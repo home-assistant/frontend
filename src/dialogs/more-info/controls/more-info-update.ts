@@ -257,8 +257,8 @@ class MoreInfoUpdate extends LitElement {
         justify-content: center;
       }
       mwc-linear-progress {
-        margin-bottom: -10px;
-        margin-top: -10px;
+        margin-bottom: -8px;
+        margin-top: 4px;
       }
     `;
   }

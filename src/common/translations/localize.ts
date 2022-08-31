@@ -9,18 +9,47 @@ import { getLocalLanguage } from "../../util/common-translation";
 // Exclude some patterns from key type checking for now
 // These are intended to be removed as errors are fixed
 // Fixing component category will require tighter definition of types from backend and/or web socket
-type LocalizeKeyExceptions =
-  | `${string}`
+export type LocalizeKeys =
+  | FlattenObjectKeys<Omit<TranslationDict, "supervisor">>
   | `panel.${string}`
   | `state.${string}`
   | `state_attributes.${string}`
   | `state_badge.${string}`
-  | `ui.${string}`
-  | `${keyof TranslationDict["supervisor"]}.${string}`
+  | `ui.card.alarm_control_panel.${string}`
+  | `ui.card.weather.attributes.${string}`
+  | `ui.card.weather.cardinal_direction.${string}`
+  | `ui.components.logbook.${string}`
+  | `ui.components.selectors.file.${string}`
+  | `ui.dialogs.entity_registry.editor.${string}`
+  | `ui.dialogs.more_info_control.vacuum.${string}`
+  | `ui.dialogs.options_flow.loading.${string}`
+  | `ui.dialogs.quick-bar.commands.${string}`
+  | `ui.dialogs.repair_flow.loading.${string}`
+  | `ui.dialogs.unhealthy.reason.${string}`
+  | `ui.dialogs.unsupported.reason.${string}`
+  | `ui.panel.config.${string}.${"caption" | "description"}`
+  | `ui.panel.config.automation.${string}`
+  | `ui.panel.config.dashboard.${string}`
+  | `ui.panel.config.devices.${string}`
+  | `ui.panel.config.energy.${string}`
+  | `ui.panel.config.helpers.${string}`
+  | `ui.panel.config.info.${string}`
+  | `ui.panel.config.integrations.${string}`
+  | `ui.panel.config.logs.${string}`
+  | `ui.panel.config.lovelace.${string}`
+  | `ui.panel.config.network.${string}`
+  | `ui.panel.config.scene.${string}`
+  | `ui.panel.config.url.${string}`
+  | `ui.panel.config.zha.${string}`
+  | `ui.panel.config.zwave_js.${string}`
+  | `ui.panel.developer-tools.tabs.${string}`
+  | `ui.panel.lovelace.card.${string}`
+  | `ui.panel.lovelace.editor.${string}`
+  | `ui.panel.page-authorize.form.${string}`
   | `component.${string}`;
 
 // Tweaked from https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
-type FlattenObjectKeys<
+export type FlattenObjectKeys<
   T extends Record<string, any>,
   Key extends keyof T = keyof T
 > = Key extends string
@@ -29,10 +58,8 @@ type FlattenObjectKeys<
     : `${Key}`
   : never;
 
-export type LocalizeFunc<
-  Dict extends Record<string, unknown> = TranslationDict
-> = (
-  key: FlattenObjectKeys<Dict> | LocalizeKeyExceptions,
+export type LocalizeFunc<Keys extends string = LocalizeKeys> = (
+  key: Keys,
   ...args: any[]
 ) => string;
 
@@ -94,14 +121,12 @@ export const polyfillsLoaded =
  * }
  */
 
-export const computeLocalize = async <
-  Dict extends Record<string, unknown> = TranslationDict
->(
+export const computeLocalize = async <Keys extends string = LocalizeKeys>(
   cache: any,
   language: string,
   resources: Resources,
   formats?: FormatsType
-): Promise<LocalizeFunc<Dict>> => {
+): Promise<LocalizeFunc<Keys>> => {
   if (polyfillsLoaded) {
     await polyfillsLoaded;
   }

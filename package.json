@@ -16,6 +16,9 @@
     "lint:lit": "lit-analyzer \"**/src/**/*.ts\" --format markdown --outFile result.md",
     "lint": "yarn run lint:eslint && yarn run lint:prettier && yarn run lint:types",
     "format": "yarn run format:eslint && yarn run format:prettier",
+    "postinstall": "husky install",
+    "prepack": "pinst --disable",
+    "postpack": "pinst --enable",
     "test": "instant-mocha --webpack-config ./test/webpack.config.js --require ./test/setup.js \"test/**/*.ts\""
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
@@ -46,6 +49,7 @@
     "@fullcalendar/daygrid": "5.9.0",
     "@fullcalendar/interaction": "5.9.0",
     "@fullcalendar/list": "5.9.0",
+    "@fullcalendar/timegrid": "5.9.0",
     "@lit-labs/motion": "^1.0.2",
     "@lit-labs/virtualizer": "patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch",
     "@material/chips": "14.0.0-canary.261f2db59.0",
@@ -89,8 +93,8 @@
     "@polymer/paper-tooltip": "^3.0.1",
     "@polymer/polymer": "3.4.1",
     "@thomasloven/round-slider": "0.5.4",
-    "@vaadin/combo-box": "^23.0.10",
-    "@vaadin/vaadin-themable-mixin": "^23.0.10",
+    "@vaadin/combo-box": "^23.1.5",
+    "@vaadin/vaadin-themable-mixin": "^23.1.5",
     "@vibrant/color": "^3.2.1-alpha.1",
     "@vibrant/core": "^3.2.1-alpha.1",
     "@vibrant/quantizer-mmcq": "^3.2.1-alpha.1",
@@ -107,15 +111,14 @@
     "deep-freeze": "^0.0.1",
     "fuse.js": "^6.0.0",
     "google-timezones-json": "^1.0.2",
-    "hls.js": "^1.1.5",
-    "home-assistant-js-websocket": "^7.1.0",
+    "hls.js": "^1.2.1",
+    "home-assistant-js-websocket": "^8.0.0",
     "idb-keyval": "^5.1.3",
     "intl-messageformat": "^9.9.1",
     "js-yaml": "^4.1.0",
     "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
     "lit": "^2.1.2",
-    "lit-vaadin-helpers": "^0.3.0",
     "marked": "^4.0.12",
     "memoize-one": "^5.2.1",
     "node-vibrant": "3.2.1-alpha.1",
@@ -202,9 +205,9 @@
     "gulp-rename": "^2.0.0",
     "gulp-zopfli-green": "^3.0.1",
     "html-minifier": "^4.0.0",
-    "husky": "^1.3.1",
+    "husky": "^8.0.1",
     "instant-mocha": "^1.3.1",
-    "lint-staged": "^11.1.2",
+    "lint-staged": "^13.0.3",
     "lit-analyzer": "^1.2.1",
     "lodash.template": "^4.5.0",
     "magic-string": "^0.25.7",
@@ -213,6 +216,7 @@
     "mocha": "^8.4.0",
     "object-hash": "^2.0.3",
     "open": "^7.0.4",
+    "pinst": "^3.0.0",
     "prettier": "^2.4.1",
     "require-dir": "^1.2.0",
     "rollup": "^2.8.2",
@@ -245,11 +249,6 @@
     "@lit/reactive-element": "1.2.1"
   },
   "main": "src/home-assistant.js",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "prettier": {
     "trailingComma": "es5",
     "arrowParens": "always"

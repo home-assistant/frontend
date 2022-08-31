@@ -69,7 +69,7 @@ export class DialogEnergyDeviceSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitOfMeasurement=${energyUnits}
+          .includeStatisticsUnitOfMeasurement=${energyUnits}
           .includeDeviceClasses=${energyDeviceClasses}
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.device_consumption_energy"

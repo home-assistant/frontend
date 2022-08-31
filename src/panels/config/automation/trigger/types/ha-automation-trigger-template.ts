@@ -1,5 +1,5 @@
 import "../../../../../components/ha-textarea";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { TemplateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
@@ -38,6 +38,14 @@ export class HaTemplateTrigger extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
+  }
+
+  static get styles() {
+    return css`
+      p {
+        margin-top: 0;
+      }
+    `;
   }
 }
 

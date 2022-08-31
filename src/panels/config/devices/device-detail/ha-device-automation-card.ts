@@ -25,15 +25,15 @@ export abstract class HaDeviceAutomationCard<
 
   @property() public deviceId?: string;
 
-  @property() public script = false;
+  @property({ type: Boolean }) public script = false;
 
-  @property() public automations: T[] = [];
+  @property({ attribute: false }) public automations: T[] = [];
 
   @state() public _showSecondary = false;
 
-  protected headerKey = "";
+  abstract headerKey: Parameters<typeof this.hass.localize>[0];
 
-  protected type = "";
+  abstract type: "action" | "condition" | "trigger";
 
   private _localizeDeviceAutomation: (
     hass: HomeAssistant,

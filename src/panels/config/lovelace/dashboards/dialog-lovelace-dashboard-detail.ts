@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
-import { HaFormSchema } from "../../../../components/ha-form/types";
+import { SchemaUnion } from "../../../../components/ha-form/types";
 import { CoreFrontendUserData } from "../../../../data/frontend";
 import {
   LovelaceDashboard,
@@ -174,12 +174,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             icon: {},
           },
         },
-        !params.dashboard &&
-          userData?.showAdvanced && {
-            name: "url_path",
-            required: true,
-            selector: { text: {} },
-          },
+        ...(!params.dashboard && userData?.showAdvanced
+          ? ([
+              {
+                name: "url_path",
+                required: true,
+                selector: { text: {} },
+              },
+            ] as const)
+          : []),
         {
           name: "require_admin",
           required: true,
@@ -194,10 +197,12 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             boolean: {},
           },
         },
-      ].filter(Boolean)
+      ] as const
   );
 
-  private _computeLabel = (entry: HaFormSchema): string =>
+  private _computeLabel = (
+    entry: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
     this.hass.localize(
       `ui.panel.config.lovelace.dashboards.detail.${
         entry.name === "show_in_sidebar"

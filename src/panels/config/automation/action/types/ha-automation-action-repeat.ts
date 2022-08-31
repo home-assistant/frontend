@@ -15,7 +15,7 @@ import "../ha-automation-action";
 import "../../../../../components/ha-textfield";
 import type { ActionElement } from "../ha-automation-action-row";
 
-const OPTIONS = ["count", "while", "until"];
+const OPTIONS = ["count", "while", "until"] as const;
 
 const getType = (action) => OPTIONS.find((option) => option in action);
 
@@ -52,42 +52,42 @@ export class HaRepeatAction extends LitElement implements ActionElement {
           `
         )}
       </ha-select>
-      ${type === "count"
-        ? html`
-            <ha-textfield
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
-              )}
-              name="count"
-              .value=${(action as CountRepeat).count || "0"}
-              @change=${this._countChanged}
-            ></ha-textfield>
-          `
-        : ""}
-      ${type === "while"
-        ? html` <h3>
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.actions.type.repeat.type.while.conditions`
-              )}:
-            </h3>
-            <ha-automation-condition
-              .conditions=${(action as WhileRepeat).while || []}
-              .hass=${this.hass}
-              @value-changed=${this._conditionChanged}
-            ></ha-automation-condition>`
-        : ""}
-      ${type === "until"
-        ? html` <h3>
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.actions.type.repeat.type.until.conditions`
-              )}:
-            </h3>
-            <ha-automation-condition
-              .conditions=${(action as UntilRepeat).until || []}
-              .hass=${this.hass}
-              @value-changed=${this._conditionChanged}
-            ></ha-automation-condition>`
-        : ""}
+      <div>
+        ${type === "count"
+          ? html`
+              <ha-textfield
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
+                )}
+                name="count"
+                .value=${(action as CountRepeat).count || "0"}
+                @change=${this._countChanged}
+              ></ha-textfield>
+            `
+          : type === "while"
+          ? html` <h3>
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.actions.type.repeat.type.while.conditions`
+                )}:
+              </h3>
+              <ha-automation-condition
+                .conditions=${(action as WhileRepeat).while || []}
+                .hass=${this.hass}
+                @value-changed=${this._conditionChanged}
+              ></ha-automation-condition>`
+          : type === "until"
+          ? html` <h3>
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.actions.type.repeat.type.until.conditions`
+                )}:
+              </h3>
+              <ha-automation-condition
+                .conditions=${(action as UntilRepeat).until || []}
+                .hass=${this.hass}
+                @value-changed=${this._conditionChanged}
+              ></ha-automation-condition>`
+          : ""}
+      </div>
       <h3>
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.repeat.sequence"

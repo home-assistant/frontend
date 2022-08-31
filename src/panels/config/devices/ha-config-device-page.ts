@@ -1,5 +1,8 @@
 import {
+  mdiCog,
+  mdiDelete,
   mdiDotsVertical,
+  mdiDownload,
   mdiOpenInNew,
   mdiPencil,
   mdiPlusCircle,
@@ -79,6 +82,7 @@ export interface DeviceAction {
   href?: string;
   action?: (ev: any) => void;
   label: string;
+  icon?: string;
   trailingIcon?: string;
   classes?: string;
 }
@@ -298,6 +302,17 @@ export class HaConfigDevicePage extends LitElement {
     if (this._deleteButtons) {
       actions.push(...this._deleteButtons);
     }
+
+    // Move all warning actions to the end
+    actions.sort((a, b) => {
+      if (a.classes === "warning" && b.classes !== "warning") {
+        return 1;
+      }
+      if (a.classes !== "warning" && b.classes === "warning") {
+        return -1;
+      }
+      return 0;
+    });
 
     const firstDeviceAction = actions.shift();
 
@@ -714,8 +729,20 @@ export class HaConfigDevicePage extends LitElement {
                                 class=${ifDefined(firstDeviceAction!.classes)}
                                 .action=${firstDeviceAction!.action}
                                 @click=${this._deviceActionClicked}
+                                graphic="icon"
                               >
                                 ${firstDeviceAction!.label}
+                                ${firstDeviceAction!.icon
+                                  ? html`
+                                      <ha-svg-icon
+                                        class=${ifDefined(
+                                          firstDeviceAction!.classes
+                                        )}
+                                        .path=${firstDeviceAction!.icon}
+                                        slot="graphic"
+                                      ></ha-svg-icon>
+                                    `
+                                  : ""}
                                 ${firstDeviceAction!.trailingIcon
                                   ? html`
                                       <ha-svg-icon
@@ -747,11 +774,27 @@ export class HaConfigDevicePage extends LitElement {
                                           )}
                                           .action=${deviceAction.action}
                                           @click=${this._deviceActionClicked}
+                                          graphic="icon"
+                                          .hasMeta=${Boolean(
+                                            deviceAction.trailingIcon
+                                          )}
                                         >
                                           ${deviceAction.label}
+                                          ${deviceAction.icon
+                                            ? html`
+                                                <ha-svg-icon
+                                                  class=${ifDefined(
+                                                    deviceAction.classes
+                                                  )}
+                                                  .path=${deviceAction.icon}
+                                                  slot="graphic"
+                                                ></ha-svg-icon>
+                                              `
+                                            : ""}
                                           ${deviceAction.trailingIcon
                                             ? html`
                                                 <ha-svg-icon
+                                                  slot="meta"
                                                   .path=${deviceAction.trailingIcon}
                                                 ></ha-svg-icon>
                                               `
@@ -869,6 +912,7 @@ export class HaConfigDevicePage extends LitElement {
         links as { link: string; domain: string }[]
       ).map((link) => ({
         href: link.link,
+        icon: mdiDownload,
         action: (ev) => this._signUrl(ev),
         label:
           links.length > 1
@@ -914,6 +958,7 @@ export class HaConfigDevicePage extends LitElement {
           );
         },
         classes: "warning",
+        icon: mdiDelete,
         label:
           buttons.length > 1
             ? this.hass.localize(
@@ -950,10 +995,9 @@ export class HaConfigDevicePage extends LitElement {
     if (configurationUrl) {
       deviceActions.push({
         href: configurationUrl,
+        icon: mdiCog,
         label: this.hass.localize(
-          `ui.panel.config.devices.open_configuration_url_${
-            device.entry_type || "device"
-          }`
+          "ui.panel.config.devices.open_configuration_url"
         ),
         trailingIcon: mdiOpenInNew,
       });
@@ -1376,6 +1420,13 @@ export class HaConfigDevicePage extends LitElement {
 
         ha-svg-icon[slot="trailingIcon"] {
           display: block;
+          width: 18px;
+          height: 18px;
+        }
+
+        ha-svg-icon[slot="meta"] {
+          width: 18px;
+          height: 18px;
         }
 
         .items {

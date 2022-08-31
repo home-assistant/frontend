@@ -29,11 +29,11 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
-import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { HELPER_DOMAINS } from "./const";
@@ -357,8 +357,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private async _openEditDialog(ev: CustomEvent): Promise<void> {
     const entityId = (ev.detail as RowClickedEvent).id;
-    showEntityEditorDialog(this, {
-      entity_id: entityId,
+    showMoreInfoDialog(this, {
+      entityId,
+      tab: "settings",
     });
   }
 

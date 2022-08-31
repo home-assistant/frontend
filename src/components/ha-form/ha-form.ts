@@ -35,20 +35,20 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
-  @property({ attribute: false }) public schema!: HaFormSchema[];
+  @property({ attribute: false }) public schema!: readonly HaFormSchema[];
 
   @property() public error?: Record<string, string>;
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public computeError?: (schema: HaFormSchema, error) => string;
+  @property() public computeError?: (schema: any, error) => string;
 
   @property() public computeLabel?: (
-    schema: HaFormSchema,
-    data?: HaFormDataContainer
+    schema: any,
+    data: HaFormDataContainer
   ) => string;
 
-  @property() public computeHelper?: (schema: HaFormSchema) => string;
+  @property() public computeHelper?: (schema: any) => string | undefined;
 
   public focus() {
     const root = this.shadowRoot?.querySelector(".root");
@@ -168,7 +168,7 @@ export class HaForm extends LitElement implements HaFormElement {
     return this.computeHelper ? this.computeHelper(schema) : "";
   }
 
-  private _computeError(error, schema: HaFormSchema | HaFormSchema[]) {
+  private _computeError(error, schema: HaFormSchema | readonly HaFormSchema[]) {
     return this.computeError ? this.computeError(error, schema) : error;
   }
 

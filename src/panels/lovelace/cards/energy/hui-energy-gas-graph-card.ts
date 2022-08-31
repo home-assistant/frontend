@@ -274,8 +274,7 @@ export class HuiEnergyGasGraphCard
       ) as GasSourceTypeEnergyPreference[];
 
     this._unit =
-      getEnergyGasUnit(this.hass, energyData.prefs, energyData.statsMetadata) ||
-      "m³";
+      getEnergyGasUnit(energyData.prefs, energyData.statsMetadata) || "m³";
 
     const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
@@ -382,7 +381,7 @@ export class HuiEnergyGasGraphCard
         label: getStatisticLabel(
           this.hass,
           source.stat_energy_from,
-          statisticsMetaData
+          statisticsMetaData[source.stat_energy_from]
         ),
         borderColor: compare ? borderColor + "7F" : borderColor,
         backgroundColor: compare ? borderColor + "32" : borderColor + "7F",

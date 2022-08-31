@@ -1,3 +1,4 @@
+import { formatDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { ensureArray } from "../common/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -5,6 +6,13 @@ import { isTemplate } from "../common/string/has-template";
 import { HomeAssistant } from "../types";
 import { Condition } from "./automation";
 import { describeCondition, describeTrigger } from "./automation_i18n";
+import { localizeDeviceAutomationAction } from "./device_automation";
+import { computeDeviceName } from "./device_registry";
+import {
+  computeEntityRegistryName,
+  entityRegistryByUniqueId,
+} from "./entity_registry";
+import { domainToName } from "./integration";
 import {
   ActionType,
   ActionTypes,
@@ -26,9 +34,10 @@ import {
 export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   action: ActionTypes[T],
-  actionType?: T
+  actionType?: T,
+  ignoreAlias = false
 ): string => {
-  if (action.alias) {
+  if (action.alias && !ignoreAlias) {
     return action.alias;
   }
   if (!actionType) {
@@ -46,7 +55,11 @@ export const describeAction = <T extends ActionType>(
     ) {
       base = "Call a service based on a template";
     } else if (config.service) {
-      base = `Call service ${config.service}`;
+      const [domain, serviceName] = config.service.split(".", 2);
+      const service = hass.services[domain][serviceName];
+      base = service
+        ? `${domainToName(hass.localize, domain)}: ${service.name}`
+        : `Call service: ${config.service}`;
     } else {
       return actionType;
     }
@@ -65,26 +78,51 @@ export const describeAction = <T extends ActionType>(
           ? config.target[key]
           : [config.target[key]];
 
-        const values: string[] = [];
-
-        let renderValues = true;
-
         for (const targetThing of keyConf) {
           if (isTemplate(targetThing)) {
             targets.push(`templated ${label}`);
-            renderValues = false;
             break;
+          } else if (key === "entity_id") {
+            if (targetThing.includes(".")) {
+              const state = hass.states[targetThing];
+              if (state) {
+                targets.push(computeStateName(state));
+              } else {
+                targets.push(targetThing);
+              }
+            } else {
+              const entityReg = entityRegistryByUniqueId(hass.entities)[
+                targetThing
+              ];
+              if (entityReg) {
+                targets.push(
+                  computeEntityRegistryName(hass, entityReg) || targetThing
+                );
+              } else {
+                targets.push("unknown entity");
+              }
+            }
+          } else if (key === "device_id") {
+            const device = hass.devices[targetThing];
+            if (device) {
+              targets.push(computeDeviceName(device, hass));
+            } else {
+              targets.push("unknown device");
+            }
+          } else if (key === "area_id") {
+            const area = hass.areas[targetThing];
+            if (area?.name) {
+              targets.push(area.name);
+            } else {
+              targets.push("unknown area");
+            }
           } else {
-            values.push(targetThing);
+            targets.push(targetThing);
           }
-        }
-
-        if (renderValues) {
-          targets.push(`${label} ${values.join(", ")}`);
         }
       }
       if (targets.length > 0) {
-        base += ` on ${targets.join(", ")}`;
+        base += ` ${targets.join(", ")}`;
       }
     }
 
@@ -103,7 +141,7 @@ export const describeAction = <T extends ActionType>(
         ? "based on a template"
         : `for ${config.delay}`;
     } else {
-      duration = `for ${JSON.stringify(config.delay)}`;
+      duration = `for ${formatDuration(config.delay)}`;
     }
 
     return `Delay ${duration}`;
@@ -118,12 +156,12 @@ export const describeAction = <T extends ActionType>(
       entityId = config.target?.entity_id || config.entity_id;
     }
     const sceneStateObj = entityId ? hass.states[entityId] : undefined;
-    return `Activate scene ${
+    return `Scene ${
       sceneStateObj
         ? computeStateName(sceneStateObj)
         : "scene" in config
         ? config.scene
-        : config.target?.entity_id || config.entity_id
+        : config.target?.entity_id || config.entity_id || ""
     }`;
   }
 
@@ -141,7 +179,7 @@ export const describeAction = <T extends ActionType>(
   if (actionType === "wait_for_trigger") {
     const config = action as WaitForTriggerAction;
     return `Wait for ${ensureArray(config.wait_for_trigger)
-      .map((trigger) => describeTrigger(trigger))
+      .map((trigger) => describeTrigger(trigger, hass))
       .join(", ")}`;
   }
 
@@ -163,7 +201,7 @@ export const describeAction = <T extends ActionType>(
   }
 
   if (actionType === "check_condition") {
-    return `Test ${describeCondition(action as Condition)}`;
+    return `Test ${describeCondition(action as Condition, hass)}`;
   }
 
   if (actionType === "stop") {
@@ -173,61 +211,40 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "if") {
     const config = action as IfAction;
-    return `If ${
-      typeof config.if === "string"
+    return `Perform an action if: ${
+      !config.if
+        ? ""
+        : typeof config.if === "string"
         ? config.if
-        : ensureArray(config.if)
-            .map((condition) => describeCondition(condition))
-            .join(", ")
-    } then ${ensureArray(config.then).map((thenAction) =>
-      describeAction(hass, thenAction)
-    )}${
-      config.else
-        ? ` else ${ensureArray(config.else).map((elseAction) =>
-            describeAction(hass, elseAction)
-          )}`
+        : ensureArray(config.if).length > 1
+        ? `${ensureArray(config.if).length} conditions`
+        : ensureArray(config.if).length
+        ? describeCondition(ensureArray(config.if)[0], hass)
         : ""
-    }`;
+    }${config.else ? " (or else!)" : ""}`;
   }
 
   if (actionType === "choose") {
     const config = action as ChooseAction;
     return config.choose
-      ? `If ${ensureArray(config.choose)
-          .map(
-            (chooseAction) =>
-              `${
-                typeof chooseAction.conditions === "string"
-                  ? chooseAction.conditions
-                  : ensureArray(chooseAction.conditions)
-                      .map((condition) => describeCondition(condition))
-                      .join(", ")
-              } then ${ensureArray(chooseAction.sequence)
-                .map((chooseSeq) => describeAction(hass, chooseSeq))
-                .join(", ")}`
-          )
-          .join(", else if ")}${
-          config.default
-            ? `. If none match: ${ensureArray(config.default)
-                .map((dAction) => describeAction(hass, dAction))
-                .join(", ")}`
-            : ""
-        }`
-      : "Choose";
+      ? `Choose between ${
+          ensureArray(config.choose).length + (config.default ? 1 : 0)
+        } actions`
+      : "Choose an action";
   }
 
   if (actionType === "repeat") {
     const config = action as RepeatAction;
-    return `Repeat ${ensureArray(config.repeat.sequence).map((repeatAction) =>
-      describeAction(hass, repeatAction)
-    )} ${"count" in config.repeat ? `${config.repeat.count} times` : ""}${
+    return `Repeat an action ${
+      "count" in config.repeat ? `${config.repeat.count} times` : ""
+    }${
       "while" in config.repeat
         ? `while ${ensureArray(config.repeat.while)
-            .map((condition) => describeCondition(condition))
+            .map((condition) => describeCondition(condition, hass))
             .join(", ")} is true`
         : "until" in config.repeat
         ? `until ${ensureArray(config.repeat.until)
-            .map((condition) => describeCondition(condition))
+            .map((condition) => describeCondition(condition, hass))
             .join(", ")} is true`
         : "for_each" in config.repeat
         ? `for every item: ${ensureArray(config.repeat.for_each)
@@ -238,11 +255,15 @@ export const describeAction = <T extends ActionType>(
   }
 
   if (actionType === "check_condition") {
-    return `Test ${describeCondition(action as Condition)}`;
+    return `Test ${describeCondition(action as Condition, hass)}`;
   }
 
   if (actionType === "device_action") {
     const config = action as DeviceAction;
+    const localized = localizeDeviceAutomationAction(hass, config);
+    if (localized) {
+      return localized;
+    }
     const stateObj = hass.states[config.entity_id as string];
     return `${config.type || "Perform action with"} ${
       stateObj ? computeStateName(stateObj) : config.entity_id
@@ -251,9 +272,7 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "parallel") {
     const config = action as ParallelAction;
-    return `Run in parallel: ${ensureArray(config.parallel)
-      .map((pAction) => describeAction(hass, pAction))
-      .join(", ")}`;
+    return `Run  ${ensureArray(config.parallel).length} actions in parallel`;
   }
 
   return actionType;

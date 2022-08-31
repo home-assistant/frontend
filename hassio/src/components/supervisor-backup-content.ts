@@ -17,8 +17,11 @@ import {
 } from "../../../src/data/hassio/backup";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant, TranslationDict } from "../../../src/types";
 import "./supervisor-formfield-label";
+
+type BackupOrRestoreKey = keyof TranslationDict["supervisor"]["backup"] &
+  keyof TranslationDict["ui"]["panel"]["page-onboarding"]["restore"];
 
 interface CheckboxItem {
   slug: string;
@@ -108,9 +111,9 @@ export class SupervisorBackupContent extends LitElement {
     this._focusTarget?.focus();
   }
 
-  private _localize = (string: string) =>
-    this.supervisor?.localize(`backup.${string}`) ||
-    this.localize!(`ui.panel.page-onboarding.restore.${string}`);
+  private _localize = (key: BackupOrRestoreKey) =>
+    this.supervisor?.localize(`backup.${key}`) ||
+    this.localize!(`ui.panel.page-onboarding.restore.${key}`);
 
   protected render(): TemplateResult {
     if (!this.onboarding && !this.supervisor) {
@@ -168,7 +171,7 @@ export class SupervisorBackupContent extends LitElement {
         : ""}
       ${this.backupType === "partial"
         ? html`<div class="partial-picker">
-            ${this.backup?.homeassistant
+            ${!this.backup || this.backup.homeassistant
               ? html`<ha-formfield
                   .label=${html`<supervisor-formfield-label
                     label="Home Assistant"

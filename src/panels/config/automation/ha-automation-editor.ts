@@ -1,4 +1,3 @@
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
@@ -6,6 +5,12 @@ import {
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
+  mdiPencil,
+  mdiPlay,
+  mdiPlayCircleOutline,
+  mdiRenameBox,
+  mdiStopCircleOutline,
+  mdiTransitConnection,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -41,6 +46,7 @@ import {
 import {
   showAlertDialog,
   showConfirmationDialog,
+  showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-tabs-subpage";
@@ -50,10 +56,8 @@ import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
-import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
-import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -114,12 +118,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         .backCallback=${this._backTapped}
         .tabs=${configSections.automations}
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._handleMenuAction}
-          activatable
-        >
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -127,12 +126,54 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           ></ha-icon-button>
 
           <mwc-list-item
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.editor.edit_ui"
-            )}
             graphic="icon"
-            ?activated=${this._mode === "gui"}
+            .disabled=${!stateObj}
+            @click=${this._runActions}
           >
+            ${this.hass.localize("ui.panel.config.automation.editor.run")}
+            <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
+          </mwc-list-item>
+
+          ${stateObj
+            ? html`<a
+                href="/config/automation/trace/${this._config
+                  ? this._config.id
+                  : ""}"
+                target="_blank"
+                .disabled=${!stateObj}
+              >
+                <mwc-list-item graphic="icon" .disabled=${!stateObj}>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.show_trace"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiTransitConnection}
+                  ></ha-svg-icon>
+                </mwc-list-item>
+              </a>`
+            : ""}
+
+          <mwc-list-item graphic="icon" @click=${this._promptAutomationAlias}>
+            ${this.hass.localize("ui.panel.config.automation.editor.rename")}
+            <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            .disabled=${!this.automationId}
+            graphic="icon"
+            @click=${this._duplicate}
+          >
+            ${this.hass.localize("ui.panel.config.automation.picker.duplicate")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiContentDuplicate}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <li divider role="separator"></li>
+
+          <mwc-list-item graphic="icon" @click=${this._switchUiMode}>
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
               ? html`<ha-svg-icon
@@ -142,13 +183,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 ></ha-svg-icon>`
               : ``}
           </mwc-list-item>
-          <mwc-list-item
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.editor.edit_yaml"
-            )}
-            graphic="icon"
-            ?activated=${this._mode === "yaml"}
-          >
+          <mwc-list-item graphic="icon" @click=${this._switchYamlMode}>
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
               ? html`<ha-svg-icon
@@ -162,32 +197,28 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           <li divider role="separator"></li>
 
           <mwc-list-item
-            .disabled=${!this.automationId}
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.picker.duplicate_automation"
-            )}
             graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._toggle}
           >
-            ${this.hass.localize(
-              "ui.panel.config.automation.picker.duplicate_automation"
-            )}
+            ${!stateObj || stateObj.state === "off"
+              ? this.hass.localize("ui.panel.config.automation.editor.enable")
+              : this.hass.localize("ui.panel.config.automation.editor.disable")}
             <ha-svg-icon
               slot="graphic"
-              .path=${mdiContentDuplicate}
+              .path=${!stateObj || stateObj.state === "off"
+                ? mdiPlayCircleOutline
+                : mdiStopCircleOutline}
             ></ha-svg-icon>
           </mwc-list-item>
 
           <mwc-list-item
             .disabled=${!this.automationId}
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.picker.delete_automation"
-            )}
             class=${classMap({ warning: Boolean(this.automationId) })}
             graphic="icon"
+            @click=${this._deleteConfirm}
           >
-            ${this.hass.localize(
-              "ui.panel.config.automation.picker.delete_automation"
-            )}
+            ${this.hass.localize("ui.panel.config.automation.picker.delete")}
             <ha-svg-icon
               class=${classMap({ warning: Boolean(this.automationId) })}
               slot="graphic"
@@ -200,7 +231,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ${this._config
           ? html`
               ${this.narrow
-                ? html`<span slot="header">${this._config?.alias}</span>`
+                ? html`<span slot="header"
+                    >${this._config!.alias ||
+                    this.hass.localize(
+                      "ui.panel.config.automation.editor.default_name"
+                    )}</span
+                  >`
                 : ""}
               <div
                 class="content ${classMap({
@@ -213,6 +249,25 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   : ""}
                 ${this._mode === "gui"
                   ? html`
+                      ${this.narrow
+                        ? ""
+                        : html`
+                            <div class="header-name">
+                              <h1>
+                                ${this._config!.alias ||
+                                this.hass.localize(
+                                  "ui.panel.config.automation.editor.default_name"
+                                )}
+                              </h1>
+                              <ha-icon-button
+                                .path=${mdiPencil}
+                                @click=${this._promptAutomationAlias}
+                                .label=${this.hass.localize(
+                                  "ui.panel.config.automation.editor.rename"
+                                )}
+                              ></ha-icon-button>
+                            </div>
+                          `}
                       ${"use_blueprint" in this._config
                         ? html`
                             <blueprint-automation-editor
@@ -241,32 +296,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                         ? html`
                             <ha-card outlined>
                               <div class="card-header">
-                                ${this._config.alias}
+                                ${this._config.alias ||
+                                this.hass.localize(
+                                  "ui.panel.config.automation.editor.default_name"
+                                )}
                               </div>
-                              ${stateObj
-                                ? html`
-                                    <div
-                                      class="card-actions layout horizontal justified center"
-                                    >
-                                      <ha-entity-toggle
-                                        .hass=${this.hass}
-                                        .stateObj=${stateObj}
-                                        .label=${this.hass.localize(
-                                          "ui.panel.config.automation.editor.enable_disable"
-                                        )}
-                                      ></ha-entity-toggle>
-
-                                      <mwc-button
-                                        @click=${this._runActions}
-                                        .stateObj=${stateObj}
-                                      >
-                                        ${this.hass.localize(
-                                          "ui.card.automation.trigger"
-                                        )}
-                                      </mwc-button>
-                                    </div>
-                                  `
-                                : ""}
                             </ha-card>
                           `
                         : ``}
@@ -319,19 +353,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
     if (changedProps.has("automationId") && !this.automationId && this.hass) {
       const initData = getAutomationEditorInitData();
-      let baseConfig: Partial<AutomationConfig> = {
-        alias: this.hass.localize(
-          "ui.panel.config.automation.editor.default_name"
-        ),
-        description: "",
-      };
+      let baseConfig: Partial<AutomationConfig> = { description: "" };
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig = {
           ...baseConfig,
           mode: "single",
-          trigger: [{ platform: "device", ...HaDeviceTrigger.defaultConfig }],
+          trigger: [],
           condition: [],
-          action: [{ ...HaDeviceAction.defaultConfig }],
+          action: [],
         };
       }
       this._config = {
@@ -339,6 +368,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ...initData,
       } as AutomationConfig;
       this._entityId = undefined;
+      this._dirty = true;
     }
 
     if (
@@ -403,8 +433,25 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._errors = undefined;
   }
 
-  private _runActions(ev: Event) {
-    triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
+  private _runActions() {
+    if (!this.hass || !this._entityId) {
+      return;
+    }
+    triggerAutomationActions(
+      this.hass,
+      this.hass.states[this._entityId].entity_id
+    );
+  }
+
+  private async _toggle(): Promise<void> {
+    if (!this.hass || !this._entityId) {
+      return;
+    }
+    const stateObj = this.hass.states[this._entityId];
+    const service = stateObj.state === "off" ? "turn_on" : "turn_off";
+    await this.hass.callService("automation", service, {
+      entity_id: stateObj.entity_id,
+    });
   }
 
   private _preprocessYaml() {
@@ -473,9 +520,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     showAutomationEditor({
       ...this._config,
       id: undefined,
-      alias: `${this._config?.alias} (${this.hass.localize(
-        "ui.panel.config.automation.picker.duplicate"
-      )})`,
+      alias: undefined,
     });
   }
 
@@ -495,25 +540,50 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     history.back();
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._mode = "gui";
-        break;
-      case 1:
-        this._mode = "yaml";
-        break;
-      case 2:
-        this._duplicate();
-        break;
-      case 3:
-        this._deleteConfirm();
-        break;
-    }
+  private _switchUiMode() {
+    this._mode = "gui";
   }
 
-  private _saveAutomation(): void {
+  private _switchYamlMode() {
+    this._mode = "yaml";
+  }
+
+  private async _promptAutomationAlias(): Promise<string | null> {
+    const result = await showPromptDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.automation_alias"
+      ),
+      inputLabel: this.hass.localize("ui.panel.config.automation.editor.alias"),
+      inputType: "string",
+      placeholder: this.hass.localize(
+        "ui.panel.config.automation.editor.default_name"
+      ),
+      defaultValue: this._config!.alias,
+      confirmText: this.hass.localize("ui.common.submit"),
+    });
+    if (result) {
+      this._config!.alias = result;
+      this._dirty = true;
+      this.requestUpdate();
+    }
+    return result;
+  }
+
+  private async _saveAutomation(): Promise<void> {
     const id = this.automationId || String(Date.now());
+    if (!this._config!.alias) {
+      const alias = await this._promptAutomationAlias();
+      if (!alias) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.automation.editor.missing_name"
+          ),
+        });
+        return;
+      }
+      this._config!.alias = alias;
+    }
+
     this.hass!.callApi(
       "POST",
       "config/automation/config/" + id,
@@ -570,6 +640,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           flex-direction: column;
           padding-bottom: 0;
         }
+        manual-automation-editor {
+          margin: 0 auto;
+          max-width: 1040px;
+          padding: 28px 20px 0;
+        }
         ha-yaml-editor {
           flex-grow: 1;
           --code-mirror-height: 100%;
@@ -599,6 +674,29 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
+        }
+        ha-button-menu a {
+          text-decoration: none;
+          color: var(--primary-color);
+        }
+        h1 {
+          margin: 0;
+          font-family: var(--paper-font-headline_-_font-family);
+          -webkit-font-smoothing: var(
+            --paper-font-headline_-_-webkit-font-smoothing
+          );
+          font-size: var(--paper-font-headline_-_font-size);
+          font-weight: var(--paper-font-headline_-_font-weight);
+          letter-spacing: var(--paper-font-headline_-_letter-spacing);
+          line-height: var(--paper-font-headline_-_line-height);
+          opacity: var(--dark-primary-opacity);
+        }
+        .header-name {
+          display: flex;
+          align-items: center;
+          margin: 0 auto;
+          max-width: 1040px;
+          padding: 28px 20px 0;
         }
       `,
     ];

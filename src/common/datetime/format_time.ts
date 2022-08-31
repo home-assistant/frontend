@@ -1,7 +1,7 @@
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
-import { useAmPm } from "./use_am_pm";
 import { polyfillsLoaded } from "../translations/localize";
+import { useAmPm } from "./use_am_pm";
 
 if (__BUILD__ === "latest" && polyfillsLoaded) {
   await polyfillsLoaded;
@@ -63,4 +63,18 @@ const formatTimeWeekdayMem = memoizeOne(
         hour12: useAmPm(locale),
       }
     )
+);
+
+// 21:15
+export const formatTime24h = (dateObj: Date) =>
+  formatTime24hMem().format(dateObj);
+
+const formatTime24hMem = memoizeOne(
+  () =>
+    // en-GB to fix Chrome 24:59 to 0:59 https://stackoverflow.com/a/60898146
+    new Intl.DateTimeFormat("en-GB", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: false,
+    })
 );

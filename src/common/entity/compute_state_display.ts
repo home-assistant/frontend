@@ -64,9 +64,12 @@ export const computeStateDisplayFromEntityAttributes = (
         // fallback to default
       }
     }
-    return `${formatNumber(state, locale)}${
-      attributes.unit_of_measurement ? " " + attributes.unit_of_measurement : ""
-    }`;
+    const unit = !attributes.unit_of_measurement
+      ? ""
+      : attributes.unit_of_measurement === "%"
+      ? "%"
+      : ` ${attributes.unit_of_measurement}`;
+    return `${formatNumber(state, locale)}${unit}`;
   }
 
   const domain = computeDomain(entityId);

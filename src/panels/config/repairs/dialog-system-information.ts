@@ -336,7 +336,7 @@ class DialogSystemInformation extends LitElement {
                         rel="noreferrer noopener"
                       >
                         ${this.hass.localize(
-                          "ui.panel.config.info.system_health.more_systemInfo"
+                          "ui.panel.config.info.system_health.more_info"
                         )}
                       </a>
                     `}

@@ -1,9 +1,7 @@
-import { CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { Action, IfAction } from "../../../../../data/script";
-import { HaDeviceCondition } from "../../condition/types/ha-automation-condition-device";
-import { HaDeviceAction } from "./ha-automation-action-device_id";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Condition } from "../../../../lovelace/common/validate-condition";
@@ -17,10 +15,12 @@ export class HaIfAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: IfAction;
 
+  @state() private _showElse = false;
+
   public static get defaultConfig() {
     return {
-      if: [{ ...HaDeviceCondition.defaultConfig, condition: "device" }],
-      then: [HaDeviceAction.defaultConfig],
+      if: [],
+      then: [],
     };
   }
 
@@ -49,18 +49,31 @@ export class HaIfAction extends LitElement implements ActionElement {
         @value-changed=${this._thenChanged}
         .hass=${this.hass}
       ></ha-automation-action>
-
-      <h3>
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.if.else"
-        )}:
-      </h3>
-      <ha-automation-action
-        .actions=${action.else || []}
-        @value-changed=${this._elseChanged}
-        .hass=${this.hass}
-      ></ha-automation-action>
+      ${this._showElse || action.else
+        ? html`
+            <h3>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.if.else"
+              )}:
+            </h3>
+            <ha-automation-action
+              .actions=${action.else || []}
+              @value-changed=${this._elseChanged}
+              .hass=${this.hass}
+            ></ha-automation-action>
+          `
+        : html` <div class="link-button-row">
+            <button class="link" @click=${this._addElse}>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.if.add_else"
+              )}
+            </button>
+          </div>`}
     `;
+  }
+
+  private _addElse() {
+    this._showElse = true;
   }
 
   private _ifChanged(ev: CustomEvent) {
@@ -98,7 +111,14 @@ export class HaIfAction extends LitElement implements ActionElement {
   }
 
   static get styles(): CSSResultGroup {
-    return haStyle;
+    return [
+      haStyle,
+      css`
+        .link-button-row {
+          padding: 14px;
+        }
+      `,
+    ];
   }
 }
 

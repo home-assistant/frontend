@@ -55,9 +55,19 @@ jobs:
           rm -rf dist home_assistant_frontend.egg-info
           python3 -m build
 
+      - name: Archive translations
+        run: tar -czvf translations.tar.gz translations
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: dist/home_assistant_frontend*.whl
+          if-no-files-found: error
+
+      - name: Upload translations
+        uses: actions/upload-artifact@v3
+        with:
+          name: translations
+          path: translations.tar.gz
           if-no-files-found: error

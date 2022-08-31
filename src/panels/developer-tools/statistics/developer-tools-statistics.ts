@@ -211,7 +211,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
       ) {
         this._data.push({
           statistic_id: statisticId,
-          unit_of_measurement: "",
+          statistics_unit_of_measurement: "",
+          display_unit_of_measurement: "",
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],

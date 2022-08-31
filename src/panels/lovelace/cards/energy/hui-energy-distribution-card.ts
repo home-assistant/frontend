@@ -315,11 +315,8 @@ class HuiEnergyDistrubutionCard
                         ${formatNumber(gasUsage || 0, this.hass.locale, {
                           maximumFractionDigits: 1,
                         })}
-                        ${getEnergyGasUnit(
-                          this.hass,
-                          prefs,
-                          this._data.statsMetadata
-                        ) || "m³"}
+                        ${getEnergyGasUnit(prefs, this._data.statsMetadata) ||
+                        "m³"}
                       </div>
                       <svg width="80" height="30">
                         <path d="M40 0 v30" id="gas" />

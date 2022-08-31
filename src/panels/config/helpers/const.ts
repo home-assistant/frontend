@@ -5,6 +5,7 @@ import type { InputDateTime } from "../../../data/input_datetime";
 import type { InputNumber } from "../../../data/input_number";
 import type { InputSelect } from "../../../data/input_select";
 import type { InputText } from "../../../data/input_text";
+import type { Schedule } from "../../../data/schedule";
 import type { Timer } from "../../../data/timer";
 
 export const HELPER_DOMAINS = [
@@ -16,6 +17,7 @@ export const HELPER_DOMAINS = [
   "input_select",
   "counter",
   "timer",
+  "schedule",
 ];
 
 export type Helper =
@@ -26,4 +28,5 @@ export type Helper =
   | InputSelect
   | InputDateTime
   | Counter
-  | Timer;
+  | Timer
+  | Schedule;

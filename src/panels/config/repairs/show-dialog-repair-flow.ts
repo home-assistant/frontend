@@ -67,8 +67,9 @@ export const showRepairsFlowDialog = (
           hass.localize(
             `component.${issue.domain}.issues.${
               issue.translation_key || issue.issue_id
-            }.fix_flow.step.${step.step_id}.title`
-          ) || hass.localize(`ui.dialogs.issues_flow.form.header`)
+            }.fix_flow.step.${step.step_id}.title`,
+            step.description_placeholders
+          ) || hass.localize("ui.dialogs.repair_flow.form.header")
         );
       },
 
@@ -99,11 +100,15 @@ export const showRepairsFlowDialog = (
       },
 
       renderShowFormStepFieldHelper(hass, step, field) {
-        return hass.localize(
+        const description = hass.localize(
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
-          }.fix_flow.step.${step.step_id}.data_description.${field.name}`
+          }.fix_flow.step.${step.step_id}.data_description.${field.name}`,
+          step.description_placeholders
         );
+        return description
+          ? html`<ha-markdown breaks .content=${description}></ha-markdown>`
+          : "";
       },
 
       renderShowFormStepFieldError(hass, step, error) {
@@ -125,7 +130,7 @@ export const showRepairsFlowDialog = (
 
       renderCreateEntryDescription(hass, _step) {
         return html`
-          <p>${hass.localize(`ui.dialogs.repairs.success.description`)}</p>
+          <p>${hass.localize("ui.dialogs.repair_flow.success.description")}</p>
         `;
       },
 
@@ -201,7 +206,7 @@ export const showRepairsFlowDialog = (
               issue.translation_key || issue.issue_id
             }.fix_flow.loading`
           ) ||
-          hass.localize(`ui.dialogs.repairs.loading.${reason}`, {
+          hass.localize(`ui.dialogs.repair_flow.loading.${reason}`, {
             integration: domainToName(hass.localize, issue.domain),
           })
         );

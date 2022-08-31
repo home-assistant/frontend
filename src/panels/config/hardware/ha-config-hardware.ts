@@ -1,18 +1,26 @@
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
+import type { ChartOptions } from "chart.js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { numberFormatToLocale } from "../../../common/number/format_number";
+import { round } from "../../../common/number/round";
 import "../../../components/buttons/ha-progress-button";
+import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
-import { BOARD_NAMES, HardwareInfo } from "../../../data/hardware";
+import {
+  BOARD_NAMES,
+  HardwareInfo,
+  SystemStatusStreamMessage,
+} from "../../../data/hardware";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -30,14 +38,27 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { DEFAULT_PRIMARY_COLOR } from "../../../resources/ha-style";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { showToast } from "../../../util/toast";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
 
+const DATASAMPLES = 60;
+
+const DATA_SET_CONFIG = {
+  fill: "origin",
+  borderColor: DEFAULT_PRIMARY_COLOR,
+  backgroundColor: DEFAULT_PRIMARY_COLOR + "2B",
+  pointRadius: 0,
+  lineTension: 0.2,
+  borderWidth: 1,
+};
+
 @customElement("ha-config-hardware")
-class HaConfigHardware extends LitElement {
+class HaConfigHardware extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
@@ -50,9 +71,101 @@ class HaConfigHardware extends LitElement {
 
   @state() private _hardwareInfo?: HardwareInfo;
 
+  @state() private _chartOptions?: ChartOptions;
+
+  @state() private _systemStatusData?: SystemStatusStreamMessage;
+
+  private _memoryEntries: { x: number; y: number | null }[] = [];
+
+  private _cpuEntries: { x: number; y: number | null }[] = [];
+
+  public hassSubscribe() {
+    return [
+      this.hass.connection.subscribeMessage<SystemStatusStreamMessage>(
+        (message) => {
+          // Only store the last 60 entries
+          this._memoryEntries.shift();
+          this._cpuEntries.shift();
+
+          this._memoryEntries.push({
+            x: new Date(message.timestamp).getTime(),
+            y: message.memory_used_percent,
+          });
+          this._cpuEntries.push({
+            x: new Date(message.timestamp).getTime(),
+            y: message.cpu_percent,
+          });
+
+          this._systemStatusData = message;
+        },
+        {
+          type: "hardware/subscribe_system_status",
+        }
+      ),
+    ];
+  }
+
+  protected willUpdate(): void {
+    if (!this.hasUpdated) {
+      this._chartOptions = {
+        animation: false,
+        responsive: true,
+        scales: {
+          y: {
+            gridLines: {
+              drawTicks: false,
+            },
+            ticks: {
+              maxTicksLimit: 7,
+              fontSize: 10,
+              max: 100,
+              min: 0,
+              stepSize: 1,
+              callback: (value) => value + "%",
+            },
+          },
+          x: {
+            type: "time",
+            adapters: {
+              date: {
+                locale: this.hass.locale,
+              },
+            },
+            gridLines: {
+              display: true,
+              drawTicks: false,
+            },
+            ticks: {
+              maxRotation: 0,
+              sampleSize: 5,
+              autoSkipPadding: 20,
+              major: {
+                enabled: true,
+              },
+              fontSize: 10,
+              autoSkip: true,
+              maxTicksLimit: 5,
+            },
+          },
+        },
+        // @ts-expect-error
+        locale: numberFormatToLocale(this.hass.locale),
+      };
+    }
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._load();
+
+    const date = new Date();
+    // Force graph to start drawing from the right
+    for (let i = 0; i < DATASAMPLES; i++) {
+      const t = new Date(date);
+      t.setSeconds(t.getSeconds() - 5 * (DATASAMPLES - i));
+      this._memoryEntries.push({ x: t.getTime(), y: null });
+      this._cpuEntries.push({ x: t.getTime(), y: null });
+    }
   }
 
   protected render(): TemplateResult {
@@ -118,9 +231,9 @@ class HaConfigHardware extends LitElement {
               >
             `
           : ""}
-        ${boardName
-          ? html`
-              <div class="content">
+        <div class="content">
+          ${boardName
+            ? html`
                 <ha-card outlined>
                   <div class="card-content">
                     <mwc-list>
@@ -169,9 +282,68 @@ class HaConfigHardware extends LitElement {
                     </mwc-list>
                   </div>
                 </ha-card>
+              `
+            : ""}
+
+          <ha-card outlined>
+            <div class="header">
+              <div class="title">
+                ${this.hass.localize("ui.panel.config.hardware.processor")}
               </div>
-            `
-          : ""}
+              <div class="value">
+                ${this._systemStatusData?.cpu_percent || "-"}%
+              </div>
+            </div>
+            <div class="card-content">
+              <ha-chart-base
+                .data=${{
+                  datasets: [
+                    {
+                      ...DATA_SET_CONFIG,
+                      data: this._cpuEntries,
+                    },
+                  ],
+                }}
+                .options=${this._chartOptions}
+              ></ha-chart-base>
+            </div>
+          </ha-card>
+          <ha-card outlined>
+            <div class="header">
+              <div class="title">
+                ${this.hass.localize("ui.panel.config.hardware.memory")}
+              </div>
+              <div class="value">
+                ${this._systemStatusData
+                  ? html`
+                      ${round(this._systemStatusData.memory_used_mb / 1024, 1)}
+                      GB /
+                      ${round(
+                        (this._systemStatusData.memory_used_mb! +
+                          this._systemStatusData.memory_free_mb!) /
+                          1024,
+                        0
+                      )}
+                      GB
+                    `
+                  : "- GB / - GB"}
+              </div>
+            </div>
+            <div class="card-content">
+              <ha-chart-base
+                .data=${{
+                  datasets: [
+                    {
+                      ...DATA_SET_CONFIG,
+                      data: this._memoryEntries,
+                    },
+                  ],
+                }}
+                .options=${this._chartOptions}
+              ></ha-chart-base>
+            </div>
+          </ha-card>
+        </div>
       </hass-subpage>
     `;
   }
@@ -280,6 +452,7 @@ class HaConfigHardware extends LitElement {
         justify-content: space-between;
         flex-direction: column;
         display: flex;
+        margin-bottom: 16px;
       }
       .card-content {
         display: flex;
@@ -297,6 +470,21 @@ class HaConfigHardware extends LitElement {
       }
       .secondary-text {
         font-size: 14px;
+      }
+
+      .header {
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .header .title {
+        color: var(--secondary-text-color);
+        font-size: 18px;
+      }
+
+      .header .value {
+        font-size: 16px;
       }
     `,
   ];

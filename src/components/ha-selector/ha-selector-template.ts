@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
@@ -47,6 +47,14 @@ export class HaTemplateSelector extends LitElement {
       return;
     }
     fireEvent(this, "value-changed", { value });
+  }
+
+  static get styles() {
+    return css`
+      p {
+        margin-top: 0;
+      }
+    `;
   }
 }
 

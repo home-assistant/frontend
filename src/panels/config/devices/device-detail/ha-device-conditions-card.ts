@@ -7,9 +7,9 @@ import { HaDeviceAutomationCard } from "./ha-device-automation-card";
 
 @customElement("ha-device-conditions-card")
 export class HaDeviceConditionsCard extends HaDeviceAutomationCard<DeviceCondition> {
-  protected type = "condition";
+  readonly type = "condition";
 
-  protected headerKey = "ui.panel.config.devices.automation.conditions.caption";
+  readonly headerKey = "ui.panel.config.devices.automation.conditions.caption";
 
   constructor() {
     super(localizeDeviceAutomationCondition);

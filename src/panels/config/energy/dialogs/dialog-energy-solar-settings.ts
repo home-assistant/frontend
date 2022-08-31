@@ -79,7 +79,7 @@ export class DialogEnergySolarSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitOfMeasurement=${energyUnits}
+          .includeStatisticsUnitOfMeasurement=${energyUnits}
           .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source.stat_energy_from}
           .label=${this.hass.localize(

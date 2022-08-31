@@ -83,7 +83,6 @@ class HaAlert extends LitElement {
       position: relative;
       padding: 8px;
       display: flex;
-      margin: 4px 0;
     }
     .issue-type.rtl {
       flex-direction: row-reverse;

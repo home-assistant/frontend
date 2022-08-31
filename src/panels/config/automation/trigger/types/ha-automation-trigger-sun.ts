@@ -5,8 +5,9 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SunTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
-import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import "../../../../../components/ha-form/ha-form";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-sun")
 export class HaSunTrigger extends LitElement implements TriggerElement {
@@ -14,28 +15,31 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
 
   @property({ attribute: false }) public trigger!: SunTrigger;
 
-  private _schema = memoizeOne((localize: LocalizeFunc) => [
-    {
-      name: "event",
-      type: "select",
-      required: true,
-      options: [
-        [
-          "sunrise",
-          localize(
-            "ui.panel.config.automation.editor.triggers.type.sun.sunrise"
-          ),
-        ],
-        [
-          "sunset",
-          localize(
-            "ui.panel.config.automation.editor.triggers.type.sun.sunset"
-          ),
-        ],
-      ],
-    },
-    { name: "offset", selector: { text: {} } },
-  ]);
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        {
+          name: "event",
+          type: "select",
+          required: true,
+          options: [
+            [
+              "sunrise",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.sun.sunrise"
+              ),
+            ],
+            [
+              "sunset",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.sun.sunset"
+              ),
+            ],
+          ],
+        },
+        { name: "offset", selector: { text: {} } },
+      ] as const
+  );
 
   public static get defaultConfig() {
     return {
@@ -63,7 +67,9 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string =>
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.sun.${schema.name}`
     );

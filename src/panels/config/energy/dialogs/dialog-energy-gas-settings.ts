@@ -90,7 +90,7 @@ export class DialogEnergyGasSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitOfMeasurement=${this._params.unit === undefined
+          .includeStatisticsUnitOfMeasurement=${this._params.unit === undefined
             ? ENERGY_GAS_UNITS
             : this._params.unit === "energy"
             ? ENERGY_GAS_ENERGY_UNITS

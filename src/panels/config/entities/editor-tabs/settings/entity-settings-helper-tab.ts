@@ -6,7 +6,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -26,6 +26,7 @@ import "../../../helpers/forms/ha-input_datetime-form";
 import "../../../helpers/forms/ha-input_number-form";
 import "../../../helpers/forms/ha-input_select-form";
 import "../../../helpers/forms/ha-input_text-form";
+import "../../../helpers/forms/ha-schedule-form";
 import "../../../helpers/forms/ha-timer-form";
 import "../../entity-registry-basic-editor";
 import type { HaEntityRegistryBasicEditor } from "../../entity-registry-basic-editor";
@@ -181,18 +182,12 @@ export class EntityRegistrySettingsHelper extends LitElement {
         }
         .form {
           padding: 20px 24px;
-          margin-bottom: 53px;
         }
         .buttons {
-          position: absolute;
-          bottom: 0;
-          width: 100%;
           box-sizing: border-box;
-          border-top: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
           display: flex;
           justify-content: space-between;
-          padding: 8px;
+          padding: 0 24px 24px 24px;
           background-color: var(--mdc-theme-surface, #fff);
         }
         .error {

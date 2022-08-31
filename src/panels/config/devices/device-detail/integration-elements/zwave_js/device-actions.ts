@@ -1,8 +1,16 @@
+import {
+  mdiChatQuestion,
+  mdiCog,
+  mdiDeleteForever,
+  mdiHospitalBox,
+  mdiInformation,
+  mdiUpload,
+} from "@mdi/js";
 import { getConfigEntries } from "../../../../../../data/config_entries";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
-  fetchZwaveIsAnyFirmwareUpdateInProgress,
-  fetchZwaveNodeIsFirmwareUpdateInProgress,
+  fetchZwaveIsAnyOTAFirmwareUpdateInProgress,
+  fetchZwaveIsNodeFirmwareUpdateInProgress,
   fetchZwaveNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
@@ -44,12 +52,14 @@ export const getZwaveDeviceActions = async (
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.device_config"
       ),
+      icon: mdiCog,
       href: `/config/zwave_js/node_config/${device.id}?config_entry=${entryId}`,
     },
     {
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.reinterview_device"
       ),
+      icon: mdiChatQuestion,
       action: () =>
         showZWaveJSReinterviewNodeDialog(el, {
           device_id: device.id,
@@ -57,6 +67,7 @@ export const getZwaveDeviceActions = async (
     },
     {
       label: hass.localize("ui.panel.config.zwave_js.device_info.heal_node"),
+      icon: mdiHospitalBox,
       action: () =>
         showZWaveJSHealNodeDialog(el, {
           device,
@@ -66,6 +77,7 @@ export const getZwaveDeviceActions = async (
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.remove_failed"
       ),
+      icon: mdiDeleteForever,
       action: () =>
         showZWaveJSRemoveFailedNodeDialog(el, {
           device_id: device.id,
@@ -75,6 +87,7 @@ export const getZwaveDeviceActions = async (
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.node_statistics"
       ),
+      icon: mdiInformation,
       action: () =>
         showZWaveJSNodeStatisticsDialog(el, {
           device,
@@ -88,8 +101,8 @@ export const getZwaveDeviceActions = async (
 
   const [isAnyFirmwareUpdateInProgress, isNodeFirmwareUpdateInProgress] =
     await Promise.all([
-      fetchZwaveIsAnyFirmwareUpdateInProgress(hass, entryId),
-      fetchZwaveNodeIsFirmwareUpdateInProgress(hass, device.id),
+      fetchZwaveIsAnyOTAFirmwareUpdateInProgress(hass, entryId),
+      fetchZwaveIsNodeFirmwareUpdateInProgress(hass, device.id),
     ]);
 
   if (!isAnyFirmwareUpdateInProgress || isNodeFirmwareUpdateInProgress) {
@@ -97,10 +110,11 @@ export const getZwaveDeviceActions = async (
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.update_firmware"
       ),
+      icon: mdiUpload,
       action: async () => {
         if (
           isNodeFirmwareUpdateInProgress ||
-          (await fetchZwaveNodeIsFirmwareUpdateInProgress(hass, device.id)) ||
+          (await fetchZwaveIsNodeFirmwareUpdateInProgress(hass, device.id)) ||
           (await showConfirmationDialog(el, {
             text: hass.localize(
               "ui.panel.config.zwave_js.update_firmware.warning"

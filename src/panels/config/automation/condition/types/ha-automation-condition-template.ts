@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-textarea";
 import type { TemplateCondition } from "../../../../../data/automation";
@@ -38,6 +38,14 @@ export class HaTemplateCondition extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
+  }
+
+  static get styles() {
+    return css`
+      p {
+        margin-top: 0;
+      }
+    `;
   }
 }
 

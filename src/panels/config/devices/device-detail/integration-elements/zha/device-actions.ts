@@ -1,3 +1,12 @@
+import {
+  mdiCogRefresh,
+  mdiDelete,
+  mdiDrawPen,
+  mdiFamilyTree,
+  mdiFileTree,
+  mdiGroup,
+  mdiPlus,
+} from "@mdi/js";
 import { navigate } from "../../../../../../common/navigate";
 import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { fetchZHADevice } from "../../../../../../data/zha";
@@ -33,6 +42,7 @@ export const getZHADeviceActions = async (
   if (!zhaDevice.active_coordinator) {
     actions.push({
       label: hass.localize("ui.dialogs.zha_device_info.buttons.reconfigure"),
+      icon: mdiCogRefresh,
       action: () => showZHAReconfigureDeviceDialog(el, { device: zhaDevice }),
     });
   }
@@ -46,12 +56,14 @@ export const getZHADeviceActions = async (
       ...[
         {
           label: hass.localize("ui.dialogs.zha_device_info.buttons.add"),
+          icon: mdiPlus,
           action: () => navigate(`/config/zha/add/${zhaDevice!.ieee}`),
         },
         {
           label: hass.localize(
             "ui.dialogs.zha_device_info.buttons.device_children"
           ),
+          icon: mdiFileTree,
           action: () => showZHADeviceChildrenDialog(el, { device: zhaDevice! }),
         },
       ]
@@ -64,16 +76,17 @@ export const getZHADeviceActions = async (
         label: hass.localize(
           "ui.dialogs.zha_device_info.buttons.zigbee_information"
         ),
+        icon: mdiDrawPen,
         action: () => showZHADeviceZigbeeInfoDialog(el, { device: zhaDevice }),
       },
       {
         label: hass.localize("ui.dialogs.zha_device_info.buttons.clusters"),
+        icon: mdiGroup,
         action: () => showZHAClusterDialog(el, { device: zhaDevice }),
       },
       {
-        label: hass.localize(
-          "ui.dialogs.zha_device_info.buttons.view_in_visualization"
-        ),
+        label: hass.localize("ui.dialogs.zha_device_info.buttons.view_network"),
+        icon: mdiFamilyTree,
         action: () =>
           navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
       },
@@ -83,6 +96,7 @@ export const getZHADeviceActions = async (
   if (!zhaDevice.active_coordinator) {
     actions.push({
       label: hass.localize("ui.dialogs.zha_device_info.buttons.remove"),
+      icon: mdiDelete,
       classes: "warning",
       action: async () => {
         const confirmed = await showConfirmationDialog(el, {

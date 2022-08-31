@@ -55,6 +55,10 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import {
+  hideMoreInfoDialog,
+  showMoreInfoDialog,
+} from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
@@ -63,15 +67,11 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
-import { DialogEntityEditor } from "./dialog-entity-editor";
-import {
-  loadEntityEditorDialog,
-  showEntityEditorDialog,
-} from "./show-dialog-entity-editor";
 
-export interface StateEntity extends EntityRegistryEntry {
+export interface StateEntity extends Omit<EntityRegistryEntry, "unique_id"> {
   readonly?: boolean;
   selectable?: boolean;
+  unique_id?: string;
 }
 
 export interface EntityRow extends StateEntity {
@@ -120,8 +120,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
-
-  private getDialog?: () => DialogEntityEditor | undefined;
 
   private _activeFilters = memoize(
     (
@@ -305,7 +303,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _filteredEntitiesAndDomains = memoize(
     (
-      entities: EntityRegistryEntry[],
+      entities: StateEntity[],
       devices: DeviceRegistryEntry[] | undefined,
       areas: AreaRegistryEntry[] | undefined,
       stateEntities: StateEntity[],
@@ -395,7 +393,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         result.push({
           ...entry,
           entity,
-          name: computeEntityRegistryName(this.hass!, entry),
+          name: computeEntityRegistryName(
+            this.hass!,
+            entry as EntityRegistryEntry
+          ),
           unavailable,
           restored,
           area: area ? area.name : "—",
@@ -454,14 +455,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    if (!this.getDialog) {
-      return;
-    }
-    const dialog = this.getDialog();
-    if (!dialog) {
-      return;
-    }
-    dialog.closeDialog();
+    hideMoreInfoDialog(this);
   }
 
   protected render(): TemplateResult {
@@ -695,11 +689,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     `;
   }
 
-  protected firstUpdated(changedProps): void {
-    super.firstUpdated(changedProps);
-    loadEntityEditorDialog();
-  }
-
   public willUpdate(changedProps): void {
     super.willUpdate(changedProps);
     const oldHass = changedProps.get("hass");
@@ -923,12 +912,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _openEditEntry(ev: CustomEvent): void {
     const entityId = (ev.detail as RowClickedEvent).id;
-    const entry = this._entities!.find(
-      (entity) => entity.entity_id === entityId
-    );
-    this.getDialog = showEntityEditorDialog(this, {
-      entry,
-      entity_id: entityId,
+    showMoreInfoDialog(this, {
+      entityId,
+      tab: "settings",
     });
   }
 

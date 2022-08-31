@@ -230,7 +230,9 @@ export class HaServiceControl extends LitElement {
         @value-changed=${this._serviceChanged}
       ></ha-service-picker>
       <div class="description">
-        <p>${serviceData?.description}</p>
+        ${serviceData?.description
+          ? html`<p>${serviceData?.description}</p>`
+          : ""}
         ${this._manifest
           ? html` <a
               href=${this._manifest.is_built_in

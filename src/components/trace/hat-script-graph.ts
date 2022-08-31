@@ -1,6 +1,5 @@
 import {
   mdiAbTesting,
-  mdiAlertOctagon,
   mdiArrowDecision,
   mdiArrowUp,
   mdiAsterisk,
@@ -10,17 +9,18 @@ import {
   mdiCheckboxBlankOutline,
   mdiCheckboxMarkedOutline,
   mdiChevronDown,
-  mdiChevronRight,
   mdiChevronUp,
   mdiClose,
-  mdiCloseOctagon,
+  mdiCodeBraces,
   mdiCodeBrackets,
   mdiDevices,
-  mdiExclamation,
+  mdiGestureDoubleTap,
+  mdiHandBackRight,
+  mdiPalette,
   mdiRefresh,
+  mdiRoomService,
   mdiShuffleDisabled,
   mdiTimerOutline,
-  mdiTrafficLight,
 } from "@mdi/js";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -46,7 +46,6 @@ import {
   ChooseActionTraceStep,
   ConditionTraceStep,
   IfActionTraceStep,
-  StopActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
 import "../ha-icon-button";
@@ -419,7 +418,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${mdiExclamation}
+        .iconPath=${mdiGestureDoubleTap}
         @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
@@ -485,7 +484,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${mdiExclamation}
+        .iconPath=${mdiPalette}
         @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
@@ -504,7 +503,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${mdiChevronRight}
+        .iconPath=${mdiRoomService}
         @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
@@ -523,7 +522,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${mdiTrafficLight}
+        .iconPath=${mdiCodeBraces}
         @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
@@ -587,13 +586,10 @@ export class HatScriptGraph extends LitElement {
     graphStart = false,
     disabled = false
   ) {
-    const trace = this.trace.trace[path] as StopActionTraceStep[] | undefined;
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${trace?.[0].result?.error
-          ? mdiAlertOctagon
-          : mdiCloseOctagon}
+        .iconPath=${mdiHandBackRight}
         @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}

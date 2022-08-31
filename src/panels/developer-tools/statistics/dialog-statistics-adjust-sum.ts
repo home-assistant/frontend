@@ -135,7 +135,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     } else {
       const data =
         this._stats5min.length >= 2 ? this._stats5min : this._statsHour;
-      const unit = this._params!.statistic.unit_of_measurement;
+      const unit = this._params!.statistic.display_unit_of_measurement;
       const rows: TemplateResult[] = [];
       for (let i = 1; i < data.length; i++) {
         const stat = data[i];
@@ -221,7 +221,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         label="New Value"
         .hass=${this.hass}
         .selector=${this._amountSelector(
-          this._params!.statistic.unit_of_measurement
+          this._params!.statistic.display_unit_of_measurement
         )}
         .value=${this._amount}
         .disabled=${this._busy}

@@ -11,17 +11,20 @@ export type Selector =
   | BooleanSelector
   | ColorRGBSelector
   | ColorTempSelector
+  | ConfigEntrySelector
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
   | DurationSelector
   | EntitySelector
+  | FileSelector
   | IconSelector
   | LocationSelector
   | MediaSelector
   | NumberSelector
   | ObjectSelector
   | SelectSelector
+  | StateSelector
   | StringSelector
   | TargetSelector
   | TemplateSelector
@@ -63,6 +66,7 @@ export interface AreaSelector {
 export interface AttributeSelector {
   attribute: {
     entity_id?: string;
+    hide_attributes?: readonly string[];
   };
 }
 
@@ -80,6 +84,12 @@ export interface ColorTempSelector {
   color_temp: {
     min_mireds?: number;
     max_mireds?: number;
+  };
+}
+
+export interface ConfigEntrySelector {
+  config_entry: {
+    integration?: string;
   };
 }
 
@@ -112,11 +122,17 @@ export interface DurationSelector {
 export interface EntitySelector {
   entity: {
     integration?: string;
-    domain?: string | string[];
+    domain?: string | readonly string[];
     device_class?: string;
     multiple?: boolean;
     include_entities?: string[];
     exclude_entities?: string[];
+  };
+}
+
+export interface FileSelector {
+  file: {
+    accept: string;
   };
 }
 
@@ -180,7 +196,14 @@ export interface SelectSelector {
     multiple?: boolean;
     custom_value?: boolean;
     mode?: "list" | "dropdown";
-    options: string[] | SelectOption[];
+    options: readonly string[] | readonly SelectOption[];
+  };
+}
+
+export interface StateSelector {
+  state: {
+    entity_id?: string;
+    attribute?: string;
   };
 }
 
