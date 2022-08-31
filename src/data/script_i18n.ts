@@ -10,6 +10,7 @@ import {
   computeEntityRegistryName,
   entityRegistryByUniqueId,
 } from "./entity_registry";
+import { domainToName } from "./integration";
 import {
   ActionType,
   ActionTypes,
@@ -52,7 +53,11 @@ export const describeAction = <T extends ActionType>(
     ) {
       base = "Call a service based on a template";
     } else if (config.service) {
-      base = `Call service ${config.service}`;
+      const [domain, serviceName] = config.service.split(".", 2);
+      const service = hass.services[domain][serviceName];
+      base = service
+        ? `${domainToName(hass.localize, domain)}: ${service.name}`
+        : `Call service: ${config.service}`;
     } else {
       return actionType;
     }
@@ -115,7 +120,7 @@ export const describeAction = <T extends ActionType>(
         }
       }
       if (targets.length > 0) {
-        base += ` on ${targets.join(", ")}`;
+        base += ` ${targets.join(", ")}`;
       }
     }
 
