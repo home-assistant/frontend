@@ -1,15 +1,25 @@
-import { repeat } from "lit/directives/repeat";
-import { mdiPlus } from "@mdi/js";
-import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
-import memoizeOne from "memoize-one";
+import { mdiDrag, mdiPlus } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-svg-icon";
+import { stringCompare } from "../../../../common/string/compare";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-button-menu";
+import type { HaSelect } from "../../../../components/ha-select";
+import "../../../../components/ha-svg-icon";
+import { ACTION_TYPES } from "../../../../data/action";
 import { Action } from "../../../../data/script";
+import { sortableStyles } from "../../../../resources/ha-sortable-style";
+import {
+  loadSortable,
+  SortableInstance,
+} from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-action-row";
 import type HaAutomationActionRow from "./ha-automation-action-row";
@@ -27,10 +37,6 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { ACTION_TYPES } from "../../../../data/action";
-import { stringCompare } from "../../../../common/string/compare";
-import { LocalizeFunc } from "../../../../common/translations/localize";
-import type { HaSelect } from "../../../../components/ha-select";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
@@ -40,28 +46,39 @@ export default class HaAutomationAction extends LitElement {
 
   @property() public actions!: Action[];
 
+  @property({ type: Boolean }) public reOrderMode = false;
+
   private _focusLastActionOnChange = false;
 
   private _actionKeys = new WeakMap<Action, string>();
 
+  private _sortable?: SortableInstance;
+
   protected render() {
     return html`
-      ${repeat(
-        this.actions,
-        (action) => this._getKey(action),
-        (action, idx) => html`
-          <ha-automation-action-row
-            .index=${idx}
-            .totalActions=${this.actions.length}
-            .action=${action}
-            .narrow=${this.narrow}
-            @duplicate=${this._duplicateAction}
-            @move-action=${this._move}
-            @value-changed=${this._actionChanged}
-            .hass=${this.hass}
-          ></ha-automation-action-row>
-        `
-      )}
+      <div class="actions">
+        ${repeat(
+          this.actions,
+          (action) => this._getKey(action),
+          (action, idx) => html`
+            <ha-automation-action-row
+              .index=${idx}
+              .totalActions=${this.actions.length}
+              .action=${action}
+              .narrow=${this.narrow}
+              .reOrderMode=${this.reOrderMode}
+              @duplicate=${this._duplicateAction}
+              @move-action=${this._move}
+              @value-changed=${this._actionChanged}
+              .hass=${this.hass}
+            >
+              <div class="handle" slot="handle">
+                <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+              </div>
+            </ha-automation-action-row>
+          `
+        )}
+      </div>
       <ha-button-menu fixed @action=${this._addAction}>
         <mwc-button
           slot="trigger"
@@ -86,6 +103,13 @@ export default class HaAutomationAction extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
+    if (changedProps.has("reOrderMode")) {
+      if (this.reOrderMode) {
+        this._createSortable();
+      } else {
+        this._destroySortable();
+      }
+    }
     if (changedProps.has("actions") && this._focusLastActionOnChange) {
       this._focusLastActionOnChange = false;
 
@@ -98,6 +122,33 @@ export default class HaAutomationAction extends LitElement {
         row.focus();
       });
     }
+  }
+
+  private async _createSortable() {
+    const Sortable = await loadSortable();
+    this._sortable = new Sortable(this.shadowRoot!.querySelector(".actions")!, {
+      animation: 150,
+      fallbackClass: "sortable-fallback",
+      handle: ".handle",
+      onChoose: (evt: SortableEvent) => {
+        (evt.item as any).placeholder =
+          document.createComment("sort-placeholder");
+        evt.item.after((evt.item as any).placeholder);
+      },
+      onEnd: (evt: SortableEvent) => {
+        // put back in original location
+        if ((evt.item as any).placeholder) {
+          (evt.item as any).placeholder.replaceWith(evt.item);
+          delete (evt.item as any).placeholder;
+        }
+        this._dragged(evt);
+      },
+    });
+  }
+
+  private _destroySortable() {
+    this._sortable?.destroy();
+    this._sortable = undefined;
   }
 
   private _getKey(action: Action) {
@@ -131,6 +182,15 @@ export default class HaAutomationAction extends LitElement {
     const action = actions.splice(index, 1)[0];
     actions.splice(newIndex, 0, action);
     fireEvent(this, "value-changed", { value: actions });
+  }
+
+  private _dragged(ev: SortableEvent): void {
+    if (ev.oldIndex === ev.newIndex) {
+      return;
+    }
+    const newActions = this.actions!.concat();
+    newActions.splice(ev.newIndex!, 0, newActions.splice(ev.oldIndex!, 1)[0]);
+    fireEvent(this, "value-changed", { value: newActions });
   }
 
   private _actionChanged(ev: CustomEvent) {
@@ -177,16 +237,27 @@ export default class HaAutomationAction extends LitElement {
   );
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-automation-action-row {
-        display: block;
-        margin-bottom: 16px;
-        scroll-margin-top: 48px;
-      }
-      ha-svg-icon {
-        height: 20px;
-      }
-    `;
+    return [
+      sortableStyles,
+      css`
+        ha-automation-action-row {
+          display: block;
+          margin-bottom: 16px;
+          scroll-margin-top: 48px;
+        }
+        ha-svg-icon {
+          height: 20px;
+        }
+        .handle {
+          cursor: move;
+          padding: 12px;
+        }
+        .handle ha-svg-icon {
+          pointer-events: none;
+          height: 24px;
+        }
+      `,
+    ];
   }
 }
 

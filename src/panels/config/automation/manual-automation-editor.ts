@@ -1,8 +1,13 @@
 import "@material/mwc-button/mwc-button";
-import { mdiHelpCircle, mdiRobot } from "@mdi/js";
+import {
+  mdiHelpCircle,
+  mdiRobot,
+  mdiSort,
+  mdiTextBoxEdit,
+} from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-card";
@@ -34,6 +39,12 @@ export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public config!: ManualAutomationConfig;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @state() private _reOrderMode = false;
+
+  private _toggleReOrderMode() {
+    this._reOrderMode = !this._reOrderMode;
+  }
 
   protected render() {
     return html`
@@ -176,18 +187,27 @@ export class HaManualAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.actions.header"
           )}
         </h2>
-        <a
-          href=${documentationUrl(this.hass, "/docs/automation/action/")}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <div>
           <ha-icon-button
-            .path=${mdiHelpCircle}
+            .path=${this._reOrderMode ? mdiTextBoxEdit : mdiSort}
             .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.learn_more"
+              "ui.panel.config.automation.editor.actions.re_order"
             )}
+            @click=${this._toggleReOrderMode}
           ></ha-icon-button>
-        </a>
+          <a
+            href=${documentationUrl(this.hass, "/docs/automation/action/")}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <ha-icon-button
+              .path=${mdiHelpCircle}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.learn_more"
+              )}
+            ></ha-icon-button>
+          </a>
+        </div>
       </div>
 
       <ha-automation-action
@@ -197,6 +217,7 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._actionChanged}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .reOrderMode=${this._reOrderMode}
       ></ha-automation-action>
     `;
   }

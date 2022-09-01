@@ -17,6 +17,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   @property() public action!: ChooseAction;
 
+  @property({ type: Boolean }) public reOrderMode = false;
+
   @state() private _showDefault = false;
 
   public static get defaultConfig() {
@@ -89,6 +91,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
             </h2>
             <ha-automation-action
               .actions=${action.default || []}
+              .reOrderMode=${this.reOrderMode}
               @value-changed=${this._defaultChanged}
               .hass=${this.hass}
             ></ha-automation-action>
