@@ -944,7 +944,18 @@ export class HaConfigDevicePage extends LitElement {
       buttons.push({
         action: async () => {
           const confirmed = await showConfirmationDialog(this, {
-            text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
+            text:
+              this._integrations(device, this.entries).length > 1
+                ? this.hass.localize(
+                    `ui.panel.config.devices.confirm_delete_integration`,
+                    {
+                      integration: domainToName(
+                        this.hass.localize,
+                        entry.domain
+                      ),
+                    }
+                  )
+                : this.hass.localize(`ui.panel.config.devices.confirm_delete`),
           });
 
           if (!confirmed) {
@@ -960,7 +971,7 @@ export class HaConfigDevicePage extends LitElement {
         classes: "warning",
         icon: mdiDelete,
         label:
-          buttons.length > 1
+          this._integrations(device, this.entries).length > 1
             ? this.hass.localize(
                 `ui.panel.config.devices.delete_device_integration`,
                 {
