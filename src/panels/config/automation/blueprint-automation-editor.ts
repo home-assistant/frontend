@@ -67,9 +67,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
     const blueprint = this._blueprint;
     return html`
       <ha-config-section vertical .isWide=${this.isWide}>
-        ${!this.narrow
-          ? html` <span slot="header">${this.config.alias}</span> `
-          : ""}
         <span slot="introduction">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.introduction"
@@ -102,36 +99,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
                   </div>
                 `}
           </div>
-          ${this.stateObj
-            ? html`
-                <div class="card-actions layout horizontal justified center">
-                  <div class="layout horizontal center">
-                    <ha-entity-toggle
-                      .hass=${this.hass}
-                      .stateObj=${this.stateObj!}
-                    ></ha-entity-toggle>
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.enable_disable"
-                    )}
-                  </div>
-                  <div>
-                    <a href="/config/automation/trace/${this.config.id}">
-                      <mwc-button>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.show_trace"
-                        )}
-                      </mwc-button>
-                    </a>
-                    <mwc-button
-                      @click=${this._runActions}
-                      .stateObj=${this.stateObj}
-                    >
-                      ${this.hass.localize("ui.card.automation.trigger")}
-                    </mwc-button>
-                  </div>
-                </div>
-              `
-            : ""}
         </ha-card>
       </ha-config-section>
 
