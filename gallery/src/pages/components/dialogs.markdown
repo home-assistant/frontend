@@ -3,7 +3,7 @@ title: Dialgos
 subtitle: Dialogs provide important prompts in a user flow.
 ---
 
-# Material Desing 3
+# Material Design 3
 
 Our dialogs are based on the latest version of Material Design. Specs and guidelines can be found on it's [website](https://m3.material.io/components/dialogs/overview). 
 
