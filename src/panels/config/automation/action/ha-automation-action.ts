@@ -62,12 +62,12 @@ export default class HaAutomationAction extends LitElement {
           (action) => this._getKey(action),
           (action, idx) => html`
             <ha-automation-action-row
+              .index=${idx}
               .action=${action}
               .narrow=${this.narrow}
               .hideMenu=${this.reOrderMode}
               .reOrderMode=${this.reOrderMode}
               @duplicate=${this._duplicateAction}
-              @move-action=${this._move}
               @value-changed=${this._actionChanged}
               .hass=${this.hass}
             >

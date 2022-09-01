@@ -126,6 +126,13 @@ export class HaManualAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.triggers.header"
           )}
         </h2>
+        <ha-icon-button
+          .path=${this._reOrderMode ? mdiTextBoxEdit : mdiSort}
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.actions.re_order"
+          )}
+          @click=${this._toggleReOrderMode}
+        ></ha-icon-button>
         <a
           href=${documentationUrl(this.hass, "/docs/automation/trigger/")}
           target="_blank"
@@ -146,6 +153,7 @@ export class HaManualAutomationEditor extends LitElement {
         .triggers=${this.config.trigger}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
+        .reOrderMode=${this._reOrderMode}
       ></ha-automation-trigger>
 
       <div class="header">
