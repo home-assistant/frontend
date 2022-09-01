@@ -331,11 +331,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                             `
                           : html`
                               <div class="header">
-                                <div class="name">
+                                <h2 id="sequence-heading" class="name">
                                   ${this.hass.localize(
                                     "ui.panel.config.script.editor.sequence"
                                   )}
-                                </div>
+                                </h2>
                                 <a
                                   href=${documentationUrl(
                                     this.hass,
@@ -354,6 +354,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                               </div>
 
                               <ha-automation-action
+                                role="region"
+                                aria-labelledby="sequence-heading"
                                 .actions=${this._config.sequence}
                                 @value-changed=${this._sequenceChanged}
                                 .hass=${this.hass}

@@ -68,10 +68,10 @@ import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 
-export interface StateEntity extends Omit<EntityRegistryEntry, "unique_id"> {
+export interface StateEntity extends Omit<EntityRegistryEntry, "id"> {
   readonly?: boolean;
   selectable?: boolean;
-  unique_id?: string;
+  id?: string;
 }
 
 export interface EntityRow extends StateEntity {

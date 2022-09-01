@@ -36,7 +36,6 @@ const defaultFullCalendarConfig: CalendarOptions = {
   selectOverlap: false,
   eventOverlap: false,
   allDaySlot: false,
-  slotMinTime: "00:00:59",
   height: "parent",
   locales: allLocales,
   firstDay: 1,
@@ -178,7 +177,7 @@ class HaScheduleForm extends LitElement {
       },
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
-        minute: undefined,
+        minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
         hour12: useAmPm(this.hass.locale),
         meridiem: useAmPm(this.hass.locale) ? "narrow" : false,
       },
@@ -214,7 +213,8 @@ class HaScheduleForm extends LitElement {
       }
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
-        const distance = i - currentDay;
+        // Add 7 to 0 because we start the calendar on Monday
+        const distance = i - currentDay + (i === 0 ? 7 : 0);
 
         const start = new Date();
         start.setDate(start.getDate() + distance);
@@ -227,7 +227,9 @@ class HaScheduleForm extends LitElement {
         end.setDate(end.getDate() + distance);
         end.setHours(
           parseInt(item.to.slice(0, 2)),
-          parseInt(item.to.slice(-2))
+          parseInt(item.to.slice(-2)),
+          0,
+          0
         );
 
         events.push({
