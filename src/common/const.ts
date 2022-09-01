@@ -126,6 +126,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   gas: mdiGasCylinder,
   humidity: mdiWaterPercent,
   illuminance: mdiBrightness5,
+  moisture: mdiWaterPercent,
   monetary: mdiCash,
   nitrogen_dioxide: mdiMolecule,
   nitrogen_monoxide: mdiMolecule,
