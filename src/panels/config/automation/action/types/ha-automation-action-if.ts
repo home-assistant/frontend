@@ -37,8 +37,9 @@ export class HaIfAction extends LitElement implements ActionElement {
       </h3>
       <ha-automation-condition
         .conditions=${action.if}
-        .hass=${this.hass}
+        .reOrderMode=${this.reOrderMode}
         @value-changed=${this._ifChanged}
+        .hass=${this.hass}
       ></ha-automation-condition>
 
       <h3>

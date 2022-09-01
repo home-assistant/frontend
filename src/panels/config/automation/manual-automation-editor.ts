@@ -1,10 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import {
-  mdiHelpCircle,
-  mdiRobot,
-  mdiSort,
-  mdiTextBoxEdit,
-} from "@mdi/js";
+import { mdiHelpCircle, mdiRobot, mdiSort, mdiTextBoxEdit } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -159,6 +154,13 @@ export class HaManualAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.conditions.header"
           )}
         </h2>
+        <ha-icon-button
+          .path=${this._reOrderMode ? mdiTextBoxEdit : mdiSort}
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.actions.re_order"
+          )}
+          @click=${this._toggleReOrderMode}
+        ></ha-icon-button>
         <a
           href=${documentationUrl(this.hass, "/docs/automation/condition/")}
           target="_blank"
@@ -179,6 +181,7 @@ export class HaManualAutomationEditor extends LitElement {
         .conditions=${this.config.condition || []}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
+        .reOrderMode=${this._reOrderMode}
       ></ha-automation-condition>
 
       <div class="header">

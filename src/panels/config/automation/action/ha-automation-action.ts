@@ -208,9 +208,7 @@ export default class HaAutomationAction extends LitElement {
   }
 
   private _dragged(ev: SortableEvent): void {
-    if (ev.oldIndex === ev.newIndex) {
-      return;
-    }
+    if (ev.oldIndex === ev.newIndex) return;
     this._move(ev.oldIndex!, ev.newIndex!);
   }
 

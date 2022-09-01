@@ -54,6 +54,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
             </h3>
             <ha-automation-condition
               .conditions=${option.conditions}
+              .reOrderMode=${this.reOrderMode}
               .hass=${this.hass}
               .idx=${idx}
               @value-changed=${this._conditionChanged}

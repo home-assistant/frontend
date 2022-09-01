@@ -28,6 +28,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public yamlMode = false;
 
+  @property({ type: Boolean }) public reOrderMode = false;
+
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
   );
@@ -60,7 +62,11 @@ export default class HaAutomationConditionEditor extends LitElement {
             <div>
               ${dynamicElement(
                 `ha-automation-condition-${condition.condition}`,
-                { hass: this.hass, condition: condition }
+                {
+                  hass: this.hass,
+                  condition: condition,
+                  reOrderMode: this.reOrderMode,
+                }
               )}
             </div>
           `}
