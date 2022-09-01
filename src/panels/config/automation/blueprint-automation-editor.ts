@@ -3,7 +3,6 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
@@ -11,10 +10,7 @@ import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
-import {
-  BlueprintAutomationConfig,
-  triggerAutomationActions,
-} from "../../../data/automation";
+import { BlueprintAutomationConfig } from "../../../data/automation";
 import {
   BlueprintOrError,
   Blueprints,
@@ -187,10 +183,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
     this._blueprints = await fetchBlueprints(this.hass, "automation");
   }
 
-  private _runActions(ev: Event) {
-    triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
-  }
-
   private _blueprintChanged(ev) {
     ev.stopPropagation();
     if (this.config.use_blueprint.path === ev.detail.value) {
@@ -285,9 +277,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
         }
         p {
           margin-bottom: 0;
-        }
-        ha-entity-toggle {
-          margin-right: 8px;
         }
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
