@@ -178,7 +178,7 @@ class HaScheduleForm extends LitElement {
       },
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
-        minute: undefined,
+        minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
         hour12: useAmPm(this.hass.locale),
         meridiem: useAmPm(this.hass.locale) ? "narrow" : false,
       },
@@ -214,7 +214,8 @@ class HaScheduleForm extends LitElement {
       }
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
-        const distance = i - currentDay;
+        // Add 7 to 0 because we start the calendar on Monday
+        const distance = i - currentDay + (i === 0 ? 7 : 0);
 
         const start = new Date();
         start.setDate(start.getDate() + distance);
