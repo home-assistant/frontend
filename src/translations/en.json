@@ -2564,7 +2564,7 @@
           "download_diagnostics": "Download diagnostics",
           "download_diagnostics_integration": "Download {integration} diagnostics",
           "delete_device": "Delete",
-          "delete_device_integration": "Remove {integration} from device",
+          "delete_device_integration": "Remove device from {integration}",
           "type": {
             "device_heading": "Device",
             "device": "device",
@@ -2641,7 +2641,7 @@
           },
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?",
-          "confirm_delete_integration": "Are you sure you want to remove {integration} from this device?",
+          "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "picker": {
             "search": "Search devices",
             "filter": {
