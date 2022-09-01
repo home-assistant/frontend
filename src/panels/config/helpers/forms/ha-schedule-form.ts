@@ -36,7 +36,6 @@ const defaultFullCalendarConfig: CalendarOptions = {
   selectOverlap: false,
   eventOverlap: false,
   allDaySlot: false,
-  slotMinTime: "00:00:59",
   height: "parent",
   locales: allLocales,
   firstDay: 1,
@@ -228,7 +227,9 @@ class HaScheduleForm extends LitElement {
         end.setDate(end.getDate() + distance);
         end.setHours(
           parseInt(item.to.slice(0, 2)),
-          parseInt(item.to.slice(-2))
+          parseInt(item.to.slice(-2)),
+          0,
+          0
         );
 
         events.push({
