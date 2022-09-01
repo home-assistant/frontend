@@ -468,12 +468,6 @@ export default class HaAutomationActionRow extends LitElement {
     });
   }
 
-  public collapse() {
-    this.updateComplete.then(() => {
-      this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = false;
-    });
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
