@@ -872,9 +872,16 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       name: this._name.trim() || null,
       icon: this._icon.trim() || null,
       area_id: this._areaId || null,
-      device_class: this._deviceClass || null,
       new_entity_id: this._entityId.trim(),
     };
+
+    // Only update device class if changed by user
+    if (
+      this._deviceClass !==
+      (this.entry.device_class || this.entry.original_device_class)
+    ) {
+      params.device_class = this._deviceClass;
+    }
 
     const stateObj: HassEntity | undefined =
       this.hass.states[this.entry.entity_id];
