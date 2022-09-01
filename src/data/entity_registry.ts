@@ -7,8 +7,8 @@ import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 
 export interface EntityRegistryEntry {
+  id: string;
   entity_id: string;
-  unique_id: string;
   name: string | null;
   icon: string | null;
   platform: string;
@@ -23,6 +23,7 @@ export interface EntityRegistryEntry {
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
+  unique_id: string;
   capabilities: Record<string, unknown>;
   original_icon?: string;
   device_class?: string;
@@ -162,11 +163,11 @@ export const sortEntityRegistryByName = (entries: EntityRegistryEntry[]) =>
     caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
   );
 
-export const entityRegistryByUniqueId = memoizeOne(
+export const entityRegistryById = memoizeOne(
   (entries: HomeAssistant["entities"]) => {
     const entities: HomeAssistant["entities"] = {};
     for (const entity of Object.values(entries)) {
-      entities[entity.unique_id] = entity;
+      entities[entity.id] = entity;
     }
     return entities;
   }

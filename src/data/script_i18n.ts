@@ -10,7 +10,7 @@ import { localizeDeviceAutomationAction } from "./device_automation";
 import { computeDeviceName } from "./device_registry";
 import {
   computeEntityRegistryName,
-  entityRegistryByUniqueId,
+  entityRegistryById,
 } from "./entity_registry";
 import { domainToName } from "./integration";
 import {
@@ -91,9 +91,7 @@ export const describeAction = <T extends ActionType>(
                 targets.push(targetThing);
               }
             } else {
-              const entityReg = entityRegistryByUniqueId(hass.entities)[
-                targetThing
-              ];
+              const entityReg = entityRegistryById(hass.entities)[targetThing];
               if (entityReg) {
                 targets.push(
                   computeEntityRegistryName(hass, entityReg) || targetThing

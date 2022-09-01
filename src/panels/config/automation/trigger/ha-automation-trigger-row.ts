@@ -121,13 +121,13 @@ export default class HaAutomationTriggerRow extends LitElement {
           : ""}
 
         <ha-expansion-panel leftChevron>
-          <div slot="header">
+          <h3 slot="header">
             <ha-svg-icon
               class="trigger-icon"
               .path=${TRIGGER_TYPES[this.trigger.platform]}
             ></ha-svg-icon>
             ${capitalizeFirstLetter(describeTrigger(this.trigger, this.hass))}
-          </div>
+          </h3>
           <ha-button-menu
             slot="icons"
             fixed
@@ -531,6 +531,11 @@ export default class HaAutomationTriggerRow extends LitElement {
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 0 0 8px;
           --expansion-panel-content-padding: 0;
+        }
+        h3 {
+          margin: 0;
+          font-size: inherit;
+          font-weight: inherit;
         }
         .trigger-icon {
           display: none;
