@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiDrag, mdiPlus } from "@mdi/js";
+import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -62,19 +62,42 @@ export default class HaAutomationAction extends LitElement {
           (action) => this._getKey(action),
           (action, idx) => html`
             <ha-automation-action-row
-              .index=${idx}
-              .totalActions=${this.actions.length}
               .action=${action}
               .narrow=${this.narrow}
+              .hideMenu=${this.reOrderMode}
               .reOrderMode=${this.reOrderMode}
               @duplicate=${this._duplicateAction}
               @move-action=${this._move}
               @value-changed=${this._actionChanged}
               .hass=${this.hass}
             >
-              <div class="handle" slot="handle">
-                <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-              </div>
+              ${this.reOrderMode
+                ? html`
+                    <ha-icon-button
+                      .index=${idx}
+                      slot="icons"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.move_up"
+                      )}
+                      .path=${mdiArrowUp}
+                      @click=${this._moveUp}
+                      .disabled=${idx === 0}
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      .index=${idx}
+                      slot="icons"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.move_down"
+                      )}
+                      .path=${mdiArrowDown}
+                      @click=${this._moveDown}
+                      .disabled=${idx === this.actions.length - 1}
+                    ></ha-icon-button>
+                    <div class="handle" slot="icons">
+                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                    </div>
+                  `
+                : ""}
             </ha-automation-action-row>
           `
         )}
@@ -172,25 +195,30 @@ export default class HaAutomationAction extends LitElement {
     fireEvent(this, "value-changed", { value: actions });
   }
 
-  private _move(ev: CustomEvent) {
-    // Prevent possible parent action-row from also moving
-    ev.stopPropagation();
-
+  private _moveUp(ev) {
     const index = (ev.target as any).index;
-    const newIndex = ev.detail.direction === "up" ? index - 1 : index + 1;
-    const actions = this.actions.concat();
-    const action = actions.splice(index, 1)[0];
-    actions.splice(newIndex, 0, action);
-    fireEvent(this, "value-changed", { value: actions });
+    const newIndex = index - 1;
+    this._move(index, newIndex);
+  }
+
+  private _moveDown(ev) {
+    const index = (ev.target as any).index;
+    const newIndex = index + 1;
+    this._move(index, newIndex);
   }
 
   private _dragged(ev: SortableEvent): void {
     if (ev.oldIndex === ev.newIndex) {
       return;
     }
-    const newActions = this.actions!.concat();
-    newActions.splice(ev.newIndex!, 0, newActions.splice(ev.oldIndex!, 1)[0]);
-    fireEvent(this, "value-changed", { value: newActions });
+    this._move(ev.oldIndex!, ev.newIndex!);
+  }
+
+  private _move(index: number, newIndex: number) {
+    const actions = this.actions.concat();
+    const action = actions.splice(index, 1)[0];
+    actions.splice(newIndex, 0, action);
+    fireEvent(this, "value-changed", { value: actions });
   }
 
   private _actionChanged(ev: CustomEvent) {

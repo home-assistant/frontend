@@ -1,8 +1,6 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
-  mdiArrowDown,
-  mdiArrowUp,
   mdiCheck,
   mdiContentDuplicate,
   mdiDelete,
@@ -17,13 +15,15 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
-import "../../../../components/ha-icon-button";
 import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { ACTION_TYPES } from "../../../../data/action";
 import { validateConfig } from "../../../../data/config";
 import { Action, getActionType } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
@@ -50,8 +50,6 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { ACTION_TYPES } from "../../../../data/action";
-import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 
 const getType = (action: Action | undefined) => {
   if (!action) {
@@ -65,13 +63,6 @@ const getType = (action: Action | undefined) => {
   }
   return Object.keys(ACTION_TYPES).find((option) => option in action);
 };
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "move-action": { direction: "up" | "down" };
-  }
-}
 
 export interface ActionElement extends LitElement {
   action: Action;
@@ -107,11 +98,9 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property() public action!: Action;
 
-  @property() public index!: number;
-
-  @property() public totalActions!: number;
-
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean }) public hideMenu = false;
 
   @property({ type: Boolean }) public reOrderMode = false;
 
@@ -167,30 +156,9 @@ export default class HaAutomationActionRow extends LitElement {
             ${capitalizeFirstLetter(describeAction(this.hass, this.action))}
           </h3>
 
-          ${this.reOrderMode
-            ? html`
-                <ha-icon-button
-                  slot="icons"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.move_up"
-                  )}
-                  .path=${mdiArrowUp}
-                  @click=${this._moveUp}
-                  .disabled=${this.index === 0}
-                ></ha-icon-button>
-
-                <ha-icon-button
-                  slot="icons"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.move_down"
-                  )}
-                  .path=${mdiArrowDown}
-                  @click=${this._moveDown}
-                  .disabled=${this.index === this.totalActions - 1}
-                ></ha-icon-button>
-
-                <slot name="handle" slot="icons"></slot>
-              `
+          <slot name="icons" slot="icons"></slot>
+          ${this.hideMenu
+            ? ""
             : html`
                 <ha-button-menu
                   slot="icons"
@@ -361,16 +329,6 @@ export default class HaAutomationActionRow extends LitElement {
     if (!this._yamlMode) {
       this._yamlMode = true;
     }
-  }
-
-  private _moveUp(ev) {
-    ev.preventDefault();
-    fireEvent(this, "move-action", { direction: "up" });
-  }
-
-  private _moveDown(ev) {
-    ev.preventDefault();
-    fireEvent(this, "move-action", { direction: "down" });
   }
 
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
