@@ -3,6 +3,8 @@ import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./ha-button-menu";
 import "./ha-icon-button";
@@ -16,6 +18,7 @@ export interface IconOverflowMenuItem {
   disabled?: boolean;
   tooltip?: string;
   onClick: CallableFunction;
+  warning?: boolean;
 }
 
 @customElement("ha-icon-overflow-menu")
@@ -49,9 +52,13 @@ export class HaIconOverflowMenu extends LitElement {
                     graphic="icon"
                     .disabled=${item.disabled}
                     @click=${item.action}
+                    class=${classMap({ warning: Boolean(item.warning) })}
                   >
                     <div slot="graphic">
-                      <ha-svg-icon .path=${item.path}></ha-svg-icon>
+                      <ha-svg-icon
+                        class=${classMap({ warning: Boolean(item.warning) })}
+                        .path=${item.path}
+                      ></ha-svg-icon>
                     </div>
                     ${item.label}
                   </mwc-list-item>
@@ -81,7 +88,8 @@ export class HaIconOverflowMenu extends LitElement {
     `;
   }
 
-  protected _handleIconOverflowMenuOpened() {
+  protected _handleIconOverflowMenuOpened(e) {
+    e.stopPropagation();
     // If this component is used inside a data table, the z-index of the row
     // needs to be increased. Otherwise the ha-button-menu would be displayed
     // underneath the next row in the table.
@@ -99,12 +107,15 @@ export class HaIconOverflowMenu extends LitElement {
   }
 
   static get styles() {
-    return css`
-      :host {
-        display: flex;
-        justify-content: flex-end;
-      }
-    `;
+    return [
+      haStyle,
+      css`
+        :host {
+          display: flex;
+          justify-content: flex-end;
+        }
+      `,
+    ];
   }
 }
 
