@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-blueprint-picker";
@@ -34,8 +34,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
 
   @state() private _blueprints?: Blueprints;
 
-  @state() private _showDescription = false;
-
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._getBlueprints();
@@ -46,17 +44,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
       return undefined;
     }
     return this._blueprints[this.config.use_blueprint.path];
-  }
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (
-      !this._showDescription &&
-      changedProps.has("config") &&
-      this.config.description
-    ) {
-      this._showDescription = true;
-    }
   }
 
   protected render() {
@@ -225,10 +212,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
     fireEvent(this, "value-changed", {
       value: { ...this.config!, [name]: newVal },
     });
-  }
-
-  private _addDescription() {
-    this._showDescription = true;
   }
 
   static get styles(): CSSResultGroup {
