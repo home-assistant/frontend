@@ -62,41 +62,25 @@ export class HaBlueprintAutomationEditor extends LitElement {
   protected render() {
     const blueprint = this._blueprint;
     return html`
-      <ha-config-section vertical .isWide=${this.isWide}>
-        <span slot="introduction">
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.introduction"
-          )}
-        </span>
-        <ha-card outlined>
-          <div class="card-content">
-            ${this._showDescription
-              ? html`
-                  <ha-textarea
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.editor.description.label"
-                    )}
-                    .placeholder=${this.hass.localize(
-                      "ui.panel.config.automation.editor.description.placeholder"
-                    )}
-                    name="description"
-                    autogrow
-                    .value=${this.config.description || ""}
-                    @change=${this._valueChanged}
-                  ></ha-textarea>
-                `
-              : html`
-                  <div class="link-button-row">
-                    <button class="link" @click=${this._addDescription}>
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.description.add"
-                      )}
-                    </button>
-                  </div>
-                `}
-          </div>
-        </ha-card>
-      </ha-config-section>
+      <p class="introduction">
+        ${this.hass.localize("ui.panel.config.automation.editor.introduction")}
+      </p>
+      <ha-card outlined>
+        <div class="card-content">
+          <ha-textarea
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.description.label"
+            )}
+            .placeholder=${this.hass.localize(
+              "ui.panel.config.automation.editor.description.placeholder"
+            )}
+            name="description"
+            autogrow
+            .value=${this.config.description || ""}
+            @change=${this._valueChanged}
+          ></ha-textarea>
+        </div>
+      </ha-card>
 
       <ha-card
         outlined
@@ -251,8 +235,10 @@ export class HaBlueprintAutomationEditor extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+        }
         ha-card.blueprint {
-          max-width: 1040px;
           margin: 24px auto;
         }
         .padding {
@@ -272,7 +258,11 @@ export class HaBlueprintAutomationEditor extends LitElement {
         h3 {
           margin: 16px;
         }
-        span[slot="introduction"] a {
+        .introduction {
+          margin-top: 0;
+          margin-bottom: 12px;
+        }
+        .introduction a {
           color: var(--primary-color);
         }
         p {
