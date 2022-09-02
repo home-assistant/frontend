@@ -144,15 +144,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
           </mwc-list-item>
 
-          ${stateObj
-            ? html`<a
-                href="/config/automation/trace/${this._config
-                  ? this._config.id
-                  : ""}"
-                target="_blank"
-                .disabled=${!stateObj}
-              >
-                <mwc-list-item graphic="icon" .disabled=${!stateObj}>
+          ${stateObj && this._config
+            ? html`<a href="/config/automation/trace/${this._config.id}">
+                <mwc-list-item graphic="icon">
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.show_trace"
                   )}
