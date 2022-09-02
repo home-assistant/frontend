@@ -5,6 +5,7 @@ import {
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
+  mdiInformationOutline,
   mdiPencil,
   mdiPlay,
   mdiPlayCircleOutline,
@@ -25,6 +26,7 @@ import {
 } from "lit";
 import { property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";
@@ -124,6 +126,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
+
+          <mwc-list-item graphic="icon" @click=${this._showInfo}>
+            ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiInformationOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
 
           <mwc-list-item
             graphic="icon"
@@ -431,6 +441,13 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._config = ev.detail.value;
     this._dirty = true;
     this._errors = undefined;
+  }
+
+  private _showInfo() {
+    if (!this.hass || !this._entityId) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId: this._entityId });
   }
 
   private _runActions() {
