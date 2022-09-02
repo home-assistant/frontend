@@ -1,4 +1,5 @@
 import secondsToDuration from "../common/datetime/seconds_to_duration";
+import { ensureArray } from "../common/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
 import { Condition, Trigger } from "./automation";
@@ -74,7 +75,7 @@ export const describeTrigger = (
   }
 
   // State Trigger
-  if (trigger.platform === "state" && trigger.entity_id) {
+  if (trigger.platform === "state") {
     let base = "When";
     let entities = "";
 
@@ -95,10 +96,15 @@ export const describeTrigger = (
           } ${computeStateName(states[entity]) || entity}`;
         }
       }
-    } else {
+    } else if (trigger.entity_id) {
       entities = states[trigger.entity_id]
         ? computeStateName(states[trigger.entity_id])
         : trigger.entity_id;
+    }
+
+    if (!entities) {
+      // no entity_id or empty array
+      entities = "something";
     }
 
     base += ` ${entities} changes`;
@@ -286,7 +292,7 @@ export const describeTrigger = (
   }
   // MQTT Trigger
   if (trigger.platform === "mqtt") {
-    return "When a MQTT payload has been received";
+    return "When an MQTT message has been received";
   }
 
   // Template Trigger
@@ -300,6 +306,9 @@ export const describeTrigger = (
   }
 
   if (trigger.platform === "device") {
+    if (!trigger.device_id) {
+      return "Device trigger";
+    }
     const config = trigger as DeviceTrigger;
     const localized = localizeDeviceAutomationTrigger(hass, config);
     if (localized) {
@@ -311,7 +320,9 @@ export const describeTrigger = (
     }`;
   }
 
-  return `${trigger.platform || "Unknown"} trigger`;
+  return `${
+    trigger.platform ? trigger.platform.replace(/_/g, " ") : "Unknown"
+  } trigger`;
 };
 
 export const describeCondition = (
@@ -323,15 +334,64 @@ export const describeCondition = (
     return condition.alias;
   }
 
-  if (["or", "and", "not"].includes(condition.condition)) {
-    return `multiple conditions using "${condition.condition}"`;
+  if (!condition.condition) {
+    const shorthands: Array<"and" | "or" | "not"> = ["and", "or", "not"];
+    for (const key of shorthands) {
+      if (!(key in condition)) {
+        continue;
+      }
+      if (ensureArray(condition[key])) {
+        condition = {
+          condition: key,
+          conditions: condition[key],
+        };
+      }
+    }
+  }
+
+  if (condition.condition === "or") {
+    const conditions = ensureArray(condition.conditions);
+
+    let count = "condition";
+
+    if (conditions && conditions.length > 0) {
+      count = `of ${conditions.length} conditions`;
+    }
+
+    return `Test if any ${count} matches`;
+  }
+
+  if (condition.condition === "and") {
+    const conditions = ensureArray(condition.conditions);
+
+    const count =
+      conditions && conditions.length > 0
+        ? `${conditions.length} `
+        : "multiple";
+
+    return `Test if ${count} conditions match`;
+  }
+
+  if (condition.condition === "not") {
+    const conditions = ensureArray(condition.conditions);
+
+    const what =
+      conditions && conditions.length > 0
+        ? `none of ${conditions.length} conditions match`
+        : "no condition matches";
+
+    return `Test if ${what}`;
   }
 
   // State Condition
-  if (condition.condition === "state" && condition.entity_id) {
+  if (condition.condition === "state") {
     let base = "Confirm";
     const stateObj = hass.states[condition.entity_id];
-    const entity = stateObj ? computeStateName(stateObj) : condition.entity_id;
+    const entity = stateObj
+      ? computeStateName(stateObj)
+      : condition.entity_id
+      ? condition.entity_id
+      : "an entity";
 
     if ("attribute" in condition) {
       base += ` ${condition.attribute} from`;
@@ -347,8 +407,12 @@ export const describeCondition = (
             : ""
         } ${state}`;
       }
-    } else {
+    } else if (condition.state) {
       states = condition.state.toString();
+    }
+
+    if (!states) {
+      states = "a state";
     }
 
     base += ` ${entity} is ${states}`;
@@ -487,6 +551,9 @@ export const describeCondition = (
   }
 
   if (condition.condition === "device") {
+    if (!condition.device_id) {
+      return "Device condition";
+    }
     const config = condition as DeviceCondition;
     const localized = localizeDeviceAutomationCondition(hass, config);
     if (localized) {
@@ -498,5 +565,7 @@ export const describeCondition = (
     }`;
   }
 
-  return `${condition.condition} condition`;
+  return `${
+    condition.condition ? condition.condition.replace(/_/g, " ") : "Unknown"
+  } condition`;
 };

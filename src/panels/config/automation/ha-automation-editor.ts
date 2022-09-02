@@ -5,6 +5,7 @@ import {
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
+  mdiInformationOutline,
   mdiPencil,
   mdiPlay,
   mdiPlayCircleOutline,
@@ -25,6 +26,7 @@ import {
 } from "lit";
 import { property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";
@@ -49,7 +51,7 @@ import {
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
-import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -111,7 +113,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       ? this.hass.states[this._entityId]
       : undefined;
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
@@ -125,6 +127,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
+          <mwc-list-item graphic="icon" @click=${this._showInfo}>
+            ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiInformationOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
           <mwc-list-item
             graphic="icon"
             .disabled=${!stateObj}
@@ -134,15 +144,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
           </mwc-list-item>
 
-          ${stateObj
-            ? html`<a
-                href="/config/automation/trace/${this._config
-                  ? this._config.id
-                  : ""}"
-                target="_blank"
-                .disabled=${!stateObj}
-              >
-                <mwc-list-item graphic="icon" .disabled=${!stateObj}>
+          ${stateObj && this._config
+            ? html`<a href="/config/automation/trace/${this._config.id}">
+                <mwc-list-item graphic="icon">
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.show_trace"
                   )}
@@ -332,7 +336,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -431,6 +435,13 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._config = ev.detail.value;
     this._dirty = true;
     this._errors = undefined;
+  }
+
+  private _showInfo() {
+    if (!this.hass || !this._entityId) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId: this._entityId });
   }
 
   private _runActions() {
@@ -640,7 +651,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           flex-direction: column;
           padding-bottom: 0;
         }
-        manual-automation-editor {
+        manual-automation-editor,
+        blueprint-automation-editor {
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
