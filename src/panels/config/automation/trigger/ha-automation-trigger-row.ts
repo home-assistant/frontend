@@ -167,14 +167,17 @@ export default class HaAutomationTriggerRow extends LitElement {
                     ></ha-svg-icon>
                   </mwc-list-item>
 
-            <mwc-list-item graphic="icon">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.edit_id"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiIdentifier}></ha-svg-icon>
-            </mwc-list-item>
+                  <mwc-list-item graphic="icon">
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.edit_id"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiIdentifier}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
 
-            <li divider role="separator"></li>
+                  <li divider role="separator"></li>
 
                   <mwc-list-item .disabled=${!supported} graphic="icon">
                     ${this.hass.localize(
