@@ -1,4 +1,16 @@
-import { mdiHelpCircle, mdiInformationOutline, mdiPlus } from "@mdi/js";
+import {
+  mdiCancel,
+  mdiContentDuplicate,
+  mdiDelete,
+  mdiHelpCircle,
+  mdiInformationOutline,
+  mdiPlay,
+  mdiPlayCircleOutline,
+  mdiPlus,
+  mdiStopCircleOutline,
+  mdiTransitConnection,
+} from "@mdi/js";
+import "@polymer/paper-tooltip/paper-tooltip";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -13,11 +25,22 @@ import type {
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-related-filter-menu";
+import "../../../components/ha-chip";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
-import type { AutomationEntity } from "../../../data/automation";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  AutomationEntity,
+  deleteAutomation,
+  getAutomationConfig,
+  showAutomationEditor,
+  triggerAutomationActions,
+} from "../../../data/automation";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -63,6 +86,7 @@ class HaAutomationPicker extends LitElement {
         ...automation,
         name: computeStateName(automation),
         last_triggered: automation.attributes.last_triggered || undefined,
+        disabled: automation.state === "off",
       }));
     }
   );
@@ -123,22 +147,105 @@ class HaAutomationPicker extends LitElement {
           },
         };
       }
+
+      columns.disabled = this.narrow
+        ? {
+            title: "",
+            template: (disabled: boolean) =>
+              disabled
+                ? html`
+                    <paper-tooltip animation-delay="0" position="left">
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.picker.disabled"
+                      )}
+                    </paper-tooltip>
+                    <ha-svg-icon
+                      .path=${mdiCancel}
+                      style="color: var(--secondary-text-color)"
+                    ></ha-svg-icon>
+                  `
+                : "",
+          }
+        : {
+            width: "20%",
+            title: "",
+            template: (disabled: boolean) =>
+              disabled
+                ? html`
+                    <ha-chip>
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.picker.disabled"
+                      )}
+                    </ha-chip>
+                  `
+                : "",
+          };
+
       columns.actions = {
         title: "",
-        label: this.hass.localize(
-          "ui.panel.config.automation.picker.headers.actions"
-        ),
-        type: "icon-button",
-        template: (_info, automation: any) => html`
-          <ha-icon-button
-            .automation=${automation}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.picker.headers.actions"
-            )}
-            .path=${mdiInformationOutline}
-            @click=${this._showInfo}
-          ></ha-icon-button>
-        `,
+        width: this.narrow ? undefined : "10%",
+        type: "overflow-menu",
+        template: (_: string, automation: any) =>
+          html`
+            <ha-icon-overflow-menu
+              .hass=${this.hass}
+              narrow
+              .items=${[
+                {
+                  path: mdiInformationOutline,
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.editor.show_info"
+                  ),
+                  action: () => this._showInfo(automation),
+                },
+                {
+                  path: mdiPlay,
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.editor.run"
+                  ),
+                  action: () => this._runActions(automation),
+                },
+                {
+                  path: mdiTransitConnection,
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.editor.show_trace"
+                  ),
+                  action: () => this._showTrace(automation),
+                },
+                {
+                  path: mdiContentDuplicate,
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.picker.duplicate"
+                  ),
+                  action: () => this.duplicate(automation),
+                },
+                {
+                  path:
+                    automation.state === "off"
+                      ? mdiPlayCircleOutline
+                      : mdiStopCircleOutline,
+                  label:
+                    automation.state === "off"
+                      ? this.hass.localize(
+                          "ui.panel.config.automation.editor.enable"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.automation.editor.disable"
+                        ),
+                  action: () => this._toggle(automation),
+                },
+                {
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.picker.delete"
+                  ),
+                  path: mdiDelete,
+                  action: () => this._deleteConfirm(automation),
+                  warning: true,
+                },
+              ]}
+            >
+            </ha-icon-overflow-menu>
+          `,
       };
       return columns;
     }
@@ -210,10 +317,50 @@ class HaAutomationPicker extends LitElement {
     this._filterValue = undefined;
   }
 
-  private _showInfo(ev) {
-    ev.stopPropagation();
-    const automation = ev.currentTarget.automation;
+  private _showInfo(automation: any) {
     fireEvent(this, "hass-more-info", { entityId: automation.entity_id });
+  }
+
+  private _runActions(automation: any) {
+    triggerAutomationActions(this.hass, automation.entity_id);
+  }
+
+  private _showTrace(automation: any) {
+    navigate(`/config/automation/trace/${automation.attributes.id}`);
+  }
+
+  private async _toggle(automation): Promise<void> {
+    const service = automation.state === "off" ? "turn_on" : "turn_off";
+    await this.hass.callService("automation", service, {
+      entity_id: automation.entity_id,
+    });
+  }
+
+  private async _deleteConfirm(automation) {
+    showConfirmationDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.automation.picker.delete_confirm"
+      ),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      confirm: () => this._delete(automation),
+    });
+  }
+
+  private async _delete(automation) {
+    await deleteAutomation(this.hass, automation.attributes.id);
+  }
+
+  private async duplicate(automation) {
+    const config = await getAutomationConfig(
+      this.hass,
+      automation.attributes.id
+    );
+    showAutomationEditor({
+      ...config,
+      id: undefined,
+      alias: undefined,
+    });
   }
 
   private _showHelp() {
