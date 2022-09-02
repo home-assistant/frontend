@@ -61,7 +61,7 @@ export const describeAction = <T extends ActionType>(
         ? `${domainToName(hass.localize, domain)}: ${service.name}`
         : `Call service: ${config.service}`;
     } else {
-      return actionType;
+      return "Call a service";
     }
     if (config.target) {
       const targets: string[] = [];
@@ -137,9 +137,11 @@ export const describeAction = <T extends ActionType>(
     } else if (typeof config.delay === "string") {
       duration = isTemplate(config.delay)
         ? "based on a template"
-        : `for ${config.delay}`;
-    } else {
+        : `for ${config.delay || "a duration"}`;
+    } else if (config.delay) {
       duration = `for ${formatDuration(config.delay)}`;
+    } else {
+      duration = "for a duration";
     }
 
     return `Delay ${duration}`;
@@ -153,13 +155,12 @@ export const describeAction = <T extends ActionType>(
     } else {
       entityId = config.target?.entity_id || config.entity_id;
     }
+    if (!entityId) {
+      return "Activate a scene";
+    }
     const sceneStateObj = entityId ? hass.states[entityId] : undefined;
-    return `Scene ${
-      sceneStateObj
-        ? computeStateName(sceneStateObj)
-        : "scene" in config
-        ? config.scene
-        : config.target?.entity_id || config.entity_id || ""
+    return `Active scene ${
+      sceneStateObj ? computeStateName(sceneStateObj) : entityId
     }`;
   }
 
@@ -167,16 +168,22 @@ export const describeAction = <T extends ActionType>(
     const config = action as PlayMediaAction;
     const entityId = config.target?.entity_id || config.entity_id;
     const mediaStateObj = entityId ? hass.states[entityId] : undefined;
-    return `Play ${config.metadata.title || config.data.media_content_id} on ${
+    return `Play ${
+      config.metadata.title || config.data.media_content_id || "media"
+    } on ${
       mediaStateObj
         ? computeStateName(mediaStateObj)
-        : config.target?.entity_id || config.entity_id
+        : entityId || "a media player"
     }`;
   }
 
   if (actionType === "wait_for_trigger") {
     const config = action as WaitForTriggerAction;
-    return `Wait for ${ensureArray(config.wait_for_trigger)
+    const triggers = ensureArray(config.wait_for_trigger);
+    if (!triggers || triggers.length === 0) {
+      return "Wait for a trigger";
+    }
+    return `Wait for ${triggers
       .map((trigger) => describeTrigger(trigger, hass))
       .join(", ")}`;
   }
@@ -199,12 +206,12 @@ export const describeAction = <T extends ActionType>(
   }
 
   if (actionType === "check_condition") {
-    return `Test ${describeCondition(action as Condition, hass)}`;
+    return describeCondition(action as Condition, hass);
   }
 
   if (actionType === "stop") {
     const config = action as StopAction;
-    return `Stopped${config.stop ? ` because: ${config.stop}` : ""}`;
+    return `Stop${config.stop ? ` because: ${config.stop}` : ""}`;
   }
 
   if (actionType === "if") {
@@ -258,6 +265,9 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "device_action") {
     const config = action as DeviceAction;
+    if (!config.device_id) {
+      return "Device action";
+    }
     const localized = localizeDeviceAutomationAction(hass, config);
     if (localized) {
       return localized;
