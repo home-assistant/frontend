@@ -145,6 +145,7 @@ export default class HaAutomationConditionRow extends LitElement {
               ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
               ${!this._yamlMode
                 ? html`<ha-svg-icon
+                    class="selected_menu_item"
                     slot="graphic"
                     .path=${mdiCheck}
                   ></ha-svg-icon>`
@@ -157,6 +158,7 @@ export default class HaAutomationConditionRow extends LitElement {
               )}
               ${this._yamlMode
                 ? html`<ha-svg-icon
+                    class="selected_menu_item"
                     slot="graphic"
                     .path=${mdiCheck}
                   ></ha-svg-icon>`
@@ -476,6 +478,12 @@ export default class HaAutomationConditionRow extends LitElement {
         }
         .testing.pass {
           background-color: var(--success-color);
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
+        }
+        li[role="separator"] {
+          border-bottom-color: var(--divider-color);
         }
       `,
     ];

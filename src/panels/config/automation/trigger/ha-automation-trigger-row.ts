@@ -170,6 +170,7 @@ export default class HaAutomationTriggerRow extends LitElement {
               ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
               ${!yamlMode
                 ? html`<ha-svg-icon
+                    class="selected_menu_item"
                     slot="graphic"
                     .path=${mdiCheck}
                   ></ha-svg-icon>`
@@ -182,6 +183,7 @@ export default class HaAutomationTriggerRow extends LitElement {
               )}
               ${yamlMode
                 ? html`<ha-svg-icon
+                    class="selected_menu_item"
                     slot="graphic"
                     .path=${mdiCheck}
                   ></ha-svg-icon>`
@@ -591,6 +593,12 @@ export default class HaAutomationTriggerRow extends LitElement {
         ha-textfield {
           display: block;
           margin-bottom: 24px;
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
+        }
+        li[role="separator"] {
+          border-bottom-color: var(--divider-color);
         }
       `,
     ];

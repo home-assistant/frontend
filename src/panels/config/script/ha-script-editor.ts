@@ -210,7 +210,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               "ui.panel.config.automation.editor.edit_yaml"
             )}
             graphic="icon"
-            ?activated=${this._mode === "yaml"}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
@@ -832,6 +831,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           font-size: 20px;
           font-weight: 400;
           flex: 1;
+        }
+        .header a {
+          color: var(--secondary-text-color);
         }
       `,
     ];

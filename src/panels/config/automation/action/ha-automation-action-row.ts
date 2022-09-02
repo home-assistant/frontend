@@ -230,6 +230,7 @@ export default class HaAutomationActionRow extends LitElement {
               ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
               ${!yamlMode
                 ? html`<ha-svg-icon
+                    class="selected_menu_item"
                     slot="graphic"
                     .path=${mdiCheck}
                   ></ha-svg-icon>`
@@ -242,6 +243,7 @@ export default class HaAutomationActionRow extends LitElement {
               )}
               ${yamlMode
                 ? html`<ha-svg-icon
+                    class="selected_menu_item"
                     slot="graphic"
                     .path=${mdiCheck}
                   ></ha-svg-icon>`
@@ -538,6 +540,12 @@ export default class HaAutomationActionRow extends LitElement {
         }
         .warning ul {
           margin: 4px 0;
+        }
+        .selected_menu_item {
+          color: var(--primary-color);
+        }
+        li[role="separator"] {
+          border-bottom-color: var(--divider-color);
         }
       `,
     ];
