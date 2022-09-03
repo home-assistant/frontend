@@ -192,7 +192,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               "ui.panel.config.automation.editor.edit_ui"
             )}
             graphic="icon"
-            ?activated=${this._mode === "gui"}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
@@ -228,13 +227,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           <mwc-list-item
             .disabled=${!this.scriptEntityId}
             .label=${this.hass.localize(
-              "ui.panel.config.script.picker.duplicate_script"
+              "ui.panel.config.script.picker.duplicate"
             )}
             graphic="icon"
           >
-            ${this.hass.localize(
-              "ui.panel.config.script.picker.duplicate_script"
-            )}
+            ${this.hass.localize("ui.panel.config.script.picker.duplicate")}
             <ha-svg-icon
               slot="graphic"
               .path=${mdiContentDuplicate}
@@ -244,12 +241,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           <mwc-list-item
             .disabled=${!this.scriptEntityId}
             aria-label=${this.hass.localize(
-              "ui.panel.config.script.editor.delete_script"
+              "ui.panel.config.script.picker.delete"
             )}
             class=${classMap({ warning: Boolean(this.scriptEntityId) })}
             graphic="icon"
           >
-            ${this.hass.localize("ui.panel.config.script.editor.delete_script")}
+            ${this.hass.localize("ui.panel.config.script.picker.delete")}
             <ha-svg-icon
               class=${classMap({ warning: Boolean(this.scriptEntityId) })}
               slot="graphic"
