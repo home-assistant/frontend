@@ -738,7 +738,7 @@ export class HaIntegrationCard extends LitElement {
         .application_credentials_id;
     } catch (err: any) {
       // We won't prompt the user to remove credentials
-      return nil;
+      return null;
     }
   }
 
@@ -747,9 +747,28 @@ export class HaIntegrationCard extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.application_credentials.delete_title"
       ),
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt"
-      ),
+      text: html` ${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt"
+        )},
+        <br />
+        <br />
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_detail"
+        )}
+        <br />
+        <br />
+        <a
+          href=${documentationUrl(
+            this.hass,
+            "/integrations/application_credentials/"
+          )}
+          target="_blank"
+          rel="noreferrer"
+        >
+          ${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.application_credentials.learn_more"
+          )}
+        </a>`,
       confirmText: this.hass.localize("ui.common.remove"),
       dismissText: this.hass.localize(
         "ui.panel.config.integrations.config_entry.application_credentials.dismiss"
