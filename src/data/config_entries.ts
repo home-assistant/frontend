@@ -44,6 +44,29 @@ export const RECOVERABLE_STATES: ConfigEntry["state"][] = [
   "setup_retry",
 ];
 
+export interface ConfigEntryUpdate {
+  // Base data
+  type: null | "added" | "removed" | "updated";
+  entry: ConfigEntry;
+}
+
+export const subscribeConfigEntries = (
+  hass: HomeAssistant,
+  callbackFunction: (message: ConfigEntryUpdate[]) => void,
+  filters?: { type?: "helper" | "integration"; domain?: string }
+) => {
+  const params: any = {
+    type: "config_entries/subscribe",
+  };
+  if (filters && filters.type) {
+    params.type_filter = filters.type;
+  }
+  return hass.connection.subscribeMessage<ConfigEntryUpdate[]>(
+    (message) => callbackFunction(message),
+    params
+  );
+};
+
 export const getConfigEntries = (
   hass: HomeAssistant,
   filters?: { type?: "helper" | "integration"; domain?: string }

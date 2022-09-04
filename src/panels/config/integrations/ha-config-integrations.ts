@@ -14,7 +14,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
@@ -28,7 +28,10 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/search-input";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import {
+  ConfigEntry,
+  subscribeConfigEntries,
+} from "../../../data/config_entries";
 import {
   getConfigFlowHandlers,
   getConfigFlowInProgressCollection,
@@ -151,6 +154,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
 
+  private _subscribedConfigEntries?: Promise<(() => Promise<void>) | void>;
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection, (entries) => {
@@ -177,6 +182,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         await nextRender();
         this._configEntriesInProgress = flowsInProgress.map((flow) => ({
           ...flow,
+          localized_domain_name: domainToName(this.hass.localize, flow.handler),
           localized_title: localizeConfigFlowTitle(this.hass.localize, flow),
         }));
       }),
@@ -255,9 +261,81 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     }
   );
 
+  public connectedCallback() {
+    this._configEntries = undefined;
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeConfigEntries();
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeConfigEntries();
+  }
+
+  private _subscribeConfigEntries() {
+    this._subscribedConfigEntries = subscribeConfigEntries(
+      this.hass,
+      (messages) => {
+        let fullUpdate = false;
+        const newEntries: ConfigEntryExtended[] = [];
+        messages.forEach((message) => {
+          if (message.type === null || message.type === "added") {
+            newEntries.push({
+              ...message.entry,
+              localized_domain_name: domainToName(
+                this.hass.localize,
+                message.entry.domain
+              ),
+            });
+            if (message.type === null) {
+              fullUpdate = true;
+            }
+          } else if (message.type === "removed") {
+            this._configEntries = this._configEntries!.filter(
+              (entry) => entry.entry_id !== message.entry.entry_id
+            );
+          } else if (message.type === "updated") {
+            const newEntry = message.entry;
+            this._configEntries = this._configEntries!.map((entry) =>
+              entry.entry_id === newEntry.entry_id
+                ? {
+                    ...newEntry,
+                    localized_domain_name: entry.localized_domain_name,
+                  }
+                : entry
+            );
+          }
+        });
+        if (!newEntries.length && !fullUpdate) {
+          return;
+        }
+        const existingEntries = fullUpdate ? [] : this._configEntries;
+        this._configEntries = [...existingEntries!, ...newEntries].sort(
+          (conf1, conf2) =>
+            caseInsensitiveStringCompare(
+              conf1.localized_domain_name + conf1.title,
+              conf2.localized_domain_name + conf2.title
+            )
+        );
+      },
+      { type: "integration" }
+    );
+  }
+
+  private _unsubscribeConfigEntries(): void {
+    if (this._subscribedConfigEntries) {
+      this._subscribedConfigEntries.then(
+        (unsubscribe) => unsubscribe && unsubscribe()
+      );
+      this._subscribedConfigEntries = undefined;
+    }
+  }
+
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
-    this._loadConfigEntries();
+    this._subscribeConfigEntries();
     const localizePromise = this.hass.loadBackendTranslation(
       "title",
       undefined,
@@ -411,11 +489,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               </div>
             `}
 
-        <div
-          class="container"
-          @entry-removed=${this._handleEntryRemoved}
-          @entry-updated=${this._handleEntryUpdated}
-        >
+        <div class="container">
           ${this._showIgnored
             ? ignoredConfigEntries.map(
                 (entry: ConfigEntryExtended) => html`
@@ -542,29 +616,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     ev.preventDefault();
   }
 
-  private _loadConfigEntries() {
-    getConfigEntries(this.hass, { type: "integration" }).then(
-      (configEntries) => {
-        this._configEntries = configEntries
-          .map(
-            (entry: ConfigEntry): ConfigEntryExtended => ({
-              ...entry,
-              localized_domain_name: domainToName(
-                this.hass.localize,
-                entry.domain
-              ),
-            })
-          )
-          .sort((conf1, conf2) =>
-            caseInsensitiveStringCompare(
-              conf1.localized_domain_name + conf1.title,
-              conf2.localized_domain_name + conf2.title
-            )
-          );
-      }
-    );
-  }
-
   private async _scanUSBDevices() {
     if (!isComponentLoaded(this.hass, "usb")) {
       return;
@@ -602,23 +653,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleEntryRemoved(ev: HASSDomEvent<ConfigEntryRemovedEvent>) {
-    this._configEntries = this._configEntries!.filter(
-      (entry) => entry.entry_id !== ev.detail.entryId
-    );
-  }
-
-  private _handleEntryUpdated(ev: HASSDomEvent<ConfigEntryUpdatedEvent>) {
-    const newEntry = ev.detail.entry;
-    this._configEntries = this._configEntries!.map((entry) =>
-      entry.entry_id === newEntry.entry_id
-        ? { ...newEntry, localized_domain_name: entry.localized_domain_name }
-        : entry
-    );
-  }
-
   private _handleFlowUpdated() {
-    this._loadConfigEntries();
     getConfigFlowInProgressCollection(this.hass.connection).refresh();
     this._fetchManifests();
   }
