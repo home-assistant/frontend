@@ -49,26 +49,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
   protected render() {
     const blueprint = this._blueprint;
     return html`
-      <p class="introduction">
-        ${this.hass.localize("ui.panel.config.automation.editor.introduction")}
-      </p>
-      <ha-card outlined>
-        <div class="card-content">
-          <ha-textarea
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.description.label"
-            )}
-            .placeholder=${this.hass.localize(
-              "ui.panel.config.automation.editor.description.placeholder"
-            )}
-            name="description"
-            autogrow
-            .value=${this.config.description || ""}
-            @change=${this._valueChanged}
-          ></ha-textarea>
-        </div>
-      </ha-card>
-
       <ha-card
         outlined
         class="blueprint"
@@ -198,22 +178,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
     });
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const target = ev.target as any;
-    const name = target.name;
-    if (!name) {
-      return;
-    }
-    const newVal = target.value;
-    if ((this.config![name] || "") === newVal) {
-      return;
-    }
-    fireEvent(this, "value-changed", {
-      value: { ...this.config!, [name]: newVal },
-    });
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -222,7 +186,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
           display: block;
         }
         ha-card.blueprint {
-          margin: 24px auto;
+          margin: 0 auto;
         }
         .padding {
           padding: 16px;
@@ -233,7 +197,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
         .blueprint-picker-container {
           padding: 0 16px 16px;
         }
-        ha-textarea,
         ha-textfield,
         ha-blueprint-picker {
           display: block;
