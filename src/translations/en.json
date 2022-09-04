@@ -2836,8 +2836,9 @@
           "config_entry": {
             "application_credentials": {
               "delete_title": "Remove Application Credentials",
-              "delete_prompt": "The integration has configured Application Credentials. Do you want to remove them?",
-              "delete_error_title": "Removing Application Credential failed"
+              "delete_prompt": "The integration has configured Application Credentials. Do you want to remove them now? If you dismiss, they will be reused for integration setup or can be manually removed from the Application Credentials menu.",
+              "delete_error_title": "Removing Application Credential failed",
+              "dismiss": "Dismiss"
             },
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",

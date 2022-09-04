@@ -31,7 +31,10 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
-import { deleteApplicationCredential } from "../../../data/application_credential";
+import {
+  fetchApplicationCredentialsConfigEntry,
+  deleteApplicationCredential,
+} from "../../../data/application_credential";
 import { getSignedPath } from "../../../data/auth";
 import {
   ConfigEntry,
@@ -697,6 +700,10 @@ export class HaIntegrationCard extends LitElement {
   private async _removeIntegration(configEntry: ConfigEntry) {
     const entryId = configEntry.entry_id;
 
+    const applicationCredentialsId = await this._applicationCredentialForRemove(
+      entryId
+    );
+
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm",
@@ -717,8 +724,21 @@ export class HaIntegrationCard extends LitElement {
         ),
       });
     }
-    if (result.application_credentials_id) {
-      this._removeApplicationCredential(result.application_credentials_id);
+    if (applicationCredentialsId) {
+      this._removeApplicationCredential(applicationCredentialsId);
+    }
+  }
+
+  // Return an application credentials id for this config entry to prompt the
+  // user for removal. This is best effort so we don't stop overall removal
+  // if the integration isn't loaded or there is some other error.
+  private async _applicationCredentialForRemove(entryId: string) {
+    try {
+      return (await fetchApplicationCredentialsConfigEntry(this.hass, entryId))
+        .application_credentials_id;
+    } catch (err: any) {
+      // We won't prompt the user to remove credentials
+      return nil;
     }
   }
 
@@ -731,6 +751,9 @@ export class HaIntegrationCard extends LitElement {
         "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt"
       ),
       confirmText: this.hass.localize("ui.common.remove"),
+      dismissText: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.application_credentials.dismiss"
+      ),
     });
     if (!confirmed) {
       return;
