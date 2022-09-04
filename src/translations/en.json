@@ -2835,10 +2835,10 @@
           },
           "config_entry": {
             "application_credentials": {
-              "delete_title": "Remove Application Credentials",
-              "delete_prompt": "The integration has configured Application Credentials. Do you want to remove them now? If you dismiss, they will be reused for integration setup or can be manually removed from the Application Credentials menu.",
+              "delete_title": "Application Credentials",
+              "delete_prompt": "Would you like to keep or remove Application Credentials for this integration? If you keep them, they will be used automatically when setting up the integration again. If you remove them, you will need to enter credentials when setting up the integration again.",
               "delete_error_title": "Removing Application Credential failed",
-              "dismiss": "Dismiss"
+              "dismiss": "Keep"
             },
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
