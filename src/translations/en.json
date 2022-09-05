@@ -1003,6 +1003,15 @@
         "attribute": "Attribute",
         "min_max_change": "min/max/change"
       },
+      "zha_manage_device": {
+        "heading": "Manage Zigbee Device",
+        "tabs": {
+          "clusters": "Clusters",
+          "bindings": "Bindings",
+          "signature": "Signature",
+          "children": "Children"
+        }
+      },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
@@ -1011,10 +1020,8 @@
         "buttons": {
           "add": "Add devices via this device",
           "remove": "Remove",
-          "clusters": "Manage clusters",
+          "clusters": "Manage zigbee device",
           "reconfigure": "Reconfigure",
-          "zigbee_information": "Zigbee signature",
-          "device_children": "View children",
           "view_network": "View network"
         },
         "services": {
@@ -3049,17 +3056,17 @@
           "clusters": {
             "header": "Clusters",
             "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
-            "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
+            "tabs": {
+              "attributes": "Attributes",
+              "commands": "Commands"
+            }
           },
           "cluster_attributes": {
             "header": "Cluster Attributes",
             "introduction": "View and edit cluster attributes.",
             "attributes_of_cluster": "Attributes of the selected cluster",
-            "get_zigbee_attribute": "Get Zigbee Attribute",
-            "set_zigbee_attribute": "Set Zigbee Attribute",
-            "help_attribute_dropdown": "Select an attribute to view or set its value.",
-            "help_get_zigbee_attribute": "Get the value for the selected attribute.",
-            "help_set_zigbee_attribute": "Set attribute value for the specified cluster on the specified entity."
+            "read_zigbee_attribute": "Read Attribute",
+            "write_zigbee_attribute": "Write Attribute"
           },
           "cluster_commands": {
             "header": "Cluster Commands",

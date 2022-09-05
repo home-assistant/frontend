@@ -19,7 +19,7 @@ import "../../../../../components/ha-service-description";
 import {
   bindDeviceToGroup,
   Cluster,
-  fetchClustersForZhaNode,
+  fetchClustersForZhaDevice,
   unbindDeviceFromGroup,
   ZHADevice,
   ZHAGroup,
@@ -230,7 +230,7 @@ export class ZHAGroupBindingControl extends LitElement {
 
   private async _fetchClustersForZhaNode(): Promise<void> {
     if (this.hass) {
-      this._clusters = await fetchClustersForZhaNode(
+      this._clusters = await fetchClustersForZhaDevice(
         this.hass,
         this.selectedDevice!.ieee
       );

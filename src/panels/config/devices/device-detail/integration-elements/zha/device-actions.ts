@@ -1,9 +1,7 @@
 import {
   mdiCogRefresh,
   mdiDelete,
-  mdiDrawPen,
   mdiFamilyTree,
-  mdiFileTree,
   mdiGroup,
   mdiPlus,
 } from "@mdi/js";
@@ -12,9 +10,7 @@ import type { DeviceRegistryEntry } from "../../../../../../data/device_registry
 import { fetchZHADevice } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";
-import { showZHAClusterDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-cluster";
-import { showZHADeviceChildrenDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-children";
-import { showZHADeviceZigbeeInfoDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-zigbee-info";
+import { showZHAManageZigbeeDeviceDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-manage-zigbee-device";
 import { showZHAReconfigureDeviceDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-reconfigure-device";
 import type { DeviceAction } from "../../../ha-config-device-page";
 
@@ -59,13 +55,6 @@ export const getZHADeviceActions = async (
           icon: mdiPlus,
           action: () => navigate(`/config/zha/add/${zhaDevice!.ieee}`),
         },
-        {
-          label: hass.localize(
-            "ui.dialogs.zha_device_info.buttons.device_children"
-          ),
-          icon: mdiFileTree,
-          action: () => showZHADeviceChildrenDialog(el, { device: zhaDevice! }),
-        },
       ]
     );
   }
@@ -73,16 +62,10 @@ export const getZHADeviceActions = async (
   actions.push(
     ...[
       {
-        label: hass.localize(
-          "ui.dialogs.zha_device_info.buttons.zigbee_information"
-        ),
-        icon: mdiDrawPen,
-        action: () => showZHADeviceZigbeeInfoDialog(el, { device: zhaDevice }),
-      },
-      {
         label: hass.localize("ui.dialogs.zha_device_info.buttons.clusters"),
         icon: mdiGroup,
-        action: () => showZHAClusterDialog(el, { device: zhaDevice }),
+        action: () =>
+          showZHAManageZigbeeDeviceDialog(el, { device: zhaDevice }),
       },
       {
         label: hass.localize("ui.dialogs.zha_device_info.buttons.view_network"),
