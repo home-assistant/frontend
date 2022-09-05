@@ -25,7 +25,6 @@ import {
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import "../../../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import {
   ChangeEvent,
@@ -227,14 +226,6 @@ export class ZHAClusterAttributes extends LitElement {
 
         .menu {
           width: 100%;
-        }
-
-        .content {
-          margin-top: 24px;
-        }
-
-        ha-card {
-          max-width: 680px;
         }
 
         .card-actions.warning ha-call-service-button {

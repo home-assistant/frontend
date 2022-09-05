@@ -14,7 +14,6 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-select";
-import "../../../../../components/ha-service-description";
 import {
   Cluster,
   fetchClustersForZhaDevice,
@@ -22,7 +21,6 @@ import {
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import "../../../ha-config-section";
 import { computeClusterKey } from "./functions";
 
 declare global {
@@ -184,19 +182,9 @@ export class ZHAManageClusters extends LitElement {
         .menu {
           width: 100%;
         }
-
-        .content {
-          margin-top: 24px;
-        }
-
         .header {
           flex-grow: 1;
         }
-
-        ha-card {
-          max-width: 680px;
-        }
-
         .node-picker {
           align-items: center;
           padding-bottom: 10px;

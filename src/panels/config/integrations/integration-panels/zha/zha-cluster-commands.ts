@@ -14,7 +14,6 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-select";
-import "../../../../../components/ha-service-description";
 import {
   Cluster,
   Command,
@@ -23,7 +22,6 @@ import {
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import "../../../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import { ChangeEvent, IssueCommandServiceData } from "./types";
 
@@ -173,14 +171,6 @@ export class ZHAClusterCommands extends LitElement {
         }
         .menu {
           width: 100%;
-        }
-
-        .content {
-          margin-top: 24px;
-        }
-
-        ha-card {
-          max-width: 680px;
         }
 
         .card-actions.warning ha-call-service-button {

@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -15,7 +14,6 @@ import "../../../../../components/buttons/ha-call-service-button";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-service-description";
 import {
   bindDeviceToGroup,
   Cluster,
@@ -26,7 +24,6 @@ import {
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import "../../../ha-config-section";
 import { ItemSelectedEvent } from "./types";
 import "./zha-clusters-data-table";
 import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
@@ -35,13 +32,7 @@ import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
 export class ZHAGroupBindingControl extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public isWide?: boolean;
-
-  @property() public narrow?: boolean;
-
-  @property() public selectedDevice?: ZHADevice;
-
-  @state() private _showHelp = false;
+  @property() public device?: ZHADevice;
 
   @state() private _bindTargetIndex = -1;
 
@@ -59,7 +50,7 @@ export class ZHAGroupBindingControl extends LitElement {
   private _zhaClustersDataTable!: ZHAClustersDataTable;
 
   protected updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has("selectedDevice")) {
+    if (changedProperties.has("device")) {
       this._bindTargetIndex = -1;
       this._selectedClusters = [];
       this._clustersToBind = [];
@@ -70,27 +61,6 @@ export class ZHAGroupBindingControl extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide=${this.isWide}>
-        <div class="sectionHeader" slot="header">
-          <span
-            >${this.hass!.localize(
-              "ui.panel.config.zha.group_binding.header"
-            )}</span
-          >
-          <ha-icon-button
-            class="toggle-help-icon"
-            @click=${this._onHelpTap}
-            .path=${mdiHelpCircle}
-            .label=${this.hass!.localize("ui.common.help")}
-          >
-          </ha-icon-button>
-        </div>
-        <span slot="introduction"
-          >${this.hass!.localize(
-            "ui.panel.config.zha.group_binding.introduction"
-          )}</span
-        >
-
         <ha-card class="content">
           <div class="command-picker">
             <ha-select
@@ -112,33 +82,14 @@ export class ZHAGroupBindingControl extends LitElement {
               )}
             </ha-select>
           </div>
-          ${this._showHelp
-            ? html`
-                <div class="helpText">
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.group_binding.group_picker_help"
-                  )}
-                </div>
-              `
-            : ""}
           <div class="command-picker">
             <zha-clusters-data-table
               .hass=${this.hass}
-              .narrow=${this.narrow}
               .clusters=${this._clusters}
               @selection-changed=${this._handleClusterSelectionChanged}
               class="menu"
             ></zha-clusters-data-table>
           </div>
-          ${this._showHelp
-            ? html`
-                <div class="helpText">
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.group_binding.cluster_selection_help"
-                  )}
-                </div>
-              `
-            : ""}
           <div class="card-actions">
             <mwc-button
               @click=${this._onBindGroupClick}
@@ -147,15 +98,6 @@ export class ZHAGroupBindingControl extends LitElement {
                 "ui.panel.config.zha.group_binding.bind_button_label"
               )}</mwc-button
             >
-            ${this._showHelp
-              ? html`
-                  <div class="helpText">
-                    ${this.hass!.localize(
-                      "ui.panel.config.zha.group_binding.bind_button_help"
-                    )}
-                  </div>
-                `
-              : ""}
             <mwc-button
               @click=${this._onUnbindGroupClick}
               .disabled=${!this._canBind}
@@ -163,15 +105,6 @@ export class ZHAGroupBindingControl extends LitElement {
                 "ui.panel.config.zha.group_binding.unbind_button_label"
               )}</mwc-button
             >
-            ${this._showHelp
-              ? html`
-                  <div class="helpText">
-                    ${this.hass!.localize(
-                      "ui.panel.config.zha.group_binding.unbind_button_help"
-                    )}
-                  </div>
-                `
-              : ""}
           </div>
         </ha-card>
       </ha-config-section>
@@ -186,15 +119,11 @@ export class ZHAGroupBindingControl extends LitElement {
         : this.groups[this._bindTargetIndex];
   }
 
-  private _onHelpTap(): void {
-    this._showHelp = !this._showHelp;
-  }
-
   private async _onBindGroupClick(): Promise<void> {
     if (this.hass && this._canBind) {
       await bindDeviceToGroup(
         this.hass,
-        this.selectedDevice!.ieee,
+        this.device!.ieee,
         this._groupToBind!.group_id,
         this._clustersToBind!
       );
@@ -206,7 +135,7 @@ export class ZHAGroupBindingControl extends LitElement {
     if (this.hass && this._canBind) {
       await unbindDeviceFromGroup(
         this.hass,
-        this.selectedDevice!.ieee,
+        this.device!.ieee,
         this._groupToBind!.group_id,
         this._clustersToBind!
       );
@@ -232,7 +161,7 @@ export class ZHAGroupBindingControl extends LitElement {
     if (this.hass) {
       this._clusters = await fetchClustersForZhaDevice(
         this.hass,
-        this.selectedDevice!.ieee
+        this.device!.ieee
       );
       this._clusters = this._clusters
         .filter((cluster) => cluster.type.toLowerCase() === "out")
@@ -245,7 +174,7 @@ export class ZHAGroupBindingControl extends LitElement {
       this._groupToBind &&
         this._clustersToBind &&
         this._clustersToBind?.length > 0 &&
-        this.selectedDevice
+        this.device
     );
   }
 
@@ -255,14 +184,6 @@ export class ZHAGroupBindingControl extends LitElement {
       css`
         .menu {
           width: 100%;
-        }
-
-        .content {
-          margin-top: 24px;
-        }
-
-        ha-card {
-          max-width: 680px;
         }
 
         .card-actions.warning ha-call-service-button {
@@ -284,30 +205,6 @@ export class ZHAGroupBindingControl extends LitElement {
 
         .sectionHeader {
           flex-grow: 1;
-        }
-
-        .helpText {
-          color: grey;
-          padding-left: 28px;
-          padding-right: 28px;
-          padding-bottom: 10px;
-        }
-
-        .toggle-help-icon {
-          float: right;
-          top: -6px;
-          right: 0;
-          padding-right: 0px;
-          color: var(--primary-color);
-        }
-
-        ha-service-description {
-          display: block;
-          color: grey;
-        }
-
-        [hidden] {
-          display: none;
         }
       `,
     ];

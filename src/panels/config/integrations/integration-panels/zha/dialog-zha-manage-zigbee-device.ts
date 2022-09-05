@@ -6,6 +6,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import { mdiClose } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -36,6 +37,8 @@ import {
 class DialogZHAManageZigbeeDevice extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean, reflect: true }) public large = false;
+
   @state() private _currTab: Tab = "clusters";
 
   @state() private _device?: ZHADevice;
@@ -53,6 +56,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
       return;
     }
     this._currTab = params.tab || "clusters";
+    this.large = false;
   }
 
   public closeDialog() {
@@ -103,20 +107,42 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           this.hass.localize("ui.dialogs.zha_manage_device.heading")
         )}
       >
-        <mwc-tab-bar
-          .activeIndex=${tabs.indexOf(this._currTab)}
-          @MDCTabBar:activated=${this._handleTabChanged}
-        >
-          ${tabs.map(
-            (tab) => html`
-              <mwc-tab
-                .label=${this.hass.localize(
-                  `ui.dialogs.zha_manage_device.tabs.${tab}`
-                )}
-              ></mwc-tab>
-            `
-          )}
-        </mwc-tab-bar>
+        <div slot="heading" class="heading">
+          <ha-header-bar>
+            <ha-icon-button
+              slot="navigationIcon"
+              dialogAction="cancel"
+              .label=${this.hass.localize(
+                "ui.dialogs.more_info_control.dismiss"
+              )}
+              .path=${mdiClose}
+            ></ha-icon-button>
+            <div
+              slot="title"
+              class="main-title"
+              .title=${this.hass.localize(
+                "ui.dialogs.zha_manage_device.heading"
+              )}
+              @click=${this._enlarge}
+            >
+              ${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
+            </div>
+          </ha-header-bar>
+          <mwc-tab-bar
+            .activeIndex=${tabs.indexOf(this._currTab)}
+            @MDCTabBar:activated=${this._handleTabChanged}
+          >
+            ${tabs.map(
+              (tab) => html`
+                <mwc-tab
+                  .label=${this.hass.localize(
+                    `ui.dialogs.zha_manage_device.tabs.${tab}`
+                  )}
+                ></mwc-tab>
+              `
+            )}
+          </mwc-tab-bar>
+        </div>
 
         <div class="content" tabindex="-1" dialogInitialFocus>
           ${cache(
@@ -133,7 +159,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                     ? html`
                         <zha-device-binding-control
                           .hass=${this.hass}
-                          .selectedDevice=${this._device}
+                          .device=${this._device}
                           .bindableDevices=${this._bindableDevices}
                         ></zha-device-binding-control>
                       `
@@ -142,7 +168,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                     ? html`
                         <zha-group-binding-control
                           .hass=${this.hass}
-                          .selectedDevice=${this._device}
+                          .device=${this._device}
                           .groups=${this._groups}
                         ></zha-group-binding-control>
                       `
@@ -179,6 +205,10 @@ class DialogZHAManageZigbeeDevice extends LitElement {
     }
   }
 
+  private _enlarge() {
+    this.large = !this.large;
+  }
+
   private _handleTabChanged(ev: CustomEvent): void {
     const newTab = this._getTabs()[ev.detail.index];
     if (newTab === this._currTab) {
@@ -211,6 +241,12 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           --vertial-align-dialog: flex-start;
         }
 
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
+          display: block;
+        }
         .content {
           outline: none;
         }
