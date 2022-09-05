@@ -14,6 +14,8 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: ParallelAction;
 
+  @property({ type: Boolean }) public reOrderMode = false;
+
   public static get defaultConfig() {
     return {
       parallel: [],
@@ -26,6 +28,7 @@ export class HaParallelAction extends LitElement implements ActionElement {
     return html`
       <ha-automation-action
         .actions=${action.parallel}
+        .reOrderMode=${this.reOrderMode}
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
       ></ha-automation-action>
