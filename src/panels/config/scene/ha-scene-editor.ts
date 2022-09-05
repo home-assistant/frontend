@@ -63,13 +63,13 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
 
 interface DeviceEntities {
   id: string;
@@ -214,17 +214,16 @@ export class HaSceneEditor extends SubscribeMixin(
       this._deviceEntityLookup,
       this._deviceRegistryEntries
     );
-    const name = this._scene
-      ? computeStateName(this._scene)
-      : this.hass.localize("ui.panel.config.scene.editor.default_name");
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .tabs=${configSections.automations}
+        .header=${this._scene
+          ? computeStateName(this._scene)
+          : this.hass.localize("ui.panel.config.scene.editor.default_name")}
       >
         <ha-button-menu
           corner="BOTTOM_START"
@@ -272,7 +271,6 @@ export class HaSceneEditor extends SubscribeMixin(
           </mwc-list-item>
         </ha-button-menu>
         ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
-        ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
         <div
           id="root"
           class=${classMap({
@@ -281,15 +279,7 @@ export class HaSceneEditor extends SubscribeMixin(
         >
           ${this._config
             ? html`
-                <ha-config-section vertical .isWide=${this.isWide}>
-                  ${!this.narrow
-                    ? html` <span slot="header">${name}</span> `
-                    : ""}
-                  <div slot="introduction">
-                    ${this.hass.localize(
-                      "ui.panel.config.scene.editor.introduction"
-                    )}
-                  </div>
+                <div class="container">
                   <ha-card outlined>
                     <div class="card-content">
                       <ha-textfield
@@ -322,7 +312,7 @@ export class HaSceneEditor extends SubscribeMixin(
                       </ha-area-picker>
                     </div>
                   </ha-card>
-                </ha-config-section>
+                </div>
 
                 <ha-config-section vertical .isWide=${this.isWide}>
                   <div slot="header">
@@ -486,7 +476,7 @@ export class HaSceneEditor extends SubscribeMixin(
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -963,6 +953,16 @@ export class HaSceneEditor extends SubscribeMixin(
         ha-card {
           overflow: hidden;
         }
+        .container {
+          display: flex;
+          justify-content: center;
+          margin-top: 24px;
+        }
+        .container > * {
+          max-width: 1040px;
+          flex: 1 1 auto;
+        }
+
         .errors {
           padding: 20px;
           font-weight: bold;

@@ -51,6 +51,7 @@ interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   media_duration?: number;
   media_position?: number;
   media_title?: string;
+  media_channel?: string;
   icon?: string;
   entity_picture_local?: string;
   is_volume_muted?: boolean;
@@ -234,6 +235,9 @@ export const computeMediaDescription = (
           secondaryTitle += "E" + stateObj.attributes.media_episode;
         }
       }
+      break;
+    case "channel":
+      secondaryTitle = stateObj.attributes.media_channel!;
       break;
     default:
       secondaryTitle = stateObj.attributes.app_name || "";

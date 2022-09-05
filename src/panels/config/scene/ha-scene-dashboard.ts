@@ -11,9 +11,13 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import { navigate } from "../../../common/navigate";
+import {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -165,6 +169,8 @@ class HaSceneDashboard extends LitElement {
         )}
         @clear-filter=${this._clearFilter}
         hasFab
+        clickable
+        @row-click=${this._handleRowClicked}
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -194,6 +200,14 @@ class HaSceneDashboard extends LitElement {
         </a>
       </hass-tabs-subpage-data-table>
     `;
+  }
+
+  private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
+    const scene = this.scenes.find((a) => a.entity_id === ev.detail.id);
+
+    if (scene?.attributes.id) {
+      navigate(`/config/scene/edit/${scene?.attributes.id}`);
+    }
   }
 
   private _relatedFilterChanged(ev: CustomEvent) {

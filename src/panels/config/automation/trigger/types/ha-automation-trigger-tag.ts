@@ -58,9 +58,9 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
   private _tagChanged(ev) {
     if (
-      !ev.detail.value ||
+      !ev.target.value ||
       !this._tags ||
-      this.trigger.tag_id === ev.detail.value
+      this.trigger.tag_id === ev.target.value
     ) {
       return;
     }

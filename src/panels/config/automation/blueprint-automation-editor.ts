@@ -10,6 +10,7 @@ import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
+import "../../../components/ha-alert";
 import { BlueprintAutomationConfig } from "../../../data/automation";
 import {
   BlueprintOrError,
@@ -49,26 +50,23 @@ export class HaBlueprintAutomationEditor extends LitElement {
   protected render() {
     const blueprint = this._blueprint;
     return html`
-      <p class="introduction">
-        ${this.hass.localize("ui.panel.config.automation.editor.introduction")}
-      </p>
-      <ha-card outlined>
-        <div class="card-content">
-          <ha-textarea
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.description.label"
-            )}
-            .placeholder=${this.hass.localize(
-              "ui.panel.config.automation.editor.description.placeholder"
-            )}
-            name="description"
-            autogrow
-            .value=${this.config.description || ""}
-            @change=${this._valueChanged}
-          ></ha-textarea>
-        </div>
-      </ha-card>
-
+      ${this.stateObj?.state === "off"
+        ? html`
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.disabled"
+              )}
+              <mwc-button slot="action" @click=${this._enable}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.enable"
+                )}
+              </mwc-button>
+            </ha-alert>
+          `
+        : ""}
+      ${this.config.description
+        ? html`<p class="description">${this.config.description}</p>`
+        : ""}
       <ha-card
         outlined
         class="blueprint"
@@ -198,19 +196,12 @@ export class HaBlueprintAutomationEditor extends LitElement {
     });
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const target = ev.target as any;
-    const name = target.name;
-    if (!name) {
+  private async _enable(): Promise<void> {
+    if (!this.hass || !this.stateObj) {
       return;
     }
-    const newVal = target.value;
-    if ((this.config![name] || "") === newVal) {
-      return;
-    }
-    fireEvent(this, "value-changed", {
-      value: { ...this.config!, [name]: newVal },
+    await this.hass.callService("automation", "turn_on", {
+      entity_id: this.stateObj.entity_id,
     });
   }
 
@@ -222,7 +213,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
           display: block;
         }
         ha-card.blueprint {
-          margin: 24px auto;
+          margin: 0 auto;
         }
         .padding {
           padding: 16px;
@@ -233,7 +224,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
         .blueprint-picker-container {
           padding: 0 16px 16px;
         }
-        ha-textarea,
         ha-textfield,
         ha-blueprint-picker {
           display: block;
@@ -251,11 +241,18 @@ export class HaBlueprintAutomationEditor extends LitElement {
         p {
           margin-bottom: 0;
         }
+        .description {
+          margin-bottom: 16px;
+        }
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
           --settings-row-content-width: 100%;
           --settings-row-prefix-display: contents;
           border-top: 1px solid var(--divider-color);
+        }
+        ha-alert {
+          margin-bottom: 16px;
+          display: block;
         }
       `,
     ];

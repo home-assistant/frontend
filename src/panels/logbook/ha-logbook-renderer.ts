@@ -34,6 +34,8 @@ import {
 } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
+import "../../components/ha-icon-next";
+import { navigate } from "../../common/navigate";
 
 declare global {
   interface HASSDomEvents {
@@ -156,8 +158,26 @@ class HaLogbookRenderer extends LitElement {
           })
         : undefined;
 
+    const traceContext =
+      triggerDomains.includes(item.domain!) &&
+      item.context_id! in this.traceContexts
+        ? this.traceContexts[item.context_id!]
+        : undefined;
+
+    const hasTrace = traceContext !== undefined;
+
     return html`
-      <div class="entry-container">
+      <div
+        class="entry-container ${classMap({ clickable: hasTrace })}"
+        .traceLink=${traceContext
+          ? `/config/${traceContext.domain}/trace/${
+              traceContext.domain === "script"
+                ? `script.${traceContext.item_id}`
+                : traceContext.item_id
+            }?run_id=${traceContext.run_id}`
+          : undefined}
+        @click=${this._handleClick}
+      >
         ${index === 0 ||
         (item?.when &&
           previous?.when &&
@@ -186,15 +206,16 @@ class HaLogbookRenderer extends LitElement {
             <div class="message-relative_time">
               <div class="message">
                 ${!this.noName // Used for more-info panel (single entity case)
-                  ? this._renderEntity(item.entity_id, item.name)
+                  ? this._renderEntity(item.entity_id, item.name, hasTrace)
                   : ""}
                 ${this._renderMessage(
                   item,
                   seenEntityIds,
                   domain,
-                  historicStateObj
+                  historicStateObj,
+                  hasTrace
                 )}
-                ${this._renderContextMessage(item, seenEntityIds)}
+                ${this._renderContextMessage(item, seenEntityIds, hasTrace)}
               </div>
               <div class="secondary">
                 <span
@@ -210,33 +231,15 @@ class HaLogbookRenderer extends LitElement {
                   capitalize
                 ></ha-relative-time>
                 ${item.context_user_id ? html`${this._renderUser(item)}` : ""}
-                ${triggerDomains.includes(item.domain!) &&
-                item.context_id! in this.traceContexts
-                  ? html`
-                      -
-                      <a
-                        href=${`/config/${
-                          this.traceContexts[item.context_id!].domain
-                        }/trace/${
-                          this.traceContexts[item.context_id!].domain ===
-                          "script"
-                            ? `script.${
-                                this.traceContexts[item.context_id!].item_id
-                              }`
-                            : this.traceContexts[item.context_id!].item_id
-                        }?run_id=${
-                          this.traceContexts[item.context_id!].run_id
-                        }`}
-                        @click=${this._close}
-                        >${this.hass.localize(
-                          "ui.components.logbook.show_trace"
-                        )}</a
-                      >
-                    `
+                ${hasTrace
+                  ? `- ${this.hass.localize(
+                      "ui.components.logbook.show_trace"
+                    )}`
                   : ""}
               </div>
             </div>
           </div>
+          ${hasTrace ? html`<ha-icon-next></ha-icon-next>` : ""}
         </div>
       </div>
     `;
@@ -258,7 +261,8 @@ class HaLogbookRenderer extends LitElement {
     item: LogbookEntry,
     seenEntityIds: string[],
     domain?: string,
-    historicStateObj?: HassEntity
+    historicStateObj?: HassEntity,
+    noLink?: boolean
   ) {
     if (item.entity_id) {
       if (item.state) {
@@ -291,7 +295,8 @@ class HaLogbookRenderer extends LitElement {
             ? stripEntityId(message, item.context_entity_id)
             : message,
           seenEntityIds,
-          undefined
+          undefined,
+          noLink
         )
       : "";
   }
@@ -307,7 +312,8 @@ class HaLogbookRenderer extends LitElement {
 
   private _renderUnseenContextSourceEntity(
     item: LogbookEntry,
-    seenEntityIds: string[]
+    seenEntityIds: string[],
+    noLink: boolean
   ) {
     if (
       !item.context_entity_id ||
@@ -320,11 +326,16 @@ class HaLogbookRenderer extends LitElement {
     // described event.
     return html` (${this._renderEntity(
       item.context_entity_id,
-      item.context_entity_id_name
+      item.context_entity_id_name,
+      noLink
     )})`;
   }
 
-  private _renderContextMessage(item: LogbookEntry, seenEntityIds: string[]) {
+  private _renderContextMessage(
+    item: LogbookEntry,
+    seenEntityIds: string[],
+    noLink: boolean
+  ) {
     // State change
     if (item.context_state) {
       const historicStateObj =
@@ -337,7 +348,11 @@ class HaLogbookRenderer extends LitElement {
       return html`${this.hass.localize(
         "ui.components.logbook.triggered_by_state_of"
       )}
-      ${this._renderEntity(item.context_entity_id, item.context_entity_id_name)}
+      ${this._renderEntity(
+        item.context_entity_id,
+        item.context_entity_id_name,
+        noLink
+      )}
       ${historicStateObj
         ? localizeStateMessage(
             this.hass,
@@ -379,11 +394,17 @@ class HaLogbookRenderer extends LitElement {
           ? "ui.components.logbook.triggered_by_automation"
           : "ui.components.logbook.triggered_by_script"
       )}
-      ${this._renderEntity(item.context_entity_id, item.context_entity_id_name)}
+      ${this._renderEntity(
+        item.context_entity_id,
+        item.context_entity_id_name,
+        noLink
+      )}
       ${item.context_message
         ? this._formatMessageWithPossibleEntity(
             contextTriggerSource,
-            seenEntityIds
+            seenEntityIds,
+            undefined,
+            noLink
           )
         : ""}`;
     }
@@ -394,14 +415,16 @@ class HaLogbookRenderer extends LitElement {
     ${this._formatMessageWithPossibleEntity(
       item.context_message,
       seenEntityIds,
-      item.context_entity_id
+      item.context_entity_id,
+      noLink
     )}
-    ${this._renderUnseenContextSourceEntity(item, seenEntityIds)}`;
+    ${this._renderUnseenContextSourceEntity(item, seenEntityIds, noLink)}`;
   }
 
   private _renderEntity(
     entityId: string | undefined,
-    entityName: string | undefined
+    entityName: string | undefined,
+    noLink?: boolean
   ) {
     const hasState = entityId && entityId in this.hass.states;
     const displayName =
@@ -412,19 +435,22 @@ class HaLogbookRenderer extends LitElement {
     if (!hasState) {
       return displayName;
     }
-    return html`<button
-      class="link"
-      @click=${this._entityClicked}
-      .entityId=${entityId}
-    >
-      ${displayName}
-    </button>`;
+    return noLink
+      ? displayName
+      : html`<button
+          class="link"
+          @click=${this._entityClicked}
+          .entityId=${entityId}
+        >
+          ${displayName}
+        </button>`;
   }
 
   private _formatMessageWithPossibleEntity(
     message: string,
     seenEntities: string[],
-    possibleEntity?: string
+    possibleEntity?: string,
+    noLink?: boolean
   ) {
     //
     // As we are looking at a log(book), we are doing entity_id
@@ -449,7 +475,8 @@ class HaLogbookRenderer extends LitElement {
           return html`${messageParts.join(" ")}
           ${this._renderEntity(
             entityId,
-            this.hass.states[entityId].attributes.friendly_name
+            this.hass.states[entityId].attributes.friendly_name,
+            noLink
           )}
           ${messageEnd.join(" ")}`;
         }
@@ -475,7 +502,7 @@ class HaLogbookRenderer extends LitElement {
           message.length - possibleEntityName.length
         );
         return html`${message}
-        ${this._renderEntity(possibleEntity, possibleEntityName)}`;
+        ${this._renderEntity(possibleEntity, possibleEntityName, noLink)}`;
       }
     }
     return message;
@@ -494,8 +521,12 @@ class HaLogbookRenderer extends LitElement {
     });
   }
 
-  private _close(): void {
-    setTimeout(() => fireEvent(this, "closed"), 500);
+  _handleClick(ev) {
+    if (!ev.currentTarget.traceLink) {
+      return;
+    }
+    navigate(ev.currentTarget.traceLink);
+    fireEvent(this, "closed");
   }
 
   static get styles(): CSSResultGroup {
@@ -520,10 +551,20 @@ class HaLogbookRenderer extends LitElement {
           padding: 8px 16px;
           box-sizing: border-box;
           border-top: 1px solid var(--divider-color);
+          justify-content: space-between;
+          align-items: center;
         }
 
-        .entry.no-entity,
-        .no-name .entry {
+        ha-icon-next {
+          color: var(--secondary-text-color);
+        }
+
+        .clickable {
+          cursor: pointer;
+        }
+
+        :not(.clickable) .entry.no-entity,
+        :not(.clickable) .no-name .entry {
           cursor: default;
         }
 

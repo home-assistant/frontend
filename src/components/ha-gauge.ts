@@ -2,6 +2,7 @@ import { css, LitElement, PropertyValues, svg, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../common/number/format_number";
+import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { afterNextRender } from "../common/util/render-status";
 import { FrontendLocaleData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";
@@ -133,7 +134,11 @@ export class Gauge extends LitElement {
               ? this._segment_label
               : this.valueText || formatNumber(this.value, this.locale)
           }${
-      this._segment_label ? "" : this.label === "%" ? "%" : ` ${this.label}`
+      this._segment_label
+        ? ""
+        : this.label === "%"
+        ? blankBeforePercent(this.locale) + "%"
+        : ` ${this.label}`
     }
         </text>
       </svg>`;

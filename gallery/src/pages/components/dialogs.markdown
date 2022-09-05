@@ -1,5 +1,5 @@
 ---
-title: Dialgos
+title: Dialogs
 subtitle: Dialogs provide important prompts in a user flow.
 ---
 

@@ -18,7 +18,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, state, query } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
@@ -51,13 +51,13 @@ import {
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
+import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { HaDeviceAction } from "../automation/action/types/ha-automation-action-device_id";
-import { configSections } from "../ha-panel-config";
 import "./blueprint-script-editor";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
@@ -168,12 +168,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     };
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .tabs=${configSections.automations}
+        .header=${!this._config?.alias ? "" : this._config.alias}
       >
         <ha-button-menu
           corner="BOTTOM_START"
@@ -192,7 +192,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               "ui.panel.config.automation.editor.edit_ui"
             )}
             graphic="icon"
-            ?activated=${this._mode === "gui"}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
@@ -228,13 +227,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           <mwc-list-item
             .disabled=${!this.scriptEntityId}
             .label=${this.hass.localize(
-              "ui.panel.config.script.picker.duplicate_script"
+              "ui.panel.config.script.picker.duplicate"
             )}
             graphic="icon"
           >
-            ${this.hass.localize(
-              "ui.panel.config.script.picker.duplicate_script"
-            )}
+            ${this.hass.localize("ui.panel.config.script.picker.duplicate")}
             <ha-svg-icon
               slot="graphic"
               .path=${mdiContentDuplicate}
@@ -244,12 +241,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           <mwc-list-item
             .disabled=${!this.scriptEntityId}
             aria-label=${this.hass.localize(
-              "ui.panel.config.script.editor.delete_script"
+              "ui.panel.config.script.picker.delete"
             )}
             class=${classMap({ warning: Boolean(this.scriptEntityId) })}
             graphic="icon"
           >
-            ${this.hass.localize("ui.panel.config.script.editor.delete_script")}
+            ${this.hass.localize("ui.panel.config.script.picker.delete")}
             <ha-svg-icon
               class=${classMap({ warning: Boolean(this.scriptEntityId) })}
               slot="graphic"
@@ -258,9 +255,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             </ha-svg-icon>
           </mwc-list-item>
         </ha-button-menu>
-        ${this.narrow
-          ? html`<span slot="header">${this._config?.alias}</span>`
-          : ""}
         <div
           class="content ${classMap({
             "yaml-mode": this._mode === "yaml",
@@ -418,7 +412,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
