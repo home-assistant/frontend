@@ -10,7 +10,6 @@ export const blankBeforePercent = (
     case "en-gb":
     case "fi":
     case "fr":
-    case "nl":
     case "ru":
     case "sk":
     case "sv":
