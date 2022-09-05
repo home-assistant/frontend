@@ -54,18 +54,6 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </h3>
           <div class="card-content">
-            <ha-textarea
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.description.label"
-              )}
-              .placeholder=${this.hass.localize(
-                "ui.panel.config.automation.editor.description.placeholder"
-              )}
-              name="description"
-              autogrow
-              .value=${this.config.description || ""}
-              @change=${this._valueChanged}
-            ></ha-textarea>
             <ha-select
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.modes.label"
