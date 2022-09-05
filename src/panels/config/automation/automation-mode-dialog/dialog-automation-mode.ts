@@ -9,7 +9,10 @@ import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { AutomationModeDialog } from "./show-dialog-automation-mode";
-import { AUTOMATION_DEFAULT_MODE } from "../../../../data/automation";
+import {
+  AUTOMATION_DEFAULT_MAX,
+  AUTOMATION_DEFAULT_MODE,
+} from "../../../../data/automation";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { isMaxMode, MODES } from "../../../../data/script";
 import "@material/mwc-list/mwc-list-item";
@@ -23,7 +26,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
 
   private _params!: AutomationModeDialog;
 
-  @state() private _newMode?: typeof MODES[number];
+  @state() private _newMode: typeof MODES[number] = AUTOMATION_DEFAULT_MODE;
 
   @state() private _newMax?: number;
 
@@ -31,7 +34,9 @@ class DialogAutomationMode extends LitElement implements HassDialog {
     this._opened = true;
     this._params = params;
     this._newMode = params.config.mode || AUTOMATION_DEFAULT_MODE;
-    this._newMax = params.config.max;
+    this._newMax = isMaxMode(this._newMode)
+      ? params.config.max || AUTOMATION_DEFAULT_MAX
+      : undefined;
   }
 
   public closeDialog(): void {
@@ -87,7 +92,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
             `
           )}
         </ha-select>
-        ${this._newMode && isMaxMode(this._newMode)
+        ${isMaxMode(this._newMode)
           ? html`
               <br /><ha-textfield
                 .label=${this.hass.localize(
@@ -95,7 +100,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
                 )}
                 type="number"
                 name="max"
-                .value=${this._newMax || "10"}
+                .value=${this._newMax?.toString() ?? ""}
                 @change=${this._valueChanged}
                 class="max"
               >
@@ -118,6 +123,8 @@ class DialogAutomationMode extends LitElement implements HassDialog {
     this._newMode = mode;
     if (!isMaxMode(mode)) {
       this._newMax = undefined;
+    } else if (!this._newMax) {
+      this._newMax = AUTOMATION_DEFAULT_MAX;
     }
   }
 
@@ -143,8 +150,8 @@ class DialogAutomationMode extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-textfield,
-        ha-textarea {
+        ha-select,
+        ha-textfield {
           display: block;
         }
       `,

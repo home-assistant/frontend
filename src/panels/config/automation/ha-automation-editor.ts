@@ -172,16 +172,23 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
           </mwc-list-item>
 
-          <mwc-list-item
-            graphic="icon"
-            @click=${this._promptAutomationMode}
-            .disabled=${!this.automationId || this._mode === "yaml"}
-          >
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.change_mode"
-            )}
-            <ha-svg-icon slot="graphic" .path=${mdiDebugStepOver}></ha-svg-icon>
-          </mwc-list-item>
+          ${this._config && !("use_blueprint" in this._config)
+            ? html`
+                <mwc-list-item
+                  graphic="icon"
+                  @click=${this._promptAutomationMode}
+                  .disabled=${!this.automationId || this._mode === "yaml"}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.change_mode"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiDebugStepOver}
+                  ></ha-svg-icon>
+                </mwc-list-item>
+              `
+            : ""}
 
           <mwc-list-item
             .disabled=${!this.automationId}
@@ -225,12 +232,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             .disabled=${!stateObj}
             @click=${this._toggle}
           >
-            ${!stateObj || stateObj.state === "off"
+            ${stateObj?.state === "off"
               ? this.hass.localize("ui.panel.config.automation.editor.enable")
               : this.hass.localize("ui.panel.config.automation.editor.disable")}
             <ha-svg-icon
               slot="graphic"
-              .path=${!stateObj || stateObj.state === "off"
+              .path=${stateObj?.state === "off"
                 ? mdiPlayCircleOutline
                 : mdiStopCircleOutline}
             ></ha-svg-icon>
@@ -260,7 +267,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 })}"
                 @subscribe-automation-config=${this._subscribeAutomationConfig}
               >
-                ${!stateObj || stateObj.state === "off"
+                ${stateObj?.state === "off"
                   ? html`
                       <ha-alert alert-type="warning" @click=${this._toggle}>
                         ${this.hass.localize(
