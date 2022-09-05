@@ -12,6 +12,8 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
 
   @property({ attribute: false }) public condition!: LogicalCondition;
 
+  @property({ type: Boolean }) public reOrderMode = false;
+
   public static get defaultConfig() {
     return {
       conditions: [],
@@ -24,6 +26,7 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
         .conditions=${this.condition.conditions || []}
         @value-changed=${this._valueChanged}
         .hass=${this.hass}
+        .reOrderMode=${this.reOrderMode}
       ></ha-automation-condition>
     `;
   }

@@ -25,6 +25,8 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: RepeatAction;
 
+  @property({ type: Boolean }) public reOrderMode = false;
+
   public static get defaultConfig() {
     return { repeat: { count: 2, sequence: [] } };
   }
@@ -95,6 +97,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       </h3>
       <ha-automation-action
         .actions=${action.sequence}
+        .reOrderMode=${this.reOrderMode}
         @value-changed=${this._actionChanged}
         .hass=${this.hass}
       ></ha-automation-action>

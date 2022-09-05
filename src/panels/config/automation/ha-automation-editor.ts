@@ -1,15 +1,17 @@
+import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
   mdiContentDuplicate,
   mdiContentSave,
+  mdiDebugStepOver,
   mdiDelete,
   mdiDotsVertical,
   mdiInformationOutline,
-  mdiPencil,
   mdiPlay,
   mdiPlayCircleOutline,
   mdiRenameBox,
+  mdiSort,
   mdiStopCircleOutline,
   mdiTransitConnection,
 } from "@mdi/js";
@@ -24,7 +26,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, state, query } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -48,7 +50,6 @@ import {
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-subpage";
@@ -57,9 +58,11 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
+import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
+import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import type { HaManualAutomationEditor } from "./manual-automation-editor";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -99,7 +102,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _mode: "gui" | "yaml" = "gui";
 
-  @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
+  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
+
+  @query("manual-automation-editor")
+  private _manualEditor?: HaManualAutomationEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -118,8 +124,28 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .tabs=${configSections.automations}
+        .header=${!this._config
+          ? ""
+          : this._config.alias ||
+            this.hass.localize(
+              "ui.panel.config.automation.editor.default_name"
+            )}
       >
+        ${this._config?.id && !this.narrow
+          ? html`
+              <a
+                class="trace-link"
+                href="/config/automation/trace/${this._config.id}"
+                slot="toolbar-icon"
+              >
+                <mwc-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.show_trace"
+                  )}
+                </mwc-button>
+              </a>
+            `
+          : ""}
         <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
@@ -144,7 +170,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
           </mwc-list-item>
 
-          ${stateObj && this._config
+          ${stateObj && this._config && this.narrow
             ? html`<a href="/config/automation/trace/${this._config.id}">
                 <mwc-list-item graphic="icon">
                   ${this.hass.localize(
@@ -158,9 +184,40 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               </a>`
             : ""}
 
-          <mwc-list-item graphic="icon" @click=${this._promptAutomationAlias}>
+          <mwc-list-item
+            graphic="icon"
+            @click=${this._promptAutomationAlias}
+            .disabled=${!this.automationId || this._mode === "yaml"}
+          >
             ${this.hass.localize("ui.panel.config.automation.editor.rename")}
             <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+          </mwc-list-item>
+
+          ${this._config && !("use_blueprint" in this._config)
+            ? html`
+                <mwc-list-item
+                  graphic="icon"
+                  @click=${this._promptAutomationMode}
+                  .disabled=${!this.automationId || this._mode === "yaml"}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.change_mode"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiDebugStepOver}
+                  ></ha-svg-icon>
+                </mwc-list-item>
+              `
+            : ""}
+
+          <mwc-list-item
+            graphic="icon"
+            @click=${this._toggleReOrderMode}
+            .disabled=${this._mode !== "gui"}
+          >
+            ${this.hass.localize("ui.panel.config.automation.editor.re_order")}
+            <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
           </mwc-list-item>
 
           <mwc-list-item
@@ -205,12 +262,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             .disabled=${!stateObj}
             @click=${this._toggle}
           >
-            ${!stateObj || stateObj.state === "off"
+            ${stateObj?.state === "off"
               ? this.hass.localize("ui.panel.config.automation.editor.enable")
               : this.hass.localize("ui.panel.config.automation.editor.disable")}
             <ha-svg-icon
               slot="graphic"
-              .path=${!stateObj || stateObj.state === "off"
+              .path=${stateObj?.state === "off"
                 ? mdiPlayCircleOutline
                 : mdiStopCircleOutline}
             ></ha-svg-icon>
@@ -234,14 +291,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
         ${this._config
           ? html`
-              ${this.narrow
-                ? html`<span slot="header"
-                    >${this._config!.alias ||
-                    this.hass.localize(
-                      "ui.panel.config.automation.editor.default_name"
-                    )}</span
-                  >`
-                : ""}
               <div
                 class="content ${classMap({
                   "yaml-mode": this._mode === "yaml",
@@ -249,65 +298,48 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 @subscribe-automation-config=${this._subscribeAutomationConfig}
               >
                 ${this._errors
-                  ? html`<div class="errors">${this._errors}</div>`
+                  ? html`<ha-alert alert-type="error">
+                      ${this._errors}
+                    </ha-alert>`
                   : ""}
                 ${this._mode === "gui"
-                  ? html`
-                      ${this.narrow
-                        ? ""
-                        : html`
-                            <div class="header-name">
-                              <h1>
-                                ${this._config!.alias ||
-                                this.hass.localize(
-                                  "ui.panel.config.automation.editor.default_name"
-                                )}
-                              </h1>
-                              <ha-icon-button
-                                .path=${mdiPencil}
-                                @click=${this._promptAutomationAlias}
-                                .label=${this.hass.localize(
-                                  "ui.panel.config.automation.editor.rename"
-                                )}
-                              ></ha-icon-button>
-                            </div>
-                          `}
-                      ${"use_blueprint" in this._config
-                        ? html`
-                            <blueprint-automation-editor
-                              .hass=${this.hass}
-                              .narrow=${this.narrow}
-                              .isWide=${this.isWide}
-                              .stateObj=${stateObj}
-                              .config=${this._config}
-                              @value-changed=${this._valueChanged}
-                            ></blueprint-automation-editor>
-                          `
-                        : html`
-                            <manual-automation-editor
-                              .hass=${this.hass}
-                              .narrow=${this.narrow}
-                              .isWide=${this.isWide}
-                              .stateObj=${stateObj}
-                              .config=${this._config}
-                              @value-changed=${this._valueChanged}
-                            ></manual-automation-editor>
-                          `}
-                    `
+                  ? "use_blueprint" in this._config
+                    ? html`
+                        <blueprint-automation-editor
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .isWide=${this.isWide}
+                          .stateObj=${stateObj}
+                          .config=${this._config}
+                          @value-changed=${this._valueChanged}
+                        ></blueprint-automation-editor>
+                      `
+                    : html`
+                        <manual-automation-editor
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .isWide=${this.isWide}
+                          .stateObj=${stateObj}
+                          .config=${this._config}
+                          @value-changed=${this._valueChanged}
+                        ></manual-automation-editor>
+                      `
                   : this._mode === "yaml"
                   ? html`
-                      ${!this.narrow
+                      ${stateObj?.state === "off"
                         ? html`
-                            <ha-card outlined>
-                              <div class="card-header">
-                                ${this._config.alias ||
-                                this.hass.localize(
-                                  "ui.panel.config.automation.editor.default_name"
+                            <ha-alert alert-type="info">
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.disabled"
+                              )}
+                              <mwc-button slot="action" @click=${this._toggle}>
+                                ${this.hass.localize(
+                                  "ui.panel.config.automation.editor.enable"
                                 )}
-                              </div>
-                            </ha-card>
+                              </mwc-button>
+                            </ha-alert>
                           `
-                        : ``}
+                        : ""}
                       <ha-yaml-editor
                         .hass=${this.hass}
                         .defaultValue=${this._preprocessYaml()}
@@ -477,8 +509,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _copyYaml(): Promise<void> {
-    if (this._editor?.yaml) {
-      await copyToClipboard(this._editor.yaml);
+    if (this._yamlEditor?.yaml) {
+      await copyToClipboard(this._yamlEditor.yaml);
       showToast(this, {
         message: this.hass.localize("ui.common.copied_clipboard"),
       });
@@ -559,40 +591,46 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._mode = "yaml";
   }
 
-  private async _promptAutomationAlias(): Promise<string | null> {
-    const result = await showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.automation.editor.automation_alias"
-      ),
-      inputLabel: this.hass.localize("ui.panel.config.automation.editor.alias"),
-      inputType: "string",
-      placeholder: this.hass.localize(
-        "ui.panel.config.automation.editor.default_name"
-      ),
-      defaultValue: this._config!.alias,
-      confirmText: this.hass.localize("ui.common.submit"),
-    });
-    if (result) {
-      this._config!.alias = result;
-      this._dirty = true;
-      this.requestUpdate();
+  private _toggleReOrderMode() {
+    if (this._manualEditor) {
+      this._manualEditor.reOrderMode = !this._manualEditor.reOrderMode;
     }
-    return result;
+  }
+
+  private async _promptAutomationAlias(): Promise<void> {
+    return new Promise((resolve) => {
+      showAutomationRenameDialog(this, {
+        config: this._config!,
+        updateAutomation: (config) => {
+          this._config = config;
+          this._dirty = true;
+          this.requestUpdate();
+          resolve();
+        },
+        onClose: () => resolve(),
+      });
+    });
+  }
+
+  private async _promptAutomationMode(): Promise<void> {
+    return new Promise((resolve) => {
+      showAutomationModeDialog(this, {
+        config: this._config!,
+        updateAutomation: (config) => {
+          this._config = config;
+          this._dirty = true;
+          this.requestUpdate();
+          resolve();
+        },
+        onClose: () => resolve(),
+      });
+    });
   }
 
   private async _saveAutomation(): Promise<void> {
     const id = this.automationId || String(Date.now());
-    if (!this._config!.alias) {
-      const alias = await this._promptAutomationAlias();
-      if (!alias) {
-        showAlertDialog(this, {
-          text: this.hass.localize(
-            "ui.panel.config.automation.editor.missing_name"
-          ),
-        });
-        return;
-      }
-      this._config!.alias = alias;
+    if (!this.automationId) {
+      await this._promptAutomationAlias();
     }
 
     this.hass!.callApi(
@@ -637,11 +675,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ha-card {
           overflow: hidden;
         }
-        .errors {
-          padding: 20px;
-          font-weight: bold;
-          color: var(--error-color);
-        }
         .content {
           padding-bottom: 20px;
         }
@@ -650,6 +683,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           display: flex;
           flex-direction: column;
           padding-bottom: 0;
+        }
+        .trace-link {
+          text-decoration: none;
         }
         manual-automation-editor,
         blueprint-automation-editor {

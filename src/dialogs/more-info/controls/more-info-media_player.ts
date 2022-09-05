@@ -167,7 +167,8 @@ class MoreInfoMediaPlayer extends LitElement {
             </div>
           `
         : ""}
-      ${supportsFeature(stateObj, SUPPORT_SELECT_SOUND_MODE) &&
+      ${![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state) &&
+      supportsFeature(stateObj, SUPPORT_SELECT_SOUND_MODE) &&
       stateObj.attributes.sound_mode_list?.length
         ? html`
             <div class="sound-input">

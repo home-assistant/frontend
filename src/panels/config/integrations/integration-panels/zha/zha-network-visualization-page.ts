@@ -37,7 +37,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @property({ type: Boolean }) public isWide!: boolean;
 
   @property()
-  public zoomedDeviceId?: string;
+  public zoomedDeviceIdFromURL?: string;
+
+  @state()
+  private zoomedDeviceId?: string;
 
   @query("#visualization", true)
   private _visualization?: HTMLElement;
@@ -63,6 +66,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
+
+    // prevent zoomedDeviceIdFromURL from being restored to zoomedDeviceId after the user clears it
+    if (this.zoomedDeviceIdFromURL) {
+      this.zoomedDeviceId = this.zoomedDeviceIdFromURL;
+    }
 
     if (this.hass) {
       this._fetchData();
