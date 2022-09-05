@@ -158,20 +158,24 @@ class HaLogbookRenderer extends LitElement {
           })
         : undefined;
 
-    const traceLink =
+    const traceContext =
       triggerDomains.includes(item.domain!) &&
       item.context_id! in this.traceContexts
-        ? `/config/${this.traceContexts[item.context_id!].domain}/trace/${
-            this.traceContexts[item.context_id!].domain === "script"
-              ? `script.${this.traceContexts[item.context_id!].item_id}`
-              : this.traceContexts[item.context_id!].item_id
-          }?run_id=${this.traceContexts[item.context_id!].run_id}`
+        ? this.traceContexts[item.context_id!]
         : undefined;
+
+    const hasTrace = traceContext !== undefined;
 
     return html`
       <div
-        class="entry-container ${classMap({ clickable: Boolean(traceLink) })}"
-        .traceLink=${traceLink}
+        class="entry-container ${classMap({ clickable: hasTrace })}"
+        .traceLink=${traceContext
+          ? `/config/${traceContext.domain}/trace/${
+              traceContext.domain === "script"
+                ? `script.${traceContext.item_id}`
+                : traceContext.item_id
+            }?run_id=${traceContext.run_id}`
+          : undefined}
         @click=${this._handleClick}
       >
         ${index === 0 ||
@@ -202,24 +206,16 @@ class HaLogbookRenderer extends LitElement {
             <div class="message-relative_time">
               <div class="message">
                 ${!this.noName // Used for more-info panel (single entity case)
-                  ? this._renderEntity(
-                      item.entity_id,
-                      item.name,
-                      Boolean(traceLink)
-                    )
+                  ? this._renderEntity(item.entity_id, item.name, hasTrace)
                   : ""}
                 ${this._renderMessage(
                   item,
                   seenEntityIds,
                   domain,
                   historicStateObj,
-                  Boolean(traceLink)
+                  hasTrace
                 )}
-                ${this._renderContextMessage(
-                  item,
-                  seenEntityIds,
-                  Boolean(traceLink)
-                )}
+                ${this._renderContextMessage(item, seenEntityIds, hasTrace)}
               </div>
               <div class="secondary">
                 <span
@@ -235,7 +231,7 @@ class HaLogbookRenderer extends LitElement {
                   capitalize
                 ></ha-relative-time>
                 ${item.context_user_id ? html`${this._renderUser(item)}` : ""}
-                ${traceLink
+                ${hasTrace
                   ? `- ${this.hass.localize(
                       "ui.components.logbook.show_trace"
                     )}`
@@ -243,7 +239,7 @@ class HaLogbookRenderer extends LitElement {
               </div>
             </div>
           </div>
-          ${traceLink ? html`<ha-icon-next></ha-icon-next>` : ""}
+          ${hasTrace ? html`<ha-icon-next></ha-icon-next>` : ""}
         </div>
       </div>
     `;
