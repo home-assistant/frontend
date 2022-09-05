@@ -11,6 +11,7 @@ import {
   mdiPlay,
   mdiPlayCircleOutline,
   mdiRenameBox,
+  mdiSort,
   mdiStopCircleOutline,
   mdiTransitConnection,
 } from "@mdi/js";
@@ -25,7 +26,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, state, query } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -61,6 +62,7 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import type { HaManualAutomationEditor } from "./manual-automation-editor";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -100,7 +102,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _mode: "gui" | "yaml" = "gui";
 
-  @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
+  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
+
+  @query("manual-automation-editor")
+  private _manualEditor?: HaManualAutomationEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -205,6 +210,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 </mwc-list-item>
               `
             : ""}
+
+          <mwc-list-item
+            graphic="icon"
+            @click=${this._toggleReOrderMode}
+            .disabled=${this._mode !== "gui"}
+          >
+            ${this.hass.localize("ui.panel.config.automation.editor.re_order")}
+            <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
+          </mwc-list-item>
 
           <mwc-list-item
             .disabled=${!this.automationId}
@@ -493,8 +507,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _copyYaml(): Promise<void> {
-    if (this._editor?.yaml) {
-      await copyToClipboard(this._editor.yaml);
+    if (this._yamlEditor?.yaml) {
+      await copyToClipboard(this._yamlEditor.yaml);
       showToast(this, {
         message: this.hass.localize("ui.common.copied_clipboard"),
       });
@@ -573,6 +587,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _switchYamlMode() {
     this._mode = "yaml";
+  }
+
+  private _toggleReOrderMode() {
+    if (this._manualEditor) {
+      this._manualEditor.reOrderMode = !this._manualEditor.reOrderMode;
+    }
   }
 
   private async _promptAutomationAlias(): Promise<void> {

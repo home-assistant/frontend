@@ -1,13 +1,15 @@
 import "@material/mwc-button/mwc-button";
-import { mdiHelpCircle, mdiSort, mdiTextBoxEdit } from "@mdi/js";
+import { mdiHelpCircle } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-alert";
+import "../../../components/ha-textarea";
+import "../../../components/ha-textfield";
 import {
   Condition,
   ManualAutomationConfig,
@@ -33,11 +35,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _reOrderMode = false;
-
-  private _toggleReOrderMode() {
-    this._reOrderMode = !this._reOrderMode;
-  }
+  @property({ type: Boolean, reflect: true, attribute: "re-order-mode" })
+  public reOrderMode = false;
 
   protected render() {
     return html`
@@ -55,19 +54,31 @@ export class HaManualAutomationEditor extends LitElement {
             </ha-alert>
           `
         : ""}
+      ${this.reOrderMode
+        ? html`
+            <ha-alert
+              alert-type="info"
+              .title=${this.hass.localize(
+                "ui.panel.config.automation.editor.re_order_mode.title"
+              )}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.re_order_mode.description"
+              )}
+              <mwc-button slot="action" @click=${this._exitReOrderMode}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.re_order_mode.exit"
+                )}
+              </mwc-button>
+            </ha-alert>
+          `
+        : ""}
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.header"
           )}
         </h2>
-        <ha-icon-button
-          .path=${this._reOrderMode ? mdiTextBoxEdit : mdiSort}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.re_order"
-          )}
-          @click=${this._toggleReOrderMode}
-        ></ha-icon-button>
         <a
           href=${documentationUrl(this.hass, "/docs/automation/trigger/")}
           target="_blank"
@@ -88,7 +99,7 @@ export class HaManualAutomationEditor extends LitElement {
         .triggers=${this.config.trigger}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
-        .reOrderMode=${this._reOrderMode}
+        .reOrderMode=${this.reOrderMode}
       ></ha-automation-trigger>
 
       <div class="header">
@@ -97,13 +108,6 @@ export class HaManualAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.conditions.header"
           )}
         </h2>
-        <ha-icon-button
-          .path=${this._reOrderMode ? mdiTextBoxEdit : mdiSort}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.re_order"
-          )}
-          @click=${this._toggleReOrderMode}
-        ></ha-icon-button>
         <a
           href=${documentationUrl(this.hass, "/docs/automation/condition/")}
           target="_blank"
@@ -124,7 +128,7 @@ export class HaManualAutomationEditor extends LitElement {
         .conditions=${this.config.condition || []}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
-        .reOrderMode=${this._reOrderMode}
+        .reOrderMode=${this.reOrderMode}
       ></ha-automation-condition>
 
       <div class="header">
@@ -134,13 +138,6 @@ export class HaManualAutomationEditor extends LitElement {
           )}
         </h2>
         <div>
-          <ha-icon-button
-            .path=${this._reOrderMode ? mdiTextBoxEdit : mdiSort}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.re_order"
-            )}
-            @click=${this._toggleReOrderMode}
-          ></ha-icon-button>
           <a
             href=${documentationUrl(this.hass, "/docs/automation/action/")}
             target="_blank"
@@ -163,9 +160,13 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._actionChanged}
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .reOrderMode=${this._reOrderMode}
+        .reOrderMode=${this.reOrderMode}
       ></ha-automation-action>
     `;
+  }
+
+  private _exitReOrderMode() {
+    this.reOrderMode = !this.reOrderMode;
   }
 
   private _triggerChanged(ev: CustomEvent): void {
@@ -269,6 +270,10 @@ export class HaManualAutomationEditor extends LitElement {
           text-align: center;
           border-top-right-radius: var(--ha-card-border-radius);
           border-top-left-radius: var(--ha-card-border-radius);
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];
