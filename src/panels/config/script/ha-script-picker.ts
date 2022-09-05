@@ -11,10 +11,14 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -191,6 +195,8 @@ class HaScriptPicker extends LitElement {
         )}
         @clear-filter=${this._clearFilter}
         hasFab
+        clickable
+        @row-click=${this._handleRowClicked}
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -239,6 +245,10 @@ class HaScriptPicker extends LitElement {
     this._filteredScripts = undefined;
     this._activeFilters = undefined;
     this._filterValue = undefined;
+  }
+
+  private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
+    navigate(`/config/script/edit/${ev.detail.id}`);
   }
 
   private _runScript = async (ev) => {
