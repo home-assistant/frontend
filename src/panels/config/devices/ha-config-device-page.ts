@@ -60,7 +60,7 @@ import {
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
@@ -96,23 +96,21 @@ export interface DeviceAlert {
 export class HaConfigDevicePage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public devices!: DeviceRegistryEntry[];
+  @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
 
-  @property() public entries!: ConfigEntry[];
+  @property({ attribute: false }) public entries!: ConfigEntry[];
 
-  @property() public entities!: EntityRegistryEntry[];
+  @property({ attribute: false }) public entities!: EntityRegistryEntry[];
 
-  @property() public areas!: AreaRegistryEntry[];
+  @property({ attribute: false }) public areas!: AreaRegistryEntry[];
 
   @property() public deviceId!: string;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public showAdvanced!: boolean;
-
-  @property() public route!: Route;
+  @property({ type: Boolean }) public showAdvanced!: boolean;
 
   @state() private _related?: RelatedResult;
 

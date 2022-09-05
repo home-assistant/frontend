@@ -45,7 +45,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
 import {
   loadAreaRegistryDetailDialog,
@@ -67,11 +67,9 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public showAdvanced!: boolean;
-
-  @property() public route!: Route;
+  @property({ type: Boolean }) public showAdvanced!: boolean;
 
   @state() public _areas!: AreaRegistryEntry[];
 
