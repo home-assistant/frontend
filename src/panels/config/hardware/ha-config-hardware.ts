@@ -175,7 +175,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     let documentationURL: string | undefined;
 
     if (this._hardwareInfo?.hardware.length) {
-      const boardData = this._hardwareInfo!.hardware[0];
+      const boardData = this._hardwareInfo.hardware[0];
 
       boardId = boardData.board.hassio_board_id;
       boardName = boardData.name;
@@ -285,7 +285,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
               `
             : ""}
           ${this._systemStatusData
-            ? html` <ha-card outlined>
+            ? html`<ha-card outlined>
                   <div class="header">
                     <div class="title">
                       ${this.hass.localize(
