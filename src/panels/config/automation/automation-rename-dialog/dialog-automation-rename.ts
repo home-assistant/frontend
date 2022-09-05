@@ -7,6 +7,8 @@ import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { AutomationRenameDialog } from "./show-dialog-automation-rename";
+import "../../../../components/ha-textarea";
+import "../../../../components/ha-textfield";
 
 @customElement("ha-dialog-automation-rename")
 class DialogAutomationRename extends LitElement implements HassDialog {
@@ -51,7 +53,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
       >
         <ha-textfield
           dialogInitialFocus
-          value=${this._newName}
+          .value=${this._newName}
           .placeholder=${this.hass.localize(
             "ui.panel.config.automation.editor.default_name"
           )}
