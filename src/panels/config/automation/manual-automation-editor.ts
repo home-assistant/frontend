@@ -207,6 +207,9 @@ export class HaManualAutomationEditor extends LitElement {
           display: flex;
           align-items: center;
         }
+        .header:first-child {
+          margin-top: -16px;
+        }
         .header .name {
           font-size: 20px;
           font-weight: 400;
