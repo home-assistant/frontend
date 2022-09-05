@@ -154,9 +154,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
 
-  private _subscribedConfigEntries?: Promise<(() => Promise<void>) | void>;
-
-  public hassSubscribe(): UnsubscribeFunc[] {
+  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
       subscribeEntityRegistry(this.hass.connection, (entries) => {
         this._entityRegistryEntries = entries;
@@ -182,10 +180,56 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         await nextRender();
         this._configEntriesInProgress = flowsInProgress.map((flow) => ({
           ...flow,
-          localized_domain_name: domainToName(this.hass.localize, flow.handler),
           localized_title: localizeConfigFlowTitle(this.hass.localize, flow),
         }));
       }),
+      subscribeConfigEntries(
+        this.hass,
+        (messages) => {
+          let fullUpdate = false;
+          const newEntries: ConfigEntryExtended[] = [];
+          messages.forEach((message) => {
+            if (message.type === null || message.type === "added") {
+              newEntries.push({
+                ...message.entry,
+                localized_domain_name: domainToName(
+                  this.hass.localize,
+                  message.entry.domain
+                ),
+              });
+              if (message.type === null) {
+                fullUpdate = true;
+              }
+            } else if (message.type === "removed") {
+              this._configEntries = this._configEntries!.filter(
+                (entry) => entry.entry_id !== message.entry.entry_id
+              );
+            } else if (message.type === "updated") {
+              const newEntry = message.entry;
+              this._configEntries = this._configEntries!.map((entry) =>
+                entry.entry_id === newEntry.entry_id
+                  ? {
+                      ...newEntry,
+                      localized_domain_name: entry.localized_domain_name,
+                    }
+                  : entry
+              );
+            }
+          });
+          if (!newEntries.length && !fullUpdate) {
+            return;
+          }
+          const existingEntries = fullUpdate ? [] : this._configEntries;
+          this._configEntries = [...existingEntries!, ...newEntries].sort(
+            (conf1, conf2) =>
+              caseInsensitiveStringCompare(
+                conf1.localized_domain_name + conf1.title,
+                conf2.localized_domain_name + conf2.title
+              )
+          );
+        },
+        { type: "integration" }
+      ),
     ];
   }
 
@@ -261,81 +305,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     }
   );
 
-  public connectedCallback() {
-    this._configEntries = undefined;
-    super.connectedCallback();
-    if (this.hasUpdated) {
-      this._subscribeConfigEntries();
-    }
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._unsubscribeConfigEntries();
-  }
-
-  private _subscribeConfigEntries() {
-    this._subscribedConfigEntries = subscribeConfigEntries(
-      this.hass,
-      (messages) => {
-        let fullUpdate = false;
-        const newEntries: ConfigEntryExtended[] = [];
-        messages.forEach((message) => {
-          if (message.type === null || message.type === "added") {
-            newEntries.push({
-              ...message.entry,
-              localized_domain_name: domainToName(
-                this.hass.localize,
-                message.entry.domain
-              ),
-            });
-            if (message.type === null) {
-              fullUpdate = true;
-            }
-          } else if (message.type === "removed") {
-            this._configEntries = this._configEntries!.filter(
-              (entry) => entry.entry_id !== message.entry.entry_id
-            );
-          } else if (message.type === "updated") {
-            const newEntry = message.entry;
-            this._configEntries = this._configEntries!.map((entry) =>
-              entry.entry_id === newEntry.entry_id
-                ? {
-                    ...newEntry,
-                    localized_domain_name: entry.localized_domain_name,
-                  }
-                : entry
-            );
-          }
-        });
-        if (!newEntries.length && !fullUpdate) {
-          return;
-        }
-        const existingEntries = fullUpdate ? [] : this._configEntries;
-        this._configEntries = [...existingEntries!, ...newEntries].sort(
-          (conf1, conf2) =>
-            caseInsensitiveStringCompare(
-              conf1.localized_domain_name + conf1.title,
-              conf2.localized_domain_name + conf2.title
-            )
-        );
-      },
-      { type: "integration" }
-    );
-  }
-
-  private _unsubscribeConfigEntries(): void {
-    if (this._subscribedConfigEntries) {
-      this._subscribedConfigEntries.then(
-        (unsubscribe) => unsubscribe && unsubscribe()
-      );
-      this._subscribedConfigEntries = undefined;
-    }
-  }
-
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
-    this._subscribeConfigEntries();
     const localizePromise = this.hass.loadBackendTranslation(
       "title",
       undefined,
