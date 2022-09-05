@@ -8,6 +8,7 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { AutomationRenameDialog } from "./show-dialog-automation-rename";
 import "../../../../components/ha-textarea";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-textfield";
 
 @customElement("ha-dialog-automation-rename")
@@ -15,6 +16,8 @@ class DialogAutomationRename extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _opened = false;
+
+  @state() private _error?: string;
 
   private _params!: AutomationRenameDialog;
 
@@ -25,7 +28,9 @@ class DialogAutomationRename extends LitElement implements HassDialog {
   public showDialog(params: AutomationRenameDialog): void {
     this._opened = true;
     this._params = params;
-    this._newName = params.config.alias || "";
+    this._newName =
+      params.config.alias ||
+      this.hass.localize("ui.panel.config.automation.editor.default_name");
     this._newDescription = params.config.description || "";
   }
 
@@ -48,9 +53,20 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize("ui.panel.config.automation.editor.rename")
+          this.hass.localize(
+            this._params.config.alias
+              ? "ui.panel.config.automation.editor.rename"
+              : "ui.panel.config.automation.editor.save"
+          )
         )}
       >
+        ${this._error
+          ? html`<ha-alert alert-type="error"
+              >${this.hass.localize(
+                "ui.panel.config.automation.editor.missing_name"
+              )}</ha-alert
+            >`
+          : ""}
         <ha-textfield
           dialogInitialFocus
           .value=${this._newName}
@@ -60,6 +76,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.alias"
           )}
+          required
           type="string"
           @change=${this._valueChanged}
         ></ha-textfield>
@@ -81,7 +98,11 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           ${this.hass.localize("ui.dialogs.generic.cancel")}
         </mwc-button>
         <mwc-button @click=${this._save} slot="primaryAction">
-          ${this.hass.localize("ui.panel.config.automation.editor.rename")}
+          ${this.hass.localize(
+            this._params.config.alias
+              ? "ui.panel.config.automation.editor.rename"
+              : "ui.panel.config.automation.editor.save"
+          )}
         </mwc-button>
       </ha-dialog>
     `;
@@ -98,6 +119,10 @@ class DialogAutomationRename extends LitElement implements HassDialog {
   }
 
   private _save(): void {
+    if (!this._newName) {
+      this._error = "Name is required";
+      return;
+    }
     this._params.updateAutomation({
       ...this._params.config,
       alias: this._newName,
@@ -114,6 +139,10 @@ class DialogAutomationRename extends LitElement implements HassDialog {
         ha-textfield,
         ha-textarea {
           display: block;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];
