@@ -75,18 +75,13 @@
                         }
                     }
                 },
+                "helpers": {
+                    "types": {
+                        "schedule": "ไทย"
+                    }
+                },
                 "mqtt": {
                     "title": "MQTT"
-                },
-                "ozw": {
-                    "network_status": {
-                        "unknown": "தெரியவில்லை"
-                    }
-                },
-                "zwave": {
-                    "node_config": {
-                        "set_config_parameter": "கட்டமைப்பு அளவுருவை அமைக்கவும்"
-                    }
                 }
             }
         }

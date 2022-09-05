@@ -85,11 +85,6 @@
         }
     },
     "ui": {
-        "auth_store": {
-            "ask": "Դուք ցանկանում եք պահպանել այդ անունը?",
-            "confirm": "Պահպանել մուտք",
-            "decline": "Ոչ, շնորհակալություն"
-        },
         "card": {
             "alarm_control_panel": {
                 "arm_away": "Ձեռք բերեք",
@@ -212,6 +207,11 @@
             "successfully_saved": "Պահմանվեց հաջողությամբ"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "name": "Անուն"
+                }
+            },
             "entity": {
                 "entity-picker": {
                     "entity": "օբյեկտ"
@@ -222,13 +222,6 @@
                 "no_history_found": "Ոչ մի պետական պատմություն չի գտնվել:"
             },
             "relative_time": {
-                "duration": {
-                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
-                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
-                    "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-                    "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
-                },
                 "never": "Երբեք"
             },
             "service-picker": {
@@ -246,7 +239,13 @@
             },
             "entity_registry": {
                 "editor": {
+                    "name": "Անուն",
                     "open_device_settings": "Բացել սարքի կարգավորումները"
+                }
+            },
+            "helper_settings": {
+                "generic": {
+                    "name": "Անուն"
                 }
             },
             "more_info_control": {
@@ -268,6 +267,24 @@
                 },
                 "success": {
                     "description": "Տարբերակները պահմանվեցին հաջողությամբ"
+                }
+            },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "server_control": "Սերվերի վերահսկում"
+                    },
+                    "reload": {
+                        "automation": "Վերաբեռնել ավտոմատացումները",
+                        "core": "Վերաբեռնել core-ը",
+                        "group": "Վերաբեռնել խմբերը",
+                        "scene": "Վերբեռնել տեսարանները",
+                        "script": "Վերբեռնել սցենարներ"
+                    },
+                    "server_control": {
+                        "restart": "Վերսկսել",
+                        "stop": "Դադարեցնել"
+                    }
                 }
             },
             "zha_device_info": {
@@ -306,6 +323,16 @@
         },
         "panel": {
             "config": {
+                "application_credentials": {
+                    "editor": {
+                        "name": "Անուն"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Անուն"
+                        }
+                    }
+                },
                 "areas": {
                     "caption": "Տարածքի գրանցամատյան",
                     "description": "Ձեր բոլոր տարածքների ակնարկ",
@@ -313,6 +340,7 @@
                         "create": "ՍՏԵՂԾԵԼ",
                         "default_name": "Նոր տարածք",
                         "delete": "Հեռացնել",
+                        "name": "Անուն",
                         "update": "Թարմացրեք"
                     },
                     "picker": {
@@ -349,8 +377,7 @@
                                 },
                                 "event": {
                                     "event": "Իրադարձություն",
-                                    "label": "Հրդեհային իրադարձություն",
-                                    "service_data": "Ծառայության տվյալներ"
+                                    "label": "Հրդեհային իրադարձություն"
                                 },
                                 "service": {
                                     "label": "Զանգի ծառայություն"
@@ -512,15 +539,24 @@
                     "picker": {
                         "add_automation": "Ավելացնել ավտոմատացում",
                         "header": "Ավտոմատացման խմբագիր",
+                        "headers": {
+                            "name": "Անուն"
+                        },
                         "introduction": "Ավտոմատացման խմբագրիչը թույլ է տալիս ստեղծել և խմբագրել ավտոմատացումը: Խնդրում ենք հետևել հետևյալ հղմանը ՝ հրահանգները կարդալու համար, որպեսզի համոզվեք, որ ճիշտ կազմաձևել եք Home Assistant-ը",
                         "learn_more": "Իմանալ ավելին ավտոմատացման մասին",
                         "no_automations": "Խմբագրերի ավտոմատացում չի գտնվել",
                         "pick_automation": " խմբագրելու համար ընտրել ավտոմատացում"
                     }
                 },
+                "blueprint": {
+                    "overview": {
+                        "headers": {
+                            "name": "Անուն"
+                        }
+                    }
+                },
                 "cloud": {
                     "description_features": "Կառավարեք տնից հեռու, ինտեգրվեք Alexa- ի և Google Assistant- ի հետ:",
-                    "description_login": "Մուտք գործեք որպես {email}",
                     "description_not_login": "Մուտք չի  գործել"
                 },
                 "core": {
@@ -548,14 +584,6 @@
                         }
                     }
                 },
-                "customize": {
-                    "caption": "Անհատականացում",
-                    "description": "Կարգավորել ձեր անձի",
-                    "picker": {
-                        "header": "հարմարեցում",
-                        "introduction": "Կսմթել յուրաքանչյուր անձի հատկանիշները: Անհապաղ գործողության մեջ կավելացվեն / խմբագրված փոփոխությունները: Հեռացված կարգավորումները ուժի մեջ են մտնում սուբյեկտի թարմացման դեպքում:"
-                    }
-                },
                 "devices": {
                     "automation": {
                         "create_disable": "Հնարավոր չէ ստեղծել ավտոմատացում անջատված սարքով"
@@ -568,6 +596,7 @@
                     },
                     "enabled_cause": "Անջատված է {cause}-ի կողմից",
                     "enabled_label": "Միացնել սարքը",
+                    "name": "Անուն",
                     "picker": {
                         "filter": {
                             "filter": "Ֆիլտր",
@@ -588,19 +617,26 @@
                     "description": "Բոլոր հայտնի սուբյեկտների ակնարկ:",
                     "picker": {
                         "header": "ռեգիստրի սուբյեկտ",
+                        "headers": {
+                            "name": "Անուն"
+                        },
                         "introduction": "Տնային օգնականը պահում է իր տեսած յուրաքանչյուր սուբյեկտի գրանցամատյան, որը կարող է եզակիորեն նույնականացվել: Այս սուբյեկտներից յուրաքանչյուրը կունենա անձի նույնականացում, որը վերապահված կլինի հենց այս սուբյեկտին:",
                         "introduction2": "Օգտագործեք կազմակերպության ռեգիստրը `անունը շրջանցելու համար, փոխելու անձի նույնականացումը կամ մուտքը Տնային օգնականից հանելու համար: Նշում, կազմակերպության գրանցամատյան մուտքագրումը հանելը չի հեռացնում կազմակերպությանը: Դա անելու համար հետևեք ստորև նշված հղմանը և հեռացրեք այն ինտեգրման էջից:"
                     }
                 },
                 "header": "Կարգավորել Home Assistant-ը",
+                "helpers": {
+                    "picker": {
+                        "headers": {
+                            "name": "Անուն"
+                        }
+                    }
+                },
                 "integrations": {
                     "caption": "Ինտեգրում",
                     "config_entry": {
                         "delete_confirm": "Համոզվա՞ծ եք, որ ցանկանում եք ջնջել այս ինտեգրումը",
-                        "device_unavailable": "սարքն անհասանելի է",
-                        "entity_unavailable": "անձը անհասանելի է",
                         "firmware": "Firmware: {version}",
-                        "hub": "Միացված է ի օգնությամբ",
                         "manuf": "{manufacturer}ի կողմից",
                         "no_area": "Ոչ մի տարածք",
                         "restart_confirm": "Վերագործարկել Home Assistant-ը որպեսզի վերջացնել ինտեգրման հեռացման պրոցեսը"
@@ -618,14 +654,8 @@
                     "new": "Ստեղծվել է նոր ինտեգրումը",
                     "none": "Ոչինչ  տրամադրված  չէ"
                 },
-                "introduction": "Այստեղ հնարավոր է կարգավորել ձեր բաղադրիչները և Home Assistant:Դեռ ամեն ինչ հնարավոր չէ կազմաձևել UI- ից, բայց մենք աշխատում ենք այդ ուղղությամբ",
                 "mqtt": {
                     "title": "MQTT"
-                },
-                "ozw": {
-                    "network_status": {
-                        "unknown": "Անհայտ"
-                    }
                 },
                 "person": {
                     "caption": "Անձինք",
@@ -637,38 +667,34 @@
                         "name": "Անուն"
                     }
                 },
+                "scene": {
+                    "editor": {
+                        "name": "Անուն"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Անուն"
+                        }
+                    }
+                },
                 "script": {
                     "caption": "Սցենար",
-                    "description": "Սցենարների  ստեղծում և խմբագրում"
-                },
-                "server_control": {
-                    "caption": "Սերվերի վերահսկում",
-                    "description": "Վերագործարկեք և դադարեցրեք Home Assistant սերվերը",
-                    "section": {
-                        "reloading": {
-                            "automation": "Վերաբեռնել ավտոմատացումները",
-                            "core": "Վերաբեռնել core-ը",
-                            "group": "Վերաբեռնել խմբերը",
-                            "heading": "Կարգավորման վերաբեռնում",
-                            "introduction": "Home Assistant-ի որոշ մասեր կարող են վերբեռնվել առանց վերագործարկման  (restart): Սեղմելով  վերաբեռնել կոճակը  ընթացիկ կարգավորումը կփոխարինվի նորով։",
-                            "scene": "Վերբեռնել տեսարանները",
-                            "script": "Վերբեռնել սցենարներ"
-                        },
-                        "server_management": {
-                            "confirm_restart": "Համոզվա՞ծ եք, որ ցանկանում եք վերագործարկել Home Assistant-ը?",
-                            "confirm_stop": "Համոզվա՞ծ եք, որ ցանկանում եք դադարեցնել Home Assistant-ը?",
-                            "heading": "Սերվերի կառավարում",
-                            "introduction": "Վերահսկեք ձեր Home Assistant սերվերը… Home Assistant-ից:",
-                            "restart": "Վերսկսել",
-                            "stop": "Դադարեցնել"
-                        },
-                        "validation": {
-                            "check_config": "Ստուգել կարգավուրումը",
-                            "heading": "Կարգավորման  վավերացում",
-                            "introduction": "Եթե վերջերս որոշ փոփոխություններ եք կատարել ձեր կարգավորման մեջ,  համոզվեք, որ այդ ամենը վավեր է։",
-                            "invalid": "Կարգավուրումը անվավեր է",
-                            "valid": "Կարգավուրումը վավեր է"
+                    "description": "Սցենարների  ստեղծում և խմբագրում",
+                    "editor": {
+                        "alias": "Անուն"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Անուն"
                         }
+                    }
+                },
+                "tag": {
+                    "detail": {
+                        "name": "Անուն"
+                    },
+                    "headers": {
+                        "name": "Անուն"
                     }
                 },
                 "users": {
@@ -693,51 +719,9 @@
                         "spinner": "ZHA Zigbee սարքերի որոնում …"
                     }
                 },
-                "zwave": {
-                    "common": {
-                        "index": "Ինդեքս",
-                        "instance": "Օրինակ",
-                        "unknown": "հայտնի չէ",
-                        "value": "Արժեք",
-                        "wakeup_interval": "Արթնանալու ինտերվալ"
-                    },
-                    "description": "Կառավարել   Z-Wave ցանցը",
-                    "network_management": {
-                        "header": "Z-Wave ցանցի կառավարում",
-                        "introduction": "Գործարկել հրամաններ, որոնք ազդում են Z-Wave ցանցի վրա: Դուք չեք ստանա հետադարձ կապ այն մասին, թե արդյոք հրամանների մեծ մասը հաջողվել է, բայց կարող եք ստուգել OZW տեղեկամատյանները ` պարզելու համար"
-                    },
-                    "network_status": {
-                        "network_started": "Մեկնարկեց Z-Wave ցանցը",
-                        "network_started_note_all_queried": "Բոլոր հանգույցներին  հարցում ուղարկված են:",
-                        "network_started_note_some_queried": "Արթնացնող հանգույցները հարցվել են: Քնած հանգույցները կզգան, երբ նրանք արթնանան:",
-                        "network_starting": "Մեկնարկվում է Z-Wave ցանցը …",
-                        "network_starting_note": "Սա կարող է որոշ ժամանակ տևել `կախված ձեր ցանցի չափից:",
-                        "network_stopped": "Z-wave ցանցը դադարեցված է"
-                    },
-                    "node_config": {
-                        "config_parameter": "կարգավորման պարամետր",
-                        "config_value": "Կարգավորման արժեք",
-                        "false": "False",
-                        "header": "Node-ի կարգավորման տարբերակներ",
-                        "seconds": "վայրկյաններ",
-                        "set_config_parameter": "Սահմանեք կարգավորման պարամետր",
-                        "set_wakeup": "Սահմանել արթնանալու ինտերվալ",
-                        "true": "True"
-                    },
-                    "services": {
-                        "add_node": "Ավելացնել հանգույց",
-                        "add_node_secure": "Ավելացնել  անվտանգ հանգույց",
-                        "cancel_command": "Չեղարկել հրամանը",
-                        "heal_network": "Բուժել ցանցը",
-                        "remove_node": "Ջնգել հանգույցը",
-                        "save_config": "Պահպանել կարգավուրումը",
-                        "soft_reset": "Թեթև վերագործարկել",
-                        "start_network": "Միացնել ցանցը",
-                        "stop_network": "Անջատել ցանցը",
-                        "test_network": "Փորձարկել ցանը"
-                    },
-                    "values": {
-                        "header": "Հանգույցի արժեքները"
+                "zone": {
+                    "detail": {
+                        "name": "Անուն"
                     }
                 }
             },
@@ -754,6 +738,36 @@
                     },
                     "templates": {
                         "title": "Ձևանմուշ"
+                    },
+                    "yaml": {
+                        "caption": "Սերվերի վերահսկում",
+                        "description": "Վերագործարկեք և դադարեցրեք Home Assistant սերվերը",
+                        "section": {
+                            "reloading": {
+                                "automation": "Վերաբեռնել ավտոմատացումները",
+                                "core": "Վերաբեռնել core-ը",
+                                "group": "Վերաբեռնել խմբերը",
+                                "heading": "Կարգավորման վերաբեռնում",
+                                "introduction": "Home Assistant-ի որոշ մասեր կարող են վերբեռնվել առանց վերագործարկման  (restart): Սեղմելով  վերաբեռնել կոճակը  ընթացիկ կարգավորումը կփոխարինվի նորով։",
+                                "scene": "Վերբեռնել տեսարանները",
+                                "script": "Վերբեռնել սցենարներ"
+                            },
+                            "server_management": {
+                                "confirm_restart": "Համոզվա՞ծ եք, որ ցանկանում եք վերագործարկել Home Assistant-ը?",
+                                "confirm_stop": "Համոզվա՞ծ եք, որ ցանկանում եք դադարեցնել Home Assistant-ը?",
+                                "heading": "Սերվերի կառավարում",
+                                "introduction": "Վերահսկեք ձեր Home Assistant սերվերը… Home Assistant-ից:",
+                                "restart": "Վերսկսել",
+                                "stop": "Դադարեցնել"
+                            },
+                            "validation": {
+                                "check_config": "Ստուգել կարգավուրումը",
+                                "heading": "Կարգավորման  վավերացում",
+                                "introduction": "Եթե վերջերս որոշ փոփոխություններ եք կատարել ձեր կարգավորման մեջ,  համոզվեք, որ այդ ամենը վավեր է։",
+                                "invalid": "Կարգավուրումը անվավեր է",
+                                "valid": "Կարգավուրումը վավեր է"
+                            }
+                        }
                     }
                 }
             },
@@ -782,6 +796,11 @@
                     "message": "Lovelace կարգավորումը թարմացվել է, կցանկանայի՞ք թարմացնել UI-ը:"
                 },
                 "editor": {
+                    "card": {
+                        "generic": {
+                            "name": "Անուն"
+                        }
+                    },
                     "edit_card": {
                         "add": "Ավելացնել քարտ",
                         "delete": "Հեռացնել",
@@ -1000,8 +1019,7 @@
                         "username": "Օգտագործողի անունը"
                     },
                     "error": {
-                        "password_not_match": "Գաղտնաբառերը չեն համընկնում",
-                        "required_fields": "Լրացրեք բոլոր պահանջվող դաշտերը"
+                        "password_not_match": "Գաղտնաբառերը չեն համընկնում"
                     },
                     "intro": "Սկսենք ՝ ստեղծելով օգտվողի հաշիվ:",
                     "required_field": "Պահանջվում է"
@@ -1040,6 +1058,7 @@
                     "empty_state": "չունեք մուտքի նշաններ:",
                     "header": "Երկարատև  մուտքի նշաններ",
                     "learn_auth_requests": "Իմացեք, թե ինչպես անել վավերացման հարցում.",
+                    "name": "Անուն",
                     "prompt_copy_token": "Պատճենեք ձեր մուտքի նշանը: Այն կրկին չի ցուցադրվի:",
                     "prompt_name": "Անուն?"
                 },

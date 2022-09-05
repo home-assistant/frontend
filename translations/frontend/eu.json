@@ -1,4 +1,9 @@
 {
+    "config_entry": {
+        "disabled_by": {
+            "integration": "Integrazioa"
+        }
+    },
     "groups": {
         "system-admin": "Administratzaileak",
         "system-read-only": "Soilik irakurtzeko erabiltzaileak",
@@ -28,6 +33,14 @@
                 "auto": "Automatikoa",
                 "off": "Itzalita",
                 "on": "Piztuta"
+            },
+            "hvac_action": {
+                "idle": "Geldirik"
+            },
+            "preset_mode": {
+                "activity": "Jarduera",
+                "comfort": "Erosotasuna",
+                "sleep": "Lo egin"
             }
         }
     },
@@ -46,11 +59,6 @@
         }
     },
     "ui": {
-        "auth_store": {
-            "ask": "Saio hau gorde nahi duzu?",
-            "confirm": "Erabiltzailea gorde",
-            "decline": "Ez, eskerrik asko"
-        },
         "card": {
             "alarm_control_panel": {
                 "clear_code": "Garbitu",
@@ -78,7 +86,9 @@
                 "effect": "Efektua"
             },
             "lock": {
-                "code": "Kodea"
+                "code": "Kodea",
+                "lock": "Blokeatu",
+                "unlock": "Desblokeatu"
             },
             "media_player": {
                 "sound_mode": "Soinu modua",
@@ -87,6 +97,9 @@
             },
             "scene": {
                 "activate": "Aktibatu"
+            },
+            "script": {
+                "cancel": "Ezeztatu"
             },
             "vacuum": {
                 "actions": {
@@ -100,12 +113,14 @@
             "water_heater": {
                 "currently": "Orain",
                 "on_off": "Piztuta / itzalita",
-                "operation": "Operazioa"
+                "operation": "Operazioa",
+                "target_temperature": "Helburu-tenperatura"
             },
             "weather": {
                 "attributes": {
                     "air_pressure": "Aire presioa",
                     "humidity": "Hezetasuna",
+                    "precipitation": "Prezipitazioa",
                     "temperature": "Tenperatura",
                     "visibility": "Ikusgarritasuna",
                     "wind_speed": "Haizearen abiadura"
@@ -128,25 +143,47 @@
                     "wnw": "MIM",
                     "wsw": "MHM"
                 },
-                "forecast": "Iragarpena"
+                "day": "Eguna",
+                "forecast": "Iragarpena",
+                "night": "Gaua"
             }
         },
         "common": {
+            "edit": "Editatu",
             "loading": "Kargatzen",
-            "save": "Gorde"
+            "no": "Ez",
+            "save": "Gorde",
+            "yes": "Bai"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "failed_create_area": "Ezin izan da gunea sortu.",
+                    "name": "Izena"
+                },
+                "area": "Gunea",
+                "clear": "Garbitu",
+                "show_areas": "Guneak erakutsi"
+            },
             "data-table": {
-                "no-data": "Daturik ez"
+                "no-data": "Daturik ez",
+                "search": "Bilatu"
+            },
+            "device-picker": {
+                "clear": "Garbitu",
+                "device": "Gailua"
+            },
+            "media-browser": {
+                "class": {
+                    "game": "Jokoa",
+                    "image": "Irudia"
+                }
+            },
+            "related-items": {
+                "area": "Gunea",
+                "integration": "Integrazioa"
             },
             "relative_time": {
-                "duration": {
-                    "day": "{count} {count, plural,\n  one {egun}\n  other {egun}\n}",
-                    "hour": "{count} {count, plural,\n  one {ordu}\n  other {ordu}\n}",
-                    "minute": "{count} {count, plural,\n  one {minutu}\n  other {minutu}\n}",
-                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundo}\n}",
-                    "week": "{count} {count, plural,\n  one {aste}\n  other {aste}\n}"
-                },
                 "never": "Inoiz"
             },
             "service-picker": {
@@ -154,6 +191,27 @@
             }
         },
         "dialogs": {
+            "entity_registry": {
+                "editor": {
+                    "name": "Izena",
+                    "update": "Eguneratu"
+                },
+                "settings": "Ezarpenak"
+            },
+            "generic": {
+                "cancel": "Ezeztatu"
+            },
+            "helper_settings": {
+                "generic": {
+                    "name": "Izena"
+                }
+            },
+            "join_beta_channel": {
+                "backup": "Ezaugarri hau aktibatu aurretik, ziurtatu zure datuen babeskopiak dituzula.",
+                "confirm": "Beta kanalean sartu nahi duzu?",
+                "title": "Beta kanalean sartu",
+                "warning": "Beta bertsioak probatzaileentzat eta lehen erabiltzaileentzat dira eta kode aldaketa ezegonkorrak izan ditzakete"
+            },
             "more_info_control": {
                 "script": {
                     "last_action": "Azken ekintza"
@@ -164,6 +222,44 @@
                 },
                 "updater": {
                     "title": "Argibideak Eguneratu"
+                }
+            },
+            "mqtt_device_debug_info": {
+                "entities": "Entitateak",
+                "no_entities": "Entitaterik ez"
+            },
+            "unhealthy": {
+                "description": "Osasuntsua ez den instalazio bat exekutatzeak arazoak sortuko ditu. Jarraian, zure instalazioarekin aurkitutako arazoen zerrenda dago, egin klik esteketan arazoak nola konpon ditzakezun jakiteko.",
+                "reasons": {
+                    "docker": "Docker ingurunea ez du behar bezala funtzionatzen",
+                    "privileged": "Supervisorrak ez dauzka pribilegiorik",
+                    "setup": "Supervisorraren konfigurazioak huts egin du",
+                    "supervisor": "Ezin izan da Supervisorra eguneratu",
+                    "untrusted": "Fidagarria ez den edukia detektatu da"
+                },
+                "title": "Zure instalazioa ez da osasuntsua"
+            },
+            "unsupported": {
+                "reasons": {
+                    "source_mods": "Iturburu aldaketak",
+                    "systemd": "Systemd",
+                    "systemd_resolved": "Systemd-Resolved"
+                }
+            },
+            "voice_command": {
+                "error": "Errore bat gertatu da",
+                "how_can_i_help": "Nola lagundu dezaket?"
+            },
+            "zha_device_info": {
+                "buttons": {
+                    "zigbee_information": "Zigbee gailuaren sinadura"
+                },
+                "device_signature": "Zigbee gailuaren sinadura",
+                "services": {
+                    "updateDeviceName": "Gailu honentzako izen pertsonalizatua ezarri gailuen erregistroan."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Gailuaren izena aldatu"
                 }
             }
         },
@@ -184,21 +280,33 @@
             "title": "Jakinarazpenak"
         },
         "notification_toast": {
-            "connection_lost": "Konexioa galdu da. Berriro konektatzen…"
+            "connection_lost": "Konexioa galdu da. Berriro konektatzen…",
+            "no_matching_link_found": "Ez da {path}-erako bat datorren Nire estekarik aurkitu"
         },
         "panel": {
             "config": {
+                "application_credentials": {
+                    "editor": {
+                        "name": "Izena"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Izena"
+                        }
+                    }
+                },
                 "areas": {
-                    "caption": "Gune Erregistroa",
+                    "caption": "Guneak",
                     "description": "Zure etxeko gune guztien ikuspegi orokorra.",
                     "editor": {
                         "create": "SORTU",
                         "default_name": "Gune berria",
                         "delete": "EZABATU",
+                        "name": "Izena",
                         "update": "EGUNERATU"
                     },
                     "picker": {
-                        "header": "Gune Erregistroa",
+                        "header": "Gunek",
                         "integrations_page": "Integrazioen orria"
                     }
                 },
@@ -207,7 +315,10 @@
                         "actions": {
                             "add": "Ekintza gehitu",
                             "delete": "Ezabatu",
+                            "disable": "Desgaitu",
+                            "disabled": "Desgaituta",
                             "duplicate": "Bikoiztu",
+                            "enable": "Gaitu",
                             "header": "Ekintzak",
                             "learn_more": "Ekintzei buruz gehiago ikasi",
                             "type": {
@@ -217,6 +328,15 @@
                                 "delay": {
                                     "delay": "Atzerapena",
                                     "label": "Atzerapena"
+                                },
+                                "device_id": {
+                                    "extra_fields": {
+                                        "code": "Kodea"
+                                    },
+                                    "label": "Gailua"
+                                },
+                                "parallel": {
+                                    "label": "Paraleloan exekutatu"
                                 },
                                 "service": {
                                     "label": "Zerbitzua deitu"
@@ -237,6 +357,18 @@
                             "header": "Baldintzak",
                             "learn_more": "Baldintzei buruz gehiago ikasi",
                             "type": {
+                                "and": {
+                                    "label": "Eta"
+                                },
+                                "device": {
+                                    "extra_fields": {
+                                        "for": "Iraupena"
+                                    },
+                                    "label": "Gailua"
+                                },
+                                "or": {
+                                    "label": "Edo"
+                                },
                                 "state": {
                                     "label": "Egoera",
                                     "state": "Egoera"
@@ -260,8 +392,13 @@
                             "type_select": "Baldintza mota"
                         },
                         "default_name": "Automatizazio berria",
+                        "description": {
+                            "placeholder": "Aukerako deskribapena"
+                        },
                         "load_error_not_editable": "Soilik automations.yaml fitxategian dauden automatizazioak dira editagarriak.",
                         "load_error_unknown": "Errorea automatizazioa kargatzean ({err_no}).",
+                        "move_down": "Beherantz mugitu",
+                        "move_up": "Gorantz mugitu",
                         "save": "Gorde",
                         "triggers": {
                             "add": "Abiarazlea gehitu",
@@ -270,6 +407,9 @@
                             "header": "Abiarazleak",
                             "learn_more": "Abiarazleei buruz gehiago ikasi",
                             "type": {
+                                "device": {
+                                    "label": "Gailua"
+                                },
                                 "event": {
                                     "event_type": "Gertaera mota",
                                     "label": "Gertaera"
@@ -324,6 +464,7 @@
                                 },
                                 "zone": {
                                     "enter": "Sartu",
+                                    "entity": "Kokapena duen entitatea",
                                     "leave": "Utzi"
                                 }
                             },
@@ -332,18 +473,48 @@
                     },
                     "picker": {
                         "add_automation": "Automatizazioa gehitu",
+                        "headers": {
+                            "name": "Izena"
+                        },
                         "learn_more": "Automatizazioei buruz gehiago ikasi"
                     }
                 },
+                "backup": {
+                    "picker": {
+                        "search": "Babeskopiak bilatu"
+                    }
+                },
+                "blueprint": {
+                    "overview": {
+                        "headers": {
+                            "name": "Izena"
+                        }
+                    }
+                },
                 "cloud": {
-                    "description_login": "{email} bezala hasi duzu saioa",
-                    "description_not_login": "Ez da saioa hasi"
+                    "alexa": {
+                        "exposed_entities": "Ageriko entitateak"
+                    },
+                    "description_not_login": "Ez da saioa hasi",
+                    "forgot_password": {
+                        "title": "Pasahitza ahaztu dut"
+                    },
+                    "login": {
+                        "password": "Pasahitza",
+                        "trial_info": "Ez da ordainketa-informaziorik behar"
+                    },
+                    "register": {
+                        "link_terms_conditions": "Baldintzak",
+                        "password": "Pasahitza"
+                    }
                 },
                 "core": {
                     "caption": "Orokorra",
                     "section": {
                         "core": {
                             "core_config": {
+                                "edit_location": "Kokapena editatu",
+                                "edit_location_description": "Kokapena tokien konfigurazioan alda daiteke",
                                 "elevation_meters": "metro",
                                 "imperial_example": "Fahrenheit, librak",
                                 "latitude": "Latitudea",
@@ -355,40 +526,110 @@
                                 "unit_system": "Unitate Sistema",
                                 "unit_system_imperial": "Inperiala",
                                 "unit_system_metric": "Metrikoa"
-                            }
+                            },
+                            "header": "Konfigurazio Orokorra"
                         }
                     }
+                },
+                "dashboard": {
+                    "areas": {
+                        "main": "Guneak eta Tokiak"
+                    }
+                },
+                "devices": {
+                    "data_table": {
+                        "battery": "Bateria",
+                        "device": "Gailua",
+                        "integration": "Integrazioa",
+                        "manufacturer": "Fabrikatzailea",
+                        "no_devices": "Gailurik ez"
+                    },
+                    "name": "Izena",
+                    "no_devices": "Gailurik ez"
                 },
                 "entities": {
                     "caption": "Entitate Erregistroa",
                     "picker": {
-                        "header": "Entitate Erregistroa"
+                        "header": "Entitate Erregistroa",
+                        "headers": {
+                            "integration": "Integrazioa",
+                            "name": "Izena"
+                        },
+                        "status": {
+                            "ok": "Ados"
+                        }
+                    }
+                },
+                "helpers": {
+                    "dialog": {
+                        "create": "Sortu"
+                    },
+                    "picker": {
+                        "headers": {
+                            "editable": "Editagarria",
+                            "name": "Izena"
+                        }
+                    },
+                    "types": {
+                        "input_number": "Zenbakia"
                     }
                 },
                 "integrations": {
                     "caption": "Integrazioak",
                     "config_entry": {
                         "firmware": "Firmware: {version}",
-                        "no_area": "Ez dago gunerik"
+                        "no_area": "Ez dago gunerik",
+                        "system_options": "Sistemaren aukerak"
                     },
                     "config_flow": {
                         "external_step": {
                             "description": "Urrats hau betetzeko kanpoko webgune bat bisitatu beharko duzu.",
                             "open_site": "Webgunea ireki"
-                        }
+                        },
+                        "not_all_required_fields": "Ez dira nahitaezko eremu guztiak bete."
                     },
                     "configure": "Konfiguratu",
                     "configured": "Konfiguratuta",
+                    "details": "Integrazioaren xehetasunak",
                     "new": "Integrazio berri bat konfiguratu",
-                    "none": "Ez dago ezer konfiguratuta"
+                    "none": "Ez dago ezer konfiguratuta",
+                    "rename_input_label": "Sarreraren izena"
+                },
+                "logs": {
+                    "clear": "Garbitu",
+                    "full_logs": "Erregistro guztiak",
+                    "load_logs": "Erregistro Guztiak Kargatu",
+                    "refresh": "Freskatu"
+                },
+                "lovelace": {
+                    "dashboards": {
+                        "detail": {
+                            "show_sidebar": "Alboko barran erakutsi"
+                        },
+                        "picker": {
+                            "headers": {
+                                "filename": "Fitxategi izena",
+                                "sidebar": "Alboko barran erakutsi"
+                            }
+                        }
+                    },
+                    "resources": {
+                        "picker": {
+                            "headers": {
+                                "type": "Mota"
+                            },
+                            "no_resources": "Baliabiderik ez"
+                        },
+                        "types": {
+                            "html": "HTML (zaharkitua)",
+                            "js": "JavaScript fitxategia (zaharkitua)",
+                            "module": "JavaScript Modulua"
+                        }
+                    }
                 },
                 "mqtt": {
+                    "description_publish": "Pakete bat argitaratu",
                     "title": "MQTT"
-                },
-                "ozw": {
-                    "network_status": {
-                        "unknown": "Ezezaguna"
-                    }
                 },
                 "person": {
                     "caption": "Pertsonak",
@@ -400,9 +641,59 @@
                         "name": "Izena"
                     }
                 },
+                "scene": {
+                    "editor": {
+                        "devices": {
+                            "header": "Gailuak"
+                        },
+                        "entities": {
+                            "add": "Entitate bat gehitu",
+                            "header": "Entitateak",
+                            "introduction": "Gailu batekoak ez diren entitateak hemen ezar daitezke.",
+                            "without_device": "Gailurik gabeko entitateak"
+                        },
+                        "name": "Izena"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Izena"
+                        }
+                    }
+                },
                 "script": {
                     "caption": "Script",
-                    "description": "Scriptak sortu eta editatu"
+                    "description": "Scriptak sortu eta editatu",
+                    "editor": {
+                        "alias": "Izena",
+                        "sequence": "Sekuentzia"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Izena"
+                        },
+                        "show_info": "Script-ari buruzko informazioa erakutsi"
+                    }
+                },
+                "system_dashboard": {
+                    "confirm_restart": "Ziur al zaude Home Assistant berrabiarazi nahi duzula?",
+                    "confirm_restart_text": "Home Assistant berrabiarazten baduzu, zure aginte-panel, automatizazio eta script aktibo guztiak geldituko dira.",
+                    "confirm_restart_title": "Home Assistant berrabiarazi?",
+                    "restart_error": "Ezin izan da Home Assistant berrabiarazi",
+                    "restart_homeassistant": "Home Assistant berrabiarazi",
+                    "restart_homeassistant_short": "Berrabiarazi"
+                },
+                "tag": {
+                    "detail": {
+                        "name": "Izena"
+                    },
+                    "headers": {
+                        "last_scanned": "Azken eskaneoa",
+                        "name": "Izena"
+                    }
+                },
+                "updates": {
+                    "join_beta": "Beta kanalean sartu",
+                    "leave_beta": "Beta kanala utzi"
                 },
                 "users": {
                     "add_user": {
@@ -423,12 +714,30 @@
                 "zha": {
                     "add_device_page": {
                         "spinner": "ZHA Zigbee gailuak bilatzen…"
+                    },
+                    "cluster_attributes": {
+                        "attributes_of_cluster": "Hautatutako klusterren atributuak"
+                    },
+                    "cluster_commands": {
+                        "commands_of_cluster": "Hautatutako klusterraren komandoak"
+                    },
+                    "group_binding": {
+                        "bind_button_label": "Lotu Taldea",
+                        "group_picker_label": "Talde lotugarriak"
+                    },
+                    "groups": {
+                        "caption": "Taldeak"
                     }
                 },
-                "zwave": {
-                    "node_config": {
-                        "set_config_parameter": "Ezarri konfigurazio-parametroa"
-                    }
+                "zone": {
+                    "detail": {
+                        "delete": "Ezabatu",
+                        "name": "Izena",
+                        "passive": "Pasiboa",
+                        "radius": "Erradioa",
+                        "required_error_msg": "Eremu hau derrigorrezkoa da"
+                    },
+                    "edit_home": "Etxea editatu"
                 }
             },
             "developer-tools": {
@@ -437,13 +746,29 @@
                         "title": "Gertaerak"
                     },
                     "services": {
+                        "column_parameter": "Parametroa",
                         "title": "Zerbitzuak"
                     },
                     "states": {
+                        "filter_attributes": "Atributuak iragazi",
+                        "filter_entities": "Entitateak iragazi",
+                        "filter_states": "Egoerak iragazi",
+                        "no_entities": "Entitaterik ez",
                         "title": "Egoerak"
                     },
                     "templates": {
                         "title": "Txantiloiak"
+                    },
+                    "yaml": {
+                        "section": {
+                            "server_management": {
+                                "confirm_restart_text": "Home Assistant berrabiarazten baduzu, zure aginte-panel, automatizazio eta script aktibo guztiak geldituko dira.",
+                                "confirm_restart_title": "Home Assistant berrabiarazi?",
+                                "restart_error": "Ezin izan da Home Assistant berrabiarazi",
+                                "restart_home_assistant": "Home Assistant berrabiarazi"
+                            }
+                        },
+                        "title": "YAML Konfigurazioa"
                     }
                 }
             },
@@ -466,6 +791,27 @@
                     }
                 },
                 "editor": {
+                    "card": {
+                        "conditional": {
+                            "change_type": "Mota aldatu",
+                            "conditions": "Baldintzak"
+                        },
+                        "entity": {
+                            "name": "Entitatea"
+                        },
+                        "generic": {
+                            "name": "Izena",
+                            "search": "Bilatu",
+                            "state": "Egoera",
+                            "unit": "Unitatea"
+                        },
+                        "glance": {
+                            "columns": "Zutabeak"
+                        },
+                        "humidifier": {
+                            "name": "Hezegailua"
+                        }
+                    },
                     "edit_card": {
                         "add": "Txartela gehitu",
                         "delete": "Ezabatu",
@@ -499,6 +845,10 @@
                 "menu": {
                     "configure_ui": "Erabiltzaile interfazea konfiguratu",
                     "help": "Laguntza"
+                },
+                "unused_entities": {
+                    "domain": "Domeinua",
+                    "title": "Erabili gabeko entitateak"
                 },
                 "warning": {
                     "entity_non_numeric": "Entitatea ez da zenbakizkoa: {entity}",
@@ -568,6 +918,33 @@
                 },
                 "initializing": "Hasieratzen"
             },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "Egilea: {name}"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "labels": {
+                            "activity": "Jarduera",
+                            "entertainment": "Entretenimendua",
+                            "information": "Informazioa"
+                        },
+                        "names": {
+                            "family_room": "Familia Gela",
+                            "hallway": "Pasilloa",
+                            "kitchen": "Sukaldea",
+                            "left": "Ezker",
+                            "mirror": "Ispilua",
+                            "right": "Eskuin"
+                        },
+                        "unit": {
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
+            },
             "page-onboarding": {
                 "core-config": {
                     "button_detect": "Detektatu",
@@ -589,8 +966,7 @@
                         "username": "Erabiltzaile izena"
                     },
                     "error": {
-                        "password_not_match": "Pasahitzak ez datoz bat",
-                        "required_fields": "Beharrezkoak diren eremu guztiak bete"
+                        "password_not_match": "Pasahitzak ez datoz bat"
                     },
                     "intro": "Erabiltzaile kontu bat sortuz has gaitezen.",
                     "required_field": "Beharrezkoa"
@@ -606,6 +982,9 @@
                     "submit": "Bidali"
                 },
                 "current_user": "{fullName} moduan hasi duzu saioa.",
+                "force_narrow": {
+                    "header": "Alboko barra beti ezkutatu"
+                },
                 "is_owner": "Jabea zara",
                 "language": {
                     "dropdown_label": "Hizkuntza",
@@ -617,6 +996,7 @@
                     "create_failed": "Ezin izan da sarbide token sortu.",
                     "delete_failed": "Errorea sortu da sarbide tokena ezabatzerakoan.",
                     "header": "Iraupen luzeko sarbide tokenak",
+                    "name": "Izena",
                     "prompt_copy_token": "Zure sarbide tokena kopiatu. Ez da berriro erakutsiko.",
                     "prompt_name": "Izena?"
                 },
@@ -627,9 +1007,11 @@
                 "mfa_setup": {
                     "close": "Itxi",
                     "submit": "Bidali",
+                    "title_aborted": "Bertan behera utzi",
                     "title_success": "Arrakasta!"
                 },
                 "push_notifications": {
+                    "description": "Bidali jakinarazpenak gailu honetara.",
                     "error_load_platform": "notify.html5 konfiguratu.",
                     "header": "Push jakinarazpenak",
                     "link_promo": "Gehiago ikasi",
@@ -642,15 +1024,24 @@
                     "not_used": "Ez da inoiz erabili"
                 },
                 "themes": {
+                    "dark_mode": {
+                        "auto": "Automatikoa"
+                    },
                     "dropdown_label": "Gaia",
                     "error_no_theme": "Ez dago gairik eskuragarri",
                     "header": "Gaia",
                     "link_promo": "Gaiei buruz gehiago ikasi"
+                },
+                "vibrate": {
+                    "header": "Bibratu"
                 }
             }
         },
         "sidebar": {
             "external_app_configuration": "Aplikazioaren Konfigurazioa"
+        },
+        "tips": {
+            "key_m_hint": "Sakatu 'm' edozein orrialdetan Nire Home Assistant esteka lortzeko"
         }
     }
 }
