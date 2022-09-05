@@ -64,6 +64,9 @@ export class HaBlueprintAutomationEditor extends LitElement {
             </ha-alert>
           `
         : ""}
+      ${this.config.description
+        ? html`<p class="description">${this.config.description}</p>`
+        : ""}
       <ha-card
         outlined
         class="blueprint"
@@ -237,6 +240,9 @@ export class HaBlueprintAutomationEditor extends LitElement {
         }
         p {
           margin-bottom: 0;
+        }
+        .description {
+          margin-bottom: 16px;
         }
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;

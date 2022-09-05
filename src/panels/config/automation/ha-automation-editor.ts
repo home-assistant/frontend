@@ -300,11 +300,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 ${this._errors
                   ? html`<div class="errors">${this._errors}</div>`
                   : ""}
-                ${this._config.description
-                  ? html`<div class="description">
-                      ${this._config.description}
-                    </div>`
-                  : ""}
                 ${this._mode === "gui"
                   ? "use_blueprint" in this._config
                     ? html`
@@ -632,7 +627,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _saveAutomation(): Promise<void> {
     const id = this.automationId || String(Date.now());
-    if (!this._config!.alias) {
+    if (!this.automationId) {
       await this._promptAutomationAlias();
       if (!this._config!.alias) {
         showAlertDialog(this, {
@@ -718,11 +713,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           overflow: initial;
           --ha-card-border-radius: 0;
           border-bottom: 1px solid var(--divider-color);
-        }
-        .description {
-          margin: 0 auto;
-          max-width: 1040px;
-          padding: 20px 20px 0;
         }
         p {
           margin-bottom: 0;
