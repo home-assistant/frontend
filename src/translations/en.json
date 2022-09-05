@@ -1836,6 +1836,12 @@
             "automation_settings": "Automation settings",
             "move_up": "Move up",
             "move_down": "Move down",
+            "re_order": "Re-order",
+            "re_order_mode": {
+              "title": "Re-order mode",
+              "description": "You are in re-order mode, you can re-order your triggers, conditions and actions.",
+              "exit": "Exit"
+            },
             "description": {
               "label": "Description",
               "placeholder": "Optional description",
