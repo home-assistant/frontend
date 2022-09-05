@@ -10,6 +10,7 @@ import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
+import "../../../components/ha-alert";
 import { BlueprintAutomationConfig } from "../../../data/automation";
 import {
   BlueprintOrError,
@@ -49,6 +50,20 @@ export class HaBlueprintAutomationEditor extends LitElement {
   protected render() {
     const blueprint = this._blueprint;
     return html`
+      ${this.stateObj?.state === "off"
+        ? html`
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.disabled"
+              )}
+              <mwc-button slot="action" @click=${this._enable}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.enable"
+                )}
+              </mwc-button>
+            </ha-alert>
+          `
+        : ""}
       <ha-card
         outlined
         class="blueprint"
@@ -178,6 +193,15 @@ export class HaBlueprintAutomationEditor extends LitElement {
     });
   }
 
+  private async _enable(): Promise<void> {
+    if (!this.hass || !this.stateObj) {
+      return;
+    }
+    await this.hass.callService("automation", "turn_on", {
+      entity_id: this.stateObj.entity_id,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -219,6 +243,10 @@ export class HaBlueprintAutomationEditor extends LitElement {
           --settings-row-content-width: 100%;
           --settings-row-prefix-display: contents;
           border-top: 1px solid var(--divider-color);
+        }
+        ha-alert {
+          margin-bottom: 16px;
+          display: block;
         }
       `,
     ];

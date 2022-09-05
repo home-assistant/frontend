@@ -9,6 +9,7 @@ import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action, MODES } from "./script";
 
 export const AUTOMATION_DEFAULT_MODE: typeof MODES[number] = "single";
+export const AUTOMATION_DEFAULT_MAX = 10;
 
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
