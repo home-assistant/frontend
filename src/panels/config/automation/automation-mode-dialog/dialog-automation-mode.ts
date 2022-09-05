@@ -56,6 +56,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
     return html`
       <ha-dialog
         open
+        scrimClickAction
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
