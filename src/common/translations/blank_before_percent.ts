@@ -7,7 +7,6 @@ export const blankBeforePercent = (
   switch (localeOptions.language) {
     case "cz":
     case "de":
-    case "en-gb":
     case "fi":
     case "fr":
     case "sk":
