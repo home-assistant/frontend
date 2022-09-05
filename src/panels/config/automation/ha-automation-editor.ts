@@ -298,7 +298,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 @subscribe-automation-config=${this._subscribeAutomationConfig}
               >
                 ${this._errors
-                  ? html`<div class="errors">${this._errors}</div>`
+                  ? html`<ha-alert alert-type="error">
+                      ${this._errors}
+                    </ha-alert>`
                   : ""}
                 ${this._mode === "gui"
                   ? "use_blueprint" in this._config
@@ -629,14 +631,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     const id = this.automationId || String(Date.now());
     if (!this.automationId) {
       await this._promptAutomationAlias();
-      if (!this._config!.alias) {
-        showAlertDialog(this, {
-          text: this.hass.localize(
-            "ui.panel.config.automation.editor.missing_name"
-          ),
-        });
-        return;
-      }
     }
 
     this.hass!.callApi(
@@ -680,11 +674,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       css`
         ha-card {
           overflow: hidden;
-        }
-        .errors {
-          padding: 20px;
-          font-weight: bold;
-          color: var(--error-color);
         }
         .content {
           padding-bottom: 20px;
