@@ -47,11 +47,12 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import "../../logbook/ha-logbook";
-import { configSections } from "../ha-panel-config";
 import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
 
 declare type NameAndEntity<EntityType extends HassEntity> = {
   name: string;
@@ -242,43 +243,20 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .tabs=${configSections.areas}
-        .route=${this.route}
+        .header=${area.name}
       >
-        ${this.narrow
-          ? html`<span slot="header"> ${area.name} </span>
-              <ha-icon-button
-                .path=${mdiPencil}
-                .entry=${area}
-                @click=${this._showSettings}
-                slot="toolbar-icon"
-                .label=${this.hass.localize(
-                  "ui.panel.config.areas.edit_settings"
-                )}
-              ></ha-icon-button>`
-          : ""}
+        <ha-icon-button
+          .path=${mdiPencil}
+          .entry=${area}
+          @click=${this._showSettings}
+          slot="toolbar-icon"
+          .label=${this.hass.localize("ui.panel.config.areas.edit_settings")}
+        ></ha-icon-button>
 
         <div class="container">
-          ${!this.narrow
-            ? html`
-                <div class="fullwidth">
-                  <h1>
-                    ${area.name}
-                    <ha-icon-button
-                      .path=${mdiPencil}
-                      .entry=${area}
-                      @click=${this._showSettings}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.areas.edit_settings"
-                      )}
-                    ></ha-icon-button>
-                  </h1>
-                </div>
-              `
-            : ""}
           <div class="column">
             ${area.picture
               ? html`<div class="img-container">
@@ -504,7 +482,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
               : ""}
           </div>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 

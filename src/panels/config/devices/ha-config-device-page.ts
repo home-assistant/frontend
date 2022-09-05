@@ -65,7 +65,6 @@ import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
@@ -73,6 +72,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import "../../../layouts/hass-subpage";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -609,16 +609,12 @@ export class HaConfigDevicePage extends LitElement {
       : "";
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .tabs=${configSections.devices}
-        .route=${this.route}
+        .header=${deviceName}
       >
-        ${
-          this.narrow
-            ? html`
-                <span slot="header">${deviceName}</span>
+
                 <ha-icon-button
                   slot="toolbar-icon"
                   .path=${mdiPencil}
@@ -627,39 +623,20 @@ export class HaConfigDevicePage extends LitElement {
                     "ui.panel.config.devices.edit_settings"
                   )}
                 ></ha-icon-button>
-              `
-            : ""
-        }
         <div class="container">
           <div class="header fullwidth">
             ${
-              this.narrow
-                ? ""
-                : html`
-                    <div class="header-name">
-                      <div>
-                        <h1>${deviceName}</h1>
-                        ${area
-                          ? html`
-                              <a href="/config/areas/area/${area.area_id}"
-                                >${this.hass.localize(
-                                  "ui.panel.config.integrations.config_entry.area",
-                                  "area",
-                                  area.name || "Unnamed Area"
-                                )}</a
-                              >
-                            `
-                          : ""}
-                      </div>
-                      <ha-icon-button
-                        .path=${mdiPencil}
-                        @click=${this._showSettings}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.devices.edit_settings"
-                        )}
-                      ></ha-icon-button>
-                    </div>
-                  `
+              area
+                ? html`<div class="header-name">
+                    <a href="/config/areas/area/${area.area_id}"
+                      >${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.area",
+                        "area",
+                        area.name || "Unnamed Area"
+                      )}</a
+                    >
+                  </div>`
+                : ""
             }
                 <div class="header-right">
                   ${
@@ -859,7 +836,7 @@ export class HaConfigDevicePage extends LitElement {
             </div>
           </div>
         </ha-config-section>
-      </hass-tabs-subpage>    `;
+      </hass-subpage>    `;
   }
 
   private async _getDiagnosticButtons(requestId: number): Promise<void> {
