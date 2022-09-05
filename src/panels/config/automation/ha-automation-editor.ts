@@ -6,7 +6,6 @@ import {
   mdiDelete,
   mdiDotsVertical,
   mdiInformationOutline,
-  mdiPencil,
   mdiPlay,
   mdiPlayCircleOutline,
   mdiRenameBox,
@@ -48,7 +47,6 @@ import {
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-subpage";
@@ -57,7 +55,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
+import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 
@@ -118,7 +116,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .tabs=${configSections.automations}
+        .header=${!this._config
+          ? ""
+          : this._config.alias ||
+            this.hass.localize(
+              "ui.panel.config.automation.editor.default_name"
+            )}
       >
         <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
           <ha-icon-button
@@ -234,14 +237,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
         ${this._config
           ? html`
-              ${this.narrow
-                ? html`<span slot="header"
-                    >${this._config!.alias ||
-                    this.hass.localize(
-                      "ui.panel.config.automation.editor.default_name"
-                    )}</span
-                  >`
-                : ""}
               <div
                 class="content ${classMap({
                   "yaml-mode": this._mode === "yaml",
@@ -252,48 +247,27 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   ? html`<div class="errors">${this._errors}</div>`
                   : ""}
                 ${this._mode === "gui"
-                  ? html`
-                      ${this.narrow
-                        ? ""
-                        : html`
-                            <div class="header-name">
-                              <h1>
-                                ${this._config!.alias ||
-                                this.hass.localize(
-                                  "ui.panel.config.automation.editor.default_name"
-                                )}
-                              </h1>
-                              <ha-icon-button
-                                .path=${mdiPencil}
-                                @click=${this._promptAutomationAlias}
-                                .label=${this.hass.localize(
-                                  "ui.panel.config.automation.editor.rename"
-                                )}
-                              ></ha-icon-button>
-                            </div>
-                          `}
-                      ${"use_blueprint" in this._config
-                        ? html`
-                            <blueprint-automation-editor
-                              .hass=${this.hass}
-                              .narrow=${this.narrow}
-                              .isWide=${this.isWide}
-                              .stateObj=${stateObj}
-                              .config=${this._config}
-                              @value-changed=${this._valueChanged}
-                            ></blueprint-automation-editor>
-                          `
-                        : html`
-                            <manual-automation-editor
-                              .hass=${this.hass}
-                              .narrow=${this.narrow}
-                              .isWide=${this.isWide}
-                              .stateObj=${stateObj}
-                              .config=${this._config}
-                              @value-changed=${this._valueChanged}
-                            ></manual-automation-editor>
-                          `}
-                    `
+                  ? "use_blueprint" in this._config
+                    ? html`
+                        <blueprint-automation-editor
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .isWide=${this.isWide}
+                          .stateObj=${stateObj}
+                          .config=${this._config}
+                          @value-changed=${this._valueChanged}
+                        ></blueprint-automation-editor>
+                      `
+                    : html`
+                        <manual-automation-editor
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .isWide=${this.isWide}
+                          .stateObj=${stateObj}
+                          .config=${this._config}
+                          @value-changed=${this._valueChanged}
+                        ></manual-automation-editor>
+                      `
                   : this._mode === "yaml"
                   ? html`
                       ${!this.narrow
@@ -559,32 +533,26 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._mode = "yaml";
   }
 
-  private async _promptAutomationAlias(): Promise<string | null> {
-    const result = await showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.automation.editor.automation_alias"
-      ),
-      inputLabel: this.hass.localize("ui.panel.config.automation.editor.alias"),
-      inputType: "string",
-      placeholder: this.hass.localize(
-        "ui.panel.config.automation.editor.default_name"
-      ),
-      defaultValue: this._config!.alias,
-      confirmText: this.hass.localize("ui.common.submit"),
+  private async _promptAutomationAlias(): Promise<void> {
+    return new Promise((resolve) => {
+      showAutomationRenameDialog(this, {
+        config: this._config!,
+        updateAutomation: (config) => {
+          this._config = config;
+          this._dirty = true;
+          this.requestUpdate();
+          resolve();
+        },
+        onClose: () => resolve(),
+      });
     });
-    if (result) {
-      this._config!.alias = result;
-      this._dirty = true;
-      this.requestUpdate();
-    }
-    return result;
   }
 
   private async _saveAutomation(): Promise<void> {
     const id = this.automationId || String(Date.now());
     if (!this._config!.alias) {
-      const alias = await this._promptAutomationAlias();
-      if (!alias) {
+      await this._promptAutomationAlias();
+      if (!this._config!.alias) {
         showAlertDialog(this, {
           text: this.hass.localize(
             "ui.panel.config.automation.editor.missing_name"
@@ -592,7 +560,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         });
         return;
       }
-      this._config!.alias = alias;
     }
 
     this.hass!.callApi(
