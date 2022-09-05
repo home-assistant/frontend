@@ -260,6 +260,20 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 })}"
                 @subscribe-automation-config=${this._subscribeAutomationConfig}
               >
+                ${!stateObj || stateObj.state === "off"
+                  ? html`
+                      <ha-alert alert-type="warning" @click=${this._toggle}>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.disabled"
+                        )}
+                        <mwc-button slot="action">
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.enable"
+                          )}
+                        </mwc-button>
+                      </ha-alert>
+                    `
+                  : ""}
                 ${this._errors
                   ? html`<div class="errors">${this._errors}</div>`
                   : ""}
