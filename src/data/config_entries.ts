@@ -1,3 +1,4 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 
 export interface ConfigEntry {
@@ -54,7 +55,7 @@ export const subscribeConfigEntries = (
   hass: HomeAssistant,
   callbackFunction: (message: ConfigEntryUpdate[]) => void,
   filters?: { type?: "helper" | "integration"; domain?: string }
-) => {
+): Promise<UnsubscribeFunc> => {
   const params: any = {
     type: "config_entries/subscribe",
   };
