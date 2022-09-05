@@ -1847,6 +1847,7 @@
               "no_blueprints": "You don't have any blueprints",
               "no_inputs": "This blueprint doesn't have any inputs."
             },
+            "change_mode": "Change mode",
             "modes": {
               "label": "Mode",
               "learn_more": "Learn about modes",

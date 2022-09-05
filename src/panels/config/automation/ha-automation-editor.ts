@@ -3,6 +3,7 @@ import {
   mdiCheck,
   mdiContentDuplicate,
   mdiContentSave,
+  mdiDebugStepOver,
   mdiDelete,
   mdiDotsVertical,
   mdiInformationOutline,
@@ -55,6 +56,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
+import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
@@ -161,9 +163,24 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               </a>`
             : ""}
 
-          <mwc-list-item graphic="icon" @click=${this._promptAutomationAlias}>
+          <mwc-list-item
+            graphic="icon"
+            @click=${this._promptAutomationAlias}
+            .disabled=${!this.automationId || this._mode === "yaml"}
+          >
             ${this.hass.localize("ui.panel.config.automation.editor.rename")}
             <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            @click=${this._promptAutomationMode}
+            .disabled=${!this.automationId || this._mode === "yaml"}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.change_mode"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDebugStepOver}></ha-svg-icon>
           </mwc-list-item>
 
           <mwc-list-item
@@ -536,6 +553,21 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private async _promptAutomationAlias(): Promise<void> {
     return new Promise((resolve) => {
       showAutomationRenameDialog(this, {
+        config: this._config!,
+        updateAutomation: (config) => {
+          this._config = config;
+          this._dirty = true;
+          this.requestUpdate();
+          resolve();
+        },
+        onClose: () => resolve(),
+      });
+    });
+  }
+
+  private async _promptAutomationMode(): Promise<void> {
+    return new Promise((resolve) => {
+      showAutomationModeDialog(this, {
         config: this._config!,
         updateAutomation: (config) => {
           this._config = config;
