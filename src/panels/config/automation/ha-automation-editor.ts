@@ -1,3 +1,4 @@
+import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
@@ -125,6 +126,21 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               "ui.panel.config.automation.editor.default_name"
             )}
       >
+        ${this._config?.id && !this.narrow
+          ? html`
+              <a
+                class="trace-link"
+                href="/config/automation/trace/${this._config.id}"
+                slot="toolbar-icon"
+              >
+                <mwc-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.show_trace"
+                  )}
+                </mwc-button>
+              </a>
+            `
+          : ""}
         <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
@@ -149,7 +165,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
           </mwc-list-item>
 
-          ${stateObj && this._config
+          ${stateObj && this._config && this.narrow
             ? html`<a href="/config/automation/trace/${this._config.id}">
                 <mwc-list-item graphic="icon">
                   ${this.hass.localize(
@@ -658,6 +674,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           display: flex;
           flex-direction: column;
           padding-bottom: 0;
+        }
+        .trace-link {
+          text-decoration: none;
         }
         manual-automation-editor,
         blueprint-automation-editor {
