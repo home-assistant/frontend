@@ -498,13 +498,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _preprocessYaml() {
-    const cleanConfig = this._config;
-    if (!cleanConfig) {
+    if (!this._config) {
       return {};
     }
-
+    const cleanConfig: AutomationConfig = { ...this._config };
     delete cleanConfig.id;
-
     return cleanConfig;
   }
 
@@ -522,7 +520,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     if (!ev.detail.isValid) {
       return;
     }
-    this._config = ev.detail.value;
+    this._config = { id: this._config?.id, ...ev.detail.value };
     this._errors = undefined;
     this._dirty = true;
   }
