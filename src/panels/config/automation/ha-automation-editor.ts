@@ -102,7 +102,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _mode: "gui" | "yaml" = "gui";
 
-  @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
+  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
   @query("manual-automation-editor")
   private _manualEditor?: HaManualAutomationEditor;
@@ -507,8 +507,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _copyYaml(): Promise<void> {
-    if (this._editor?.yaml) {
-      await copyToClipboard(this._editor.yaml);
+    if (this._yamlEditor?.yaml) {
+      await copyToClipboard(this._yamlEditor.yaml);
       showToast(this, {
         message: this.hass.localize("ui.common.copied_clipboard"),
       });
