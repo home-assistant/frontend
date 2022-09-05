@@ -50,11 +50,6 @@
         }
     },
     "ui": {
-        "auth_store": {
-            "ask": "మీరు ఈ లాగిన్ సేవ్ చేయాలనుకుంటున్నారా?",
-            "confirm": "లాగిన్ సేవ్ చేయండి",
-            "decline": "అక్కర్లేదు"
-        },
         "card": {
             "alarm_control_panel": {
                 "clear_code": "Clear",
@@ -249,26 +244,9 @@
                         "pick_automation": "సవరించడానికి ఆటోమేషన్ను ఎంచుకోండి"
                     }
                 },
-                "customize": {
-                    "caption": "మార్పులు చేర్పులు"
-                },
-                "energy": {
-                    "validation": {
-                        "issues": {
-                            "entity_unexpected_state_class_total_increasing": {
-                                "description": "దిగువ పేర్కొన్న సంస్థలకు ఆశించిన స్టేట్ క్లాస్ 'total_increasing' లేదు"
-                            }
-                        }
-                    }
-                },
                 "header": "కాన్ఫిగర్ Home Assistant",
                 "mqtt": {
                     "title": "MQTT"
-                },
-                "ozw": {
-                    "network_status": {
-                        "unknown": "తెలియదు"
-                    }
                 },
                 "script": {
                     "caption": "స్క్రిప్ట్",
@@ -278,12 +256,6 @@
                     "caption": "వినియోగదారులు",
                     "editor": {
                         "change_password": "పాస్ వర్డ్ ను మార్చండి"
-                    }
-                },
-                "zwave": {
-                    "description": "మీ Z- వేవ్ నెట్వర్క్ని నిర్వహించండి",
-                    "node_config": {
-                        "set_config_parameter": "కాన్ఫిగర్ పారామితిని సెట్ చేయండి"
                     }
                 }
             },

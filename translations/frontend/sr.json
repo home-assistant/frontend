@@ -1,30 +1,76 @@
 {
+    "config_entry": {
+        "hidden_by": {
+            "device": "Uređaj",
+            "integration": "Integracija",
+            "user": "Korisnik"
+        }
+    },
     "panel": {
         "calendar": "Kalendar",
-        "config": "Конфигурација",
-        "history": "Историја",
-        "logbook": "Дневник",
-        "mailbox": "Поштанско сандуче",
-        "map": "Мапа",
-        "shopping_list": "Листа за куповину",
-        "states": "Преглед"
+        "config": "Konfiguracija",
+        "history": "Istorija",
+        "logbook": "Evidencija",
+        "mailbox": "Poštansko sanduče",
+        "map": "Mapa",
+        "shopping_list": "Lista za kupovinu",
+        "states": "Pregled"
+    },
+    "state": {
+        "default": {
+            "unavailable": "Nedostupna",
+            "unknown": "Nepoznat"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Automatski",
+                "off": "Isključi",
+                "on": "Uključi"
+            }
+        }
     },
     "state_badge": {
         "alarm_control_panel": {
+            "armed": "Naoružan",
+            "armed_away": "Naoružan",
+            "armed_custom_bypass": "Naoružan",
+            "armed_night": "Naoružan",
+            "armed_vacation": "Naoružano",
             "arming": "Aktiviranje",
             "disarming": "Deaktiviraj"
         },
         "default": {
             "entity_not_found": "Вредност није пронађена",
-            "error": "Грешка"
+            "error": "Грешка",
+            "unavailable": "Nedost",
+            "unknown": "Nep"
+        },
+        "device_tracker": {
+            "home": "Kuća"
+        },
+        "person": {
+            "home": "Kuća"
         }
     },
     "supervisor": {
         "addon": {
+            "configuration": {
+                "network": {
+                    "introduction": "Промени портове на хосту које је аддон изложио",
+                    "show_disabled": "Прикажи онемогућене портове"
+                }
+            },
             "dashboard": {
                 "capability": {
                     "label": {
-                        "core": "Core"
+                        "core": "Jezgro",
+                        "signed": "Potpisan"
+                    },
+                    "signed": {
+                        "description": "Ovaj dodatak je potpisan i verifikovan pomoću Codenotary Community Attestation Service (CAS).",
+                        "title": "Potpisan"
                     },
                     "stages": {
                         "deprecated": "Zastarelo",
@@ -33,34 +79,62 @@
                 }
             }
         },
+        "backup": {
+            "backup_already_running": "Rezervna kopija ili vraćanje u prethodno stanje je već pokrenuto, kreiranje nove rezervne kopije trenutno nije moguće, pokušajte ponovo kasnije.",
+            "create_backup": "Kreiranje rezervne kopije",
+            "delete_backup_text": "Želite li da izbrišete {number} {number, plural,\n  one {backup}\n  other {backups}\n}?",
+            "delete_backup_title": "Izbriši rezervnu kopiju",
+            "download_backup": "Preuzmi rezervnu kopiju",
+            "full_backup": "Kompletna rezervna kopija",
+            "no_backups": "Još uvek nemate rezervne kopije.",
+            "partial_backup": "Delimično pravljenje rezervne kopije",
+            "size": "Veličina",
+            "upload_backup": "Otpremanje rezervne kopije"
+        },
         "common": {
             "menu": "Meni",
-            "review": "pregled",
             "show": "Prikaži"
         },
         "dialog": {
             "datadisk_move": {
                 "cancel": "Otkaži",
-                "move": "Premesti"
+                "description": "Trenutno koristite ''{current_path}'' kao disk sa podacima. Premeštanje diskova sa podacima će ponovo pokrenuti uređaj i procenjuje se da će trajati {time} minuta. Instalaciji kućnog pomoćnika nećete moći da pristupite tokom ovog perioda. Ne iskljuиujte struju tokom selidbe!",
+                "loading_devices": "Učitavanje uređaja",
+                "move": "Premesti",
+                "moving": "Premeštanje diska sa podacima",
+                "moving_desc": "Ponovno pokretanje i premeštanje diska sa podacima. Molim vas, imajte strpljenja.",
+                "no_devices": "Nisu pronađeni odgovarajući priključeni uređaji",
+                "select_device": "Izbor novog diska sa podacima",
+                "title": "Premeštanje diska sa podacima"
             },
             "repositories": {
                 "used": "Skladište se koristi za instalirane dodatke i ne može se ukloniti."
             }
         },
         "panel": {
-            "addons": "Dodaci"
+            "addons": "Dodaci",
+            "backups": "Rezervne kopije"
+        },
+        "store": {
+            "check_updates": "Provera da li postoje ispravke"
         },
         "system": {
+            "host": {
+                "failed_to_move": "Premeštanje diskete sa podacima nije uspelo",
+                "move_datadisk": "Premeštanje diska sa podacima"
+            },
             "supervisor": {
                 "unsupported_reason": {
-                    "software": "Otkriven nepodržani softver"
+                    "content_trust": "Provera valjanosti pouzdanosti sadržaja je onemogućena",
+                    "os_agent": "Agent OS-a",
+                    "software": "Otkriven nepodržani softver",
+                    "source_mods": "Izmene izvora",
+                    "systemd_resolved": "Sistemski rešeno"
                 }
             }
         },
         "update_available": {
-            "core_note": "Supervizor će se vratiti na verziju {version} ako se vaša instanca ne pojavi nakon ažuriranja.",
             "create_backup": "Kreiranje rezervne kopije pre ažuriranja",
-            "creating_backup": "Kreiranje rezervne kopije {name}",
             "description": "Imate instaliranu {verziju}. Kliknite na dugme \"Ažuriraj\" da biste ažurirali verziju {newest_version}",
             "no_update": "Nema dostupnih ažuriranja za {name}",
             "open_release_notes": "Otvaranje napomena uz izdanje",
@@ -69,12 +143,18 @@
         }
     },
     "ui": {
+        "backup": {
+            "upload_backup": "Otpremanje rezervne kopije"
+        },
         "card": {
+            "alarm_control_panel": {
+                "arm_vacation": "Naoružaj u status \"na odmoru\""
+            },
             "area": {
                 "area_not_found": "Oblast nije pronađena."
             },
             "button": {
-                "press": "Pritisnite"
+                "press": "Pritisni"
             },
             "lock": {
                 "lock": "Zaključaj",
@@ -87,25 +167,76 @@
                 "media_volume_mute": "Isključi zvuk",
                 "media_volume_unmute": "Uključi zvuk",
                 "media_volume_up": "Pojačaj zvuk",
+                "nothing_playing": "Ništa se ne reprodukuje",
+                "repeat_set": "Mod ponavljanja",
+                "shuffle_set": "Mešanje",
                 "sound_mode": "Režim zvuka",
                 "source": "Izvor"
+            },
+            "update": {
+                "installing": "Instaliranje",
+                "installing_with_progress": "Instaliranje ({progress}%)",
+                "up_to_date": "Ažuriran "
             }
         },
         "common": {
             "clear": "Opozovite izbor",
             "help": "Pomoć",
+            "hide": "Sakriti",
             "move": "Premestite",
             "submit": "Prosledi"
         },
         "components": {
+            "area-picker": {
+                "add_new_sugestion": "Dodaj novu oblast ''{name}''"
+            },
+            "climate-control": {
+                "temperature_down": "Smanjite temperaturu",
+                "temperature_up": "Povećajte temperaturu"
+            },
             "entity": {
                 "entity-picker": {
-                    "edit": "Uređivanje"
+                    "edit": "Uređivanje",
+                    "no_entities": "Nemaš entitete"
+                }
+            },
+            "logbook": {
+                "messages": {
+                    "cleared_tampering": "raščišćavanje neovlašćenog menjanja",
+                    "detected_tampering": "otkriveno neovlašćeno menjanje"
+                }
+            },
+            "media-browser": {
+                "file_management": {
+                    "add_media": "Dodaj medij",
+                    "confirm_delete": "Želite li da izbrišete {count} {count, plural,\n  one {file}\n  other {files}\n}?",
+                    "delete": "Izbriši {count}",
+                    "deleting": "Brisanje {count}",
+                    "folders_not_supported": "Fasciklama se ne može upravljati putem UI.",
+                    "highlight_button": "Kliknite ovde da biste otpremili prvi medij",
+                    "manage": "Upravljanje",
+                    "no_items": "Nisu pronađene medijske stavke",
+                    "title": "Upravljanje medijima",
+                    "upload_failed": "Otpremanje nije uspelo: {reason}",
+                    "uploading": "Otpremanje {count} {count, plural,\n  one {file}\n  other {files}\n}"
+                },
+                "not_shown": "{count} nekompatibilan {count, plural,\n  one {item}\n  other {items}\n} skriven",
+                "tts": {
+                    "action_pick": "Izaberite",
+                    "action_play": "Izgovori",
+                    "example_message": "Zdravo {name}, možete da reprodukujete bilo koji tekst na bilo kom podržanom media plejeru!",
+                    "faild_to_store_defaults": "Skladištenje podrazumevanih vrednosti nije uspelo: {error}",
+                    "gender": "Pol",
+                    "gender_female": "Žensko",
+                    "gender_male": "Muško",
+                    "language": "Jezik",
+                    "message": "Poruka",
+                    "set_as_default": "Postavi kao podrazumevane opcije"
                 }
             },
             "qr-scanner": {
                 "enter_qr_code": "Unesite vrednost QR koda",
-                "manual_input": "QR kôd možete skenirati drugim QR skenerom i nalepiti kôd u dole navedeni unos",
+                "manual_input": "QR kod možete skenirati drugim QR skenerom i nalepiti kod u dole navedeni unos",
                 "not_supported": "Vaš pretraživač ne podržava QR skeniranje.",
                 "only_https_supported": "Kameru možete koristiti samo za skeniranje QR koda prilikom korišćenja HTTPS-a.",
                 "select_camera": "Izaberite kameru"
@@ -113,75 +244,226 @@
             "related-filter-menu": {
                 "filter": "Filter"
             },
+            "selectors": {
+                "media": {
+                    "browse_media": "Pregled medija",
+                    "browse_not_supported": "Media Player ne podržava pregledanje medija.",
+                    "manual": "Ručno unesite ID medija",
+                    "media_content_id": "ID medijskog sadržaja",
+                    "media_content_type": "Tip medijskog sadržaja",
+                    "pick_media": "Odaberi medij",
+                    "pick_media_player": "Izbor programa media player"
+                }
+            },
             "target-picker": {
                 "expand": "Proširi",
                 "remove": "Ukloni"
+            },
+            "theme-picker": {
+                "no_theme": "Nema teme",
+                "theme": "Tema"
             }
         },
         "dialogs": {
             "entity_registry": {
                 "editor": {
+                    "change_area": "Promeni oblast",
+                    "configure_state": "Konfiguriši status",
                     "device_class": "Prikaži kao",
                     "device_classes": {
                         "binary_sensor": {
+                            "battery": "Baterija",
+                            "battery_charging": "Punjenje baterije",
+                            "carbon_monoxide": "Ugljen-monoksid",
+                            "cold": "Hladnoća",
+                            "connectivity": "Povezivanje",
                             "door": "Vrata",
                             "garage_door": "Garažna vrata",
-                            "opening": "Ostalo",
+                            "gas": "Gas",
+                            "heat": "Temperatura",
+                            "light": "Svetlo",
+                            "lock": "Brava",
+                            "moisture": "Vlaga",
+                            "motion": "Pokret",
+                            "moving": "Pomeranje",
+                            "occupancy": "Popunjenost",
+                            "opening": "Otvaranje",
+                            "plug": "Priključak",
+                            "power": "Napajanje",
+                            "presence": "Prisustvo",
+                            "problem": "Problem",
+                            "running": "U pogonu",
+                            "safety": "Bezbednost",
+                            "smoke": "Dim",
+                            "sound": "Zvuk",
+                            "tamper": "Tamper",
+                            "update": "Unapređenje",
+                            "vibration": "Vibracija",
                             "window": "Prozor"
                         },
                         "cover": {
+                            "awning": "Tenda",
+                            "blind": "Trakaste zavese",
+                            "curtain": "Zavese",
+                            "damper": "Klapna",
                             "door": "Vrata",
                             "garage": "Garažna vrata",
+                            "gate": "Kapija",
+                            "shade": "Tenda",
+                            "shutter": "Roletna",
                             "window": "Prozor"
                         }
-                    }
+                    },
+                    "disabled_label": "Onemogućen",
+                    "entity_status": "Status entiteta",
+                    "hidden_cause": "Skriveno od {cause}.",
+                    "hidden_description": "Skriveni entiteti neće biti prikazani na kontrolnoj tabli. Njihova istorija se još uvek prati i još uvek možete da komunicirate sa njima sa uslugama.",
+                    "hidden_label": "Skriven",
+                    "switch_as_x_confirm": "Овај прекидач ће бити сакривен и нови {domain} ће бити додат. Ваша постојећа конфигурација која користи прекидач ће наставити да ради.",
+                    "unit_of_measurement": "Мерна јединица"
+                }
+            },
+            "helper_settings": {
+                "input_number": {
+                    "initial": "Почетна вредност"
+                },
+                "timer": {
+                    "restore": "Povratiti?"
                 }
             },
             "more_info_control": {
+                "cover": {
+                    "close_tilt_cover": "Zatvori nagib pokopca"
+                },
                 "logbook": "Evidencija",
-                "show_more": "Prikaži više"
-            }
-        },
-        "errors": {
-            "config": {
-                "no_state_array_support": "Više vrednosti stanja nije podržano u programu visual editor"
+                "show_more": "Prikaži više",
+                "update": {
+                    "create_backup": "Napravi rezervnu kopiju pre unapređenja",
+                    "current_version": "Trenutna verzija",
+                    "install": "Instaliraj",
+                    "installed_version": "Инсталирана верзија",
+                    "latest_version": "Poslednja verzija",
+                    "release_announcement": "Pročitaj najavu izdanja",
+                    "skip": "Preskoči"
+                }
+            },
+            "mqtt_device_debug_info": {
+                "recent_tx_messages": "{n} najskorije prenete poruke"
+            },
+            "quick-bar": {
+                "commands": {
+                    "reload": {
+                        "themes": "Teme"
+                    }
+                },
+                "key_c_hint": "Pritisnite taster \"c\" na bilo kojoj stranici da biste otvorili ovu traku za pretragu",
+                "nothing_found": "Ništa nije pronađeno!",
+                "title": "Brzo pretraživanje"
             }
         },
         "panel": {
             "config": {
                 "areas": {
                     "add_picture": "Dodavanje slike",
-                    "edit_settings": "Postavke oblasti"
+                    "area_not_found": "Област није пронађена.",
+                    "assigned_to_area": "Dodeljeno ovoj oblasti",
+                    "edit_settings": "Postavke oblasti",
+                    "targeting_area": "Ciljanje ove oblasti"
                 },
                 "automation": {
                     "dialog_new": {
                         "start_empty_description": "Kreiranje nove automatizacije od početka"
                     },
                     "editor": {
+                        "actions": {
+                            "invalid_action": "Nevažeća radnja",
+                            "run_action": "Pokreni radnju",
+                            "run_action_error": "Greška pri pokretanju radnje",
+                            "run_action_success": "Uspešno pokretanje radnje",
+                            "type": {
+                                "activate_scene": {
+                                    "label": "Aktiviraj scenu"
+                                },
+                                "event": {
+                                    "event_data": "Istorija događaja"
+                                },
+                                "play_media": {
+                                    "label": "Reprodukuj medije"
+                                }
+                            }
+                        },
                         "conditions": {
+                            "invalid_condition": "Nevažeća konfiguracija uslova",
+                            "test": "Test",
+                            "test_failed": "Došlo je do greške tokom testiranja",
                             "type": {
                                 "time": {
+                                    "mode_after": "Posle",
+                                    "mode_before": "Pre",
+                                    "weekday": "Radnim danima",
                                     "weekdays": {
                                         "mon": "Понедељак"
                                     }
                                 }
                             }
                         },
+                        "description": {
+                            "add": "Dodaj opis"
+                        },
                         "triggers": {
+                            "edit_id": "Uredi ID okidača",
                             "learn_more": "Сазнајте више о окидачима",
+                            "triggered": "Pokrenut",
                             "type": {
                                 "mqtt": {
                                     "label": "MQTT"
+                                },
+                                "time": {
+                                    "mode": "Režim"
+                                },
+                                "webhook": {
+                                    "copy_url": "Kopiraj URL adresu",
+                                    "webhook_id_helper": "Tretirajte ovaj ID kao lozinku: držite ga u tajnosti i napravite ga da bude težak za pogađanje."
                                 }
                             }
                         }
                     },
                     "picker": {
+                        "headers": {
+                            "actions": "Akcija",
+                            "toggle": "Omogući/onemogući",
+                            "trigger": "Okidač"
+                        },
                         "learn_more": "Сазнајте више о аутоматизацијама"
                     },
                     "trace": {
-                        "edit_automation": "Uređivanje automatizacije"
+                        "download_trace": "Preuzmi praćenje",
+                        "edit_automation": "Uređivanje automatizacije",
+                        "newer_trace": "Novije praćenje",
+                        "older_trace": "Starije praćenje",
+                        "refresh": "Osveži"
                     }
+                },
+                "backup": {
+                    "caption": "Rezervna kopija",
+                    "create": {
+                        "confirm": "направи",
+                        "description": "Направи резервну копију директоријума са конфигурацијом, ово ће потрајати",
+                        "title": "Направи резервну копију"
+                    },
+                    "create_backup": "Napravi rezervnu kopiju",
+                    "created": "Направљен",
+                    "creating_backup": "Kreiram rezervnu kopiju",
+                    "download_backup": "Преузми резервну копију",
+                    "name": "Име резервне копије",
+                    "no_backups": "Немате резервних копија.",
+                    "remove": {
+                        "confirm": "Уклони",
+                        "description": "Да ли сте сигурни да желите да избришете резервну копију по имену {name}?",
+                        "title": "Уклони резервну копију"
+                    },
+                    "remove_backup": "Обриши резервну копију",
+                    "size": "Величина"
                 },
                 "blueprint": {
                     "overview": {
@@ -196,58 +478,72 @@
                         }
                     }
                 },
+                "cloud": {
+                    "account": {
+                        "alexa": {
+                            "not_configured_text": "Da biste mogli da koristite Aleksu, potrebno je da aktivirate veštinu Home Assistant-a za Aleksu u Alexa aplikaciji.",
+                            "not_configured_title": "Aleksa nije aktiviran"
+                        },
+                        "google": {
+                            "http_use_ssl_warning_text": "Google uređaji neće moći da razgovaraju lokalno sa Home Assistant-om jer ste konfigurisali SSL sertifikat za vašu HTTP integraciju.",
+                            "http_use_ssl_warning_title": "Lokalna komunikacija nije dostupna",
+                            "sync_failed_text": "Sinhronizacija entiteta nije uspela, pokušajte ponovo ili proverite evidencije.",
+                            "sync_failed_title": "Sinhronizacija nije uspela"
+                        },
+                        "sign_out_confirm": "Želite li zaista da se odjavite?",
+                        "tts": {
+                            "default_gender": "Podrazumevani pol",
+                            "dialog": {
+                                "create_automation": "Kreiraj automatizaciju"
+                            }
+                        }
+                    }
+                },
+                "common": {
+                    "learn_more": "Uči više"
+                },
                 "dashboard": {
-                    "automations": {
-                        "description": "Upravljanje automatizacijama, scenama, skriptama i pomagačima",
-                        "title": "Automatizacije i scene"
-                    },
-                    "blueprints": {
-                        "description": "Unapred napravljene automatizacije i skripte od strane zajednice",
-                        "title": "Nacrti"
-                    },
-                    "companion": {
-                        "description": "Lokacija i obaveštenja"
-                    },
-                    "dashboards": {
-                        "description": "Kreiranje prilagođenih skupova kartica za kontrolu kuće",
-                        "title": "Kontrolne table"
-                    },
-                    "devices": {
-                        "description": "Integracije, uređaji, entiteti i oblasti",
-                        "title": "Uređaji i usluge"
-                    },
-                    "energy": {
-                        "description": "Praćenje proizvodnje i potrošnje energije",
-                        "title": "Energija"
-                    },
-                    "people": {
-                        "description": "Upravljanje osobama i zonama koje Home Assistant prati",
-                        "title": "Ljudi i zone"
-                    },
-                    "settings": {
-                        "description": "Osnovne postavke, kontrole servera, evidencije i informacije",
-                        "title": "Postavke"
-                    },
-                    "supervisor": {
-                        "description": "Kreiranje rezervnih kopija, provera evidencija ili ponovno pokretanje sistema",
-                        "title": "Dodaci, rezervne kopije i Supervisor"
-                    },
-                    "tags": {
-                        "description": "Aktivirnje automatizacije kada se skenira NFC oznaka, QR kod itd.",
-                        "title": "Oznake"
+                    "backup": {
+                        "description": "Napravi rezervnu kopiju Home Assistant konfiguracije",
+                        "title": "Rezervna kopija"
                     }
                 },
                 "devices": {
+                    "automation": {
+                        "automations_heading": "Automatizacija"
+                    },
+                    "data_table": {
+                        "disabled_by": "Onemogućen",
+                        "no_integration": "Nema integracije"
+                    },
+                    "delete_device": "Izbriši uređaj",
+                    "delete_device_integration": "Ukloni {integration} sa uređaja",
+                    "download_diagnostics": "Preuzmi dijagnostiku",
+                    "download_diagnostics_integration": "Preuzmite dijagnostiku {integration}",
                     "edit_settings": "Uređivanje postavki",
                     "entities": {
                         "config": "Konfiguracija",
                         "control": "Kontrole",
                         "diagnostic": "Dijagnostika",
+                        "hidden": "Скривено",
+                        "hidden_entities": "+{count} {count, plural,\n  one {entity}\n  other {entities}\n} nije prikazano",
                         "sensor": "Senzori",
-                        "state": "Stanje"
+                        "show_less": "Prikaži manje"
                     },
                     "open_configuration_url_device": "Posetite uređaj",
-                    "open_configuration_url_service": "Posetite servis"
+                    "open_configuration_url_service": "Posetite servis",
+                    "scene": {
+                        "scenes_heading": "Scena"
+                    },
+                    "script": {
+                        "scripts_heading": "Skripta"
+                    },
+                    "type": {
+                        "device": "uređaj",
+                        "device_heading": "Uređaj",
+                        "service": "servis",
+                        "service_heading": "Servis"
+                    }
                 },
                 "energy": {
                     "battery": {
@@ -257,8 +553,13 @@
                             "energy_into_battery": "Energija koja ide u bateriju (kWh)",
                             "energy_out_of_battery": "Energija koja izlazi iz baterije (kWh)",
                             "header": "Konfigurisanje sistema baterije"
-                        }
+                        },
+                        "learn_more": "Više informacija o tome kako da počnete.",
+                        "sub": "Ako imate sistem baterije, možete ga konfigurisati tako da nadgleda koliko je energije uskladišteno i korišćeno iz baterije.",
+                        "title": "Skladište kućne baterije"
                     },
+                    "delete_integration": "Želite li zaista da izbrišete ovu integraciju? Ukloniće entitete koje obezbeđuje",
+                    "delete_source": "Želite li zaista da izbrišete ovaj izvor?",
                     "device_consumption": {
                         "add_device": "Dodaj uređaj",
                         "devices": "Uređaji",
@@ -270,68 +571,237 @@
                     "gas": {
                         "add_gas_source": "Dodaj izvor gasa",
                         "dialog": {
+                            "cost_entity": "Korišćenje entiteta sa trenutnom cenom",
+                            "cost_entity_input": "Entitet sa trenutnom cenom po {uni}",
+                            "cost_number": "Korišćenje statične cene",
+                            "cost_number_input": "Cena po {unit}",
+                            "cost_para": "Izaberite kako Home Assistant treba da prati troškove utrošene energije.",
+                            "cost_stat": "Korišćenje entiteta koji prati ukupne troškove",
+                            "cost_stat_input": "Entitet ukupnih troškova",
+                            "energy_stat": "Utrošena energija (m³)",
                             "gas_usage": "Upotreba gasa",
-                            "m3_or_kWh": "ft³, m³, Wh, kWh ili MWh"
+                            "header": "Konfigurisanje potrošnje gasa",
+                            "m3_or_kWh": "ft³, m³, Wh, kWh ili MWh",
+                            "no_cost": "Ne prati troškove",
+                            "paragraph": "Potrošnja gasa je zapremina gasa koja teče ka vašem domu."
                         },
-                        "gas_consumption": "Potrošnja gasa"
+                        "gas_consumption": "Potrošnja gasa",
+                        "learn_more": "Više informacija o tome kako da počnete.",
+                        "sub": "Dozvolite Home Assistant-u da nadgleda korišćenje gasa.",
+                        "title": "Potrošnja gasa"
                     },
+                    "grid": {
+                        "add_co2_signal": "Dodaj integraciju CO2 signala",
+                        "add_consumption": "Dodaj potrošnju",
+                        "add_return": "Dodaj povraćaj",
+                        "grid_carbon_footprint": "Otisak ugljenika na mreži",
+                        "grid_consumption": "Potrošnja sa mreže",
+                        "return_to_grid": "Povraćaj u mrežu"
+                    },
+                    "new_device_info": "Nakon podešavanja novog uređaja, može da potraje i do 2 sata da novi podaci stignu na kontrolnu tablu za energiju.",
                     "solar": {
+                        "add_solar_production": "Dodaj solarnu proizvodnju",
                         "dialog": {
-                            "add_forecast": "Dodaj prognozu"
+                            "add_forecast": "Dodaj prognozu",
+                            "dont_forecast_production": "Ne prognoziraj proizvodnju",
+                            "forecast_production": "Predviđanje proizvodnje",
+                            "header": "Konfigurisanje solarnih panela",
+                            "solar_production_energy": "Solarna proizvodna energija (kWh)",
+                            "solar_production_forecast": "Prognoza solarne proizvodnje",
+                            "solar_production_forecast_description": "Dodavanje informacija o prognozi solarne proizvodnje omogućiće vam da brzo vidite očekivanu proizvodnju za danas."
+                        },
+                        "solar_production": "Solarna proizvodnja"
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_negative_state": {
+                                "description": "Sledeći entiteti imaju negativno stanje dok se očekuje pozitivno stanje:",
+                                "title": "Entitet ima negativno stanje"
+                            },
+                            "entity_not_defined": {
+                                "description": "Proverite integraciju ili konfiguraciju koja obezbeđuje:",
+                                "title": "Entitet nije definisan"
+                            },
+                            "entity_state_class_measurement_no_last_reset": {
+                                "description": "Sledeći entiteti imaju 'merenje' statusne klase, ali nedostaje uspostavljanje početnih vrednosti nedostaje:",
+                                "title": "Poslednje uspostavljanje početnih vrednosti nedostaje"
+                            },
+                            "entity_state_non_numeric": {
+                                "description": "Sledeći entiteti imaju stanje koje se ne može raščlaniti kao broj:",
+                                "title": "Entitet ima ne-numeričko stanje"
+                            },
+                            "entity_unavailable": {
+                                "description": "Stanje ovih konfigurisanih entiteta trenutno nije dostupno:",
+                                "title": "Entitet nije dostupan"
+                            },
+                            "entity_unexpected_device_class": {
+                                "description": "Sledeći entiteti nemaju očekivanu klasu uređaja:",
+                                "title": "Neočekivana klasa uređaja"
+                            },
+                            "entity_unexpected_state_class": {
+                                "description": "Sledeći entiteti nemaju očekivanu statusnu klasu:",
+                                "title": "Neočekivana statusna klasa"
+                            },
+                            "entity_unexpected_unit_energy": {
+                                "description": "Sledeći entiteti nemaju očekivane merne jedinice \"Wh\", \"kWh\" ili \"MWh\":",
+                                "title": "Neočekivana jedinica merenja"
+                            },
+                            "entity_unexpected_unit_energy_price": {
+                                "description": "Sledeći entiteti nemaju očekivane jedinice mere \"'{currency}/kWh\", \"'{currency}/Wh'' ili \"'{currency}/MWh'':\":",
+                                "title": "Neočekivana jedinica merenja"
+                            },
+                            "entity_unexpected_unit_gas": {
+                                "description": "Sledeći entiteti nemaju očekivane jedinice merenja 'Wh', 'kWh' ili 'MWh' za energetski senzor ili 'm³' ili 'ft³' za gasni senzor:",
+                                "title": "Neočekivana jedinica merenja"
+                            },
+                            "entity_unexpected_unit_gas_price": {
+                                "description": "Sledeći entiteti nemaju očekivane jedinice merenja ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'', ''{currency}/m³'' or ''{currency}/ft³'':",
+                                "title": "Neočekivana jedinica merenja"
+                            },
+                            "recorder_untracked": {
+                                "description": "Snimač je konfigurisan da izuzme ove konfigurisane entitete:",
+                                "title": "Entitet nije praćen"
+                            }
                         }
+                    }
+                },
+                "entities": {
+                    "picker": {
+                        "filter": {
+                            "show_hidden": "Prikaži skrivene entitete"
+                        },
+                        "headers": {
+                            "disabled_by": "Onemogućen od",
+                            "state_icon": "Ikona statusa"
+                        },
+                        "hide_selected": {
+                            "button": "Sakrij izabrano",
+                            "confirm_text": "Skriveni entiteti neće biti prikazani na kontrolnoj tabli. Njihova istorija se još uvek prati i još uvek možete da komunicirate sa njima sa uslugama.",
+                            "confirm_title": "Želite li da sakrijete {number} {number, plural,\n  one {entity}\n  other {entities}\n}?"
+                        },
+                        "status": {
+                            "hidden": "Skriven "
+                        }
+                    }
+                },
+                "helpers": {
+                    "picker": {
+                        "headers": {
+                            "icon": "Ikona"
+                        }
+                    },
+                    "types": {
+                        "input_button": "Dugme",
+                        "schedule": "Распоред"
                     }
                 },
                 "info": {
                     "copy_menu": "Kopiraj meni"
                 },
                 "integrations": {
+                    "add_zha_device": "Dodaj Zigbee uređaj",
+                    "add_zwave_js_device": "Dodavanje Z-Wave uređaja",
                     "config_entry": {
+                        "download_diagnostics": "Preuzmi dijagnostiku",
                         "hardware": "Hardver: {version}",
+                        "known_issues": "Poznati problemi",
+                        "open_configuration_url": "Posetite uređaj",
                         "unknown_via_device": "Nepoznat uređaj",
+                        "version": "Verzija: {version}",
                         "via": "Povezano preko"
                     },
                     "config_flow": {
                         "external_step": {
                             "description": "Овај корак захтева да посетите екстерни веб-сајт да би био завршен.",
                             "open_site": "Отворите сајт"
-                        }
+                        },
+                        "no_config_flow": "Ova integracija ne podržava konfiguraciju putem UI. Ako ste pratili ovu vezu sa Veb lokacije Home Assistant-a, uverite se da ste pokrenuli najnoviju verziju programa Home Assistant."
                     }
                 },
                 "logs": {
-                    "copy": "Kopiranje stavke evidencije"
+                    "copy": "Kopiranje stavke evidencije",
+                    "no_issues_search": "Nisu pronađeni problemi za termin za pretragu ''{term}''",
+                    "search": "Evidencije pretrage"
+                },
+                "lovelace": {
+                    "dashboards": {
+                        "confirm_delete_text": "Kontrolna tabla će biti trajno izbrisana.",
+                        "confirm_delete_title": "Želite li da izbrišete {dashboard_title}?",
+                        "picker": {
+                            "headers": {
+                                "icon": "Ikona",
+                                "url": "Otvori"
+                            }
+                        }
+                    }
                 },
                 "mqtt": {
                     "title": "MQTT"
                 },
-                "ozw": {
-                    "network_status": {
-                        "unknown": "Непознат"
-                    }
-                },
                 "person": {
                     "detail": {
-                        "local_only": "Može da se uloguje samo sa lokalne mreže"
+                        "local_only": "Moguće prijavljivanje samo sa lokalne mreže"
                     }
                 },
                 "scene": {
                     "editor": {
                         "area": "Oblast"
-                    }
-                },
-                "server_control": {
-                    "section": {
-                        "reloading": {
-                            "timer": "Tajmeri"
+                    },
+                    "picker": {
+                        "headers": {
+                            "activate": "Aktiviraj",
+                            "edit": "Uređivanje",
+                            "show_info": "Prikaži informacije",
+                            "state": "Status"
                         }
                     }
                 },
+                "script": {
+                    "picker": {
+                        "headers": {
+                            "state": "Status"
+                        }
+                    }
+                },
+                "tag": {
+                    "detail": {
+                        "required_error_msg": "Ово поље је обавезно"
+                    },
+                    "headers": {
+                        "icon": "Ikona",
+                        "write": "Napiši"
+                    }
+                },
+                "tips": {
+                    "join": "Pridružite se zajednici na našim {forums}, {twitter}, {discord}, {blog} ili {newsletter}",
+                    "tip": "Savet!"
+                },
                 "updates": {
+                    "check_updates": "Provera da li postoje ispravke",
                     "more_updates": "+ {count} ažuriranja",
-                    "review": "pregled",
+                    "no_new_updates": "Nisu pronađene nove ispravke",
+                    "no_update_entities": {
+                        "description": "Nemate nijednu integraciju koja obezbeđuje ažuriranja",
+                        "title": "Nije moguće proveriti unapređenja"
+                    },
                     "show": "Prikaži",
-                    "show_all_updates": "Prikaži sva ažuriranja",
-                    "unable_to_fetch": "Nije moguće učitati ažuriranja",
+                    "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
+                    "unable_to_fetch": "Nije moguće učitati ispravke",
+                    "updates_refreshed": "Ispravke osvežene",
                     "version_available": "Dostupna je verzija {version_available}"
+                },
+                "url": {
+                    "caption": "Home Assistant URL",
+                    "description": "Konfigurišite adrese Veb lokacije koje Home Assistant treba da deli sa drugim uređajima kada je potrebno da dopreme podatke iz Home Assistant-a (npr. da reprodukuju tekst-u-govor ili druge hostovane medije).",
+                    "enable_remote": "Omogući",
+                    "external_get_ha_cloud": "Pristup sa bilo kog mesta pomoću Home Assistant oblaka ",
+                    "external_url_label": "Internet",
+                    "external_use_ha_cloud": "Koristi Home Assistant oblak",
+                    "ha_cloud_remote_not_enabled": "Daljinska veza Home Assistant-a i oblaka trenutno nije omogućena.",
+                    "internal_url_automatic": "Automatsko",
+                    "internal_url_https_error_description": "Konfigurisali ste HTTPS sertifikat u Home Assistant-u. To znači da unutrašnju URL adresu treba postaviti na domen koji je pokriven sertifikatom.",
+                    "internal_url_https_error_title": "Nevažeća URL adresa lokalne mreže",
+                    "internal_url_label": "Lokalna mreža"
                 },
                 "users": {
                     "add_user": {
@@ -341,70 +811,129 @@
                         "password": "Лозинка"
                     },
                     "editor": {
-                        "caption": "Прикажи корисника"
+                        "caption": "Прикажи корисника",
+                        "local_only": "Moguće prijavljivanje samo sa lokalne mreže"
                     },
+                    "is_local": "Lokalni korisnik",
+                    "is_not_active": "Onemogućen",
+                    "is_owner": "Vlasnik",
+                    "is_system": "Korisnik sistema",
                     "picker": {
                         "headers": {
-                            "local": "Samo lokalno"
+                            "icon": "Ikona",
+                            "local": "Lokalno"
                         }
                     }
                 },
                 "zha": {
                     "groups": {
                         "delete": "Izbriši grupu"
+                    },
+                    "visualization": {
+                        "enable_physics": "Omogući fiziku"
                     }
                 },
                 "zone": {
                     "edit_zone": "Uredi zonu"
                 },
-                "zwave": {
-                    "node_config": {
-                        "set_config_parameter": "Подесите параметар Цонфиг"
-                    }
-                },
                 "zwave_js": {
                     "add_node": {
                         "check_logs": "Više informacija potražite u evidencijama.",
                         "choose_inclusion_strategy": "Kako želite da dodate uređaj",
-                        "enter_qr_code": "Unesite vrednost QR koda",
                         "provisioning_finished": "Uređaj je dodat. Kada ga uključite, postaće dostupan.",
-                        "qr_code": "QR kôd",
+                        "qr_code": "QR kod",
                         "qr_code_paragraph": "Ako uređaj podržava SmartStart, možete da skenirate QR kôd radi lakog uparivanja.",
-                        "scan_qr_code": "Skeniraj QR kôd",
-                        "searching_device": "Traženje uređaja",
-                        "select_camera": "Izaberite kameru"
+                        "scan_qr_code": "Skeniraj QR kod",
+                        "searching_device": "Traženje uređaja"
                     },
                     "common": {
-                        "back": "Nazad"
+                        "back": "Nazad",
+                        "cancel_inclusion_exclusion": "Zaustavi pretraživanje",
+                        "in_progress_inclusion_exclusion": "Z-Wave JS traži uređaje"
                     },
                     "dashboard": {
+                        "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
                         "not_ready": "{count} nije spremno",
+                        "provisioned_devices": "Prijavljeni uređaji",
                         "server_url": "URL adresa servera"
                     },
                     "device_info": {
                         "highest_security": "Najviša bezbednost",
+                        "unknown": "Nepoznat",
+                        "zwave_plus": "Z-Wave Plus",
                         "zwave_plus_version": "Verzija {verzija}"
                     },
                     "logs": {
                         "download_logs": "Preuzmi evidencije"
                     },
                     "provisioned": {
+                        "confirm_unprovision_text": "Ako otklonite uređaj, on neće biti dodat Home Assistant-u  kada se uključi. Ako je već dodat Home Assistant-u, uklanjanje obezbeđenog uređaja neće ga ukloniti iz Home Assistant-a.",
+                        "confirm_unprovision_title": "Želite li zaista da oodjavite uređaj?",
+                        "dsk": "DSK",
                         "included": "Uključeno",
-                        "not_included": "Nije uključeno"
+                        "not_included": "Nije uključeno",
+                        "security_classes": "Klasa bezbednosti",
+                        "unprovison": "Odjava"
                     },
                     "security_classes": {
                         "None": {
                             "title": "Nijedan"
+                        },
+                        "S0_Legacy": {
+                            "description": "Primer: Stara brava za vrata bez podrške za S2",
+                            "title": "S0 Legacy"
+                        },
+                        "S2_AccessControl": {
+                            "description": "Primer: Brava vrata i garažna vrata",
+                            "title": "S2 kontrola pristupa"
+                        },
+                        "S2_Authenticated": {
+                            "description": "Primer: Osvetljenje, senzori i bezbednosni sistemi",
+                            "title": "S2 potvrđena verodostojnost"
+                        },
+                        "S2_Unauthenticated": {
+                            "description": "Kao i S2 potvrđena verodostojnost, ali bez provere da li je uključen ispravan uređaj",
+                            "title": "S2 neautorizovan"
                         }
                     }
                 }
             },
             "developer-tools": {
                 "tabs": {
+                    "events": {
+                        "active_listeners": "Aktivni slušaoci"
+                    },
                     "statistics": {
+                        "adjust_sum": "Преправи вредност",
+                        "entity": "Entitet",
+                        "fix_issue": {
+                            "fix": "Reši problem",
+                            "units_changed": {
+                                "clear": "Izbriši sve stare statističke podatke za ovaj entitet",
+                                "title": "Jedinica ovog entiteta se promenila",
+                                "update": "Ažurirajte istorijske statističke vrednosti sa ''{metadata_unit}'' u ''{state_unit}}''"
+                            }
+                        },
+                        "issue": "Problem",
                         "issues": {
                             "entity_no_longer_recorded": "Ovaj entitet se više ne snima.",
-                            "no_state": "Nema dostupnog stanja za ovaj entitet."
+                            "entity_not_recorded": "Ovaj entitet je isključen iz zapisa.",
+                            "no_state": "Nema dostupnog stanja za ovaj entitet.",
+                            "units_changed": "Jedinica ovog entiteta se promenila iz \"'{metadata_unit}'' u \"{state_unit}\".",
+                            "unsupported_state_class": "Državna klasa ''{state_class}}'' ovog entiteta nije podržana.",
+                            "unsupported_unit_metadata": "Jedinica ('{metadata_unit}') zapisane statistike ne podudara se sa podržanom jedinicom \"'{supported_unit}'' klase uređaja ''{device_class}}''.",
+                            "unsupported_unit_state": "Jedinica ('{state_unit}') ovog entiteta ne podudara se sa jedinicom klase uređaja \"'{device_class}\"."
+                        },
+                        "no_issue": "Nema problema",
+                        "title": "Statistika"
+                    },
+                    "yaml": {
+                        "section": {
+                            "reloading": {
+                                "input_button": "Ulazna dugmad",
+                                "themes": "Teme",
+                                "timer": "Tajmeri"
+                            }
                         }
                     }
                 }
@@ -417,6 +946,9 @@
                     "energy_solar_graph_title": "Solarna proizvodnja",
                     "energy_sources_table_title": "Izvori",
                     "energy_usage_graph_title": "Korišćenje energije"
+                },
+                "setup": {
+                    "step": "Korak {step} od {steps}"
                 }
             },
             "lovelace": {
@@ -425,7 +957,7 @@
                         "carbon_consumed_gauge": {
                             "card_indicates_energy_used": "Ova kartica ukazuje na to koliko je energije koju je utrošio vaš dom generisano korišćenjem ne-fosilnih goriva kao što su solarna, vetar i nuklearna. Što više, to bolje!",
                             "non_fossil_energy_consumed": "Potrošena ne-fosilna energija",
-                            "non_fossil_energy_not_calculated": "Potrošena ne-fosilna energija nije mogla biti izračunata"
+                            "non_fossil_energy_not_calculated": "Potrošena ne-fosilna energija nemože biti izračunata"
                         },
                         "energy_devices_graph": {
                             "energy_usage": "Korišćenje energije"
@@ -448,6 +980,7 @@
                             "battery_total": "Baterija ukupno",
                             "cost": "Cena",
                             "energy": "Energija",
+                            "gas_total": "Upotreba gasa",
                             "grid_total": "Mreža ukupno",
                             "source": "Izvor",
                             "total_costs": "Ukupna cena"
@@ -464,10 +997,9 @@
                             "energy_dependency": "Ova kartica prikazuje vaše neto korišćenje energije.",
                             "grid_neutrality_not_calculated": "Nije moguće izračunati neutralnost mreže",
                             "net_consumed_grid": "Neto utrošeno iz mreže",
-                            "net_returned_grid": "Neto vraćeno u mrežu",
-                            "red_green_color_explain": "Ako je zelena, to znači da ste proizveli više energije nego što ste potrošili iz mreže. Ako je u crvenom, to znači da ste se oslanjali na mrežu za deo potrošnje energije vašeg doma."
+                            "net_returned_grid": "Neto vraćeno u mrežu"
                         },
-                        "loading": "Učitavanje...",
+                        "loading": "Učitavanje…",
                         "no_data": "Nema podataka za prikazivanje. Novim podacima može biti potrebno do 2 sata da stignu nakon što konfigurišete kontrolnu tablu za energiju.",
                         "no_data_period": "Nema podataka za ovaj period.",
                         "solar_consumed_gauge": {
@@ -511,11 +1043,31 @@
                             "name": "Oblast",
                             "show_camera": "Prikaži snimak kamere umesto slike oblasti"
                         },
+                        "calendar": {
+                            "initial_view": "Početni prikaz"
+                        },
+                        "entity-row": {
+                            "secondary_info": "Sekundarne informacije"
+                        },
+                        "statistics-graph": {
+                            "chart_type": "Tip grafikona",
+                            "period": "Period",
+                            "periods": {
+                                "5minute": "5 minuta",
+                                "day": "Dan",
+                                "hour": "Sat",
+                                "month": "Mesec"
+                            },
+                            "stat_types": "Prikaži tipove statistike"
+                        },
                         "weather-forecast": {
                             "show_both": "Prikaži trenutno vreme i prognozu",
                             "show_only_current": "Prikaži samo trenutno vreme",
                             "show_only_forecast": "Prikaži samo prognozu"
                         }
+                    },
+                    "edit_badges": {
+                        "view_no_badges": "Trenutni tip prikaza ne podržava značke."
                     },
                     "edit_card": {
                         "move_down": "Premesti karticu nadole",
@@ -524,10 +1076,35 @@
                     "select_view": {
                         "views_label": "Prikaz"
                     }
+                },
+                "strategy": {
+                    "original-states": {
+                        "helpers": "Pomoćnici"
+                    }
+                },
+                "unused_entities": {
+                    "state_icon": "Status"
                 }
             },
             "map": {
                 "edit_zones": "Uredi zone"
+            },
+            "media-browser": {
+                "error": {
+                    "player_not_exist": "Media player {name} ne postoji"
+                },
+                "tts": {
+                    "action_pick": "Izaberi",
+                    "action_play": "Izgovori",
+                    "example_message": "Zdravo {name}, možete da reprodukujete bilo koji tekst na bilo kom podržanom media plejeru!",
+                    "faild_to_store_defaults": "Skladištenje podrazumevanih vrednosti nije uspelo: {error}",
+                    "gender": "Pol",
+                    "gender_female": "Žensko",
+                    "gender_male": "Muško",
+                    "language": "Jezik",
+                    "message": "Poruka",
+                    "set_as_default": "Postavi kao podrazumevane opcije"
+                }
             },
             "page-authorize": {
                 "store_token": "Drži me prijavljenog"
@@ -535,6 +1112,11 @@
             "page-onboarding": {
                 "integration": {
                     "finish": "Крај"
+                },
+                "restore": {
+                    "full_backup": "Kompletna rezervna kopija",
+                    "partial_backup": "Delimično pravljenje rezervne kopije",
+                    "upload_backup": "Otpremanje rezervne kopije"
                 },
                 "user": {
                     "data": {

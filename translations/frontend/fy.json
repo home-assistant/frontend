@@ -2,6 +2,9 @@
     "config_entry": {
         "disabled_by": {
             "user": "Brûker"
+        },
+        "hidden_by": {
+            "user": "Brûker"
         }
     },
     "groups": {
@@ -26,8 +29,19 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
+                "auto": "Auto",
                 "off": "Út",
                 "on": "Oan"
+            },
+            "preset_mode": {
+                "away": "Fuort",
+                "home": "Thús"
+            }
+        },
+        "humidifier": {
+            "mode": {
+                "home": "Thús",
+                "normal": "Normaal"
             }
         }
     },
@@ -51,8 +65,12 @@
                 "capability": {
                     "label": {
                         "docker": "docker"
+                    },
+                    "role": {
+                        "manager": "behearder"
                     }
                 },
+                "hostname": "Hostnamme",
                 "install": "ynstallearje",
                 "start": "start",
                 "stop": "stop"
@@ -66,21 +84,31 @@
             "created": "Makke",
             "delete_backup_confirm": "ferwiderje",
             "failed_to_delete": "Ferwiderje is mislearre",
-            "selected": "{number} selekteare"
+            "selected": "{number} selekteare",
+            "size": "Grutte"
         },
         "common": {
+            "add": "Tafoegje",
+            "cancel": "Annulearje",
             "close": "Slute",
+            "learn_more": "Lear mear",
+            "newest_version": "Nijste Ferzje",
             "no": "Nee",
             "refresh": "Ferfarskje",
             "restart": "Opnij starte",
             "restart_name": "{Name} opnij starte",
+            "version": "Ferzje",
             "yes": "Ja"
+        },
+        "dashboard": {
+            "addons": "Ynstallearre add-ons"
         },
         "dialog": {
             "network": {
                 "open": "Iepenje"
             },
             "registries": {
+                "password": "Wachtwurd",
                 "username": "Brûkersnamme"
             },
             "repositories": {
@@ -89,20 +117,25 @@
             "restart_addon": {
                 "confirm_text": "Start add-on opnij op",
                 "text": "Wolle jo de add-on opnij starte mei jo feroaringen?"
-            },
-            "update": {
-                "updating": "{name} bywurkje nei ferzje {version}"
             }
         },
         "my": {
             "error_addon_not_found": "Add-on net fûn"
         },
+        "panel": {
+            "system": "Systeem"
+        },
         "system": {
             "host": {
-                "change": "Feroarje"
+                "change": "Feroarje",
+                "operating_system": "Bestjoeringssysteem"
             },
             "supervisor": {
                 "search": "Sykje",
+                "share_diagonstics_title": "Help Home Assistant ferbetterje",
+                "unsupported_reason": {
+                    "os": "Bestjoeringssysteem"
+                },
                 "warning": "Warskoging"
             }
         }
@@ -111,7 +144,21 @@
         "card": {
             "climate": {
                 "on_off": "Oan / út",
-                "operation": "Operaasje"
+                "operation": "Operaasje",
+                "target_temperature": "Doeltemperatuer"
+            },
+            "fan": {
+                "direction": "Rjochting",
+                "forward": "Foarút"
+            },
+            "humidifier": {
+                "on_entity": "{name} oan"
+            },
+            "light": {
+                "brightness": "Helderheid"
+            },
+            "media_player": {
+                "media_volume_down": "Volume del"
             },
             "script": {
                 "cancel": "Annulearje",
@@ -146,16 +193,23 @@
         },
         "common": {
             "cancel": "Annulearje",
+            "delete": "Ferwiderje",
             "loading": "Oan it laden",
+            "next": "Folgjende",
             "no": "Nee",
+            "rename": "Omneame",
             "yes": "Ja"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Add-on"
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Tafoegje",
                     "name": "Namme"
-                }
+                },
+                "add_new": "Nij gebiet tafoegje..."
             },
             "blueprint-picker": {
                 "add_user": "Brûker tafoegje"
@@ -164,7 +218,9 @@
                 "today": "Hjoed"
             },
             "data-table": {
-                "clear": "Opklearje"
+                "clear": "Opklearje",
+                "filtering_by": "Filterje troch",
+                "search": "Sykje"
             },
             "date-range-picker": {
                 "ranges": {
@@ -178,19 +234,77 @@
                 "device": "Apparaat",
                 "toggle": "Skeakelje"
             },
+            "logbook": {
+                "messages": {
+                    "was_at_home": "is thús"
+                }
+            },
+            "media-browser": {
+                "class": {
+                    "url": "URL"
+                },
+                "media-player-browser": "Media",
+                "tts": {
+                    "message": "Berjocht"
+                }
+            },
+            "related-items": {
+                "integration": "Yntegraasje"
+            },
             "user-picker": {
                 "add_user": "Brûker tafoegje",
                 "no_user": "Gjin brûker"
             }
         },
         "dialogs": {
+            "entity_registry": {
+                "editor": {
+                    "device_classes": {
+                        "cover": {
+                            "curtain": "Gerdyn",
+                            "window": "Finster"
+                        }
+                    },
+                    "hidden_cause": "Ferburgen troch {cause}.",
+                    "name": "Namme"
+                }
+            },
             "generic": {
                 "cancel": "Annulearje"
+            },
+            "helper_settings": {
+                "generic": {
+                    "name": "Namme"
+                },
+                "input_datetime": {
+                    "time": "Tiid"
+                },
+                "input_select": {
+                    "add": "Tafoegje"
+                },
+                "input_text": {
+                    "min": "Minimum lingte",
+                    "password": "Wachtwurd"
+                }
+            },
+            "more_info_control": {
+                "update": {
+                    "skip": "Oerslaan"
+                }
+            },
+            "mqtt_device_debug_info": {
+                "show_as_yaml": "Lit sjen as YAML"
             },
             "quick-bar": {
                 "commands": {
                     "navigation": {
+                        "info": "Oer",
+                        "integrations": "Yntegraasjes",
+                        "system": "Systeem",
                         "users": "Brûkers"
+                    },
+                    "reload": {
+                        "script": "Skripten"
                     },
                     "types": {
                         "navigation": "Navigearje",
@@ -199,6 +313,7 @@
                 }
             },
             "zha_device_info": {
+                "unknown": "Ûnbekend",
                 "zha_device_card": {
                     "device_name_placeholder": "Feroarje apparaatnamme"
                 }
@@ -209,34 +324,75 @@
             "second": "{count} {count, plural,\none {sekonde}\nother {sekonden}\n}",
             "week": "{count} {count, plural,\none {wike}\nother {wiken}\n}"
         },
+        "login-form": {
+            "password": "Wachtwurd"
+        },
         "notification_drawer": {
             "close": "Slute"
         },
         "panel": {
             "config": {
+                "application_credentials": {
+                    "editor": {
+                        "domain": "Yntegraasje",
+                        "name": "Namme"
+                    },
+                    "picker": {
+                        "headers": {
+                            "application": "Yntegraasje",
+                            "name": "Namme"
+                        }
+                    }
+                },
+                "areas": {
+                    "editor": {
+                        "name": "Namme"
+                    },
+                    "picker": {
+                        "header": "Gebieten"
+                    }
+                },
                 "automation": {
                     "editor": {
                         "actions": {
                             "header": "Aksjes",
                             "type": {
                                 "choose": {
-                                    "add_option": "Opsje tafoegje"
+                                    "add_option": "Opsje tafoegje",
+                                    "label": "Kieze",
+                                    "option": "Opsje {number}"
                                 },
                                 "device_id": {
                                     "extra_fields": {
+                                        "brightness_pct": "Helderheid",
+                                        "message": "Berjocht",
                                         "mode": "Wize",
+                                        "title": "Titel",
                                         "value": "Wearde"
                                     }
+                                },
+                                "if": {
+                                    "then": "Dan"
                                 }
                             }
                         },
                         "alias": "Namme",
                         "conditions": {
                             "type": {
+                                "device": {
+                                    "extra_fields": {
+                                        "above": "Boppe",
+                                        "below": "Ûnder"
+                                    }
+                                },
                                 "sun": {
                                     "label": "Sinne"
                                 },
                                 "time": {
+                                    "after": "Efter",
+                                    "before": "Foar",
+                                    "label": "Tiid",
+                                    "type_value": "Fêste tiid",
                                     "weekdays": {
                                         "fri": "Freed",
                                         "mon": "Moandei",
@@ -253,6 +409,17 @@
                             "add": "Trigger tafoegje",
                             "header": "",
                             "type": {
+                                "calendar": {
+                                    "before": "Foar"
+                                },
+                                "device": {
+                                    "extra_fields": {
+                                        "below": "Ûnder"
+                                    }
+                                },
+                                "event": {
+                                    "context_user_pick": "Selektearje brûker"
+                                },
                                 "homeassistant": {
                                     "label": "",
                                     "shutdown": "Ofslúte",
@@ -266,8 +433,16 @@
                                     "from": "Fan",
                                     "to": "Nei"
                                 },
+                                "sun": {
+                                    "sunset": "Sinneûndergong"
+                                },
                                 "time": {
-                                    "at": "Om"
+                                    "at": "Om",
+                                    "label": "Tiid",
+                                    "type_value": "Fêste tiid"
+                                },
+                                "time_pattern": {
+                                    "seconds": "Sekonden"
                                 }
                             }
                         }
@@ -279,8 +454,10 @@
                     }
                 },
                 "blueprint": {
+                    "caption": "Blueprints",
                     "overview": {
                         "headers": {
+                            "file_name": "Bestânsnamme",
                             "name": "Namme"
                         },
                         "share_blueprint": "Diel blaudruk"
@@ -288,7 +465,11 @@
                 },
                 "cloud": {
                     "account": {
+                        "alexa": {
+                            "disable": "útskeakelje"
+                        },
                         "connecting": "Ferbine …",
+                        "integrations": "Yntegraasjes",
                         "tts": {
                             "try": "bisykje"
                         }
@@ -296,40 +477,131 @@
                     "alexa": {
                         "title": "Alexa"
                     },
+                    "forgot_password": {
+                        "email_error_msg": "Ferkearde email"
+                    },
                     "google": {
                         "title": "Google Assistant"
+                    },
+                    "login": {
+                        "forgot_password": "Wachtwurd ferjitten?",
+                        "password": "Wachtwurd",
+                        "sign_in": "Ynlogge"
+                    },
+                    "register": {
+                        "email_error_msg": "ûnjildich e-mailadres",
+                        "password": "Wachtwurd"
+                    }
+                },
+                "core": {
+                    "section": {
+                        "core": {
+                            "core_config": {
+                                "edit_location": "Lokaasje bewurkje",
+                                "location_name": "Namme"
+                            }
+                        }
+                    }
+                },
+                "dashboard": {
+                    "about": {
+                        "description": "Ferzje, systeemstatus en keppelings nei dokumintaasje",
+                        "main": "Oer",
+                        "secondary": "Ferzje, laden yntegraasjes, credits en keppelings nei dokumintaasje",
+                        "title": "Oer"
+                    },
+                    "energy": {
+                        "main": "Enerzjy"
+                    },
+                    "supervisor": {
+                        "main": "Add-ons"
+                    },
+                    "system": {
+                        "main": "Systeem",
+                        "title": "Systeem"
                     }
                 },
                 "devices": {
                     "data_table": {
-                        "device": "Apparaat"
+                        "device": "Apparaat",
+                        "integration": "Yntegraasje",
+                        "no_integration": "Gjin yntegraasje"
                     },
                     "device_not_found": "Apparaat net fûn.",
                     "disabled_by": {
+                        "integration": "Yntegraasje",
                         "user": "Gebrûker"
+                    },
+                    "name": "Namme",
+                    "picker": {
+                        "filter": {
+                            "filter": "Filter"
+                        }
+                    },
+                    "script": {
+                        "scripts_heading": "Skripten"
+                    }
+                },
+                "energy": {
+                    "grid": {
+                        "learn_more": "Mear ynformaasje oer hoe te begjinnen."
+                    },
+                    "solar": {
+                        "title": "Sinnepanielen"
+                    }
+                },
+                "entities": {
+                    "picker": {
+                        "filter": {
+                            "show_all": "Lit alles sjen"
+                        },
+                        "headers": {
+                            "integration": "Yntegraasje",
+                            "name": "Namme"
+                        }
                     }
                 },
                 "helpers": {
+                    "dialog": {
+                        "create_platform": "Meitsje {platform}"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Namme"
+                        }
+                    },
                     "types": {
                         "input_boolean": "Skeakelje",
-                        "input_number": "Nûmer"
+                        "input_number": "Nûmer",
+                        "input_text": "Tekst"
                     }
                 },
                 "info": {
+                    "caption": "Oer",
                     "description": "Ynformaasje oer dyn Home Assistant ynstallaasje"
                 },
                 "integrations": {
+                    "caption": "Yntegraasjes",
                     "config_entry": {
                         "configure": "Ynstelle",
                         "disable": {
+                            "disabled": "Útsetten",
                             "disabled_by": {
+                                "device": "apparaat",
+                                "integration": "yntegraasje",
                                 "user": "Gebrûker"
                             }
-                        }
+                        },
+                        "version": "Ferzje: {version}"
+                    },
+                    "config_flow": {
+                        "next": "Folgjende",
+                        "success": "Sukses"
                     },
                     "disable": {
                         "show": "Toan"
-                    }
+                    },
+                    "integration": "yntegraasje"
                 },
                 "logs": {
                     "level": {
@@ -339,21 +611,52 @@
                     }
                 },
                 "lovelace": {
+                    "dashboards": {
+                        "detail": {
+                            "create": "Meitsje",
+                            "delete": "Ferwiderje",
+                            "dismiss": "Slute",
+                            "url": "URL"
+                        },
+                        "picker": {
+                            "headers": {
+                                "filename": "Bestânsnamme"
+                            }
+                        }
+                    },
                     "description": "Konfigurearje dyn Lovelace-dashboards",
                     "resources": {
                         "detail": {
+                            "dismiss": "Slute",
+                            "url": "URL",
                             "warning_header": "Wês foarsichtich!"
+                        },
+                        "picker": {
+                            "headers": {
+                                "url": "URL"
+                            }
                         }
                     }
                 },
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "network": {
+                    "supervisor": {
+                        "static": "Statysk"
+                    }
+                },
+                "person": {
+                    "detail": {
+                        "name": "Namme"
+                    }
+                },
                 "scene": {
                     "editor": {
                         "devices": {
                             "add": "Foegje in apparaat ta",
-                            "delete": "Apparaat ferwiderje"
+                            "delete": "Apparaat ferwiderje",
+                            "header": "Apparaten"
                         },
                         "name": "Namme"
                     },
@@ -366,25 +669,58 @@
                     }
                 },
                 "script": {
+                    "caption": "Skripten",
                     "description": "Meitsje en bewurkje scripts",
+                    "editor": {
+                        "alias": "Namme",
+                        "default_name": "Nij Skript",
+                        "header": "Skript: {name}"
+                    },
                     "picker": {
                         "headers": {
                             "name": "Namme"
                         }
                     }
                 },
+                "system_dashboard": {
+                    "confirm_restart_title": "Home Assistant opnij starte?"
+                },
+                "tag": {
+                    "detail": {
+                        "name": "Namme"
+                    },
+                    "headers": {
+                        "name": "Namme",
+                        "write": "Skriuwe"
+                    },
+                    "write": "Skriuwe"
+                },
+                "updates": {
+                    "version_available": "Ferzje {version_available} is beskikber"
+                },
+                "url": {
+                    "caption": "Home Assistant URL",
+                    "external_url_label": "Ynternet",
+                    "internal_url_label": "Lokaal netwurk"
+                },
                 "users": {
                     "add_user": {
-                        "caption": "Brûker tafoegje"
+                        "caption": "Brûker tafoegje",
+                        "password": "Wachtwurd"
                     },
+                    "caption": "Brûkers",
                     "editor": {
+                        "new_password": "Nij Wachtwurd",
+                        "owner": "Eigner",
                         "password_changed": "It wachtwurd is feroare!",
+                        "system_generated": "Systeem brûker",
                         "username": "Brûkersnamme"
                     },
+                    "is_system": "Systeem brûker",
                     "picker": {
                         "headers": {
-                            "is_owner": "Eigner",
                             "name": "Namme",
+                            "system": "Systeem",
                             "username": "Brûkersnamme"
                         }
                     }
@@ -392,28 +728,85 @@
                 "zha": {
                     "clusters": {
                         "introduction": "Clusters binne de boustiennen foar Zigbee-funksjonaliteit. Se skiede funksjonaliteit yn logyske ienheden. D'r binne client- en serversoarten en disse besteane út attributen en kommando's."
+                    },
+                    "groups": {
+                        "create_group": "Meitsje groep"
                     }
                 },
-                "zwave": {
-                    "node_config": {
-                        "config_value": "Konfiguraasje wearde"
-                    },
-                    "node_management": {
-                        "add_to_group": "Tafoegje oan groep",
-                        "remove_from_group": "Ferwiderje út groep"
-                    },
-                    "services": {
-                        "cancel_command": "Opdracht annulearje"
+                "zone": {
+                    "detail": {
+                        "create": "Tafoegje",
+                        "name": "Namme"
                     }
+                },
+                "zwave_js": {
+                    "device_info": {
+                        "unknown": "Ûnbekend",
+                        "zwave_plus_version": "Ferzje {version}"
+                    }
+                }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "yaml_mode": "Gean nei YAML modus"
+                    },
+                    "yaml": {
+                        "section": {
+                            "reloading": {
+                                "script": "Skripten"
+                            },
+                            "server_management": {
+                                "confirm_restart_title": "Home Assistant opnij starte?",
+                                "heading": "Home Assistant"
+                            }
+                        },
+                        "title": "YAML"
+                    }
+                }
+            },
+            "energy": {
+                "setup": {
+                    "next": "Folgjende"
                 }
             },
             "lovelace": {
                 "cards": {
+                    "empty_state": {
+                        "title": "Wolkom thús"
+                    },
+                    "energy": {
+                        "energy_distribution": {
+                            "home": "Thús"
+                        },
+                        "energy_solar_graph": {
+                            "production": "Produksje {name}"
+                        },
+                        "energy_sources_table": {
+                            "energy": "Enerzjy"
+                        },
+                        "loading": "Laden…"
+                    },
+                    "picture-elements": {
+                        "toggle": "Skeakelje {name}"
+                    },
                     "starting": {
                         "description": "Home Assistant komt op gong, eefkes geduld…"
                     }
                 },
+                "components": {
+                    "energy_period_selector": {
+                        "month": "Moanne",
+                        "next": "Folgjende"
+                    }
+                },
                 "editor": {
+                    "action-editor": {
+                        "actions": {
+                            "more-info": "Mear Ynformaasje",
+                            "url": "URL"
+                        }
+                    },
                     "card": {
                         "calendar": {
                             "views": {
@@ -421,24 +814,65 @@
                                 "dayGridMonth": "Moanne"
                             }
                         },
+                        "config": {
+                            "required": "fereaske"
+                        },
                         "entities": {
                             "edit_special_row": "Rige bewurkje mei de code-editor",
+                            "entity_row": {
+                                "cast": "Cast"
+                            },
+                            "secondary_info_values": {
+                                "last-changed": "Lêst feroare"
+                            },
                             "special_row": "Spesjale rige"
+                        },
+                        "generic": {
+                            "maximum": "Maksimum",
+                            "name": "Namme",
+                            "unit": "Ienheid",
+                            "url": "URL"
+                        },
+                        "markdown": {
+                            "name": "Markdown"
+                        },
+                        "statistics-graph": {
+                            "periods": {
+                                "hour": "Oere"
+                            }
                         }
+                    },
+                    "common": {
+                        "add": "Tafoegje"
+                    },
+                    "edit_card": {
+                        "clear": "Opklearje"
                     },
                     "raw_editor": {
                         "confirm_remove_config_title": "Binne jo wis dat jo jo Lovelace UI-konfiguraasje ferwiderje wolle?"
                     },
                     "select_view": {
                         "dashboard_label": "Dashboard"
+                    },
+                    "suggest_card": {
+                        "add": "Taheakje oan dashboard"
                     }
                 },
                 "menu": {
+                    "close": "Slute",
                     "configure_ui": "Konfigurearje UI"
                 }
             },
             "mailbox": {
                 "playback_title": "Berjocht ôfspylje"
+            },
+            "media-browser": {
+                "tts": {
+                    "message": "Berjocht"
+                }
+            },
+            "my": {
+                "documentation": "dokumintaasje"
             },
             "page-authorize": {
                 "form": {
@@ -452,6 +886,45 @@
                                     }
                                 }
                             }
+                        },
+                        "homeassistant": {
+                            "error": {
+                                "invalid_auth": "Unjildige brûkersnamme of wachtwurd"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Wachtwurd",
+                                        "username": "Brûkersnamme"
+                                    }
+                                }
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Brûker"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "start_over": "Oernij begjinne"
+                }
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "troch {name}",
+                        "next_demo": "Folgjende demo"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "labels": {
+                            "air": "Loft",
+                            "commute_home": "Reizgje nei hûs"
                         }
                     }
                 }
@@ -460,31 +933,63 @@
                 "analytics": {
                     "finish": "Folgjende"
                 },
+                "core-config": {
+                    "finish": "Folgjende",
+                    "location_name_default": "Hûs"
+                },
                 "finish": "Ein",
-                "next": "Folgjende"
+                "integration": {
+                    "more_integrations": "Mear"
+                },
+                "next": "Folgjende",
+                "user": {
+                    "data": {
+                        "name": "Namme",
+                        "password": "Wachtwurd",
+                        "username": "Brûkersnamme"
+                    }
+                }
             },
             "profile": {
                 "advanced_mode": {
                     "link_promo": "Lear mear"
                 },
+                "change_password": {
+                    "new_password": "Nij Wachtwurd"
+                },
                 "dashboard": {
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
                 },
+                "logout_title": "Útlogge?",
+                "long_lived_access_tokens": {
+                    "name": "Namme"
+                },
                 "mfa_setup": {
-                    "close": "Slute"
+                    "close": "Slute",
+                    "title_success": "Sukses!"
                 },
                 "number_format": {
                     "formats": {
+                        "comma_decimal": "1.234.567.89",
                         "none": "Gjin"
                     }
                 },
+                "push_notifications": {
+                    "link_promo": "Lear mear"
+                },
                 "themes": {
                     "dark_mode": {
+                        "auto": "Auto",
                         "dark": "Tsjuster",
                         "light": "Ljocht"
                     },
                     "primary_color": "Primêre kleur"
+                },
+                "time_format": {
+                    "formats": {
+                        "24": "24 oeren"
+                    }
                 }
             }
         }

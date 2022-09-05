@@ -1,4 +1,11 @@
 {
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "on": "On"
+            }
+        }
+    },
     "supervisor": {
         "addon": {
             "dashboard": {
@@ -18,9 +25,6 @@
             }
         },
         "dialogs": {
-            "entity_registry": {
-                "customize_link": "entity customisations"
-            },
             "options_flow": {
                 "loading": {
                     "loading_flow": "Please wait while the options for {integration} are being initialised"
@@ -28,8 +32,8 @@
             },
             "quick-bar": {
                 "commands": {
-                    "navigation": {
-                        "customize": "Customisations"
+                    "reload": {
+                        "core": "Location & customisations"
                     }
                 }
             }
@@ -54,13 +58,9 @@
                         }
                     }
                 },
-                "customize": {
-                    "attributes_outside": "The following attributes are customised from outside of customize.yaml",
-                    "caption": "Customisations",
-                    "description": "Customise your entities",
-                    "picker": {
-                        "documentation": "Customisation documentation",
-                        "header": "Customisations"
+                "cloud": {
+                    "google": {
+                        "sync_to_google": "Synchronising changes to Google."
                     }
                 },
                 "integrations": {
@@ -75,9 +75,25 @@
                 "lovelace": {
                     "description": "Create customised sets of cards to control your home"
                 },
-                "ozw": {
-                    "network_status": {
-                        "unknown": "Unknown"
+                "zha": {
+                    "device_pairing_card": {
+                        "CONFIGURED_status_text": "Initialising",
+                        "INITIALIZED": "Initialisation complete"
+                    },
+                    "visualization": {
+                        "caption": "Visualisation",
+                        "header": "Network visualisation"
+                    }
+                }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "yaml": {
+                        "section": {
+                            "reloading": {
+                                "core": "Location & customisations"
+                            }
+                        }
                     }
                 }
             },

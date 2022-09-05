@@ -94,11 +94,6 @@
         }
     },
     "ui": {
-        "auth_store": {
-            "ask": "Bạn có muốn lưu thông tin đăng nhập này không?",
-            "confirm": "Lưu thông tin đăng nhập",
-            "decline": "Không, cám ơn"
-        },
         "card": {
             "alarm_control_panel": {
                 "arm_away": "Đi vắng",
@@ -309,7 +304,6 @@
             },
             "logbook": {
                 "by": "bởi",
-                "by_service": "bởi dịch vụ",
                 "entries_not_found": "Không tìm thấy mục nhật ký nào.",
                 "messages": {
                     "became_unavailable": "đã trở nên không khả dụng",
@@ -396,14 +390,6 @@
                 "script": "Một phần của các kịch bản sau"
             },
             "relative_time": {
-                "duration": {
-                    "day": "{count} {count, plural,\n  one { ngày }\n  other { ngày }\n}",
-                    "hour": "{count} {count, plural,\n  one { giờ }\n  other { giờ }\n}",
-                    "minute": "{count} {count, plural,\n  one { phút }\n  other { phút }\n}",
-                    "second": "{count}{count, plural,\n  one { giây }\n  other { giây }\n}",
-                    "week": "{count} {count, plural,\n  one { tuần }\n  other { tuần }\n}"
-                },
-                "just_now": "Ngay bây giờ",
                 "never": "Không bao giờ"
             },
             "service-picker": {
@@ -539,6 +525,50 @@
                 "title": "{device} thông tin sửa lỗi",
                 "triggers": "Các kích hoạt"
             },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "server_control": "Điều khiển máy chủ"
+                    },
+                    "reload": {
+                        "automation": "Tải lại tự động hóa",
+                        "command_line": "Tải lại các thực thể từ command line",
+                        "core": "Tải lại lõi",
+                        "filesize": "Tải lại các thực thể kích thước tập tin",
+                        "filter": "Tải lại các thực thể filter",
+                        "generic": "Tải lại các thực thể từ generic IP camera",
+                        "generic_thermostat": "Tải lại các thực thể từ generic thermostat",
+                        "group": "Tải lại nhóm",
+                        "history_stats": "Tải lại các thực thể history stats",
+                        "homekit": "Tải lại HomeKit",
+                        "input_boolean": "Tải lại input boolean",
+                        "input_datetime": "Tải lại input date time",
+                        "input_number": "Tải lại input number",
+                        "input_select": "Tải lại input select",
+                        "input_text": "Tải lại input texts",
+                        "min_max": "Tải lại các thực thể min/max",
+                        "mqtt": "Tải lại các thực thể mqtt",
+                        "person": "Tải lại người",
+                        "ping": "Tải lại các thực thể cảm biến nhị phân từ ping",
+                        "reload": "Tải lại {domain}",
+                        "rest": "Tải lại các thực thể và dịch vụ thông báo từ rest",
+                        "rpi_gpio": "Tải lại các thực thể Raspberry Pi GPIO",
+                        "scene": "Tải lại ngữ cảnh",
+                        "script": "Tải lại kịch bản",
+                        "smtp": "Tải lại các dịch vụ thông báo qua smtp",
+                        "statistics": "Tải lại các thực thể statistics",
+                        "telegram": "Tải lại các dịch vụ thông báo qua telegram",
+                        "template": "Tải lại các thực thể từ template",
+                        "trend": "Tải lại các thực thể từ trend",
+                        "universal": "Tải lại các thực thể từ universal media player",
+                        "zone": "Tải lại khu vực"
+                    },
+                    "server_control": {
+                        "restart": "Khởi động lại",
+                        "stop": "Dừng"
+                    }
+                }
+            },
             "voice_command": {
                 "did_not_hear": "Home Assistant không nghe thấy gì cả",
                 "how_can_i_help": "Tôi có thể giúp gì nào?",
@@ -585,8 +615,15 @@
         },
         "panel": {
             "config": {
-                "advanced_mode": {
-                    "link_profile_page": "trang hồ sơ của bạn"
+                "application_credentials": {
+                    "editor": {
+                        "name": "Tên"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Tên"
+                        }
+                    }
                 },
                 "areas": {
                     "caption": "Đăng ký Khu vực",
@@ -655,8 +692,7 @@
                                 },
                                 "event": {
                                     "event": "Sự kiện:",
-                                    "label": "Kích hoạt Sự kiện",
-                                    "service_data": "Dữ liệu cho dịch vụ"
+                                    "label": "Kích hoạt Sự kiện"
                                 },
                                 "repeat": {
                                     "label": "Lặp lại",
@@ -895,12 +931,14 @@
                         "show_info_automation": "Hiển thị thông tin về tự động hóa"
                     }
                 },
-                "cloud": {
-                    "account": {
-                        "google": {
-                            "sync_entities_404_message": "Thất bị khi đồng bộ các thực thể của bạn với Google, yêu cầu Google 'Hey Google, sync my devices' để thực hiện đồng bộ hoá."
+                "blueprint": {
+                    "overview": {
+                        "headers": {
+                            "name": "Tên"
                         }
-                    },
+                    }
+                },
+                "cloud": {
                     "alexa": {
                         "dont_expose_entity": "Không hiển thị thực thể",
                         "expose_entity": "Hiển thị thực thể",
@@ -909,7 +947,6 @@
                         "manage_domains": "Quản lý các tên miền",
                         "not_exposed": "{selected} không hiển thị"
                     },
-                    "description_login": "Đã đăng nhập với tên {email}",
                     "description_not_login": "Chưa đăng nhập",
                     "google": {
                         "dont_expose_entity": "Không hiển thị thực thể",
@@ -929,9 +966,7 @@
                                 "edit_requires_storage": "Trình chỉnh sửa bị vô hiệu hóa do cấu hình được lưu trữ trong configuration.yaml.",
                                 "elevation": "Độ cao",
                                 "elevation_meters": "mét",
-                                "external_url": "URL bên ngoài",
                                 "imperial_example": "Độ F, pound",
-                                "internal_url": "URL nội bộ",
                                 "latitude": "Vĩ độ",
                                 "location_name": "Tên cài đặt Home Assistant của bạn",
                                 "longitude": "Kinh độ",
@@ -947,24 +982,6 @@
                         }
                     }
                 },
-                "customize": {
-                    "attributes_not_set": "Các thuộc tính sau chưa được thiết lập. Thiết lập chúng nếu muốn.",
-                    "attributes_outside": "Các thuộc tính sau được tùy chỉnh từ bên ngoài customize.yaml",
-                    "attributes_override": "Bạn có thể ghi đè chúng nếu muốn.",
-                    "attributes_set": "Các thuộc tính sau của thực thể được thiếp lập bởi chương trình.",
-                    "caption": "Tùy chỉnh",
-                    "description": "Tùy chỉnh các thực thể của bạn",
-                    "different_include": "Có thể qua một miền, một đường dẫn hoặc một bao gồm khác.",
-                    "pick_attribute": "Chọn một thuộc tính để ghi đè",
-                    "picker": {
-                        "header": "Tùy chỉnh",
-                        "introduction": "Tinh chỉnh thuộc tính mỗi thực thể. Các tùy chỉnh được thêm / chỉnh sửa sẽ có hiệu lực ngay lập tức. Các tùy chỉnh bị xóa sẽ có hiệu lực khi thực thể được cập nhật."
-                    },
-                    "warning": {
-                        "include_link": "bao gồm customize.yaml",
-                        "include_sentence": "Có vẻ như cấu hình trong configuration.yaml của bạn chưa đúng"
-                    }
-                },
                 "devices": {
                     "add_prompt": "Chưa có {name} nào được thêm sử dụng thiết bị này. Bạn có thể thêm bằng nút + ở trên.",
                     "automation": {
@@ -973,7 +990,7 @@
                         "no_automations": "Không có tự động hoá",
                         "no_device_automations": "Không có tự động hoá nào khả dụng cho thiết bị này.",
                         "triggers": {
-                            "caption": "Làm gì đó khi ..."
+                            "caption": "Làm gì đó khi …"
                         }
                     },
                     "cant_edit": "Bạn chỉ có thể chỉnh sửa các mục được tạo trong UI.",
@@ -995,9 +1012,7 @@
                     "device_not_found": "Không tìm thấy thiết bị.",
                     "entities": {
                         "add_entities_lovelace": "Thêm vào Lovelace",
-                        "disabled_entities": "+{count} {count, plural,\n  one {thực thể bị vô hiệu hoá}\n  other {các thực thể bị vô hiệu hoá}\n}",
                         "entities": "Các thực thể",
-                        "hide_disabled": "Ẩn các thiết bị bị vô hiệu hoá",
                         "none": "Thiết bị này không có thực thể nào"
                     },
                     "name": "Tên",
@@ -1007,13 +1022,11 @@
                         "no_scenes": "Không có ngữ cảnh",
                         "scenes": "Các ngữ cảnh"
                     },
-                    "scenes": "Các ngữ cảnh",
                     "script": {
                         "create": "Tạo kịch bản với thiết bị",
                         "no_scripts": "Không có kịch bản",
                         "scripts": "Các kịch bản"
                     },
-                    "scripts": "Các kịch bản",
                     "unknown_error": "Lỗi không xác định",
                     "unnamed_device": "Thiết bị không tên",
                     "update": "Cập nhật"
@@ -1067,12 +1080,9 @@
                     "caption": "Người hỗ trợ",
                     "description": "Các yếu tố có thể giúp xây dựng tự động hóa.",
                     "dialog": {
-                        "add_helper": "Thêm hỗ trợ",
-                        "add_platform": "Thêm {platform}",
                         "create": "Tạo"
                     },
                     "picker": {
-                        "add_helper": "Thêm hỗ trợ",
                         "headers": {
                             "editable": "Có thể chỉnh sửa",
                             "entity_id": "Mã Thực thể",
@@ -1097,7 +1107,6 @@
                     "documentation": "Tài liệu",
                     "frontend_version": "Phiên bản Frontend: {version} - {type}",
                     "home_assistant_logo": "Logo của Home Assistant",
-                    "integrations": "Các tích hợp",
                     "issues": "Các vấn đề",
                     "license": "Được xuất bản theo giấy phép Apache 2.0",
                     "path_configuration": "Đường dẫn đến configuration.yaml: {path}",
@@ -1111,11 +1120,9 @@
                     "config_entry": {
                         "delete": "Xóa",
                         "delete_confirm": "Bạn chắc chắn muốn xóa bộ tích hợp này?",
-                        "device_unavailable": "Thiết bị không khả dụng",
                         "devices": "{count} {count, plural,\n  one { thiết bị }\n  other { các thiết bị }\n}",
                         "documentation": "Tài liệu",
                         "entities": "{count} {count, plural,\n  one { thực thể }\n  other { các thực thể }\n}",
-                        "entity_unavailable": "Thiết bị không khả dụng",
                         "firmware": "Firmware: {version}",
                         "manuf": "bởi {manufacturer}",
                         "no_area": "Không có khu vực",
@@ -1166,14 +1173,12 @@
                     "rename_input_label": "Tên mục",
                     "search": "Tìm các bộ tích hợp"
                 },
-                "introduction": "Ở đây có thể định cấu hình các thành phần của bạn và Home Assistant. Không phải mọi thứ đều có thể được cấu hình từ giao diện người dùng, nhưng chúng tôi đang cải thiện việc đó.",
                 "logs": {
                     "caption": "Nhật ký hoạt động",
                     "clear": "Xoá",
                     "description": "Xem nhật ký hoạt động của Home Assistant",
                     "details": "Chi tiết Nhật ký ({level})",
-                    "load_full_log": "Tải Đầy đủ Nhật ký của Home Assistant",
-                    "loading_log": "Đang tải nhật ký lỗi...",
+                    "loading_log": "Đang tải nhật ký lỗi…",
                     "multiple_messages": "thông điệp xuất hiện lần đầu vào lúc {time} và lặp lại {counter} lần",
                     "no_errors": "Không có lỗi nào được báo cáo.",
                     "no_issues": "Không có vấn đề mới nào!",
@@ -1189,7 +1194,6 @@
                             "storage": "Điều khiển bằng UI",
                             "yaml": "Tập tin YAML"
                         },
-                        "confirm_delete": "Bạn có chắc chắn muốn xóa bảng điều khiển này?",
                         "default_dashboard": "Đây là bảng điều khiển mặc định",
                         "detail": {
                             "create": "Tạo",
@@ -1268,41 +1272,6 @@
                     "subscribe_to": "Đăng ký vào chủ đề",
                     "title": "MQTT",
                     "topic": "chủ đề"
-                },
-                "ozw": {
-                    "navigation": {
-                        "nodes": "Các nút"
-                    },
-                    "network": {
-                        "header": "Quản lý Mạng lưới",
-                        "node_count": "{count} nút"
-                    },
-                    "network_status": {
-                        "unknown": "không xác định"
-                    },
-                    "node": {
-                        "button": "Chi tiết Nút",
-                        "not_found": "Không tìm thấy nút"
-                    },
-                    "nodes_table": {
-                        "failed": "Thất bại",
-                        "id": "ID",
-                        "manufacturer": "Nhà sản xuất",
-                        "model": "Mẫu",
-                        "query_stage": "Giai đoạn Truy vấn",
-                        "zwave_plus": "Z-Wave Plus"
-                    },
-                    "refresh_node": {
-                        "button": "Làm mới Nút",
-                        "node_status": "Trạng thái Nút",
-                        "refreshing_description": "Đang làm mới thông tin nút…",
-                        "start_refresh_button": "Bắt đầu Làm mới",
-                        "step": "Bước"
-                    },
-                    "services": {
-                        "add_node": "Thêm Nút",
-                        "remove_node": "Xoá Nút"
-                    }
                 },
                 "person": {
                     "caption": "Người",
@@ -1397,60 +1366,6 @@
                         },
                         "run_script": "Chạy kịch bản",
                         "show_info": "Hiển thị thông tin về kịch bản"
-                    }
-                },
-                "server_control": {
-                    "caption": "Điều khiển máy chủ",
-                    "description": "Khởi động lại và dừng máy chủ Home Assistant",
-                    "section": {
-                        "reloading": {
-                            "automation": "Tải lại tự động hóa",
-                            "command_line": "Tải lại các thực thể từ command line",
-                            "core": "Tải lại lõi",
-                            "filesize": "Tải lại các thực thể kích thước tập tin",
-                            "filter": "Tải lại các thực thể filter",
-                            "generic": "Tải lại các thực thể từ generic IP camera",
-                            "generic_thermostat": "Tải lại các thực thể từ generic thermostat",
-                            "group": "Tải lại nhóm",
-                            "heading": "Đang tải lại cấu hình YAML",
-                            "history_stats": "Tải lại các thực thể history stats",
-                            "homekit": "Tải lại HomeKit",
-                            "input_boolean": "Tải lại input boolean",
-                            "input_datetime": "Tải lại input date time",
-                            "input_number": "Tải lại input number",
-                            "input_select": "Tải lại input select",
-                            "input_text": "Tải lại input texts",
-                            "introduction": "Một số phần của Home Assistant có thể tải lại mà không yêu cầu khởi động lại. Nhấn nút tải lại sẽ gỡ bỏ cấu hình hiện tại của nó và tải một cấu hình mới.",
-                            "min_max": "Tải lại các thực thể min/max",
-                            "mqtt": "Tải lại các thực thể mqtt",
-                            "person": "Tải lại người",
-                            "ping": "Tải lại các thực thể cảm biến nhị phân từ ping",
-                            "reload": "Tải lại {domain}",
-                            "rest": "Tải lại các thực thể và dịch vụ thông báo từ rest",
-                            "rpi_gpio": "Tải lại các thực thể Raspberry Pi GPIO",
-                            "scene": "Tải lại ngữ cảnh",
-                            "script": "Tải lại kịch bản",
-                            "smtp": "Tải lại các dịch vụ thông báo qua smtp",
-                            "statistics": "Tải lại các thực thể statistics",
-                            "telegram": "Tải lại các dịch vụ thông báo qua telegram",
-                            "template": "Tải lại các thực thể từ template",
-                            "trend": "Tải lại các thực thể từ trend",
-                            "universal": "Tải lại các thực thể từ universal media player",
-                            "zone": "Tải lại khu vực"
-                        },
-                        "server_management": {
-                            "heading": "Quản lý máy chủ",
-                            "introduction": "Kiểm soát máy chủ Home Assistant của bạn từ Home Assistant.",
-                            "restart": "Khởi động lại",
-                            "stop": "Dừng"
-                        },
-                        "validation": {
-                            "check_config": "Kiểm tra cấu hình",
-                            "heading": "Xác nhận cấu hình",
-                            "introduction": "Xác thực cấu hình của bạn nếu gần đây bạn đã thực hiện một số thay đổi đối với cấu hình của bạn và muốn đảm bảo rằng nó là hợp lệ",
-                            "invalid": "Cấu hình không hợp lệ",
-                            "valid": "Cấu hình hợp lệ!"
-                        }
                     }
                 },
                 "tag": {
@@ -1581,47 +1496,6 @@
                     "home_zone_core_config": "Vị trí của Khu vực nhà của bạn có thể chỉnh sửa từ trang cấu hình chung. Bán kính của Khu vực nhà chưa thể được chỉnh sửa từ giao diện. Bạn có muốn chuyển đến cấu hình chung?",
                     "introduction": "Vùng địa lý cho phép bạn xác định các khu vực nhất định trên trái đất. Khi một người nằm trong một vùng, trạng thái của họ sẽ hiển thị tên vùng này. Vùng cũng có thể được sử dụng như một kích hoạt hoặc điều kiện trong các thiết lập tự động hóa.",
                     "no_zones_created_yet": "Có vẻ như bạn chưa tạo ra bất kỳ khu vực nào."
-                },
-                "zwave": {
-                    "common": {
-                        "index": "Mục lục",
-                        "value": "Giá trị"
-                    },
-                    "description": "Quản lý mạng Z-Wave",
-                    "node_config": {
-                        "config_parameter": "Tham số",
-                        "config_value": "Giá trị cấu hình",
-                        "false": "Sai",
-                        "set_config_parameter": "Đặt tham số cấu hình",
-                        "true": "Đúng"
-                    },
-                    "node_management": {
-                        "add_to_group": "Thêm vào Nhóm",
-                        "entities": "Các thực thể của nút này",
-                        "entity_info": "Thông tin Thực thể",
-                        "group": "Nhóm",
-                        "node_to_control": "Nút để điều khiển",
-                        "remove_broadcast": "Xoá Phát sóng",
-                        "remove_from_group": "Xóa Khỏi Nhóm"
-                    },
-                    "ozw_log": {
-                        "last_log_lines": "Số dòng nhật ký gần nhất",
-                        "load": "Tải",
-                        "tail": "Đuôi"
-                    },
-                    "services": {
-                        "cancel_command": "Hủy lệnh",
-                        "heal_node": "Nút sửa lỗi",
-                        "node_info": "Thông tin nút",
-                        "print_node": "Nút in ấn",
-                        "refresh_entity": "Làm mới Thực thể",
-                        "refresh_node": "Làm Mới Nút",
-                        "remove_failed_node": "Loại Bỏ Nút Bị Lỗi",
-                        "replace_failed_node": "Thay Thế Nút Bị Lỗi",
-                        "save_config": "Lưu cấu hình",
-                        "soft_reset": "Khởi động lại",
-                        "test_node": "Nút kiểm tra"
-                    }
                 }
             },
             "custom": {
@@ -1633,7 +1507,6 @@
                 "tabs": {
                     "events": {
                         "alert_event_type": "Loại sự kiện là một trường bắt buộc",
-                        "available_events": "Các sự kiện khả dụng",
                         "count_listeners": "({count} đang lắng nghe)",
                         "data": "Dữ liệu của Sự kiện (YAML, tùy chọn)",
                         "description": "Tạo một sự kiện trên kênh sự kiện.",
@@ -1683,6 +1556,60 @@
                         "reset": "Đặt lại mẫu sẵn về nội dung demo",
                         "title": "Mẫu sẵn",
                         "unknown_error_template": "Lỗi không xác định khi kết xuất bản mẫu"
+                    },
+                    "yaml": {
+                        "caption": "Điều khiển máy chủ",
+                        "description": "Khởi động lại và dừng máy chủ Home Assistant",
+                        "section": {
+                            "reloading": {
+                                "automation": "Tải lại tự động hóa",
+                                "command_line": "Tải lại các thực thể từ command line",
+                                "core": "Tải lại lõi",
+                                "filesize": "Tải lại các thực thể kích thước tập tin",
+                                "filter": "Tải lại các thực thể filter",
+                                "generic": "Tải lại các thực thể từ generic IP camera",
+                                "generic_thermostat": "Tải lại các thực thể từ generic thermostat",
+                                "group": "Tải lại nhóm",
+                                "heading": "Đang tải lại cấu hình YAML",
+                                "history_stats": "Tải lại các thực thể history stats",
+                                "homekit": "Tải lại HomeKit",
+                                "input_boolean": "Tải lại input boolean",
+                                "input_datetime": "Tải lại input date time",
+                                "input_number": "Tải lại input number",
+                                "input_select": "Tải lại input select",
+                                "input_text": "Tải lại input texts",
+                                "introduction": "Một số phần của Home Assistant có thể tải lại mà không yêu cầu khởi động lại. Nhấn nút tải lại sẽ gỡ bỏ cấu hình hiện tại của nó và tải một cấu hình mới.",
+                                "min_max": "Tải lại các thực thể min/max",
+                                "mqtt": "Tải lại các thực thể mqtt",
+                                "person": "Tải lại người",
+                                "ping": "Tải lại các thực thể cảm biến nhị phân từ ping",
+                                "reload": "Tải lại {domain}",
+                                "rest": "Tải lại các thực thể và dịch vụ thông báo từ rest",
+                                "rpi_gpio": "Tải lại các thực thể Raspberry Pi GPIO",
+                                "scene": "Tải lại ngữ cảnh",
+                                "script": "Tải lại kịch bản",
+                                "smtp": "Tải lại các dịch vụ thông báo qua smtp",
+                                "statistics": "Tải lại các thực thể statistics",
+                                "telegram": "Tải lại các dịch vụ thông báo qua telegram",
+                                "template": "Tải lại các thực thể từ template",
+                                "trend": "Tải lại các thực thể từ trend",
+                                "universal": "Tải lại các thực thể từ universal media player",
+                                "zone": "Tải lại khu vực"
+                            },
+                            "server_management": {
+                                "heading": "Quản lý máy chủ",
+                                "introduction": "Kiểm soát máy chủ Home Assistant của bạn từ Home Assistant.",
+                                "restart": "Khởi động lại",
+                                "stop": "Dừng"
+                            },
+                            "validation": {
+                                "check_config": "Kiểm tra cấu hình",
+                                "heading": "Xác nhận cấu hình",
+                                "introduction": "Xác thực cấu hình của bạn nếu gần đây bạn đã thực hiện một số thay đổi đối với cấu hình của bạn và muốn đảm bảo rằng nó là hợp lệ",
+                                "invalid": "Cấu hình không hợp lệ",
+                                "valid": "Cấu hình hợp lệ!"
+                            }
+                        }
                     }
                 }
             },
@@ -1753,7 +1680,6 @@
                         "calendar": {
                             "calendar_entities": "Các thực thể Lịch",
                             "description": "Thẻ Lịch dùng hiển thị lịch bao gồm ngày, tuần và xem dạng danh sách",
-                            "inital_view": "Dạng xem Căn bản",
                             "name": "Lịch",
                             "views": {
                                 "dayGridDay": "Ngày",
@@ -1818,7 +1744,7 @@
                             "entities": "Các Thực thể",
                             "manual": "Thủ công",
                             "manual_description": "Cần thêm một thẻ tuỳ chỉnh hay chỉ muốn viết cấu hình yaml thủ công?",
-                            "no_theme": "Không có theme.",
+                            "name": "Tên",
                             "search": "Tìm kiếm",
                             "state": "Trạng thái",
                             "state_color": "Thay đổi màu sắc biểu tượng theo trạng thái?"
@@ -1899,8 +1825,7 @@
                         },
                         "weather-forecast": {
                             "description": "Thẻ Dự báo Thời tiết hiển thị thông tin thời tiết. Rất hữu ích khi thêm vào các giao diện điều khiển dùng gắn tường.",
-                            "name": "Dự báo Thời tiết",
-                            "show_forecast": "Hiển thị Dự báo thời tiết"
+                            "name": "Dự báo Thời tiết"
                         }
                     },
                     "cardpicker": {
@@ -2192,8 +2117,7 @@
                         "username": "Tên đăng nhập"
                     },
                     "error": {
-                        "password_not_match": "Mật khẩu không khớp",
-                        "required_fields": "Điền vào tất cả các trường bắt buộc"
+                        "password_not_match": "Mật khẩu không khớp"
                     },
                     "intro": "Hãy bắt đầu bằng cách tạo tài khoản người dùng.",
                     "required_field": "Yêu cầu"
