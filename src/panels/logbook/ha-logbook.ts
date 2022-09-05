@@ -377,16 +377,32 @@ export class HaLogbook extends LitElement {
       return;
     }
     const nonExpiredRecords = this._nonExpiredRecords(purgeBeforePythonTime);
-    this._logbookEntries = !nonExpiredRecords.length
-      ? // All existing entries expired
-        newEntries
-      : newEntries[0].when >= nonExpiredRecords[0].when
-      ? // The new records are newer than the old records
-        // append the old records to the end of the new records
-        newEntries.concat(nonExpiredRecords)
-      : // The new records are older than the old records
-        // append the new records to the end of the old records
-        nonExpiredRecords.concat(newEntries);
+
+    // Entries are sorted in descending order with newest first.
+    if (!nonExpiredRecords.length) {
+      // We have no records left, so we can just replace the list
+      this._logbookEntries = newEntries;
+    } else if (
+      newEntries[newEntries.length - 1].when > // oldest new entry
+      nonExpiredRecords[0].when // newest old entry
+    ) {
+      // The new records are newer than the old records
+      // append the old records to the end of the new records
+      this._logbookEntries = newEntries.concat(nonExpiredRecords);
+    } else if (
+      nonExpiredRecords[nonExpiredRecords.length - 1].when > // oldest old entry
+      newEntries[0].when // newest new entry
+    ) {
+      // The new records are older than the old records
+      // append the new records to the end of the old records
+      this._logbookEntries = nonExpiredRecords.concat(newEntries);
+    } else {
+      // The new records are in the middle of the old records
+      // so we need to re-sort them
+      this._logbookEntries = nonExpiredRecords
+        .concat(newEntries)
+        .sort((a, b) => b.when - a.when);
+    }
   };
 
   private _updateTraceContexts = throttle(async () => {
