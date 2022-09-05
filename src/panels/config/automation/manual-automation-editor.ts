@@ -41,6 +41,20 @@ export class HaManualAutomationEditor extends LitElement {
 
   protected render() {
     return html`
+      ${this.stateObj?.state === "off"
+        ? html`
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.disabled"
+              )}
+              <mwc-button slot="action" @click=${this._enable}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.enable"
+                )}
+              </mwc-button>
+            </ha-alert>
+          `
+        : ""}
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
@@ -175,6 +189,15 @@ export class HaManualAutomationEditor extends LitElement {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, action: ev.detail.value as Action[] },
+    });
+  }
+
+  private async _enable(): Promise<void> {
+    if (!this.hass || !this.stateObj) {
+      return;
+    }
+    await this.hass.callService("automation", "turn_on", {
+      entity_id: this.stateObj.entity_id,
     });
   }
 

@@ -267,20 +267,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 })}"
                 @subscribe-automation-config=${this._subscribeAutomationConfig}
               >
-                ${stateObj?.state === "off"
-                  ? html`
-                      <ha-alert alert-type="warning" @click=${this._toggle}>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.disabled"
-                        )}
-                        <mwc-button slot="action">
-                          ${this.hass.localize(
-                            "ui.panel.config.automation.editor.enable"
-                          )}
-                        </mwc-button>
-                      </ha-alert>
-                    `
-                  : ""}
                 ${this._errors
                   ? html`<div class="errors">${this._errors}</div>`
                   : ""}
@@ -308,18 +294,20 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                       `
                   : this._mode === "yaml"
                   ? html`
-                      ${!this.narrow
+                      ${stateObj?.state === "off"
                         ? html`
-                            <ha-card outlined>
-                              <div class="card-header">
-                                ${this._config.alias ||
-                                this.hass.localize(
-                                  "ui.panel.config.automation.editor.default_name"
+                            <ha-alert alert-type="info">
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.disabled"
+                              )}
+                              <mwc-button slot="action" @click=${this._toggle}>
+                                ${this.hass.localize(
+                                  "ui.panel.config.automation.editor.enable"
                                 )}
-                              </div>
-                            </ha-card>
+                              </mwc-button>
+                            </ha-alert>
                           `
-                        : ``}
+                        : ""}
                       <ha-yaml-editor
                         .hass=${this.hass}
                         .defaultValue=${this._preprocessYaml()}
