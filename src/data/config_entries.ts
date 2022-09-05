@@ -46,7 +46,7 @@ export const RECOVERABLE_STATES: ConfigEntry["state"][] = [
 ];
 
 export interface ConfigEntryUpdate {
-  // Base data
+  // null means no update as is the current state
   type: null | "added" | "removed" | "updated";
   entry: ConfigEntry;
 }
