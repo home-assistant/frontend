@@ -4,7 +4,7 @@ subtitle: The difference between remove/delete and add/create.
 ---
 
 # Remove vs Delete
-Remove and Delete are quite similarly, but can be frustrating if used inconsistent.
+Remove and Delete are quite similar, but can be frustrating if used inconsistently.
 
 ## Remove
 Take away and set aside, but kept in existence.
