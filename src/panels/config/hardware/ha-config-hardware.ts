@@ -284,38 +284,38 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                 </ha-card>
               `
             : ""}
-
-          <ha-card outlined>
-            <div class="header">
-              <div class="title">
-                ${this.hass.localize("ui.panel.config.hardware.processor")}
-              </div>
-              <div class="value">
-                ${this._systemStatusData?.cpu_percent || "-"}%
-              </div>
-            </div>
-            <div class="card-content">
-              <ha-chart-base
-                .data=${{
-                  datasets: [
-                    {
-                      ...DATA_SET_CONFIG,
-                      data: this._cpuEntries,
-                    },
-                  ],
-                }}
-                .options=${this._chartOptions}
-              ></ha-chart-base>
-            </div>
-          </ha-card>
-          <ha-card outlined>
-            <div class="header">
-              <div class="title">
-                ${this.hass.localize("ui.panel.config.hardware.memory")}
-              </div>
-              <div class="value">
-                ${this._systemStatusData
-                  ? html`
+          ${this._systemStatusData
+            ? html` <ha-card outlined>
+                  <div class="header">
+                    <div class="title">
+                      ${this.hass.localize(
+                        "ui.panel.config.hardware.processor"
+                      )}
+                    </div>
+                    <div class="value">
+                      ${this._systemStatusData.cpu_percent || "-"}%
+                    </div>
+                  </div>
+                  <div class="card-content">
+                    <ha-chart-base
+                      .data=${{
+                        datasets: [
+                          {
+                            ...DATA_SET_CONFIG,
+                            data: this._cpuEntries,
+                          },
+                        ],
+                      }}
+                      .options=${this._chartOptions}
+                    ></ha-chart-base>
+                  </div>
+                </ha-card>
+                <ha-card outlined>
+                  <div class="header">
+                    <div class="title">
+                      ${this.hass.localize("ui.panel.config.hardware.memory")}
+                    </div>
+                    <div class="value">
                       ${round(this._systemStatusData.memory_used_mb / 1024, 1)}
                       GB /
                       ${round(
@@ -325,24 +325,23 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                         0
                       )}
                       GB
-                    `
-                  : "- GB / - GB"}
-              </div>
-            </div>
-            <div class="card-content">
-              <ha-chart-base
-                .data=${{
-                  datasets: [
-                    {
-                      ...DATA_SET_CONFIG,
-                      data: this._memoryEntries,
-                    },
-                  ],
-                }}
-                .options=${this._chartOptions}
-              ></ha-chart-base>
-            </div>
-          </ha-card>
+                    </div>
+                  </div>
+                  <div class="card-content">
+                    <ha-chart-base
+                      .data=${{
+                        datasets: [
+                          {
+                            ...DATA_SET_CONFIG,
+                            data: this._memoryEntries,
+                          },
+                        ],
+                      }}
+                      .options=${this._chartOptions}
+                    ></ha-chart-base>
+                  </div>
+                </ha-card>`
+            : ""}
         </div>
       </hass-subpage>
     `;
