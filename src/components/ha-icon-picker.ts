@@ -124,11 +124,7 @@ export class HaIconPicker extends LitElement {
   }
 
   protected shouldUpdate(changedProps: PropertyValues) {
-    const keys = Array.from(changedProps.keys());
-    if (keys.length === 1 && keys[0] === "hass" && this.hass) {
-      return false;
-    }
-    return true;
+    return !(this.hass && changedProps.size === 1 && changedProps.has("hass"));
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {
