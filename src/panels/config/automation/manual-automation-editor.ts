@@ -73,6 +73,9 @@ export class HaManualAutomationEditor extends LitElement {
             </ha-alert>
           `
         : ""}
+      ${this.config.description
+        ? html`<p class="description">${this.config.description}</p>`
+        : ""}
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
@@ -215,7 +218,9 @@ export class HaManualAutomationEditor extends LitElement {
         .link-button-row {
           padding: 14px;
         }
-
+        .description {
+          margin: 0;
+        }
         p {
           margin-bottom: 0;
         }

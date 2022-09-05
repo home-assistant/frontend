@@ -627,7 +627,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _saveAutomation(): Promise<void> {
     const id = this.automationId || String(Date.now());
-    if (!this._config!.alias) {
+    if (!this.automationId) {
       await this._promptAutomationAlias();
       if (!this._config!.alias) {
         showAlertDialog(this, {
