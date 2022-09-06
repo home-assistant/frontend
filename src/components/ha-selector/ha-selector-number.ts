@@ -29,13 +29,17 @@ export class HaNumberSelector extends LitElement {
   protected render() {
     const isBox = this.selector.number.mode === "box";
 
+    const fullLabel = `${this.label} ${
+      this.selector.number.unit_of_measurement
+        ? "(" + this.selector.number.unit_of_measurement + ")"
+        : ""
+    }`;
+
     return html`
       <div class="input">
         ${!isBox
           ? html`
-              ${this.label
-                ? html`${this.label}${this.required ? " *" : ""}`
-                : ""}
+              ${fullLabel ? html`${fullLabel}${this.required ? " *" : ""}` : ""}
               <ha-slider
                 .min=${this.selector.number.min}
                 .max=${this.selector.number.max}
@@ -53,7 +57,7 @@ export class HaNumberSelector extends LitElement {
         <ha-textfield
           inputMode="numeric"
           pattern="[0-9]+([\\.][0-9]+)?"
-          .label=${this.selector.number.mode !== "box" ? undefined : this.label}
+          .label=${this.selector.number.mode !== "box" ? undefined : fullLabel}
           .placeholder=${this.placeholder}
           class=${classMap({ single: this.selector.number.mode === "box" })}
           .min=${this.selector.number.min}

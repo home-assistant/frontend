@@ -20,7 +20,7 @@ export default class HaNumericStateCondition extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (entityId) =>
+    (entityId, condition: NumericStateCondition) =>
       [
         { name: "entity_id", required: true, selector: { entity: {} } },
         {
@@ -103,6 +103,11 @@ export default class HaNumericStateCondition extends LitElement {
               min: Number.MIN_SAFE_INTEGER,
               max: Number.MAX_SAFE_INTEGER,
               step: 0.1,
+              // If we have an attribute selected, then the unit is not relevant and no input suffix should be shown
+              unit_of_measurement:
+                entityId && !condition.attribute
+                  ? this.hass.states[entityId].attributes.unit_of_measurement
+                  : undefined,
             },
           },
         },
@@ -114,6 +119,11 @@ export default class HaNumericStateCondition extends LitElement {
               min: Number.MIN_SAFE_INTEGER,
               max: Number.MAX_SAFE_INTEGER,
               step: 0.1,
+              // If we have an attribute selected, then the unit is not relevant and no input suffix should be shown
+              unit_of_measurement:
+                entityId && !condition.attribute
+                  ? this.hass.states[entityId].attributes.unit_of_measurement
+                  : undefined,
             },
           },
         },
@@ -125,7 +135,7 @@ export default class HaNumericStateCondition extends LitElement {
   );
 
   public render() {
-    const schema = this._schema(this.condition.entity_id);
+    const schema = this._schema(this.condition.entity_id, this.condition);
 
     return html`
       <ha-form

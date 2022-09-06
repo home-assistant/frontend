@@ -16,7 +16,7 @@ export class HaNumericStateTrigger extends LitElement {
   @property({ attribute: false }) public trigger!: NumericStateTrigger;
 
   private _schema = memoizeOne(
-    (entityId) =>
+    (entityId, trigger: NumericStateTrigger) =>
       [
         { name: "entity_id", required: true, selector: { entity: {} } },
         {
@@ -99,6 +99,11 @@ export class HaNumericStateTrigger extends LitElement {
               min: Number.MIN_SAFE_INTEGER,
               max: Number.MAX_SAFE_INTEGER,
               step: 0.1,
+              // If we have an attribute selected, then the unit is not relevant and no input suffix should be shown
+              unit_of_measurement:
+                entityId && !trigger.attribute
+                  ? this.hass.states[entityId].attributes.unit_of_measurement
+                  : undefined,
             },
           },
         },
@@ -110,6 +115,11 @@ export class HaNumericStateTrigger extends LitElement {
               min: Number.MIN_SAFE_INTEGER,
               max: Number.MAX_SAFE_INTEGER,
               step: 0.1,
+              // If we have an attribute selected, then the unit is not relevant and no input suffix should be shown
+              unit_of_measurement:
+                entityId && !trigger.attribute
+                  ? this.hass.states[entityId].attributes.unit_of_measurement
+                  : undefined,
             },
           },
         },
@@ -145,7 +155,7 @@ export class HaNumericStateTrigger extends LitElement {
     const trgFor = createDurationData(this.trigger.for);
 
     const data = { ...this.trigger, for: trgFor };
-    const schema = this._schema(this.trigger.entity_id);
+    const schema = this._schema(this.trigger.entity_id, this.trigger);
 
     return html`
       <ha-form
