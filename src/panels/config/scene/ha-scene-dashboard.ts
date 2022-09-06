@@ -1,7 +1,8 @@
 import {
+  mdiContentDuplicate,
+  mdiDelete,
   mdiHelpCircle,
   mdiInformationOutline,
-  mdiPencil,
   mdiPencilOff,
   mdiPlay,
   mdiPlus,
@@ -9,7 +10,6 @@ import {
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -23,15 +23,27 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-overflow-menu";
 import { forwardHaptic } from "../../../data/haptics";
-import { activateScene, SceneEntity } from "../../../data/scene";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  activateScene,
+  deleteScene,
+  getSceneConfig,
+  SceneEntity,
+  showSceneEditor,
+} from "../../../data/scene";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -68,88 +80,108 @@ class HaSceneDashboard extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (_language): DataTableColumnContainer => ({
-      activate: {
-        title: "",
-        label: this.hass.localize(
-          "ui.panel.config.scene.picker.headers.activate"
-        ),
-        type: "icon-button",
-        template: (_toggle, scene) =>
-          html`
-            <ha-icon-button
-              .scene=${scene}
-              .label=${this.hass.localize(
-                "ui.panel.config.scene.picker.activate_scene"
-              )}
-              .path=${mdiPlay}
-              @click=${this._activateScene}
-            ></ha-icon-button>
+    (_language, narrow): DataTableColumnContainer => {
+      const columns: DataTableColumnContainer = {
+        icon: {
+          title: "",
+          label: this.hass.localize(
+            "ui.panel.config.scene.picker.headers.state"
+          ),
+          type: "icon",
+          template: (_, scene) =>
+            html` <ha-state-icon .state=${scene}></ha-state-icon> `,
+        },
+        name: {
+          title: this.hass.localize(
+            "ui.panel.config.scene.picker.headers.name"
+          ),
+          sortable: true,
+          filterable: true,
+          direction: "asc",
+          grows: true,
+        },
+      };
+      if (!narrow) {
+        columns.state = {
+          title: this.hass.localize(
+            "ui.panel.config.scene.picker.headers.last_activated"
+          ),
+          sortable: true,
+          width: "30%",
+          template: (last_activated) => html`
+            ${last_activated && !UNAVAILABLE_STATES.includes(last_activated)
+              ? formatDateTime(new Date(last_activated), this.hass.locale)
+              : this.hass.localize("ui.components.relative_time.never")}
           `,
-      },
-      icon: {
+        };
+      }
+      columns.only_editable = {
         title: "",
-        label: this.hass.localize("ui.panel.config.scene.picker.headers.state"),
-        type: "icon",
-        template: (_, scene) =>
-          html` <ha-state-icon .state=${scene}></ha-state-icon> `,
-      },
-      name: {
-        title: this.hass.localize("ui.panel.config.scene.picker.headers.name"),
-        sortable: true,
-        filterable: true,
-        direction: "asc",
-        grows: true,
-      },
-      info: {
-        title: "",
-        label: this.hass.localize(
-          "ui.panel.config.scene.picker.headers.show_info"
-        ),
-        type: "icon-button",
-        template: (_info, scene) => html`
-          <ha-icon-button
-            .scene=${scene}
-            @click=${this._showInfo}
-            .label=${this.hass.localize(
-              "ui.panel.config.scene.picker.show_info_scene"
-            )}
-            .path=${mdiInformationOutline}
-          ></ha-icon-button>
-        `,
-      },
-      edit: {
-        title: "",
-        label: this.hass.localize("ui.panel.config.scene.picker.headers.edit"),
-        type: "icon-button",
-        template: (_info, scene: any) => html`
-          <a
-            href=${ifDefined(
-              scene.attributes.id
-                ? `/config/scene/edit/${scene.attributes.id}`
-                : undefined
-            )}
-          >
-            <ha-icon-button
-              .disabled=${!scene.attributes.id}
-              .label=${this.hass.localize(
-                "ui.panel.config.scene.picker.edit_scene"
-              )}
-              .path=${scene.attributes.id ? mdiPencil : mdiPencilOff}
-            ></ha-icon-button>
-          </a>
-          ${!scene.attributes.id
+        width: "56px",
+        template: (_info, scene: any) =>
+          !scene.attributes.id
             ? html`
                 <paper-tooltip animation-delay="0" position="left">
                   ${this.hass.localize(
                     "ui.panel.config.scene.picker.only_editable"
                   )}
                 </paper-tooltip>
+                <ha-svg-icon
+                  .path=${mdiPencilOff}
+                  style="color: var(--secondary-text-color)"
+                ></ha-svg-icon>
               `
-            : ""}
-        `,
-      },
-    })
+            : "",
+      };
+      columns.actions = {
+        title: "",
+        width: "72px",
+        type: "overflow-menu",
+        template: (_: string, scene: any) =>
+          html`
+            <ha-icon-overflow-menu
+              .hass=${this.hass}
+              narrow
+              .items=${[
+                {
+                  path: mdiInformationOutline,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.show_info"
+                  ),
+                  action: () => this._showInfo(scene),
+                },
+                {
+                  path: mdiPlay,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.activate"
+                  ),
+                  action: () => this._activateScene(scene),
+                },
+                {
+                  path: mdiContentDuplicate,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.duplicate"
+                  ),
+                  action: () => this._duplicate(scene),
+                  disabled: !scene.attributes.id,
+                },
+                {
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.delete"
+                  ),
+                  path: mdiDelete,
+                  action: () => this._deleteConfirm(scene),
+                  warning: scene.attributes.id,
+                  disabled: !scene.attributes.id,
+                },
+              ]}
+            >
+            </ha-icon-overflow-menu>
+          `,
+      };
+
+      return columns;
+    }
   );
 
   protected render(): TemplateResult {
@@ -160,7 +192,7 @@ class HaSceneDashboard extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
-        .columns=${this._columns(this.hass.language)}
+        .columns=${this._columns(this.hass.locale, this.narrow)}
         id="entity_id"
         .data=${this._scenes(this.scenes, this._filteredScenes)}
         .activeFilters=${this._activeFilters}
@@ -226,15 +258,11 @@ class HaSceneDashboard extends LitElement {
     this._filterValue = undefined;
   }
 
-  private _showInfo(ev) {
-    ev.stopPropagation();
-    const entityId = ev.currentTarget.scene.entity_id;
-    fireEvent(this, "hass-more-info", { entityId });
+  private _showInfo(scene: SceneEntity) {
+    fireEvent(this, "hass-more-info", { entityId: scene.entity_id });
   }
 
-  private _activateScene = async (ev) => {
-    ev.stopPropagation();
-    const scene = ev.currentTarget.scene as SceneEntity;
+  private _activateScene = async (scene: SceneEntity) => {
     await activateScene(this.hass, scene.entity_id);
     showToast(this, {
       message: this.hass.localize(
@@ -245,6 +273,34 @@ class HaSceneDashboard extends LitElement {
     });
     forwardHaptic("light");
   };
+
+  private _deleteConfirm(scene: SceneEntity): void {
+    showConfirmationDialog(this, {
+      text: this.hass!.localize("ui.panel.config.scene.picker.delete_confirm"),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      confirm: () => this._delete(scene),
+    });
+  }
+
+  private async _delete(scene: SceneEntity): Promise<void> {
+    if (scene.attributes.id) {
+      await deleteScene(this.hass, scene.attributes.id);
+    }
+  }
+
+  private async _duplicate(scene) {
+    if (scene.attributes.id) {
+      const config = await getSceneConfig(this.hass, scene.attributes.id);
+      showSceneEditor({
+        ...config,
+        id: undefined,
+        name: `${config?.name} (${this.hass.localize(
+          "ui.panel.config.scene.picker.duplicate"
+        )})`,
+      });
+    }
+  }
 
   private _showHelp() {
     showAlertDialog(this, {

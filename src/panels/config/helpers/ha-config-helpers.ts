@@ -15,7 +15,6 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
-import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import { getConfigFlowHandlers } from "../../../data/config_flow";

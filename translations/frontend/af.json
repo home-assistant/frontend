@@ -49,6 +49,11 @@
                 "none": "Geen",
                 "sleep": "Slaap"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "normal": "Normāls"
+            }
         }
     },
     "state_badge": {
@@ -93,11 +98,6 @@
         }
     },
     "ui": {
-        "auth_store": {
-            "ask": "Wil u hierdie aanmelding stoor?",
-            "confirm": "Stoor aanmelding",
-            "decline": "Nee"
-        },
         "card": {
             "alarm_control_panel": {
                 "arm_away": "Bewapen weg",
@@ -271,13 +271,6 @@
                 "script": "Deel van die volgende skrifte"
             },
             "relative_time": {
-                "duration": {
-                    "day": "{count} {count, plural,\n  one {dag}\n  other {dae}\n}",
-                    "hour": "{count} {count, plural,\n  one {uur}\n  other {ure}\n}",
-                    "minute": "{count} {count, plural,\n  one {minuut}\n  other {minute}\n}",
-                    "second": "{count} {count, plural,\n  one {sekonde}\n  other {sekondes}\n}",
-                    "week": "{count} {count, plural,\n  one {week}\n  other {weke}\n}"
-                },
                 "never": "Nooit"
             },
             "service-picker": {
@@ -387,6 +380,17 @@
                     "stop": "Stop"
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "server_control": "Bedienerkontroles"
+                    },
+                    "reload": {
+                        "person": "Herlaai persone",
+                        "zone": "Herlaai sones"
+                    }
+                }
+            },
             "voice_command": {
                 "how_can_i_help": "Hoe kan ek help?",
                 "label": "Voer 'n vraag in en druk 'Enter'",
@@ -422,9 +426,15 @@
         },
         "panel": {
             "config": {
-                "advanced_mode": {
-                    "hint_enable": "Ontbreekopsies ontbreek? Aktiveer gevorderde modus aan",
-                    "link_profile_page": "jou profiel bladsy"
+                "application_credentials": {
+                    "editor": {
+                        "name": "Naam"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Naam"
+                        }
+                    }
                 },
                 "areas": {
                     "caption": "Areas",
@@ -433,6 +443,7 @@
                         "create": "SKEP",
                         "default_name": "Nuwe Gebied",
                         "delete": "SKRAP",
+                        "name": "Naam",
                         "update": "Opdateer"
                     },
                     "picker": {
@@ -467,8 +478,7 @@
                                 },
                                 "event": {
                                     "event": "Gebeurtenis:",
-                                    "label": "Vuur geval",
-                                    "service_data": "Diens data"
+                                    "label": "Vuur geval"
                                 },
                                 "service": {
                                     "label": "Roep diens"
@@ -636,6 +646,9 @@
                         "delete_confirm": "Is u seker dat u hierdie outomatisering wil uitvee?",
                         "edit_automation": "Wysig outomatisering",
                         "header": "Outomatiseringsredakteur",
+                        "headers": {
+                            "name": "Naam"
+                        },
                         "introduction": "Die outomatiseringsredakteur stel u in staat om outomatisasies te skep en te wysig. Volg die onderstaande skakel om die instruksies te lees om seker te maak dat u Home Assistant korrek opgestel het.",
                         "learn_more": "Kom meer te wete oor outomatisasies",
                         "no_automations": "Ons kon nie redigeerbare outomatisasies vind nie",
@@ -644,21 +657,23 @@
                         "show_info_automation": "Wys inligting oor outomatisering"
                     }
                 },
+                "backup": {
+                    "created": "Geskep"
+                },
+                "blueprint": {
+                    "overview": {
+                        "headers": {
+                            "name": "Naam"
+                        }
+                    }
+                },
                 "cloud": {
                     "account": {
-                        "google": {
-                            "sync_entities_404_message": "Kon nie u entiteite met Google sinkroniseer nie, vra Google 'Hallo Google, sinkroniseer my toestelle' om u entiteite te sinkroniseer."
-                        },
                         "remote": {
-                            "not_connected": "Nie gekoppel nie",
-                            "remote_enabled": {
-                                "caption": "Verbind outomaties",
-                                "description": "Skakel hierdie opsie in om seker te maak dat u Home Assistent-instansie altyd op afstand toeganklik is."
-                            }
+                            "not_connected": "Nie gekoppel nie"
                         }
                     },
                     "description_features": "Beheer terwyl weg van die huis af is, integreer met Alexa en Google Assistant.",
-                    "description_login": "Aangemeld as {email}",
                     "description_not_login": "Nie aangemeld nie"
                 },
                 "core": {
@@ -684,25 +699,6 @@
                             "header": "Opstellings en bedienerbeheer",
                             "introduction": "As u opstellings verander, kan dit 'n vermoeiende proses wees. Ons weet. Hierdie afdeling sal probeer om u lewe 'n bietjie makliker te maak."
                         }
-                    }
-                },
-                "customize": {
-                    "attributes_customize": "Die volgende kenmerke is reeds opgestel in customize.yaml",
-                    "attributes_not_set": "Die volgende eienskappe is nie gestel nie. Stel dit in as u wil.",
-                    "attributes_override": "Jy kan hulle oorheers as jy wil.",
-                    "attributes_set": "Die volgende eienskappe van die entiteit is programmaties gestel",
-                    "caption": "Pasgemaakte Instellings",
-                    "description": "Pas u entiteite aan",
-                    "different_include": "Moontlik via 'n domein, 'n glob of 'n ander insluit.",
-                    "pick_attribute": "Kies 'n kenmerk om te ignoreer",
-                    "picker": {
-                        "header": "Pasgemaakte Instellings",
-                        "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde / gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werking tree wanneer die entiteit opgedateer word."
-                    },
-                    "warning": {
-                        "include_link": "sluit customize.yaml in",
-                        "include_sentence": "Dit lyk asof u konfigurasie.yaml nie behoorlik is nie",
-                        "not_applied": "Wysigings wat hier aangebring is, word daarin geskryf, maar sal nie toegepas word na die herlaai van die konfigurasie nie, tensy die insluit in plek is."
                     }
                 },
                 "devices": {
@@ -734,13 +730,11 @@
                         "no_scenes": "Geen tonele nie",
                         "scenes": "Tonele"
                     },
-                    "scenes": "Tonele",
                     "script": {
                         "create": "Skep skrip met toestel",
                         "no_scripts": "Geen skrifte nie",
                         "scripts": "Skripte"
                     },
-                    "scripts": "Skripte",
                     "unknown_error": "Onbekende fout",
                     "unnamed_device": "Naamlose toestel",
                     "update": "Opdateer"
@@ -767,6 +761,7 @@
                         },
                         "header": "Entiteit Register",
                         "headers": {
+                            "name": "Naam",
                             "status": "Status"
                         },
                         "introduction": "Home Assistant hou 'n register van al die vorige entiteite wat uniek geïdentifiseer kan word. Elk van hierdie entiteite sal 'n entiteit-ID hê wat vir hierdie entiteit gereserveer sal word.",
@@ -790,12 +785,9 @@
                     "caption": "Helpers",
                     "description": "Elemente wat kan help met die opbou van outomatisering.",
                     "dialog": {
-                        "add_helper": "Voeg helper by",
-                        "add_platform": "Voeg {platform}",
                         "create": "Skep"
                     },
                     "picker": {
-                        "add_helper": "Voeg helper by",
                         "headers": {
                             "editable": "Redigeerbaar",
                             "name": "Naam",
@@ -816,11 +808,8 @@
                     "config_entry": {
                         "delete": "Verwyder",
                         "delete_confirm": "Is u seker u wil hierdie integrasie skrap?",
-                        "device_unavailable": "toestel nie beskikbaar nie",
                         "documentation": "Dokumentasie",
-                        "entity_unavailable": "entiteit nie beskikbaar nie",
                         "firmware": "Fermware: {version}",
-                        "hub": "Gekonnekteer via",
                         "manuf": "deur {manufacturer}",
                         "no_area": "Geen Gebied",
                         "rename": "Hernoem",
@@ -866,7 +855,6 @@
                     "rename_dialog": "Redigeer die naam van hierdie config-inskrywing",
                     "rename_input_label": "Inskrywingsnaam"
                 },
-                "introduction": "Hier is dit moontlik om u komponente en Home Assistant op te stel. Tans kan alles in verband met die gebruikerskoppelvlak nog nie hier opgestel word nie, maar ons werk daaraan.",
                 "lovelace": {
                     "caption": "Lovelace Kontroleskerms",
                     "dashboards": {
@@ -876,7 +864,6 @@
                             "storage": "UI beheerde",
                             "yaml": "YAML-lêer"
                         },
-                        "confirm_delete": "Is u seker dat u hierdie dashboard wil uitvee?",
                         "detail": {
                             "create": "Skep",
                             "delete": "Verwyder",
@@ -939,11 +926,6 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
-                "ozw": {
-                    "network_status": {
-                        "unknown": "Onbekend"
-                    }
-                },
                 "person": {
                     "caption": "Persone",
                     "description": "Bestuur die persone wat Home Assistant op spoor.",
@@ -989,6 +971,9 @@
                         "duplicate_scene": "Duplikaat toneel",
                         "edit_scene": "Wysig toneel",
                         "header": "Toneel-Redakteur",
+                        "headers": {
+                            "name": "Naam"
+                        },
                         "introduction": "Die toneel redakteur kan jy om te skep en wysig skerms. Volg asseblief die skakel hieronder om die instruksies te lees om seker te maak dat jy het ingestel Huis Assistent korrek.",
                         "learn_more": "Kom meer te wete oor tonele",
                         "no_scenes": "Ons kon geen bewerkbare tonele vind nie",
@@ -1010,16 +995,18 @@
                     },
                     "picker": {
                         "duplicate": "Dupliseer",
-                        "edit_script": "Redigeer skrip"
+                        "edit_script": "Redigeer skrip",
+                        "headers": {
+                            "name": "Naam"
+                        }
                     }
                 },
-                "server_control": {
-                    "caption": "Bedienerkontroles",
-                    "section": {
-                        "reloading": {
-                            "person": "Herlaai persone",
-                            "zone": "Herlaai sones"
-                        }
+                "tag": {
+                    "detail": {
+                        "name": "Naam"
+                    },
+                    "headers": {
+                        "name": "Naam"
                     }
                 },
                 "users": {
@@ -1110,50 +1097,6 @@
                     "introduction": "Met sones kan u sekere streke op aarde spesifiseer. As 'n persoon binne 'n sone is, neem die toestand die sonenaam aan. Sones kan ook as 'n sneller of toestand gebruik word in outomatiseringsinstellings.",
                     "no_zones_created_yet": "Lyk asof jy nog geen sones geskep het nie."
                 },
-                "zwave": {
-                    "common": {
-                        "index": "Indeks",
-                        "instance": "Aktiwiteit",
-                        "value": "Waarde"
-                    },
-                    "description": "Bestuur u Z-Wave netwerk",
-                    "network_management": {
-                        "header": "Bestuur Z-Wave Netwerk",
-                        "introduction": "Begin opdragte wat die Z-Wave-netwerk beïnvloed. U sal nie terugvoer kry of meeste opdragte slaag nie, maar u kan die OZW-logboek nagaan om dit uit te vind."
-                    },
-                    "network_status": {
-                        "network_started": "Z-Wave Netwerk is Aangeskakel",
-                        "network_started_note_all_queried": "Alle knooppunte is nagevra",
-                        "network_started_note_some_queried": "Aktiewe Knooppunte is nagevra. Slapende Knooppunte sal nagevra word sodra hulle ontwaak.",
-                        "network_starting": "Skakel Tans Z-Wave Netwerk Aan…",
-                        "network_starting_note": "Afhangend van die grootte van u netwerk, kan dit 'n rukkie duur.",
-                        "network_stopped": "Z-Wave Netwerk het Gestop"
-                    },
-                    "node_config": {
-                        "config_value": "Konfigurasiewaarde",
-                        "header": "Knooppuntkonfigurasieopsies",
-                        "set_config_parameter": "Stel Config-parameter in"
-                    },
-                    "node_management": {
-                        "add_to_group": "Voeg by Groep",
-                        "remove_from_group": "Verwyder van Groep"
-                    },
-                    "services": {
-                        "add_node": "Voeg Knooppunt By",
-                        "add_node_secure": "Voeg Veilige Knooppunt By",
-                        "cancel_command": "Kanselleer Opdrag",
-                        "heal_network": "Herstel Netwerk",
-                        "remove_node": "Verwyder Knooppunt",
-                        "save_config": "Stoor Konfigurasie",
-                        "soft_reset": "Sagte Herstel",
-                        "start_network": "Skakel Netwerk Aan",
-                        "stop_network": "Stop Netwerk",
-                        "test_network": "Toets Netwerk"
-                    },
-                    "values": {
-                        "header": "Knooppuntwaardes"
-                    }
-                },
                 "zwave_js": {
                     "add_node": {
                         "interview_failed": "Die toestelonderhoud het misluk. Bykomende inligting kan moontlik in die logboeke beskikbaar wees.",
@@ -1186,8 +1129,21 @@
                     },
                     "templates": {
                         "title": "Template"
+                    },
+                    "yaml": {
+                        "caption": "Bedienerkontroles",
+                        "section": {
+                            "reloading": {
+                                "person": "Herlaai persone",
+                                "zone": "Herlaai sones"
+                            }
+                        }
                     }
                 }
+            },
+            "history": {
+                "add_all": "Voeg alle entiteite by",
+                "remove_all": "Herverifieer integrasie"
             },
             "lovelace": {
                 "add_entities": {
@@ -1240,6 +1196,7 @@
                             "name": "Knoppie"
                         },
                         "generic": {
+                            "name": "Naam",
                             "url": "URL"
                         },
                         "humidifier": {
@@ -1503,8 +1460,7 @@
                         "username": "Gebruikersnaam"
                     },
                     "error": {
-                        "password_not_match": "Wagwoorde stem nie ooreen nie",
-                        "required_fields": "Vul al die vereiste velde in"
+                        "password_not_match": "Wagwoorde stem nie ooreen nie"
                     },
                     "intro": "Kom ons begin deur 'n gebruikers rekening te skep.",
                     "required_field": "Vereis"
@@ -1545,6 +1501,7 @@
                     "empty_state": "U het nog geen langlewende-toegangs-tekseenhede nie.",
                     "header": "Langlewende-toegangs-tekseenhede",
                     "learn_auth_requests": "Leer hoe om geverifieerde versoeke te maak.",
+                    "name": "Naam",
                     "prompt_copy_token": "Kopieer u toegangs-tekseenheid. Dit sal nie weer gewys word nie.",
                     "prompt_name": "Naam?"
                 },
