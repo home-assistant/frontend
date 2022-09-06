@@ -352,7 +352,9 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     try {
       if (isComponentLoaded(this.hass, "hardware")) {
         this._hardwareInfo = await this.hass.callWS({ type: "hardware/info" });
-      } else if (isHassioLoaded) {
+      }
+
+      if (isHassioLoaded && !this._hardwareInfo?.hardware.length) {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
       }
 
