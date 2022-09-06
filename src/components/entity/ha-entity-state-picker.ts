@@ -54,6 +54,7 @@ class HaEntityStatePicker extends LitElement {
                     state,
                     this.hass.locale,
                     key,
+                    // If we have an attribute set, the unit is not relevant since it only applies to the entity state
                     !!this.attribute
                   )
                 : key,
@@ -77,6 +78,7 @@ class HaEntityStatePicker extends LitElement {
                 this.hass.states[this.entityId],
                 this.hass.locale,
                 this.value,
+                // If we have an attribute set, the unit is not relevant since it only applies to the entity state
                 !!this.attribute
               )
             : this.value
