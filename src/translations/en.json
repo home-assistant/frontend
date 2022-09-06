@@ -2270,7 +2270,7 @@
             "no_scripts": "We couldn't find any scripts",
             "add_script": "Add script",
             "run_script": "Run script",
-            "run": "[%key:ui::panel::config::automation::editor::run%]",
+            "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "headers": {
