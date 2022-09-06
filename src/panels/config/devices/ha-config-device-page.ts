@@ -80,6 +80,8 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
 
 export interface DeviceAction {
   href?: string;
+  target?: string;
+  rel?: string;
   action?: (ev: any) => void;
   label: string;
   icon?: string;
@@ -699,7 +701,11 @@ export class HaConfigDevicePage extends LitElement {
                     ? html`
                         <div class="card-actions" slot="actions">
                           <div>
-                            <a href=${ifDefined(firstDeviceAction!.href)}>
+                            <a
+                              href=${ifDefined(firstDeviceAction!.href)}
+                              rel=${ifDefined(firstDeviceAction!.rel)}
+                              target=${ifDefined(firstDeviceAction!.target)}
+                            >
                               <mwc-button
                                 class=${ifDefined(firstDeviceAction!.classes)}
                                 .action=${firstDeviceAction!.action}
@@ -742,7 +748,11 @@ export class HaConfigDevicePage extends LitElement {
                                   ></ha-icon-button>
                                   ${actions.map(
                                     (deviceAction) => html`
-                                      <a href=${ifDefined(deviceAction.href)}>
+                                      <a
+                                        href=${ifDefined(deviceAction.href)}
+                                        rel=${ifDefined(deviceAction.rel)}
+                                        target=${ifDefined(deviceAction.target)}
+                                      >
                                         <mwc-list-item
                                           class=${ifDefined(
                                             deviceAction.classes
@@ -981,6 +991,8 @@ export class HaConfigDevicePage extends LitElement {
     if (configurationUrl) {
       deviceActions.push({
         href: configurationUrl,
+        rel: "noreferrer",
+        target: configurationUrlIsHomeAssistant ? "_self" : "_blank",
         icon: mdiCog,
         label: this.hass.localize(
           "ui.panel.config.devices.open_configuration_url"
