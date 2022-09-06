@@ -80,6 +80,7 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
 
 export interface DeviceAction {
   href?: string;
+  target?: string;
   action?: (ev: any) => void;
   label: string;
   icon?: string;
@@ -699,7 +700,15 @@ export class HaConfigDevicePage extends LitElement {
                     ? html`
                         <div class="card-actions" slot="actions">
                           <div>
-                            <a href=${ifDefined(firstDeviceAction!.href)}>
+                            <a
+                              href=${ifDefined(firstDeviceAction!.href)}
+                              rel=${ifDefined(
+                                firstDeviceAction!.target
+                                  ? "noreferrer"
+                                  : undefined
+                              )}
+                              target=${ifDefined(firstDeviceAction!.target)}
+                            >
                               <mwc-button
                                 class=${ifDefined(firstDeviceAction!.classes)}
                                 .action=${firstDeviceAction!.action}
@@ -742,7 +751,15 @@ export class HaConfigDevicePage extends LitElement {
                                   ></ha-icon-button>
                                   ${actions.map(
                                     (deviceAction) => html`
-                                      <a href=${ifDefined(deviceAction.href)}>
+                                      <a
+                                        href=${ifDefined(deviceAction.href)}
+                                        target=${ifDefined(deviceAction.target)}
+                                        rel=${ifDefined(
+                                          deviceAction.target
+                                            ? "noreferrer"
+                                            : undefined
+                                        )}
+                                      >
                                         <mwc-list-item
                                           class=${ifDefined(
                                             deviceAction.classes
@@ -981,6 +998,7 @@ export class HaConfigDevicePage extends LitElement {
     if (configurationUrl) {
       deviceActions.push({
         href: configurationUrl,
+        target: configurationUrlIsHomeAssistant ? undefined : "_blank",
         icon: mdiCog,
         label: this.hass.localize(
           "ui.panel.config.devices.open_configuration_url"
