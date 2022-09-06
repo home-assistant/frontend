@@ -195,6 +195,48 @@ const SCHEMAS: {
           },
         },
       },
+      select_disabled_list: {
+        name: "Select disabled option",
+        selector: {
+          select: {
+            options: [
+              { label: "Option 1", value: "Option 1" },
+              { label: "Option 2", value: "Option 2" },
+              { label: "Option 3", value: "Option 3", disabled: true },
+            ],
+            mode: "list",
+          },
+        },
+      },
+      select_disabled_multiple: {
+        name: "Select disabled option",
+        selector: {
+          select: {
+            multiple: true,
+            options: [
+              { label: "Option 1", value: "Option 1" },
+              { label: "Option 2", value: "Option 2" },
+              { label: "Option 3", value: "Option 3", disabled: true },
+            ],
+            mode: "list",
+          },
+        },
+      },
+      select_disabled: {
+        name: "Select disabled option",
+        selector: {
+          select: {
+            options: [
+              { label: "Option 1", value: "Option 1" },
+              { label: "Option 2", value: "Option 2" },
+              { label: "Option 3", value: "Option 3", disabled: true },
+              { label: "Option 4", value: "Option 4", disabled: true },
+              { label: "Option 5", value: "Option 5", disabled: true },
+              { label: "Option 6", value: "Option 6" },
+            ],
+          },
+        },
+      },
       select_custom: {
         name: "Select (Custom)",
         selector: {
