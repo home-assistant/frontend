@@ -40,9 +40,9 @@ import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   Action,
   deleteScript,
+  getScriptConfig,
   getScriptEditorInitData,
   isMaxMode,
-  ManualScriptConfig,
   MODES,
   MODES_MAX,
   ScriptConfig,
@@ -427,37 +427,32 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
       (!oldScript || oldScript !== this.scriptEntityId)
     ) {
-      this.hass
-        .callApi<ManualScriptConfig>(
-          "GET",
-          `config/script/config/${computeObjectId(this.scriptEntityId)}`
-        )
-        .then(
-          (config) => {
-            // Normalize data: ensure sequence is a list
-            // Happens when people copy paste their scripts into the config
-            const value = config.sequence;
-            if (value && !Array.isArray(value)) {
-              config.sequence = [value];
-            }
-            this._dirty = false;
-            this._config = config;
-          },
-          (resp) => {
-            alert(
-              resp.status_code === 404
-                ? this.hass.localize(
-                    "ui.panel.config.script.editor.load_error_not_editable"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.script.editor.load_error_unknown",
-                    "err_no",
-                    resp.status_code
-                  )
-            );
-            history.back();
+      getScriptConfig(this.hass, computeObjectId(this.scriptEntityId)).then(
+        (config) => {
+          // Normalize data: ensure sequence is a list
+          // Happens when people copy paste their scripts into the config
+          const value = config.sequence;
+          if (value && !Array.isArray(value)) {
+            config.sequence = [value];
           }
-        );
+          this._dirty = false;
+          this._config = config;
+        },
+        (resp) => {
+          alert(
+            resp.status_code === 404
+              ? this.hass.localize(
+                  "ui.panel.config.script.editor.load_error_not_editable"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.script.editor.load_error_unknown",
+                  "err_no",
+                  resp.status_code
+                )
+          );
+          history.back();
+        }
+      );
     }
 
     if (

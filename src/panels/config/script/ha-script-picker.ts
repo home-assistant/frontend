@@ -1,4 +1,5 @@
 import {
+  mdiContentDuplicate,
   mdiDelete,
   mdiHelpCircle,
   mdiInformationOutline,
@@ -25,7 +26,12 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
-import { deleteScript, triggerScript } from "../../../data/script";
+import {
+  deleteScript,
+  getScriptConfig,
+  showScriptEditor,
+  triggerScript,
+} from "../../../data/script";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -148,6 +154,13 @@ class HaScriptPicker extends LitElement {
                   "ui.panel.config.script.picker.show_trace"
                 ),
                 action: () => this._showTrace(script),
+              },
+              {
+                path: mdiContentDuplicate,
+                label: this.hass.localize(
+                  "ui.panel.config.script.picker.duplicate"
+                ),
+                action: () => this._duplicate(script),
               },
               {
                 label: this.hass.localize(
@@ -273,6 +286,19 @@ class HaScriptPicker extends LitElement {
           </a>
         </p>
       `,
+    });
+  }
+
+  private async _duplicate(script: any) {
+    const config = await getScriptConfig(
+      this.hass,
+      computeObjectId(script.entity_id)
+    );
+    showScriptEditor({
+      ...config,
+      alias: `${config?.alias} (${this.hass.localize(
+        "ui.panel.config.script.picker.duplicate"
+      )})`,
     });
   }
 
