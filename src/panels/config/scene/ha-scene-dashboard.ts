@@ -42,6 +42,8 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -77,24 +79,45 @@ class HaSceneDashboard extends LitElement {
     }
   );
 
-  private _columns = memoizeOne((_language): DataTableColumnContainer => {
-    const columns: DataTableColumnContainer = {
-      icon: {
+  private _columns = memoizeOne(
+    (_language, narrow): DataTableColumnContainer => {
+      const columns: DataTableColumnContainer = {
+        icon: {
+          title: "",
+          label: this.hass.localize(
+            "ui.panel.config.scene.picker.headers.state"
+          ),
+          type: "icon",
+          template: (_, scene) =>
+            html` <ha-state-icon .state=${scene}></ha-state-icon> `,
+        },
+        name: {
+          title: this.hass.localize(
+            "ui.panel.config.scene.picker.headers.name"
+          ),
+          sortable: true,
+          filterable: true,
+          direction: "asc",
+          grows: true,
+        },
+      };
+      if (!narrow) {
+        columns.state = {
+          title: this.hass.localize(
+            "ui.panel.config.scene.picker.headers.last_activated"
+          ),
+          sortable: true,
+          width: "30%",
+          template: (last_activated) => html`
+            ${last_activated && !UNAVAILABLE_STATES.includes(last_activated)
+              ? formatDateTime(new Date(last_activated), this.hass.locale)
+              : this.hass.localize("ui.components.relative_time.never")}
+          `,
+        };
+      }
+      columns.only_editable = {
         title: "",
-        label: this.hass.localize("ui.panel.config.scene.picker.headers.state"),
-        type: "icon",
-        template: (_, scene) =>
-          html` <ha-state-icon .state=${scene}></ha-state-icon> `,
-      },
-      name: {
-        title: this.hass.localize("ui.panel.config.scene.picker.headers.name"),
-        sortable: true,
-        filterable: true,
-        direction: "asc",
-        grows: true,
-      },
-      only_editable: {
-        title: "",
+        width: "56px",
         template: (_info, scene: any) =>
           !scene.attributes.id
             ? html`
@@ -109,57 +132,57 @@ class HaSceneDashboard extends LitElement {
                 ></ha-svg-icon>
               `
             : "",
-      },
-    };
+      };
+      columns.actions = {
+        title: "",
+        width: "72px",
+        type: "overflow-menu",
+        template: (_: string, scene: any) =>
+          html`
+            <ha-icon-overflow-menu
+              .hass=${this.hass}
+              narrow
+              .items=${[
+                {
+                  path: mdiInformationOutline,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.show_info"
+                  ),
+                  action: () => this._showInfo(scene),
+                },
+                {
+                  path: mdiPlay,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.activate"
+                  ),
+                  action: () => this._activateScene(scene),
+                },
+                {
+                  path: mdiContentDuplicate,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.duplicate"
+                  ),
+                  action: () => this._duplicate(scene),
+                  disabled: !scene.attributes.id,
+                },
+                {
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.picker.delete"
+                  ),
+                  path: mdiDelete,
+                  action: () => this._deleteConfirm(scene),
+                  warning: scene.attributes.id,
+                  disabled: !scene.attributes.id,
+                },
+              ]}
+            >
+            </ha-icon-overflow-menu>
+          `,
+      };
 
-    columns.actions = {
-      title: "",
-      type: "overflow-menu",
-      template: (_: string, scene: any) =>
-        html`
-          <ha-icon-overflow-menu
-            .hass=${this.hass}
-            narrow
-            .items=${[
-              {
-                path: mdiInformationOutline,
-                label: this.hass.localize(
-                  "ui.panel.config.scene.picker.show_info"
-                ),
-                action: () => this._showInfo(scene),
-              },
-              {
-                path: mdiPlay,
-                label: this.hass.localize(
-                  "ui.panel.config.scene.picker.activate"
-                ),
-                action: () => this._activateScene(scene),
-              },
-              {
-                path: mdiContentDuplicate,
-                label: this.hass.localize(
-                  "ui.panel.config.scene.picker.duplicate"
-                ),
-                action: () => this._duplicate(scene),
-                disabled: !scene.attributes.id,
-              },
-              {
-                label: this.hass.localize(
-                  "ui.panel.config.scene.picker.delete"
-                ),
-                path: mdiDelete,
-                action: () => this._deleteConfirm(scene),
-                warning: scene.attributes.id,
-                disabled: !scene.attributes.id,
-              },
-            ]}
-          >
-          </ha-icon-overflow-menu>
-        `,
-    };
-
-    return columns;
-  });
+      return columns;
+    }
+  );
 
   protected render(): TemplateResult {
     return html`
@@ -169,7 +192,7 @@ class HaSceneDashboard extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
-        .columns=${this._columns(this.hass.language)}
+        .columns=${this._columns(this.hass.locale, this.narrow)}
         id="entity_id"
         .data=${this._scenes(this.scenes, this._filteredScenes)}
         .activeFilters=${this._activeFilters}

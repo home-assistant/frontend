@@ -2332,11 +2332,8 @@
             "duplicate_scene": "Duplicate scene",
             "duplicate": "[%key:ui::common::duplicate%]",
             "headers": {
-              "activate": "Activate",
-              "state": "State",
               "name": "Name",
-              "show_info": "Show information",
-              "edit": "Edit"
+              "last_activated": "Last activated"
             }
           },
           "editor": {
