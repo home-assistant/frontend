@@ -27,6 +27,18 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
   };
 
   protected render() {
+    const fullLabel = `${this.label}${
+      !this.selector.state.attribute && this.selector.state.entity_id
+        ? this.hass.states[this.selector.state.entity_id].attributes
+            ?.unit_of_measurement
+          ? " (" +
+            this.hass.states[this.selector.state.entity_id].attributes
+              ?.unit_of_measurement +
+            ")"
+          : ""
+        : ""
+    }`;
+
     return html`
       <ha-entity-state-picker
         .hass=${this.hass}
@@ -35,7 +47,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
         .attribute=${this.selector.state.attribute ||
         this.context?.filter_attribute}
         .value=${this.value}
-        .label=${this.label}
+        .label=${fullLabel}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
