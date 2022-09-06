@@ -13,6 +13,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import {
@@ -191,27 +192,26 @@ class StatisticsChart extends LitElement {
     };
   }
 
-  private async _getStatisticsMetaData() {
-    const statisticIds = Object.keys(this.statisticsData);
-    const statsMetadataArray = await getStatisticMetadata(
-      this.hass,
-      statisticIds
-    );
-    const statisticsMetaData = {};
-    statsMetadataArray.forEach((x) => {
-      statisticsMetaData[x.statistic_id] = x;
-    });
-    this._statisticsMetaData = statisticsMetaData;
-  }
+  private _getStatisticsMetaData = memoizeOne(
+    async (statisticIds: string[] | undefined) => {
+      const statsMetadataArray = await getStatisticMetadata(
+        this.hass,
+        statisticIds
+      );
+      const statisticsMetaData = {};
+      statsMetadataArray.forEach((x) => {
+        statisticsMetaData[x.statistic_id] = x;
+      });
+      this._statisticsMetaData = statisticsMetaData;
+    }
+  );
 
   private async _generateData() {
     if (!this.statisticsData) {
       return;
     }
 
-    if (!this._statisticsMetaData) {
-      await this._getStatisticsMetaData();
-    }
+    await this._getStatisticsMetaData(Object.keys(this.statisticsData));
 
     let colorIndex = 0;
     const statisticsData = Object.values(this.statisticsData);
