@@ -19,14 +19,16 @@ export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
-  state?: string
+  state?: string,
+  hide_unit?: boolean
 ): string =>
   computeStateDisplayFromEntityAttributes(
     localize,
     locale,
     stateObj.entity_id,
     stateObj.attributes,
-    state !== undefined ? state : stateObj.state
+    state !== undefined ? state : stateObj.state,
+    hide_unit
   );
 
 export const computeStateDisplayFromEntityAttributes = (
@@ -34,7 +36,8 @@ export const computeStateDisplayFromEntityAttributes = (
   locale: FrontendLocaleData,
   entityId: string,
   attributes: any,
-  state: string
+  state: string,
+  hide_unit?: boolean
 ): string => {
   if (state === UNKNOWN || state === UNAVAILABLE) {
     return localize(`state.default.${state}`);
@@ -70,7 +73,7 @@ export const computeStateDisplayFromEntityAttributes = (
       : attributes.unit_of_measurement === "%"
       ? blankBeforePercent(locale) + "%"
       : ` ${attributes.unit_of_measurement}`;
-    return `${formatNumber(state, locale)}${unit}`;
+    return `${formatNumber(state, locale)}${hide_unit ? "" : unit}`;
   }
 
   const domain = computeDomain(entityId);
