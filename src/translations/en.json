@@ -2269,10 +2269,10 @@
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn't find any scripts",
             "add_script": "Add script",
-            "show_info": "Show info about script",
             "run_script": "Run script",
-            "edit_script": "Edit script",
-            "dev_script": "Debug script",
+            "run": "[%key:ui::panel::config::automation::editor::run%]",
+            "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
+            "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "headers": {
               "name": "Name",
               "state": "State"

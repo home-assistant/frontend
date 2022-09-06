@@ -301,6 +301,9 @@ export const deleteScript = (hass: HomeAssistant, objectId: string) =>
 
 let inititialScriptEditorData: Partial<ScriptConfig> | undefined;
 
+export const getScriptConfig = (hass: HomeAssistant, objectId: string) =>
+  hass.callApi<ScriptConfig>("GET", `config/script/config/${objectId}`);
+
 export const showScriptEditor = (data?: Partial<ScriptConfig>) => {
   inititialScriptEditorData = data;
   navigate("/config/script/edit/new");
