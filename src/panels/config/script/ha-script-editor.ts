@@ -536,6 +536,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _modeChanged(mode) {
+    const curMode = this._config!.mode || MODES[0];
+
+    if (mode === curMode) {
+      return;
+    }
+
     this._config = { ...this._config!, mode };
     if (!isMaxMode(mode)) {
       delete this._config.max;
@@ -575,6 +581,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     ev.stopPropagation();
     const values = ev.detail.value as any;
     const currentId = this._entityId;
+    let changed = false;
 
     for (const key of Object.keys(values)) {
       if (key === "sequence") {
@@ -590,6 +597,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         continue;
       }
 
+      changed = true;
+
       switch (key) {
         case "id":
           this._idChanged(value);
@@ -603,14 +612,17 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       }
 
       if (values[key] === undefined) {
-        delete this._config![key];
-        this._config = { ...this._config! };
+        const newConfig = { ...this._config! };
+        delete newConfig![key];
+        this._config = newConfig;
       } else {
         this._config = { ...this._config!, [key]: value };
       }
     }
 
-    this._dirty = true;
+    if (changed) {
+      this._dirty = true;
+    }
   }
 
   private _configChanged(ev) {
