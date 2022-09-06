@@ -1,4 +1,5 @@
 import {
+  mdiDelete,
   mdiHelpCircle,
   mdiInformationOutline,
   mdiPlay,
@@ -11,6 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -23,8 +25,11 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
-import { triggerScript } from "../../../data/script";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { deleteScript, triggerScript } from "../../../data/script";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -144,6 +149,14 @@ class HaScriptPicker extends LitElement {
                 ),
                 action: () => this._showTrace(script),
               },
+              {
+                label: this.hass.localize(
+                  "ui.panel.config.script.picker.delete"
+                ),
+                path: mdiDelete,
+                action: () => this._deleteConfirm(script),
+                warning: true,
+              },
             ]}
           >
           </ha-icon-overflow-menu>
@@ -261,6 +274,19 @@ class HaScriptPicker extends LitElement {
         </p>
       `,
     });
+  }
+
+  private async _deleteConfirm(script: any) {
+    showConfirmationDialog(this, {
+      text: this.hass.localize("ui.panel.config.script.editor.delete_confirm"),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      confirm: () => this._delete(script),
+    });
+  }
+
+  private async _delete(script: any) {
+    await deleteScript(this.hass, computeObjectId(script.entity_id));
   }
 
   static get styles(): CSSResultGroup {
