@@ -213,6 +213,9 @@ class HaAutomationPicker extends LitElement {
                   action: () => this._showTrace(automation),
                 },
                 {
+                  divider: true,
+                },
+                {
                   path: mdiContentDuplicate,
                   label: this.hass.localize(
                     "ui.panel.config.automation.picker.duplicate"
