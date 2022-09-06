@@ -82,16 +82,6 @@
                 },
                 "mqtt": {
                     "title": "MQTT"
-                },
-                "ozw": {
-                    "network_status": {
-                        "unknown": "Nepoznato"
-                    }
-                },
-                "zwave": {
-                    "node_config": {
-                        "set_config_parameter": "Podesite parametar Config"
-                    }
                 }
             },
             "developer-tools": {

@@ -40,9 +40,9 @@ import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   Action,
   deleteScript,
+  getScriptConfig,
   getScriptEditorInitData,
   isMaxMode,
-  ManualScriptConfig,
   MODES,
   MODES_MAX,
   ScriptConfig,
@@ -427,37 +427,32 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
       (!oldScript || oldScript !== this.scriptEntityId)
     ) {
-      this.hass
-        .callApi<ManualScriptConfig>(
-          "GET",
-          `config/script/config/${computeObjectId(this.scriptEntityId)}`
-        )
-        .then(
-          (config) => {
-            // Normalize data: ensure sequence is a list
-            // Happens when people copy paste their scripts into the config
-            const value = config.sequence;
-            if (value && !Array.isArray(value)) {
-              config.sequence = [value];
-            }
-            this._dirty = false;
-            this._config = config;
-          },
-          (resp) => {
-            alert(
-              resp.status_code === 404
-                ? this.hass.localize(
-                    "ui.panel.config.script.editor.load_error_not_editable"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.script.editor.load_error_unknown",
-                    "err_no",
-                    resp.status_code
-                  )
-            );
-            history.back();
+      getScriptConfig(this.hass, computeObjectId(this.scriptEntityId)).then(
+        (config) => {
+          // Normalize data: ensure sequence is a list
+          // Happens when people copy paste their scripts into the config
+          const value = config.sequence;
+          if (value && !Array.isArray(value)) {
+            config.sequence = [value];
           }
-        );
+          this._dirty = false;
+          this._config = config;
+        },
+        (resp) => {
+          alert(
+            resp.status_code === 404
+              ? this.hass.localize(
+                  "ui.panel.config.script.editor.load_error_not_editable"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.script.editor.load_error_unknown",
+                  "err_no",
+                  resp.status_code
+                )
+          );
+          history.back();
+        }
+      );
     }
 
     if (
@@ -536,6 +531,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _modeChanged(mode) {
+    const curMode = this._config!.mode || MODES[0];
+
+    if (mode === curMode) {
+      return;
+    }
+
     this._config = { ...this._config!, mode };
     if (!isMaxMode(mode)) {
       delete this._config.max;
@@ -575,6 +576,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     ev.stopPropagation();
     const values = ev.detail.value as any;
     const currentId = this._entityId;
+    let changed = false;
 
     for (const key of Object.keys(values)) {
       if (key === "sequence") {
@@ -590,6 +592,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         continue;
       }
 
+      changed = true;
+
       switch (key) {
         case "id":
           this._idChanged(value);
@@ -603,14 +607,17 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       }
 
       if (values[key] === undefined) {
-        delete this._config![key];
-        this._config = { ...this._config! };
+        const newConfig = { ...this._config! };
+        delete newConfig![key];
+        this._config = newConfig;
       } else {
         this._config = { ...this._config!, [key]: value };
       }
     }
 
-    this._dirty = true;
+    if (changed) {
+      this._dirty = true;
+    }
   }
 
   private _configChanged(ev) {

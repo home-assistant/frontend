@@ -175,7 +175,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     let documentationURL: string | undefined;
 
     if (this._hardwareInfo?.hardware.length) {
-      const boardData = this._hardwareInfo!.hardware[0];
+      const boardData = this._hardwareInfo.hardware[0];
 
       boardId = boardData.board.hassio_board_id;
       boardName = boardData.name;
@@ -285,7 +285,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
               `
             : ""}
           ${this._systemStatusData
-            ? html` <ha-card outlined>
+            ? html`<ha-card outlined>
                   <div class="header">
                     <div class="title">
                       ${this.hass.localize(
@@ -352,7 +352,9 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     try {
       if (isComponentLoaded(this.hass, "hardware")) {
         this._hardwareInfo = await this.hass.callWS({ type: "hardware/info" });
-      } else if (isHassioLoaded) {
+      }
+
+      if (isHassioLoaded && !this._hardwareInfo?.hardware.length) {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
       }
 

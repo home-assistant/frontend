@@ -27,9 +27,7 @@ jobs:
       - name: Build Demo
         run: ./node_modules/.bin/gulp build-demo
       - name: Deploy to Netlify
-        uses: netlify/actions/cli@master
+        run: npx netlify-cli deploy --dir=demo/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_DEV_SITE_ID }}
-        with:
-          args: deploy --dir=demo/dist --prod

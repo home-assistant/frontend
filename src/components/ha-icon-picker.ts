@@ -13,7 +13,8 @@ type IconItem = {
   icon: string;
   keywords: string[];
 };
-let iconItems: IconItem[] = [];
+let iconItems: IconItem[] = [{ icon: "", keywords: [] }];
+let iconLoaded = false;
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<mwc-list-item
@@ -88,15 +89,16 @@ export class HaIconPicker extends LitElement {
 
   private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
     this._opened = ev.detail.value;
-    if (this._opened && !iconItems.length) {
+    if (this._opened && !iconLoaded) {
       const iconList = await import("../../build/mdi/iconList.json");
 
       iconItems = iconList.default.map((icon) => ({
         icon: `mdi:${icon.name}`,
         keywords: icon.keywords,
       }));
+      iconLoaded = true;
 
-      (this.comboBox as any).filteredItems = iconItems;
+      this.comboBox.filteredItems = iconItems;
 
       Object.keys(customIcons).forEach((iconSet) => {
         this._loadCustomIconItems(iconSet);
@@ -116,7 +118,7 @@ export class HaIconPicker extends LitElement {
         keywords: icon.keywords ?? [],
       }));
       iconItems.push(...customIconItems);
-      (this.comboBox as any).filteredItems = iconItems;
+      this.comboBox.filteredItems = iconItems;
     } catch (e) {
       // eslint-disable-next-line
       console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
@@ -165,14 +167,12 @@ export class HaIconPicker extends LitElement {
       filteredItems.push(...filteredItemsByKeywords);
 
       if (filteredItems.length > 0) {
-        (this.comboBox as any).filteredItems = filteredItems;
+        this.comboBox.filteredItems = filteredItems;
       } else {
-        (this.comboBox as any).filteredItems = [
-          { icon: filterString, keywords: [] },
-        ];
+        this.comboBox.filteredItems = [{ icon: filterString, keywords: [] }];
       }
     } else {
-      (this.comboBox as any).filteredItems = iconItems;
+      this.comboBox.filteredItems = iconItems;
     }
   }
 

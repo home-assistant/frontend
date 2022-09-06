@@ -1,4 +1,11 @@
 {
+    "config_entry": {
+        "disabled_by": {
+            "config_entry": "รายการกำหนดค่า",
+            "integration": "บูรณาการ",
+            "user": "ผู้ใช้"
+        }
+    },
     "groups": {
         "system-admin": "ผู้ดูแลระบบ",
         "system-read-only": "ผู้ใช้ที่สามารถดูได้อย่างเดียว",
@@ -92,9 +99,11 @@
                 }
             }
         },
+        "backup": {
+            "search": "ค้นหาข้อมูลสำรอง"
+        },
         "common": {
             "menu": "เมนู",
-            "review": "รีวิว",
             "show": "แสดง"
         },
         "panel": {
@@ -108,9 +117,7 @@
             }
         },
         "update_available": {
-            "core_note": "ตัวควบคุมจะย้อนกลับไปยังเวอร์ชัน {version} ถ้าอินสแตนซ์ของคุณไม่ปรากฎขึ้นหลังจากการอัปเดต",
             "create_backup": "สร้างข้อมูลสำรองก่อนการอัปเดต",
-            "creating_backup": "กำลังสร้างข้อมูลสำรองของ {name}",
             "description": "คุณได้ติดตั้งเวอร์ชั่น {version} คลิกอัปเดตเพื่ออัปเดตเป็นเวอร์ชัน {newest_version}",
             "open_release_notes": "เปิดบันทึกประจำรุ่น",
             "update_name": "อัปเดต {name}",
@@ -118,11 +125,6 @@
         }
     },
     "ui": {
-        "auth_store": {
-            "ask": "คุณต้องการจำการเข้าระบบนี้หรือไม่?",
-            "confirm": "จำการเข้าสู่ระบบ",
-            "decline": "ไม่เป็นไรขอบคุณ"
-        },
         "card": {
             "alarm_control_panel": {
                 "arm_away": "ล็อคแบบออกข้างนอก",
@@ -164,7 +166,9 @@
             },
             "fan": {
                 "direction": "ทิศทาง",
+                "forward": "ข้างหน้า",
                 "oscillate": "การส่าย",
+                "reverse": "ย้อนกลับ",
                 "speed": "ความเร็วลม"
             },
             "light": {
@@ -249,9 +253,15 @@
             "help": "วิธีใช้",
             "loading": "กำลังโหลด",
             "move": "ย้าย",
-            "save": "บันทึก"
+            "save": "บันทึก",
+            "successfully_saved": "บันทึกสำเร็จแล้ว"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "name": "ชื่อ"
+                }
+            },
             "entity": {
                 "entity-picker": {
                     "edit": "แก้ไข",
@@ -263,7 +273,8 @@
                 "no_history_found": "ไม่พบประวัติการทำงาน"
             },
             "logbook": {
-                "entries_not_found": "ไม่พบรายการสมุดบันทึก"
+                "entries_not_found": "ไม่พบรายการสมุดบันทึก",
+                "not_loaded": "บูรณาการ {platform} ไม่โหลด โปรดเพิ่มลงไปในการตั้งค่าค่าของคุณโดยเพิ่ม 'default_config:' หรือ ''{platform}:''"
             },
             "media-browser": {
                 "class": {
@@ -285,13 +296,6 @@
                 "setup_local_help": "ตรวจสอบ {เอกสารประกอบ} เกี่ยวกับวิธีการตั้งค่าสื่อภายในเครื่อง"
             },
             "relative_time": {
-                "duration": {
-                    "day": "{count} {count, plural,\n  one {วัน}\n  other {วัน}\n}",
-                    "hour": "{count} {count, plural,\n  one {ชั่วโมง}\n  other {ชั่วโมง}\n}",
-                    "minute": "{count} {count, plural,\n  one {นาที}\n  other {นาที}\n}",
-                    "second": "{count} {count, plural,\n  one {วินาที}\n  other {วินาที}\n}",
-                    "week": "{count} {count, plural,\n  one {สัปดาห์}\n  other {สัปดาห์}\n}"
-                },
                 "never": "ไม่เคย"
             },
             "service-picker": {
@@ -304,8 +308,25 @@
         },
         "dialogs": {
             "config_entry_system_options": {
+                "enable_new_entities_description": "หากค้นพบอุปกรณ์ใหม่สำหรับ {integration} ควรเพิ่มโดยอัตโนมัติ",
                 "enable_new_entities_label": "เปิดใช้งานเอนทิตีที่เพิ่มใหม่",
                 "title": "ตัวเลือกระบบสําหรับ {การรวม}"
+            },
+            "entity_registry": {
+                "editor": {
+                    "name": "ชื่อ"
+                }
+            },
+            "helper_settings": {
+                "generic": {
+                    "name": "ชื่อ"
+                },
+                "input_number": {
+                    "initial": "ค่าเริ่มต้น"
+                },
+                "input_select": {
+                    "remove_option": "ลบตัวเลือก"
+                }
             },
             "more_info_control": {
                 "details": "รายละเอียด",
@@ -331,18 +352,54 @@
                     "description": "ตัวเลือกถูกบันทึกเรียบร้อยแล้ว"
                 }
             },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "server_control": "การควบคุมเซิร์ฟเวอร์"
+                    },
+                    "reload": {
+                        "automation": "ระบบอัตโนมัติ",
+                        "core": "โหลดส่วนกลางใหม่",
+                        "group": "โหลดกลุ่มใหม่",
+                        "scene": "ฉาก",
+                        "script": "โหลดสคริปต์อีกครั้ง"
+                    },
+                    "server_control": {
+                        "restart": "เริ่มต้นใหม่",
+                        "stop": "หยุด"
+                    }
+                }
+            },
+            "repair_flow": {
+                "form": {
+                    "header": "ปัญหาการซ่อม"
+                },
+                "loading": {
+                    "loading_flow": "โปรดรอสักครู่ในขณะที่การซ่อมแซม {integration} กำลังเริ่มต้นขึ้น"
+                },
+                "success": {
+                    "description": "ปัญหานี้ได้รับการซ่อมแซมแล้ว"
+                }
+            },
             "zha_device_info": {
                 "buttons": {
-                    "reconfigure": "กำหนดค่าอุปกรณ์ใหม่"
+                    "add": "เพิ่มอุปกรณ์ผ่านอุปกรณ์นี้",
+                    "reconfigure": "กำหนดค่าอุปกรณ์ใหม่",
+                    "remove": "ลบอุปกรณ์"
                 },
+                "last_seen": "เห็นล่าสุด",
                 "manuf": "โดย {manufacturer}",
                 "no_area": "ไม่มีห้อง",
                 "power_source": "แหล่งพลังงาน",
                 "services": {
                     "reconfigure": "กำหนดค่าอุปกรณ์ ZHA อีกครั้ง (เพื่อรักษาอุปกรณ์) ใช้สิ่งนี้หากคุณมีปัญหากับอุปกรณ์ หากอุปกรณ์ดังกล่าวเป็นอุปกรณ์ที่ใช้พลังงานจากแบตเตอรี่โปรดตรวจสอบให้แน่ใจว่าอุปกรณ์นั้นเปิดอยู่และยอมรับคำสั่งเมื่อคุณใช้บริการ",
-                    "remove": "ลบอุปกรณ์ออกจากเครือข่าย Zigbee"
+                    "remove": "ลบอุปกรณ์ออกจากเครือข่าย Zigbee",
+                    "updateDeviceName": "ตั้งชื่อที่กำหนดเองสำหรับอุปกรณ์นี้ในการลงทะเบียนอุปกรณ์"
                 },
-                "unknown": "ไม่ทราบสถานะ"
+                "unknown": "ไม่ทราบสถานะ",
+                "zha_device_card": {
+                    "device_name_placeholder": "เปลี่ยนชื่ออุปกรณ์"
+                }
             },
             "zha_reconfigure_device": {
                 "bind_header": "ผูก",
@@ -376,12 +433,24 @@
         },
         "notification_toast": {
             "connection_lost": "สูญเสียการเชื่อมต่อ ดำเนินการเชื่อมต่อใหม่…",
-            "service_call_failed": "การเรียกบริการ {service} ล้มเหลว"
+            "service_call_failed": "การเรียกบริการ {service} ล้มเหลว",
+            "triggered": "เรียก {name}"
         },
         "panel": {
             "config": {
+                "application_credentials": {
+                    "editor": {
+                        "name": "ชื่อ"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "ชื่อ"
+                        }
+                    }
+                },
                 "areas": {
                     "add_picture": "เพิ่มรูปภาพ",
+                    "area_not_found": "ไม่เจอพื้นที่นี้",
                     "caption": "ค่าของห้อง",
                     "description": "ภาพรวมของห้องทั้งหมดในบ้านของคุณ",
                     "edit_settings": "การตั้งค่าพื้นที่",
@@ -389,6 +458,7 @@
                         "create": "สร้าง",
                         "default_name": "พื้นที่ใหม่",
                         "delete": "ลบ",
+                        "name": "ชื่อ",
                         "update": "แก้ไข"
                     },
                     "picker": {
@@ -425,8 +495,7 @@
                                 },
                                 "event": {
                                     "event": "การกระทำ",
-                                    "label": "กระทำเหตุการณ์",
-                                    "service_data": "บริการ"
+                                    "label": "กระทำเหตุการณ์"
                                 },
                                 "service": {
                                     "label": "เรียกบริการ"
@@ -460,7 +529,8 @@
                                     "extra_fields": {
                                         "above": "เหนือกว่า",
                                         "below": "ต่ำกว่า"
-                                    }
+                                    },
+                                    "label": "อุปกรณ์"
                                 },
                                 "numeric_state": {
                                     "above": "เหนือหัว",
@@ -526,7 +596,8 @@
                                 "device": {
                                     "extra_fields": {
                                         "above": "เหนือกว่า",
-                                        "below": "ต่ำกว่า"
+                                        "below": "ต่ำกว่า",
+                                        "for": "ช่วงเวลา (เลือกเพิ่ม)"
                                     },
                                     "label": "อุปกรณ์"
                                 },
@@ -608,6 +679,9 @@
                     "picker": {
                         "add_automation": "เพิ่มระบบอัตโนมัติ",
                         "header": "เครื่องมือแก้ไข ระบบอัตโนมัติ",
+                        "headers": {
+                            "name": "ชื่อ"
+                        },
                         "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Automation",
                         "no_automations": "เราไม่พบระบบอัตโนมัติใด ๆ สามารถแก้ไขได้",
@@ -626,8 +700,10 @@
                         "create_automation": "สร้างการทำงานอัตโนมัติ",
                         "create_script": "สร้างสคริปต์",
                         "headers": {
+                            "name": "ชื่อ",
                             "type": "ประเภท"
                         },
+                        "no_blueprints": "คุณไม่มีพิมพ์เขียวสักอัน",
                         "types": {
                             "automation": "ระบบอัตโนมัติ",
                             "script": "สคริปต์"
@@ -646,7 +722,7 @@
                         "sign_out": "ลงชื่อออก"
                     },
                     "description_features": "ควบคุมบ้านในยามที่คุณไม่อยู่บ้าน ควบคู่ไปกับ Alexa และ Google Assistant",
-                    "description_login": "ลงชื่อเข้าใช้เป็น {email}",
+                    "description_login": "เข้าสู่ระบบและเชื่อมต่อแล้ว",
                     "description_not_login": "ยังไม่ได้เข้าสู่ระบบ",
                     "forgot_password": {
                         "check_your_email": "ตรวจสอบอีเมลของคุณเพื่อดูคําแนะนําเกี่ยวกับวิธีการรีเซ็ตรหัสผ่านของคุณ",
@@ -686,6 +762,11 @@
                         "title": "ลงทะเบียนบัญชี"
                     }
                 },
+                "common": {
+                    "editor": {
+                        "confirm_unsaved": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก. คุณแน่ใจหรือไม่ว่าต้องการที่จะออก?"
+                    }
+                },
                 "core": {
                     "caption": "ทั่วไป",
                     "description": "ตรวจสอบไฟล์การกำหนดค่าและควบคุมเซิร์ฟเวอร์",
@@ -711,15 +792,18 @@
                         }
                     }
                 },
-                "customize": {
-                    "caption": "การปรับแต่ง",
-                    "description": "ปรับแต่งเอนทิตี้ในรูปแบบของคุณ",
-                    "picker": {
-                        "header": "การปรับแต่ง",
-                        "introduction": "ปรับแต่งคุณลักษณะของเอนทิตี้แต่ละตัว เมื่อมีการเพิ่มหรือแก้ไขจะมีผลทันที หากลบคุณลักษณะจะเห็นผลต่อเมื่อเอนทิตี้นั้นได้รับการอัพเดท"
-                    }
-                },
                 "devices": {
+                    "automation": {
+                        "actions": {
+                            "caption": "เมื่อมีบางสิ่งถูกกระตุ้น..."
+                        },
+                        "conditions": {
+                            "caption": "ทำบางอย่างก็ต่อเมื่อ..."
+                        },
+                        "triggers": {
+                            "caption": "ทำอะไรสักอย่างเมื่อ..."
+                        }
+                    },
                     "caption": "อุปกรณ์",
                     "description": "จัดการอุปกรณ์ที่กำหนดค่าไว้แล้ว",
                     "edit_settings": "แก้ไขการตั้งค่า",
@@ -727,40 +811,63 @@
                         "config": "การกำหนดค่า",
                         "control": "การควบคุม",
                         "diagnostic": "การวินิจฉัย",
-                        "sensor": "เซนเซอร์",
-                        "state": "สถานะ"
+                        "sensor": "เซนเซอร์"
                     },
+                    "name": "ชื่อ",
                     "open_configuration_url_device": "เยี่ยมชมอุปกรณ์",
                     "open_configuration_url_service": "เยี่ยมชมบริการ",
                     "scene": {
                         "create": "สร้างฉากด้วยอุปกรณ์",
                         "no_scenes": "ไม่มีฉาก",
                         "scenes": "ฉาก"
-                    },
-                    "scenes": "ฉาก"
+                    }
                 },
                 "entities": {
                     "caption": "เอนทิตีรีจิสทรี",
                     "description": "ภาพรวมของเอนทิตีทั้งหมดที่รู้จัก",
                     "picker": {
                         "header": "เอนทิตีรีจิสทรี",
+                        "headers": {
+                            "name": "ชื่อ"
+                        },
                         "introduction": "ระบบจะเก็บค่าของทุกๆ เอนทิตี้ไว้ โดยมันจะเป็นแบบนั้นและสามารถระบุค่าให้ไม่ซ้ำกันได้ ในแต่ละเอนทิตี้นั้นจะมี 'รหัสเอนทิตี้' ถูกกำหนดไว้อยู่แล้วซึ่งจะถูกกำหนดไว้ให้ใช้กับเอนทิตี้นั้นๆ เท่านั้น",
                         "introduction2": "ใช้เอนทิตี้รีจิสตรีเพื่อแทนที่ชื่อเปลี่ยนรหัสประจำเอนทิตีหรือลบรายการออกจาก Home Assistant \nหมายเหตุ: การลบรายการเอนทิตีรีจิสตรีจะไม่ลบเอนทิตี โดยทำตามลิงก์ด้านล่างและลบออกจากหน้าการรวมระบบ"
                     }
                 },
+                "hardware": {
+                    "available_hardware": {
+                        "search": "ค้นหาฮาร์ดแวร์"
+                    }
+                },
                 "header": "ตั้งค่า Home Assistant",
+                "helpers": {
+                    "picker": {
+                        "headers": {
+                            "name": "ชื่อ"
+                        }
+                    },
+                    "types": {
+                        "schedule": "กำหนดการ"
+                    }
+                },
                 "info": {
-                    "copy_menu": "คัดลอกเมนู"
+                    "copy_menu": "คัดลอกเมนู",
+                    "items": {
+                        "bug": "รายงานบั๊ก",
+                        "change_log": "บันทึกการเปลี่ยนแปลง",
+                        "feature": "ขอคุณสมบัติ",
+                        "help": "วิธีใช้",
+                        "license": "ใบอนุญาต",
+                        "merch": "สินค้า",
+                        "thanks": "ขอขอบคุณที่"
+                    }
                 },
                 "integrations": {
                     "attention": "ต้องระบุ",
                     "caption": "ตัวประสานงาน",
                     "config_entry": {
                         "delete_confirm": "แน่ใจหรือว่าต้องการจะลบการบูรณาการนี้",
-                        "device_unavailable": "อุปกรณ์นี้ไม่พร้อมใช้งาน",
-                        "entity_unavailable": "Entity นี้ไม่พร้อมใช้งาน",
                         "firmware": "Firmware: {version}",
-                        "hub": "เชื่อมต่อผ่านทาง",
                         "manuf": "โดย {manufacturer}",
                         "no_area": "ไม่มีห้อง",
                         "restart_confirm": "เริ่ม Home Assistant ใหม่หลังจากลบการบูรณาการนี้",
@@ -774,7 +881,13 @@
                         },
                         "loading": {
                             "fallback_title": "ตัวประสานงาน"
-                        }
+                        },
+                        "missing_zha": "ในการเพิ่มอุปกรณ์ Zigbee, คุณต้องตั้งค่าบูรณาการ Zigbee Home Automation. คุณต้องการที่จะทําตอนนี้เลยหรือไม่?",
+                        "missing_zwave_js": "ในการเพิ่มอุปกรณ์ Z-Wave, คุณต้องตั้งค่าบูรณาการ Z-Wave. คุณต้องการที่จะทําตอนนี้เลยหรือไม่?",
+                        "missing_zwave_zigbee": "ในการเพิ่มอุปกรณ์ {integration}, คุณต้องมี {supported_hardware_link} และตั้งค่าการ {integration}. หากคุณมีฮาร์ดแวร์อยู่แล้วคุณสามารถดําเนินการตั้งค่า {integration} ได้เลย.",
+                        "proceed": "ดำเนินการ",
+                        "supported_brand_flow": "อุปกรณ์ {supported_brand} จัดทำโดย {flow_domain_name}. คุณต้องการดำเนินการต่อหรือไม่?",
+                        "supported_hardware": "ฮาร์ดแวร์ที่รองรับ"
                     },
                     "configure": "ปรับแต่ง",
                     "configured": "ตั้งค่าแล้ว",
@@ -784,23 +897,11 @@
                     "none": "ยังไม่มีการกำหนดค่าใดๆ เลย",
                     "reconfigure": "กำหนดค่าใหม่"
                 },
-                "introduction": "ที่นี่คือที่สำหรับกำหนดค่าองค์ประกอบต่างๆ รวมถึงระบบของ Home Assistant ไม่ใช่ทุกอย่างที่จะสามารถตั้งค่าได้ผ่าน UI ในขณะนี้ แต่เรากำลังพัฒนาเพิ่มเติมอยู่นะ",
                 "logs": {
                     "copy": "คัดลอกรายการบันทึก"
                 },
                 "mqtt": {
                     "title": "MQTT"
-                },
-                "ozw": {
-                    "common": {
-                        "zwave": "Z-Wave"
-                    },
-                    "device_info": {
-                        "zwave_info": "ข้อมูล Z-Wave"
-                    },
-                    "network_status": {
-                        "unknown": "ไม่ทราบ"
-                    }
                 },
                 "person": {
                     "caption": "บุคคล",
@@ -812,49 +913,69 @@
                         "name": "ชื่อ"
                     }
                 },
+                "repairs": {
+                    "caption": "การซ่อมแซม",
+                    "copy": "คัดลอก",
+                    "critical": "วิกฤต",
+                    "description": "ค้นหาและแก้ไขปัญหาเกี่ยวกับอินสแตนซ์ของคุณ",
+                    "dialog": {
+                        "alert_not_fixable": "เราไม่สามารถแก้ไขปัญหานี้ให้คุณได้",
+                        "breaks_in_version": "ไม่ทำงานในเวอร์ชั่น {version}. โปรดระบุที่อยู่หรือตรวจสอบก่อนการอัปเกรด",
+                        "fix": "ซ่อมแซม",
+                        "ignore": "สนใจ",
+                        "ignored_in_version": "ปัญหานี้ถูกละเว้นในเวอร์ชัน {version}.",
+                        "ignored_in_version_short": "ละเว้นในเวอร์ชัน {version}",
+                        "learn": "เรียนรู้เพิ่มเติม",
+                        "title": "ซ่อมแซม",
+                        "unignore": "ไม่สนใจ"
+                    },
+                    "error": "เกิดข้อผิดพลาด",
+                    "hide_ignored": "ซ่อนการละเว้น",
+                    "integration_startup_time": "เวลาเริ่มต้นการบูรณาการ",
+                    "more_repairs": "แสดงการซ่อมแซมทั้งหมด",
+                    "no_repairs": "ตอนนี้ไม่มีการซ่อมแซ่ม",
+                    "show_ignored": "แสดงการซ่อมแซมที่ถูกละเว้น",
+                    "system_information": "ข้อมูลระบบ",
+                    "warning": "คำเตือน"
+                },
                 "scene": {
                     "editor": {
                         "entities": {
                             "add": "เพิ่มเอนทิตี",
                             "delete": "ลบเอนทิตี"
+                        },
+                        "name": "ชื่อ"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "ชื่อ"
                         }
                     }
                 },
                 "script": {
                     "caption": "สคริปต์",
                     "description": "สร้างและแก้ไขสคริปต์",
+                    "editor": {
+                        "alias": "ชื่อ"
+                    },
                     "picker": {
-                        "add_script": "เพิ่มสคริปต์"
-                    }
-                },
-                "server_control": {
-                    "caption": "การควบคุมเซิร์ฟเวอร์",
-                    "description": "รีสตาร์ทและหยุดเซิร์ฟเวอร์ Home Assistant",
-                    "section": {
-                        "reloading": {
-                            "core": "โหลดส่วนกลางใหม่",
-                            "group": "โหลดกลุ่มใหม่",
-                            "heading": "โหลดการกำหนดค่า YAML อีกครั้ง",
-                            "script": "โหลดสคริปต์อีกครั้ง"
-                        },
-                        "server_management": {
-                            "confirm_stop": "คุณแน่ใจหรือว่าต้องการหยุดการทำงานของ Home Assistant",
-                            "heading": "การจัดการเซิร์ฟเวอร์",
-                            "restart": "เริ่มต้นใหม่",
-                            "stop": "หยุด"
-                        },
-                        "validation": {
-                            "check_config": "ตรวจสอบการกำหนดค่า",
-                            "heading": "ตรวจสอบการกำหนดค่า",
-                            "invalid": "การกำหนดค่าไม่ถูกต้อง",
-                            "valid": "การกำหนดค่าถูกต้อง!"
+                        "add_script": "เพิ่มสคริปต์",
+                        "headers": {
+                            "name": "ชื่อ"
                         }
                     }
                 },
+                "tag": {
+                    "detail": {
+                        "name": "ชื่อ",
+                        "required_error_msg": "ช่องนี้ต้องการกำหนดค่า"
+                    },
+                    "headers": {
+                        "name": "ชื่อ"
+                    }
+                },
                 "updates": {
-                    "review": "รีวิว",
                     "show": "แสดง",
-                    "show_all_updates": "แสดงการปรับปรุงทั้งหมด",
                     "unable_to_fetch": "ไม่สามารถดึงรายการอัพเดตที่มีอยู่",
                     "version_available": "เวอร์ชัน {version_available} พร้อมใช้งานแล้ว"
                 },
@@ -887,40 +1008,10 @@
                     }
                 },
                 "zone": {
+                    "detail": {
+                        "name": "ชื่อ"
+                    },
                     "edit_zone": "แก้ไขโซน"
-                },
-                "zwave": {
-                    "common": {
-                        "index": "ดัชนี",
-                        "instance": "อิน สแตนซ์",
-                        "unknown": "ไม่ทราบ",
-                        "value": "ค่า",
-                        "wakeup_interval": "ช่วงเวลาการปลุก"
-                    },
-                    "description": "จัดการเครือข่าย Z-Wave",
-                    "network_management": {
-                        "header": "เริ่มเครือข่าย Z-Wave"
-                    },
-                    "network_status": {
-                        "network_started": "เริ่มเครือข่าย Z-Wave",
-                        "network_starting": "กําลังเริ่มเครือข่าย Z-Wave…",
-                        "network_starting_note": "อาจใช้เวลาสักครู่ขึ้นอยู่กับขนาดของเครือข่ายของคุณ",
-                        "network_stopped": "หยุดเครือข่าย Z-Wave"
-                    },
-                    "node_config": {
-                        "false": "เท็จ",
-                        "seconds": "วินาที",
-                        "set_config_parameter": "ตั้งค่าพารามิเตอร์การกำหนดค่า",
-                        "set_wakeup": "ตั้งค่าช่วงเวลาการปลุก",
-                        "true": "จริง"
-                    },
-                    "services": {
-                        "add_node": "เพิ่มโหนด",
-                        "cancel_command": "ยกเลิกคำสั่ง",
-                        "remove_node": "เอาโหนดออก",
-                        "start_network": "กําลังเริ่มเครือข่าย Z-Wave…",
-                        "stop_network": "หยุดการใช้งานเครือข่าย Z-Wave..."
-                    }
                 },
                 "zwave_js": {
                     "common": {
@@ -954,6 +1045,12 @@
                             "description": "S2 Authenticated แต่ไม่มีการตรวจสอบว่ามีอุปกรณ์ที่ถูกต้องรวมอยู่ด้วย",
                             "title": "S2 Unauthenticated"
                         }
+                    },
+                    "update_firmware": {
+                        "finished_status": {
+                            "OK_NoRestart": "ไม่มีการรีสตาร์ท",
+                            "OK_RestartPending": "รีสตาร์ท กำลังดําเนินการ"
+                        }
                     }
                 }
             },
@@ -979,6 +1076,36 @@
                         "listeners": "เทมเพลตนี้รับฟังเหตุการณ์ที่เปลี่ยนแปลงสถานะต่อไปนี้:",
                         "no_listeners": "เทมเพลตนี้ไม่รับฟังเหตุการณ์ที่เปลี่ยนแปลงสถานะใด ๆ และจะไม่อัปเดตโดยอัตโนมัติ",
                         "title": "แม่แบบ"
+                    },
+                    "yaml": {
+                        "caption": "การควบคุมเซิร์ฟเวอร์",
+                        "description": "รีสตาร์ทและหยุดเซิร์ฟเวอร์ Home Assistant",
+                        "section": {
+                            "reloading": {
+                                "automation": "ระบบอัตโนมัติ",
+                                "core": "โหลดส่วนกลางใหม่",
+                                "group": "โหลดกลุ่มใหม่",
+                                "heading": "โหลดการกำหนดค่า YAML อีกครั้ง",
+                                "introduction": "บางส่วนของระบบสามารถรีโหลดใหม่ได้ โดยไม่ต้องรีสตาร์ท เมื่อกดปุ่มแล้วระบบจะโหลดไฟล์นั้นใหม่อีกครั้งนึงขึ้นมา",
+                                "scene": "ฉาก",
+                                "script": "โหลดสคริปต์อีกครั้ง"
+                            },
+                            "server_management": {
+                                "confirm_restart": "คุณแน่ใจหรือไม่ว่าต้องการรีสตาร์ท?",
+                                "confirm_stop": "คุณแน่ใจหรือว่าต้องการหยุดการทำงานของ Home Assistant",
+                                "heading": "การจัดการเซิร์ฟเวอร์",
+                                "introduction": "การรีสตาร์ท Home Assistant จะหยุดแดชบอร์ดและระบบอัตโนมัติของคุณ หลังจากรีบูตการกําหนดค่าแต่ละรายการจะถูกโหลดใหม่",
+                                "restart": "เริ่มต้นใหม่",
+                                "stop": "หยุด"
+                            },
+                            "validation": {
+                                "check_config": "ตรวจสอบการกำหนดค่า",
+                                "heading": "ตรวจสอบการกำหนดค่า",
+                                "introduction": "ตรวจสอบความถูกต้องของการกําหนดค่าของคุณ หากคุณเพิ่งทําการเปลี่ยนแปลงบางอย่าง ต้องตรวจสอบให้แน่ใจว่าการกําหนดค่านั้นถูกต้องทั้งหมด.",
+                                "invalid": "การกำหนดค่าไม่ถูกต้อง",
+                                "valid": "การกำหนดค่าถูกต้อง!"
+                            }
+                        }
                     }
                 }
             },
@@ -991,10 +1118,18 @@
                     "energy_sources_table_title": "แหล่งที่มา",
                     "energy_usage_graph_title": "การใช้พลังงาน"
                 },
+                "compare": {
+                    "info": "คุณกำลังเปรียบเทียบช่วงเวลา {start} กับช่วงเวลา {end}"
+                },
                 "setup": {
                     "back": "กลับ",
                     "next": "ต่อไป"
                 }
+            },
+            "history": {
+                "add_all": "เพิ่มเอนทิตีทั้งหมด",
+                "remove_all": "เอาส่วนที่เลือกทั้งหมดออก",
+                "start_search": "เริ่มต้นด้วยการเลือกพื้นที่, อุปกรณ์ หรือเอนทิตีด้านบน"
             },
             "lovelace": {
                 "cards": {
@@ -1055,6 +1190,7 @@
                 },
                 "components": {
                     "energy_period_selector": {
+                        "compare": "เปรียบเทียบข้อมูล",
                         "day": "วัน",
                         "month": "เดือน",
                         "next": "ต่อไป",
@@ -1074,24 +1210,55 @@
                             "optional": "ตัวเลือก",
                             "required": "ต้องระบุ"
                         },
+                        "entities": {
+                            "show_header_toggle": "แสดงการสลับส่วนหัว?"
+                        },
                         "gauge": {
                             "severity": {
+                                "define": "กำหนดความรุนแรง?",
                                 "green": "เขียว",
                                 "red": "แดง",
                                 "yellow": "เหลือง"
                             }
                         },
                         "generic": {
+                            "aspect_ratio": "อัตราส่วนภาพ",
+                            "camera_image": "เอนทิตีกล้อง",
+                            "camera_view": "มุมมองกล้อง",
+                            "entities": "เอนทิตี",
+                            "entity": "เอนทิตี",
+                            "hold_action": "ถือการกระทำ",
+                            "hours_to_show": "ชั่วโมงที่จะแสดง",
                             "icon": "ไอคอน",
                             "icon_height": "ความสูงของไอคอน",
                             "image": "เส้นทางของภาพ",
                             "maximum": "ขีดสุด",
-                            "minimum": "ขั้นต่ำ"
+                            "minimum": "ขั้นต่ำ",
+                            "name": "ชื่อ",
+                            "refresh_interval": "ช่วงเวลารีเฟรช",
+                            "show_icon": "แสดงไอคอน?",
+                            "show_name": "แสดงชื่อ?",
+                            "show_state": "แสดงสถานะ?",
+                            "tap_action": "แตะ \"การดําเนินการ\"",
+                            "theme": "ธีม",
+                            "title": "ชื่อ",
+                            "unit": "หน่วย",
+                            "url": "ยูอาร์แอล"
+                        },
+                        "glance": {
+                            "columns": "คอลัมน์"
                         },
                         "map": {
                             "dark_mode": "โหมดมืด?",
                             "default_zoom": "ค่าซูมเริ่มต้น",
+                            "geo_location_sources": "แหล่งตําแหน่งทางภูมิศาสตร์",
                             "source": "แหล่งที่มา"
+                        },
+                        "markdown": {
+                            "content": "เนื้อหา"
+                        },
+                        "sensor": {
+                            "graph_type": "ประเภทกราฟ"
                         },
                         "weather-forecast": {
                             "show_both": "แสดงสภาพอากาศปัจจุบันและการพยากรณ์",
@@ -1111,6 +1278,7 @@
                         "toggle_editor": "เปิด/ปิดเครื่องมือแก้ไข"
                     },
                     "edit_lovelace": {
+                        "explanation": "ชื่อนี้แสดงอยู่เหนือการแสดงทั้งหมดของคุณในแดชบอร์ด",
                         "header": "ชื่อของ Lovelace UI ของคุณ"
                     },
                     "edit_view": {
@@ -1326,8 +1494,7 @@
                         "username": "ชื่อผู้ใช้"
                     },
                     "error": {
-                        "password_not_match": "รหัสผ่านไม่ตรงกัน",
-                        "required_fields": "กรอกข้อมูลในฟิลด์ที่จำเป็นทั้งหมด"
+                        "password_not_match": "รหัสผ่านไม่ตรงกัน"
                     },
                     "intro": "มาเริ่มกันเลยด้วยการสร้างบัญชีผู้ใช้",
                     "required_field": "ต้องระบุ"
@@ -1350,6 +1517,7 @@
                     "default_dashboard_label": "ภาพรวม (ค่าเริ่มต้น)"
                 },
                 "force_narrow": {
+                    "description": "การดําเนินการนี้จะซ่อนแถบด้านข้างตามค่าเริ่มต้น คล้ายกับประสบการณ์การใช้งานมือถือ",
                     "header": "ซ่อนแถบด้านข้างเสมอ"
                 },
                 "is_owner": "คุณเป็นเจ้าของ",
@@ -1412,6 +1580,7 @@
                     "link_promo": "เรียนรู้เกี่ยวกับธีม"
                 },
                 "vibrate": {
+                    "description": "เปิดหรือปิดการสั่นบนอุปกรณ์นี้เมื่อควบคุมอุปกรณ์",
                     "header": "สั่น"
                 }
             }
