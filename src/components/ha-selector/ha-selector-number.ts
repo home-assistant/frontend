@@ -29,9 +29,9 @@ export class HaNumberSelector extends LitElement {
   protected render() {
     const isBox = this.selector.number.mode === "box";
 
-    const fullLabel = `${this.label} ${
+    const fullLabel = `${this.label}${
       this.selector.number.unit_of_measurement
-        ? "(" + this.selector.number.unit_of_measurement + ")"
+        ? " (" + this.selector.number.unit_of_measurement + ")"
         : ""
     }`;
 
