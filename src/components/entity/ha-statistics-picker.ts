@@ -22,6 +22,25 @@ class HaStatisticsPicker extends LitElement {
   @property({ attribute: "pick-statistic-label" })
   public pickStatisticLabel?: string;
 
+  /**
+   * Show only statistics natively stored with these units of measurements.
+   * @type {Array}
+   * @attr include-statistics-unit-of-measurement
+   */
+  @property({
+    type: Array,
+    attribute: "include-statistics-unit-of-measurement",
+  })
+  public includeStatisticsUnitOfMeasurement?: string[];
+
+  /**
+   * Show only statistics displayed with these units of measurements.
+   * @type {Array}
+   * @attr include-display-unit-of-measurement
+   */
+  @property({ type: Array, attribute: "include-display-unit-of-measurement" })
+  public includeDisplayUnitOfMeasurement?: string[];
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -34,6 +53,10 @@ class HaStatisticsPicker extends LitElement {
             <ha-statistic-picker
               .curValue=${statisticId}
               .hass=${this.hass}
+              .includeDisplayUnitOfMeasurement=${this
+                .includeDisplayUnitOfMeasurement}
+              .includeStatisticsUnitOfMeasurement=${this
+                .includeStatisticsUnitOfMeasurement}
               .value=${statisticId}
               .statisticTypes=${this.statisticTypes}
               .statisticIds=${this.statisticIds}
@@ -46,6 +69,10 @@ class HaStatisticsPicker extends LitElement {
       <div>
         <ha-statistic-picker
           .hass=${this.hass}
+          .includeDisplayUnitOfMeasurement=${this
+            .includeDisplayUnitOfMeasurement}
+          .includeStatisticsUnitOfMeasurement=${this
+            .includeStatisticsUnitOfMeasurement}
           .statisticTypes=${this.statisticTypes}
           .statisticIds=${this.statisticIds}
           .label=${this.pickStatisticLabel}
