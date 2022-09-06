@@ -2271,8 +2271,8 @@
             "add_script": "Add script",
             "run_script": "Run script",
             "run": "[%key:ui::panel::config::automation::editor::run%]",
-            "show_trace": "[%key:ui::panel::config::automation::editor:::show_traces%]",
-            "show_info": "[%key:ui::panel::config::automation::editor:::show_info%]",
+            "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
+            "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "headers": {
               "name": "Name",
               "state": "State"
