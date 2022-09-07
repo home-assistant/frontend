@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResultGroup,
@@ -10,10 +9,9 @@ import {
 import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import "../../../../../components/buttons/ha-call-service-button";
+import "../../../../../components/buttons/ha-progress-button";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-button";
 import {
   bindDeviceToGroup,
   Cluster,
@@ -41,6 +39,8 @@ export class ZHAGroupBindingControl extends LitElement {
   @state() private _selectedClusters: string[] = [];
 
   @state() private _clusters: Cluster[] = [];
+
+  @state() private _bindingOperationInProgress = false;
 
   private _groupToBind?: ZHAGroup;
 
@@ -91,20 +91,23 @@ export class ZHAGroupBindingControl extends LitElement {
             ></zha-clusters-data-table>
           </div>
           <div class="card-actions">
-            <mwc-button
-              @click=${this._onBindGroupClick}
-              .disabled=${!this._canBind}
-              >${this.hass!.localize(
-                "ui.panel.config.zha.group_binding.bind_button_label"
-              )}</mwc-button
-            >
-            <mwc-button
-              @click=${this._onUnbindGroupClick}
-              .disabled=${!this._canBind}
-              >${this.hass!.localize(
-                "ui.panel.config.zha.group_binding.unbind_button_label"
-              )}</mwc-button
-            >
+          <ha-progress-button
+            @click=${this._onBindGroupClick}
+            .disabled=${!this._canBind || this._bindingOperationInProgress}
+          >
+            ${this.hass!.localize(
+              "ui.panel.config.zha.group_binding.bind_button_label"
+            )}
+          </ha-progress-button>
+
+          <ha-progress-button
+            @click=${this._onUnbindGroupClick}
+            .disabled=${!this._canBind || this._bindingOperationInProgress}
+          >
+            ${this.hass!.localize(
+              "ui.panel.config.zha.group_binding.unbind_button_label"
+            )}
+          </ha-progress-button>
           </div>
         </ha-card>
       </ha-config-section>
@@ -119,27 +122,49 @@ export class ZHAGroupBindingControl extends LitElement {
         : this.groups[this._bindTargetIndex];
   }
 
-  private async _onBindGroupClick(): Promise<void> {
+  private async _onBindGroupClick(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
     if (this.hass && this._canBind) {
-      await bindDeviceToGroup(
-        this.hass,
-        this.device!.ieee,
-        this._groupToBind!.group_id,
-        this._clustersToBind!
-      );
-      this._zhaClustersDataTable.clearSelection();
+      this._bindingOperationInProgress = true;
+      button.progress = true;
+      try {
+        await bindDeviceToGroup(
+          this.hass,
+          this.device!.ieee,
+          this._groupToBind!.group_id,
+          this._clustersToBind!
+        );
+        this._zhaClustersDataTable.clearSelection();
+        button.actionSuccess();
+      } catch (err: any) {
+        button.actionError();
+      } finally {
+        this._bindingOperationInProgress = false;
+        button.progress = false;
+      }
     }
   }
 
-  private async _onUnbindGroupClick(): Promise<void> {
+  private async _onUnbindGroupClick(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
     if (this.hass && this._canBind) {
-      await unbindDeviceFromGroup(
-        this.hass,
-        this.device!.ieee,
-        this._groupToBind!.group_id,
-        this._clustersToBind!
-      );
-      this._zhaClustersDataTable.clearSelection();
+      this._bindingOperationInProgress = true;
+      button.progress = true;
+      try {
+        await unbindDeviceFromGroup(
+          this.hass,
+          this.device!.ieee,
+          this._groupToBind!.group_id,
+          this._clustersToBind!
+        );
+        this._zhaClustersDataTable.clearSelection();
+        button.actionSuccess();
+      } catch (err: any) {
+        button.actionError();
+      } finally {
+        this._bindingOperationInProgress = false;
+        button.progress = false;
+      }
     }
   }
 
@@ -184,10 +209,6 @@ export class ZHAGroupBindingControl extends LitElement {
       css`
         .menu {
           width: 100%;
-        }
-
-        .card-actions.warning ha-call-service-button {
-          color: var(--error-color);
         }
 
         .command-picker {
