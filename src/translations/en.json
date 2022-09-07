@@ -3116,6 +3116,10 @@
             "enable_physics": "Enable Physics",
             "refresh_topology": "Refresh Topology"
           },
+          "device_binding": {
+            "bind": "Bind",
+            "unbind": "Unbind"
+          },
           "group_binding": {
             "header": "Group Binding",
             "introduction": "Bind and unbind groups.",

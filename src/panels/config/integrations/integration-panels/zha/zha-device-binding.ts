@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import {
   css,
@@ -10,7 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import "../../../../../components/buttons/ha-call-service-button";
+import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-select";
@@ -30,6 +29,8 @@ export class ZHADeviceBindingControl extends LitElement {
   @state() private bindableDevices: ZHADevice[] = [];
 
   @state() private _deviceToBind?: ZHADevice;
+
+  @state() private _bindingOperationInProgress = false;
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("device")) {
@@ -63,16 +64,20 @@ export class ZHADeviceBindingControl extends LitElement {
           </ha-select>
         </div>
         <div class="card-actions">
-          <mwc-button
+          <ha-progress-button
             @click=${this._onBindDevicesClick}
-            .disabled=${!(this._deviceToBind && this.device)}
-            >Bind</mwc-button
+            .disabled=${!(this._deviceToBind && this.device) ||
+            this._bindingOperationInProgress}
           >
-          <mwc-button
+            ${this.hass!.localize("ui.panel.config.zha.device_binding.bind")}
+          </ha-progress-button>
+          <ha-progress-button
             @click=${this._onUnbindDevicesClick}
-            .disabled=${!(this._deviceToBind && this.device)}
-            >Unbind</mwc-button
+            .disabled=${!(this._deviceToBind && this.device) ||
+            this._bindingOperationInProgress}
           >
+            ${this.hass!.localize("ui.panel.config.zha.device_binding.unbind")}
+          </ha-progress-button>
         </div>
       </ha-card>
     `;
@@ -86,15 +91,41 @@ export class ZHADeviceBindingControl extends LitElement {
         : this.bindableDevices[this._bindTargetIndex];
   }
 
-  private async _onBindDevicesClick(): Promise<void> {
+  private async _onBindDevicesClick(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
     if (this.hass && this._deviceToBind && this.device) {
-      await bindDevices(this.hass, this.device.ieee, this._deviceToBind.ieee);
+      this._bindingOperationInProgress = true;
+      button.progress = true;
+      try {
+        await bindDevices(this.hass, this.device.ieee, this._deviceToBind.ieee);
+        button.actionSuccess();
+      } catch (err: any) {
+        button.actionError();
+      } finally {
+        this._bindingOperationInProgress = false;
+        button.progress = false;
+      }
     }
   }
 
-  private async _onUnbindDevicesClick(): Promise<void> {
+  private async _onUnbindDevicesClick(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
     if (this.hass && this._deviceToBind && this.device) {
-      await unbindDevices(this.hass, this.device.ieee, this._deviceToBind.ieee);
+      this._bindingOperationInProgress = true;
+      button.progress = true;
+      try {
+        await unbindDevices(
+          this.hass,
+          this.device.ieee,
+          this._deviceToBind.ieee
+        );
+        button.actionSuccess();
+      } catch (err: any) {
+        button.actionError();
+      } finally {
+        this._bindingOperationInProgress = false;
+        button.progress = false;
+      }
     }
   }
 
@@ -104,10 +135,6 @@ export class ZHADeviceBindingControl extends LitElement {
       css`
         .menu {
           width: 100%;
-        }
-
-        .card-actions.warning ha-call-service-button {
-          color: var(--error-color);
         }
 
         .command-picker {
