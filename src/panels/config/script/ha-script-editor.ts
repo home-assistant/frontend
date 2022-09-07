@@ -270,47 +270,49 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 >
                   ${this._config
                     ? html`
-                        <ha-card outlined>
-                          <div class="card-content">
-                            <ha-form
-                              .schema=${schema}
-                              .data=${data}
-                              .hass=${this.hass}
-                              .computeLabel=${this._computeLabelCallback}
-                              .computeHelper=${this._computeHelperCallback}
-                              @value-changed=${this._valueChanged}
-                            ></ha-form>
-                          </div>
-                          ${this.scriptEntityId
-                            ? html`
-                                <div
-                                  class="card-actions layout horizontal justified center"
-                                >
-                                  <a
-                                    href="/config/script/trace/${this
-                                      .scriptEntityId}"
+                        <div class="config-container">
+                          <ha-card outlined>
+                            <div class="card-content">
+                              <ha-form
+                                .schema=${schema}
+                                .data=${data}
+                                .hass=${this.hass}
+                                .computeLabel=${this._computeLabelCallback}
+                                .computeHelper=${this._computeHelperCallback}
+                                @value-changed=${this._valueChanged}
+                              ></ha-form>
+                            </div>
+                            ${this.scriptEntityId
+                              ? html`
+                                  <div
+                                    class="card-actions layout horizontal justified center"
                                   >
-                                    <mwc-button>
+                                    <a
+                                      href="/config/script/trace/${this
+                                        .scriptEntityId}"
+                                    >
+                                      <mwc-button>
+                                        ${this.hass.localize(
+                                          "ui.panel.config.script.editor.show_trace"
+                                        )}
+                                      </mwc-button>
+                                    </a>
+                                    <mwc-button
+                                      @click=${this._runScript}
+                                      title=${this.hass.localize(
+                                        "ui.panel.config.script.picker.run_script"
+                                      )}
+                                      ?disabled=${this._dirty}
+                                    >
                                       ${this.hass.localize(
-                                        "ui.panel.config.script.editor.show_trace"
+                                        "ui.panel.config.script.picker.run_script"
                                       )}
                                     </mwc-button>
-                                  </a>
-                                  <mwc-button
-                                    @click=${this._runScript}
-                                    title=${this.hass.localize(
-                                      "ui.panel.config.script.picker.run_script"
-                                    )}
-                                    ?disabled=${this._dirty}
-                                  >
-                                    ${this.hass.localize(
-                                      "ui.panel.config.script.picker.run_script"
-                                    )}
-                                  </mwc-button>
-                                </div>
-                              `
-                            : ``}
-                        </ha-card>
+                                  </div>
+                                `
+                              : ``}
+                          </ha-card>
+                        </div>
 
                         ${"use_blueprint" in this._config
                           ? html`
@@ -323,36 +325,38 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                               ></blueprint-script-editor>
                             `
                           : html`
-                              <div class="header">
-                                <h2 id="sequence-heading" class="name">
-                                  ${this.hass.localize(
-                                    "ui.panel.config.script.editor.sequence"
-                                  )}
-                                </h2>
-                                <a
-                                  href=${documentationUrl(
-                                    this.hass,
-                                    "/docs/scripts/"
-                                  )}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  <ha-icon-button
-                                    .path=${mdiHelpCircle}
-                                    .label=${this.hass.localize(
-                                      "ui.panel.config.script.editor.link_available_actions"
+                              <div class="sequence-container">
+                                <div class="header">
+                                  <h2 id="sequence-heading" class="name">
+                                    ${this.hass.localize(
+                                      "ui.panel.config.script.editor.sequence"
                                     )}
-                                  ></ha-icon-button>
-                                </a>
-                              </div>
+                                  </h2>
+                                  <a
+                                    href=${documentationUrl(
+                                      this.hass,
+                                      "/docs/scripts/"
+                                    )}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    <ha-icon-button
+                                      .path=${mdiHelpCircle}
+                                      .label=${this.hass.localize(
+                                        "ui.panel.config.script.editor.link_available_actions"
+                                      )}
+                                    ></ha-icon-button>
+                                  </a>
+                                </div>
 
-                              <ha-automation-action
-                                role="region"
-                                aria-labelledby="sequence-heading"
-                                .actions=${this._config.sequence}
-                                @value-changed=${this._sequenceChanged}
-                                .hass=${this.hass}
-                              ></ha-automation-action>
+                                <ha-automation-action
+                                  role="region"
+                                  aria-labelledby="sequence-heading"
+                                  .actions=${this._config.sequence}
+                                  @value-changed=${this._sequenceChanged}
+                                  .hass=${this.hass}
+                                ></ha-automation-action>
+                              </div>
                             `}
                       `
                     : ""}
@@ -787,14 +791,18 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           font-weight: bold;
           color: var(--error-color);
         }
-        .content {
-          padding: 16px 16px 20px;
-        }
         .yaml-mode {
           height: 100%;
           display: flex;
           flex-direction: column;
           padding-bottom: 0;
+        }
+        blueprint-script-editor,
+        .config-container,
+        .sequence-container {
+          margin: 0 auto;
+          max-width: 1040px;
+          padding: 28px 20px 0;
         }
         ha-yaml-editor {
           flex-grow: 1;
