@@ -11,7 +11,6 @@ import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-select";
 import { bindDevices, unbindDevices, ZHADevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";

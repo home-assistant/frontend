@@ -10,9 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-select";
 import {
   Cluster,
