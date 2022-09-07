@@ -782,9 +782,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           flex-direction: column;
           padding-bottom: 0;
         }
-        blueprint-script-editor,
         .config-container,
-        .sequence-container {
+        manual-script-editor,
+        blueprint-script-editor {
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
