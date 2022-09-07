@@ -205,7 +205,7 @@ export class HuiStatisticsGraphCardEditor
       period: "hour",
       days_to_show: 30,
       ...this._config,
-      configured_stat_types,
+      stat_types: configured_stat_types,
     };
     const displayUnit = this._metaDatas?.[0]?.display_unit_of_measurement;
 
