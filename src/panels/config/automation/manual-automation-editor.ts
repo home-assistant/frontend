@@ -4,12 +4,9 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-alert";
-import "../../../components/ha-textarea";
-import "../../../components/ha-textfield";
 import {
   Condition,
   ManualAutomationConfig,
@@ -215,22 +212,11 @@ export class HaManualAutomationEditor extends LitElement {
         ha-card {
           overflow: hidden;
         }
-        .link-button-row {
-          padding: 14px;
-        }
         .description {
           margin: 0;
         }
         p {
           margin-bottom: 0;
-        }
-        ha-entity-toggle {
-          margin-right: 8px;
-        }
-        ha-select,
-        .max {
-          margin-top: 16px;
-          width: 200px;
         }
         .header {
           display: flex;
@@ -246,35 +232,6 @@ export class HaManualAutomationEditor extends LitElement {
         }
         .header a {
           color: var(--secondary-text-color);
-        }
-        h3 {
-          margin: 0;
-          font-size: inherit;
-          font-weight: inherit;
-        }
-        ha-expansion-panel {
-          --expansion-panel-summary-padding: 0 0 0 8px;
-          --expansion-panel-content-padding: 0;
-        }
-        .card-content {
-          padding: 16px;
-        }
-        .settings-icon {
-          display: none;
-        }
-        @media (min-width: 870px) {
-          .settings-icon {
-            display: inline-block;
-            color: var(--secondary-text-color);
-            opacity: 0.9;
-            margin-right: 8px;
-          }
-        }
-        .disabled-bar {
-          background: var(--divider-color, #e0e0e0);
-          text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius);
-          border-top-left-radius: var(--ha-card-border-radius);
         }
         ha-alert {
           display: block;

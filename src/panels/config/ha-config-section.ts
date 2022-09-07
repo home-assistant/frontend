@@ -126,3 +126,9 @@ export class HaConfigSection extends LitElement {
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-section": HaConfigSection;
+  }
+}
