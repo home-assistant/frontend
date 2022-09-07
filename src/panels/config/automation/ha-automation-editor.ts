@@ -216,15 +216,18 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 </mwc-list-item>
               `
             : ""}
-
-          <mwc-list-item
-            graphic="icon"
-            @click=${this._toggleReOrderMode}
-            .disabled=${this._mode !== "gui"}
-          >
-            ${this.hass.localize("ui.panel.config.automation.editor.re_order")}
-            <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
-          </mwc-list-item>
+          ${this._config && !("use_blueprint" in this._config)
+            ? html`<mwc-list-item
+                graphic="icon"
+                @click=${this._toggleReOrderMode}
+                .disabled=${this._mode === "yaml"}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.re_order"
+                )}
+                <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
+              </mwc-list-item>`
+            : ""}
 
           <mwc-list-item
             .disabled=${!this.automationId}
