@@ -5,6 +5,8 @@ import {
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
+  mdiInformationOutline,
+  mdiPlay,
   mdiSort,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
@@ -20,6 +22,7 @@ import {
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -178,6 +181,21 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         .backCallback=${this._backTapped}
         .header=${!this._config?.alias ? "" : this._config.alias}
       >
+        ${this.scriptEntityId && !this.narrow
+          ? html`
+              <a
+                class="trace-link"
+                href="/config/script/trace/${this.scriptEntityId}"
+                slot="toolbar-icon"
+              >
+                <mwc-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.script.editor.show_trace"
+                  )}
+                </mwc-button>
+              </a>
+            `
+          : ""}
         <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
@@ -185,6 +203,42 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!this.scriptEntityId}
+            @click=${this._showInfo}
+          >
+            ${this.hass.localize("ui.panel.config.script.editor.show_info")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiInformationOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!this.scriptEntityId}
+            @click=${this._runScript}
+          >
+            ${this.hass.localize("ui.panel.config.script.picker.run_script")}
+            <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
+          </mwc-list-item>
+
+          ${this.scriptEntityId && !this.narrow
+            ? html`
+                <a
+                  class="trace-link"
+                  href="/config/automation/trace/${this.scriptEntityId}"
+                  slot="toolbar-icon"
+                >
+                  <mwc-button>
+                    ${this.hass.localize(
+                      "ui.panel.config.script.editor.show_trace"
+                    )}
+                  </mwc-button>
+                </a>
+              `
+            : ""}
           ${this._config && !("use_blueprint" in this._config)
             ? html`
                 <mwc-list-item
@@ -361,28 +415,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : this._mode === "yaml"
             ? html`
-                ${!this.narrow
-                  ? html`
-                      <ha-card outlined>
-                        <div class="card-header">${this._config?.alias}</div>
-                        <div
-                          class="card-actions layout horizontal justified center"
-                        >
-                          <mwc-button
-                            @click=${this._runScript}
-                            title=${this.hass.localize(
-                              "ui.panel.config.script.picker.run_script"
-                            )}
-                            ?disabled=${this._dirty}
-                          >
-                            ${this.hass.localize(
-                              "ui.panel.config.script.picker.run_script"
-                            )}
-                          </mwc-button>
-                        </div>
-                      </ha-card>
-                    `
-                  : ``}
                 <ha-yaml-editor
                   .hass=${this.hass}
                   .defaultValue=${this._preprocessYaml()}
@@ -518,6 +550,13 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
     return undefined;
   };
+
+  private async _showInfo() {
+    if (!this.scriptEntityId) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId: this.scriptEntityId });
+  }
 
   private async _runScript(ev: CustomEvent) {
     ev.stopPropagation();
@@ -828,6 +867,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         .header a {
           color: var(--secondary-text-color);
+        }
+        .trace-link {
+          text-decoration: none;
         }
       `,
     ];
