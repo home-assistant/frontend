@@ -156,6 +156,9 @@ class HaScriptPicker extends LitElement {
                 action: () => this._showTrace(script),
               },
               {
+                divider: true,
+              },
+              {
                 path: mdiContentDuplicate,
                 label: this.hass.localize(
                   "ui.panel.config.script.picker.duplicate"
