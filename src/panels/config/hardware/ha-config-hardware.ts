@@ -80,29 +80,31 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   private _cpuEntries: { x: number; y: number | null }[] = [];
 
   public hassSubscribe() {
-    return [
-      this.hass.connection.subscribeMessage<SystemStatusStreamMessage>(
-        (message) => {
-          // Only store the last 60 entries
-          this._memoryEntries.shift();
-          this._cpuEntries.shift();
+    return isComponentLoaded(this.hass, "hardware")
+      ? [
+          this.hass.connection.subscribeMessage<SystemStatusStreamMessage>(
+            (message) => {
+              // Only store the last 60 entries
+              this._memoryEntries.shift();
+              this._cpuEntries.shift();
 
-          this._memoryEntries.push({
-            x: new Date(message.timestamp).getTime(),
-            y: message.memory_used_percent,
-          });
-          this._cpuEntries.push({
-            x: new Date(message.timestamp).getTime(),
-            y: message.cpu_percent,
-          });
+              this._memoryEntries.push({
+                x: new Date(message.timestamp).getTime(),
+                y: message.memory_used_percent,
+              });
+              this._cpuEntries.push({
+                x: new Date(message.timestamp).getTime(),
+                y: message.cpu_percent,
+              });
 
-          this._systemStatusData = message;
-        },
-        {
-          type: "hardware/subscribe_system_status",
-        }
-      ),
-    ];
+              this._systemStatusData = message;
+            },
+            {
+              type: "hardware/subscribe_system_status",
+            }
+          ),
+        ]
+      : [];
   }
 
   protected willUpdate(): void {
@@ -198,32 +200,34 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.hardware.caption")}
       >
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-            slot="trigger"
-          ></ha-icon-button>
-          <mwc-list-item @click=${this._openHardware}
-            >${this.hass.localize(
-              "ui.panel.config.hardware.available_hardware.title"
-            )}</mwc-list-item
-          >
-          ${this._hostData
-            ? html`
-                <mwc-list-item class="warning" @click=${this._hostReboot}
-                  >${this.hass.localize(
-                    "ui.panel.config.hardware.reboot_host"
-                  )}</mwc-list-item
-                >
-                <mwc-list-item class="warning" @click=${this._hostShutdown}
-                  >${this.hass.localize(
-                    "ui.panel.config.hardware.shutdown_host"
-                  )}</mwc-list-item
-                >
-              `
-            : ""}
-        </ha-button-menu>
+        ${isComponentLoaded(this.hass, "hassio")
+          ? html`<ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+              <ha-icon-button
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+                slot="trigger"
+              ></ha-icon-button>
+              <mwc-list-item @click=${this._openHardware}
+                >${this.hass.localize(
+                  "ui.panel.config.hardware.available_hardware.title"
+                )}</mwc-list-item
+              >
+              ${this._hostData
+                ? html`
+                    <mwc-list-item class="warning" @click=${this._hostReboot}
+                      >${this.hass.localize(
+                        "ui.panel.config.hardware.reboot_host"
+                      )}</mwc-list-item
+                    >
+                    <mwc-list-item class="warning" @click=${this._hostShutdown}
+                      >${this.hass.localize(
+                        "ui.panel.config.hardware.shutdown_host"
+                      )}</mwc-list-item
+                    >
+                  `
+                : ""}
+            </ha-button-menu>`
+          : ""}
         ${this._error
           ? html`
               <ha-alert alert-type="error"
