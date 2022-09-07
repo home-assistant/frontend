@@ -358,35 +358,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                 @value-changed=${this._valueChanged}
                               ></ha-form>
                             </div>
-                            ${this.scriptEntityId
-                              ? html`
-                                  <div
-                                    class="card-actions layout horizontal justified center"
-                                  >
-                                    <a
-                                      href="/config/script/trace/${this
-                                        .scriptEntityId}"
-                                    >
-                                      <mwc-button>
-                                        ${this.hass.localize(
-                                          "ui.panel.config.script.editor.show_trace"
-                                        )}
-                                      </mwc-button>
-                                    </a>
-                                    <mwc-button
-                                      @click=${this._runScript}
-                                      title=${this.hass.localize(
-                                        "ui.panel.config.script.picker.run_script"
-                                      )}
-                                      ?disabled=${this._dirty}
-                                    >
-                                      ${this.hass.localize(
-                                        "ui.panel.config.script.picker.run_script"
-                                      )}
-                                    </mwc-button>
-                                  </div>
-                                `
-                              : ``}
                           </ha-card>
                         </div>
 
