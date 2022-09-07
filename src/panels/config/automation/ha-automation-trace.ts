@@ -1,6 +1,5 @@
 import {
   mdiDownload,
-  mdiPencil,
   mdiRayEndArrow,
   mdiRayStartArrow,
   mdiRefresh,
@@ -34,7 +33,7 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
+import "../../../layouts/hass-subpage";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -108,175 +107,152 @@ export class HaAutomationTrace extends LitElement {
 
     return html`
       ${devButtons}
-      <hass-tabs-subpage
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configSections.automations}
-      >
-        ${this.narrow
-          ? html`<span slot="header">${title}</span>
-              <div slot="toolbar-icon">${actionButtons}</div>`
-          : ""}
-        <div class="toolbar">
-          ${!this.narrow
-            ? html`<div>
-                ${title}
-                <a
-                  class="linkButton"
-                  href="/config/automation/edit/${this.automationId}"
-                >
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.automation.trace.edit_automation"
-                    )}
-                    .path=${mdiPencil}
-                    tabindex="-1"
-                  ></ha-icon-button>
-                </a>
-              </div>`
-            : ""}
-          ${this._traces && this._traces.length > 0
-            ? html`
-                <div>
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.automation.trace.older_trace"
-                    )}
-                    .path=${mdiRayEndArrow}
-                    .disabled=${this._traces[this._traces.length - 1].run_id ===
-                    this._runId}
-                    @click=${this._pickOlderTrace}
-                  ></ha-icon-button>
-                  <select .value=${this._runId} @change=${this._pickTrace}>
-                    ${repeat(
-                      this._traces,
-                      (trace) => trace.run_id,
-                      (trace) =>
-                        html`<option value=${trace.run_id}>
-                          ${formatDateTimeWithSeconds(
-                            new Date(trace.timestamp.start),
-                            this.hass.locale
-                          )}
-                        </option>`
-                    )}
-                  </select>
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.automation.trace.newer_trace"
-                    )}
-                    .path=${mdiRayStartArrow}
-                    .disabled=${this._traces[0].run_id === this._runId}
-                    @click=${this._pickNewerTrace}
-                  ></ha-icon-button>
-                </div>
-              `
-            : ""}
-          ${!this.narrow ? html`<div>${actionButtons}</div>` : ""}
+      <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
+              <div slot="toolbar-icon">${actionButtons}</div>
+          ${
+            this._traces && this._traces.length > 0
+              ? html`
+                  <div class="trace-picker">
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        "ui.panel.config.automation.trace.older_trace"
+                      )}
+                      .path=${mdiRayEndArrow}
+                      .disabled=${this._traces[this._traces.length - 1]
+                        .run_id === this._runId}
+                      @click=${this._pickOlderTrace}
+                    ></ha-icon-button>
+                    <select .value=${this._runId} @change=${this._pickTrace}>
+                      ${repeat(
+                        this._traces,
+                        (trace) => trace.run_id,
+                        (trace) =>
+                          html`<option value=${trace.run_id}>
+                            ${formatDateTimeWithSeconds(
+                              new Date(trace.timestamp.start),
+                              this.hass.locale
+                            )}
+                          </option>`
+                      )}
+                    </select>
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        "ui.panel.config.automation.trace.newer_trace"
+                      )}
+                      .path=${mdiRayStartArrow}
+                      .disabled=${this._traces[0].run_id === this._runId}
+                      @click=${this._pickNewerTrace}
+                    ></ha-icon-button>
+                  </div>
+                `
+              : ""
+          }
         </div>
 
-        ${this._traces === undefined
-          ? html`<div class="container">Loading…</div>`
-          : this._traces.length === 0
-          ? html`<div class="container">No traces found</div>`
-          : this._trace === undefined
-          ? ""
-          : html`
-              <div class="main">
-                <div class="graph">
-                  <hat-script-graph
-                    .trace=${this._trace}
-                    .selected=${this._selected?.path}
-                    @graph-node-selected=${this._pickNode}
-                  ></hat-script-graph>
-                </div>
+        ${
+          this._traces === undefined
+            ? html`<div class="container">Loading…</div>`
+            : this._traces.length === 0
+            ? html`<div class="container">No traces found</div>`
+            : this._trace === undefined
+            ? ""
+            : html`
+                <div class="main">
+                  <div class="graph">
+                    <hat-script-graph
+                      .trace=${this._trace}
+                      .selected=${this._selected?.path}
+                      @graph-node-selected=${this._pickNode}
+                    ></hat-script-graph>
+                  </div>
 
-                <div class="info">
-                  <div class="tabs top">
-                    ${[
-                      ["details", "Step Details"],
-                      ["timeline", "Trace Timeline"],
-                      ["logbook", "Related logbook entries"],
-                      ["config", "Automation Config"],
-                    ].map(
-                      ([view, label]) => html`
-                        <button
-                          tabindex="0"
-                          .view=${view}
-                          class=${classMap({ active: this._view === view })}
-                          @click=${this._showTab}
-                        >
-                          ${label}
-                        </button>
-                      `
-                    )}
-                    ${this._trace.blueprint_inputs
-                      ? html`
+                  <div class="info">
+                    <div class="tabs top">
+                      ${[
+                        ["details", "Step Details"],
+                        ["timeline", "Trace Timeline"],
+                        ["logbook", "Related logbook entries"],
+                        ["config", "Automation Config"],
+                      ].map(
+                        ([view, label]) => html`
                           <button
                             tabindex="0"
-                            .view=${"blueprint"}
-                            class=${classMap({
-                              active: this._view === "blueprint",
-                            })}
+                            .view=${view}
+                            class=${classMap({ active: this._view === view })}
                             @click=${this._showTab}
                           >
-                            Blueprint Config
+                            ${label}
                           </button>
                         `
-                      : ""}
+                      )}
+                      ${this._trace.blueprint_inputs
+                        ? html`
+                            <button
+                              tabindex="0"
+                              .view=${"blueprint"}
+                              class=${classMap({
+                                active: this._view === "blueprint",
+                              })}
+                              @click=${this._showTab}
+                            >
+                              Blueprint Config
+                            </button>
+                          `
+                        : ""}
+                    </div>
+                    ${this._selected === undefined ||
+                    this._logbookEntries === undefined ||
+                    trackedNodes === undefined
+                      ? ""
+                      : this._view === "details"
+                      ? html`
+                          <ha-trace-path-details
+                            .hass=${this.hass}
+                            .narrow=${this.narrow}
+                            .trace=${this._trace}
+                            .selected=${this._selected}
+                            .logbookEntries=${this._logbookEntries}
+                            .trackedNodes=${trackedNodes}
+                            .renderedNodes=${renderedNodes!}
+                          ></ha-trace-path-details>
+                        `
+                      : this._view === "config"
+                      ? html`
+                          <ha-trace-config
+                            .hass=${this.hass}
+                            .trace=${this._trace}
+                          ></ha-trace-config>
+                        `
+                      : this._view === "logbook"
+                      ? html`
+                          <ha-trace-logbook
+                            .hass=${this.hass}
+                            .narrow=${this.narrow}
+                            .trace=${this._trace}
+                            .logbookEntries=${this._logbookEntries}
+                          ></ha-trace-logbook>
+                        `
+                      : this._view === "blueprint"
+                      ? html`
+                          <ha-trace-blueprint-config
+                            .hass=${this.hass}
+                            .trace=${this._trace}
+                          ></ha-trace-blueprint-config>
+                        `
+                      : html`
+                          <ha-trace-timeline
+                            .hass=${this.hass}
+                            .trace=${this._trace}
+                            .logbookEntries=${this._logbookEntries}
+                            .selected=${this._selected}
+                            @value-changed=${this._timelinePathPicked}
+                          ></ha-trace-timeline>
+                        `}
                   </div>
-                  ${this._selected === undefined ||
-                  this._logbookEntries === undefined ||
-                  trackedNodes === undefined
-                    ? ""
-                    : this._view === "details"
-                    ? html`
-                        <ha-trace-path-details
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .trace=${this._trace}
-                          .selected=${this._selected}
-                          .logbookEntries=${this._logbookEntries}
-                          .trackedNodes=${trackedNodes}
-                          .renderedNodes=${renderedNodes!}
-                        ></ha-trace-path-details>
-                      `
-                    : this._view === "config"
-                    ? html`
-                        <ha-trace-config
-                          .hass=${this.hass}
-                          .trace=${this._trace}
-                        ></ha-trace-config>
-                      `
-                    : this._view === "logbook"
-                    ? html`
-                        <ha-trace-logbook
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .trace=${this._trace}
-                          .logbookEntries=${this._logbookEntries}
-                        ></ha-trace-logbook>
-                      `
-                    : this._view === "blueprint"
-                    ? html`
-                        <ha-trace-blueprint-config
-                          .hass=${this.hass}
-                          .trace=${this._trace}
-                        ></ha-trace-blueprint-config>
-                      `
-                    : html`
-                        <ha-trace-timeline
-                          .hass=${this.hass}
-                          .trace=${this._trace}
-                          .logbookEntries=${this._logbookEntries}
-                          .selected=${this._selected}
-                          @value-changed=${this._timelinePathPicked}
-                        ></ha-trace-timeline>
-                      `}
                 </div>
-              </div>
-            `}
-      </hass-tabs-subpage>
+              `
+        }
+      </hass-subpage>
     `;
   }
 
@@ -519,6 +495,12 @@ export class HaAutomationTrace extends LitElement {
 
         .linkButton {
           color: var(--primary-text-color);
+        }
+        .trace-picker {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-bottom: 1px solid var(--divider-color);
         }
       `,
     ];
