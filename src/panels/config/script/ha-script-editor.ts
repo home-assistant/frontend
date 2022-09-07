@@ -225,7 +225,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
           </mwc-list-item>
 
-          ${this.scriptEntityId && !this.narrow
+          ${this.scriptEntityId && this.narrow
             ? html`
                 <a href="/config/script/trace/${this.scriptEntityId}">
                   <mwc-list-item graphic="icon">
@@ -842,6 +842,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         .trace-link {
           text-decoration: none;
+        }
+        ha-button-menu a {
+          text-decoration: none;
+          color: var(--primary-color);
         }
       `,
     ];
