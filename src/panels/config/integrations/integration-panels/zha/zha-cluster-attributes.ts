@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-input/paper-input";
 import {
@@ -15,6 +14,7 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-select";
+import "../../../../../components/buttons/ha-progress-button";
 import {
   Attribute,
   Cluster,
@@ -49,6 +49,8 @@ export class ZHAClusterAttributes extends LitElement {
   @state() private _manufacturerCodeOverride?: string | number;
 
   @state() private _attributesLoaded = false;
+
+  @state() private _readingAttribute = false;
 
   @state()
   private _setAttributeServiceData?: SetAttributeServiceData;
@@ -121,11 +123,15 @@ export class ZHAClusterAttributes extends LitElement {
         ></paper-input>
       </div>
       <div class="card-actions">
-        <mwc-button @click=${this._onGetZigbeeAttributeClick}>
+        <ha-progress-button
+          @click=${this._onGetZigbeeAttributeClick}
+          .progress=${this._readingAttribute}
+          .disabled=${this._readingAttribute}
+        >
           ${this.hass!.localize(
             "ui.panel.config.zha.cluster_attributes.read_zigbee_attribute"
           )}
-        </mwc-button>
+        </ha-progress-button>
         <ha-call-service-button
           .hass=${this.hass}
           domain="zha"
@@ -204,10 +210,19 @@ export class ZHAClusterAttributes extends LitElement {
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
-  private async _onGetZigbeeAttributeClick(): Promise<void> {
+  private async _onGetZigbeeAttributeClick(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
     const data = this._computeReadAttributeServiceData();
     if (data && this.hass) {
-      this._attributeValue = await readAttributeValue(this.hass, data);
+      this._readingAttribute = true;
+      try {
+        this._attributeValue = await readAttributeValue(this.hass, data);
+        button.actionSuccess();
+      } catch (err: any) {
+        button.actionError();
+      } finally {
+        this._readingAttribute = false;
+      }
     }
   }
 
