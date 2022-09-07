@@ -226,16 +226,16 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
           ${this.scriptEntityId && !this.narrow
             ? html`
-                <a
-                  class="trace-link"
-                  href="/config/automation/trace/${this.scriptEntityId}"
-                  slot="toolbar-icon"
-                >
-                  <mwc-button>
+                <a href="/config/script/trace/${this.scriptEntityId}">
+                  <mwc-list-item graphic="icon">
                     ${this.hass.localize(
                       "ui.panel.config.script.editor.show_trace"
                     )}
-                  </mwc-button>
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiTransitConnection}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
                 </a>
               `
             : ""}
