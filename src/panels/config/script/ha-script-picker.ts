@@ -293,16 +293,31 @@ class HaScriptPicker extends LitElement {
   }
 
   private async _duplicate(script: any) {
-    const config = await getScriptConfig(
-      this.hass,
-      computeObjectId(script.entity_id)
-    );
-    showScriptEditor({
-      ...config,
-      alias: `${config?.alias} (${this.hass.localize(
-        "ui.panel.config.script.picker.duplicate"
-      )})`,
-    });
+    try {
+      const config = await getScriptConfig(
+        this.hass,
+        computeObjectId(script.entity_id)
+      );
+      showScriptEditor({
+        ...config,
+        alias: `${config?.alias} (${this.hass.localize(
+          "ui.panel.config.script.picker.duplicate"
+        )})`,
+      });
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        text:
+          err.status_code === 404
+            ? this.hass.localize(
+                "ui.panel.config.script.editor.load_error_not_duplicable"
+              )
+            : this.hass.localize(
+                "ui.panel.config.script.editor.load_error_unknown",
+                "err_no",
+                err.status_code
+              ),
+      });
+    }
   }
 
   private async _deleteConfirm(script: any) {
@@ -315,7 +330,22 @@ class HaScriptPicker extends LitElement {
   }
 
   private async _delete(script: any) {
-    await deleteScript(this.hass, computeObjectId(script.entity_id));
+    try {
+      await deleteScript(this.hass, computeObjectId(script.entity_id));
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        text:
+          err.status_code === 400
+            ? this.hass.localize(
+                "ui.panel.config.script.editor.load_error_not_deletable"
+              )
+            : this.hass.localize(
+                "ui.panel.config.script.editor.load_error_unknown",
+                "err_no",
+                err.status_code
+              ),
+      });
+    }
   }
 
   static get styles(): CSSResultGroup {

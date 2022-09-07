@@ -17,7 +17,7 @@ export interface IconOverflowMenuItem {
   narrowOnly?: boolean;
   disabled?: boolean;
   tooltip?: string;
-  onClick: CallableFunction;
+  action: () => any;
   warning?: boolean;
   divider?: boolean;
 }
@@ -52,7 +52,7 @@ export class HaIconOverflowMenu extends LitElement {
                   ? html`<li divider role="separator"></li>`
                   : html`<mwc-list-item
                       graphic="icon"
-                      .disabled=${item.disabled}
+                      ?disabled=${item.disabled}
                       @click=${item.action}
                       class=${classMap({ warning: Boolean(item.warning) })}
                     >
@@ -83,7 +83,7 @@ export class HaIconOverflowMenu extends LitElement {
                       @click=${item.action}
                       .label=${item.label}
                       .path=${item.path}
-                      .disabled=${item.disabled}
+                      ?disabled=${item.disabled}
                     ></ha-icon-button>
                   </div> `
             )}

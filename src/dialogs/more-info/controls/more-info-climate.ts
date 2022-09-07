@@ -98,7 +98,9 @@ class MoreInfoClimate extends LitElement {
                   </div>
                 `
               : ""}
-            ${stateObj.attributes.temperature !== undefined &&
+            ${supportTargetTemperature &&
+            !supportTargetTemperatureRange &&
+            stateObj.attributes.temperature !== undefined &&
             stateObj.attributes.temperature !== null
               ? html`
                   <ha-climate-control
@@ -112,10 +114,11 @@ class MoreInfoClimate extends LitElement {
                   ></ha-climate-control>
                 `
               : ""}
-            ${(stateObj.attributes.target_temp_low !== undefined &&
+            ${supportTargetTemperatureRange &&
+            ((stateObj.attributes.target_temp_low !== undefined &&
               stateObj.attributes.target_temp_low !== null) ||
-            (stateObj.attributes.target_temp_high !== undefined &&
-              stateObj.attributes.target_temp_high !== null)
+              (stateObj.attributes.target_temp_high !== undefined &&
+                stateObj.attributes.target_temp_high !== null))
               ? html`
                   <ha-climate-control
                     .hass=${this.hass}
