@@ -2290,6 +2290,7 @@
             "id_already_exists": "This ID already exists",
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
+            "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
