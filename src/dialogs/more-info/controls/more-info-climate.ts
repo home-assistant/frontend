@@ -98,7 +98,8 @@ class MoreInfoClimate extends LitElement {
                   </div>
                 `
               : ""}
-            ${!supportTargetTemperatureRange &&
+            ${supportTargetTemperature &&
+            !supportTargetTemperatureRange &&
             stateObj.attributes.temperature !== undefined &&
             stateObj.attributes.temperature !== null
               ? html`
