@@ -31,6 +31,7 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -153,7 +154,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <mwc-list-item graphic="icon" @click=${this._showInfo}>
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._showInfo}
+          >
             ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
             <ha-svg-icon
               slot="graphic"
@@ -534,11 +539,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
         confirm: () => {
-          setTimeout(() => history.back());
+          afterNextRender(() => history.back());
         },
       });
     } else {
-      history.back();
+      afterNextRender(() => history.back());
     }
   };
 
