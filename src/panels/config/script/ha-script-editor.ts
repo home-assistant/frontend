@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
@@ -179,28 +178,30 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         .backCallback=${this._backTapped}
         .header=${!this._config?.alias ? "" : this._config.alias}
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._handleMenuAction}
-          activatable
-        >
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <mwc-list-item
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.editor.re_order"
-            )}
-            graphic="icon"
-            .disabled=${this._mode !== "gui"}
-          >
-            ${this.hass.localize("ui.panel.config.automation.editor.re_order")}
-            <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
-          </mwc-list-item>
+          ${this._config && !("use_blueprint" in this._config)
+            ? html`
+                <mwc-list-item
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.automation.editor.re_order"
+                  )}
+                  graphic="icon"
+                  .disabled=${this._mode !== "gui"}
+                  @click=${this._toggleReOrderMode}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.re_order"
+                  )}
+                  <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
+                </mwc-list-item>
+              `
+            : ""}
 
           <li divider role="separator"></li>
 
@@ -209,6 +210,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               "ui.panel.config.automation.editor.edit_ui"
             )}
             graphic="icon"
+            @click=${this._switchUiMode}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
@@ -226,6 +228,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               "ui.panel.config.automation.editor.edit_yaml"
             )}
             graphic="icon"
+            @click=${this._switchYamlMode}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
@@ -247,6 +250,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               "ui.panel.config.script.picker.duplicate"
             )}
             graphic="icon"
+            @click=${this._duplicate}
           >
             ${this.hass.localize("ui.panel.config.script.picker.duplicate")}
             <ha-svg-icon
@@ -262,6 +266,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             )}
             class=${classMap({ warning: Boolean(this.scriptEntityId) })}
             graphic="icon"
+            @click=${this._deleteConfirm}
           >
             ${this.hass.localize("ui.panel.config.script.picker.delete")}
             <ha-svg-icon
@@ -702,24 +707,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     history.back();
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._toggleReOrderMode();
-        break;
-      case 1:
-        this._mode = "gui";
-        break;
-      case 2:
-        this._mode = "yaml";
-        break;
-      case 3:
-        this._duplicate();
-        break;
-      case 4:
-        this._deleteConfirm();
-        break;
-    }
+  private _switchUiMode() {
+    this._mode = "gui";
+  }
+
+  private _switchYamlMode() {
+    this._mode = "yaml";
   }
 
   private _toggleReOrderMode() {
