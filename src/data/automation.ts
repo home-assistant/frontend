@@ -314,9 +314,23 @@ let inititialAutomationEditorData: Partial<AutomationConfig> | undefined;
 export const getAutomationConfig = (hass: HomeAssistant, id: string) =>
   hass.callApi<AutomationConfig>("GET", `config/automation/config/${id}`);
 
+export const saveAutomationConfig = (
+  hass: HomeAssistant,
+  id: string,
+  config: AutomationConfig
+) => hass.callApi<void>("POST", `config/automation/config/${id}`, config);
+
 export const showAutomationEditor = (data?: Partial<AutomationConfig>) => {
   inititialAutomationEditorData = data;
   navigate("/config/automation/edit/new");
+};
+
+export const duplicateAutomation = (config: AutomationConfig) => {
+  showAutomationEditor({
+    ...config,
+    id: undefined,
+    alias: undefined,
+  });
 };
 
 export const getAutomationEditorInitData = () => {

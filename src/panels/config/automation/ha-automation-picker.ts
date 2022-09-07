@@ -33,8 +33,8 @@ import "../../../components/ha-svg-icon";
 import {
   AutomationEntity,
   deleteAutomation,
+  duplicateAutomation,
   getAutomationConfig,
-  showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
 import {
@@ -348,19 +348,45 @@ class HaAutomationPicker extends LitElement {
   }
 
   private async _delete(automation) {
-    await deleteAutomation(this.hass, automation.attributes.id);
+    try {
+      await deleteAutomation(this.hass, automation.attributes.id);
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        text:
+          err.status_code === 400
+            ? this.hass.localize(
+                "ui.panel.config.automation.editor.load_error_not_deletable"
+              )
+            : this.hass.localize(
+                "ui.panel.config.automation.editor.load_error_unknown",
+                "err_no",
+                err.status_code
+              ),
+      });
+    }
   }
 
   private async duplicate(automation) {
-    const config = await getAutomationConfig(
-      this.hass,
-      automation.attributes.id
-    );
-    showAutomationEditor({
-      ...config,
-      id: undefined,
-      alias: undefined,
-    });
+    try {
+      const config = await getAutomationConfig(
+        this.hass,
+        automation.attributes.id
+      );
+      duplicateAutomation(config);
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        text:
+          err.status_code === 404
+            ? this.hass.localize(
+                "ui.panel.config.automation.editor.load_error_not_duplicable"
+              )
+            : this.hass.localize(
+                "ui.panel.config.automation.editor.load_error_unknown",
+                "err_no",
+                err.status_code
+              ),
+      });
+    }
   }
 
   private _showHelp() {
@@ -389,7 +415,7 @@ class HaAutomationPicker extends LitElement {
     );
 
     if (automation?.attributes.id) {
-      navigate(`/config/automation/edit/${automation?.attributes.id}`);
+      navigate(`/config/automation/edit/${automation.attributes.id}`);
     }
   }
 
