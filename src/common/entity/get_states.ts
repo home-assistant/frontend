@@ -239,10 +239,13 @@ export const getStates = (
       }
       break;
     case "light":
-      if (attribute === "effect") {
+      if (attribute === "effect" && state.attributes.effect_list) {
         result.push(...state.attributes.effect_list);
-      } else if (attribute === "color_mode") {
-        result.push(...state.attributes.color_modes);
+      } else if (
+        attribute === "color_mode" &&
+        state.attributes.supported_color_modes
+      ) {
+        result.push(...state.attributes.supported_color_modes);
       }
       break;
     case "media_player":

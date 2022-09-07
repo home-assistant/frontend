@@ -7,6 +7,7 @@ import { getStates } from "../../common/entity/get_states";
 import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
+import { formatAttributeValue } from "../../data/entity_attributes";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -55,7 +56,7 @@ class HaEntityStatePicker extends LitElement {
                     this.hass.locale,
                     key
                   )
-                : key,
+                : formatAttributeValue(this.hass, key),
             }))
           : [];
     }
@@ -69,16 +70,7 @@ class HaEntityStatePicker extends LitElement {
     return html`
       <ha-combo-box
         .hass=${this.hass}
-        .value=${this.value
-          ? this.entityId && this.hass.states[this.entityId]
-            ? computeStateDisplay(
-                this.hass.localize,
-                this.hass.states[this.entityId],
-                this.hass.locale,
-                this.value
-              )
-            : this.value
-          : ""}
+        .value=${this.value}
         .autofocus=${this.autofocus}
         .label=${this.label ??
         this.hass.localize("ui.components.entity.entity-state-picker.state")}
