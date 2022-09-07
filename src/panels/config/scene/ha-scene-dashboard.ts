@@ -158,6 +158,9 @@ class HaSceneDashboard extends LitElement {
                   action: () => this._activateScene(scene),
                 },
                 {
+                  divider: true,
+                },
+                {
                   path: mdiContentDuplicate,
                   label: this.hass.localize(
                     "ui.panel.config.scene.picker.duplicate"

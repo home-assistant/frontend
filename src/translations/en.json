@@ -1828,6 +1828,8 @@
             "default_name": "New Automation",
             "missing_name": "Cannot save automation without a name",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
+            "load_error_not_duplicable": "Only automations in automations.yaml can be duplicated.",
+            "load_error_not_deletable": "Only automations in automations.yaml can be deleted.",
             "load_error_unknown": "Error loading automation ({err_no}).",
             "save": "Save",
             "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
@@ -2270,7 +2272,7 @@
             "no_scripts": "We couldn't find any scripts",
             "add_script": "Add script",
             "run_script": "Run script",
-            "run": "[%key:ui::panel::config::automation::editor::run%]",
+            "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "headers": {
@@ -2288,6 +2290,7 @@
             "id_already_exists": "This ID already exists",
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
+            "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
@@ -2303,13 +2306,16 @@
               "parallel": "Max number of parallel runs"
             },
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
+            "load_error_not_duplicable": "Only scripts in scripts.yaml can be duplicated.",
+            "load_error_not_deletable": "Only scripts in scripts.yaml can be deleted.",
             "load_error_unknown": "Error loading script ({err_no}).",
             "delete_confirm": "Are you sure you want to delete this script?",
             "save_script": "Save script",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
             "link_available_actions": "Learn more about available actions."
-          }
+          },
+          "trace": { "edit_script": "Edit script" }
         },
         "scene": {
           "caption": "Scenes",

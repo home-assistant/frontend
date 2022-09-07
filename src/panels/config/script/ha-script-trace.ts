@@ -1,6 +1,5 @@
 import {
   mdiDownload,
-  mdiPencil,
   mdiRayEndArrow,
   mdiRayStartArrow,
   mdiRefresh,
@@ -34,7 +33,7 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
+import "../../../layouts/hass-subpage";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -88,81 +87,72 @@ export class HaScriptTrace extends LitElement {
       </div>`;
     }
 
-    const actionButtons = html`
-      <ha-icon-button
-        label="Refresh"
-        @click=${this._refreshTraces}
-        .path=${mdiRefresh}
-      ></ha-icon-button>
-      <ha-icon-button
-        .disabled=${!this._trace}
-        label="Download Trace"
-        @click=${this._downloadTrace}
-        .path=${mdiDownload}
-      ></ha-icon-button>
-    `;
-
     return html`
       ${devButtons}
-      <hass-tabs-subpage
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configSections.automations}
-      >
-        ${this.narrow
-          ? html`<span slot="header"> ${title} </span>
-              <div slot="toolbar-icon">${actionButtons}</div>`
+      <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
+        ${!this.narrow && this.scriptEntityId
+          ? html`
+              <a
+                class="trace-link"
+                href="/config/script/edit/${this.scriptEntityId}"
+                slot="toolbar-icon"
+              >
+                <mwc-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.script.trace.edit_script"
+                  )}
+                </mwc-button>
+              </a>
+            `
           : ""}
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.trace.refresh"
+          )}
+          .path=${mdiRefresh}
+          @click=${this._refreshTraces}
+        ></ha-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.trace.download_trace"
+          )}
+          .path=${mdiDownload}
+          .disabled=${!this._trace}
+          @click=${this._downloadTrace}
+        ></ha-icon-button>
         <div class="toolbar">
-          ${!this.narrow
-            ? html`<div>
-                ${title}
-                <a
-                  class="linkButton"
-                  href="/config/script/edit/${this.scriptEntityId}"
-                >
-                  <ha-icon-button
-                    label="Edit Script"
-                    tabindex="-1"
-                    .path=${mdiPencil}
-                  ></ha-icon-button>
-                </a>
-              </div>`
-            : ""}
           ${this._traces && this._traces.length > 0
             ? html`
-                <div>
-                  <ha-icon-button
-                    .disabled=${this._traces[this._traces.length - 1].run_id ===
-                    this._runId}
-                    label="Older trace"
-                    @click=${this._pickOlderTrace}
-                    .path=${mdiRayEndArrow}
-                  ></ha-icon-button>
-                  <select .value=${this._runId} @change=${this._pickTrace}>
-                    ${repeat(
-                      this._traces,
-                      (trace) => trace.run_id,
-                      (trace) =>
-                        html`<option value=${trace.run_id}>
-                          ${formatDateTimeWithSeconds(
-                            new Date(trace.timestamp.start),
-                            this.hass.locale
-                          )}
-                        </option>`
-                    )}
-                  </select>
-                  <ha-icon-button
-                    .disabled=${this._traces[0].run_id === this._runId}
-                    label="Newer trace"
-                    @click=${this._pickNewerTrace}
-                    .path=${mdiRayStartArrow}
-                  ></ha-icon-button>
-                </div>
+                <ha-icon-button
+                  .disabled=${this._traces[this._traces.length - 1].run_id ===
+                  this._runId}
+                  label="Older trace"
+                  @click=${this._pickOlderTrace}
+                  .path=${mdiRayEndArrow}
+                ></ha-icon-button>
+                <select .value=${this._runId} @change=${this._pickTrace}>
+                  ${repeat(
+                    this._traces,
+                    (trace) => trace.run_id,
+                    (trace) =>
+                      html`<option value=${trace.run_id}>
+                        ${formatDateTimeWithSeconds(
+                          new Date(trace.timestamp.start),
+                          this.hass.locale
+                        )}
+                      </option>`
+                  )}
+                </select>
+                <ha-icon-button
+                  .disabled=${this._traces[0].run_id === this._runId}
+                  label="Newer trace"
+                  @click=${this._pickNewerTrace}
+                  .path=${mdiRayStartArrow}
+                ></ha-icon-button>
               `
             : ""}
-          ${!this.narrow ? html`<div>${actionButtons}</div>` : ""}
         </div>
 
         ${this._traces === undefined
@@ -266,7 +256,7 @@ export class HaScriptTrace extends LitElement {
                 </div>
               </div>
             `}
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -447,24 +437,12 @@ export class HaScriptTrace extends LitElement {
         .toolbar {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          font-size: 20px;
+          justify-content: center;
           height: var(--header-height);
-          padding: 0 16px;
           background-color: var(--primary-background-color);
-          font-weight: 400;
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
-        }
-
-        .toolbar > * {
-          display: flex;
-          align-items: center;
-        }
-
-        :host([narrow]) .toolbar > * {
-          display: contents;
         }
 
         .main {
@@ -498,6 +476,9 @@ export class HaScriptTrace extends LitElement {
 
         .linkButton {
           color: var(--primary-text-color);
+        }
+        .trace-link {
+          text-decoration: none;
         }
       `,
     ];

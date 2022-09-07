@@ -45,13 +45,14 @@ export class HaBlueprintScriptEditor extends LitElement {
 
   protected render() {
     const blueprint = this._blueprint;
-    return html` <ha-config-section vertical .isWide=${this.isWide}>
-      <span slot="header"
-        >${this.hass.localize(
+    return html`
+      <ha-card
+        outlined
+        class="blueprint"
+        .header=${this.hass.localize(
           "ui.panel.config.automation.editor.blueprint.header"
-        )}</span
+        )}
       >
-      <ha-card outlined>
         <div class="blueprint-picker-container">
           ${this._blueprints
             ? Object.keys(this._blueprints).length
@@ -118,7 +119,7 @@ export class HaBlueprintScriptEditor extends LitElement {
                   </p>`}`
           : ""}
       </ha-card>
-    </ha-config-section>`;
+    `;
   }
 
   private async _getBlueprints() {
@@ -173,22 +174,50 @@ export class HaBlueprintScriptEditor extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+        }
+        ha-card.blueprint {
+          margin: 0 auto;
+        }
         .padding {
           padding: 16px;
         }
+        .link-button-row {
+          padding: 14px;
+        }
         .blueprint-picker-container {
-          padding: 16px;
+          padding: 0 16px 16px;
+        }
+        ha-textfield,
+        ha-blueprint-picker {
+          display: block;
+        }
+        h3 {
+          margin: 16px;
+        }
+        .introduction {
+          margin-top: 0;
+          margin-bottom: 12px;
+        }
+        .introduction a {
+          color: var(--primary-color);
         }
         p {
           margin-bottom: 0;
         }
+        .description {
+          margin-bottom: 16px;
+        }
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
+          --settings-row-content-width: 100%;
+          --settings-row-prefix-display: contents;
           border-top: 1px solid var(--divider-color);
         }
-        :host(:not([narrow])) ha-settings-row ha-textfield,
-        :host(:not([narrow])) ha-settings-row ha-selector {
-          width: 60%;
+        ha-alert {
+          margin-bottom: 16px;
+          display: block;
         }
       `,
     ];
