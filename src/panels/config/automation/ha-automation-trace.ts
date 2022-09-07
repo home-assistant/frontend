@@ -89,26 +89,41 @@ export class HaAutomationTrace extends LitElement {
       </div>`;
     }
 
-    const actionButtons = html`
-      <ha-icon-button
-        .label=${this.hass.localize("ui.panel.config.automation.trace.refresh")}
-        .path=${mdiRefresh}
-        @click=${this._refreshTraces}
-      ></ha-icon-button>
-      <ha-icon-button
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.trace.download_trace"
-        )}
-        .path=${mdiDownload}
-        .disabled=${!this._trace}
-        @click=${this._downloadTrace}
-      ></ha-icon-button>
-    `;
-
     return html`
       ${devButtons}
       <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
-        <div slot="toolbar-icon">${actionButtons}</div>
+        ${!this.narrow && stateObj?.attributes.id
+          ? html`
+              <a
+                class="trace-link"
+                href="/config/automation/edit/${stateObj.attributes.id}"
+                slot="toolbar-icon"
+              >
+                <mwc-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.trace.edit_automation"
+                  )}
+                </mwc-button>
+              </a>
+            `
+          : ""}
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.trace.refresh"
+          )}
+          .path=${mdiRefresh}
+          @click=${this._refreshTraces}
+        ></ha-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.trace.download_trace"
+          )}
+          .path=${mdiDownload}
+          .disabled=${!this._trace}
+          @click=${this._downloadTrace}
+        ></ha-icon-button>
         <div class="toolbar">
           ${this._traces && this._traces.length > 0
             ? html`
@@ -481,6 +496,9 @@ export class HaAutomationTrace extends LitElement {
 
         .linkButton {
           color: var(--primary-text-color);
+        }
+        .trace-link {
+          text-decoration: none;
         }
       `,
     ];

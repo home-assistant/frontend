@@ -87,24 +87,41 @@ export class HaScriptTrace extends LitElement {
       </div>`;
     }
 
-    const actionButtons = html`
-      <ha-icon-button
-        label="Refresh"
-        @click=${this._refreshTraces}
-        .path=${mdiRefresh}
-      ></ha-icon-button>
-      <ha-icon-button
-        .disabled=${!this._trace}
-        label="Download Trace"
-        @click=${this._downloadTrace}
-        .path=${mdiDownload}
-      ></ha-icon-button>
-    `;
-
     return html`
       ${devButtons}
       <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
-        <div slot="toolbar-icon">${actionButtons}</div>
+        ${!this.narrow && this.scriptEntityId
+          ? html`
+              <a
+                class="trace-link"
+                href="/config/script/edit/${this.scriptEntityId}"
+                slot="toolbar-icon"
+              >
+                <mwc-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.script.trace.edit_script"
+                  )}
+                </mwc-button>
+              </a>
+            `
+          : ""}
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.trace.refresh"
+          )}
+          .path=${mdiRefresh}
+          @click=${this._refreshTraces}
+        ></ha-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.trace.download_trace"
+          )}
+          .path=${mdiDownload}
+          .disabled=${!this._trace}
+          @click=${this._downloadTrace}
+        ></ha-icon-button>
         <div class="toolbar">
           ${this._traces && this._traces.length > 0
             ? html`
@@ -459,6 +476,9 @@ export class HaScriptTrace extends LitElement {
 
         .linkButton {
           color: var(--primary-text-color);
+        }
+        .trace-link {
+          text-decoration: none;
         }
       `,
     ];
