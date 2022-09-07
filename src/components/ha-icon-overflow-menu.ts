@@ -19,6 +19,7 @@ export interface IconOverflowMenuItem {
   tooltip?: string;
   action: () => any;
   warning?: boolean;
+  divider?: boolean;
 }
 
 @customElement("ha-icon-overflow-menu")
@@ -46,23 +47,23 @@ export class HaIconOverflowMenu extends LitElement {
                 slot="trigger"
               ></ha-icon-button>
 
-              ${this.items.map(
-                (item) => html`
-                  <mwc-list-item
-                    graphic="icon"
-                    ?disabled=${item.disabled}
-                    @click=${item.action}
-                    class=${classMap({ warning: Boolean(item.warning) })}
-                  >
-                    <div slot="graphic">
-                      <ha-svg-icon
-                        class=${classMap({ warning: Boolean(item.warning) })}
-                        .path=${item.path}
-                      ></ha-svg-icon>
-                    </div>
-                    ${item.label}
-                  </mwc-list-item>
-                `
+              ${this.items.map((item) =>
+                item.divider
+                  ? html`<li divider role="separator"></li>`
+                  : html`<mwc-list-item
+                      graphic="icon"
+                      ?disabled=${item.disabled}
+                      @click=${item.action}
+                      class=${classMap({ warning: Boolean(item.warning) })}
+                    >
+                      <div slot="graphic">
+                        <ha-svg-icon
+                          class=${classMap({ warning: Boolean(item.warning) })}
+                          .path=${item.path}
+                        ></ha-svg-icon>
+                      </div>
+                      ${item.label}
+                    </mwc-list-item> `
               )}
             </ha-button-menu>`
         : html`
@@ -70,6 +71,8 @@ export class HaIconOverflowMenu extends LitElement {
             ${this.items.map((item) =>
               item.narrowOnly
                 ? ""
+                : item.divider
+                ? html`<div role="separator"></div>`
                 : html`<div>
                     ${item.tooltip
                       ? html`<paper-tooltip animation-delay="0" position="left">
@@ -113,6 +116,13 @@ export class HaIconOverflowMenu extends LitElement {
         :host {
           display: flex;
           justify-content: flex-end;
+        }
+        li[role="separator"] {
+          border-bottom-color: var(--divider-color);
+        }
+        div[role="separator"] {
+          border-right: 1px solid var(--divider-color);
+          width: 1px;
         }
       `,
     ];
