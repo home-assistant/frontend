@@ -2313,7 +2313,8 @@
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
             "link_available_actions": "Learn more about available actions."
-          }
+          },
+          "trace": { "edit_script": "Edit script" }
         },
         "scene": {
           "caption": "Scenes",
