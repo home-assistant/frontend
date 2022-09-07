@@ -45,6 +45,7 @@ import {
   deleteAutomation,
   getAutomationConfig,
   getAutomationEditorInitData,
+  saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
@@ -203,7 +204,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 <mwc-list-item
                   graphic="icon"
                   @click=${this._promptAutomationMode}
-                  .disabled=${!this.automationId || this._mode === "yaml"}
+                  .disabled=${this._mode === "yaml"}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.change_mode"
@@ -452,7 +453,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       this._dirty = false;
       this._config = config;
     } catch (err: any) {
-      showAlertDialog(this, {
+      await showAlertDialog(this, {
         text:
           err.status_code === 404
             ? this.hass.localize(
@@ -463,7 +464,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 "err_no",
                 err.status_code
               ),
-      }).then(() => history.back());
+      });
+      history.back();
     }
   }
 
@@ -582,8 +584,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _delete() {
-    await deleteAutomation(this.hass, this.automationId as string);
-    history.back();
+    if (this.automationId) {
+      await deleteAutomation(this.hass, this.automationId);
+      history.back();
+    }
   }
 
   private _switchUiMode() {
@@ -636,26 +640,21 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       await this._promptAutomationAlias();
     }
 
-    this.hass!.callApi(
-      "POST",
-      "config/automation/config/" + id,
-      this._config
-    ).then(
-      () => {
-        this._dirty = false;
+    try {
+      await saveAutomationConfig(this.hass, id, this._config!);
+    } catch (errors: any) {
+      this._errors = errors.body.message || errors.error || errors.body;
+      showToast(this, {
+        message: errors.body.message || errors.error || errors.body,
+      });
+      throw errors;
+    }
 
-        if (!this.automationId) {
-          navigate(`/config/automation/edit/${id}`, { replace: true });
-        }
-      },
-      (errors) => {
-        this._errors = errors.body.message || errors.error || errors.body;
-        showToast(this, {
-          message: errors.body.message || errors.error || errors.body,
-        });
-        throw errors;
-      }
-    );
+    this._dirty = false;
+
+    if (!this.automationId) {
+      navigate(`/config/automation/edit/${id}`, { replace: true });
+    }
   }
 
   private _subscribeAutomationConfig(ev) {

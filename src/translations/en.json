@@ -1828,6 +1828,8 @@
             "default_name": "New Automation",
             "missing_name": "Cannot save automation without a name",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
+            "load_error_not_duplicable": "Only automations in automations.yaml can be duplicated.",
+            "load_error_not_deletable": "Only automations in automations.yaml can be deleted.",
             "load_error_unknown": "Error loading automation ({err_no}).",
             "save": "Save",
             "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
