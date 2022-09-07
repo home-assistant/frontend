@@ -72,7 +72,7 @@ export class HaIconOverflowMenu extends LitElement {
               item.narrowOnly
                 ? ""
                 : item.divider
-                ? html`<li divider role="separator"></li>`
+                ? html`<div role="separator"></div>`
                 : html`<div>
                     ${item.tooltip
                       ? html`<paper-tooltip animation-delay="0" position="left">
@@ -119,6 +119,10 @@ export class HaIconOverflowMenu extends LitElement {
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
+        }
+        div[role="separator"] {
+          border-right: 1px solid var(--divider-color);
+          width: 1px;
         }
       `,
     ];
