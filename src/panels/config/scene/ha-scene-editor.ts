@@ -29,6 +29,7 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-area-picker";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -279,7 +280,12 @@ export class HaSceneEditor extends SubscribeMixin(
         >
           ${this._config
             ? html`
-                <div class="container">
+                <div
+                  class=${classMap({
+                    container: true,
+                    narrow: !this.isWide,
+                  })}
+                >
                   <ha-card outlined>
                     <div class="card-content">
                       <ha-textfield
@@ -954,15 +960,13 @@ export class HaSceneEditor extends SubscribeMixin(
           overflow: hidden;
         }
         .container {
-          display: flex;
-          justify-content: center;
-          margin-top: 24px;
-        }
-        .container > * {
+          padding: 28px 20px 0;
           max-width: 1040px;
-          flex: 1 1 auto;
+          margin: 0 auto;
         }
-
+        .narrow.container {
+          max-width: 640px;
+        }
         .errors {
           padding: 20px;
           font-weight: bold;
