@@ -1,5 +1,8 @@
 import {
+  mdiDotsVertical,
   mdiDownload,
+  mdiInformationOutline,
+  mdiPencil,
   mdiRayEndArrow,
   mdiRayStartArrow,
   mdiRefresh,
@@ -34,6 +37,8 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import "../../../layouts/hass-subpage";
+import "../../../components/ha-button-menu";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -105,23 +110,64 @@ export class HaScriptTrace extends LitElement {
               </a>
             `
           : ""}
-        <ha-icon-button
-          slot="toolbar-icon"
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.trace.refresh"
-          )}
-          .path=${mdiRefresh}
-          @click=${this._refreshTraces}
-        ></ha-icon-button>
-        <ha-icon-button
-          slot="toolbar-icon"
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.trace.download_trace"
-          )}
-          .path=${mdiDownload}
-          .disabled=${!this._trace}
-          @click=${this._downloadTrace}
-        ></ha-icon-button>
+
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!this.scriptEntityId}
+            @click=${this._showInfo}
+          >
+            ${this.hass.localize("ui.panel.config.script.editor.show_info")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiInformationOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          ${this.narrow && this.scriptEntityId
+            ? html`
+                <a
+                  class="trace-link"
+                  href="/config/script/edit/${this.scriptEntityId}"
+                >
+                  <mwc-list-item graphic="icon">
+                    ${this.hass.localize(
+                      "ui.panel.config.script.trace.edit_script"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiPencil}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                </a>
+              `
+            : ""}
+
+          <li divider role="separator"></li>
+
+          <mwc-list-item graphic="icon" @click=${this._refreshTraces}>
+            ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
+            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!this._trace}
+            @click=${this._downloadTrace}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.trace.download_trace"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
+
         <div class="toolbar">
           ${this._traces && this._traces.length > 0
             ? html`
@@ -427,6 +473,13 @@ export class HaScriptTrace extends LitElement {
     if (nodes[path]) {
       this._selected = nodes[path];
     }
+  }
+
+  private async _showInfo() {
+    if (!this.scriptEntityId) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId: this.scriptEntityId });
   }
 
   static get styles(): CSSResultGroup {
