@@ -457,7 +457,7 @@ export const getStatisticIds = (
   statistic_type?: "mean" | "sum"
 ) =>
   hass.callWS<StatisticsMetaData[]>({
-    type: "history/list_statistic_ids",
+    type: "recorder/list_statistic_ids",
     statistic_type,
   });
 
@@ -478,7 +478,7 @@ export const fetchStatistics = (
   period: "5minute" | "hour" | "day" | "month" = "hour"
 ) =>
   hass.callWS<Statistics>({
-    type: "history/statistics_during_period",
+    type: "recorder/statistics_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime?.toISOString(),
     statistic_ids,
