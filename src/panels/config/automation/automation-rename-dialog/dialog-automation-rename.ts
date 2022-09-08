@@ -78,7 +78,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           )}
           required
           type="string"
-          @change=${this._valueChanged}
+          @input=${this._valueChanged}
         ></ha-textfield>
 
         <ha-textarea
@@ -91,7 +91,7 @@ class DialogAutomationRename extends LitElement implements HassDialog {
           name="description"
           autogrow
           .value=${this._newDescription}
-          @change=${this._valueChanged}
+          @input=${this._valueChanged}
         ></ha-textarea>
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
