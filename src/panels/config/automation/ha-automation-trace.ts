@@ -130,6 +130,7 @@ export class HaAutomationTrace extends LitElement {
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
           </mwc-list-item>
+
           ${stateObj?.attributes.id && this.narrow
             ? html`
                 <a
@@ -148,11 +149,14 @@ export class HaAutomationTrace extends LitElement {
                 </a>
               `
             : ""}
+
           <li divider role="separator"></li>
+
           <mwc-list-item graphic="icon" @click=${this._refreshTraces}>
             ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
             <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
           </mwc-list-item>
+
           <mwc-list-item
             graphic="icon"
             .disabled=${!this._trace}
@@ -164,6 +168,7 @@ export class HaAutomationTrace extends LitElement {
             <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
           </mwc-list-item>
         </ha-button-menu>
+
         <div class="toolbar">
           ${this._traces && this._traces.length > 0
             ? html`
