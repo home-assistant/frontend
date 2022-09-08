@@ -3,6 +3,7 @@ import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../common/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { stringCompare } from "../../common/string/compare";
@@ -39,7 +40,7 @@ export class HaStatisticPicker extends LitElement {
     type: Array,
     attribute: "include-statistics-unit-of-measurement",
   })
-  public includeStatisticsUnitOfMeasurement?: string[];
+  public includeStatisticsUnitOfMeasurement?: string | string[];
 
   /**
    * Show only statistics displayed with these units of measurements.
@@ -47,7 +48,7 @@ export class HaStatisticPicker extends LitElement {
    * @attr include-display-unit-of-measurement
    */
   @property({ type: Array, attribute: "include-display-unit-of-measurement" })
-  public includeDisplayUnitOfMeasurement?: string[];
+  public includeDisplayUnitOfMeasurement?: string | string[];
 
   /**
    * Show only statistics with these device classes.
@@ -97,8 +98,8 @@ export class HaStatisticPicker extends LitElement {
   private _getStatistics = memoizeOne(
     (
       statisticIds: StatisticsMetaData[],
-      includeStatisticsUnitOfMeasurement?: string[],
-      includeDisplayUnitOfMeasurement?: string[],
+      includeStatisticsUnitOfMeasurement?: string | string[],
+      includeDisplayUnitOfMeasurement?: string | string[],
       includeDeviceClasses?: string[],
       entitiesOnly?: boolean
     ): Array<{ id: string; name: string; state?: HassEntity }> => {
@@ -114,17 +115,15 @@ export class HaStatisticPicker extends LitElement {
       }
 
       if (includeStatisticsUnitOfMeasurement) {
+        const includeUnits = ensureArray(includeStatisticsUnitOfMeasurement);
         statisticIds = statisticIds.filter((meta) =>
-          includeStatisticsUnitOfMeasurement.includes(
-            meta.statistics_unit_of_measurement
-          )
+          includeUnits.includes(meta.statistics_unit_of_measurement)
         );
       }
       if (includeDisplayUnitOfMeasurement) {
+        const includeUnits = ensureArray(includeDisplayUnitOfMeasurement);
         statisticIds = statisticIds.filter((meta) =>
-          includeDisplayUnitOfMeasurement.includes(
-            meta.display_unit_of_measurement
-          )
+          includeUnits.includes(meta.display_unit_of_measurement)
         );
       }
 

@@ -33,7 +33,7 @@ import { entitiesConfigStruct } from "../structs/entities-struct";
 import {
   getStatisticMetadata,
   StatisticsMetaData,
-  StatisticType,
+  statisticsMetaHasType,
 } from "../../../../data/history";
 
 const statTypeStruct = union([
@@ -70,16 +70,6 @@ const stat_type_labels = {
   max: "Max",
   sum: "Sum",
 } as const;
-const mean_stat_types: readonly StatisticType[] = ["mean", "min", "max"];
-
-const statisticsHaveType = (
-  metadata: StatisticsMetaData,
-  type: StatisticType
-) => {
-  if (mean_stat_types.includes(type) && metadata.has_mean) return true;
-  if (type === "sum" && metadata.has_sum) return true;
-  return false;
-};
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor
@@ -165,7 +155,7 @@ export class HuiStatisticsGraphCardEditor
                     disabled:
                       !metaDatas ||
                       !metaDatas?.every((metaData) =>
-                        statisticsHaveType(metaData, stat_type)
+                        statisticsMetaHasType(metaData, stat_type)
                       ),
                   })),
                 },
@@ -221,9 +211,7 @@ export class HuiStatisticsGraphCardEditor
           .hass=${this.hass}
           .pickStatisticLabel=${`Add a statistic`}
           .pickedStatisticLabel=${`Statistic`}
-          .includeDisplayUnitOfMeasurement=${
-            displayUnit !== undefined ? [displayUnit] : undefined
-          }
+          .includeDisplayUnitOfMeasurement=${displayUnit}
           .value=${this._configEntities}
           .configValue=${"entities"}
           @value-changed=${this._entitiesChanged}
