@@ -143,11 +143,11 @@ export const describeTrigger = (
     if ("for" in trigger) {
       let duration: string;
       if (typeof trigger.for === "number") {
-        duration = `for ${secondsToDuration(trigger.for)!}`;
+        duration = `${secondsToDuration(trigger.for)!}`;
       } else if (typeof trigger.for === "string") {
-        duration = `for ${trigger.for}`;
+        duration = `${trigger.for}`;
       } else {
-        duration = `for ${JSON.stringify(trigger.for)}`;
+        duration = `${JSON.stringify(trigger.for)}`;
       }
 
       base += ` for ${duration}`;
