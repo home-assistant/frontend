@@ -13,7 +13,7 @@ import {
 import {
   getStatisticMetadata,
   StatisticsMetaData,
-} from "../../../data/history";
+} from "../../../data/recorder";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";

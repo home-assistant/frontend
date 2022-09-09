@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { StatisticsValidationResultUnsupportedUnitMetadata } from "../../../data/history";
+import { StatisticsValidationResultUnsupportedUnitMetadata } from "../../../data/recorder";
 
 export const loadFixUnsupportedUnitMetaDialog = () =>
   import("./dialog-statistics-fix-unsupported-unit-meta");

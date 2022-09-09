@@ -15,7 +15,7 @@ import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
 import { StatisticsGraphCardConfig } from "./types";
-import { fetchStatistics, Statistics } from "../../../data/history";
+import { fetchStatistics, Statistics } from "../../../data/recorder";
 
 @customElement("hui-statistics-graph-card")
 export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {

@@ -30,7 +30,7 @@ import {
 import {
   StatisticsMetaData,
   getStatisticLabel,
-} from "../../../../data/history";
+} from "../../../../data/recorder";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import {
   showAlertDialog,

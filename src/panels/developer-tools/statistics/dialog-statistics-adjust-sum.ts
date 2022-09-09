@@ -24,7 +24,7 @@ import {
   adjustStatisticsSum,
   fetchStatistics,
   StatisticValue,
-} from "../../../data/history";
+} from "../../../data/recorder";
 import type { DateTimeSelector, NumberSelector } from "../../../data/selector";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../resources/styles";

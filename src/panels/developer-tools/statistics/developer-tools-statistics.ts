@@ -15,7 +15,7 @@ import {
   StatisticsMetaData,
   StatisticsValidationResult,
   validateStatistics,
-} from "../../../data/history";
+} from "../../../data/recorder";
 import {
   showAlertDialog,
   showConfirmationDialog,
