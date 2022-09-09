@@ -20,7 +20,7 @@ import {
   getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
-} from "./history";
+} from "./recorder";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
