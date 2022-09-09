@@ -1,9 +1,7 @@
 import { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
-import {
-  computeStateNameFromEntityAttributes,
-} from "../common/entity/compute_state_name";
+import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { FrontendLocaleData } from "./translation";
