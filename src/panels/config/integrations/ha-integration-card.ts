@@ -11,6 +11,7 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiOpenInNew,
+  mdiReloadAlert,
   mdiProgressHelper,
   mdiPlayCircleOutline,
   mdiReload,
@@ -24,7 +25,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
@@ -184,7 +184,9 @@ export class HaIntegrationCard extends LitElement {
                 ? html`<span>
                     <ha-svg-icon
                       class="error"
-                      .path=${mdiAlertCircle}
+                      .path=${item.state === "setup_retry"
+                        ? mdiReloadAlert
+                        : mdiAlertCircle}
                     ></ha-svg-icon
                     ><paper-tooltip animation-delay="0" position="left">
                       ${this.hass.localize(
@@ -231,6 +233,9 @@ export class HaIntegrationCard extends LitElement {
         "ui.panel.config.integrations.config_entry.setup_in_progress",
       ];
     } else if (ERROR_STATES.includes(item.state)) {
+      if (item.state === "setup_retry") {
+        icon = mdiReloadAlert;
+      }
       stateText = [
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
@@ -622,10 +627,6 @@ export class HaIntegrationCard extends LitElement {
     showConfigEntrySystemOptionsDialog(this, {
       entry: configEntry,
       manifest: this.manifest,
-      entryUpdated: (entry) =>
-        fireEvent(this, "entry-updated", {
-          entry,
-        }),
     });
   }
 
@@ -660,9 +661,6 @@ export class HaIntegrationCard extends LitElement {
         ),
       });
     }
-    fireEvent(this, "entry-updated", {
-      entry: { ...configEntry, disabled_by: "user" },
-    });
   }
 
   private async _enableIntegration(configEntry: ConfigEntry) {
@@ -688,9 +686,6 @@ export class HaIntegrationCard extends LitElement {
         ),
       });
     }
-    fireEvent(this, "entry-updated", {
-      entry: { ...configEntry, disabled_by: null },
-    });
   }
 
   private async _removeIntegration(configEntry: ConfigEntry) {
@@ -707,7 +702,6 @@ export class HaIntegrationCard extends LitElement {
       return;
     }
     const result = await deleteConfigEntry(this.hass, entryId);
-    fireEvent(this, "entry-removed", { entryId });
 
     if (result.require_restart) {
       showAlertDialog(this, {
@@ -743,10 +737,9 @@ export class HaIntegrationCard extends LitElement {
     if (newName === null) {
       return;
     }
-    const result = await updateConfigEntry(this.hass, configEntry.entry_id, {
+    await updateConfigEntry(this.hass, configEntry.entry_id, {
       title: newName,
     });
-    fireEvent(this, "entry-updated", { entry: result.config_entry });
   }
 
   private async _signUrl(ev) {
