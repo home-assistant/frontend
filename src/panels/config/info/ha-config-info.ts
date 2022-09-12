@@ -5,7 +5,7 @@ import {
   mdiHandsPray,
   mdiHelp,
   mdiHomeAssistant,
-  mdiPower,
+  mdiNewspaperVariant,
   mdiTshirtCrew,
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -36,7 +36,7 @@ const PAGES: Array<{
   {
     name: "change_log",
     path: "/latest-release-notes/",
-    iconPath: mdiPower,
+    iconPath: mdiNewspaperVariant,
     iconColor: "#4A5963",
   },
   {
