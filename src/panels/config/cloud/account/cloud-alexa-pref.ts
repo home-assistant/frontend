@@ -99,21 +99,42 @@ export class CloudAlexaPref extends LitElement {
                     "ui.panel.config.cloud.account.alexa.info_state_reporting"
                   )}
                 </p>
+                <div class="sync-entities">
+                  <h3>
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.alexa.sync_entities"
+                    )}
+                  </h3>
+                  <div class="sync-entities-button">
+                    <mwc-button
+                      @click=${this._handleSync}
+                      .disabled=${!alexa_enabled || this._syncing}
+                    >
+                      ${this.hass!.localize(
+                        "ui.panel.config.cloud.account.alexa.button_sync_entities"
+                      )}
+                    </mwc-button>
+                  </div>
+                </div>
+                <p>
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.account.alexa.info_sync_entities"
+                  )}
+                </p>
               `}
         </div>
         <div class="card-actions">
-          ${alexa_registered
-            ? html`
-                <mwc-button
-                  @click=${this._handleSync}
-                  .disabled=${!alexa_enabled || this._syncing}
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.account.alexa.sync_entities"
-                  )}
-                </mwc-button>
-              `
-            : ""}
+          <a
+            href="https://www.nabucasa.com/config/amazon_alexa/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <mwc-button
+              >${this.hass.localize(
+                "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
+              )}</mwc-button
+            >
+          </a>
           <div class="spacer"></div>
           <a href="/config/cloud/alexa">
             <mwc-button
@@ -212,6 +233,21 @@ export class CloudAlexaPref extends LitElement {
       .state-reporting-switch {
         margin-top: 0.25em;
         margin-right: 7px;
+        margin-left: 0.5em;
+      }
+      .sync-entities {
+        display: flex;
+        margin-top: 1.5em;
+      }
+      .sync-entities + p {
+        margin-top: 0.5em;
+      }
+      .sync-entities h3 {
+        flex-grow: 1;
+        margin: 0;
+      }
+      .sync-entities-button {
+        margin-top: -0.5em;
         margin-left: 0.5em;
       }
     `;
