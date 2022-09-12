@@ -37,7 +37,7 @@ import {
   Statistics,
   StatisticsMetaData,
   getStatisticLabel,
-} from "../../../../data/history";
+} from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";

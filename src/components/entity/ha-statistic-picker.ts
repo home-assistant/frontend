@@ -6,7 +6,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { stringCompare } from "../../common/string/compare";
-import { getStatisticIds, StatisticsMetaData } from "../../data/history";
+import { getStatisticIds, StatisticsMetaData } from "../../data/recorder";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
