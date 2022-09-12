@@ -158,7 +158,7 @@ export class CloudGooglePref extends LitElement {
                   <div class="sync-entities-button">
                     <mwc-button
                       @click=${this._handleSync}
-                      .disabled=${!google_enabled || this._syncing}
+                      .disabled=${this._syncing}
                     >
                       ${this.hass!.localize(
                         "ui.panel.config.cloud.account.google.button_sync_entities"

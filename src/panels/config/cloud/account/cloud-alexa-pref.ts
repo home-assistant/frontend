@@ -108,7 +108,7 @@ export class CloudAlexaPref extends LitElement {
                   <div class="sync-entities-button">
                     <mwc-button
                       @click=${this._handleSync}
-                      .disabled=${!alexa_enabled || this._syncing}
+                      .disabled=${this._syncing}
                     >
                       ${this.hass!.localize(
                         "ui.panel.config.cloud.account.alexa.button_sync_entities"
