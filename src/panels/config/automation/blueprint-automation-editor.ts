@@ -2,7 +2,9 @@ import "@material/mwc-button/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoize from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-alert";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
@@ -10,7 +12,6 @@ import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
-import "../../../components/ha-alert";
 import { BlueprintAutomationConfig } from "../../../data/automation";
 import {
   BlueprintOrError,
@@ -34,6 +35,9 @@ export class HaBlueprintAutomationEditor extends LitElement {
   @property() public stateObj?: HassEntity;
 
   @state() private _blueprints?: Blueprints;
+
+  @property({ type: Boolean, reflect: true, attribute: "re-order-mode" })
+  public reOrderMode = false;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -59,6 +63,25 @@ export class HaBlueprintAutomationEditor extends LitElement {
               <mwc-button slot="action" @click=${this._enable}>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.enable"
+                )}
+              </mwc-button>
+            </ha-alert>
+          `
+        : ""}
+      ${this.reOrderMode
+        ? html`
+            <ha-alert
+              alert-type="info"
+              .title=${this.hass.localize(
+                "ui.panel.config.automation.editor.re_order_mode.title"
+              )}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.re_order_mode.description_blueprint"
+              )}
+              <mwc-button slot="action" @click=${this._exitReOrderMode}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.re_order_mode.exit"
                 )}
               </mwc-button>
             </ha-alert>
@@ -126,6 +149,9 @@ export class HaBlueprintAutomationEditor extends LitElement {
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
                               value?.default}
+                              .context=${this._selectorContext(
+                                this.reOrderMode
+                              )}
                               @value-changed=${this._inputChanged}
                             ></ha-selector>`
                           : html`<ha-textfield
@@ -148,8 +174,16 @@ export class HaBlueprintAutomationEditor extends LitElement {
     `;
   }
 
+  private _selectorContext = memoize((reOrderMode?: boolean) => ({
+    re_order_mode: reOrderMode,
+  }));
+
   private async _getBlueprints() {
     this._blueprints = await fetchBlueprints(this.hass, "automation");
+  }
+
+  private _exitReOrderMode() {
+    this.reOrderMode = !this.reOrderMode;
   }
 
   private _blueprintChanged(ev) {

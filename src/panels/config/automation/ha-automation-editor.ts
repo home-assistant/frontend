@@ -63,6 +63,7 @@ import "../ha-config-section";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
+import type { HaBlueprintAutomationEditor } from "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
 
@@ -108,6 +109,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @query("manual-automation-editor")
   private _manualEditor?: HaManualAutomationEditor;
+
+  @query("blueprint-automation-editor")
+  private _blueprintEditor?: HaBlueprintAutomationEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -216,19 +220,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 </mwc-list-item>
               `
             : ""}
-          ${this._config && !("use_blueprint" in this._config)
-            ? html`<mwc-list-item
-                graphic="icon"
-                @click=${this._toggleReOrderMode}
-                .disabled=${this._mode === "yaml"}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.re_order"
-                )}
-                <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
-              </mwc-list-item>`
-            : ""}
-
+          <mwc-list-item
+            graphic="icon"
+            @click=${this._toggleReOrderMode}
+            .disabled=${this._mode === "yaml"}
+          >
+            ${this.hass.localize("ui.panel.config.automation.editor.re_order")}
+            <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
+          </mwc-list-item>
           <mwc-list-item
             .disabled=${!this.automationId}
             graphic="icon"
@@ -604,6 +603,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private _toggleReOrderMode() {
     if (this._manualEditor) {
       this._manualEditor.reOrderMode = !this._manualEditor.reOrderMode;
+    }
+    if (this._blueprintEditor) {
+      this._blueprintEditor.reOrderMode = !this._blueprintEditor.reOrderMode;
     }
   }
 

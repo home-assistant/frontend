@@ -1842,6 +1842,7 @@
             "re_order_mode": {
               "title": "Re-order mode",
               "description": "You are in re-order mode, you can re-order your triggers, conditions and actions.",
+              "description_blueprint": "You are in re-order mode, if you have actions in your blueprint, you can re-order them",
               "exit": "Exit"
             },
             "description": {

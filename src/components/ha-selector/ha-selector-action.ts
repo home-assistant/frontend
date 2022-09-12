@@ -17,11 +17,16 @@ export class HaActionSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ attribute: false }) public context?: {
+    re_order_mode?: boolean;
+  };
+
   protected render() {
     return html`<ha-automation-action
       .disabled=${this.disabled}
       .actions=${this.value || []}
       .hass=${this.hass}
+      .reOrderMode=${this.context?.re_order_mode ?? false}
     ></ha-automation-action>`;
   }
 
