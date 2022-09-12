@@ -93,7 +93,10 @@ export const computeEntityRegistryName = (
     return entry.name;
   }
   const state = hass.states[entry.entity_id];
-  return state ? computeStateName(state) : entry.entity_id;
+  if (state) {
+    return computeStateName(state)
+  }
+  return entry.original_name ? entry.original_name : entry.entity_id;
 };
 
 export const getExtendedEntityRegistryEntry = (
