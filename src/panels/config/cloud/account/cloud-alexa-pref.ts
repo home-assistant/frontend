@@ -2,7 +2,9 @@ import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
+import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import { syncCloudAlexaEntities } from "../../../../data/alexa";
@@ -81,46 +83,42 @@ export class CloudAlexaPref extends LitElement {
                 </ha-alert>
               `
             : html`
-                <div class="header">
-                  <h3>
+                <ha-settings-row>
+                  <span slot="heading">
                     ${this.hass!.localize(
                       "ui.panel.config.cloud.account.alexa.enable_state_reporting"
                     )}
-                  </h3>
-                  <div class="header-switch">
-                    <ha-switch
-                      .checked=${alexa_report_state}
-                      @change=${this._reportToggleChanged}
-                    ></ha-switch>
-                  </div>
-                </div>
-                <p>
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.account.alexa.info_state_reporting"
-                  )}
-                </p>
-                <div class="header">
-                  <h3>
+                  </span>
+                  <span slot="description">
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.alexa.info_state_reporting"
+                    )}
+                  </span>
+                  <ha-switch
+                    .checked=${alexa_report_state}
+                    @change=${this._reportToggleChanged}
+                  ></ha-switch>
+                </ha-settings-row>
+                <ha-settings-row>
+                  <span slot="heading">
                     ${this.hass!.localize(
                       "ui.panel.config.cloud.account.alexa.sync_entities"
                     )}
-                  </h3>
-                  <div class="header-button">
-                    <mwc-button
-                      @click=${this._handleSync}
-                      .disabled=${this._syncing}
-                    >
-                      ${this.hass!.localize(
-                        "ui.panel.config.cloud.account.alexa.button_sync_entities"
-                      )}
-                    </mwc-button>
-                  </div>
-                </div>
-                <p>
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.account.alexa.info_sync_entities"
-                  )}
-                </p>
+                  </span>
+                  <span slot="description">
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.alexa.info_sync_entities"
+                    )}
+                  </span>
+                  <mwc-button
+                    @click=${this._handleSync}
+                    .disabled=${this._syncing}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.alexa.button_sync_entities"
+                    )}
+                  </mwc-button>
+                </ha-settings-row>
               `}
         </div>
         <div class="card-actions">
@@ -210,6 +208,9 @@ export class CloudAlexaPref extends LitElement {
         right: auto;
         left: 24px;
       }
+      ha-settings-row {
+        padding: 0;
+      }
       .card-actions {
         display: flex;
       }
@@ -218,26 +219,6 @@ export class CloudAlexaPref extends LitElement {
       }
       .spacer {
         flex-grow: 1;
-      }
-      .header {
-        display: flex;
-        margin-top: 1.5em;
-      }
-      .header + p {
-        margin-top: 0.5em;
-      }
-      .header h3 {
-        flex-grow: 1;
-        margin: 0;
-      }
-      .header-button {
-        margin-top: -0.5em;
-        margin-left: 0.5em;
-      }
-      .header-switch {
-        margin-top: 0.25em;
-        margin-right: 7px;
-        margin-left: 0.5em;
       }
     `;
   }

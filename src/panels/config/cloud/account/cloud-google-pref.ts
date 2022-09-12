@@ -4,6 +4,7 @@ import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
+import "../../../../components/ha-settings-row";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
@@ -110,36 +111,36 @@ export class CloudGooglePref extends LitElement {
                     `
                   : ""}
 
-                <div class="header">
-                  <h3>
-                    ${this.hass.localize(
+                <ha-settings-row>
+                  <span slot="heading">
+                    ${this.hass!.localize(
                       "ui.panel.config.cloud.account.google.enable_state_reporting"
                     )}
-                  </h3>
-                  <div class="header-switch">
-                    <ha-switch
-                      .checked=${google_report_state}
-                      @change=${this._reportToggleChanged}
-                    ></ha-switch>
-                  </div>
-                </div>
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.google.info_state_reporting"
-                  )}
-                </p>
-                <div class="section">
-                  <h3>
+                  </span>
+                  <span slot="description">
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.info_state_reporting"
+                    )}
+                  </span>
+                  <ha-switch
+                    .checked=${google_report_state}
+                    @change=${this._reportToggleChanged}
+                  ></ha-switch>
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="heading">
                     ${this.hass.localize(
                       "ui.panel.config.cloud.account.google.security_devices"
                     )}
-                  </h3>
-                </div>
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.google.enter_pin_info"
-                  )}
-                </p>
+                  </span>
+                  <span slot="description">
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.google.enter_pin_info"
+                    )}
+                  </span>
+                </ha-settings-row>
+
                 <ha-textfield
                   id="google_secure_devices_pin"
                   .label=${this.hass.localize(
@@ -151,28 +152,27 @@ export class CloudGooglePref extends LitElement {
                   .value=${google_secure_devices_pin || ""}
                   @change=${this._pinChanged}
                 ></ha-textfield>
-                <div class="header">
-                  <h3>
+
+                <ha-settings-row>
+                  <span slot="heading">
                     ${this.hass!.localize(
                       "ui.panel.config.cloud.account.google.sync_entities"
                     )}
-                  </h3>
-                  <div class="header-button">
-                    <mwc-button
-                      @click=${this._handleSync}
-                      .disabled=${this._syncing}
-                    >
-                      ${this.hass!.localize(
-                        "ui.panel.config.cloud.account.google.button_sync_entities"
-                      )}
-                    </mwc-button>
-                  </div>
-                </div>
-                <p>
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.account.google.info_sync_entities"
-                  )}
-                </p>
+                  </span>
+                  <span slot="description">
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.info_sync_entities"
+                    )}
+                  </span>
+                  <mwc-button
+                    @click=${this._handleSync}
+                    .disabled=${this._syncing}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.button_sync_entities"
+                    )}
+                  </mwc-button>
+                </ha-settings-row>
               `}
         </div>
         <div class="card-actions">
@@ -284,6 +284,9 @@ export class CloudGooglePref extends LitElement {
         right: auto;
         left: 24px;
       }
+      ha-settings-row {
+        padding: 0;
+      }
       ha-textfield {
         width: 250px;
         display: block;
@@ -298,31 +301,8 @@ export class CloudGooglePref extends LitElement {
       .warning {
         color: var(--error-color);
       }
-      .secure_devices {
-        padding-top: 8px;
-      }
       .spacer {
         flex-grow: 1;
-      }
-      .header {
-        display: flex;
-        margin-top: 1.5em;
-      }
-      .header + p {
-        margin-top: 0.5em;
-      }
-      .header h3 {
-        flex-grow: 1;
-        margin: 0;
-      }
-      .header-button {
-        margin-top: -0.5em;
-        margin-left: 0.5em;
-      }
-      .header-switch {
-        margin-top: 0.25em;
-        margin-right: 7px;
-        margin-left: 0.5em;
       }
     `;
   }

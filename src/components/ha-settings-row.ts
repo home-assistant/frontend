@@ -64,6 +64,12 @@ export class HaSettingsRow extends LitElement {
       ::slotted(ha-switch) {
         padding: 16px 0;
       }
+      ::slotted(mwc-button) {
+        padding: 16px 0;
+        margin-inline-end: -8px;
+        margin-right: -8px;
+        direction: var(--direction);
+      }
       div[secondary] {
         white-space: normal;
       }
