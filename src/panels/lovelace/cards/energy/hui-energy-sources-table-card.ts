@@ -30,7 +30,7 @@ import {
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
-} from "../../../../data/history";
+} from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";

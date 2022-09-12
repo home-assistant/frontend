@@ -26,7 +26,7 @@ import {
   statisticsHaveType,
   StatisticsMetaData,
   StatisticType,
-} from "../../data/history";
+} from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 

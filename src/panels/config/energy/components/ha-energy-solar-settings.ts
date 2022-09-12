@@ -16,7 +16,7 @@ import {
 import {
   StatisticsMetaData,
   getStatisticLabel,
-} from "../../../../data/history";
+} from "../../../../data/recorder";
 import {
   showConfirmationDialog,
   showAlertDialog,
