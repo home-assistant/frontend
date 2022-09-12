@@ -609,13 +609,13 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       switch (key) {
         case "id":
           this._idChanged(value);
-          return;
+          break;
         case "alias":
           this._aliasChanged(value);
           break;
         case "mode":
           this._modeChanged(value);
-          return;
+          break;
       }
 
       if (values[key] === undefined) {
