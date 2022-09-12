@@ -110,13 +110,13 @@ export class CloudGooglePref extends LitElement {
                     `
                   : ""}
 
-                <div class="state-reporting">
+                <div class="header">
                   <h3>
                     ${this.hass.localize(
                       "ui.panel.config.cloud.account.google.enable_state_reporting"
                     )}
                   </h3>
-                  <div class="state-reporting-switch">
+                  <div class="header-switch">
                     <ha-switch
                       .checked=${google_report_state}
                       @change=${this._reportToggleChanged}
@@ -128,34 +128,36 @@ export class CloudGooglePref extends LitElement {
                     "ui.panel.config.cloud.account.google.info_state_reporting"
                   )}
                 </p>
-                <div class="secure_devices">
+                <div class="section">
                   <h3>
                     ${this.hass.localize(
                       "ui.panel.config.cloud.account.google.security_devices"
                     )}
                   </h3>
+                </div>
+                <p>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.google.enter_pin_info"
                   )}
-                  <ha-textfield
-                    id="google_secure_devices_pin"
-                    .label=${this.hass.localize(
-                      "ui.panel.config.cloud.account.google.devices_pin"
-                    )}
-                    .placeholder=${this.hass.localize(
-                      "ui.panel.config.cloud.account.google.enter_pin_hint"
-                    )}
-                    .value=${google_secure_devices_pin || ""}
-                    @change=${this._pinChanged}
-                  ></ha-textfield>
-                </div>
-                <div class="sync-entities">
+                </p>
+                <ha-textfield
+                  id="google_secure_devices_pin"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.cloud.account.google.devices_pin"
+                  )}
+                  .placeholder=${this.hass.localize(
+                    "ui.panel.config.cloud.account.google.enter_pin_hint"
+                  )}
+                  .value=${google_secure_devices_pin || ""}
+                  @change=${this._pinChanged}
+                ></ha-textfield>
+                <div class="header">
                   <h3>
                     ${this.hass!.localize(
                       "ui.panel.config.cloud.account.google.sync_entities"
                     )}
                   </h3>
-                  <div class="sync-entities-button">
+                  <div class="header-button">
                     <mwc-button
                       @click=${this._handleSync}
                       .disabled=${this._syncing}
@@ -302,39 +304,24 @@ export class CloudGooglePref extends LitElement {
       .spacer {
         flex-grow: 1;
       }
-
-      .state-reporting {
+      .header {
         display: flex;
         margin-top: 1.5em;
       }
-      .state-reporting + p {
+      .header + p {
         margin-top: 0.5em;
       }
-      h3 {
-        margin: 0 0 8px 0;
-      }
-      .state-reporting h3 {
+      .header h3 {
         flex-grow: 1;
         margin: 0;
       }
-      .state-reporting-switch {
-        margin-top: 0.25em;
-        margin-right: 7px;
+      .header-button {
+        margin-top: -0.5em;
         margin-left: 0.5em;
       }
-      .sync-entities {
-        display: flex;
-        margin-top: 1.5em;
-      }
-      .sync-entities + p {
-        margin-top: 0.5em;
-      }
-      .sync-entities h3 {
-        flex-grow: 1;
-        margin: 0;
-      }
-      .sync-entities-button {
-        margin-top: -0.5em;
+      .header-switch {
+        margin-top: 0.25em;
+        margin-right: 7px;
         margin-left: 0.5em;
       }
     `;

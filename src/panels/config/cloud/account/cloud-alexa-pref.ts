@@ -81,13 +81,13 @@ export class CloudAlexaPref extends LitElement {
                 </ha-alert>
               `
             : html`
-                <div class="state-reporting">
+                <div class="header">
                   <h3>
                     ${this.hass!.localize(
                       "ui.panel.config.cloud.account.alexa.enable_state_reporting"
                     )}
                   </h3>
-                  <div class="state-reporting-switch">
+                  <div class="header-switch">
                     <ha-switch
                       .checked=${alexa_report_state}
                       @change=${this._reportToggleChanged}
@@ -99,13 +99,13 @@ export class CloudAlexaPref extends LitElement {
                     "ui.panel.config.cloud.account.alexa.info_state_reporting"
                   )}
                 </p>
-                <div class="sync-entities">
+                <div class="header">
                   <h3>
                     ${this.hass!.localize(
                       "ui.panel.config.cloud.account.alexa.sync_entities"
                     )}
                   </h3>
-                  <div class="sync-entities-button">
+                  <div class="header-button">
                     <mwc-button
                       @click=${this._handleSync}
                       .disabled=${this._syncing}
@@ -219,35 +219,24 @@ export class CloudAlexaPref extends LitElement {
       .spacer {
         flex-grow: 1;
       }
-      .state-reporting {
+      .header {
         display: flex;
         margin-top: 1.5em;
       }
-      .state-reporting + p {
+      .header + p {
         margin-top: 0.5em;
       }
-      .state-reporting h3 {
+      .header h3 {
         flex-grow: 1;
         margin: 0;
       }
-      .state-reporting-switch {
-        margin-top: 0.25em;
-        margin-right: 7px;
+      .header-button {
+        margin-top: -0.5em;
         margin-left: 0.5em;
       }
-      .sync-entities {
-        display: flex;
-        margin-top: 1.5em;
-      }
-      .sync-entities + p {
-        margin-top: 0.5em;
-      }
-      .sync-entities h3 {
-        flex-grow: 1;
-        margin: 0;
-      }
-      .sync-entities-button {
-        margin-top: -0.5em;
+      .header-switch {
+        margin-top: 0.25em;
+        margin-right: 7px;
         margin-left: 0.5em;
       }
     `;
