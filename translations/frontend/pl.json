@@ -1287,7 +1287,7 @@
                 "restored": {
                     "confirm_remove_text": "Czy na pewno chcesz usunąć tę encję?",
                     "confirm_remove_title": "Usunąć encję?",
-                    "no_longer_provided": "Ta encja nie jest już dostarczana przez {integracja}. Jeśli encja nie jest już używana, usuń ją w ustawieniach.",
+                    "no_longer_provided": "Ta encja nie jest już dostarczana przez {integration}. Jeśli encja nie jest już używana, usuń ją w ustawieniach.",
                     "not_provided": "Ta encja jest obecnie niedostępna i jest osierocona po usuniętej, zmienionej lub dysfunkcyjnej integracji, lub urządzeniu.",
                     "remove_action": "Usuń encję",
                     "remove_intro": "Jeśli encja nie jest używana możesz ją usunąć.",
