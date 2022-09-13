@@ -900,7 +900,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       params.hidden_by = this._hiddenBy;
     }
     if (
-      (domain === "number" || domain === "number") &&
+      (domain === "number" || domain === "sensor") &&
       stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
     ) {
       params.options_domain = domain;
