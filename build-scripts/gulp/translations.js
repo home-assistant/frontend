@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 const crypto = require("crypto");
 const del = require("del");
 const path = require("path");
@@ -378,7 +376,6 @@ gulp.task("build-translation-write-metadata", () =>
           if (value.nativeName) {
             newData[key] = value;
           } else {
-            // eslint-disable-next-line no-console
             console.warn(
               `Skipping language ${key}. Native name was not translated.`
             );
