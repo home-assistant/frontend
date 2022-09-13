@@ -29,6 +29,7 @@ import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -184,17 +185,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       >
         ${this.scriptEntityId && !this.narrow
           ? html`
-              <a
-                class="trace-link"
-                href="/config/script/trace/${this.scriptEntityId}"
-                slot="toolbar-icon"
-              >
-                <mwc-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.script.editor.show_trace"
-                  )}
-                </mwc-button>
-              </a>
+              <mwc-button @click=${this._showTrace} slot="toolbar-icon">
+                ${this.hass.localize(
+                  "ui.panel.config.script.editor.show_trace"
+                )}
+              </mwc-button>
             `
           : ""}
         <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
@@ -530,6 +525,13 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     fireEvent(this, "hass-more-info", { entityId: this.scriptEntityId });
   }
 
+  private async _showTrace() {
+    if (this.scriptEntityId) {
+      await this.confirmUnsavedChanged();
+      navigate(`/config/script/trace/${this.scriptEntityId}`);
+    }
+  }
+
   private async _runScript(ev: CustomEvent) {
     ev.stopPropagation();
     await triggerScript(this.hass, this.scriptEntityId as string);
@@ -660,39 +662,32 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this._dirty = true;
   }
 
-  private _backTapped = (): void => {
-    if (this._dirty) {
-      showConfirmationDialog(this, {
-        text: this.hass!.localize(
-          "ui.panel.config.common.editor.confirm_unsaved"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        confirm: () => {
-          setTimeout(() => history.back());
-        },
-      });
-    } else {
-      history.back();
-    }
+  private confirmUnsavedChanged() {
+    return new Promise<void>((res) => {
+      if (this._dirty) {
+        showConfirmationDialog(this, {
+          text: this.hass!.localize(
+            "ui.panel.config.automation.editor.unsaved_confirm"
+          ),
+          confirmText: this.hass!.localize("ui.common.leave"),
+          dismissText: this.hass!.localize("ui.common.stay"),
+          confirm: () => {
+            afterNextRender(() => res());
+          },
+        });
+      } else {
+        afterNextRender(() => res());
+      }
+    });
+  }
+
+  private _backTapped = async () => {
+    await this.confirmUnsavedChanged();
+    history.back();
   };
 
   private async _duplicate() {
-    if (this._dirty) {
-      if (
-        !(await showConfirmationDialog(this, {
-          text: this.hass!.localize(
-            "ui.panel.config.common.editor.confirm_unsaved"
-          ),
-          confirmText: this.hass!.localize("ui.common.yes"),
-          dismissText: this.hass!.localize("ui.common.no"),
-        }))
-      ) {
-        return;
-      }
-      // Wait for dialog to complete closing
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    }
+    await this.confirmUnsavedChanged();
     showScriptEditor({
       ...this._config,
       alias: `${this._config?.alias} (${this.hass.localize(
@@ -839,9 +834,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         .header a {
           color: var(--secondary-text-color);
-        }
-        .trace-link {
-          text-decoration: none;
         }
         ha-button-menu a {
           text-decoration: none;
