@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -37,11 +38,23 @@ export class CloudGooglePref extends LitElement {
           "ui.panel.config.cloud.account.google.title"
         )}
       >
-        <div class="switch">
+        <div class="header-actions">
+          <a
+            href="https://www.nabucasa.com/config/google_assistant/"
+            target="_blank"
+            rel="noreferrer"
+            class="icon-link"
+          >
+            <ha-icon-button
+              .label=${this.hass.localize(
+                "ui.panel.config.cloud.account.google.link_learn_how_it_works"
+              )}
+              .path=${mdiHelpCircle}
+            ></ha-icon-button>
+          </a>
           <ha-switch
-            id="google_enabled"
             .checked=${google_enabled}
-            @change=${this._enableToggleChanged}
+            @change=${this._enabledToggleChanged}
           ></ha-switch>
         </div>
         <div class="card-content">
@@ -176,18 +189,6 @@ export class CloudGooglePref extends LitElement {
               `}
         </div>
         <div class="card-actions">
-          <a
-            href="https://www.nabucasa.com/config/google_assistant/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <mwc-button
-              >${this.hass.localize(
-                "ui.panel.config.cloud.account.google.link_learn_how_it_works"
-              )}</mwc-button
-            >
-          </a>
-          <div class="spacer"></div>
           <a href="/config/cloud/google-assistant">
             <mwc-button>
               ${this.hass.localize(
@@ -225,7 +226,7 @@ export class CloudGooglePref extends LitElement {
     }
   }
 
-  private async _enableToggleChanged(ev) {
+  private async _enabledToggleChanged(ev) {
     const toggle = ev.target as HaSwitch;
     try {
       await updateCloudPref(this.hass, { [toggle.id]: toggle.checked! });
@@ -275,14 +276,23 @@ export class CloudGooglePref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      .switch {
+      .header-actions {
         position: absolute;
         right: 24px;
         top: 24px;
+        display: flex;
+        flex-direction: row;
       }
-      :host([dir="rtl"]) .switch {
+      :host([dir="rtl"]) .header-actions {
         right: auto;
         left: 24px;
+      }
+      .header-actions .icon-link {
+        margin-top: -16px;
+        margin-inline-end: 8px;
+        margin-right: 8px;
+        direction: var(--direction);
+        color: var(--secondary-text-color);
       }
       ha-settings-row {
         padding: 0;

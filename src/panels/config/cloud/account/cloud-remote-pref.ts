@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { mdiContentCopy } from "@mdi/js";
+import { mdiContentCopy, mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -58,12 +58,26 @@ export class CloudRemotePref extends LitElement {
           "ui.panel.config.cloud.account.remote.title"
         )}
       >
-        <div class="switch">
+        <div class="header-actions">
+          <a
+            href="https://www.nabucasa.com/config/amazon_alexa/"
+            target="_blank"
+            rel="noreferrer"
+            class="icon-link"
+          >
+            <ha-icon-button
+              .label=${this.hass.localize(
+                "ui.panel.config.cloud.account.remote.link_learn_how_it_works"
+              )}
+              .path=${mdiHelpCircle}
+            ></ha-icon-button>
+          </a>
           <ha-switch
             .checked=${remote_enabled}
             @change=${this._toggleChanged}
           ></ha-switch>
         </div>
+
         <div class="card-content">
           ${!remote_connected && remote_enabled
             ? html`
@@ -98,18 +112,6 @@ export class CloudRemotePref extends LitElement {
           ></ha-svg-icon>
         </div>
         <div class="card-actions">
-          <a
-            href="https://www.nabucasa.com/config/remote/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <mwc-button
-              >${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.link_learn_how_it_works"
-              )}</mwc-button
-            >
-          </a>
-          <div class="spacer"></div>
           <mwc-button @click=${this._openCertInfo}>
             ${this.hass.localize(
               "ui.panel.config.cloud.account.remote.certificate_info"
@@ -158,14 +160,23 @@ export class CloudRemotePref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      .switch {
+      .header-actions {
         position: absolute;
         right: 24px;
         top: 24px;
+        display: flex;
+        flex-direction: row;
       }
-      :host([dir="rtl"]) .switch {
+      :host([dir="rtl"]) .header-actions {
         right: auto;
         left: 24px;
+      }
+      .header-actions .icon-link {
+        margin-top: -16px;
+        margin-inline-end: 8px;
+        margin-right: 8px;
+        direction: var(--direction);
+        color: var(--secondary-text-color);
       }
       .warning {
         font-weight: bold;
