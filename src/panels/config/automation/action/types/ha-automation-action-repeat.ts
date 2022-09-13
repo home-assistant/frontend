@@ -115,6 +115,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         repeat: { [type]: value, sequence: this.action.repeat.sequence },
       },
     });
@@ -125,6 +126,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const value = ev.detail.value as Condition[];
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         repeat: {
           ...this.action.repeat,
           [getType(this.action.repeat)!]: value,
@@ -138,6 +140,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const value = ev.detail.value as Action[];
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         repeat: {
           ...this.action.repeat,
           sequence: value,
@@ -153,6 +156,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     }
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         repeat: {
           ...this.action.repeat,
           count: newVal,
