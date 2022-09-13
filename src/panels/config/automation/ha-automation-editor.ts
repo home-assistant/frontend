@@ -31,7 +31,6 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -482,8 +481,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _showTrace() {
     if (this._config?.id) {
-      await this.confirmUnsavedChanged();
-      navigate(`/config/automation/trace/${this._config.id}`);
+      const result = await this.confirmUnsavedChanged();
+      if (result) {
+        navigate(`/config/automation/trace/${this._config.id}`);
+      }
     }
   }
 
@@ -536,37 +537,35 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._dirty = true;
   }
 
-  private confirmUnsavedChanged() {
-    return new Promise<void>((res) => {
-      if (this._dirty) {
-        showConfirmationDialog(this, {
-          text: this.hass!.localize(
-            "ui.panel.config.automation.editor.unsaved_confirm"
-          ),
-          confirmText: this.hass!.localize("ui.common.leave"),
-          dismissText: this.hass!.localize("ui.common.stay"),
-          confirm: () => {
-            afterNextRender(() => res());
-          },
-        });
-      } else {
-        afterNextRender(() => res());
-      }
-    });
+  private async confirmUnsavedChanged(): Promise<boolean> {
+    if (this._dirty) {
+      return showConfirmationDialog(this, {
+        text: this.hass!.localize(
+          "ui.panel.config.automation.editor.unsaved_confirm"
+        ),
+        confirmText: this.hass!.localize("ui.common.leave"),
+        dismissText: this.hass!.localize("ui.common.stay"),
+      });
+    }
+    return true;
   }
 
   private _backTapped = async () => {
-    await this.confirmUnsavedChanged();
-    history.back();
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
+      history.back();
+    }
   };
 
   private async _duplicate() {
-    await this.confirmUnsavedChanged();
-    showAutomationEditor({
-      ...this._config,
-      id: undefined,
-      alias: undefined,
-    });
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
+      showAutomationEditor({
+        ...this._config,
+        id: undefined,
+        alias: undefined,
+      });
+    }
   }
 
   private async _deleteConfirm() {

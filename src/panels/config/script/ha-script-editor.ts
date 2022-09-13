@@ -29,7 +29,6 @@ import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -527,8 +526,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _showTrace() {
     if (this.scriptEntityId) {
-      await this.confirmUnsavedChanged();
-      navigate(`/config/script/trace/${this.scriptEntityId}`);
+      const result = await this.confirmUnsavedChanged();
+      if (result) {
+        navigate(`/config/script/trace/${this.scriptEntityId}`);
+      }
     }
   }
 
@@ -662,38 +663,36 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this._dirty = true;
   }
 
-  private confirmUnsavedChanged() {
-    return new Promise<void>((res) => {
-      if (this._dirty) {
-        showConfirmationDialog(this, {
-          text: this.hass!.localize(
-            "ui.panel.config.automation.editor.unsaved_confirm"
-          ),
-          confirmText: this.hass!.localize("ui.common.leave"),
-          dismissText: this.hass!.localize("ui.common.stay"),
-          confirm: () => {
-            afterNextRender(() => res());
-          },
-        });
-      } else {
-        afterNextRender(() => res());
-      }
-    });
+  private async confirmUnsavedChanged(): Promise<boolean> {
+    if (this._dirty) {
+      return showConfirmationDialog(this, {
+        text: this.hass!.localize(
+          "ui.panel.config.automation.editor.unsaved_confirm"
+        ),
+        confirmText: this.hass!.localize("ui.common.leave"),
+        dismissText: this.hass!.localize("ui.common.stay"),
+      });
+    }
+    return true;
   }
 
   private _backTapped = async () => {
-    await this.confirmUnsavedChanged();
-    history.back();
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
+      history.back();
+    }
   };
 
   private async _duplicate() {
-    await this.confirmUnsavedChanged();
-    showScriptEditor({
-      ...this._config,
-      alias: `${this._config?.alias} (${this.hass.localize(
-        "ui.panel.config.script.picker.duplicate"
-      )})`,
-    });
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
+      showScriptEditor({
+        ...this._config,
+        alias: `${this._config?.alias} (${this.hass.localize(
+          "ui.panel.config.script.picker.duplicate"
+        )})`,
+      });
+    }
   }
 
   private async _deleteConfirm() {
