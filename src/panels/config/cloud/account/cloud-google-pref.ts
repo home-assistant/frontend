@@ -311,9 +311,6 @@ export class CloudGooglePref extends LitElement {
       .warning {
         color: var(--error-color);
       }
-      .spacer {
-        flex-grow: 1;
-      }
     `;
   }
 }

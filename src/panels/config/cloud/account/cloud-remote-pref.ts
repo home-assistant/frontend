@@ -190,18 +190,11 @@ export class CloudRemotePref extends LitElement {
         right: 24px;
         top: 24px;
       }
-      :host([dir="rtl"]) .switch {
-        right: auto;
-        left: 24px;
-      }
       .card-actions {
         display: flex;
       }
       .card-actions a {
         text-decoration: none;
-      }
-      .spacer {
-        flex-grow: 1;
       }
       ha-svg-icon {
         --mdc-icon-size: 18px;

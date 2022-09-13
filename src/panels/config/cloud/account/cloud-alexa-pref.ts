@@ -228,9 +228,6 @@ export class CloudAlexaPref extends LitElement {
       .card-actions a {
         text-decoration: none;
       }
-      .spacer {
-        flex-grow: 1;
-      }
     `;
   }
 }
