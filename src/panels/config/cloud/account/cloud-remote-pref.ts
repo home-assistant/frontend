@@ -60,7 +60,7 @@ export class CloudRemotePref extends LitElement {
       >
         <div class="header-actions">
           <a
-            href="https://www.nabucasa.com/config/amazon_alexa/"
+            href="https://www.nabucasa.com/config/remote/"
             target="_blank"
             rel="noreferrer"
             class="icon-link"
