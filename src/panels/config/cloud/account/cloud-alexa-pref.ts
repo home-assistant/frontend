@@ -1,14 +1,12 @@
 import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { property, state } from "lit/decorators";
+import { property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
-import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
-import { syncCloudAlexaEntities } from "../../../../data/alexa";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 
@@ -17,15 +15,13 @@ export class CloudAlexaPref extends LitElement {
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  @state() private _syncing = false;
-
   protected render(): TemplateResult {
     if (!this.cloudStatus) {
       return html``;
     }
 
     const alexa_registered = this.cloudStatus.alexa_registered;
-    const { alexa_enabled, alexa_report_state } = this.cloudStatus!.prefs;
+    const { alexa_enabled } = this.cloudStatus!.prefs;
 
     return html`
       <ha-card
@@ -96,44 +92,7 @@ export class CloudAlexaPref extends LitElement {
                   </ul>
                 </ha-alert>
               `
-            : html`
-                <ha-settings-row>
-                  <span slot="heading">
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.alexa.enable_state_reporting"
-                    )}
-                  </span>
-                  <span slot="description">
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.alexa.info_state_reporting"
-                    )}
-                  </span>
-                  <ha-switch
-                    .checked=${alexa_report_state}
-                    @change=${this._reportToggleChanged}
-                  ></ha-switch>
-                </ha-settings-row>
-                <ha-settings-row>
-                  <span slot="heading">
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.alexa.sync_entities"
-                    )}
-                  </span>
-                  <span slot="description">
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.alexa.info_sync_entities"
-                    )}
-                  </span>
-                  <mwc-button
-                    @click=${this._handleSync}
-                    .disabled=${this._syncing}
-                  >
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.alexa.button_sync_entities"
-                    )}
-                  </mwc-button>
-                </ha-settings-row>
-              `}
+            : ""}
         </div>
         <div class="card-actions">
           <a href="/config/cloud/alexa">
@@ -148,50 +107,12 @@ export class CloudAlexaPref extends LitElement {
     `;
   }
 
-  private async _handleSync() {
-    this._syncing = true;
-    try {
-      await syncCloudAlexaEntities(this.hass!);
-    } catch (err: any) {
-      alert(
-        `${this.hass!.localize(
-          "ui.panel.config.cloud.account.alexa.sync_entities_error"
-        )} ${err.body.message}`
-      );
-    } finally {
-      this._syncing = false;
-    }
-  }
-
   private async _enabledToggleChanged(ev) {
     const toggle = ev.target as HaSwitch;
     try {
       await updateCloudPref(this.hass!, { alexa_enabled: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
-      toggle.checked = !toggle.checked;
-    }
-  }
-
-  private async _reportToggleChanged(ev) {
-    const toggle = ev.target as HaSwitch;
-    try {
-      await updateCloudPref(this.hass!, {
-        alexa_report_state: toggle.checked!,
-      });
-      fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err: any) {
-      alert(
-        `${this.hass!.localize(
-          "ui.panel.config.cloud.account.alexa.state_reporting_error",
-          "enable_disable",
-          this.hass!.localize(
-            toggle.checked
-              ? "ui.panel.config.cloud.account.alexa.enable"
-              : "ui.panel.config.cloud.account.alexa.disable"
-          )
-        )} ${err.message}`
-      );
       toggle.checked = !toggle.checked;
     }
   }
@@ -218,9 +139,6 @@ export class CloudAlexaPref extends LitElement {
         margin-right: 8px;
         direction: var(--direction);
         color: var(--secondary-text-color);
-      }
-      ha-settings-row {
-        padding: 0;
       }
       .card-actions {
         display: flex;

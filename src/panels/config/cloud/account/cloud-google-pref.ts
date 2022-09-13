@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { property, state } from "lit/decorators";
+import { property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
@@ -10,8 +10,6 @@ import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
-import { syncCloudGoogleEntities } from "../../../../data/google_assistant";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 
@@ -20,15 +18,13 @@ export class CloudGooglePref extends LitElement {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
-  @state() private _syncing = false;
-
   protected render(): TemplateResult {
     if (!this.cloudStatus) {
       return html``;
     }
 
     const google_registered = this.cloudStatus.google_registered;
-    const { google_enabled, google_report_state, google_secure_devices_pin } =
+    const { google_enabled, google_secure_devices_pin } =
       this.cloudStatus.prefs;
 
     return html`
@@ -126,23 +122,6 @@ export class CloudGooglePref extends LitElement {
 
                 <ha-settings-row>
                   <span slot="heading">
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.google.enable_state_reporting"
-                    )}
-                  </span>
-                  <span slot="description">
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.google.info_state_reporting"
-                    )}
-                  </span>
-                  <ha-switch
-                    .checked=${google_report_state}
-                    @change=${this._reportToggleChanged}
-                  ></ha-switch>
-                </ha-settings-row>
-
-                <ha-settings-row>
-                  <span slot="heading">
                     ${this.hass.localize(
                       "ui.panel.config.cloud.account.google.security_devices"
                     )}
@@ -165,27 +144,6 @@ export class CloudGooglePref extends LitElement {
                   .value=${google_secure_devices_pin || ""}
                   @change=${this._pinChanged}
                 ></ha-textfield>
-
-                <ha-settings-row>
-                  <span slot="heading">
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.google.sync_entities"
-                    )}
-                  </span>
-                  <span slot="description">
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.google.info_sync_entities"
-                    )}
-                  </span>
-                  <mwc-button
-                    @click=${this._handleSync}
-                    .disabled=${this._syncing}
-                  >
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.google.button_sync_entities"
-                    )}
-                  </mwc-button>
-                </ha-settings-row>
               `}
         </div>
         <div class="card-actions">
@@ -201,54 +159,12 @@ export class CloudGooglePref extends LitElement {
     `;
   }
 
-  private async _handleSync() {
-    this._syncing = true;
-    try {
-      await syncCloudGoogleEntities(this.hass!);
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          `ui.panel.config.cloud.account.google.${
-            err.status_code === 404
-              ? "not_configured_title"
-              : "sync_failed_title"
-          }`
-        ),
-        text: this.hass.localize(
-          `ui.panel.config.cloud.account.google.${
-            err.status_code === 404 ? "not_configured_text" : "sync_failed_text"
-          }`
-        ),
-      });
-      fireEvent(this, "ha-refresh-cloud-status");
-    } finally {
-      this._syncing = false;
-    }
-  }
-
   private async _enabledToggleChanged(ev) {
     const toggle = ev.target as HaSwitch;
     try {
       await updateCloudPref(this.hass, { [toggle.id]: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
-      toggle.checked = !toggle.checked;
-    }
-  }
-
-  private async _reportToggleChanged(ev) {
-    const toggle = ev.target as HaSwitch;
-    try {
-      await updateCloudPref(this.hass, {
-        google_report_state: toggle.checked!,
-      });
-      fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err: any) {
-      alert(
-        `Unable to ${toggle.checked ? "enable" : "disable"} report state. ${
-          err.message
-        }`
-      );
       toggle.checked = !toggle.checked;
     }
   }
