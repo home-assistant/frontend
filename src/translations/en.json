@@ -2509,9 +2509,10 @@
               "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say/enter this PIN when interacting with such devices via Google Assistant.",
               "devices_pin": "Security Devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
-              "sync_entities": "Synchronize entities",
               "manage_entities": "Manage Entities",
               "enter_pin_error": "Unable to store PIN:",
+              "not_configured_title": "Google Assistant is not activated",
+              "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
             },
             "webhooks": {
@@ -2539,7 +2540,9 @@
             "follow_domain": "[%key:ui::panel::config::cloud::google::follow_domain%]",
             "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
             "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
-            "expose": "Expose to Alexa"
+            "expose": "Expose to Alexa",
+            "sync_entities": "Synchronize entities",
+            "sync_entities_error": "Failed to sync entities:"
           },
           "dialog_certificate": {
             "certificate_information": "Certificate Information",
@@ -2565,8 +2568,8 @@
             "sync_to_google": "Synchronizing changes to Google.",
             "sync_entities": "Synchronize entities",
             "sync_entities_error": "Failed to sync entities:",
-            "not_configured_title": "Google Assistant is not activated",
-            "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
+            "not_configured_title": "[%key:ui::panel::config::cloud::account::google::not_configured_title%]",
+            "not_configured_text": "[%key:ui::panel::config::cloud::account::google::not_configured_text%]",
             "sync_failed_title": "Syncing failed",
             "sync_failed_text": "Syncing your entities failed, try again or check the logs."
           },

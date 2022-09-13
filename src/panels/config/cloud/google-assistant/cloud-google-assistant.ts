@@ -279,7 +279,7 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
           <mwc-list-item
             graphic="icon"
             .disabled=${this._syncing}
-            @click=${this._forceSync}
+            @click=${this._handleSync}
           >
           ${this.hass.localize("ui.panel.config.cloud.google.sync_entities")}
             <ha-svg-icon
@@ -287,7 +287,6 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
               .path=${mdiSync}
             ></ha-svg-icon>
           </mwc-list-item>
-
         </ha-button-menu>
         ${
           !emptyFilter
@@ -533,7 +532,7 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
     );
   }
 
-  private async _forceSync() {
+  private async _handleSync() {
     this._syncing = true;
     try {
       await cloudSyncGoogleAssistant(this.hass!);
