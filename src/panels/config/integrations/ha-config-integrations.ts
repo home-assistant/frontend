@@ -689,22 +689,22 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (handlers.includes(domain)) {
       const localize = await localizePromise;
       if (
-        !(await showConfirmationDialog(this, {
+        await showConfirmationDialog(this, {
           title: localize("ui.panel.config.integrations.confirm_new", {
             integration: domainToName(localize, domain),
           }),
-        }))
+        })
       ) {
-        return;
+        showConfigFlowDialog(this, {
+          dialogClosedCallback: () => {
+            this._handleFlowUpdated();
+          },
+          startFlowHandler: domain,
+          manifest: this._manifests[domain],
+          showAdvanced: this.hass.userData?.showAdvanced,
+        });
       }
-      showConfigFlowDialog(this, {
-        dialogClosedCallback: () => {
-          this._handleFlowUpdated();
-        },
-        startFlowHandler: domain,
-        manifest: this._manifests[domain],
-        showAdvanced: this.hass.userData?.showAdvanced,
-      });
+      return;
     }
 
     const supportedBrands = await getSupportedBrands(this.hass);
