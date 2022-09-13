@@ -49,9 +49,8 @@ jobs:
         run: |
           pip install build
           yarn install
-
+          export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/build_frontend
-
           rm -rf dist home_assistant_frontend.egg-info
           python3 -m build
 
