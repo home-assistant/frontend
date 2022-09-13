@@ -5,6 +5,9 @@ import {
   mdiCheckboxMultipleMarked,
   mdiCloseBox,
   mdiCloseBoxMultiple,
+  mdiDotsVertical,
+  mdiFormatListChecks,
+  mdiSync,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -45,6 +48,7 @@ import {
   GoogleEntity,
 } from "../../../../data/google_assistant";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -63,6 +67,8 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
   @property() public narrow!: boolean;
 
   @state() private _entities?: GoogleEntity[];
+
+  @state() private _syncing = false;
 
   @state()
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
@@ -249,19 +255,40 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .header=${this.hass!.localize("ui.panel.config.cloud.google.title")}
         .narrow=${this.narrow}>
-        ${
-          emptyFilter
-            ? html`
-                <mwc-button
-                  slot="toolbar-icon"
-                  @click=${this._openDomainToggler}
-                  >${this.hass!.localize(
-                    "ui.panel.config.cloud.google.manage_defaults"
-                  )}</mwc-button
-                >
-              `
-            : ""
-        }
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!emptyFilter}
+            @click=${this._openDomainToggler}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.cloud.google.manage_defaults"
+            )}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiFormatListChecks}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${this._syncing}
+            @click=${this._forceSync}
+          >
+          ${this.hass.localize("ui.panel.config.cloud.google.sync_entities")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiSync}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+        </ha-button-menu>
         ${
           !emptyFilter
             ? html`
@@ -504,6 +531,31 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
       () => fireEvent(parent, "ha-refresh-cloud-status"),
       { once: true }
     );
+  }
+
+  private async _forceSync() {
+    this._syncing = true;
+    try {
+      await cloudSyncGoogleAssistant(this.hass!);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          `ui.panel.config.cloud.google.${
+            err.status_code === 404
+              ? "not_configured_title"
+              : "sync_failed_title"
+          }`
+        ),
+        text: this.hass.localize(
+          `ui.panel.config.cloud.google.${
+            err.status_code === 404 ? "not_configured_text" : "sync_failed_text"
+          }`
+        ),
+      });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } finally {
+      this._syncing = false;
+    }
   }
 
   private _ensureEntitySync() {

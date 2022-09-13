@@ -2491,9 +2491,7 @@
               "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
               "enable_ha_skill": "Enable the Home Assistant skill for Alexa",
               "config_documentation": "Configuration documentation",
-              "sync_entities": "Synchronize entities",
               "manage_entities": "Manage Entities",
-              "sync_entities_error": "Failed to sync entities:",
               "enable": "enable",
               "disable": "disable",
               "not_configured_title": "Alexa is not activated",
@@ -2514,10 +2512,6 @@
               "sync_entities": "Synchronize entities",
               "manage_entities": "Manage Entities",
               "enter_pin_error": "Unable to store PIN:",
-              "not_configured_title": "Google Assistant is not activated",
-              "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
-              "sync_failed_title": "Syncing failed",
-              "sync_failed_text": "Syncing your entities failed, try again or check the logs.",
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
             },
             "webhooks": {
@@ -2568,7 +2562,13 @@
             "follow_domain": "Follow domain",
             "exposed": "{selected} exposed",
             "not_exposed": "{selected} not exposed",
-            "sync_to_google": "Synchronizing changes to Google."
+            "sync_to_google": "Synchronizing changes to Google.",
+            "sync_entities": "Synchronize entities",
+            "sync_entities_error": "Failed to sync entities:",
+            "not_configured_title": "Google Assistant is not activated",
+            "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
+            "sync_failed_title": "Syncing failed",
+            "sync_failed_text": "Syncing your entities failed, try again or check the logs."
           },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
