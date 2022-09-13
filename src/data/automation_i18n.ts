@@ -1,3 +1,4 @@
+import { formatDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { ensureArray } from "../common/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -140,17 +141,19 @@ export const describeTrigger = (
       base += ` to ${to}`;
     }
 
-    if ("for" in trigger) {
-      let duration: string;
+    if (trigger.for) {
+      let duration: string | null;
       if (typeof trigger.for === "number") {
-        duration = `${secondsToDuration(trigger.for)!}`;
+        duration = secondsToDuration(trigger.for);
       } else if (typeof trigger.for === "string") {
-        duration = `${trigger.for}`;
+        duration = trigger.for;
       } else {
-        duration = `${JSON.stringify(trigger.for)}`;
+        duration = formatDuration(trigger.for);
       }
 
-      base += ` for ${duration}`;
+      if (duration) {
+        base += ` for ${duration}`;
+      }
     }
 
     return base;
