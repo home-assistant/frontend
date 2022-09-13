@@ -31,7 +31,6 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -135,17 +134,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       >
         ${this._config?.id && !this.narrow
           ? html`
-              <a
-                class="trace-link"
-                href="/config/automation/trace/${this._config.id}"
-                slot="toolbar-icon"
-              >
-                <mwc-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.show_trace"
-                  )}
-                </mwc-button>
-              </a>
+              <mwc-button @click=${this._showTrace} slot="toolbar-icon">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.show_trace"
+                )}
+              </mwc-button>
             `
           : ""}
         <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
@@ -486,6 +479,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     fireEvent(this, "hass-more-info", { entityId: this._entityId });
   }
 
+  private async _showTrace() {
+    if (this._config?.id) {
+      const result = await this.confirmUnsavedChanged();
+      if (result) {
+        navigate(`/config/automation/trace/${this._config.id}`);
+      }
+    }
+  }
+
   private _runActions() {
     if (!this.hass || !this._entityId) {
       return;
@@ -535,44 +537,35 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._dirty = true;
   }
 
-  private _backTapped = (): void => {
+  private async confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
-      showConfirmationDialog(this, {
+      return showConfirmationDialog(this, {
         text: this.hass!.localize(
           "ui.panel.config.automation.editor.unsaved_confirm"
         ),
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
-        confirm: () => {
-          afterNextRender(() => history.back());
-        },
       });
-    } else {
-      afterNextRender(() => history.back());
+    }
+    return true;
+  }
+
+  private _backTapped = async () => {
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
+      history.back();
     }
   };
 
   private async _duplicate() {
-    if (this._dirty) {
-      if (
-        !(await showConfirmationDialog(this, {
-          text: this.hass!.localize(
-            "ui.panel.config.automation.editor.unsaved_confirm"
-          ),
-          confirmText: this.hass!.localize("ui.common.leave"),
-          dismissText: this.hass!.localize("ui.common.stay"),
-        }))
-      ) {
-        return;
-      }
-      // Wait for dialog to complete closing
-      await new Promise((resolve) => setTimeout(resolve, 0));
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
+      showAutomationEditor({
+        ...this._config,
+        id: undefined,
+        alias: undefined,
+      });
     }
-    showAutomationEditor({
-      ...this._config,
-      id: undefined,
-      alias: undefined,
-    });
   }
 
   private async _deleteConfirm() {
@@ -688,9 +681,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           display: flex;
           flex-direction: column;
           padding-bottom: 0;
-        }
-        .trace-link {
-          text-decoration: none;
         }
         manual-automation-editor,
         blueprint-automation-editor {
