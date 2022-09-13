@@ -221,13 +221,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _sortable?: SortableInstance;
 
   public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
-        this._issuesCount = repairs.issues.filter(
-          (issue) => !issue.ignored
-        ).length;
-      }),
-    ];
+    return this.hass.user?.is_admin
+      ? [
+          subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
+            this._issuesCount = repairs.issues.filter(
+              (issue) => !issue.ignored
+            ).length;
+          }),
+        ]
+      : [];
   }
 
   protected render() {
