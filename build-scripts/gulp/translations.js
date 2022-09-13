@@ -13,6 +13,8 @@ const { mapFiles } = require("../util");
 const env = require("../env");
 const paths = require("../paths");
 
+require("./fetch-nightly_translations");
+
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";
 const workDir = "build/translations";
@@ -408,8 +410,10 @@ gulp.task(
 gulp.task(
   "build-translations",
   gulp.series(
-    "clean-translations",
-    "ensure-translations-build-dir",
+    gulp.parallel(
+      "fetch-nightly-translations",
+      gulp.series("clean-translations", "ensure-translations-build-dir")
+    ),
     "create-translations",
     "build-translation-fingerprints",
     "build-translation-write-metadata"
@@ -419,8 +423,10 @@ gulp.task(
 gulp.task(
   "build-supervisor-translations",
   gulp.series(
-    "clean-translations",
-    "ensure-translations-build-dir",
+    gulp.parallel(
+      "fetch-nightly-translations",
+      gulp.series("clean-translations", "ensure-translations-build-dir")
+    ),
     "build-master-translation",
     "build-merged-translations",
     "build-translation-fragment-supervisor",
