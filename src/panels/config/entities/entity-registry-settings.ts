@@ -36,6 +36,7 @@ import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import {
   CameraPreferences,
+  CAMERA_ORIENTATIONS,
   CAMERA_SUPPORT_STREAM,
   fetchCameraPrefs,
   STREAM_TYPE_HLS,
@@ -619,7 +620,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                   @selected=${this._handleCameraOrientationChanged}
                   @closed=${stopPropagation}
                 >
-                  ${[1, 2, 3, 4, 6, 8].map((num) => {
+                  ${CAMERA_ORIENTATIONS.map((num) => {
                     const localizeStr =
                       "ui.dialogs.entity_registry.editor.stream.stream_orientation_" +
                       num.toString();

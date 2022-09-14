@@ -6,6 +6,7 @@ import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-pro
 import { HomeAssistant } from "../types";
 import { getSignedPath } from "./auth";
 
+export const CAMERA_ORIENTATIONS = [1, 2, 3, 4, 6, 8];
 export const CAMERA_SUPPORT_ON_OFF = 1;
 export const CAMERA_SUPPORT_STREAM = 2;
 
