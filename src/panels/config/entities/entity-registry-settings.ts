@@ -29,7 +29,6 @@ import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
-import { HaSelector } from "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -874,13 +873,12 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private async _handleCameraOrientationChanged(ev) {
-    const selector = ev.currentTarget as HaSelector;
     try {
       this._cameraPrefs = await updateCameraPrefs(
         this.hass,
         this.entry.entity_id,
         {
-          orientation: selector.value,
+          orientation: ev.currentTarget.value,
         }
       );
     } catch (err: any) {
