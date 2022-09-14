@@ -34,11 +34,14 @@ class HassSubpage extends LitElement {
   @restoreScroll(".content") private _savedScrollPos?: number;
 
   protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (!changedProps.has("hass")) {
+      return;
+    }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass || oldHass.locale !== this.hass.locale) {
       toggleAttribute(this, "rtl", computeRTL(this.hass));
     }
-    super.willUpdate(changedProps);
   }
 
   protected render(): TemplateResult {
