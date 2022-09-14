@@ -111,12 +111,13 @@ export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>
     entity_id: entityId,
   });
 
+type ValueOf<T extends any[]> = T[number];
 export const updateCameraPrefs = (
   hass: HomeAssistant,
   entityId: string,
   prefs: {
     preload_stream?: boolean;
-    orientation?: number;
+    orientation?: ValueOf<typeof CAMERA_ORIENTATIONS>;
   }
 ) =>
   hass.callWS<CameraPreferences>({
