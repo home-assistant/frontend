@@ -2,13 +2,12 @@ import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { supportsFeature } from "../common/entity/supports-feature";
 import {
   CoverEntity,
+  CoverEntityFeature,
   isFullyClosedTilt,
   isFullyOpenTilt,
-  supportsCloseTilt,
-  supportsOpenTilt,
-  supportsStopTilt,
 } from "../data/cover";
 import { UNAVAILABLE } from "../data/entity";
 import { HomeAssistant } from "../types";
@@ -27,7 +26,10 @@ class HaCoverTiltControls extends LitElement {
 
     return html` <ha-icon-button
         class=${classMap({
-          invisible: !supportsOpenTilt(this.stateObj),
+          invisible: !supportsFeature(
+            this.stateObj,
+            CoverEntityFeature.OPEN_TILT
+          ),
         })}
         .label=${this.hass.localize(
           "ui.dialogs.more_info_control.cover.open_tilt_cover"
@@ -38,7 +40,10 @@ class HaCoverTiltControls extends LitElement {
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
-          invisible: !supportsStopTilt(this.stateObj),
+          invisible: !supportsFeature(
+            this.stateObj,
+            CoverEntityFeature.STOP_TILT
+          ),
         })}
         .label=${this.hass.localize(
           "ui.dialogs.more_info_control.cover.stop_cover"
@@ -49,7 +54,10 @@ class HaCoverTiltControls extends LitElement {
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
-          invisible: !supportsCloseTilt(this.stateObj),
+          invisible: !supportsFeature(
+            this.stateObj,
+            CoverEntityFeature.CLOSE_TILT
+          ),
         })}
         .label=${this.hass.localize(
           "ui.dialogs.more_info_control.cover.close_tilt_cover"
