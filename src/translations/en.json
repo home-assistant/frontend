@@ -1293,7 +1293,7 @@
           },
           "delete": {
             "confirmation_title": "Are you sure you want to delete this area?",
-            "confirmation_text": "All devices in this area will become unassigned."
+            "confirmation_text": "This user will be permanently deleted."
           }
         },
         "backup": {
@@ -2974,7 +2974,8 @@
             "system_generated_users_not_removable": "Unable to remove system users.",
             "system_generated_users_not_editable": "Unable to update system users.",
             "unnamed_user": "Unnamed User",
-            "confirm_user_deletion": "Are you sure you want to delete {name}?",
+            "confirm_user_deletion_title": "Delete {name}?",
+            "confirm_user_deletion_text": "This user will be permanently deleted.",
             "active_tooltip": "Controls if user can login"
           },
           "add_user": {
