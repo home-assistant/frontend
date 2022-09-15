@@ -322,10 +322,18 @@ class HaScriptPicker extends LitElement {
 
   private async _deleteConfirm(script: any) {
     showConfirmationDialog(this, {
-      text: this.hass.localize("ui.panel.config.script.editor.delete_confirm"),
+      title: this.hass.localize(
+        "ui.panel.config.script.editor.delete_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.script.editor.delete_confirm_text",
+        "name",
+        script.name
+      ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(script),
+      destructive: true,
     });
   }
 
