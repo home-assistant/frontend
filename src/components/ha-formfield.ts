@@ -13,6 +13,9 @@ export class HaFormfield extends FormfieldBase {
       switch (input.tagName) {
         case "HA-CHECKBOX":
         case "HA-RADIO":
+          if ((input as any).disabled) {
+            break;
+          }
           (input as any).checked = !(input as any).checked;
           fireEvent(input, "change");
           break;
