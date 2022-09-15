@@ -145,5 +145,8 @@ gulp.task("fetch-nightly-translations", async function () {
   console.log("Unpacking downloaded translations...");
   const zip = await jszip.loadAsync(downloadResponse.data);
   await deleteCurrent;
-  await zip.file(/.*/)[0].nodeStream().pipe(tar.extract());
+  const extractStream = zip.file(/.*/)[0].nodeStream().pipe(tar.extract());
+  await new Promise((resolve, reject) => {
+    extractStream.on("close", resolve).on("error", reject);
+  });
 });
