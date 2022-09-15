@@ -785,10 +785,18 @@ export class HaSceneEditor extends SubscribeMixin(
 
   private _deleteTapped(): void {
     showConfirmationDialog(this, {
-      text: this.hass!.localize("ui.panel.config.scene.picker.delete_confirm"),
+      title: this.hass!.localize(
+        "ui.panel.config.scene.picker.delete_confirm_title"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.scene.picker.delete_confirm_text",
+        "name",
+        this._config?.name
+      ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
+      destructive: true,
     });
   }
 
