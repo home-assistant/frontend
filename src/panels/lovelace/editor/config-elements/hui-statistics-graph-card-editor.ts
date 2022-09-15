@@ -181,7 +181,7 @@ export class HuiStatisticsGraphCardEditor
   );
 
   protected render(): TemplateResult {
-    if (!this.hass || !this._config || !this._metaDatas) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
