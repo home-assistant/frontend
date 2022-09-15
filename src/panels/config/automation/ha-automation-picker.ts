@@ -341,12 +341,18 @@ class HaAutomationPicker extends LitElement {
 
   private async _deleteConfirm(automation) {
     showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.picker.delete_confirm_title"
+      ),
       text: this.hass.localize(
-        "ui.panel.config.automation.picker.delete_confirm"
+        "ui.panel.config.automation.picker.delete_confirm_text",
+        "name",
+        automation.name
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(automation),
+      destructive: true,
     });
   }
 

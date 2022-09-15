@@ -570,10 +570,16 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _deleteConfirm() {
     showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.picker.delete_confirm_title"
+      ),
       text: this.hass.localize(
-        "ui.panel.config.automation.picker.delete_confirm"
+        "ui.panel.config.automation.picker.delete_confirm_text",
+        "name",
+        this._config?.alias
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
+      destructive: true,
       dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
     });
