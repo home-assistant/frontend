@@ -19,7 +19,6 @@ import {
 } from "../../../../common/color/convert-color";
 import { labBrighten, labDarken } from "../../../../common/color/lab";
 import { formatNumber } from "../../../../common/number/format_number";
-import "../../../../components/chart/statistics-chart";
 import "../../../../components/ha-card";
 import {
   EnergyData,

@@ -13,6 +13,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import {
@@ -20,11 +21,10 @@ import {
   numberFormatToLocale,
 } from "../../common/number/format_number";
 import {
-  getStatisticIds,
   getStatisticLabel,
+  getStatisticMetadata,
   Statistics,
   statisticsHaveType,
-  StatisticsMetaData,
   StatisticType,
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
@@ -35,8 +35,6 @@ class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public statisticsData!: Statistics;
-
-  @property({ type: Array }) public statisticIds?: StatisticsMetaData[];
 
   @property() public names: boolean | Record<string, string> = false;
 
@@ -191,18 +189,28 @@ class StatisticsChart extends LitElement {
     };
   }
 
-  private async _getStatisticIds() {
-    this.statisticIds = await getStatisticIds(this.hass);
-  }
+  private _getStatisticsMetaData = memoizeOne(
+    async (statisticIds: string[] | undefined) => {
+      const statsMetadataArray = await getStatisticMetadata(
+        this.hass,
+        statisticIds
+      );
+      const statisticsMetaData = {};
+      statsMetadataArray.forEach((x) => {
+        statisticsMetaData[x.statistic_id] = x;
+      });
+      return statisticsMetaData;
+    }
+  );
 
   private async _generateData() {
     if (!this.statisticsData) {
       return;
     }
 
-    if (!this.statisticIds) {
-      await this._getStatisticIds();
-    }
+    const statisticsMetaData = await this._getStatisticsMetaData(
+      Object.keys(this.statisticsData)
+    );
 
     let colorIndex = 0;
     const statisticsData = Object.values(this.statisticsData);
@@ -233,9 +241,7 @@ class StatisticsChart extends LitElement {
     const names = this.names || {};
     statisticsData.forEach((stats) => {
       const firstStat = stats[0];
-      const meta = this.statisticIds!.find(
-        (stat) => stat.statistic_id === firstStat.statistic_id
-      );
+      const meta = statisticsMetaData?.[firstStat.statistic_id];
       let name = names[firstStat.statistic_id];
       if (!name) {
         name = getStatisticLabel(this.hass, firstStat.statistic_id, meta);
