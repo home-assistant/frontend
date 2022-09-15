@@ -2554,14 +2554,14 @@
           },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
-            "available_at": "The webhook is available at the following URL:",
             "managed_by_integration": "This webhook is managed by an integration and cannot be disabled.",
             "info_disable_webhook": "If you no longer want to use this webhook, you can",
             "link_disable_webhook": "disable it",
+            "public_url": "Public address",
             "view_documentation": "View documentation",
             "close": "Close",
-            "confirm_disable": "Are you sure you want to disable this webhook?",
-            "copied_to_clipboard": "Copied to clipboard"
+            "confirm_disable_title": "Disable webhook",
+            "confirm_disable_text": "Webhook for {name} will be disabled."
           }
         },
         "devices": {
