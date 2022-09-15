@@ -92,17 +92,16 @@ export class HuiStatisticsGraphCardEditor
       : [];
   }
 
-  private _getStatisticsMetaData = memoizeOne(
-    async (statisticIds?: string[]) => {
-      this._metaDatas = await getStatisticMetadata(
-        this.hass!,
-        statisticIds || []
-      );
-    }
-  );
+  private _getStatisticsMetaData = async (statisticIds?: string[]) => {
+    this._metaDatas = await getStatisticMetadata(
+      this.hass!,
+      statisticIds || []
+    );
+  };
 
   public willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("_configEntities")) {
+      this._metaDatas = undefined;
       this._getStatisticsMetaData(this._configEntities);
     }
   }
@@ -178,7 +177,7 @@ export class HuiStatisticsGraphCardEditor
   );
 
   protected render(): TemplateResult {
-    if (!this.hass || !this._config) {
+    if (!this.hass || !this._config || !this._metaDatas) {
       return html``;
     }
 
