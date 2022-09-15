@@ -25,7 +25,6 @@ import {
   getStatisticMetadata,
   Statistics,
   statisticsHaveType,
-  StatisticsMetaData,
   StatisticType,
 } from "../../data/history";
 import type { HomeAssistant } from "../../types";
@@ -57,8 +56,6 @@ class StatisticsChart extends LitElement {
   @state() private _chartData: ChartData = { datasets: [] };
 
   @state() private _chartOptions?: ChartOptions;
-
-  @state() private _statisticsMetaData?: Record<string, StatisticsMetaData>;
 
   private _computedStyle?: CSSStyleDeclaration;
 
@@ -202,7 +199,7 @@ class StatisticsChart extends LitElement {
       statsMetadataArray.forEach((x) => {
         statisticsMetaData[x.statistic_id] = x;
       });
-      this._statisticsMetaData = statisticsMetaData;
+      return statisticsMetaData;
     }
   );
 
@@ -211,7 +208,9 @@ class StatisticsChart extends LitElement {
       return;
     }
 
-    await this._getStatisticsMetaData(Object.keys(this.statisticsData));
+    const statisticsMetaData = await this._getStatisticsMetaData(
+      Object.keys(this.statisticsData)
+    );
 
     let colorIndex = 0;
     const statisticsData = Object.values(this.statisticsData);
@@ -242,7 +241,7 @@ class StatisticsChart extends LitElement {
     const names = this.names || {};
     statisticsData.forEach((stats) => {
       const firstStat = stats[0];
-      const meta = this._statisticsMetaData?.[firstStat.statistic_id];
+      const meta = statisticsMetaData?.[firstStat.statistic_id];
       let name = names[firstStat.statistic_id];
       if (!name) {
         name = getStatisticLabel(this.hass, firstStat.statistic_id, meta);
