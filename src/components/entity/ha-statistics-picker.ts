@@ -31,7 +31,7 @@ class HaStatisticsPicker extends LitElement {
     type: Array,
     attribute: "include-statistics-unit-of-measurement",
   })
-  public includeStatisticsUnitOfMeasurement?: string[];
+  public includeStatisticsUnitOfMeasurement?: string[] | string;
 
   /**
    * Show only statistics displayed with these units of measurements.
@@ -39,7 +39,7 @@ class HaStatisticsPicker extends LitElement {
    * @attr include-display-unit-of-measurement
    */
   @property({ type: Array, attribute: "include-display-unit-of-measurement" })
-  public includeDisplayUnitOfMeasurement?: string[];
+  public includeDisplayUnitOfMeasurement?: string[] | string;
 
   protected render(): TemplateResult {
     if (!this.hass) {

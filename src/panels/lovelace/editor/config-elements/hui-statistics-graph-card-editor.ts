@@ -131,6 +131,8 @@ export class HuiStatisticsGraphCardEditor
                     ),
                     disabled:
                       period === "5minute" &&
+                      // External statistics don't support 5-minute statistics.
+                      // External statistics is formatted as <domain>:<object_id>
                       statisticIds?.some((statistic_id) =>
                         statistic_id.includes(":")
                       ),

@@ -191,8 +191,12 @@ export const statisticsMetaHasType = (
   metadata: StatisticsMetaData,
   type: StatisticType
 ) => {
-  if (mean_stat_types.includes(type) && metadata.has_mean) return true;
-  if (sum_stat_types.includes(type) && metadata.has_sum) return true;
+  if (mean_stat_types.includes(type) && metadata.has_mean) {
+    return true;
+  }
+  if (sum_stat_types.includes(type) && metadata.has_sum) {
+    return true;
+  }
   return false;
 };
 
