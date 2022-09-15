@@ -35,6 +35,7 @@ import {
   StatisticsMetaData,
   statisticsMetaHasType,
 } from "../../../../data/recorder";
+import { deepEqual } from "../../../../common/util/deep-equal";
 
 const statTypeStruct = union([
   literal("sum"),
@@ -100,7 +101,10 @@ export class HuiStatisticsGraphCardEditor
   };
 
   public willUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("_configEntities")) {
+    if (
+      changedProps.has("_configEntities") &&
+      !deepEqual(this._configEntities, changedProps.get("_configEntities"))
+    ) {
       this._metaDatas = undefined;
       this._getStatisticsMetaData(this._configEntities);
     }
