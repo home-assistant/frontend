@@ -41,10 +41,35 @@ class HaStatisticsPicker extends LitElement {
   @property({ type: Array, attribute: "include-display-unit-of-measurement" })
   public includeDisplayUnitOfMeasurement?: string[] | string;
 
+  /**
+   * Ignore filtering og statistics type and units when only a single statistic is selected.
+   * @type {boolean}
+   * @attr ignore-restrictions-on-first-statistic
+   */
+  @property({
+    type: Boolean,
+    attribute: "ignore-restrictions-on-first-statistic",
+  })
+  public ignoreRestrictionsOnFirstStatistic = false;
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
+
+    const ignoreRestriction =
+      this.ignoreRestrictionsOnFirstStatistic &&
+      this._currentStatistics.length <= 1;
+
+    const includeDisplayUnitCurrent = ignoreRestriction
+      ? undefined
+      : this.includeDisplayUnitOfMeasurement;
+    const includeStatisticsUnitCurrent = ignoreRestriction
+      ? undefined
+      : this.includeStatisticsUnitOfMeasurement;
+    const includeStatisticTypesCurrent = ignoreRestriction
+      ? undefined
+      : this.statisticTypes;
 
     return html`
       ${this._currentStatistics.map(
@@ -53,12 +78,10 @@ class HaStatisticsPicker extends LitElement {
             <ha-statistic-picker
               .curValue=${statisticId}
               .hass=${this.hass}
-              .includeDisplayUnitOfMeasurement=${this
-                .includeDisplayUnitOfMeasurement}
-              .includeStatisticsUnitOfMeasurement=${this
-                .includeStatisticsUnitOfMeasurement}
+              .includeDisplayUnitOfMeasurement=${includeDisplayUnitCurrent}
+              .includeStatisticsUnitOfMeasurement=${includeStatisticsUnitCurrent}
               .value=${statisticId}
-              .statisticTypes=${this.statisticTypes}
+              .statisticTypes=${includeStatisticTypesCurrent}
               .statisticIds=${this.statisticIds}
               .label=${this.pickedStatisticLabel}
               @value-changed=${this._statisticChanged}

@@ -217,6 +217,7 @@ export class HuiStatisticsGraphCardEditor
           .pickStatisticLabel=${`Add a statistic`}
           .pickedStatisticLabel=${`Statistic`}
           .includeDisplayUnitOfMeasurement=${displayUnit}
+          .ignoreRestrictionsOnFirstStatistic=${true}
           .value=${this._configEntities}
           .configValue=${"entities"}
           @value-changed=${this._entitiesChanged}
