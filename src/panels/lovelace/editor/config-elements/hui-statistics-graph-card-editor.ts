@@ -34,7 +34,7 @@ import {
   getStatisticMetadata,
   StatisticsMetaData,
   statisticsMetaHasType,
-} from "../../../../data/history";
+} from "../../../../data/recorder";
 
 const statTypeStruct = union([
   literal("sum"),
