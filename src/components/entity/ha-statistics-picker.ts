@@ -24,25 +24,22 @@ class HaStatisticsPicker extends LitElement {
 
   /**
    * Show only statistics natively stored with these units of measurements.
-   * @type {Array}
    * @attr include-statistics-unit-of-measurement
    */
   @property({
-    type: Array,
     attribute: "include-statistics-unit-of-measurement",
   })
   public includeStatisticsUnitOfMeasurement?: string[] | string;
 
   /**
    * Show only statistics displayed with these units of measurements.
-   * @type {Array}
    * @attr include-display-unit-of-measurement
    */
-  @property({ type: Array, attribute: "include-display-unit-of-measurement" })
+  @property({ attribute: "include-display-unit-of-measurement" })
   public includeDisplayUnitOfMeasurement?: string[] | string;
 
   /**
-   * Ignore filtering og statistics type and units when only a single statistic is selected.
+   * Ignore filtering of statistics type and units when only a single statistic is selected.
    * @type {boolean}
    * @attr ignore-restrictions-on-first-statistic
    */

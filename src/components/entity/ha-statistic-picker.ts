@@ -44,18 +44,16 @@ export class HaStatisticPicker extends LitElement {
 
   /**
    * Show only statistics displayed with these units of measurements.
-   * @type {Array}
    * @attr include-display-unit-of-measurement
    */
-  @property({ type: Array, attribute: "include-display-unit-of-measurement" })
+  @property({ attribute: "include-display-unit-of-measurement" })
   public includeDisplayUnitOfMeasurement?: string | string[];
 
   /**
    * Show only statistics with these device classes.
-   * @type {Array}
    * @attr include-device-classes
    */
-  @property({ type: Array, attribute: "include-device-classes" })
+  @property({ attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
   /**
