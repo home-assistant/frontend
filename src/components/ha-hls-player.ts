@@ -165,7 +165,7 @@ class HaHLSPlayer extends LitElement {
     window.addEventListener("resize", this._resizeExoPlayer);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
-    await this.hass!.auth.external!.sendMessage({
+    await this.hass!.auth.external!.fireMessage({
       type: "exoplayer/play_hls",
       payload: {
         url: new URL(url, window.location.href).toString(),
