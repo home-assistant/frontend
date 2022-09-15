@@ -18,6 +18,7 @@ export const SCENE_IGNORED_DOMAINS = [
   "schedule",
   "sensor",
   "sun",
+  "update",
   "weather",
   "zone",
 ];
