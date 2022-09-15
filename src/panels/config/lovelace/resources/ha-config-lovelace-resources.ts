@@ -157,9 +157,17 @@ export class HaConfigLovelaceRescources extends LitElement {
       removeResource: async () => {
         if (
           !(await showConfirmationDialog(this, {
-            text: this.hass!.localize(
-              "ui.panel.config.lovelace.resources.confirm_delete"
+            title: this.hass!.localize(
+              "ui.panel.config.lovelace.resources.confirm_delete_title"
             ),
+            text: this.hass!.localize(
+              "ui.panel.config.lovelace.resources.confirm_delete_text",
+              "url",
+              resource!.url
+            ),
+            dismissText: this.hass!.localize("ui.common.cancel"),
+            confirmText: this.hass!.localize("ui.common.delete"),
+            destructive: true,
           }))
         ) {
           return false;
