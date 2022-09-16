@@ -376,10 +376,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
   private async _hostReboot(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize("ui.panel.config.hardware.reboot_host"),
-      text: this.hass.localize("ui.panel.config.hardware.reboot_host_confirm"),
-      confirmText: this.hass.localize("ui.panel.config.hardware.reboot_host"),
+      title: this.hass.localize("ui.panel.config.hardware.reboot_host_title"),
+      text: this.hass.localize("ui.panel.config.hardware.reboot_host_text"),
+      confirmText: this.hass.localize("ui.panel.config.hardware.reboot"),
       dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
     });
 
     if (!confirmed) {
@@ -408,12 +409,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
   private async _hostShutdown(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize("ui.panel.config.hardware.shutdown_host"),
-      text: this.hass.localize(
-        "ui.panel.config.hardware.shutdown_host_confirm"
-      ),
-      confirmText: this.hass.localize("ui.panel.config.hardware.shutdown_host"),
+      title: this.hass.localize("ui.panel.config.hardware.shutdown_host_title"),
+      text: this.hass.localize("ui.panel.config.hardware.shutdown_host_text"),
+      confirmText: this.hass.localize("ui.panel.config.hardware.shutdown"),
       dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
     });
 
     if (!confirmed) {
