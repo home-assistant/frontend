@@ -181,6 +181,7 @@ class HaConfigSystemNavigation extends LitElement {
           });
         });
       },
+      destructive: true,
     });
   }
 
