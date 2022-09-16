@@ -22,10 +22,51 @@ class HaStatisticsPicker extends LitElement {
   @property({ attribute: "pick-statistic-label" })
   public pickStatisticLabel?: string;
 
+  /**
+   * Show only statistics natively stored with these units of measurements.
+   * @attr include-statistics-unit-of-measurement
+   */
+  @property({
+    attribute: "include-statistics-unit-of-measurement",
+  })
+  public includeStatisticsUnitOfMeasurement?: string[] | string;
+
+  /**
+   * Show only statistics displayed with these units of measurements.
+   * @attr include-display-unit-of-measurement
+   */
+  @property({ attribute: "include-display-unit-of-measurement" })
+  public includeDisplayUnitOfMeasurement?: string[] | string;
+
+  /**
+   * Ignore filtering of statistics type and units when only a single statistic is selected.
+   * @type {boolean}
+   * @attr ignore-restrictions-on-first-statistic
+   */
+  @property({
+    type: Boolean,
+    attribute: "ignore-restrictions-on-first-statistic",
+  })
+  public ignoreRestrictionsOnFirstStatistic = false;
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
+
+    const ignoreRestriction =
+      this.ignoreRestrictionsOnFirstStatistic &&
+      this._currentStatistics.length <= 1;
+
+    const includeDisplayUnitCurrent = ignoreRestriction
+      ? undefined
+      : this.includeDisplayUnitOfMeasurement;
+    const includeStatisticsUnitCurrent = ignoreRestriction
+      ? undefined
+      : this.includeStatisticsUnitOfMeasurement;
+    const includeStatisticTypesCurrent = ignoreRestriction
+      ? undefined
+      : this.statisticTypes;
 
     return html`
       ${this._currentStatistics.map(
@@ -34,8 +75,10 @@ class HaStatisticsPicker extends LitElement {
             <ha-statistic-picker
               .curValue=${statisticId}
               .hass=${this.hass}
+              .includeDisplayUnitOfMeasurement=${includeDisplayUnitCurrent}
+              .includeStatisticsUnitOfMeasurement=${includeStatisticsUnitCurrent}
               .value=${statisticId}
-              .statisticTypes=${this.statisticTypes}
+              .statisticTypes=${includeStatisticTypesCurrent}
               .statisticIds=${this.statisticIds}
               .label=${this.pickedStatisticLabel}
               @value-changed=${this._statisticChanged}
@@ -46,6 +89,10 @@ class HaStatisticsPicker extends LitElement {
       <div>
         <ha-statistic-picker
           .hass=${this.hass}
+          .includeDisplayUnitOfMeasurement=${this
+            .includeDisplayUnitOfMeasurement}
+          .includeStatisticsUnitOfMeasurement=${this
+            .includeStatisticsUnitOfMeasurement}
           .statisticTypes=${this.statisticTypes}
           .statisticIds=${this.statisticIds}
           .label=${this.pickStatisticLabel}
