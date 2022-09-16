@@ -747,7 +747,7 @@ export class HaIntegrationCard extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.application_credentials.delete_title"
       ),
-      text: html` ${this.hass.localize(
+      text: html`${this.hass.localize(
           "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt"
         )},
         <br />
@@ -769,6 +769,7 @@ export class HaIntegrationCard extends LitElement {
             "ui.panel.config.integrations.config_entry.application_credentials.learn_more"
           )}
         </a>`,
+      destructive: true,
       confirmText: this.hass.localize("ui.common.remove"),
       dismissText: this.hass.localize(
         "ui.panel.config.integrations.config_entry.application_credentials.dismiss"
