@@ -1761,7 +1761,8 @@
               "no_resources": "No resources",
               "add_resource": "Add resource"
             },
-            "confirm_delete": "Are you sure you want to delete this resource?",
+            "confirm_delete_title": "Delete resource?",
+            "confirm_delete_text": "{url} will be permanently deleted.",
             "refresh_header": "Do you want to refresh?",
             "refresh_body": "You have to refresh the page to complete the removal. Do you want to refresh now?",
             "cant_edit_yaml": "You are using your dashboard in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
