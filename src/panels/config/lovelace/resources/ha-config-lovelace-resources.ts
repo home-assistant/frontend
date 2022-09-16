@@ -162,8 +162,7 @@ export class HaConfigLovelaceRescources extends LitElement {
             ),
             text: this.hass!.localize(
               "ui.panel.config.lovelace.resources.confirm_delete_text",
-              "url",
-              resource!.url
+              { url: resource!.url }
             ),
             dismissText: this.hass!.localize("ui.common.cancel"),
             confirmText: this.hass!.localize("ui.common.delete"),
