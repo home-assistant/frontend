@@ -268,11 +268,9 @@ class HaSceneDashboard extends LitElement {
   private _activateScene = async (scene: SceneEntity) => {
     await activateScene(this.hass, scene.entity_id);
     showToast(this, {
-      message: this.hass.localize(
-        "ui.panel.config.scene.activated",
-        "name",
-        computeStateName(scene)
-      ),
+      message: this.hass.localize("ui.panel.config.scene.activated", {
+        name: computeStateName(scene),
+      }),
     });
     forwardHaptic("light");
   };
@@ -284,8 +282,7 @@ class HaSceneDashboard extends LitElement {
       ),
       text: this.hass!.localize(
         "ui.panel.config.scene.picker.delete_confirm_text",
-        "name",
-        computeStateName(scene)
+        { name: computeStateName(scene) }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
