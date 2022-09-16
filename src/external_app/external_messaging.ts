@@ -8,7 +8,6 @@ interface CommandInFlight {
 export interface EMMessage {
   id?: number;
   type: string;
-  payload?: unknown;
 }
 
 interface EMError {
@@ -30,34 +29,120 @@ interface EMMessageResultError {
   error: EMError;
 }
 
-interface EMExternalMessageRestart {
+interface EMOutgoingMessageConfigGet extends EMMessage {
+  type: "config/get";
+}
+
+interface EMOutgoingMessageMatterCommission extends EMMessage {
+  type: "matter/commission";
+}
+
+type EMOutgoingMessageWithAnswer = {
+  "config/get": {
+    request: EMOutgoingMessageConfigGet;
+    response: ExternalConfig;
+  };
+  "matter/commission": {
+    request: EMOutgoingMessageMatterCommission;
+    response: {
+      code: string;
+    };
+  };
+};
+
+interface EMOutgoingMessageExoplayerPlayHLS extends EMMessage {
+  type: "exoplayer/play_hls";
+  payload: {
+    url: string;
+    muted: boolean;
+  };
+}
+interface EMOutgoingMessageExoplayerResize extends EMMessage {
+  type: "exoplayer/resize";
+  payload: {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+  };
+}
+
+interface EMOutgoingMessageExoplayerStop extends EMMessage {
+  type: "exoplayer/stop";
+}
+
+interface EMOutgoingMessageThemeUpdate extends EMMessage {
+  type: "theme-update";
+}
+
+interface EMOutgoingMessageHaptic extends EMMessage {
+  type: "haptic";
+  payload: { hapticType: string };
+}
+
+interface EMOutgoingMessageConnectionStatus extends EMMessage {
+  type: "connection-status";
+  payload: { event: string };
+}
+
+interface EMOutgoingMessageAppConfiguration extends EMMessage {
+  type: "config_screen/show";
+}
+
+interface EMOutgoingMessageTagWrite extends EMMessage {
+  type: "tag/write";
+  payload: {
+    name: string | null;
+    tag: string;
+  };
+}
+
+interface EMOutgoingMessageSidebarShow extends EMMessage {
+  type: "sidebar/show";
+}
+
+type EMOutgoingMessageWithoutAnswer =
+  | EMOutgoingMessageHaptic
+  | EMOutgoingMessageConnectionStatus
+  | EMOutgoingMessageAppConfiguration
+  | EMOutgoingMessageTagWrite
+  | EMOutgoingMessageSidebarShow
+  | EMOutgoingMessageExoplayerPlayHLS
+  | EMOutgoingMessageExoplayerResize
+  | EMOutgoingMessageExoplayerStop
+  | EMOutgoingMessageThemeUpdate
+  | EMMessageResultSuccess
+  | EMMessageResultError;
+
+interface EMIncomingMessageRestart {
   id: number;
   type: "command";
   command: "restart";
 }
 
-interface EMExternMessageShowNotifications {
+interface EMIncomingMessageShowNotifications {
   id: number;
   type: "command";
   command: "notifications/show";
 }
 
-export type EMExternalMessageCommands =
-  | EMExternalMessageRestart
-  | EMExternMessageShowNotifications;
+export type EMIncomingMessageCommands =
+  | EMIncomingMessageRestart
+  | EMIncomingMessageShowNotifications;
 
-type ExternalMessage =
+type EMIncomingMessage =
   | EMMessageResultSuccess
   | EMMessageResultError
-  | EMExternalMessageCommands;
+  | EMIncomingMessageCommands;
 
-type ExternalMessageHandler = (msg: EMExternalMessageCommands) => boolean;
+type EMIncomingMessageHandler = (msg: EMIncomingMessageCommands) => boolean;
 
 export interface ExternalConfig {
   hasSettingsScreen: boolean;
   hasSidebar: boolean;
   canWriteTag: boolean;
   hasExoPlayer: boolean;
+  canCommissionMatter: boolean;
 }
 
 export class ExternalMessaging {
@@ -67,7 +152,7 @@ export class ExternalMessaging {
 
   public msgId = 0;
 
-  private _commandHandler?: ExternalMessageHandler;
+  private _commandHandler?: EMIncomingMessageHandler;
 
   public async attach() {
     window[CALLBACK_EXTERNAL_BUS] = (msg) => this.receiveMessage(msg);
@@ -77,12 +162,12 @@ export class ExternalMessaging {
         payload: { event: ev.detail },
       })
     );
-    this.config = await this.sendMessage<ExternalConfig>({
+    this.config = await this.sendMessage<"config/get">({
       type: "config/get",
     });
   }
 
-  public addCommandHandler(handler: ExternalMessageHandler) {
+  public addCommandHandler(handler: EMIncomingMessageHandler) {
     this._commandHandler = handler;
   }
 
@@ -90,31 +175,33 @@ export class ExternalMessaging {
    * Send message to external app that expects a response.
    * @param msg message to send
    */
-  public sendMessage<T>(msg: EMMessage): Promise<T> {
+  public sendMessage<T extends keyof EMOutgoingMessageWithAnswer>(
+    msg: EMOutgoingMessageWithAnswer[T]["request"]
+  ): Promise<EMOutgoingMessageWithAnswer[T]["response"]> {
     const msgId = ++this.msgId;
     msg.id = msgId;
 
-    this.fireMessage(msg);
+    this._sendExternal(msg);
 
-    return new Promise<T>((resolve, reject) => {
-      this.commands[msgId] = { resolve, reject };
-    });
+    return new Promise<EMOutgoingMessageWithAnswer[T]["response"]>(
+      (resolve, reject) => {
+        this.commands[msgId] = { resolve, reject };
+      }
+    );
   }
 
   /**
    * Send message to external app without expecting a response.
    * @param msg message to send
    */
-  public fireMessage(
-    msg: EMMessage | EMMessageResultSuccess | EMMessageResultError
-  ) {
+  public fireMessage(msg: EMOutgoingMessageWithoutAnswer) {
     if (!msg.id) {
       msg.id = ++this.msgId;
     }
     this._sendExternal(msg);
   }
 
-  public receiveMessage(msg: ExternalMessage) {
+  public receiveMessage(msg: EMIncomingMessage) {
     if (__DEV__) {
       // eslint-disable-next-line no-console
       console.log("Receiving message from external app", msg);
