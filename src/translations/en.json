@@ -2857,13 +2857,16 @@
             "download_diagnostics": "Download diagnostics",
             "known_issues": "Known issues",
             "delete": "Delete",
-            "delete_confirm": "Are you sure you want to delete the {title} integration?",
+            "delete_confirm_title": "Delete {title}?",
+            "delete_confirm_text": "Its devices and entities will be permantly deleted.",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
             "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
             "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
             "enable_restart_confirm": "Restart Home Assistant to finish enabling this integration",
+            "disable_confirm_title": "Disable {title}?",
+            "disable_confirm_text": "Its devices and entities will be disabled.",
             "disable_error": "Enabling or disabling of the integration failed",
             "manuf": "by {manufacturer}",
             "via": "Connected via",
@@ -2884,8 +2887,7 @@
                 "user": "user",
                 "integration": "integration",
                 "device": "device"
-              },
-              "disable_confirm": "Are you sure you want to disable this config entry? Its devices and entities will be disabled."
+              }
             },
             "provided_by_custom_integration": "Provided by a custom integration",
             "depends_on_cloud": "Depends on the cloud",
