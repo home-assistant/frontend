@@ -73,6 +73,23 @@ export interface StatisticsValidationResultUnsupportedUnitMetadata {
   };
 }
 
+export interface StatisticsUnitConfiguration {
+  energy?: "Wh" | "kWh" | "MWh";
+  power?: "W" | "kW";
+  pressure?:
+    | "Pa"
+    | "hPa"
+    | "kPa"
+    | "bar"
+    | "cbar"
+    | "mbar"
+    | "inHg"
+    | "psi"
+    | "mmHg";
+  temperature?: "°C" | "°F" | "K";
+  volume?: "ft³" | "m³";
+}
+
 export interface StatisticsValidationResultUnsupportedUnitState {
   type: "unsupported_unit_state";
   data: { statistic_id: string; device_class: string; metadata_unit: string };
@@ -105,7 +122,8 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
-  period: "5minute" | "hour" | "day" | "month" = "hour"
+  period: "5minute" | "hour" | "day" | "month" = "hour",
+  units?: StatisticsUnitConfiguration
 ) =>
   hass.callWS<Statistics>({
     type: "recorder/statistics_during_period",
@@ -113,6 +131,7 @@ export const fetchStatistics = (
     end_time: endTime?.toISOString(),
     statistic_ids,
     period,
+    units,
   });
 
 export const validateStatistics = (hass: HomeAssistant) =>
@@ -204,13 +223,15 @@ export const adjustStatisticsSum = (
   hass: HomeAssistant,
   statistic_id: string,
   start_time: string,
-  adjustment: number
+  adjustment: number,
+  display_unit: string
 ): Promise<void> =>
   hass.callWS({
     type: "recorder/adjust_sum_statistics",
     statistic_id,
     start_time,
     adjustment,
+    display_unit,
   });
 
 export const getStatisticLabel = (
