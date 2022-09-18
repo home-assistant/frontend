@@ -170,17 +170,24 @@ gulp.task("build-master-translation", () => {
     .pipe(transform((data, file) => lokaliseTransform(data, data, file)))
     .pipe(
       merge({
-        fileName: "translationMaster.json",
+        fileName: "en.json",
       })
     )
-    .pipe(gulp.dest(workDir));
+    .pipe(gulp.dest(fullDir));
 });
 
 gulp.task("build-merged-translations", () =>
   gulp
-    .src([inFrontendDir + "/*.json", workDir + "/test.json"], {
-      allowEmpty: true,
-    })
+    .src(
+      [
+        inFrontendDir + "/*.json",
+        "!" + inFrontendDir + "/en.json",
+        workDir + "/test.json",
+      ],
+      {
+        allowEmpty: true,
+      }
+    )
     .pipe(transform((data, file) => lokaliseTransform(data, data, file)))
     .pipe(
       flatmap((stream, file) => {
@@ -193,7 +200,7 @@ gulp.task("build-merged-translations", () =>
         //       than a base translation + region.
         const tr = path.basename(file.history[0], ".json");
         const subtags = tr.split("-");
-        const src = [workDir + "/translationMaster.json"];
+        const src = [fullDir + "/en.json"];
         for (let i = 1; i <= subtags.length; i++) {
           const lang = subtags.slice(0, i).join("-");
           if (lang === "test") {
