@@ -9,6 +9,7 @@ import {
 import { mdiClose } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
@@ -77,7 +78,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
     if (!this._device) {
       return;
     }
-    const tabs = this._getTabs();
+    const tabs = this._getTabs(this._device);
     if (!tabs.includes(this._currTab)) {
       this._currTab = tabs[0];
     }
@@ -91,7 +92,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
       return html``;
     }
 
-    const tabs = this._getTabs();
+    const tabs = this._getTabs(this._device);
 
     return html`
       <ha-dialog
@@ -206,26 +207,25 @@ class DialogZHAManageZigbeeDevice extends LitElement {
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = this._getTabs()[ev.detail.index];
+    const newTab = this._getTabs(this._device)[ev.detail.index];
     if (newTab === this._currTab) {
       return;
     }
     this._currTab = newTab;
   }
 
-  private _getTabs(): Tab[] {
+  private _getTabs = memoizeOne((device: ZHADevice | undefined) => {
     const tabs: Tab[] = ["clusters", "bindings", "signature"];
 
     if (
-      this._device &&
-      (this._device.device_type === "Router" ||
-        this._device.device_type === "Coordinator")
+      device &&
+      (device.device_type === "Router" || device.device_type === "Coordinator")
     ) {
       tabs.push("children");
     }
 
     return tabs;
-  }
+  });
 
   static get styles(): CSSResultGroup {
     return [
