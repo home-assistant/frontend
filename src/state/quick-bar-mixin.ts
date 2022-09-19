@@ -48,6 +48,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
 
     private _registerShortcut() {
       tinykeys(window, {
+        // Those are for latin keyboards that have e, c, m keys
+        e: (ev) => this._showQuickBar(ev),
+        c: (ev) => this._showQuickBar(ev, true),
+        m: (ev) => this._createMyLink(ev),
+        // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
         KeyE: (ev) => this._showQuickBar(ev),
         KeyC: (ev) => this._showQuickBar(ev, true),
         KeyM: (ev) => this._createMyLink(ev),
