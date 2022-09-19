@@ -546,6 +546,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ),
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
+        destructive: true,
       });
     }
     return true;
