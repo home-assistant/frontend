@@ -259,10 +259,6 @@ class DialogZHAManageZigbeeDevice extends LitElement {
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
-        :host([tab="settings"]) ha-dialog {
-          --dialog-content-padding: 0px;
-        }
-
         @media all and (min-width: 600px) and (min-height: 501px) {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
