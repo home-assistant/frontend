@@ -287,6 +287,7 @@ class HaSceneDashboard extends LitElement {
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(scene),
+      destructive: true,
     });
   }
 
