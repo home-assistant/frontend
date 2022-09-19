@@ -393,7 +393,8 @@ const getEnergyData = async (
       compareStartMinHour,
       endCompare,
       statIDs,
-      period
+      period,
+      units
     );
   }
 
