@@ -333,7 +333,6 @@ class HaBlueprintOverview extends LitElement {
         ),
         text: this.hass.localize(
           "ui.panel.config.blueprint.overview.confirm_delete_text",
-          "name",
           { name: blueprint.name }
         ),
         confirmText: this.hass!.localize("ui.common.delete"),
