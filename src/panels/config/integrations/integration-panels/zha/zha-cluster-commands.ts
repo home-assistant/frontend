@@ -33,7 +33,7 @@ export class ZHAClusterCommands extends LitElement {
 
   @property() public selectedCluster?: Cluster;
 
-  @state() private _commands: Command[] = [];
+  @state() private _commands: Command[] | undefined;
 
   @state() private _selectedCommandId?: number;
 
@@ -42,20 +42,17 @@ export class ZHAClusterCommands extends LitElement {
   @state()
   private _issueClusterCommandServiceData?: IssueCommandServiceData;
 
-  @state() private _commandsLoaded = false;
-
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {
-      this._commands = [];
+      this._commands = undefined;
       this._selectedCommandId = undefined;
-      this._commandsLoaded = false;
       this._fetchCommandsForCluster();
     }
     super.update(changedProperties);
   }
 
   protected render(): TemplateResult {
-    if (!this.device || !this.selectedCluster || !this._commandsLoaded) {
+    if (!this.device || !this.selectedCluster || !this._commands) {
       return html``;
     }
     return html`
@@ -124,7 +121,6 @@ export class ZHAClusterCommands extends LitElement {
         this.selectedCluster!.type
       );
       this._commands.sort((a, b) => a.name.localeCompare(b.name));
-      this._commandsLoaded = true;
       if (this._commands.length > 0) {
         this._selectedCommandId = this._commands[0].id;
       }
@@ -134,7 +130,7 @@ export class ZHAClusterCommands extends LitElement {
   private _computeIssueClusterCommandServiceData():
     | IssueCommandServiceData
     | undefined {
-    if (!this.device || !this.selectedCluster) {
+    if (!this.device || !this.selectedCluster || !this._commands) {
       return undefined;
     }
     return {

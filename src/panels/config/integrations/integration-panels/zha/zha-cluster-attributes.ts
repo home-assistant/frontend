@@ -39,15 +39,13 @@ export class ZHAClusterAttributes extends LitElement {
 
   @property() public selectedCluster?: Cluster;
 
-  @state() private _attributes: Attribute[] = [];
+  @state() private _attributes: Attribute[] | undefined;
 
   @state() private _selectedAttributeId?: number;
 
   @state() private _attributeValue?: any = "";
 
   @state() private _manufacturerCodeOverride?: string | number;
-
-  @state() private _attributesLoaded = false;
 
   @state() private _readingAttribute = false;
 
@@ -56,17 +54,16 @@ export class ZHAClusterAttributes extends LitElement {
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {
-      this._attributes = [];
+      this._attributes = undefined;
       this._selectedAttributeId = undefined;
       this._attributeValue = "";
-      this._attributesLoaded = false;
       this._fetchAttributesForCluster();
     }
     super.update(changedProperties);
   }
 
   protected render(): TemplateResult {
-    if (!this.device || !this.selectedCluster || !this._attributesLoaded) {
+    if (!this.device || !this.selectedCluster || !this._attributes) {
       return html``;
     }
     return html`
@@ -86,7 +83,7 @@ export class ZHAClusterAttributes extends LitElement {
             ${this._attributes.map(
               (entry) => html`
                 <mwc-list-item .value=${String(entry.id)}>
-                  ${entry.name + " (id: " + formatAsPaddedHex(entry.id) + ")"}
+                  ${`${entry.name} (id: ${formatAsPaddedHex(entry.id)})`}
                 </mwc-list-item>
               `
             )}
@@ -155,7 +152,6 @@ export class ZHAClusterAttributes extends LitElement {
         this.selectedCluster!.type
       );
       this._attributes.sort((a, b) => a.name.localeCompare(b.name));
-      this._attributesLoaded = true;
       if (this._attributes.length > 0) {
         this._selectedAttributeId = this._attributes[0].id;
       }
