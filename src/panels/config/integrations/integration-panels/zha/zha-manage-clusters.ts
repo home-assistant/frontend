@@ -20,6 +20,10 @@ import {
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { computeClusterKey } from "./functions";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
+import "./zha-cluster-attributes";
+import "./zha-cluster-commands";
 
 declare global {
   // for fire event
@@ -194,6 +198,6 @@ export class ZHAManageClusters extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "zha-manage-cluster": ZHAManageClusters;
+    "zha-manage-clusters": ZHAManageClusters;
   }
 }

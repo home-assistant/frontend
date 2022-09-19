@@ -1020,7 +1020,7 @@
         "buttons": {
           "add": "Add devices via this device",
           "remove": "Remove",
-          "clusters": "Manage zigbee device",
+          "manage": "Manage zigbee device",
           "reconfigure": "Reconfigure",
           "view_network": "View network"
         },

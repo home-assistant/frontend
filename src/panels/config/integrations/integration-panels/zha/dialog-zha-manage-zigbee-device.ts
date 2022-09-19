@@ -32,6 +32,9 @@ import {
   Tab,
   ZHAManageZigbeeDeviceDialogParams,
 } from "./show-dialog-zha-manage-zigbee-device";
+import "../../../../../components/ha-header-bar";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
 
 @customElement("dialog-zha-manage-zigbee-device")
 class DialogZHAManageZigbeeDevice extends LitElement {

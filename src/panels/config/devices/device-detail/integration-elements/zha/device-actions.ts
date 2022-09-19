@@ -62,7 +62,7 @@ export const getZHADeviceActions = async (
   actions.push(
     ...[
       {
-        label: hass.localize("ui.dialogs.zha_device_info.buttons.clusters"),
+        label: hass.localize("ui.dialogs.zha_device_info.buttons.manage"),
         icon: mdiGroup,
         action: () =>
           showZHAManageZigbeeDeviceDialog(el, { device: zhaDevice }),
