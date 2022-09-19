@@ -24,7 +24,6 @@ import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -41,6 +40,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
+import { getExtendedEntityRegistryEntry } from "../../../data/entity_registry";
 import {
   deleteScript,
   getScriptConfig,
@@ -438,32 +438,34 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
       (!oldScript || oldScript !== this.scriptEntityId)
     ) {
-      getScriptConfig(this.hass, computeObjectId(this.scriptEntityId)).then(
-        (config) => {
-          // Normalize data: ensure sequence is a list
-          // Happens when people copy paste their scripts into the config
-          const value = config.sequence;
-          if (value && !Array.isArray(value)) {
-            config.sequence = [value];
+      getExtendedEntityRegistryEntry(this.hass, this.scriptEntityId)
+        .then((entry) => getScriptConfig(this.hass, entry.unique_id))
+        .then(
+          (config) => {
+            // Normalize data: ensure sequence is a list
+            // Happens when people copy paste their scripts into the config
+            const value = config.sequence;
+            if (value && !Array.isArray(value)) {
+              config.sequence = [value];
+            }
+            this._dirty = false;
+            this._config = config;
+          },
+          (resp) => {
+            alert(
+              resp.status_code === 404
+                ? this.hass.localize(
+                    "ui.panel.config.script.editor.load_error_not_editable"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.script.editor.load_error_unknown",
+                    "err_no",
+                    resp.status_code || resp.code
+                  )
+            );
+            history.back();
           }
-          this._dirty = false;
-          this._config = config;
-        },
-        (resp) => {
-          alert(
-            resp.status_code === 404
-              ? this.hass.localize(
-                  "ui.panel.config.script.editor.load_error_not_editable"
-                )
-              : this.hass.localize(
-                  "ui.panel.config.script.editor.load_error_unknown",
-                  "err_no",
-                  resp.status_code
-                )
-          );
-          history.back();
-        }
-      );
+        );
     }
 
     if (
@@ -547,7 +549,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _runScript(ev: CustomEvent) {
     ev.stopPropagation();
-    await triggerScript(this.hass, this.scriptEntityId as string);
+    const entry = await getExtendedEntityRegistryEntry(
+      this.hass,
+      this.scriptEntityId as string
+    );
+    await triggerScript(this.hass, entry.unique_id);
     showToast(this, {
       message: this.hass.localize(
         "ui.notification_toast.triggered",
@@ -720,10 +726,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _delete() {
-    await deleteScript(
+    const entry = await getExtendedEntityRegistryEntry(
       this.hass,
-      computeObjectId(this.scriptEntityId as string)
+      this.scriptEntityId as string
     );
+    await deleteScript(this.hass, entry.unique_id);
     history.back();
   }
 
@@ -741,7 +748,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
-  private _saveScript(): void {
+  private async _saveScript(): Promise<void> {
     if (this._idError) {
       showToast(this, {
         message: this.hass.localize(
@@ -756,24 +763,33 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       });
       return;
     }
-    const id = this.scriptEntityId
-      ? computeObjectId(this.scriptEntityId)
-      : this._entityId || Date.now();
-    this.hass!.callApi("POST", "config/script/config/" + id, this._config).then(
-      () => {
-        this._dirty = false;
-        if (!this.scriptEntityId) {
-          navigate(`/config/script/edit/${id}`, { replace: true });
-        }
-      },
-      (errors) => {
-        this._errors = errors.body.message || errors.error || errors.body;
-        showToast(this, {
-          message: errors.body.message || errors.error || errors.body,
-        });
-        throw errors;
-      }
-    );
+
+    const entry = this.scriptEntityId
+      ? await getExtendedEntityRegistryEntry(
+          this.hass,
+          this.scriptEntityId as string
+        )
+      : undefined;
+    const id = entry ? entry.unique_id : this._entityId || Date.now();
+    try {
+      await this.hass!.callApi(
+        "POST",
+        "config/script/config/" + id,
+        this._config
+      );
+    } catch (errors: any) {
+      this._errors = errors.body.message || errors.error || errors.body;
+      showToast(this, {
+        message: errors.body.message || errors.error || errors.body,
+      });
+      throw errors;
+    }
+
+    this._dirty = false;
+
+    if (!this.scriptEntityId) {
+      navigate(`/config/script/edit/script.${id}`, { replace: true });
+    }
   }
 
   protected handleKeyboardSave() {

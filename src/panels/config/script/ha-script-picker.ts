@@ -13,7 +13,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -26,6 +25,7 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
+import { getExtendedEntityRegistryEntry } from "../../../data/entity_registry";
 import {
   deleteScript,
   getScriptConfig,
@@ -256,7 +256,11 @@ class HaScriptPicker extends LitElement {
   }
 
   private _runScript = async (script: any) => {
-    await triggerScript(this.hass, script.entity_id);
+    const entry = await getExtendedEntityRegistryEntry(
+      this.hass,
+      script.entity_id
+    );
+    await triggerScript(this.hass, entry.unique_id);
     showToast(this, {
       message: this.hass.localize(
         "ui.notification_toast.triggered",
@@ -294,10 +298,11 @@ class HaScriptPicker extends LitElement {
 
   private async _duplicate(script: any) {
     try {
-      const config = await getScriptConfig(
+      const entry = await getExtendedEntityRegistryEntry(
         this.hass,
-        computeObjectId(script.entity_id)
+        script.entity_id
       );
+      const config = await getScriptConfig(this.hass, entry.unique_id);
       showScriptEditor({
         ...config,
         alias: `${config?.alias} (${this.hass.localize(
@@ -338,7 +343,11 @@ class HaScriptPicker extends LitElement {
 
   private async _delete(script: any) {
     try {
-      await deleteScript(this.hass, computeObjectId(script.entity_id));
+      const entry = await getExtendedEntityRegistryEntry(
+        this.hass,
+        script.entity_id
+      );
+      await deleteScript(this.hass, entry.unique_id);
     } catch (err: any) {
       await showAlertDialog(this, {
         text:
