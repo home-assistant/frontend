@@ -52,6 +52,20 @@ class MoveDatadiskDialog extends LitElement {
 
     try {
       this._osInfo = await fetchHassioHassOsInfo(this.hass);
+
+      const data = await listDatadisks(this.hass);
+      if (data.devices.length > 0) {
+        this._devices = data.devices;
+      } else {
+        await showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.storage.datadisk.no_devices_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.storage.datadisk.no_devices_text"
+          ),
+        });
+      }
     } catch (err: any) {
       await showAlertDialog(this, {
         title: this.hass.localize(
@@ -60,10 +74,6 @@ class MoveDatadiskDialog extends LitElement {
         text: extractApiErrorMessage(err),
       });
     }
-
-    listDatadisks(this.hass).then((data) => {
-      this._devices = data.devices;
-    });
   }
 
   public closeDialog(): void {
@@ -76,9 +86,10 @@ class MoveDatadiskDialog extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._hostInfo || !this._osInfo) {
+    if (!this._hostInfo || !this._osInfo || !this._devices) {
       return html``;
     }
+
     return html`
       <ha-dialog
         open
@@ -91,47 +102,40 @@ class MoveDatadiskDialog extends LitElement {
         ?hideActions=${this._moving}
       >
         ${this._moving
-          ? html` <ha-circular-progress alt="Moving" size="large" active>
+          ? html`
+              <ha-circular-progress alt="Moving" size="large" active>
               </ha-circular-progress>
               <p class="progress-text">
                 ${this.hass.localize(
                   "ui.panel.config.storage.datadisk.moving_desc"
                 )}
-              </p>`
-          : html`${this._devices?.length
-                ? html`
-                    ${this.hass.localize(
-                      "ui.panel.config.storage.datadisk.description",
-                      {
-                        current_path: this._osInfo.data_disk,
-                        time: calculateMoveTime(this._hostInfo),
-                      }
-                    )}
-                    <br /><br />
+              </p>
+            `
+          : html`
+              ${this.hass.localize(
+                "ui.panel.config.storage.datadisk.description",
+                {
+                  current_path: this._osInfo.data_disk,
+                  time: calculateMoveTime(this._hostInfo),
+                }
+              )}
+              <br /><br />
 
-                    <ha-select
-                      .label=${this.hass.localize(
-                        "ui.panel.config.storage.datadisk.select_device"
-                      )}
-                      @selected=${this._select_device}
-                      @closed=${stopPropagation}
-                      dialogInitialFocus
-                    >
-                      ${this._devices.map(
-                        (device) =>
-                          html`<mwc-list-item .value=${device}
-                            >${device}</mwc-list-item
-                          >`
-                      )}
-                    </ha-select>
-                  `
-                : this._devices === undefined
-                ? this.hass.localize(
-                    "ui.panel.config.storage.datadisk.loading_devices"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.storage.datadisk.no_devices"
-                  )}
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.panel.config.storage.datadisk.select_device"
+                )}
+                @selected=${this._select_device}
+                @closed=${stopPropagation}
+                dialogInitialFocus
+              >
+                ${this._devices.map(
+                  (device) =>
+                    html`<mwc-list-item .value=${device}
+                      >${device}</mwc-list-item
+                    >`
+                )}
+              </ha-select>
 
               <mwc-button
                 slot="secondaryAction"
@@ -147,7 +151,8 @@ class MoveDatadiskDialog extends LitElement {
                 @click=${this._moveDatadisk}
               >
                 ${this.hass.localize("ui.panel.config.storage.datadisk.move")}
-              </mwc-button>`}
+              </mwc-button>
+            `}
       </ha-dialog>
     `;
   }
