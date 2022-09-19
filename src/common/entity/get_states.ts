@@ -37,6 +37,7 @@ const FIXED_DOMAIN_STATES = {
   siren: ["on", "off"],
   sun: ["above_horizon", "below_horizon"],
   switch: ["on", "off"],
+  timer: ["active", "idle", "paused"],
   update: ["on", "off"],
   vacuum: ["cleaning", "docked", "error", "idle", "paused", "returning"],
   weather: [
