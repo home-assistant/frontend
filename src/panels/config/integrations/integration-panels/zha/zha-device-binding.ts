@@ -35,7 +35,7 @@ export class ZHADeviceBindingControl extends LitElement {
     if (changedProperties.has("device")) {
       this._bindTargetIndex = -1;
     }
-    super.update(changedProperties);
+    super.updated(changedProperties);
   }
 
   protected render(): TemplateResult {
@@ -43,7 +43,9 @@ export class ZHADeviceBindingControl extends LitElement {
       <ha-card class="content">
         <div class="command-picker">
           <ha-select
-            label="Bindable Devices"
+            label=${this.hass!.localize(
+              "ui.panel.config.zha.device_binding.picker_label"
+            )}
             class="menu"
             .value=${String(this._bindTargetIndex)}
             @selected=${this._bindTargetIndexChanged}

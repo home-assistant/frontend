@@ -3118,7 +3118,8 @@
           },
           "device_binding": {
             "bind": "Bind",
-            "unbind": "Unbind"
+            "unbind": "Unbind",
+            "picker_label": "Bindable Devices"
           },
           "group_binding": {
             "header": "Group Binding",

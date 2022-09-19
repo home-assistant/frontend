@@ -26,9 +26,9 @@ class ZHADeviceChildren extends LitElement {
 
   @state() private _devices: Map<string, ZHADevice> | undefined;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
-    if (this.hass) {
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    if (this.hass && changedProperties.has("device")) {
       this._fetchData();
     }
   }

@@ -48,7 +48,7 @@ export class ZHAClusterCommands extends LitElement {
       this._selectedCommandId = undefined;
       this._fetchCommandsForCluster();
     }
-    super.update(changedProperties);
+    super.updated(changedProperties);
   }
 
   protected render(): TemplateResult {

@@ -12,9 +12,8 @@ class ZHADeviceZigbeeInfo extends LitElement {
 
   @state() private _signature: any;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
-    if (this.hass && this.device) {
+  protected updated(changedProperties: PropertyValues): void {
+    if (changedProperties.has("device") && this.hass && this.device) {
       this._signature = JSON.stringify(
         {
           ...this.device.signature,
@@ -26,6 +25,7 @@ class ZHADeviceZigbeeInfo extends LitElement {
         2
       );
     }
+    super.updated(changedProperties);
   }
 
   protected render(): TemplateResult {

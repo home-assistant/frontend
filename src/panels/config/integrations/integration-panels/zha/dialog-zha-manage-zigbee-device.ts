@@ -81,14 +81,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
     if (!tabs.includes(this._currTab)) {
       this._currTab = tabs[0];
     }
-  }
-
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
-    if (changedProperties.has("_currTab")) {
-      this.setAttribute("tab", this._currTab);
-    }
-    if (changedProperties.has("_device")) {
+    if (changedProps.has("_device")) {
       this._fetchData();
     }
   }

@@ -67,16 +67,13 @@ export class ZHAManageClusters extends LitElement {
   }
 
   protected updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has("_currTab")) {
-      this.setAttribute("tab", this._currTab);
-    }
     if (changedProperties.has("device")) {
       this._clusters = [];
       this._selectedClusterIndex = -1;
       this._clustersLoaded = false;
       this._fetchClustersForZhaDevice();
     }
-    super.update(changedProperties);
+    super.updated(changedProperties);
   }
 
   protected render(): TemplateResult {

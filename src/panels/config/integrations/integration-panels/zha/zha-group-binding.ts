@@ -25,6 +25,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { ItemSelectedEvent } from "./types";
 import "./zha-clusters-data-table";
 import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
+import "@material/mwc-list/mwc-list-item";
 
 @customElement("zha-group-binding-control")
 export class ZHAGroupBindingControl extends LitElement {
@@ -56,7 +57,7 @@ export class ZHAGroupBindingControl extends LitElement {
       this._clustersToBind = [];
       this._fetchClustersForZhaNode();
     }
-    super.update(changedProperties);
+    super.updated(changedProperties);
   }
 
   protected render(): TemplateResult {

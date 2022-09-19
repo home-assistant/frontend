@@ -59,7 +59,7 @@ export class ZHAClusterAttributes extends LitElement {
       this._attributeValue = "";
       this._fetchAttributesForCluster();
     }
-    super.update(changedProperties);
+    super.updated(changedProperties);
   }
 
   protected render(): TemplateResult {
