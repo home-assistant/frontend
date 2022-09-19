@@ -3230,7 +3230,9 @@
             "zoom_label": "Zoom To Device",
             "auto_zoom": "Auto Zoom",
             "enable_physics": "Enable Physics",
-            "refresh_topology": "Refresh Topology"
+            "refresh_topology": "Refresh Topology",
+            "render_children_links": "Render Children Links",
+            "render_sibling_links": "Render Sibling Links"
           },
           "device_binding": {
             "bind": "Bind",

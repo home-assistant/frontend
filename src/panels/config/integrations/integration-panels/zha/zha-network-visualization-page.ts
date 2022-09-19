@@ -7,12 +7,14 @@ import {
   Network,
   Node,
 } from "vis-network/peer/esm/vis-network";
+import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
+import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/search-input";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-formfield";
 import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import {
@@ -63,6 +65,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _autoZoom = true;
 
   private _enablePhysics = true;
+
+  private _renderChildrenLinks = true;
+
+  private _renderSiblingLinks = true;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -184,32 +190,62 @@ export class ZHANetworkVisualizationPage extends LitElement {
             @value-changed=${this._onZoomToDevice}
           ></ha-device-picker>
           <div class="controls">
-            <ha-formfield
-              .label=${this.hass!.localize(
-                "ui.panel.config.zha.visualization.auto_zoom"
-              )}
-            >
-              <ha-checkbox
-                @change=${this._handleAutoZoomCheckboxChange}
-                .checked=${this._autoZoom}
+            <ha-button-menu corner="BOTTOM_START" multi>
+              <ha-icon-button
+                slot="trigger"
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+              ></ha-icon-button>
+              <ha-check-list-item
+                left
+                @request-selected=${this._handleAutoZoomCheckboxChange}
+                .selected=${this._autoZoom}
               >
-              </ha-checkbox>
-            </ha-formfield>
-            <ha-formfield
-              .label=${this.hass!.localize(
-                "ui.panel.config.zha.visualization.enable_physics"
-              )}
-              ><ha-checkbox
-                @change=${this._handlePhysicsCheckboxChange}
-                .checked=${this._enablePhysics}
+                ${this.hass.localize(
+                  "ui.panel.config.zha.visualization.auto_zoom"
+                )}
+              </ha-check-list-item>
+              <ha-check-list-item
+                left
+                @request-selected=${this._handlePhysicsCheckboxChange}
+                .selected=${this._enablePhysics}
               >
-              </ha-checkbox
-            ></ha-formfield>
-            <mwc-button @click=${this._refreshTopology}>
-              ${this.hass!.localize(
-                "ui.panel.config.zha.visualization.refresh_topology"
-              )}
-            </mwc-button>
+                ${this.hass.localize(
+                  "ui.panel.config.zha.visualization.enable_physics"
+                )}
+              </ha-check-list-item>
+              <li divider role="separator"></li>
+              <ha-check-list-item
+                left
+                @request-selected=${this
+                  ._handleRenderChildrenLinksCheckboxChange}
+                .selected=${this._renderChildrenLinks}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.zha.visualization.render_children_links"
+                )}
+              </ha-check-list-item>
+              <ha-check-list-item
+                left
+                @request-selected=${this
+                  ._handleRenderSiblingLinksCheckboxChange}
+                .selected=${this._renderSiblingLinks}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.zha.visualization.render_sibling_links"
+                )}
+              </ha-check-list-item>
+              <li divider role="separator"></li>
+              <mwc-list-item
+                @request-selected=${this._refreshTopology}
+                graphic="icon"
+              >
+                ${this.hass!.localize(
+                  "ui.panel.config.zha.visualization.refresh_topology"
+                )}
+                <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
+              </mwc-list-item>
+            </ha-button-menu>
           </div>
         </div>
         <div id="visualization"></div>
@@ -241,21 +277,26 @@ export class ZHANetworkVisualizationPage extends LitElement {
       });
       if (device.neighbors && device.neighbors.length > 0) {
         device.neighbors.forEach((neighbor) => {
-          const idx = edges.findIndex(
-            (e) => device.ieee === e.to && neighbor.ieee === e.from
-          );
-          if (idx === -1) {
-            edges.push({
-              from: device.ieee,
-              to: neighbor.ieee,
-              label: neighbor.lqi + "",
-              color: this._getLQI(parseInt(neighbor.lqi)),
-            });
-          } else {
-            edges[idx].color = this._getLQI(
-              (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
+          if (
+            (neighbor.relationship === "Child" && this._renderChildrenLinks) ||
+            (neighbor.relationship === "Sibling" && this._renderSiblingLinks)
+          ) {
+            const idx = edges.findIndex(
+              (e) => device.ieee === e.to && neighbor.ieee === e.from
             );
-            edges[idx].label += "/" + neighbor.lqi;
+            if (idx === -1) {
+              edges.push({
+                from: device.ieee,
+                to: neighbor.ieee,
+                label: neighbor.lqi + "",
+                color: this._getLQI(parseInt(neighbor.lqi)),
+              });
+            } else {
+              edges[idx].color = this._getLQI(
+                (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
+              );
+              edges[idx].label += "/" + neighbor.lqi;
+            }
           }
         });
       }
@@ -390,12 +431,20 @@ export class ZHANetworkVisualizationPage extends LitElement {
     return false;
   };
 
-  private _handleAutoZoomCheckboxChange(ev: Event) {
-    this._autoZoom = (ev.target as HaCheckbox).checked;
+  private _handleAutoZoomCheckboxChange(
+    ev: CustomEvent<RequestSelectedDetail>
+  ) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._autoZoom = !this._autoZoom;
   }
 
-  private _handlePhysicsCheckboxChange(ev: Event) {
-    this._enablePhysics = (ev.target as HaCheckbox).checked;
+  private _handlePhysicsCheckboxChange(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._enablePhysics = !this._enablePhysics;
 
     this._network!.setOptions(
       this._enablePhysics
@@ -410,6 +459,26 @@ export class ZHANetworkVisualizationPage extends LitElement {
           }
         : { physics: false }
     );
+  }
+
+  private _handleRenderChildrenLinksCheckboxChange(
+    ev: CustomEvent<RequestSelectedDetail>
+  ) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._renderChildrenLinks = !this._renderChildrenLinks;
+    this._updateDevices(Array.from(this._devices.values()));
+  }
+
+  private _handleRenderSiblingLinksCheckboxChange(
+    ev: CustomEvent<RequestSelectedDetail>
+  ) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._renderSiblingLinks = !this._renderSiblingLinks;
+    this._updateDevices(Array.from(this._devices.values()));
   }
 
   static get styles(): CSSResultGroup {
@@ -467,6 +536,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
         }
         :host([narrow]) #visualization {
           height: calc(100% - (var(--header-height) * 2));
+        }
+        li[divider] {
+          border-bottom-color: var(--divider-color);
+        }
+        ha-svg-icon[slot="graphic"] {
+          padding-left: 13px;
         }
       `,
     ];
