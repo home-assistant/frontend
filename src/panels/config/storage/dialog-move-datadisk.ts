@@ -57,6 +57,7 @@ class MoveDatadiskDialog extends LitElement {
       if (data.devices.length > 0) {
         this._devices = data.devices;
       } else {
+        this.closeDialog();
         await showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.storage.datadisk.no_devices_title"
@@ -67,6 +68,7 @@ class MoveDatadiskDialog extends LitElement {
         });
       }
     } catch (err: any) {
+      this.closeDialog();
       await showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.hardware.available_hardware.failed_to_get"
