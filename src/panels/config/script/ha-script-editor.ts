@@ -29,6 +29,7 @@ import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -679,7 +680,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private _backTapped = async () => {
     const result = await this.confirmUnsavedChanged();
     if (result) {
-      history.back();
+      afterNextRender(() => history.back());
     }
   };
 

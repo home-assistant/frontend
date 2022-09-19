@@ -31,6 +31,7 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -553,7 +554,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private _backTapped = async () => {
     const result = await this.confirmUnsavedChanged();
     if (result) {
-      history.back();
+      afterNextRender(() => history.back());
     }
   };
 
