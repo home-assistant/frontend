@@ -541,11 +541,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private async confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
       return showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.config.automation.editor.unsaved_confirm_title"
+        ),
         text: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm"
+          "ui.panel.config.automation.editor.unsaved_confirm_text"
         ),
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
+        destructive: true,
       });
     }
     return true;
