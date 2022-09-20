@@ -75,9 +75,9 @@ export class DialogEnergyGasSettings
 
     const pickableUnit =
       this._pickableUnit ||
-      (this._params.unit === undefined
+      (this._params.allowedStatisticsUnit === undefined
         ? "m³ or kWh"
-        : this._params.unit === "energy"
+        : this._params.allowedStatisticsUnit === "energy"
         ? "kWh"
         : "m³");
 
