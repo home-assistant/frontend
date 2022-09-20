@@ -33,7 +33,7 @@ export class HuiViewEditor extends LitElement {
   private _suggestedPath = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, childView: boolean) =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -63,6 +63,25 @@ export class HuiViewEditor extends LitElement {
             },
           },
         },
+        {
+          name: "child_view",
+          selector: {
+            boolean: {},
+          },
+        },
+        ...(childView
+          ? [
+              {
+                name: "back_path",
+                selector: { text: {} },
+
+                description: {
+                  suggested_value:
+                    "Back path only apply when the view is a child view",
+                },
+              },
+            ]
+          : []),
       ] as const
   );
 
@@ -84,7 +103,10 @@ export class HuiViewEditor extends LitElement {
       return html``;
     }
 
-    const schema = this._schema(this.hass.localize);
+    const schema = this._schema(
+      this.hass.localize,
+      this._config.child_view ?? false
+    );
     const data = {
       theme: "Backend-selected",
       ...this._config,
@@ -103,10 +125,13 @@ export class HuiViewEditor extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value;
+    const config = ev.detail.value as LovelaceViewConfig;
 
     if (config.type === "masonry") {
       delete config.type;
+    }
+    if (!config.child_view) {
+      delete config.back_path;
     }
 
     if (
@@ -130,6 +155,14 @@ export class HuiViewEditor extends LitElement {
         return this.hass!.localize("ui.panel.lovelace.editor.card.generic.url");
       case "type":
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.type");
+      case "child_view":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.child_view"
+        );
+      case "back_path":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.back_path"
+        );
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`

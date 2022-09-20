@@ -2,6 +2,7 @@ import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
+  mdiArrowLeft,
   mdiCodeBraces,
   mdiDotsVertical,
   mdiFileMultiple,
@@ -112,6 +113,11 @@ class HUIRoot extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const views = this.lovelace?.config.views ?? [];
+
+    const curViewConfig =
+      typeof this._curView === "number" ? views[this._curView] : undefined;
+
     return html`
       <ha-app-layout
         class=${classMap({
@@ -229,11 +235,22 @@ class HUIRoot extends LitElement {
               `
             : html`
                 <app-toolbar>
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                  ${this.lovelace!.config.views.length > 1
+                  ${curViewConfig?.child_view
+                    ? html`
+                        <ha-icon-button
+                          .path=${mdiArrowLeft}
+                          @click=${this._goBack}
+                        ></ha-icon-button>
+                      `
+                    : html`
+                        <ha-menu-button
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                        ></ha-menu-button>
+                      `}
+                  ${curViewConfig?.child_view
+                    ? html`<div main-title>${curViewConfig.title}</div>`
+                    : views.filter((view) => !view.child_view).length > 1
                     ? html`
                         <ha-tabs
                           scrollable
@@ -241,18 +258,20 @@ class HUIRoot extends LitElement {
                           @iron-activate=${this._handleViewSelected}
                           dir=${computeRTLDirection(this.hass!)}
                         >
-                          ${this.lovelace!.config.views.map(
+                          ${views.map(
                             (view) => html`
                               <paper-tab
                                 aria-label=${ifDefined(view.title)}
                                 class=${classMap({
                                   "hide-tab": Boolean(
-                                    view.visible !== undefined &&
-                                      ((Array.isArray(view.visible) &&
-                                        !view.visible.some(
-                                          (e) => e.user === this.hass!.user!.id
-                                        )) ||
-                                        view.visible === false)
+                                    view.child_view ||
+                                      (view.visible !== undefined &&
+                                        ((Array.isArray(view.visible) &&
+                                          !view.visible.some(
+                                            (e) =>
+                                              e.user === this.hass!.user!.id
+                                          )) ||
+                                          view.visible === false))
                                   ),
                                 })}
                               >
@@ -473,7 +492,7 @@ class HUIRoot extends LitElement {
                     @iron-activate=${this._handleViewSelected}
                     dir=${computeRTLDirection(this.hass!)}
                   >
-                    ${this.lovelace!.config.views.map(
+                    ${views.map(
                       (view) => html`
                         <paper-tab
                           aria-label=${ifDefined(view.title)}
@@ -505,6 +524,9 @@ class HUIRoot extends LitElement {
                           ${view.icon
                             ? html`
                                 <ha-icon
+                                  class=${classMap({
+                                    "child-view-icon": Boolean(view.child_view),
+                                  })}
                                   title=${ifDefined(view.title)}
                                   .icon=${view.icon}
                                 ></ha-icon>
@@ -528,7 +550,7 @@ class HUIRoot extends LitElement {
                                   class="edit-icon view"
                                   @click=${this._moveViewRight}
                                   ?disabled=${(this._curView! as number) + 1 ===
-                                  this.lovelace!.config.views.length}
+                                  views.length}
                                 ></ha-icon-button-arrow-next>
                               `
                             : ""}
@@ -718,6 +740,20 @@ class HUIRoot extends LitElement {
       commandMode: false,
       hint: this.hass.localize("ui.tips.key_e_hint"),
     });
+  }
+
+  private _goBack(): void {
+    const views = this.lovelace?.config.views ?? [];
+    const curViewConfig =
+      typeof this._curView === "number" ? views[this._curView] : undefined;
+
+    if (curViewConfig?.back_path) {
+      navigate(curViewConfig.back_path);
+    } else if (history.length > 0) {
+      history.back();
+    } else {
+      navigate(views[0].path!);
+    }
   }
 
   private _handleRawEditor(ev: CustomEvent<RequestSelectedDetail>): void {
@@ -1018,6 +1054,9 @@ class HUIRoot extends LitElement {
           --mdc-theme-primary: var(--app-header-edit-text-color, #fff);
           --mdc-button-outline-color: var(--app-header-edit-text-color, #fff);
           --mdc-typography-button-font-size: 14px;
+        }
+        .child-view-icon {
+          opacity: 0.5;
         }
       `,
     ];

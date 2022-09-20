@@ -93,6 +93,8 @@ export interface LovelaceViewConfig {
   panel?: boolean;
   background?: string;
   visible?: boolean | ShowViewConfig[];
+  child_view?: boolean;
+  back_path?: string;
 }
 
 export interface LovelaceViewElement extends HTMLElement {
