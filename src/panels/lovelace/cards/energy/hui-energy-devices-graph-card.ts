@@ -27,6 +27,7 @@ import {
   fetchStatistics,
   getStatisticLabel,
   Statistics,
+  StatisticsUnitConfiguration,
 } from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -181,12 +182,19 @@ export class HuiEnergyDevicesGraphCard
 
     const startMinHour = addHours(energyData.start, -1);
 
+    const lengthUnit = this.hass.config.unit_system.length || "";
+    const units: StatisticsUnitConfiguration = {
+      energy: "kWh",
+      volume: lengthUnit === "km" ? "m³" : "ft³",
+    };
+
     const data = await fetchStatistics(
       this.hass,
       startMinHour,
       energyData.end,
       devices,
-      period
+      period,
+      units
     );
 
     Object.values(data).forEach((stat) => {
@@ -211,7 +219,8 @@ export class HuiEnergyDevicesGraphCard
         startCompareMinHour,
         energyData.endCompare,
         devices,
-        period
+        period,
+        units
       );
 
       Object.values(compareData).forEach((stat) => {

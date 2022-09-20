@@ -20,6 +20,7 @@ import {
   getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
+  StatisticsUnitConfiguration,
 } from "./recorder";
 
 const energyCollectionKeys: (string | undefined)[] = [];
@@ -358,12 +359,19 @@ const getEnergyData = async (
   // Subtract 1 hour from start to get starting point data
   const startMinHour = addHours(start, -1);
 
+  const lengthUnit = hass.config.unit_system.length || "";
+  const units: StatisticsUnitConfiguration = {
+    energy: "kWh",
+    volume: lengthUnit === "km" ? "m³" : "ft³",
+  };
+
   const stats = await fetchStatistics(
     hass!,
     startMinHour,
     end,
     statIDs,
-    period
+    period,
+    units
   );
 
   let statsCompare;
@@ -385,7 +393,8 @@ const getEnergyData = async (
       compareStartMinHour,
       endCompare,
       statIDs,
-      period
+      period,
+      units
     );
   }
 
