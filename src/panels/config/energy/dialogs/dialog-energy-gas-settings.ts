@@ -76,10 +76,10 @@ export class DialogEnergyGasSettings
     const pickableUnit =
       this._pickableUnit ||
       (this._params.allowedGasUnitCategory === undefined
-        ? "m³ or kWh"
+        ? "ft³, m³, Wh, kWh or MWh"
         : this._params.allowedGasUnitCategory === "energy"
-        ? "kWh"
-        : "m³");
+        ? "Wh, kWh or MWh"
+        : "ft³ or m³");
 
     const externalSource =
       this._source.stat_cost && this._source.stat_cost.includes(":");
@@ -98,22 +98,21 @@ export class DialogEnergyGasSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeStatisticsUnitOfMeasurement=${this._params.unit === undefined
+          .includeStatisticsUnitOfMeasurement=${this._params
+            .allowedGasUnitCategory === undefined
             ? ENERGY_GAS_UNITS
-            : this._params.unit === "energy"
+            : this._params.allowedGasUnitCategory === "energy"
             ? ENERGY_GAS_ENERGY_UNITS
             : ENERGY_GAS_VOLUME_UNITS}
           .value=${this._source.stat_energy_from}
           .label=${`${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.gas_usage"
           )} (${
-            this._params.unit === undefined
+            this._params.allowedGasUnitCategory === undefined
               ? this.hass.localize(
                   "ui.panel.config.energy.gas.dialog.m3_or_kWh"
                 )
-              : this._params.unit === "energy"
-              ? "kWh"
-              : "m³"
+              : pickableUnit
           })`}
           @value-changed=${this._statisticChanged}
           dialogInitialFocus
