@@ -305,7 +305,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         this.hass,
         this._params!.statistic.statistic_id,
         this._chosenStat!.start,
-        this._amount! - this._origAmount!
+        this._amount! - this._origAmount!,
+        this._params!.statistic.display_unit_of_measurement
       );
     } catch (err: any) {
       this._busy = false;
