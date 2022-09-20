@@ -154,6 +154,7 @@ export class EnergyGasSettings extends LitElement {
         this.statsMetadata,
         origSource.stat_energy_from
       ),
+      metadata: this.statsMetadata[origSource.stat_energy_from],
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,

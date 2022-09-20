@@ -9,6 +9,7 @@ import {
   GasSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
+import { StatisticsMetaData } from "../../../../data/recorder";
 
 export interface EnergySettingsGridFlowDialogParams {
   source?:
@@ -46,6 +47,7 @@ export interface EnergySettingsBatteryDialogParams {
 export interface EnergySettingsGasDialogParams {
   source?: GasSourceTypeEnergyPreference;
   unit?: EnergyGasUnit;
+  metadata?: StatisticsMetaData;
   saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
 }
 
