@@ -394,7 +394,7 @@ class MoreInfoClimate extends LitElement {
       [key: string]: unknown;
     }
   ) {
-    if (oldVal === newVal) {
+    if (oldVal === newVal || !newVal) {
       return;
     }
 
