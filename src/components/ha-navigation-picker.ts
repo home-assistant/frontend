@@ -49,7 +49,7 @@ const createViewNavigationItem = (
 ) => ({
   path: `/${prefix}/${view.path ?? index}`,
   icon: view.icon ?? "mdi:view-compact",
-  title: view.title ?? titleCase(view.path),
+  title: view.title ?? (view.path ? titleCase(view.path) : index),
 });
 
 @customElement("ha-navigation-picker")
@@ -106,17 +106,18 @@ export class HaNavigationPicker extends LitElement {
   private async _loadNavigationItems() {
     this.navigationItems = DEFAULT_ITEMS;
 
-    const overviewConfig = await fetchConfig(
-      this.hass!.connection,
-      null,
-      true
-    ).catch((_) => undefined);
-
-    if (overviewConfig) {
+    try {
+      const overviewConfig = await fetchConfig(
+        this.hass!.connection,
+        null,
+        true
+      );
       const viewItems = overviewConfig.views.map<NavigationItem>(
         (view, index) => createViewNavigationItem("lovelace", view, index)
       );
       this.navigationItems = this.navigationItems.concat(viewItems);
+    } catch (_) {
+      // eslint-disable-next-line no-empty
     }
 
     const dashboards = await fetchDashboards(this.hass!);
