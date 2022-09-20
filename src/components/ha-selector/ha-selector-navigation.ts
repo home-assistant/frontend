@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { NavigationSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
-import "../ha-navigate-picker";
+import "../ha-navigation-picker";
 
 @customElement("ha-selector-navigation")
 export class HaNavigationSelector extends LitElement {
@@ -23,7 +23,7 @@ export class HaNavigationSelector extends LitElement {
 
   protected render() {
     return html`
-      <ha-navigate-picker
+      <ha-navigation-picker
         .hass=${this.hass}
         .label=${this.label}
         .value=${this.value}
@@ -31,7 +31,7 @@ export class HaNavigationSelector extends LitElement {
         .disabled=${this.disabled}
         .helper=${this.helper}
         @value-changed=${this._valueChanged}
-      ></ha-navigate-picker>
+      ></ha-navigation-picker>
     `;
   }
 

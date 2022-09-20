@@ -14,7 +14,7 @@ import {
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
-import "../../../components/ha-navigate-picker";
+import "../../../components/ha-navigation-picker";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -90,14 +90,14 @@ export class HuiActionEditor extends LitElement {
       </div>
       ${this.config?.action === "navigate"
         ? html`
-            <ha-navigate-picker
+            <ha-navigation-picker
               .hass=${this.hass}
               label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.action-editor.navigation_path"
               )}
               .value=${this._navigation_path}
               @value-changed=${this._navigateValueChanged}
-            ></ha-navigate-picker>
+            ></ha-navigation-picker>
           `
         : ""}
       ${this.config?.action === "url"

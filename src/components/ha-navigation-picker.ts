@@ -52,8 +52,8 @@ const createViewNavigationItem = (
   title: view.title ?? titleCase(view.path),
 });
 
-@customElement("ha-navigate-picker")
-export class HaNavigatePicker extends LitElement {
+@customElement("ha-navigation-picker")
+export class HaNavigationPicker extends LitElement {
   @property() public hass?: HomeAssistant;
 
   @property() public label?: string;
@@ -219,6 +219,6 @@ export class HaNavigatePicker extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-navigate-picker": HaNavigatePicker;
+    "ha-navigation-picker": HaNavigationPicker;
   }
 }
