@@ -46,7 +46,7 @@ export interface EnergySettingsBatteryDialogParams {
 
 export interface EnergySettingsGasDialogParams {
   source?: GasSourceTypeEnergyPreference;
-  allowedStatisticsUnit?: EnergyGasUnit;
+  allowedGasUnitCategory?: EnergyGasUnit;
   metadata?: StatisticsMetaData;
   saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
 }
