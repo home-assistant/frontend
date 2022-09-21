@@ -94,6 +94,12 @@ export class HuiStatisticsGraphCardEditor
       this.hass!,
       statisticIds || []
     );
+    if (statisticIds?.some((statistic_id) => statistic_id.includes(":"))) {
+      const { period, ...config } = this._config!;
+      fireEvent(this, "config-changed", {
+        config: config,
+      });
+    }
   };
 
   public willUpdate(changedProps: PropertyValues) {
