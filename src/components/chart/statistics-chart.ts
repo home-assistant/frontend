@@ -38,6 +38,7 @@ export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
   max: "max",
   sum: "sum",
   sum_rel: "sum",
+  state: "sum",
 };
 @customElement("statistics-chart")
 class StatisticsChart extends LitElement {
