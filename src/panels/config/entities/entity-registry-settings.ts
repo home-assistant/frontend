@@ -111,8 +111,9 @@ const OVERRIDE_NUMBER_UNITS = {
 };
 
 const OVERRIDE_SENSOR_UNITS = {
-  temperature: ["°C", "°F", "K"],
+  distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
+  temperature: ["°C", "°F", "K"],
 };
 
 const OVERRIDE_WEATHER_UNITS = {
