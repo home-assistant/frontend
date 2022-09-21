@@ -39,6 +39,7 @@ import { deepEqual } from "../../../../common/util/deep-equal";
 
 const statTypeStruct = union([
   literal("sum"),
+  literal("sum_rel"),
   literal("min"),
   literal("max"),
   literal("mean"),
@@ -64,7 +65,7 @@ const cardConfigStruct = assign(
 );
 
 const periods = ["5minute", "hour", "day", "month"] as const;
-const stat_types = ["mean", "min", "max", "sum"] as const;
+const stat_types = ["mean", "min", "max", "sum", "sum_rel"] as const;
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor

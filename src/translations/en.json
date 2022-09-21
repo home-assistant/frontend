@@ -517,7 +517,8 @@
           "min": "min",
           "max": "max",
           "mean": "mean",
-          "sum": "sum"
+          "sum": "sum",
+          "sum_rel": "change"
         }
       },
       "service-picker": {
@@ -3969,7 +3970,8 @@
                 "mean": "Mean",
                 "min": "Min",
                 "max": "Max",
-                "sum": "Sum"
+                "sum": "Sum (absolute)",
+                "sum_rel": "Change"
               },
               "chart_type": "Chart type",
               "periods": {

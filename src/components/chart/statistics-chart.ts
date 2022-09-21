@@ -346,9 +346,9 @@ class StatisticsChart extends LitElement {
         const dataValues: Array<number | null> = [];
         statTypes.forEach((type) => {
           let val: number | null;
-          if (type === "sum") {
+          if (type === "sum" || type === "sum_rel") {
             if (initVal === null) {
-              initVal = val = stat.state || 0;
+              initVal = val = type === "sum_rel" ? 0 : stat.sum || 0;
               prevSum = stat.sum;
             } else {
               val = initVal + ((stat.sum || 0) - prevSum!);
