@@ -24,6 +24,7 @@ import {
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
+import { forwardHaptic } from "../../../../../data/haptics";
 import { formatAsPaddedHex } from "./functions";
 import {
   ChangeEvent,
@@ -212,8 +213,10 @@ export class ZHAClusterAttributes extends LitElement {
       this._readingAttribute = true;
       try {
         this._attributeValue = await readAttributeValue(this.hass, data);
+        forwardHaptic("success");
         button.actionSuccess();
       } catch (err: any) {
+        forwardHaptic("failure");
         button.actionError();
       } finally {
         this._readingAttribute = false;
