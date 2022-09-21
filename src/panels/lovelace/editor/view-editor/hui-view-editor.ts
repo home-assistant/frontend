@@ -64,7 +64,7 @@ export class HuiViewEditor extends LitElement {
           },
         },
         {
-          name: "child_view",
+          name: "subview",
           selector: {
             boolean: {},
           },
@@ -105,7 +105,7 @@ export class HuiViewEditor extends LitElement {
 
     const schema = this._schema(
       this.hass.localize,
-      this._config.child_view ?? false
+      this._config.subview ?? false
     );
     const data = {
       theme: "Backend-selected",
@@ -130,7 +130,7 @@ export class HuiViewEditor extends LitElement {
     if (config.type === "masonry") {
       delete config.type;
     }
-    if (!config.child_view) {
+    if (!config.subview) {
       delete config.back_path;
     }
 
@@ -155,10 +155,8 @@ export class HuiViewEditor extends LitElement {
         return this.hass!.localize("ui.panel.lovelace.editor.card.generic.url");
       case "type":
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.type");
-      case "child_view":
-        return this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.child_view"
-        );
+      case "subview":
+        return this.hass.localize("ui.panel.lovelace.editor.edit_view.subview");
       case "back_path":
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.back_path"

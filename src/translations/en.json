@@ -3741,7 +3741,7 @@
               "sidebar": "Sidebar",
               "panel": "Panel (1 card)"
             },
-            "child_view": "Child view (do not appear in tabs)",
+            "subview": "Subview (do not appear in tabs)",
             "back_path": "Back path (go to previous page if empty)"
           },
           "edit_badges": {

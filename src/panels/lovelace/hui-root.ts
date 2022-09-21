@@ -235,7 +235,7 @@ class HUIRoot extends LitElement {
               `
             : html`
                 <app-toolbar>
-                  ${curViewConfig?.child_view
+                  ${curViewConfig?.subview
                     ? html`
                         <ha-icon-button
                           .path=${mdiArrowLeft}
@@ -248,9 +248,9 @@ class HUIRoot extends LitElement {
                           .narrow=${this.narrow}
                         ></ha-menu-button>
                       `}
-                  ${curViewConfig?.child_view
+                  ${curViewConfig?.subview
                     ? html`<div main-title>${curViewConfig.title}</div>`
-                    : views.filter((view) => !view.child_view).length > 1
+                    : views.filter((view) => !view.subview).length > 1
                     ? html`
                         <ha-tabs
                           scrollable
@@ -264,7 +264,7 @@ class HUIRoot extends LitElement {
                                 aria-label=${ifDefined(view.title)}
                                 class=${classMap({
                                   "hide-tab": Boolean(
-                                    view.child_view ||
+                                    view.subview ||
                                       (view.visible !== undefined &&
                                         ((Array.isArray(view.visible) &&
                                           !view.visible.some(
@@ -525,7 +525,7 @@ class HUIRoot extends LitElement {
                             ? html`
                                 <ha-icon
                                   class=${classMap({
-                                    "child-view-icon": Boolean(view.child_view),
+                                    "child-view-icon": Boolean(view.subview),
                                   })}
                                   title=${ifDefined(view.title)}
                                   .icon=${view.icon}

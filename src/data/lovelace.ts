@@ -93,7 +93,7 @@ export interface LovelaceViewConfig {
   panel?: boolean;
   background?: string;
   visible?: boolean | ShowViewConfig[];
-  child_view?: boolean;
+  subview?: boolean;
   back_path?: string;
 }
 
