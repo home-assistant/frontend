@@ -377,12 +377,14 @@ class MoreInfoClimate extends LitElement {
 
   private _handlePresetmodeChanged(ev) {
     const newVal = ev.target.value || null;
-    this._callServiceHelper(
-      this.stateObj!.attributes.preset_mode,
-      newVal,
-      "set_preset_mode",
-      { preset_mode: newVal }
-    );
+    if (newVal) {
+      this._callServiceHelper(
+        this.stateObj!.attributes.preset_mode,
+        newVal,
+        "set_preset_mode",
+        { preset_mode: newVal }
+      );
+    }
   }
 
   private async _callServiceHelper(
@@ -394,7 +396,7 @@ class MoreInfoClimate extends LitElement {
       [key: string]: unknown;
     }
   ) {
-    if (oldVal === newVal || !newVal) {
+    if (oldVal === newVal) {
       return;
     }
 
