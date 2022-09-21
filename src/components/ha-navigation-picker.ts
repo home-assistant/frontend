@@ -5,11 +5,11 @@ import { fireEvent } from "../common/dom/fire_event";
 import { titleCase } from "../common/string/title-case";
 import {
   fetchConfig,
-  fetchDashboards,
+  LovelaceConfig,
   LovelaceViewConfig,
 } from "../data/lovelace";
 import { PolymerChangedEvent } from "../polymer-types";
-import { HomeAssistant } from "../types";
+import { HomeAssistant, PanelInfo } from "../types";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon";
@@ -20,18 +20,7 @@ type NavigationItem = {
   title: string;
 };
 
-const DEFAULT_ITEMS = [
-  {
-    path: "/energy",
-    icon: "mdi:lightning-bolt",
-    title: "Energy",
-  },
-  {
-    path: "/lovelace",
-    icon: "mdi:view-dashboard",
-    title: "Overview",
-  },
-];
+const DEFAULT_ITEMS: NavigationItem[] = [{ path: "", icon: "", title: "" }];
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<NavigationItem> = (item) => html`
@@ -49,7 +38,18 @@ const createViewNavigationItem = (
 ) => ({
   path: `/${prefix}/${view.path ?? index}`,
   icon: view.icon ?? "mdi:view-compact",
-  title: view.title ?? (view.path ? titleCase(view.path) : index),
+  title: view.title ?? (view.path ? titleCase(view.path) : `${index}`),
+});
+
+const createPanelNavigationItem = (hass: HomeAssistant, panel: PanelInfo) => ({
+  path: `/${panel.url_path}`,
+  icon: panel.icon ?? "mdi:view-dashboard",
+  title:
+    panel.url_path === hass.defaultPanel
+      ? hass.localize("panel.states")
+      : hass.localize(`panel.${panel.title}`) ||
+        panel.title ||
+        (panel.url_path ? titleCase(panel.url_path) : ""),
 });
 
 @customElement("ha-navigation-picker")
@@ -104,47 +104,42 @@ export class HaNavigationPicker extends LitElement {
   }
 
   private async _loadNavigationItems() {
-    this.navigationItems = DEFAULT_ITEMS;
-
-    try {
-      const overviewConfig = await fetchConfig(
-        this.hass!.connection,
-        null,
-        true
-      );
-      const viewItems = overviewConfig.views.map<NavigationItem>(
-        (view, index) => createViewNavigationItem("lovelace", view, index)
-      );
-      this.navigationItems = this.navigationItems.concat(viewItems);
-    } catch (_) {
-      // eslint-disable-next-line no-empty
-    }
-
-    const dashboards = await fetchDashboards(this.hass!);
+    const panels = Object.entries(this.hass!.panels).map(([id, panel]) => ({
+      id,
+      ...panel,
+    }));
+    const lovelacePanels = panels.filter(
+      (panel) => panel.component_name === "lovelace"
+    );
 
     const viewConfigs = await Promise.all(
-      dashboards.map((dashboard) =>
-        fetchConfig(this.hass!.connection, dashboard.url_path, true).catch(
-          (_) => undefined
+      lovelacePanels.map((panel) =>
+        fetchConfig(
+          this.hass!.connection,
+          // path should be null to fetch default lovelace panel
+          panel.url_path === "lovelace" ? null : panel.url_path,
+          true
         )
+          .then((config) => [panel.id, config] as [string, LovelaceConfig])
+          .catch((_) => [panel.id, undefined] as [string, undefined])
       )
     );
 
-    for (const dashboard of dashboards) {
-      this.navigationItems.push({
-        path: `/${dashboard.url_path}`,
-        icon: dashboard.icon ?? "mdi:view-dashboard",
-        title: dashboard.title,
-      });
+    const panelViewConfig = new Map(viewConfigs);
 
-      const config = viewConfigs[dashboards.indexOf(dashboard)];
+    this.navigationItems = [];
 
-      if (config) {
-        const viewItems = config.views.map<NavigationItem>((view, index) =>
-          createViewNavigationItem(dashboard.url_path, view, index)
-        );
-        this.navigationItems = this.navigationItems.concat(viewItems);
-      }
+    for (const panel of panels) {
+      this.navigationItems.push(createPanelNavigationItem(this.hass!, panel));
+
+      const config = panelViewConfig.get(panel.id);
+
+      if (!config) continue;
+
+      const viewItems = config.views.map<NavigationItem>((view, index) =>
+        createViewNavigationItem(panel.url_path, view, index)
+      );
+      this.navigationItems = this.navigationItems.concat(viewItems);
     }
 
     this.navigationItemsLoaded = true;
