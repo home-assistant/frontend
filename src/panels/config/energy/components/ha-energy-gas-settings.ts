@@ -36,7 +36,7 @@ export class EnergyGasSettings extends LitElement {
   public preferences!: EnergyPreferences;
 
   @property({ attribute: false })
-  public statsMetadata!: Record<string, StatisticsMetaData>;
+  public statsMetadata?: Record<string, StatisticsMetaData>;
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
@@ -98,7 +98,7 @@ export class EnergyGasSettings extends LitElement {
                   >${getStatisticLabel(
                     this.hass,
                     source.stat_energy_from,
-                    this.statsMetadata[source.stat_energy_from]
+                    this.statsMetadata?.[source.stat_energy_from]
                   )}</span
                 >
                 <ha-icon-button
@@ -157,7 +157,7 @@ export class EnergyGasSettings extends LitElement {
         this.statsMetadata,
         origSource.stat_energy_from
       ),
-      metadata: this.statsMetadata[origSource.stat_energy_from],
+      metadata: this.statsMetadata?.[origSource.stat_energy_from],
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,
