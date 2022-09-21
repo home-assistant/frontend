@@ -92,7 +92,7 @@ export class HuiActionEditor extends LitElement {
         ? html`
             <ha-navigation-picker
               .hass=${this.hass}
-              label=${this.hass!.localize(
+              .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.action-editor.navigation_path"
               )}
               .value=${this._navigation_path}

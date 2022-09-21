@@ -104,6 +104,8 @@ export class HaNavigationPicker extends LitElement {
   }
 
   private async _loadNavigationItems() {
+    this.navigationItemsLoaded = true;
+
     const panels = Object.entries(this.hass!.panels).map(([id, panel]) => ({
       id,
       ...panel,
@@ -136,13 +138,12 @@ export class HaNavigationPicker extends LitElement {
 
       if (!config) continue;
 
-      const viewItems = config.views.map<NavigationItem>((view, index) =>
-        createViewNavigationItem(panel.url_path, view, index)
+      config.views.forEach((view, index) =>
+        this.navigationItems.push(
+          createViewNavigationItem(panel.url_path, view, index)
+        )
       );
-      this.navigationItems = this.navigationItems.concat(viewItems);
     }
-
-    this.navigationItemsLoaded = true;
 
     this.comboBox.filteredItems = this.navigationItems;
   }
