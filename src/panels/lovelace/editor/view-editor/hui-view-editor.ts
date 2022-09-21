@@ -73,7 +73,7 @@ export class HuiViewEditor extends LitElement {
           ? [
               {
                 name: "back_path",
-                selector: { text: {} },
+                selector: { navigation: {} },
               },
             ]
           : []),
