@@ -3741,8 +3741,10 @@
               "sidebar": "Sidebar",
               "panel": "Panel (1 card)"
             },
-            "subview": "Subview (do not appear in tabs)",
-            "back_path": "Back path (go to previous page if empty)"
+            "subview": "Subview",
+            "subview_helper": "Subviews don't appear in tabs and have a back button",
+            "back_path": "Back path (optional)",
+            "back_path_helper": "If empty, it will go to the previous page"
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
