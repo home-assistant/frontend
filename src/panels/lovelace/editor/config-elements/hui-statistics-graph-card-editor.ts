@@ -65,12 +65,6 @@ const cardConfigStruct = assign(
 
 const periods = ["5minute", "hour", "day", "month"] as const;
 const stat_types = ["mean", "min", "max", "sum"] as const;
-const stat_type_labels = {
-  mean: "Mean",
-  min: "Min",
-  max: "Max",
-  sum: "Sum",
-} as const;
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor
@@ -156,7 +150,9 @@ export class HuiStatisticsGraphCardEditor
                   multiple: true,
                   options: stat_types.map((stat_type) => ({
                     value: stat_type,
-                    label: stat_type_labels[stat_type],
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.statistics-graph.stat_type_labels.${stat_type}`
+                    ),
                     disabled:
                       !metaDatas ||
                       !metaDatas?.every((metaData) =>
@@ -214,8 +210,12 @@ export class HuiStatisticsGraphCardEditor
       ></ha-form>
         <ha-statistics-picker
           .hass=${this.hass}
-          .pickStatisticLabel=${`Add a statistic`}
-          .pickedStatisticLabel=${`Statistic`}
+          .pickStatisticLabel=${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.statistics-graph.pick_statistic"
+          )}
+          .pickedStatisticLabel=${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.statistics-graph.picked_statistic"
+          )}
           .includeDisplayUnitOfMeasurement=${displayUnit}
           .ignoreRestrictionsOnFirstStatistic=${true}
           .value=${this._configEntities}
