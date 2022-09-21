@@ -36,6 +36,7 @@ import {
   statisticsMetaHasType,
 } from "../../../../data/recorder";
 import { deepEqual } from "../../../../common/util/deep-equal";
+import { statTypeMap } from "../../../../components/chart/statistics-chart";
 
 const statTypeStruct = union([
   literal("sum"),
@@ -157,7 +158,7 @@ export class HuiStatisticsGraphCardEditor
                     disabled:
                       !metaDatas ||
                       !metaDatas?.every((metaData) =>
-                        statisticsMetaHasType(metaData, stat_type)
+                        statisticsMetaHasType(metaData, statTypeMap[stat_type])
                       ),
                   })),
                 },

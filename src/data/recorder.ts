@@ -1,7 +1,7 @@
 import { computeStateName } from "../common/entity/compute_state_name";
 import { HomeAssistant } from "../types";
 
-export type StatisticType = "sum" | "sum_rel" | "min" | "max" | "mean";
+export type StatisticType = "sum" | "min" | "max" | "mean";
 
 export interface Statistics {
   [statisticId: string]: StatisticValue[];
@@ -201,13 +201,10 @@ export const calculateStatisticsSumGrowth = (
 export const statisticsHaveType = (
   stats: StatisticValue[],
   type: StatisticType
-) => {
-  type = type === "sum_rel" ? "sum" : type;
-  return stats.some((stat) => stat[type] !== null);
-};
+) => stats.some((stat) => stat[type] !== null);
 
 const mean_stat_types: readonly StatisticType[] = ["mean", "min", "max"];
-const sum_stat_types: readonly StatisticType[] = ["sum", "sum_rel"];
+const sum_stat_types: readonly StatisticType[] = ["sum"];
 
 export const statisticsMetaHasType = (
   metadata: StatisticsMetaData,

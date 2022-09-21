@@ -30,6 +30,15 @@ import {
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
+export type ExtendedStatisticType = StatisticType | "state" | "sum_rel";
+
+export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
+  mean: "mean",
+  min: "min",
+  max: "max",
+  sum: "sum",
+  sum_rel: "sum",
+};
 @customElement("statistics-chart")
 class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -42,7 +51,7 @@ class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ type: Array }) public statTypes: Array<StatisticType> = [
+  @property({ type: Array }) public statTypes: Array<ExtendedStatisticType> = [
     "sum",
     "min",
     "mean",
@@ -307,7 +316,7 @@ class StatisticsChart extends LitElement {
         : this.statTypes;
 
       sortedTypes.forEach((type) => {
-        if (statisticsHaveType(stats, type)) {
+        if (statisticsHaveType(stats, statTypeMap[type])) {
           const band = drawBands && (type === "min" || type === "max");
           statTypes.push(type);
           statDataSets.push({
@@ -335,8 +344,14 @@ class StatisticsChart extends LitElement {
 
       let prevDate: Date | null = null;
       // Process chart data.
-      let initVal: number | null = null;
-      let prevSum: number | null = null;
+      const initVal: Record<"sum" | "sum_rel", number | null> = {
+        sum: null,
+        sum_rel: null,
+      };
+      const prevSum: Record<"sum" | "sum_rel", number | null> = {
+        sum: null,
+        sum_rel: null,
+      };
       stats.forEach((stat) => {
         const date = new Date(stat.start);
         if (prevDate === date) {
@@ -347,11 +362,11 @@ class StatisticsChart extends LitElement {
         statTypes.forEach((type) => {
           let val: number | null;
           if (type === "sum" || type === "sum_rel") {
-            if (initVal === null) {
-              initVal = val = type === "sum_rel" ? 0 : stat.sum || 0;
-              prevSum = stat.sum;
+            if (initVal[type] === null) {
+              initVal[type] = val = type === "sum_rel" ? 0 : stat.sum || 0;
+              prevSum[type] = stat.sum;
             } else {
-              val = initVal + ((stat.sum || 0) - prevSum!);
+              val = initVal[type]! + ((stat.sum || 0) - prevSum[type]!);
             }
           } else {
             val = stat[type];
