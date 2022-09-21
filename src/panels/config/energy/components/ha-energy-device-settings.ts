@@ -35,7 +35,7 @@ export class EnergyDeviceSettings extends LitElement {
   public preferences!: EnergyPreferences;
 
   @property({ attribute: false })
-  public statsMetadata!: Record<string, StatisticsMetaData>;
+  public statsMetadata?: Record<string, StatisticsMetaData>;
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
@@ -90,7 +90,7 @@ export class EnergyDeviceSettings extends LitElement {
                   >${getStatisticLabel(
                     this.hass,
                     device.stat_consumption,
-                    this.statsMetadata[device.stat_consumption]
+                    this.statsMetadata?.[device.stat_consumption]
                   )}</span
                 >
                 <ha-icon-button
