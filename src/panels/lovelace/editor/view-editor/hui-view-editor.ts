@@ -33,7 +33,7 @@ export class HuiViewEditor extends LitElement {
   private _suggestedPath = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, childView: boolean) =>
+    (localize: LocalizeFunc, subview: boolean) =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -69,7 +69,7 @@ export class HuiViewEditor extends LitElement {
             boolean: {},
           },
         },
-        ...(childView
+        ...(subview
           ? [
               {
                 name: "back_path",

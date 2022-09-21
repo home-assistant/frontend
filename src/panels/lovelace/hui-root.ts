@@ -2,7 +2,6 @@ import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
-  mdiArrowLeft,
   mdiCodeBraces,
   mdiDotsVertical,
   mdiFileMultiple,
@@ -237,10 +236,9 @@ class HUIRoot extends LitElement {
                 <app-toolbar>
                   ${curViewConfig?.subview
                     ? html`
-                        <ha-icon-button
-                          .path=${mdiArrowLeft}
+                        <ha-icon-button-arrow-prev
                           @click=${this._goBack}
-                        ></ha-icon-button>
+                        ></ha-icon-button-arrow-prev>
                       `
                     : html`
                         <ha-menu-button
