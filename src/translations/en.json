@@ -518,8 +518,7 @@
           "max": "max",
           "mean": "mean",
           "state": "state",
-          "sum": "sum",
-          "sum_rel": "change"
+          "sum": "sum"
         }
       },
       "service-picker": {
@@ -3972,8 +3971,7 @@
                 "min": "Min",
                 "max": "Max",
                 "state": "State",
-                "sum": "Sum (absolute)",
-                "sum_rel": "Change"
+                "sum": "Sum (change during period)"
               },
               "chart_type": "Chart type",
               "periods": {

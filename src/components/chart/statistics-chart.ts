@@ -30,14 +30,13 @@ import {
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
-export type ExtendedStatisticType = StatisticType | "state" | "sum_rel";
+export type ExtendedStatisticType = StatisticType | "state";
 
 export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
   mean: "mean",
   min: "min",
   max: "max",
   sum: "sum",
-  sum_rel: "sum",
   state: "sum",
 };
 @customElement("statistics-chart")
@@ -345,14 +344,7 @@ class StatisticsChart extends LitElement {
 
       let prevDate: Date | null = null;
       // Process chart data.
-      const initVal: Record<"sum" | "sum_rel", number | null> = {
-        sum: null,
-        sum_rel: null,
-      };
-      const prevSum: Record<"sum" | "sum_rel", number | null> = {
-        sum: null,
-        sum_rel: null,
-      };
+      let prevSum: number | null = null;
       stats.forEach((stat) => {
         const date = new Date(stat.start);
         if (prevDate === date) {
@@ -362,12 +354,12 @@ class StatisticsChart extends LitElement {
         const dataValues: Array<number | null> = [];
         statTypes.forEach((type) => {
           let val: number | null;
-          if (type === "sum" || type === "sum_rel") {
-            if (initVal[type] === null) {
-              initVal[type] = val = type === "sum_rel" ? 0 : stat.sum || 0;
-              prevSum[type] = stat.sum;
+          if (type === "sum") {
+            if (prevSum === null) {
+              val = 0;
+              prevSum = stat.sum;
             } else {
-              val = initVal[type]! + ((stat.sum || 0) - prevSum[type]!);
+              val = (stat.sum || 0) - prevSum;
             }
           } else {
             val = stat[type];
