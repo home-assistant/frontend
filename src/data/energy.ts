@@ -630,7 +630,7 @@ export const getEnergyGasUnitCategory = (
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
     if (statisticIdWithMeta) {
       return ENERGY_GAS_VOLUME_UNITS.includes(
-        statisticIdWithMeta.display_unit_of_measurement
+        statisticIdWithMeta.statistics_unit_of_measurement
       )
         ? "volume"
         : "energy";

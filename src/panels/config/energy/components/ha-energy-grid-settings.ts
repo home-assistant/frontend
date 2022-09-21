@@ -55,7 +55,7 @@ export class EnergyGridSettings extends LitElement {
   public preferences!: EnergyPreferences;
 
   @property({ attribute: false })
-  public statsMetadata!: Record<string, StatisticsMetaData>;
+  public statsMetadata?: Record<string, StatisticsMetaData>;
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
@@ -136,7 +136,7 @@ export class EnergyGridSettings extends LitElement {
                   >${getStatisticLabel(
                     this.hass,
                     flow.stat_energy_from,
-                    this.statsMetadata[flow.stat_energy_from]
+                    this.statsMetadata?.[flow.stat_energy_from]
                   )}</span
                 >
                 <ha-icon-button
@@ -183,7 +183,7 @@ export class EnergyGridSettings extends LitElement {
                   >${getStatisticLabel(
                     this.hass,
                     flow.stat_energy_to,
-                    this.statsMetadata[flow.stat_energy_to]
+                    this.statsMetadata?.[flow.stat_energy_to]
                   )}</span
                 >
                 <ha-icon-button
