@@ -26,7 +26,11 @@ const SCHEMA = [
     name: "",
     type: "grid",
     schema: [
-      { name: "navigation_path", required: false, selector: { text: {} } },
+      {
+        name: "navigation_path",
+        required: false,
+        selector: { navigation: {} },
+      },
       { name: "theme", required: false, selector: { theme: {} } },
     ],
   },
