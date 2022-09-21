@@ -346,8 +346,7 @@ class HaAutomationPicker extends LitElement {
       ),
       text: this.hass.localize(
         "ui.panel.config.automation.picker.delete_confirm_text",
-        "name",
-        automation.name
+        { name: automation.name }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
