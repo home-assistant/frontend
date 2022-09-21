@@ -34,9 +34,7 @@ declare global {
   }
 }
 
-type Tab = "attributes" | "commands";
-
-const tabs: Tab[] = ["attributes", "commands"];
+const tabs = ["attributes", "commands"] as const;
 
 @customElement("zha-manage-clusters")
 export class ZHAManageClusters extends LitElement {
@@ -52,7 +50,7 @@ export class ZHAManageClusters extends LitElement {
 
   @state() private _selectedCluster?: Cluster;
 
-  @state() private _currTab: Tab = "attributes";
+  @state() private _currTab: typeof tabs[number] = "attributes";
 
   @state() private _clustersLoaded = false;
 

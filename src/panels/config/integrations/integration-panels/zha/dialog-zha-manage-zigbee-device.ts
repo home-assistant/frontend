@@ -78,11 +78,11 @@ class DialogZHAManageZigbeeDevice extends LitElement {
     if (!this._device) {
       return;
     }
-    const tabs = this._getTabs(this._device);
-    if (!tabs.includes(this._currTab)) {
-      this._currTab = tabs[0];
-    }
     if (changedProps.has("_device")) {
+      const tabs = this._getTabs(this._device);
+      if (!tabs.includes(this._currTab)) {
+        this._currTab = tabs[0];
+      }
       this._fetchData();
     }
   }
@@ -278,10 +278,6 @@ class DialogZHAManageZigbeeDevice extends LitElement {
             --mdc-dialog-min-width: 90vw;
             --mdc-dialog-max-width: 90vw;
           }
-        }
-
-        ha-dialog[data-domain="camera"] {
-          --dialog-content-padding: 0;
         }
       `,
     ];
