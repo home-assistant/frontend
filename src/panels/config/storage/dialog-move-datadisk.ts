@@ -182,7 +182,6 @@ class MoveDatadiskDialog extends LitElement {
         });
       }
     } finally {
-      this._moving = false;
       this.closeDialog();
     }
   }
