@@ -94,12 +94,6 @@ export class HuiStatisticsGraphCardEditor
       this.hass!,
       statisticIds || []
     );
-    if (statisticIds?.some((statistic_id) => statistic_id.includes(":"))) {
-      const { period, ...config } = this._config!;
-      fireEvent(this, "config-changed", {
-        config: config,
-      });
-    }
   };
 
   public willUpdate(changedProps: PropertyValues) {
@@ -239,8 +233,15 @@ export class HuiStatisticsGraphCardEditor
   }
 
   private _entitiesChanged(ev: CustomEvent): void {
+    const config = { ...this._config!, entities: ev.detail.value };
+    if (
+      config.entities?.some((statistic_id) => statistic_id.includes(":")) &&
+      config.period === "5minute"
+    ) {
+      delete config.period;
+    }
     fireEvent(this, "config-changed", {
-      config: { ...this._config!, entities: ev.detail.value },
+      config,
     });
   }
 
