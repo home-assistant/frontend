@@ -2258,15 +2258,15 @@
           "add": {
             "header": "Import a blueprint",
             "import_header": "Blueprint ''{name}''",
-            "import_introduction_link": "You can import blueprints of other users from Github and the {community_link}. Enter the URL of the blueprint below.",
-            "community_forums": "community forums",
-            "url": "URL of the blueprint",
+            "import_introduction": "Import blueprints of other users from GitHub and the community forums by pasting the address below.",
+            "community_forums": "View blueprints on the community forums",
+            "url": "Blueprint address",
             "raw_blueprint": "Blueprint content",
             "importing": "Loading blueprint…",
-            "import_btn": "Preview blueprint",
+            "import_btn": "Preview",
             "saving": "Importing blueprint…",
             "save_btn": "Import blueprint",
-            "error_no_url": "Please enter the URL of the blueprint.",
+            "error_no_url": "Please enter the blueprint address.",
             "unsupported_blueprint": "This blueprint is not supported",
             "file_name": "Blueprint Path"
           }
