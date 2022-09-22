@@ -24,13 +24,11 @@ import {
   checkForEntityUpdates,
   filterUpdateEntitiesWithInstall,
 } from "../../../data/update";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../dialogs/generic/show-dialog-box";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "../dashboard/ha-config-updates";
+import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
@@ -50,6 +48,10 @@ class HaConfigSectionUpdates extends LitElement {
         this._supervisorInfo = data;
       });
     }
+
+    this._supervisorInfo = {
+      channel: "stable",
+    } as HassioSupervisorInfo;
   }
 
   protected render(): TemplateResult {
@@ -142,34 +144,21 @@ class HaConfigSectionUpdates extends LitElement {
     }
 
     if (this._supervisorInfo!.channel === "stable") {
-      const confirmed = await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.dialogs.join_beta_channel.title"),
-        text: html`${this.hass.localize("ui.dialogs.join_beta_channel.warning")}
-          <br />
-          <b> ${this.hass.localize("ui.dialogs.join_beta_channel.backup")} </b>
-          <br /><br />
-          ${this.hass.localize("ui.dialogs.join_beta_channel.release_items")}
-          <ul>
-            <li>Home Assistant Core</li>
-            <li>Home Assistant Supervisor</li>
-            <li>Home Assistant Operating System</li>
-          </ul>
-          <br />
-          ${this.hass.localize("ui.dialogs.join_beta_channel.confirm")}`,
-        confirmText: this.hass.localize("ui.panel.config.updates.join_beta"),
-        dismissText: this.hass.localize("ui.common.cancel"),
+      showJoinBetaDialog(this, {
+        join: async () => this._setChannel("beta"),
       });
-
-      if (!confirmed) {
-        return;
-      }
+    } else {
+      this._setChannel("stable");
     }
+  }
 
+  private async _setChannel(
+    channel: SupervisorOptions["channel"]
+  ): Promise<void> {
     try {
-      const data: Partial<SupervisorOptions> = {
-        channel: this._supervisorInfo!.channel === "stable" ? "beta" : "stable",
-      };
-      await setSupervisorOption(this.hass, data);
+      await setSupervisorOption(this.hass, {
+        channel,
+      });
       await reloadSupervisor(this.hass);
     } catch (err: any) {
       showAlertDialog(this, {
