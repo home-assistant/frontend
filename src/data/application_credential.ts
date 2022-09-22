@@ -8,6 +8,10 @@ export interface ApplicationCredentialsConfig {
   integrations: Record<string, ApplicationCredentialsDomainConfig>;
 }
 
+export interface ApplicationCredentialsConfigEntry {
+  application_credentials_id?: string;
+}
+
 export interface ApplicationCredential {
   id: string;
   domain: string;
@@ -19,6 +23,15 @@ export interface ApplicationCredential {
 export const fetchApplicationCredentialsConfig = async (hass: HomeAssistant) =>
   hass.callWS<ApplicationCredentialsConfig>({
     type: "application_credentials/config",
+  });
+
+export const fetchApplicationCredentialsConfigEntry = async (
+  hass: HomeAssistant,
+  configEntryId: string
+) =>
+  hass.callWS<ApplicationCredentialsConfigEntry>({
+    type: "application_credentials/config_entry",
+    config_entry_id: configEntryId,
   });
 
 export const fetchApplicationCredentials = async (hass: HomeAssistant) =>
