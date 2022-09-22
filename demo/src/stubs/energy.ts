@@ -11,14 +11,12 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
           {
             stat_energy_from: "sensor.energy_consumption_tarif_1",
             stat_cost: "sensor.energy_consumption_tarif_1_cost",
-            entity_energy_from: "sensor.energy_consumption_tarif_1",
             entity_energy_price: null,
             number_energy_price: null,
           },
           {
             stat_energy_from: "sensor.energy_consumption_tarif_2",
             stat_cost: "sensor.energy_consumption_tarif_2_cost",
-            entity_energy_from: "sensor.energy_consumption_tarif_2",
             entity_energy_price: null,
             number_energy_price: null,
           },
@@ -27,14 +25,12 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
           {
             stat_energy_to: "sensor.energy_production_tarif_1",
             stat_compensation: "sensor.energy_production_tarif_1_compensation",
-            entity_energy_to: "sensor.energy_production_tarif_1",
             entity_energy_price: null,
             number_energy_price: null,
           },
           {
             stat_energy_to: "sensor.energy_production_tarif_2",
             stat_compensation: "sensor.energy_production_tarif_2_compensation",
-            entity_energy_to: "sensor.energy_production_tarif_2",
             entity_energy_price: null,
             number_energy_price: null,
           },
@@ -55,7 +51,6 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
         type: "gas",
         stat_energy_from: "sensor.energy_gas",
         stat_cost: "sensor.energy_gas_cost",
-        entity_energy_from: "sensor.energy_gas",
         entity_energy_price: null,
         number_energy_price: null,
       },
