@@ -280,7 +280,6 @@ export class DialogEnergyGasSettings
     this._source = {
       ...this._source!,
       stat_energy_from: ev.detail.value,
-      entity_energy_from: ev.detail.value,
     };
   }
 
