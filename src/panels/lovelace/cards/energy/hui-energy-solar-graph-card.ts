@@ -455,7 +455,7 @@ export class HuiEnergySolarGraphCard
               } else {
                 dateObj.setMinutes(0, 0, 0);
               }
-              const time = dateObj.getTime();
+              const time = dateObj.getTime()-3.6e6;
               if (time in forecastsData) {
                 forecastsData[time] += value;
               } else {
