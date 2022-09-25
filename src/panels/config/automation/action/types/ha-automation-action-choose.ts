@@ -29,7 +29,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
     return html`
       ${(action.choose ? ensureArray(action.choose) : []).map(
-        (option, idx) => html`<ha-card>
+        (option, idx) => html`<ha-card outlined>
           <ha-icon-button
             .idx=${idx}
             @click=${this._removeOption}
@@ -38,39 +38,41 @@ export class HaChooseAction extends LitElement implements ActionElement {
             )}
             .path=${mdiDelete}
           ></ha-icon-button>
-          <div class="card-content">
-            <h2>
+          <ha-expansion-panel leftChevron>
+            <h3 slot="header">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.choose.option",
                 "number",
                 idx + 1
               )}:
-            </h2>
-            <h3>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.choose.conditions"
-              )}:
             </h3>
-            <ha-automation-condition
-              .conditions=${option.conditions}
-              .reOrderMode=${this.reOrderMode}
-              .hass=${this.hass}
-              .idx=${idx}
-              @value-changed=${this._conditionChanged}
-            ></ha-automation-condition>
-            <h3>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.choose.sequence"
-              )}:
-            </h3>
-            <ha-automation-action
-              .actions=${option.sequence || []}
-              .reOrderMode=${this.reOrderMode}
-              .hass=${this.hass}
-              .idx=${idx}
-              @value-changed=${this._actionChanged}
-            ></ha-automation-action>
-          </div>
+            <div class="card-content">
+              <h3>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.choose.conditions"
+                )}:
+              </h3>
+              <ha-automation-condition
+                .conditions=${option.conditions}
+                .reOrderMode=${this.reOrderMode}
+                .hass=${this.hass}
+                .idx=${idx}
+                @value-changed=${this._conditionChanged}
+              ></ha-automation-condition>
+              <h3>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.choose.sequence"
+                )}:
+              </h3>
+              <ha-automation-action
+                .actions=${option.sequence || []}
+                .reOrderMode=${this.reOrderMode}
+                .hass=${this.hass}
+                .idx=${idx}
+                @value-changed=${this._actionChanged}
+              ></ha-automation-action>
+            </div>
+          </ha-expansion-panel>
         </ha-card>`
       )}
       <mwc-button
@@ -178,6 +180,9 @@ export class HaChooseAction extends LitElement implements ActionElement {
         .add-card mwc-button {
           display: block;
           text-align: center;
+        }
+        .card-content {
+          padding: 16px;
         }
         ha-icon-button {
           position: absolute;
