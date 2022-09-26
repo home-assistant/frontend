@@ -3014,12 +3014,16 @@
           "caption": "Application Credentials",
           "description": "Manage the OAuth Application Credentials used by Integrations",
           "editor": {
-            "caption": "Add Application Credential",
-            "create": "Create",
+            "caption": "Add Credential",
+            "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a passwords. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
+            "view_documentation": "View documentation",
+            "add": "Add",
             "domain": "Integration",
             "name": "Name",
             "client_id": "OAuth Client ID",
-            "client_secret": "OAuth Client Secret"
+            "client_id_helper": "Public identifier of the OAuth application",
+            "client_secret": "OAuth Client Secret",
+            "client_secret_helper": "Secret of the OAuth application"
           },
           "picker": {
             "add_application_credential": "Add Application Credential",
