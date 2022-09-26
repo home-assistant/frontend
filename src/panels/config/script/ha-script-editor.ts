@@ -332,7 +332,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             "yaml-mode": this._mode === "yaml",
           })}"
         >
-          ${this._errors ? html`<div class="errors">${this._errors}</div>` : ""}
           ${this._mode === "gui"
             ? html`
                 <div
@@ -343,6 +342,13 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                   ${this._config
                     ? html`
                         <div class="config-container">
+                          ${this._errors
+                            ? html`
+                                <ha-alert alert-type="error">
+                                  ${this._errors}
+                                </ha-alert>
+                              `
+                            : ""}
                           <ha-card outlined>
                             <div class="card-content">
                               <ha-form
@@ -382,6 +388,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : this._mode === "yaml"
             ? html`
+                ${this._errors
+                  ? html`
+                      <ha-alert alert-type="error">${this._errors}</ha-alert>
+                    `
+                  : ""}
                 <ha-yaml-editor
                   .hass=${this.hass}
                   .defaultValue=${this._preprocessYaml()}
@@ -557,7 +568,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     return id;
   }
 
-  private _setEntityId(id: string) {
+  private _setEntityId(id?: string) {
     this._entityId = id;
     if (this.hass.states[`script.${this._entityId}`]) {
       this._idError = true;
@@ -566,8 +577,32 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
+  private updateEntityId(
+    newId: string | undefined,
+    newAlias: string | undefined
+  ) {
+    const currentAlias = this._config?.alias ?? "";
+    const currentEntityId = this._entityId ?? "";
+
+    if (newId !== this._entityId) {
+      this._setEntityId(newId || undefined);
+      return;
+    }
+
+    const currentComputedEntity = this._computeEntityIdFromAlias(currentAlias);
+
+    if (currentComputedEntity === currentEntityId || !this._entityId) {
+      const newComputedId = newAlias
+        ? this._computeEntityIdFromAlias(newAlias)
+        : undefined;
+
+      this._setEntityId(newComputedId);
+    }
+  }
+
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
+    this._errors = undefined;
     const values = ev.detail.value as any;
 
     let changed = false;
@@ -578,19 +613,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       max: isMaxMode(values.mode) ? values.max : undefined,
     };
 
-    const currentAlias = this._config?.alias ?? "";
-    const currentEntityId = this._entityId ?? "";
-
     if (!this.scriptEntityId) {
-      if (values.id !== this._entityId) {
-        this._setEntityId(values.id || undefined);
-      } else if (
-        this._computeEntityIdFromAlias(currentAlias) === currentEntityId ||
-        !this._entityId
-      ) {
-        const newId = this._computeEntityIdFromAlias(newValues.alias);
-        this._setEntityId(newId);
-      }
+      this.updateEntityId(values.id, values.alias);
     }
 
     for (const key of Object.keys(newValues)) {
@@ -616,6 +640,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _configChanged(ev) {
     this._config = ev.detail.value;
+    this._errors = undefined;
     this._dirty = true;
   }
 
@@ -737,7 +762,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this.hass!.callApi("POST", "config/script/config/" + id, this._config).then(
       () => {
         this._dirty = false;
-
         if (!this.scriptEntityId) {
           navigate(`/config/script/edit/${id}`, { replace: true });
         }
@@ -783,6 +807,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
+        }
+        .config-container ha-alert {
+          margin-bottom: 16px;
+          display: block;
         }
         ha-yaml-editor {
           flex-grow: 1;
