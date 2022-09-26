@@ -546,28 +546,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private _modeChanged(mode) {
-    const curMode = this._config!.mode || MODES[0];
-
-    if (mode === curMode) {
-      return;
-    }
-
-    this._config = { ...this._config!, mode };
-    if (!isMaxMode(mode)) {
-      delete this._config.max;
-    }
-    this._dirty = true;
-  }
-
-  private _aliasChanged(alias: string) {
-    if (
-      this.scriptEntityId ||
-      (this._entityId && this._entityId !== slugify(this._config!.alias))
-    ) {
-      return;
-    }
-
+  private _computeEntityIdFromAlias(alias: string) {
     const aliasSlugify = slugify(alias);
     let id = aliasSlugify;
     let i = 2;
@@ -575,11 +554,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       id = `${aliasSlugify}_${i}`;
       i++;
     }
-
-    this._entityId = id;
+    return id;
   }
 
-  private _idChanged(id: string) {
+  private _setEntityId(id: string) {
     this._entityId = id;
     if (this.hass.states[`script.${this._entityId}`]) {
       this._idError = true;
@@ -591,44 +569,44 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const values = ev.detail.value as any;
-    const currentId = this._entityId;
+
     let changed = false;
+    const newValues: Omit<ScriptConfig, "sequence"> = {
+      alias: values.alias ?? "",
+      icon: values.icon,
+      mode: values.mode,
+      max: isMaxMode(values.mode) ? values.max : undefined,
+    };
 
-    for (const key of Object.keys(values)) {
-      if (key === "sequence") {
-        continue;
-      }
+    const currentAlias = this._config?.alias ?? "";
+    const currentEntityId = this._entityId ?? "";
 
-      const value = values[key];
-
-      if (
-        value === this._config![key] ||
-        (key === "id" && currentId === value)
+    if (!this.scriptEntityId) {
+      if (values.id !== this._entityId) {
+        this._setEntityId(values.id || undefined);
+      } else if (
+        this._computeEntityIdFromAlias(currentAlias) === currentEntityId ||
+        !this._entityId
       ) {
+        const newId = this._computeEntityIdFromAlias(newValues.alias);
+        this._setEntityId(newId);
+      }
+    }
+
+    for (const key of Object.keys(newValues)) {
+      const value = newValues[key];
+
+      if (value === this._config![key]) {
         continue;
       }
-
-      changed = true;
-
-      switch (key) {
-        case "id":
-          this._idChanged(value);
-          break;
-        case "alias":
-          this._aliasChanged(value);
-          break;
-        case "mode":
-          this._modeChanged(value);
-          break;
-      }
-
-      if (values[key] === undefined) {
+      if (value === undefined) {
         const newConfig = { ...this._config! };
         delete newConfig![key];
         this._config = newConfig;
       } else {
         this._config = { ...this._config!, [key]: value };
       }
+      changed = true;
     }
 
     if (changed) {
