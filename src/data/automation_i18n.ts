@@ -493,7 +493,21 @@ export const describeCondition = (
     }
 
     if (condition.before) {
-      base += ` before ${condition.before}`;
+      let duration = "";
+
+      if (condition.before_offset) {
+        if (typeof condition.before_offset === "number") {
+          duration = ` offset by ${secondsToDuration(
+            condition.before_offset
+          )!}`;
+        } else if (typeof condition.before_offset === "string") {
+          duration = ` offset by ${condition.before_offset}`;
+        } else {
+          duration = ` offset by ${JSON.stringify(condition.before_offset)}`;
+        }
+      }
+
+      base += ` before ${condition.before}${duration}`;
     }
 
     return base;
