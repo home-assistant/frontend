@@ -70,43 +70,19 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _flowsInProgress?: DataEntryFlowProgress[];
 
+  @state() private _open = false;
+
   private _width?: number;
 
   private _height?: number;
 
-  public async showDialog(params): Promise<void> {
+  public showDialog(params): void {
+    this._open = true;
     this._initialFilter = params.initialFilter;
-    const [descriptions, supportedBrands] = await Promise.all([
-      getIntegrationDescriptions(this.hass),
-      getSupportedBrands(this.hass),
-    ]);
-    this._fetchManifests();
-    this._integrations = {
-      ...descriptions.core.integration,
-      ...descriptions.custom.integration,
-    };
-    this._helpers = {
-      ...descriptions.core.helper,
-      ...descriptions.custom.helper,
-    };
-    this._supportedBrands = supportedBrands;
-    this.hass.loadBackendTranslation(
-      "title",
-      descriptions.core.translated_name,
-      true
-    );
-  }
-
-  private async _fetchManifests() {
-    const fetched = await fetchIntegrationManifests(this.hass);
-    const manifests = {};
-    for (const manifest of fetched) {
-      manifests[manifest.domain] = manifest;
-    }
-    this._manifests = manifests;
   }
 
   public closeDialog() {
+    this._open = false;
     this._integrations = undefined;
     this._manifests = undefined;
     this._helpers = undefined;
@@ -139,6 +115,13 @@ class AddIntegrationDialog extends LitElement {
         this.shadowRoot!.querySelector("mwc-list")?.getBoundingClientRect();
       this._width = boundingRect?.width;
       this._height = boundingRect?.height;
+    }
+  }
+
+  public updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("_open") && this._open) {
+      this._load();
     }
   }
 
@@ -225,11 +208,12 @@ class AddIntegrationDialog extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._integrations) {
+    if (!this._open) {
       return html``;
     }
-
-    const integrations = this._getIntegrations();
+    const integrations = this._integrations
+      ? this._getIntegrations()
+      : undefined;
 
     return html`<ha-dialog
       open
@@ -300,47 +284,49 @@ class AddIntegrationDialog extends LitElement {
         )}
         @keypress=${this._maybeSubmit}
       ></search-input>
-      <mwc-list
-        style=${styleMap({
-          width: `${this._width}px`,
-          height: `${this._height}px`,
-        })}
-        class="ha-scrollbar"
-        >${integrations.integrations.length
-          ? integrations.integrations.map((integration) =>
-              this._renderRow(integration)
-            )
-          : html`
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.integrations.note_about_integrations"
-                )}<br />
-                ${this.hass.localize(
-                  "ui.panel.config.integrations.note_about_website_reference"
-                )}<a
-                  href=${documentationUrl(
-                    this.hass,
-                    `/integrations/${
-                      this._filter ? `#search/${this._filter}` : ""
-                    }`
+      ${integrations
+        ? html`<mwc-list
+            style=${styleMap({
+              width: `${this._width}px`,
+              height: `${this._height}px`,
+            })}
+            class="ha-scrollbar"
+            >${integrations.integrations.length
+              ? integrations.integrations.map((integration) =>
+                  this._renderRow(integration)
+                )
+              : html`
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.note_about_integrations"
+                    )}<br />
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.note_about_website_reference"
+                    )}<a
+                      href=${documentationUrl(
+                        this.hass,
+                        `/integrations/${
+                          this._filter ? `#search/${this._filter}` : ""
+                        }`
+                      )}
+                      target="_blank"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        "ui.panel.config.integrations.home_assistant_website"
+                      )}</a
+                    >.
+                  </p>
+                `}
+            ${integrations.helpers.length
+              ? html`
+                  <li divider padded class="divider" role="separator"></li>
+                  ${integrations.helpers.map((integration) =>
+                    this._renderRow(integration, true)
                   )}
-                  target="_blank"
-                  rel="noreferrer"
-                  >${this.hass.localize(
-                    "ui.panel.config.integrations.home_assistant_website"
-                  )}</a
-                >.
-              </p>
-            `}
-        ${integrations.helpers.length
-          ? html`
-              <li divider padded class="divider" role="separator"></li>
-              ${integrations.helpers.map((integration) =>
-                this._renderRow(integration, true)
-              )}
-            `
-          : ""}
-      </mwc-list> `;
+                `
+              : ""}
+          </mwc-list>`
+        : html`<ha-circular-progress active></ha-circular-progress>`} `;
   }
 
   private _renderRow(integration: ListItem, is_helper = false) {
@@ -405,6 +391,37 @@ class AddIntegrationDialog extends LitElement {
         </div>
       </mwc-list-item>
     `;
+  }
+
+  private async _load() {
+    const [descriptions, supportedBrands] = await Promise.all([
+      getIntegrationDescriptions(this.hass),
+      getSupportedBrands(this.hass),
+    ]);
+    this._fetchManifests();
+    this._integrations = {
+      ...descriptions.core.integration,
+      ...descriptions.custom.integration,
+    };
+    this._helpers = {
+      ...descriptions.core.helper,
+      ...descriptions.custom.helper,
+    };
+    this._supportedBrands = supportedBrands;
+    this.hass.loadBackendTranslation(
+      "title",
+      descriptions.core.translated_name,
+      true
+    );
+  }
+
+  private async _fetchManifests() {
+    const fetched = await fetchIntegrationManifests(this.hass);
+    const manifests = {};
+    for (const manifest of fetched) {
+      manifests[manifest.domain] = manifest;
+    }
+    this._manifests = manifests;
   }
 
   private async _filterChanged(e) {
@@ -594,6 +611,12 @@ class AddIntegrationDialog extends LitElement {
       }
       [slot="meta"] > *:last-child {
         margin-right: 0px;
+      }
+      ha-circular-progress {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 24px 0;
       }
     `,
   ];
