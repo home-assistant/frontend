@@ -295,7 +295,9 @@ class AddIntegrationDialog extends LitElement {
         dialogInitialFocus
         .filter=${this._filter}
         @value-changed=${this._filterChanged}
-        .label=${this.hass.localize("ui.panel.config.integrations.search")}
+        .label=${this.hass.localize(
+          "ui.panel.config.integrations.search_brand"
+        )}
         @keypress=${this._maybeSubmit}
       ></search-input>
       <mwc-list
