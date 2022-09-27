@@ -44,9 +44,7 @@ class HaConfigSectionUpdates extends LitElement {
     super.firstUpdated(changedProps);
 
     if (isComponentLoaded(this.hass, "hassio")) {
-      fetchHassioSupervisorInfo(this.hass).then((data) => {
-        this._supervisorInfo = data;
-      });
+      this._refreshSupervisorInfo();
     }
   }
 
@@ -124,6 +122,10 @@ class HaConfigSectionUpdates extends LitElement {
     `;
   }
 
+  private async _refreshSupervisorInfo() {
+    this._supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
+  }
+
   private _toggleSkipped(ev: CustomEvent<RequestSelectedDetail>): void {
     if (ev.detail.source !== "property") {
       return;
@@ -156,6 +158,7 @@ class HaConfigSectionUpdates extends LitElement {
         channel,
       });
       await reloadSupervisor(this.hass);
+      await this._refreshSupervisorInfo();
     } catch (err: any) {
       showAlertDialog(this, {
         text: extractApiErrorMessage(err),
