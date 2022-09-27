@@ -3013,7 +3013,7 @@
             "password_confirm": "Confirm Password",
             "change": "Change",
             "password_no_match": "Passwords don't match",
-            "password_changed": "The password has been changed successfully"
+            "password_changed": "The password has been changed successfully."
           }
         },
         "application_credentials": {
