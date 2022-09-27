@@ -30,22 +30,24 @@ export class HaChooseAction extends LitElement implements ActionElement {
     return html`
       ${(action.choose ? ensureArray(action.choose) : []).map(
         (option, idx) => html`<ha-card outlined>
-          <ha-icon-button
-            .idx=${idx}
-            @click=${this._removeOption}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-            )}
-            .path=${mdiDelete}
-          ></ha-icon-button>
           <ha-expansion-panel leftChevron>
             <h3 slot="header">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.choose.option",
                 "number",
                 idx + 1
-              )}:
+              )}
             </h3>
+            <slot name="icons" slot="icons"></slot>
+            <ha-icon-button
+              slot="icons"
+              .idx=${idx}
+              @click=${this._removeOption}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+              )}
+              .path=${mdiDelete}
+            ></ha-icon-button>
             <div class="card-content">
               <h3>
                 ${this.hass.localize(
@@ -183,6 +185,11 @@ export class HaChooseAction extends LitElement implements ActionElement {
         }
         .card-content {
           padding: 16px;
+        }
+        h3[slot="header"] {
+          margin: 0;
+          font-size: inherit;
+          font-weight: inherit;
         }
         ha-icon-button {
           position: absolute;
