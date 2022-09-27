@@ -52,9 +52,7 @@ class DialogAdminChangePassword extends LitElement {
 
   @state() private _success = false;
 
-  public async showDialog(
-    params: AdminChangePasswordDialogParams
-  ): Promise<void> {
+  public showDialog(params: AdminChangePasswordDialogParams): void {
     this._params = params;
     this._userId = params.userId;
   }
