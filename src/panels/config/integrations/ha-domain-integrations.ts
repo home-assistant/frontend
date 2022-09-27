@@ -4,7 +4,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
 import { localizeConfigFlowTitle } from "../../../data/config_flow";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
-import { domainToName } from "../../../data/integration";
+import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { Integration } from "../../../data/integrations";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyle } from "../../../resources/styles";
@@ -23,6 +23,11 @@ class HaDomainIntegrations extends LitElement {
 
   @property({ attribute: false })
   public flowsInProgress?: DataEntryFlowProgress[];
+
+  @property({ attribute: false }) public manifests?: Record<
+    string,
+    IntegrationManifest
+  >;
 
   protected render() {
     return html`
@@ -152,6 +157,7 @@ class HaDomainIntegrations extends LitElement {
     showConfigFlowDialog(this, {
       startFlowHandler: domain,
       showAdvanced: this.hass.userData?.showAdvanced,
+      manifest: this.manifests?.[domain],
     });
   }
 
@@ -161,6 +167,7 @@ class HaDomainIntegrations extends LitElement {
     showConfigFlowDialog(this, {
       continueFlowId: flow.flow_id,
       showAdvanced: this.hass.userData?.showAdvanced,
+      manifest: this.manifests?.[flow.handler],
     });
   }
 

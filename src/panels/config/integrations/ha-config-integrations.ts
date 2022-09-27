@@ -312,7 +312,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       undefined,
       true
     );
-    this._fetchManifests();
     if (this.route.path === "/add") {
       this._handleAdd(localizePromise);
     }
@@ -599,7 +598,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     // Make a copy so we can keep track of previously loaded manifests
     // for discovered flows (which are not part of these results)
     const manifests = { ...this._manifests };
-    for (const manifest of fetched) manifests[manifest.domain] = manifest;
+    for (const manifest of fetched) {
+      manifests[manifest.domain] = manifest;
+    }
     this._manifests = manifests;
   }
 

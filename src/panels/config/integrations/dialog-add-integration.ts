@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
+import { mdiCloudOutline, mdiPackageVariant } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -11,10 +12,15 @@ import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-icon-button-prev";
 import "../../../components/search-input";
 import { fetchConfigFlowInProgress } from "../../../data/config_flow";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
-import { domainToName } from "../../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationManifests,
+  IntegrationManifest,
+} from "../../../data/integration";
 import {
   getIntegrationDescriptions,
   Integrations,
@@ -33,7 +39,6 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-domain-integrations";
-import "../../../components/ha-icon-button-prev";
 
 interface ListItem {
   name: string;
@@ -52,6 +57,8 @@ class AddIntegrationDialog extends LitElement {
   @state() private _integrations?: Integrations;
 
   @state() private _helpers?: Integrations;
+
+  @state() private _manifests?: Record<string, IntegrationManifest>;
 
   @state() private _supportedBrands?: Record<string, SupportedBrandHandler>;
 
@@ -73,6 +80,7 @@ class AddIntegrationDialog extends LitElement {
       getIntegrationDescriptions(this.hass),
       getSupportedBrands(this.hass),
     ]);
+    this._fetchManifests();
     this._integrations = {
       ...descriptions.core.integration,
       ...descriptions.custom.integration,
@@ -89,8 +97,18 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
+  private async _fetchManifests() {
+    const fetched = await fetchIntegrationManifests(this.hass);
+    const manifests = {};
+    for (const manifest of fetched) {
+      manifests[manifest.domain] = manifest;
+    }
+    this._manifests = manifests;
+  }
+
   public closeDialog() {
     this._integrations = undefined;
+    this._manifests = undefined;
     this._helpers = undefined;
     this._supportedBrands = undefined;
     this._pickedBrand = undefined;
@@ -260,6 +278,7 @@ class AddIntegrationDialog extends LitElement {
       .hass=${this.hass}
       .domain=${this._pickedBrand}
       .integration=${this._integrations?.[this._pickedBrand!]}
+      .manifests=${this._manifests}
       .flowsInProgress=${this._flowsInProgress}
       style=${styleMap({
         minWidth: `${this._width}px`,
@@ -323,6 +342,7 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _renderRow(integration: ListItem, is_helper = false) {
+    const manifest = this._manifests?.[integration.domain];
     return html`
       <mwc-list-item
         graphic="medium"
@@ -346,7 +366,29 @@ class AddIntegrationDialog extends LitElement {
           domainToName(this.hass.localize, integration.domain)}
           ${is_helper ? " (helper)" : ""}</span
         >
-        <ha-icon-next slot="meta"></ha-icon-next>
+        <div slot="meta">
+          ${manifest?.iot_class && manifest.iot_class.startsWith("cloud_")
+            ? html`<span
+                ><ha-svg-icon .path=${mdiCloudOutline}></ha-svg-icon
+                ><paper-tooltip animation-delay="0" position="left"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.depends_on_cloud"
+                  )}</paper-tooltip
+                ></span
+              >`
+            : ""}
+          ${manifest && !manifest.is_built_in
+            ? html`<span
+                ><ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon
+                ><paper-tooltip animation-delay="0" position="left"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.provided_by_custom_integration"
+                  )}</paper-tooltip
+                ></span
+              >`
+            : ""}
+          <ha-icon-next></ha-icon-next>
+        </div>
       </mwc-list-item>
     `;
   }
@@ -443,11 +485,14 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
 
+    const manifest = this._manifests?.[integration.domain];
+
     this.closeDialog();
 
     showConfigFlowDialog(this, {
       startFlowHandler: integration.domain,
       showAdvanced: this.hass.userData?.showAdvanced,
+      manifest,
     });
   }
 
@@ -521,6 +566,20 @@ class AddIntegrationDialog extends LitElement {
       }
       p > a {
         color: var(--primary-color);
+      }
+      mwc-list-item {
+        --mdc-list-item-meta-size: 88px;
+      }
+      [slot="meta"] {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      [slot="meta"] > * {
+        margin-right: 8px;
+      }
+      [slot="meta"] > *:last-child {
+        margin-right: 0px;
       }
     `,
   ];
