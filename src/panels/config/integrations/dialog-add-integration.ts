@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiCloudOutline, mdiPackageVariant } from "@mdi/js";
+import { mdiCloudOutline, mdiCodeTags, mdiPackageVariant } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -369,6 +369,18 @@ class AddIntegrationDialog extends LitElement {
           ${is_helper ? " (helper)" : ""}</span
         >
         <div slot="meta">
+          ${!integration.config_flow &&
+          !integration.integrations &&
+          !integration.iot_standards
+            ? html`<span
+                ><ha-svg-icon .path=${mdiCodeTags}></ha-svg-icon
+                ><paper-tooltip animation-delay="0" position="left"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.yaml_only"
+                  )}</paper-tooltip
+                ></span
+              >`
+            : ""}
           ${manifest?.iot_class && manifest.iot_class.startsWith("cloud_")
             ? html`<span
                 ><ha-svg-icon .path=${mdiCloudOutline}></ha-svg-icon
