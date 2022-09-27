@@ -25,7 +25,6 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
-import { getExtendedEntityRegistryEntry } from "../../../data/entity_registry";
 import {
   deleteScript,
   getScriptConfig,
@@ -256,10 +255,7 @@ class HaScriptPicker extends LitElement {
   }
 
   private _runScript = async (script: any) => {
-    const entry = await getExtendedEntityRegistryEntry(
-      this.hass,
-      script.entity_id
-    );
+    const entry = this.hass.entities[script.entity_id];
     await triggerScript(this.hass, entry.unique_id);
     showToast(this, {
       message: this.hass.localize(
@@ -298,10 +294,7 @@ class HaScriptPicker extends LitElement {
 
   private async _duplicate(script: any) {
     try {
-      const entry = await getExtendedEntityRegistryEntry(
-        this.hass,
-        script.entity_id
-      );
+      const entry = this.hass.entities[script.entity_id];
       const config = await getScriptConfig(this.hass, entry.unique_id);
       showScriptEditor({
         ...config,
@@ -343,10 +336,7 @@ class HaScriptPicker extends LitElement {
 
   private async _delete(script: any) {
     try {
-      const entry = await getExtendedEntityRegistryEntry(
-        this.hass,
-        script.entity_id
-      );
+      const entry = this.hass.entities[script.entity_id];
       await deleteScript(this.hass, entry.unique_id);
     } catch (err: any) {
       await showAlertDialog(this, {

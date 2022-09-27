@@ -40,7 +40,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
-import { getExtendedEntityRegistryEntry } from "../../../data/entity_registry";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
   deleteScript,
   getScriptConfig,
@@ -438,34 +438,44 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
       (!oldScript || oldScript !== this.scriptEntityId)
     ) {
-      getExtendedEntityRegistryEntry(this.hass, this.scriptEntityId)
-        .then((entry) => getScriptConfig(this.hass, entry.unique_id))
-        .then(
-          (config) => {
-            // Normalize data: ensure sequence is a list
-            // Happens when people copy paste their scripts into the config
-            const value = config.sequence;
-            if (value && !Array.isArray(value)) {
-              config.sequence = [value];
-            }
-            this._dirty = false;
-            this._config = config;
-          },
-          (resp) => {
-            alert(
-              resp.status_code === 404
-                ? this.hass.localize(
-                    "ui.panel.config.script.editor.load_error_not_editable"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.script.editor.load_error_unknown",
-                    "err_no",
-                    resp.status_code || resp.code
-                  )
-            );
-            history.back();
-          }
+      const entry = this.hass.entities[this.scriptEntityId] as
+        | EntityRegistryEntry
+        | undefined;
+      if (!entry) {
+        alert(
+          this.hass.localize(
+            "ui.panel.config.script.editor.load_error_not_editable"
+          )
         );
+        return;
+      }
+
+      getScriptConfig(this.hass, entry.unique_id).then(
+        (config) => {
+          // Normalize data: ensure sequence is a list
+          // Happens when people copy paste their scripts into the config
+          const value = config.sequence;
+          if (value && !Array.isArray(value)) {
+            config.sequence = [value];
+          }
+          this._dirty = false;
+          this._config = config;
+        },
+        (resp) => {
+          alert(
+            resp.status_code === 404
+              ? this.hass.localize(
+                  "ui.panel.config.script.editor.load_error_not_editable"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.script.editor.load_error_unknown",
+                  "err_no",
+                  resp.status_code || resp.code
+                )
+          );
+          history.back();
+        }
+      );
     }
 
     if (
@@ -549,10 +559,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _runScript(ev: CustomEvent) {
     ev.stopPropagation();
-    const entry = await getExtendedEntityRegistryEntry(
-      this.hass,
-      this.scriptEntityId as string
-    );
+    const entry = this.hass.entities[this.scriptEntityId!];
     await triggerScript(this.hass, entry.unique_id);
     showToast(this, {
       message: this.hass.localize(
@@ -726,10 +733,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _delete() {
-    const entry = await getExtendedEntityRegistryEntry(
-      this.hass,
-      this.scriptEntityId as string
-    );
+    const entry = this.hass.entities[this.scriptEntityId!];
     await deleteScript(this.hass, entry.unique_id);
     history.back();
   }
@@ -764,12 +768,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       return;
     }
 
-    const entry = this.scriptEntityId
-      ? await getExtendedEntityRegistryEntry(
-          this.hass,
-          this.scriptEntityId as string
-        )
-      : undefined;
+    const entry = this.hass.entities[this.scriptEntityId!];
     const id = entry ? entry.unique_id : this._entityId || Date.now();
     try {
       await this.hass!.callApi(
