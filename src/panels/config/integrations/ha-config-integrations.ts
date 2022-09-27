@@ -75,6 +75,7 @@ import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
+import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -630,6 +631,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   }
 
   private _createFlow() {
+    showAddIntegrationDialog(this, { initialFilter: this._filter });
+    return;
     showConfigFlowDialog(this, {
       searchQuery: this._filter,
       dialogClosedCallback: () => {

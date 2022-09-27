@@ -56,11 +56,16 @@ class StepFlowAbort extends LitElement {
   private async _handleMissingCreds() {
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.missing_credentials_title"
+      ),
+      text: this.hass.localize(
         "ui.panel.config.integrations.config_flow.missing_credentials",
         {
           integration: domainToName(this.hass.localize, this.domain),
         }
       ),
+      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.no"),
     });
     this._flowDone();
     if (!confirm) {
