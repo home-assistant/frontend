@@ -614,7 +614,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       max: isMaxMode(values.mode) ? values.max : undefined,
     };
 
-    if (!this.scriptEntityId) {
+    if (!this.scriptId) {
       this.updateEntityId(values.id, values.alias);
     }
 
