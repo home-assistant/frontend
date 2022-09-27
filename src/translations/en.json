@@ -3749,7 +3749,11 @@
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
               "panel": "Panel (1 card)"
-            }
+            },
+            "subview": "Subview",
+            "subview_helper": "Subviews don't appear in tabs and have a back button.",
+            "back_path": "Back path (optional)",
+            "back_path_helper": "Only for subviews. If empty, clicking on back button will go to the previous page."
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
