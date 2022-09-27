@@ -14,7 +14,6 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
@@ -631,17 +630,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   }
 
   private _createFlow() {
-    showAddIntegrationDialog(this, { initialFilter: this._filter });
-    return;
-    showConfigFlowDialog(this, {
-      searchQuery: this._filter,
-      dialogClosedCallback: () => {
-        this._handleFlowUpdated();
-      },
-      showAdvanced: this.showAdvanced,
+    showAddIntegrationDialog(this, {
+      initialFilter: this._filter,
     });
-    // For config entries. Also loading config flow ones for added integration
-    this.hass.loadBackendTranslation("title", undefined, true);
   }
 
   private _handleMenuAction(ev: CustomEvent<ActionDetail>) {
@@ -738,9 +729,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             protocolIntegrationPicked(this, this.hass, slug);
             return;
           }
-
-          fireEvent(this, "handler-picked", {
-            handler: slug,
+          showConfigFlowDialog(this, {
+            dialogClosedCallback: () => {
+              this._handleFlowUpdated();
+            },
+            startFlowHandler: slug,
+            manifest: this._manifests[slug],
+            showAdvanced: this.hass.userData?.showAdvanced,
           });
         },
       });

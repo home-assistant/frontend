@@ -33,6 +33,7 @@ class HaDomainIntegrations extends LitElement {
                 graphic="medium"
                 .flow=${flow}
                 @click=${this._flowInProgressPicked}
+                hasMeta
               >
                 <img
                   slot="graphic"
@@ -48,6 +49,7 @@ class HaDomainIntegrations extends LitElement {
                 <span
                   >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
                 >
+                <ha-icon-next slot="meta"></ha-icon-next>
               </mwc-list-item>`
             )}`
         : ""}
@@ -58,6 +60,7 @@ class HaDomainIntegrations extends LitElement {
               graphic="medium"
               .domain=${domain}
               @click=${this._standardPicked}
+              hasMeta
             >
               <img
                 slot="graphic"
@@ -75,6 +78,7 @@ class HaDomainIntegrations extends LitElement {
                   `ui.panel.config.integrations.add_${domain}_device`
                 )}</span
               >
+              <ha-icon-next slot="meta"></ha-icon-next>
             </mwc-list-item>`;
           })
         : ""}
@@ -84,6 +88,7 @@ class HaDomainIntegrations extends LitElement {
               graphic="medium"
               .domain=${dom}
               @click=${this._integrationPicked}
+              hasMeta
             >
               <img
                 slot="graphic"
@@ -99,6 +104,7 @@ class HaDomainIntegrations extends LitElement {
               <span>
                 ${val.name || domainToName(this.hass.localize, dom)}
               </span>
+              <ha-icon-next slot="meta"></ha-icon-next>
             </mwc-list-item>`
           )
         : ""}
@@ -107,10 +113,13 @@ class HaDomainIntegrations extends LitElement {
             ? html`<mwc-list-item
                 .domain=${this.domain}
                 @click=${this._integrationPicked}
-                >Setup another instance of
+                hasMeta
+              >
+                Setup another instance of
                 ${this.integration.name ||
-                domainToName(this.hass.localize, this.domain)}</mwc-list-item
-              >`
+                domainToName(this.hass.localize, this.domain)}
+                <ha-icon-next slot="meta"></ha-icon-next>
+              </mwc-list-item>`
             : html`<mwc-list-item
                 graphic="medium"
                 .domain=${this.domain}
@@ -131,6 +140,7 @@ class HaDomainIntegrations extends LitElement {
                   ${this.integration.name ||
                   domainToName(this.hass.localize, this.domain)}
                 </span>
+                <ha-icon-next slot="meta"></ha-icon-next>
               </mwc-list-item>`}`
         : ""}
     `;
@@ -139,13 +149,19 @@ class HaDomainIntegrations extends LitElement {
   private _integrationPicked(ev) {
     const domain = ev.currentTarget.domain;
     fireEvent(this, "close-dialog");
-    showConfigFlowDialog(this, { startFlowHandler: domain });
+    showConfigFlowDialog(this, {
+      startFlowHandler: domain,
+      showAdvanced: this.hass.userData?.showAdvanced,
+    });
   }
 
   private _flowInProgressPicked(ev) {
     const flow: DataEntryFlowProgress = ev.currentTarget.flow;
     fireEvent(this, "close-dialog");
-    showConfigFlowDialog(this, { continueFlowId: flow.flow_id });
+    showConfigFlowDialog(this, {
+      continueFlowId: flow.flow_id,
+      showAdvanced: this.hass.userData?.showAdvanced,
+    });
   }
 
   private _standardPicked(ev) {

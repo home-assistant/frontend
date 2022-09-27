@@ -328,6 +328,7 @@ class AddIntegrationDialog extends LitElement {
         graphic="medium"
         .integration=${integration}
         @click=${this._integrationPicked}
+        hasMeta
       >
         <img
           slot="graphic"
@@ -345,6 +346,7 @@ class AddIntegrationDialog extends LitElement {
           domainToName(this.hass.localize, integration.domain)}
           ${is_helper ? " (helper)" : ""}</span
         >
+        <ha-icon-next slot="meta"></ha-icon-next>
       </mwc-list-item>
     `;
   }
@@ -445,6 +447,7 @@ class AddIntegrationDialog extends LitElement {
 
     showConfigFlowDialog(this, {
       startFlowHandler: integration.domain,
+      showAdvanced: this.hass.userData?.showAdvanced,
     });
   }
 
