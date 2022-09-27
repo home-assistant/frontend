@@ -48,10 +48,6 @@ class HaConfigSectionUpdates extends LitElement {
         this._supervisorInfo = data;
       });
     }
-
-    this._supervisorInfo = {
-      channel: "stable",
-    } as HassioSupervisorInfo;
   }
 
   protected render(): TemplateResult {
