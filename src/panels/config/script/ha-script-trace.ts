@@ -44,7 +44,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 export class HaScriptTrace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scriptEntityId!: string;
+  @property() public scriptId!: string;
 
   @property({ attribute: false }) public scripts!: ScriptEntity[];
 
@@ -53,6 +53,8 @@ export class HaScriptTrace extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
+
+  @state() private _entityId?: string;
 
   @state() private _traces?: ScriptTrace[];
 
@@ -74,15 +76,15 @@ export class HaScriptTrace extends LitElement {
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
   protected render(): TemplateResult {
-    const stateObj = this.scriptEntityId
-      ? this.hass.states[this.scriptEntityId]
+    const stateObj = this._entityId
+      ? this.hass.states[this._entityId]
       : undefined;
 
     const graph = this._graph;
     const trackedNodes = graph?.trackedNodes;
     const renderedNodes = graph?.renderedNodes;
 
-    const title = stateObj?.attributes.friendly_name || this.scriptEntityId;
+    const title = stateObj?.attributes.friendly_name || this._entityId;
 
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
@@ -95,11 +97,11 @@ export class HaScriptTrace extends LitElement {
     return html`
       ${devButtons}
       <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
-        ${!this.narrow && this.scriptEntityId
+        ${!this.narrow && this.scriptId
           ? html`
               <a
                 class="trace-link"
-                href="/config/script/edit/${this.scriptEntityId}"
+                href="/config/script/edit/${this.scriptId}"
                 slot="toolbar-icon"
               >
                 <mwc-button>
@@ -120,7 +122,7 @@ export class HaScriptTrace extends LitElement {
 
           <mwc-list-item
             graphic="icon"
-            .disabled=${!this.scriptEntityId}
+            .disabled=${!stateObj}
             @click=${this._showInfo}
           >
             ${this.hass.localize("ui.panel.config.script.editor.show_info")}
@@ -130,11 +132,11 @@ export class HaScriptTrace extends LitElement {
             ></ha-svg-icon>
           </mwc-list-item>
 
-          ${this.narrow && this.scriptEntityId
+          ${this.narrow && this.scriptId
             ? html`
                 <a
                   class="trace-link"
-                  href="/config/script/edit/${this.scriptEntityId}"
+                  href="/config/script/edit/${this.scriptId}"
                 >
                   <mwc-list-item graphic="icon">
                     ${this.hass.localize(
@@ -309,25 +311,33 @@ export class HaScriptTrace extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
-    if (!this.scriptEntityId) {
+    if (!this.scriptId) {
       return;
     }
 
     const params = new URLSearchParams(location.search);
     this._loadTraces(params.get("run_id") || undefined);
+
+    this._entityId = Object.values(this.hass.entities).find(
+      (entry) => entry.unique_id === this.scriptId
+    )?.entity_id;
   }
 
   public willUpdate(changedProps) {
     super.willUpdate(changedProps);
 
     // Only reset if scriptEntityId has changed and we had one before.
-    if (changedProps.get("scriptEntityId")) {
+    if (changedProps.get("scriptId")) {
       this._traces = undefined;
       this._runId = undefined;
       this._trace = undefined;
       this._logbookEntries = undefined;
-      if (this.scriptEntityId) {
+      if (this.scriptId) {
         this._loadTraces();
+
+        this._entityId = Object.values(this.hass.entities).find(
+          (entry) => entry.unique_id === this.scriptId
+        )?.entity_id;
       }
     }
 
@@ -364,11 +374,7 @@ export class HaScriptTrace extends LitElement {
   }
 
   private async _loadTraces(runId?: string) {
-    this._traces = await loadTraces(
-      this.hass,
-      "script",
-      this.scriptEntityId.split(".")[1]
-    );
+    this._traces = await loadTraces(this.hass, "script", this.scriptId);
     // Newest will be on top.
     this._traces.reverse();
 
@@ -410,7 +416,7 @@ export class HaScriptTrace extends LitElement {
     const trace = await loadTrace(
       this.hass,
       "script",
-      this.scriptEntityId.split(".")[1],
+      this.scriptId,
       this._runId!
     );
     this._logbookEntries = isComponentLoaded(this.hass, "logbook")
@@ -426,7 +432,7 @@ export class HaScriptTrace extends LitElement {
 
   private _downloadTrace() {
     const aEl = document.createElement("a");
-    aEl.download = `trace ${this.scriptEntityId} ${
+    aEl.download = `trace ${this._entityId} ${
       this._trace!.timestamp.start
     }.json`;
     aEl.href = `data:application/json;charset=utf-8,${encodeURI(
@@ -476,10 +482,10 @@ export class HaScriptTrace extends LitElement {
   }
 
   private async _showInfo() {
-    if (!this.scriptEntityId) {
+    if (!this._entityId) {
       return;
     }
-    fireEvent(this, "hass-more-info", { entityId: this.scriptEntityId });
+    fireEvent(this, "hass-more-info", { entityId: this._entityId });
   }
 
   static get styles(): CSSResultGroup {

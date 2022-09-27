@@ -251,7 +251,10 @@ class HaScriptPicker extends LitElement {
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    navigate(`/config/script/edit/${ev.detail.id}`);
+    const entry = this.hass.entities[ev.detail.id];
+    if (entry) {
+      navigate(`/config/script/edit/${entry.unique_id}`);
+    }
   }
 
   private _runScript = async (script: any) => {
@@ -271,7 +274,10 @@ class HaScriptPicker extends LitElement {
   }
 
   private _showTrace(script: any) {
-    navigate(`/config/script/trace/${script.entity_id}`);
+    const entry = this.hass.entities[script.entity_id];
+    if (entry) {
+      navigate(`/config/script/trace/${entry.unique_id}`);
+    }
   }
 
   private _showHelp() {
