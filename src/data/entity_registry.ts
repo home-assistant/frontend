@@ -61,7 +61,7 @@ export interface EntityRegistryEntryUpdateParams {
   hidden_by: string | null;
   new_entity_id?: string;
   options_domain?: string;
-  options?: SensorEntityOptions | WeatherEntityOptions;
+  options?: SensorEntityOptions | NumberEntityOptions | WeatherEntityOptions;
 }
 
 export const findBatteryEntity = (
