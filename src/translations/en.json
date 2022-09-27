@@ -2981,8 +2981,6 @@
             "name": "Display name",
             "username": "Username",
             "change_password": "Change password",
-            "new_password": "New Password",
-            "password_changed": "Password was changed successfully",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -3008,6 +3006,14 @@
             "password_not_match": "Passwords don't match",
             "local_only": "Local only",
             "create": "Create"
+          },
+          "change_password": {
+            "caption": "Change password",
+            "new_password": "New Password",
+            "password_confirm": "Confirm Password",
+            "change": "Change",
+            "password_no_match": "Passwords don't match",
+            "password_changed": "The password has been changed successfully"
           }
         },
         "application_credentials": {
