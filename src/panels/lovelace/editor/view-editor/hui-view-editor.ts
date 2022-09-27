@@ -33,7 +33,7 @@ export class HuiViewEditor extends LitElement {
   private _suggestedPath = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, subview: boolean) =>
+    (localize: LocalizeFunc, subview: boolean, showAdvanced: boolean) =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -69,7 +69,7 @@ export class HuiViewEditor extends LitElement {
             boolean: {},
           },
         },
-        ...(subview
+        ...(subview && showAdvanced
           ? [
               {
                 name: "back_path",
@@ -100,8 +100,10 @@ export class HuiViewEditor extends LitElement {
 
     const schema = this._schema(
       this.hass.localize,
-      this._config.subview ?? false
+      this._config.subview ?? false,
+      this.hass.userData?.showAdvanced ?? false
     );
+
     const data = {
       theme: "Backend-selected",
       ...this._config,
