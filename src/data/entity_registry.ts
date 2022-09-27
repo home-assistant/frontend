@@ -20,10 +20,10 @@ export interface EntityRegistryEntry {
   entity_category: "config" | "diagnostic" | null;
   has_entity_name: boolean;
   original_name?: string;
+  unique_id: string;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
-  unique_id: string;
   capabilities: Record<string, unknown>;
   original_icon?: string;
   device_class?: string;
