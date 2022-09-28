@@ -87,9 +87,11 @@ class HaDomainIntegrations extends LitElement {
           })
         : ""}
       ${this.integration?.integrations
-        ? Object.entries(this.integration.integrations).map(([dom, val]) =>
-            val.config_flow
-              ? html`<ha-integration-list-item
+        ? Object.entries(this.integration.integrations)
+            .filter(([_dom, val]) => val.config_flow)
+            .map(
+              ([dom, val]) =>
+                html`<ha-integration-list-item
                   .hass=${this.hass}
                   .domain=${dom}
                   .integration=${{
@@ -102,8 +104,7 @@ class HaDomainIntegrations extends LitElement {
                   @click=${this._integrationPicked}
                 >
                 </ha-integration-list-item>`
-              : ""
-          )
+            )
         : ""}
       ${["zha", "zwave_js"].includes(this.domain)
         ? html`<mwc-list-item
