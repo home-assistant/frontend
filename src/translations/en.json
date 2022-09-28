@@ -5133,6 +5133,11 @@
         "text": "To use the new saved configuration this add-on must be restarted.",
         "restart": "Restart"
       },
+      "uninstall_addon": {
+        "title": "Uninstall {name}?",
+        "text": "Its configuration will be permanently deleted.",
+        "uninstall": "Uninstall"
+      },
       "hardware": {
         "title": "Hardware",
         "search": "Search hardware",
