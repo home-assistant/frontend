@@ -1090,10 +1090,11 @@
       },
       "join_beta_channel": {
         "title": "Join the beta channel",
-        "warning": "[%key:supervisor::system::supervisor::beta_warning%]",
-        "backup": "[%key:supervisor::system::supervisor::beta_backup%]",
-        "release_items": "[%key:supervisor::system::supervisor::beta_release_items%]",
-        "confirm": "[%key:supervisor::system::supervisor::beta_join_confirm%]"
+        "backup": "Make sure you have backups of your data before you activate this feature.",
+        "warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
+        "release_items": "This includes beta releases for:",
+        "view_documentation": "View documentation",
+        "join": "Join"
       }
     },
     "duration": {
@@ -4999,10 +5000,6 @@
         "reload_supervisor": "Reload Supervisor",
         "warning": "WARNING",
         "search": "Search",
-        "beta_warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
-        "beta_backup": "Make sure you have backups of your data before you activate this feature.",
-        "beta_release_items": "This includes beta releases for:",
-        "beta_join_confirm": "Do you want to join the beta channel?",
         "share_diagonstics_title": "Help Improve Home Assistant",
         "share_diagonstics_description": "Would you want to automatically share crash reports and diagnostic information when the Supervisor encounters unexpected errors? {line_break} This will allow us to fix the problems, the information is only accessible to the Home Assistant Core team and will not be shared with others.{line_break} The data does not include any private/sensitive information and you can disable this in settings at any time you want.",
         "unsupported_reason": {
