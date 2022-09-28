@@ -23,6 +23,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
+import { showJoinBetaDialog } from "../../../src/panels/config/core/updates/show-dialog-join-beta";
 import {
   UNHEALTHY_REASON_URL,
   UNSUPPORTED_REASON_URL,
@@ -230,36 +231,27 @@ class HassioSupervisorInfo extends LitElement {
     button.progress = true;
 
     if (this.supervisor.supervisor.channel === "stable") {
-      const confirmed = await showConfirmationDialog(this, {
-        title: this.supervisor.localize("system.supervisor.warning"),
-        text: html`${this.supervisor.localize("system.supervisor.beta_warning")}
-          <br />
-          <b> ${this.supervisor.localize("system.supervisor.beta_backup")} </b>
-          <br /><br />
-          ${this.supervisor.localize("system.supervisor.beta_release_items")}
-          <ul>
-            <li>Home Assistant Core</li>
-            <li>Home Assistant Supervisor</li>
-            <li>Home Assistant Operating System</li>
-          </ul>
-          <br />
-          ${this.supervisor.localize("system.supervisor.beta_join_confirm")}`,
-        confirmText: this.supervisor.localize(
-          "system.supervisor.join_beta_action"
-        ),
-        dismissText: this.supervisor.localize("common.cancel"),
+      showJoinBetaDialog(this, {
+        join: async () => {
+          await this._setChannel("beta");
+          button.progress = false;
+        },
+        cancel: () => {
+          button.progress = false;
+        },
       });
-
-      if (!confirmed) {
-        button.progress = false;
-        return;
-      }
+    } else {
+      await this._setChannel("stable");
+      button.progress = false;
     }
+  }
 
+  private async _setChannel(
+    channel: SupervisorOptions["channel"]
+  ): Promise<void> {
     try {
       const data: Partial<SupervisorOptions> = {
-        channel:
-          this.supervisor.supervisor.channel === "stable" ? "beta" : "stable",
+        channel,
       };
       await setSupervisorOption(this.hass, data);
       await this._reloadSupervisor();
@@ -270,8 +262,6 @@ class HassioSupervisorInfo extends LitElement {
         ),
         text: extractApiErrorMessage(err),
       });
-    } finally {
-      button.progress = false;
     }
   }
 
