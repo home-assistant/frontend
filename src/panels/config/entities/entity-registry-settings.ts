@@ -112,6 +112,7 @@ const OVERRIDE_NUMBER_UNITS = {
 
 const OVERRIDE_SENSOR_UNITS = {
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
+  speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mph"],
   temperature: ["°C", "°F", "K"],
   volume: ["fl. oz.", "ft³", "gal", "L", "mL", "m³"],
 };
