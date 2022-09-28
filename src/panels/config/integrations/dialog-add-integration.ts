@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiCloudOutline, mdiCodeTags, mdiPackageVariant } from "@mdi/js";
+import { mdiCloudOutline, mdiCodeBraces, mdiPackageVariant } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -35,7 +35,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { haStyleScrollbar } from "../../../resources/styles";
+import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -73,6 +73,8 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _open = false;
 
+  @state() private _narrow = false;
+
   private _width?: number;
 
   private _height?: number;
@@ -80,6 +82,9 @@ class AddIntegrationDialog extends LitElement {
   public showDialog(params): void {
     this._open = true;
     this._initialFilter = params.initialFilter;
+    this._narrow = matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
   }
 
   public closeDialog() {
@@ -273,7 +278,10 @@ class AddIntegrationDialog extends LitElement {
     ></ha-domain-integrations>`;
   }
 
-  private _renderAll(integrations): TemplateResult {
+  private _renderAll(integrations?: {
+    integrations: ListItem[];
+    helpers: ListItem[];
+  }): TemplateResult {
     return html`<search-input
         .hass=${this.hass}
         autofocus
@@ -286,59 +294,30 @@ class AddIntegrationDialog extends LitElement {
         @keypress=${this._maybeSubmit}
       ></search-input>
       ${integrations
-        ? html`<mwc-list
-            style=${styleMap({
-              width: `${this._width}px`,
-              height: `${this._height}px`,
-            })}
-            class="ha-scrollbar"
-            >${integrations.integrations.length
-              ? integrations.integrations.map((integration) =>
-                  this._renderRow(integration)
-                )
-              : html`
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.note_about_integrations"
-                    )}<br />
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.note_about_website_reference"
-                    )}<a
-                      href=${documentationUrl(
-                        this.hass,
-                        `/integrations/${
-                          this._filter ? `#search/${this._filter}` : ""
-                        }`
-                      )}
-                      target="_blank"
-                      rel="noreferrer"
-                      >${this.hass.localize(
-                        "ui.panel.config.integrations.home_assistant_website"
-                      )}</a
-                    >.
-                  </p>
-                `}
-            ${integrations.helpers.length
-              ? html`
-                  <li divider padded class="divider" role="separator"></li>
-                  ${integrations.helpers.map((integration) =>
-                    this._renderRow(integration, true)
-                  )}
-                `
-              : ""}
+        ? html`<mwc-list>
+            <lit-virtualizer
+              scroller
+              class="ha-scrollbar"
+              style=${styleMap({
+                width: `${this._width}px`,
+                height: this._narrow ? "calc(100vh - 184px)" : "500px",
+              })}
+              @click=${this._integrationPicked}
+              .items=${integrations.integrations}
+              .renderItem=${this._renderRow}
+            >
+            </lit-virtualizer>
           </mwc-list>`
         : html`<ha-circular-progress active></ha-circular-progress>`} `;
   }
 
-  private _renderRow(integration: ListItem, is_helper = false) {
+  private _renderRow = (integration: ListItem) => {
+    if (!integration) {
+      return html``;
+    }
     const manifest = this._manifests?.[integration.domain];
     return html`
-      <mwc-list-item
-        graphic="medium"
-        .integration=${integration}
-        @click=${this._integrationPicked}
-        hasMeta
-      >
+      <mwc-list-item graphic="medium" .integration=${integration} hasMeta>
         <img
           slot="graphic"
           loading="lazy"
@@ -353,14 +332,14 @@ class AddIntegrationDialog extends LitElement {
         <span
           >${integration.name ||
           domainToName(this.hass.localize, integration.domain)}
-          ${is_helper ? " (helper)" : ""}</span
+          ${integration.is_helper ? " (helper)" : ""}</span
         >
         <div slot="meta">
           ${!integration.config_flow &&
           !integration.integrations &&
           !integration.iot_standards
             ? html`<span
-                ><ha-svg-icon .path=${mdiCodeTags}></ha-svg-icon
+                ><ha-svg-icon .path=${mdiCodeBraces}></ha-svg-icon
                 ><paper-tooltip animation-delay="0" position="left"
                   >${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.yaml_only"
@@ -392,7 +371,7 @@ class AddIntegrationDialog extends LitElement {
         </div>
       </mwc-list-item>
     `;
-  }
+  };
 
   private async _load() {
     const [descriptions, supportedBrands] = await Promise.all([
@@ -433,7 +412,8 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _integrationPicked(ev) {
-    const integration: ListItem = ev.currentTarget.integration;
+    const listItem = ev.target.closest("mwc-list-item");
+    const integration: ListItem = listItem.integration;
     this._handleIntegrationPicked(integration);
   }
 
@@ -590,6 +570,7 @@ class AddIntegrationDialog extends LitElement {
 
   static styles = [
     haStyleScrollbar,
+    haStyleDialog,
     css`
       ha-dialog {
         --dialog-content-padding: 0;
@@ -630,6 +611,7 @@ class AddIntegrationDialog extends LitElement {
         color: var(--primary-color);
       }
       mwc-list-item {
+        width: 100%;
         --mdc-list-item-meta-size: 88px;
       }
       [slot="meta"] {
@@ -648,6 +630,9 @@ class AddIntegrationDialog extends LitElement {
         display: flex;
         justify-content: center;
         margin: 24px 0;
+      }
+      lit-virtualizer {
+        contain: size layout !important;
       }
     `,
   ];
