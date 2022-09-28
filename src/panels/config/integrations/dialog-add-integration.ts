@@ -310,7 +310,7 @@ class AddIntegrationDialog extends LitElement {
       .flowsInProgress=${this._flowsInProgress}
       style=${styleMap({
         minWidth: `${this._width}px`,
-        minHeight: `589px`,
+        minHeight: `581px`,
       })}
       @close-dialog=${this.closeDialog}
     ></ha-domain-integrations>`;
@@ -628,6 +628,7 @@ class AddIntegrationDialog extends LitElement {
       }
       .mdc-dialog__title {
         margin: 0;
+        margin-bottom: 8px;
         margin-left: 48px;
         padding: 24px 24px 0 24px;
         color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
