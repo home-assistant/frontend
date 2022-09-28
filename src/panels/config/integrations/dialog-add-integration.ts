@@ -495,7 +495,6 @@ class AddIntegrationDialog extends LitElement {
       this.hass,
       integration.domain
     );
-    this.closeDialog();
     showAlertDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_flow.yaml_only_title"
