@@ -45,6 +45,8 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _focusLastTriggerOnChange = false;
 
   private _triggerKeys = new WeakMap<Trigger, string>();
@@ -65,6 +67,7 @@ export default class HaAutomationTrigger extends LitElement {
               @duplicate=${this._duplicateTrigger}
               @value-changed=${this._triggerChanged}
               .hass=${this.hass}
+              .disabled=${this.disabled}
             >
               ${this.reOrderMode
                 ? html`
@@ -97,13 +100,14 @@ export default class HaAutomationTrigger extends LitElement {
           `
         )}
         </div>
-        <ha-button-menu @action=${this._addTrigger}>
+        <ha-button-menu @action=${this._addTrigger} .disabled=${this.disabled}>
           <mwc-button
             slot="trigger"
             outlined
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.triggers.add"
             )}
+            .disabled=${this.disabled}
           >
             <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
           </mwc-button>

@@ -89,6 +89,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property({ type: Boolean }) public hideMenu = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _warnings?: string[];
 
   @state() private _yamlMode = false;
@@ -148,7 +150,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                     .path=${mdiDotsVertical}
                   ></ha-icon-button>
 
-                  <mwc-list-item graphic="icon">
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.triggers.rename"
                     )}
@@ -157,7 +159,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                       .path=${mdiRenameBox}
                     ></ha-svg-icon>
                   </mwc-list-item>
-                  <mwc-list-item graphic="icon">
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.duplicate"
                     )}
@@ -167,7 +169,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                     ></ha-svg-icon>
                   </mwc-list-item>
 
-                  <mwc-list-item graphic="icon">
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.triggers.edit_id"
                     )}
@@ -207,7 +209,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
                   <li divider role="separator"></li>
 
-                  <mwc-list-item graphic="icon">
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.trigger.enabled === false
                       ? this.hass.localize(
                           "ui.panel.config.automation.editor.actions.enable"
@@ -222,7 +224,11 @@ export default class HaAutomationTriggerRow extends LitElement {
                         : mdiStopCircleOutline}
                     ></ha-svg-icon>
                   </mwc-list-item>
-                  <mwc-list-item class="warning" graphic="icon">
+                  <mwc-list-item
+                    class="warning"
+                    graphic="icon"
+                    .disabled=${this.disabled}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.delete"
                     )}
@@ -292,7 +298,11 @@ export default class HaAutomationTriggerRow extends LitElement {
                   <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
                     ${dynamicElement(
                       `ha-automation-trigger-${this.trigger.platform}`,
-                      { hass: this.hass, trigger: this.trigger }
+                      {
+                        hass: this.hass,
+                        trigger: this.trigger,
+                        disabled: this.disabled,
+                      }
                     )}
                   </div>
                 `}

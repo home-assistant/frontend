@@ -43,6 +43,7 @@ import {
   AutomationConfig,
   AutomationEntity,
   deleteAutomation,
+  fetchAutomationConfig,
   getAutomationConfig,
   getAutomationEditorInitData,
   saveAutomationConfig,
@@ -85,6 +86,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public automationId: string | null = null;
+
+  @property() public entityId: string | null = null;
 
   @property() public automations!: AutomationEntity[];
 
@@ -198,7 +201,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 <mwc-list-item
                   graphic="icon"
                   @click=${this._promptAutomationMode}
-                  .disabled=${this._mode === "yaml"}
+                  .disabled=${this.entityId || this._mode === "yaml"}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.change_mode"
@@ -214,7 +217,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             ? html`<mwc-list-item
                 graphic="icon"
                 @click=${this._toggleReOrderMode}
-                .disabled=${this._mode === "yaml"}
+                .disabled=${this.entityId || this._mode === "yaml"}
               >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.re_order"
@@ -224,7 +227,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             : ""}
 
           <mwc-list-item
-            .disabled=${!this.automationId}
+            .disabled=${!this.entityId && !this.automationId}
             graphic="icon"
             @click=${this._duplicate}
           >
@@ -314,6 +317,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           .isWide=${this.isWide}
                           .stateObj=${stateObj}
                           .config=${this._config}
+                          .disabled=${Boolean(this.entityId)}
                           @value-changed=${this._valueChanged}
                         ></blueprint-automation-editor>
                       `
@@ -324,6 +328,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           .isWide=${this.isWide}
                           .stateObj=${stateObj}
                           .config=${this._config}
+                          .disabled=${Boolean(this.entityId)}
                           @value-changed=${this._valueChanged}
                         ></manual-automation-editor>
                       `
@@ -390,7 +395,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       this._loadConfig();
     }
 
-    if (changedProps.has("automationId") && !this.automationId && this.hass) {
+    if (
+      changedProps.has("automationId") &&
+      !this.automationId &&
+      !this.entityId &&
+      this.hass
+    ) {
       const initData = getAutomationEditorInitData();
       let baseConfig: Partial<AutomationConfig> = { description: "" };
       if (!initData || !("use_blueprint" in initData)) {
@@ -408,6 +418,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       } as AutomationConfig;
       this._entityId = undefined;
       this._dirty = true;
+    }
+
+    if (changedProps.has("entityId") && this.entityId) {
+      fetchAutomationConfig(this.hass, this.entityId).then((c) => {
+        this._config = c.config;
+      });
+      this._entityId = this.entityId;
+      this._dirty = false;
     }
 
     if (
@@ -450,6 +468,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       this._dirty = false;
       this._config = config;
     } catch (err: any) {
+      const entity = Object.values(this.hass.entities).find(
+        (ent) => ent.unique_id === this.automationId
+      );
+      if (entity) {
+        navigate(`/config/automation/show/${entity.entity_id}`, {
+          replace: true,
+        });
+        return;
+      }
       await showAlertDialog(this, {
         text:
           err.status_code === 404

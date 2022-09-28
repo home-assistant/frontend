@@ -49,6 +49,9 @@ class HaConfigAutomation extends HassRouterPage {
       edit: {
         tag: "ha-automation-editor",
       },
+      show: {
+        tag: "ha-automation-editor",
+      },
       trace: {
         tag: "ha-automation-trace",
         load: () => import("./ha-automation-trace"),
@@ -87,10 +90,19 @@ class HaConfigAutomation extends HassRouterPage {
 
     if (
       (!changedProps || changedProps.has("route")) &&
-      this._currentPage !== "dashboard"
+      this._currentPage === "edit"
     ) {
       const automationId = decodeURIComponent(this.routeTail.path.substr(1));
       pageEl.automationId = automationId === "new" ? null : automationId;
+      pageEl.entityId = null;
+    }
+    if (
+      (!changedProps || changedProps.has("route")) &&
+      this._currentPage === "show"
+    ) {
+      const automationId = decodeURIComponent(this.routeTail.path.substr(1));
+      pageEl.automationId = null;
+      pageEl.entityId = automationId === "new" ? null : automationId;
     }
   }
 }

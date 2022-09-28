@@ -424,6 +424,8 @@ class HaAutomationPicker extends LitElement {
 
     if (automation?.attributes.id) {
       navigate(`/config/automation/edit/${automation.attributes.id}`);
+    } else {
+      navigate(`/config/automation/show/${ev.detail.id}`);
     }
   }
 

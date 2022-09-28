@@ -28,6 +28,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
+  @property({ type: Boolean }) public disabled!: boolean;
+
   @property({ attribute: false }) public config!: ManualAutomationConfig;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
@@ -100,6 +102,7 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
         .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
       ></ha-automation-trigger>
 
       <div class="header">
@@ -129,6 +132,7 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
       ></ha-automation-condition>
 
       <div class="header">
@@ -161,6 +165,7 @@ export class HaManualAutomationEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
       ></ha-automation-action>
     `;
   }

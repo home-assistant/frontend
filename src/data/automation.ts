@@ -314,6 +314,9 @@ let inititialAutomationEditorData: Partial<AutomationConfig> | undefined;
 export const getAutomationConfig = (hass: HomeAssistant, id: string) =>
   hass.callApi<AutomationConfig>("GET", `config/automation/config/${id}`);
 
+export const fetchAutomationConfig = (hass: HomeAssistant, entity_id: string) =>
+  hass.callWS({ type: "automation/config", entity_id });
+
 export const saveAutomationConfig = (
   hass: HomeAssistant,
   id: string,
