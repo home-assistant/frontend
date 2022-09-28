@@ -5129,8 +5129,9 @@
         "used": "Repository is in use for installed add-ons and can't be removed."
       },
       "restart_addon": {
-        "confirm_text": "Restart add-on",
-        "text": "Do you want to restart the add-on with your changes?"
+        "title": "Restart {name}?",
+        "text": "To use the new saved configuration this add-on must be restarted.",
+        "restart": "Restart"
       },
       "hardware": {
         "title": "Hardware",
