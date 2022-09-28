@@ -1,5 +1,5 @@
 import { HaSelect } from "../../../../../components/ha-select";
-import { Cluster, ZHADevice } from "../../../../../data/zha";
+import { ZHADevice } from "../../../../../data/zha";
 
 export interface ItemSelectedEvent {
   target?: HaSelect;
@@ -39,10 +39,6 @@ export interface IssueCommandServiceData {
 
 export interface ZHADeviceSelectedParams {
   node: ZHADevice;
-}
-
-export interface ZHAClusterSelectedParams {
-  cluster: Cluster;
 }
 
 export interface NodeServiceData {

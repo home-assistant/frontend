@@ -332,7 +332,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             "yaml-mode": this._mode === "yaml",
           })}"
         >
-          ${this._errors ? html`<div class="errors">${this._errors}</div>` : ""}
           ${this._mode === "gui"
             ? html`
                 <div
@@ -343,6 +342,13 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                   ${this._config
                     ? html`
                         <div class="config-container">
+                          ${this._errors
+                            ? html`
+                                <ha-alert alert-type="error">
+                                  ${this._errors}
+                                </ha-alert>
+                              `
+                            : ""}
                           <ha-card outlined>
                             <div class="card-content">
                               <ha-form
@@ -382,6 +388,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : this._mode === "yaml"
             ? html`
+                ${this._errors
+                  ? html`
+                      <ha-alert alert-type="error">${this._errors}</ha-alert>
+                    `
+                  : ""}
                 <ha-yaml-editor
                   .hass=${this.hass}
                   .defaultValue=${this._preprocessYaml()}
@@ -546,28 +557,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private _modeChanged(mode) {
-    const curMode = this._config!.mode || MODES[0];
-
-    if (mode === curMode) {
-      return;
-    }
-
-    this._config = { ...this._config!, mode };
-    if (!isMaxMode(mode)) {
-      delete this._config.max;
-    }
-    this._dirty = true;
-  }
-
-  private _aliasChanged(alias: string) {
-    if (
-      this.scriptEntityId ||
-      (this._entityId && this._entityId !== slugify(this._config!.alias))
-    ) {
-      return;
-    }
-
+  private _computeEntityIdFromAlias(alias: string) {
     const aliasSlugify = slugify(alias);
     let id = aliasSlugify;
     let i = 2;
@@ -575,11 +565,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       id = `${aliasSlugify}_${i}`;
       i++;
     }
-
-    this._entityId = id;
+    return id;
   }
 
-  private _idChanged(id: string) {
+  private _setEntityId(id?: string) {
     this._entityId = id;
     if (this.hass.states[`script.${this._entityId}`]) {
       this._idError = true;
@@ -588,47 +577,60 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
+  private updateEntityId(
+    newId: string | undefined,
+    newAlias: string | undefined
+  ) {
+    const currentAlias = this._config?.alias ?? "";
+    const currentEntityId = this._entityId ?? "";
+
+    if (newId !== this._entityId) {
+      this._setEntityId(newId || undefined);
+      return;
+    }
+
+    const currentComputedEntity = this._computeEntityIdFromAlias(currentAlias);
+
+    if (currentComputedEntity === currentEntityId || !this._entityId) {
+      const newComputedId = newAlias
+        ? this._computeEntityIdFromAlias(newAlias)
+        : undefined;
+
+      this._setEntityId(newComputedId);
+    }
+  }
+
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
+    this._errors = undefined;
     const values = ev.detail.value as any;
-    const currentId = this._entityId;
+
     let changed = false;
+    const newValues: Omit<ScriptConfig, "sequence"> = {
+      alias: values.alias ?? "",
+      icon: values.icon,
+      mode: values.mode,
+      max: isMaxMode(values.mode) ? values.max : undefined,
+    };
 
-    for (const key of Object.keys(values)) {
-      if (key === "sequence") {
+    if (!this.scriptEntityId) {
+      this.updateEntityId(values.id, values.alias);
+    }
+
+    for (const key of Object.keys(newValues)) {
+      const value = newValues[key];
+
+      if (value === this._config![key]) {
         continue;
       }
-
-      const value = values[key];
-
-      if (
-        value === this._config![key] ||
-        (key === "id" && currentId === value)
-      ) {
-        continue;
-      }
-
-      changed = true;
-
-      switch (key) {
-        case "id":
-          this._idChanged(value);
-          break;
-        case "alias":
-          this._aliasChanged(value);
-          break;
-        case "mode":
-          this._modeChanged(value);
-          break;
-      }
-
-      if (values[key] === undefined) {
+      if (value === undefined) {
         const newConfig = { ...this._config! };
         delete newConfig![key];
         this._config = newConfig;
       } else {
         this._config = { ...this._config!, [key]: value };
       }
+      changed = true;
     }
 
     if (changed) {
@@ -638,6 +640,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _configChanged(ev) {
     this._config = ev.detail.value;
+    this._errors = undefined;
     this._dirty = true;
   }
 
@@ -759,7 +762,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this.hass!.callApi("POST", "config/script/config/" + id, this._config).then(
       () => {
         this._dirty = false;
-
         if (!this.scriptEntityId) {
           navigate(`/config/script/edit/${id}`, { replace: true });
         }
@@ -805,6 +807,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
+        }
+        .config-container ha-alert {
+          margin-bottom: 16px;
+          display: block;
         }
         ha-yaml-editor {
           flex-grow: 1;
