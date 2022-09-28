@@ -56,6 +56,7 @@ import {
   mdiVideo,
   mdiWaterPercent,
   mdiWeatherCloudy,
+  mdiWeight,
   mdiWhiteBalanceSunny,
   mdiWifi,
 } from "@mdi/js";
@@ -150,6 +151,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   volatile_organic_compounds: mdiMolecule,
   voltage: mdiSineWave,
   // volume: TBD, => no well matching icon found
+  weight: mdiWeight,
 };
 
 /** Domains that have a state card. */
