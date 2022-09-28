@@ -135,8 +135,14 @@ class AddIntegrationDialog extends LitElement {
       localize: LocalizeFunc,
       filter?: string
     ): IntegrationListItem[] => {
-      const integrations: IntegrationListItem[] = Object.entries(i).map(
-        ([domain, integration]) => ({
+      const integrations: IntegrationListItem[] = Object.entries(i)
+        .filter(
+          ([_domain, integration]) =>
+            integration.config_flow ||
+            integration.iot_standards ||
+            integration.integrations
+        )
+        .map(([domain, integration]) => ({
           domain,
           name: integration.name || domainToName(localize, domain),
           config_flow: integration.config_flow,
@@ -148,11 +154,17 @@ class AddIntegrationDialog extends LitElement {
             : undefined,
           is_built_in: integration.is_built_in !== false,
           cloud: integration.iot_class?.startsWith("cloud_"),
-        })
-      );
+        }));
 
       for (const [domain, domainBrands] of Object.entries(sb)) {
         const integration = i[domain];
+        if (
+          !integration.config_flow &&
+          !integration.iot_standards &&
+          !integration.integrations
+        ) {
+          continue;
+        }
         for (const [slug, name] of Object.entries(domainBrands)) {
           integrations.push({
             domain: slug,
@@ -178,14 +190,21 @@ class AddIntegrationDialog extends LitElement {
           minMatchCharLength: 2,
           threshold: 0.2,
         };
-        const helpers = Object.entries(h).map(([domain, integration]) => ({
-          domain,
-          name: integration.name || domainToName(localize, domain),
-          config_flow: integration.config_flow,
-          is_helper: true,
-          is_built_in: integration.is_built_in !== false,
-          cloud: integration.iot_class?.startsWith("cloud_"),
-        }));
+        const helpers = Object.entries(h)
+          .filter(
+            ([_domain, integration]) =>
+              integration.config_flow ||
+              integration.iot_standards ||
+              integration.integrations
+          )
+          .map(([domain, integration]) => ({
+            domain,
+            name: integration.name || domainToName(localize, domain),
+            config_flow: integration.config_flow,
+            is_helper: true,
+            is_built_in: integration.is_built_in !== false,
+            cloud: integration.iot_class?.startsWith("cloud_"),
+          }));
         return [
           ...new Fuse(integrations, options)
             .search(filter)
