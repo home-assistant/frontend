@@ -28,7 +28,7 @@ export const traceTabStyles = css`
   }
 
   .tabs > *.active {
-    border-bottom-color: var(--accent-color);
+    border-bottom-color: var(--primary-color);
   }
 
   .tabs > *:focus,

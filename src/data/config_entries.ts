@@ -1,3 +1,4 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 
 export interface ConfigEntry {
@@ -43,6 +44,29 @@ export const RECOVERABLE_STATES: ConfigEntry["state"][] = [
   "setup_error",
   "setup_retry",
 ];
+
+export interface ConfigEntryUpdate {
+  // null means no update as is the current state
+  type: null | "added" | "removed" | "updated";
+  entry: ConfigEntry;
+}
+
+export const subscribeConfigEntries = (
+  hass: HomeAssistant,
+  callbackFunction: (message: ConfigEntryUpdate[]) => void,
+  filters?: { type?: "helper" | "integration"; domain?: string }
+): Promise<UnsubscribeFunc> => {
+  const params: any = {
+    type: "config_entries/subscribe",
+  };
+  if (filters && filters.type) {
+    params.type_filter = filters.type;
+  }
+  return hass.connection.subscribeMessage<ConfigEntryUpdate[]>(
+    (message) => callbackFunction(message),
+    params
+  );
+};
 
 export const getConfigEntries = (
   hass: HomeAssistant,

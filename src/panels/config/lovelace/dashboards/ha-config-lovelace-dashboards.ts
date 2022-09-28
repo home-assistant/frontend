@@ -365,6 +365,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
               "ui.panel.config.lovelace.dashboards.confirm_delete_text"
             ),
             confirmText: this.hass!.localize("ui.common.delete"),
+            destructive: true,
           }))
         ) {
           return false;

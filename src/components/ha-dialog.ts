@@ -91,7 +91,7 @@ export class HaDialog extends DialogBase {
       .header_button {
         position: absolute;
         right: 16px;
-        top: 10px;
+        top: 14px;
         text-decoration: none;
         color: inherit;
       }

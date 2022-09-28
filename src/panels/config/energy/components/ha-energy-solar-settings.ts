@@ -16,7 +16,7 @@ import {
 import {
   StatisticsMetaData,
   getStatisticLabel,
-} from "../../../../data/history";
+} from "../../../../data/recorder";
 import {
   showConfirmationDialog,
   showAlertDialog,
@@ -36,7 +36,7 @@ export class EnergySolarSettings extends LitElement {
   public preferences!: EnergyPreferences;
 
   @property({ attribute: false })
-  public statsMetadata!: Record<string, StatisticsMetaData>;
+  public statsMetadata?: Record<string, StatisticsMetaData>;
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
@@ -106,7 +106,7 @@ export class EnergySolarSettings extends LitElement {
                   >${getStatisticLabel(
                     this.hass,
                     source.stat_energy_from,
-                    this.statsMetadata[source.stat_energy_from]
+                    this.statsMetadata?.[source.stat_energy_from]
                   )}</span
                 >
                 ${this.info

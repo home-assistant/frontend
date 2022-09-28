@@ -18,9 +18,7 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
-import { fetchConfigFlowInProgress } from "../../data/config_flow";
 import {
-  DataEntryFlowProgress,
   DataEntryFlowStep,
   subscribeDataEntryFlowProgressed,
 } from "../../data/data_entry_flow";
@@ -28,14 +26,12 @@ import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
-import { fetchIntegrationManifest } from "../../data/integration";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import {
   DataEntryFlowDialogParams,
-  FlowHandlers,
   LoadingReason,
 } from "./show-dialog-data-entry-flow";
 import "./step-flow-abort";
@@ -44,8 +40,6 @@ import "./step-flow-external";
 import "./step-flow-form";
 import "./step-flow-loading";
 import "./step-flow-menu";
-import "./step-flow-pick-flow";
-import "./step-flow-pick-handler";
 import "./step-flow-progress";
 
 let instance = 0;
@@ -86,11 +80,7 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _areas?: AreaRegistryEntry[];
 
-  @state() private _handlers?: FlowHandlers;
-
   @state() private _handler?: string;
-
-  @state() private _flowsInProgress?: DataEntryFlowProgress[];
 
   private _unsubAreas?: UnsubscribeFunc;
 
@@ -102,15 +92,39 @@ class DataEntryFlowDialog extends LitElement {
     this._params = params;
     this._instance = instance++;
 
-    if (params.startFlowHandler) {
-      this._checkFlowsInProgress(params.startFlowHandler);
-      return;
-    }
+    const curInstance = this._instance;
+    let step: DataEntryFlowStep;
 
-    if (params.continueFlowId) {
+    if (params.startFlowHandler) {
       this._loading = "loading_flow";
-      const curInstance = this._instance;
-      let step: DataEntryFlowStep;
+      this._handler = params.startFlowHandler;
+      try {
+        step = await this._params!.flowConfig.createFlow(
+          this.hass,
+          params.startFlowHandler
+        );
+      } catch (err: any) {
+        this.closeDialog();
+        let message = err.message || err.body || "Unknown error";
+        if (typeof message !== "string") {
+          message = JSON.stringify(message);
+        }
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error"
+          ),
+          text: `${this.hass.localize(
+            "ui.panel.config.integrations.config_flow.could_not_load"
+          )}: ${message}`,
+        });
+        return;
+      }
+      // Happens if second showDialog called
+      if (curInstance !== this._instance) {
+        return;
+      }
+    } else if (params.continueFlowId) {
+      this._loading = "loading_flow";
       try {
         step = await params.flowConfig.fetchFlow(
           this.hass,
@@ -132,32 +146,17 @@ class DataEntryFlowDialog extends LitElement {
         });
         return;
       }
-
-      // Happens if second showDialog called
-      if (curInstance !== this._instance) {
-        return;
-      }
-
-      this._processStep(step);
-      this._loading = undefined;
+    } else {
       return;
     }
 
-    // Create a new config flow. Show picker
-    if (!params.flowConfig.getFlowHandlers) {
-      throw new Error("No getFlowHandlers defined in flow config");
+    // Happens if second showDialog called
+    if (curInstance !== this._instance) {
+      return;
     }
-    this._step = null;
 
-    // We only load the handlers once
-    if (this._handlers === undefined) {
-      this._loading = "loading_handlers";
-      try {
-        this._handlers = await params.flowConfig.getFlowHandlers(this.hass);
-      } finally {
-        this._loading = undefined;
-      }
-    }
+    this._processStep(step);
+    this._loading = undefined;
   }
 
   public closeDialog() {
@@ -185,7 +184,6 @@ class DataEntryFlowDialog extends LitElement {
     this._step = undefined;
     this._params = undefined;
     this._devices = undefined;
-    this._flowsInProgress = undefined;
     this._handler = undefined;
     if (this._unsubAreas) {
       this._unsubAreas();
@@ -218,15 +216,12 @@ class DataEntryFlowDialog extends LitElement {
         hideActions
       >
         <div>
-          ${this._loading ||
-          (this._step === null &&
-            this._handlers === undefined &&
-            this._handler === undefined)
+          ${this._loading || this._step === null
             ? html`
                 <step-flow-loading
                   .flowConfig=${this._params.flowConfig}
                   .hass=${this.hass}
-                  .loadingReason=${this._loading || "loading_handlers"}
+                  .loadingReason=${this._loading}
                   .handler=${this._handler}
                   .step=${this._step}
                 ></step-flow-loading>
@@ -273,24 +268,7 @@ class DataEntryFlowDialog extends LitElement {
                     dialogAction="close"
                   ></ha-icon-button>
                 </div>
-                ${this._step === null
-                  ? this._handler
-                    ? html`<step-flow-pick-flow
-                        .flowConfig=${this._params.flowConfig}
-                        .hass=${this.hass}
-                        .handler=${this._handler}
-                        .flowsInProgress=${this._flowsInProgress}
-                      ></step-flow-pick-flow>`
-                    : // Show handler picker
-                      html`
-                        <step-flow-pick-handler
-                          .hass=${this.hass}
-                          .handlers=${this._handlers}
-                          .initialFilter=${this._params.searchQuery}
-                          @handler-picked=${this._handlerPicked}
-                        ></step-flow-pick-handler>
-                      `
-                  : this._step.type === "form"
+                ${this._step.type === "form"
                   ? html`
                       <step-flow-form
                         .flowConfig=${this._params.flowConfig}
@@ -398,64 +376,6 @@ class DataEntryFlowDialog extends LitElement {
     this._unsubAreas = subscribeAreaRegistry(this.hass.connection, (areas) => {
       this._areas = areas;
     });
-  }
-
-  private async _checkFlowsInProgress(handler: string) {
-    this._loading = "loading_handlers";
-    this._handler = handler;
-
-    const flowsInProgress = (
-      await fetchConfigFlowInProgress(this.hass.connection)
-    ).filter((flow) => flow.handler === handler);
-
-    if (!flowsInProgress.length) {
-      // No flows in progress, create a new flow
-      this._loading = "loading_flow";
-      let step: DataEntryFlowStep;
-      try {
-        step = await this._params!.flowConfig.createFlow(this.hass, handler);
-      } catch (err: any) {
-        this.closeDialog();
-        const message =
-          err?.status_code === 404
-            ? this.hass.localize(
-                "ui.panel.config.integrations.config_flow.no_config_flow"
-              )
-            : `${this.hass.localize(
-                "ui.panel.config.integrations.config_flow.could_not_load"
-              )}: ${err?.body?.message || err?.message}`;
-
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.error"
-          ),
-          text: message,
-        });
-        return;
-      } finally {
-        this._handler = undefined;
-      }
-      this._processStep(step);
-      if (this._params!.manifest === undefined) {
-        try {
-          this._params!.manifest = await fetchIntegrationManifest(
-            this.hass,
-            this._params?.domain || step.handler
-          );
-        } catch (_) {
-          // No manifest
-          this._params!.manifest = null;
-        }
-      }
-    } else {
-      this._step = null;
-      this._flowsInProgress = flowsInProgress;
-    }
-    this._loading = undefined;
-  }
-
-  private _handlerPicked(ev) {
-    this._checkFlowsInProgress(ev.detail.handler);
   }
 
   private async _processStep(

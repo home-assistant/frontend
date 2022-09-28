@@ -24,7 +24,7 @@ import {
   adjustStatisticsSum,
   fetchStatistics,
   StatisticValue,
-} from "../../../data/history";
+} from "../../../data/recorder";
 import type { DateTimeSelector, NumberSelector } from "../../../data/selector";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -305,7 +305,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         this.hass,
         this._params!.statistic.statistic_id,
         this._chosenStat!.start,
-        this._amount! - this._origAmount!
+        this._amount! - this._origAmount!,
+        this._params!.statistic.display_unit_of_measurement
       );
     } catch (err: any) {
       this._busy = false;

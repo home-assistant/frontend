@@ -90,7 +90,7 @@ export class MoreInfoDialog extends LitElement {
     const stateObj = this.hass.states[entityId];
 
     const domain = computeDomain(entityId);
-    const name = stateObj ? computeStateName(stateObj) : entityId;
+    const name = (stateObj && computeStateName(stateObj)) || entityId;
     const tabs = this._getTabs(entityId, this.hass.user!.is_admin);
 
     return html`

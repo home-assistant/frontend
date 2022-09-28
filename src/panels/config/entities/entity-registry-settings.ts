@@ -19,7 +19,10 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stringCompare } from "../../../common/string/compare";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
@@ -32,6 +35,7 @@ import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import {
   CameraPreferences,
+  CAMERA_ORIENTATIONS,
   CAMERA_SUPPORT_STREAM,
   fetchCameraPrefs,
   STREAM_TYPE_HLS,
@@ -111,8 +115,12 @@ const OVERRIDE_NUMBER_UNITS = {
 };
 
 const OVERRIDE_SENSOR_UNITS = {
-  temperature: ["°C", "°F", "K"],
+  distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
+  speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mph"],
+  temperature: ["°C", "°F", "K"],
+  volume: ["fl. oz.", "ft³", "gal", "L", "mL", "m³"],
+  weight: ["g", "kg", "lb", "mg", "oz", "µg"],
 };
 
 const OVERRIDE_WEATHER_UNITS = {
@@ -582,12 +590,12 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               <ha-settings-row>
                 <span slot="heading"
                   >${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.preload_stream"
+                    "ui.dialogs.entity_registry.editor.stream.preload_stream"
                   )}</span
                 >
                 <span slot="description"
                   >${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.preload_stream_description"
+                    "ui.dialogs.entity_registry.editor.stream.preload_stream_description"
                   )}</span
                 >
                 <ha-switch
@@ -595,6 +603,38 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                   @change=${this._handleCameraPrefsChanged}
                 >
                 </ha-switch>
+              </ha-settings-row>
+              <ha-settings-row>
+                <span slot="heading"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.stream_orientation"
+                  )}</span
+                >
+                <span slot="description"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.stream_orientation_description"
+                  )}</span
+                >
+                <ha-select
+                  .label=${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.stream_orientation"
+                  )}
+                  naturalMenuWidth
+                  fixedMenuPosition
+                  @selected=${this._handleCameraOrientationChanged}
+                  @closed=${stopPropagation}
+                >
+                  ${CAMERA_ORIENTATIONS.map((num) => {
+                    const localizeStr =
+                      "ui.dialogs.entity_registry.editor.stream.stream_orientation_" +
+                      num.toString();
+                    return html`
+                      <mwc-list-item value=${num}>
+                        ${this.hass.localize(localizeStr as LocalizeKeys)}
+                      </mwc-list-item>
+                    `;
+                  })}
+                </ha-select>
               </ha-settings-row>
             `
           : ""}
@@ -834,6 +874,20 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     } catch (err: any) {
       showAlertDialog(this, { text: err.message });
       checkbox.checked = !checkbox.checked;
+    }
+  }
+
+  private async _handleCameraOrientationChanged(ev) {
+    try {
+      this._cameraPrefs = await updateCameraPrefs(
+        this.hass,
+        this.entry.entity_id,
+        {
+          orientation: ev.currentTarget.value,
+        }
+      );
+    } catch (err: any) {
+      showAlertDialog(this, { text: err.message });
     }
   }
 

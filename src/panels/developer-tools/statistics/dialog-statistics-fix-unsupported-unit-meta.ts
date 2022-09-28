@@ -5,7 +5,7 @@ import "../../../components/ha-dialog";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { updateStatisticsMetadata } from "../../../data/history";
+import { updateStatisticsMetadata } from "../../../data/recorder";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
 import type { DialogStatisticsUnsupportedUnitMetaParams } from "./show-dialog-statistics-fix-unsupported-unit-meta";
