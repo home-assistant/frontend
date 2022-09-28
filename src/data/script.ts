@@ -15,7 +15,6 @@ import {
   Describe,
   boolean,
 } from "superstruct";
-import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
 import {
@@ -278,9 +277,9 @@ export type ActionType = keyof ActionTypes;
 
 export const triggerScript = (
   hass: HomeAssistant,
-  entityId: string,
+  scriptId: string,
   variables?: Record<string, unknown>
-) => hass.callService("script", computeObjectId(entityId), variables);
+) => hass.callService("script", scriptId, variables);
 
 export const canRun = (state: ScriptEntity) => {
   if (state.state === "off") {

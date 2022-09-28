@@ -12,10 +12,10 @@ import { DataEntryFlowStepAbort } from "../../data/data_entry_flow";
 import { HomeAssistant } from "../../types";
 import { showAddApplicationCredentialDialog } from "../../panels/config/application_credentials/show-dialog-add-application-credential";
 import { configFlowContentStyles } from "./styles";
-import { showConfirmationDialog } from "../generic/show-dialog-box";
-import { domainToName } from "../../data/integration";
 import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import { showConfigFlowDialog } from "./show-dialog-config-flow";
+import { domainToName } from "../../data/integration";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
 
 @customElement("step-flow-abort")
 class StepFlowAbort extends LitElement {
@@ -56,11 +56,16 @@ class StepFlowAbort extends LitElement {
   private async _handleMissingCreds() {
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.missing_credentials_title"
+      ),
+      text: this.hass.localize(
         "ui.panel.config.integrations.config_flow.missing_credentials",
         {
           integration: domainToName(this.hass.localize, this.domain),
         }
       ),
+      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.no"),
     });
     this._flowDone();
     if (!confirm) {

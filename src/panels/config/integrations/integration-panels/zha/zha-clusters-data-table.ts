@@ -59,7 +59,7 @@ export class ZHAClustersDataTable extends LitElement {
               title: "ID",
               template: (id: number) => html` ${formatAsPaddedHex(id)} `,
               sortable: true,
-              width: "15%",
+              width: "25%",
             },
             endpoint_id: {
               title: "Endpoint ID",

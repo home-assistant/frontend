@@ -1,12 +1,9 @@
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import memoizeOne from "memoize-one";
 import { customElement, property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-code-editor";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import { ZHADeviceChildrenDialogParams } from "./show-dialog-zha-device-children";
 import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -14,7 +11,6 @@ import type {
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-circular-progress";
 import { fetchDevices, ZHADevice } from "../../../../../data/zha";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface DeviceRowData extends DataTableRowData {
   id: string;
@@ -22,13 +18,20 @@ export interface DeviceRowData extends DataTableRowData {
   lqi: number;
 }
 
-@customElement("dialog-zha-device-children")
-class DialogZHADeviceChildren extends LitElement {
+@customElement("zha-device-children")
+class ZHADeviceChildren extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _device: ZHADevice | undefined;
+  @property() public device: ZHADevice | undefined;
 
   @state() private _devices: Map<string, ZHADevice> | undefined;
+
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    if (this.hass && changedProperties.has("device")) {
+      this._fetchData();
+    }
+  }
 
   private _deviceChildren = memoizeOne(
     (
@@ -69,70 +72,45 @@ class DialogZHADeviceChildren extends LitElement {
     },
   };
 
-  public showDialog(params: ZHADeviceChildrenDialogParams): void {
-    this._device = params.device;
-    this._fetchData();
-  }
-
-  public closeDialog(): void {
-    this._device = undefined;
-    this._devices = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
   protected render(): TemplateResult {
-    if (!this._device) {
+    if (!this.device) {
       return html``;
     }
     return html`
-      <ha-dialog
-        hideActions
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(`ui.dialogs.zha_device_info.device_children`)
-        )}
-      >
-        ${!this._devices
-          ? html`<ha-circular-progress
-              alt="Loading"
-              size="large"
-              active
-            ></ha-circular-progress>`
-          : html`<ha-data-table
-              .hass=${this.hass}
-              .columns=${this._columns}
-              .data=${this._deviceChildren(this._device, this._devices)}
-              auto-height
-              .dir=${computeRTLDirection(this.hass)}
-              .searchLabel=${this.hass.localize(
-                "ui.components.data-table.search"
-              )}
-              .noDataText=${this.hass.localize(
-                "ui.components.data-table.no-data"
-              )}
-            ></ha-data-table>`}
-      </ha-dialog>
+      ${!this._devices
+        ? html`<ha-circular-progress
+            alt="Loading"
+            size="large"
+            active
+          ></ha-circular-progress>`
+        : html`<ha-data-table
+            .hass=${this.hass}
+            .columns=${this._columns}
+            .data=${this._deviceChildren(this.device, this._devices)}
+            auto-height
+            .dir=${computeRTLDirection(this.hass)}
+            .searchLabel=${this.hass.localize(
+              "ui.components.data-table.search"
+            )}
+            .noDataText=${this.hass.localize(
+              "ui.components.data-table.no-data"
+            )}
+          ></ha-data-table>`}
     `;
   }
 
   private async _fetchData(): Promise<void> {
-    if (this._device && this.hass) {
+    if (this.device && this.hass) {
       const devices = await fetchDevices(this.hass!);
       this._devices = new Map(
         devices.map((device: ZHADevice) => [device.ieee, device])
       );
     }
   }
-
-  static get styles(): CSSResultGroup {
-    return haStyleDialog;
-  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-zha-device-children": DialogZHADeviceChildren;
+    "zha-device-children": ZHADeviceChildren;
   }
 }

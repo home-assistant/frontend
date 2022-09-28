@@ -14,8 +14,11 @@ export const SCENE_IGNORED_DOMAINS = [
   "input_button",
   "persistent_notification",
   "person",
+  "scene",
+  "schedule",
   "sensor",
   "sun",
+  "update",
   "weather",
   "zone",
 ];

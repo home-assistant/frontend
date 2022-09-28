@@ -1,18 +1,28 @@
 import { css, CSSResult, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { attributeClassNames } from "../../../common/entity/attribute_class_names";
-import { featureClassNames } from "../../../common/entity/feature_class_names";
+import {
+  FeatureClassNames,
+  featureClassNames,
+} from "../../../common/entity/feature_class_names";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-cover-tilt-controls";
 import "../../../components/ha-labeled-slider";
 import {
   CoverEntity,
-  FEATURE_CLASS_NAMES,
+  CoverEntityFeature,
   isTiltOnly,
-  supportsSetPosition,
-  supportsSetTiltPosition,
 } from "../../../data/cover";
 import { HomeAssistant } from "../../../types";
+
+export const FEATURE_CLASS_NAMES: FeatureClassNames<CoverEntityFeature> = {
+  [CoverEntityFeature.SET_POSITION]: "has-set_position",
+  [CoverEntityFeature.OPEN_TILT]: "has-open_tilt",
+  [CoverEntityFeature.CLOSE_TILT]: "has-close_tilt",
+  [CoverEntityFeature.STOP_TILT]: "has-stop_tilt",
+  [CoverEntityFeature.SET_TILT_POSITION]: "has-set_tilt_position",
+};
 
 @customElement("more-info-cover")
 class MoreInfoCover extends LitElement {
@@ -34,13 +44,16 @@ class MoreInfoCover extends LitElement {
             .caption=${this.hass.localize("ui.card.cover.position")}
             pin=""
             .value=${this.stateObj.attributes.current_position}
-            .disabled=${!supportsSetPosition(this.stateObj)}
+            .disabled=${!supportsFeature(
+              this.stateObj,
+              CoverEntityFeature.SET_POSITION
+            )}
             @change=${this._coverPositionSliderChanged}
           ></ha-labeled-slider>
         </div>
 
         <div class="tilt">
-          ${supportsSetTiltPosition(this.stateObj)
+          ${supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION)
             ? // Either render the labeled slider and put the tilt buttons into its slot
               // or (if tilt position is not supported and therefore no slider is shown)
               // render a title <div> (same style as for a labeled slider) and directly put

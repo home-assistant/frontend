@@ -1,11 +1,11 @@
 import { html } from "lit";
 import { getConfigEntries } from "../../data/config_entries";
+import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { showZWaveJSAddNodeDialog } from "../../panels/config/integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { isComponentLoaded } from "../config/is_component_loaded";
-import { fireEvent } from "../dom/fire_event";
 import { navigate } from "../navigate";
 
 export const protocolIntegrationPicked = async (
@@ -39,8 +39,8 @@ export const protocolIntegrationPicked = async (
           "ui.panel.config.integrations.config_flow.proceed"
         ),
         confirm: () => {
-          fireEvent(element, "handler-picked", {
-            handler: "zwave_js",
+          showConfigFlowDialog(element, {
+            startFlowHandler: "zwave_js",
           });
         },
       });
@@ -75,8 +75,8 @@ export const protocolIntegrationPicked = async (
           "ui.panel.config.integrations.config_flow.proceed"
         ),
         confirm: () => {
-          fireEvent(element, "handler-picked", {
-            handler: "zha",
+          showConfigFlowDialog(element, {
+            startFlowHandler: "zha",
           });
         },
       });

@@ -11,6 +11,7 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiOpenInNew,
+  mdiReloadAlert,
   mdiProgressHelper,
   mdiPlayCircleOutline,
   mdiReload,
@@ -24,13 +25,16 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
+import {
+  fetchApplicationCredentialsConfigEntry,
+  deleteApplicationCredential,
+} from "../../../data/application_credential";
 import { getSignedPath } from "../../../data/auth";
 import {
   ConfigEntry,
@@ -184,7 +188,9 @@ export class HaIntegrationCard extends LitElement {
                 ? html`<span>
                     <ha-svg-icon
                       class="error"
-                      .path=${mdiAlertCircle}
+                      .path=${item.state === "setup_retry"
+                        ? mdiReloadAlert
+                        : mdiAlertCircle}
                     ></ha-svg-icon
                     ><paper-tooltip animation-delay="0" position="left">
                       ${this.hass.localize(
@@ -231,6 +237,9 @@ export class HaIntegrationCard extends LitElement {
         "ui.panel.config.integrations.config_entry.setup_in_progress",
       ];
     } else if (ERROR_STATES.includes(item.state)) {
+      if (item.state === "setup_retry") {
+        icon = mdiReloadAlert;
+      }
       stateText = [
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
@@ -622,10 +631,6 @@ export class HaIntegrationCard extends LitElement {
     showConfigEntrySystemOptionsDialog(this, {
       entry: configEntry,
       manifest: this.manifest,
-      entryUpdated: (entry) =>
-        fireEvent(this, "entry-updated", {
-          entry,
-        }),
     });
   }
 
@@ -633,9 +638,16 @@ export class HaIntegrationCard extends LitElement {
     const entryId = configEntry.entry_id;
 
     const confirmed = await showConfirmationDialog(this, {
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.disable.disable_confirm"
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.disable_confirm_title",
+        { title: configEntry.title }
       ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.disable_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.disable"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      destructive: true,
     });
 
     if (!confirmed) {
@@ -660,9 +672,6 @@ export class HaIntegrationCard extends LitElement {
         ),
       });
     }
-    fireEvent(this, "entry-updated", {
-      entry: { ...configEntry, disabled_by: "user" },
-    });
   }
 
   private async _enableIntegration(configEntry: ConfigEntry) {
@@ -688,32 +697,102 @@ export class HaIntegrationCard extends LitElement {
         ),
       });
     }
-    fireEvent(this, "entry-updated", {
-      entry: { ...configEntry, disabled_by: null },
-    });
   }
 
   private async _removeIntegration(configEntry: ConfigEntry) {
     const entryId = configEntry.entry_id;
 
+    const applicationCredentialsId = await this._applicationCredentialForRemove(
+      entryId
+    );
+
     const confirmed = await showConfirmationDialog(this, {
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.delete_confirm",
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_title",
         { title: configEntry.title }
       ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      destructive: true,
     });
 
     if (!confirmed) {
       return;
     }
     const result = await deleteConfigEntry(this.hass, entryId);
-    fireEvent(this, "entry-removed", { entryId });
 
     if (result.require_restart) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_entry.restart_confirm"
         ),
+      });
+    }
+    if (applicationCredentialsId) {
+      this._removeApplicationCredential(applicationCredentialsId);
+    }
+  }
+
+  // Return an application credentials id for this config entry to prompt the
+  // user for removal. This is best effort so we don't stop overall removal
+  // if the integration isn't loaded or there is some other error.
+  private async _applicationCredentialForRemove(entryId: string) {
+    try {
+      return (await fetchApplicationCredentialsConfigEntry(this.hass, entryId))
+        .application_credentials_id;
+    } catch (err: any) {
+      // We won't prompt the user to remove credentials
+      return null;
+    }
+  }
+
+  private async _removeApplicationCredential(applicationCredentialsId: string) {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.application_credentials.delete_title"
+      ),
+      text: html`${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt"
+        )},
+        <br />
+        <br />
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_detail"
+        )}
+        <br />
+        <br />
+        <a
+          href=${documentationUrl(
+            this.hass,
+            "/integrations/application_credentials/"
+          )}
+          target="_blank"
+          rel="noreferrer"
+        >
+          ${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.application_credentials.learn_more"
+          )}
+        </a>`,
+      destructive: true,
+      confirmText: this.hass.localize("ui.common.remove"),
+      dismissText: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.application_credentials.dismiss"
+      ),
+    });
+    if (!confirmed) {
+      return;
+    }
+    try {
+      await deleteApplicationCredential(this.hass, applicationCredentialsId);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_error_title"
+        ),
+        text: err.message,
       });
     }
   }
@@ -743,10 +822,9 @@ export class HaIntegrationCard extends LitElement {
     if (newName === null) {
       return;
     }
-    const result = await updateConfigEntry(this.hass, configEntry.entry_id, {
+    await updateConfigEntry(this.hass, configEntry.entry_id, {
       title: newName,
     });
-    fireEvent(this, "entry-updated", { entry: result.config_entry });
   }
 
   private async _signUrl(ev) {

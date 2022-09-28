@@ -18,9 +18,11 @@ export const suggestAddonRestart = async (
   addon: HassioAddonDetails
 ): Promise<void> => {
   const confirmed = await showConfirmationDialog(element, {
-    title: supervisor.localize("common.restart_name", "name", addon.name),
+    title: supervisor.localize("dialog.restart_addon.title", {
+      name: addon.name,
+    }),
     text: supervisor.localize("dialog.restart_addon.text"),
-    confirmText: supervisor.localize("dialog.restart_addon.confirm_text"),
+    confirmText: supervisor.localize("dialog.restart_addon.restart"),
     dismissText: supervisor.localize("common.cancel"),
   });
   if (confirmed) {
@@ -28,11 +30,9 @@ export const suggestAddonRestart = async (
       await restartHassioAddon(hass, addon.slug);
     } catch (err: any) {
       showAlertDialog(element, {
-        title: supervisor.localize(
-          "common.failed_to_restart_name",
-          "name",
-          addon.name
-        ),
+        title: supervisor.localize("common.failed_to_restart_name", {
+          name: addon.name,
+        }),
         text: extractApiErrorMessage(err),
       });
     }

@@ -23,6 +23,7 @@ export class HaDeviceActionsZha extends LitElement {
   @state() private _zhaDevice?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (changedProperties.has("device")) {
       const zigbeeConnection = this.device.connections.find(
         (conn) => conn[0] === "zigbee"

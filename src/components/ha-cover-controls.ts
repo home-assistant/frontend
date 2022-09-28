@@ -3,15 +3,14 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeCloseIcon, computeOpenIcon } from "../common/entity/cover_icon";
+import { supportsFeature } from "../common/entity/supports-feature";
 import {
   CoverEntity,
+  CoverEntityFeature,
   isClosing,
   isFullyClosed,
   isFullyOpen,
   isOpening,
-  supportsClose,
-  supportsOpen,
-  supportsStop,
 } from "../data/cover";
 import { UNAVAILABLE } from "../data/entity";
 import type { HomeAssistant } from "../types";
@@ -32,7 +31,7 @@ class HaCoverControls extends LitElement {
       <div class="state">
         <ha-icon-button
           class=${classMap({
-            hidden: !supportsOpen(this.stateObj),
+            hidden: !supportsFeature(this.stateObj, CoverEntityFeature.OPEN),
           })}
           .label=${this.hass.localize(
             "ui.dialogs.more_info_control.cover.open_cover"
@@ -44,7 +43,7 @@ class HaCoverControls extends LitElement {
         </ha-icon-button>
         <ha-icon-button
           class=${classMap({
-            hidden: !supportsStop(this.stateObj),
+            hidden: !supportsFeature(this.stateObj, CoverEntityFeature.STOP),
           })}
           .label=${this.hass.localize(
             "ui.dialogs.more_info_control.cover.stop_cover"
@@ -55,7 +54,7 @@ class HaCoverControls extends LitElement {
         ></ha-icon-button>
         <ha-icon-button
           class=${classMap({
-            hidden: !supportsClose(this.stateObj),
+            hidden: !supportsFeature(this.stateObj, CoverEntityFeature.CLOSE),
           })}
           .label=${this.hass.localize(
             "ui.dialogs.more_info_control.cover.close_cover"

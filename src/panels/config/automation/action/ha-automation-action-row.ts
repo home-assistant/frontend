@@ -404,11 +404,15 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _onDelete() {
     showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.delete_confirm_title"
+      ),
       text: this.hass.localize(
-        "ui.panel.config.automation.editor.actions.delete_confirm"
+        "ui.panel.config.automation.editor.actions.delete_confirm_text"
       ),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
       },

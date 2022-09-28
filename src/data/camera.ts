@@ -6,6 +6,7 @@ import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-pro
 import { HomeAssistant } from "../types";
 import { getSignedPath } from "./auth";
 
+export const CAMERA_ORIENTATIONS = [1, 2, 3, 4, 6, 8];
 export const CAMERA_SUPPORT_ON_OFF = 1;
 export const CAMERA_SUPPORT_STREAM = 2;
 
@@ -26,6 +27,7 @@ export interface CameraEntity extends HassEntityBase {
 
 export interface CameraPreferences {
   preload_stream: boolean;
+  orientation: number;
 }
 
 export interface CameraThumbnail {
@@ -109,11 +111,13 @@ export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>
     entity_id: entityId,
   });
 
+type ValueOf<T extends any[]> = T[number];
 export const updateCameraPrefs = (
   hass: HomeAssistant,
   entityId: string,
   prefs: {
     preload_stream?: boolean;
+    orientation?: ValueOf<typeof CAMERA_ORIENTATIONS>;
   }
 ) =>
   hass.callWS<CameraPreferences>({

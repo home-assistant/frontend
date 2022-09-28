@@ -170,11 +170,7 @@ class HaLogbookRenderer extends LitElement {
       <div
         class="entry-container ${classMap({ clickable: hasTrace })}"
         .traceLink=${traceContext
-          ? `/config/${traceContext.domain}/trace/${
-              traceContext.domain === "script"
-                ? `script.${traceContext.item_id}`
-                : traceContext.item_id
-            }?run_id=${traceContext.run_id}`
+          ? `/config/${traceContext.domain}/trace/${traceContext.item_id}?run_id=${traceContext.run_id}`
           : undefined}
         @click=${this._handleClick}
       >

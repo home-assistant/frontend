@@ -8,7 +8,7 @@ import { HomeAssistant } from "../../../types";
 import {
   clearStatistics,
   updateStatisticsMetadata,
-} from "../../../data/history";
+} from "../../../data/recorder";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
 import type { DialogStatisticsUnitsChangedParams } from "./show-dialog-statistics-fix-units-changed";

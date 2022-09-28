@@ -269,9 +269,6 @@ export class DialogEnergyGridFlowSettings
       [this._params!.direction === "from"
         ? "stat_energy_from"
         : "stat_energy_to"]: ev.detail.value,
-      [this._params!.direction === "from"
-        ? "entity_energy_from"
-        : "entity_energy_to"]: ev.detail.value,
     };
   }
 

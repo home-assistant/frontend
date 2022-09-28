@@ -15,7 +15,7 @@ import {
   StatisticsMetaData,
   StatisticsValidationResult,
   validateStatistics,
-} from "../../../data/history";
+} from "../../../data/recorder";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -72,8 +72,14 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         hidden: this.narrow,
         width: "20%",
       },
-      unit_of_measurement: {
-        title: "Unit",
+      display_unit_of_measurement: {
+        title: "Display unit",
+        sortable: true,
+        filterable: true,
+        width: "10%",
+      },
+      statistics_unit_of_measurement: {
+        title: "Statistics unit",
         sortable: true,
         filterable: true,
         width: "10%",

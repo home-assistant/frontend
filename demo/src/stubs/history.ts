@@ -6,7 +6,7 @@ import {
   endOfDay,
 } from "date-fns/esm";
 import { HassEntity } from "home-assistant-js-websocket";
-import { StatisticValue } from "../../../src/data/history";
+import { StatisticValue } from "../../../src/data/recorder";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 interface HistoryQueryParams {
