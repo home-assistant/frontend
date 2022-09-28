@@ -103,6 +103,32 @@ class HaDomainIntegrations extends LitElement {
             </ha-integration-list-item>`
           )
         : ""}
+      ${["zha", "zwave_js"].includes(this.domain)
+        ? html`<mwc-list-item
+            graphic="medium"
+            .domain=${this.domain}
+            @click=${this._standardPicked}
+            hasMeta
+          >
+            <img
+              slot="graphic"
+              loading="lazy"
+              src=${brandsUrl({
+                domain: this.domain,
+                type: "icon",
+                useFallback: true,
+                darkOptimized: this.hass.themes?.darkMode,
+              })}
+              referrerpolicy="no-referrer"
+            />
+            <span
+              >${this.hass.localize(
+                `ui.panel.config.integrations.add_${this.domain}_device`
+              )}</span
+            >
+            <ha-icon-next slot="meta"></ha-icon-next>
+          </mwc-list-item>`
+        : ""}
       ${this.integration?.config_flow
         ? html`${this.flowsInProgress?.length
             ? html`<mwc-list-item
@@ -115,28 +141,21 @@ class HaDomainIntegrations extends LitElement {
                 domainToName(this.hass.localize, this.domain)}
                 <ha-icon-next slot="meta"></ha-icon-next>
               </mwc-list-item>`
-            : html`<mwc-list-item
-                graphic="medium"
+            : html`<ha-integration-list-item
+                .hass=${this.hass}
                 .domain=${this.domain}
+                .integration=${{
+                  ...this.integration,
+                  domain: this.domain,
+                  name:
+                    this.integration.name ||
+                    domainToName(this.hass.localize, this.domain),
+                  is_built_in: this.integration.is_built_in !== false,
+                  cloud: this.integration.iot_class?.startsWith("cloud_"),
+                }}
                 @click=${this._integrationPicked}
               >
-                <img
-                  slot="graphic"
-                  loading="lazy"
-                  src=${brandsUrl({
-                    domain: this.domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  referrerpolicy="no-referrer"
-                />
-                <span>
-                  ${this.integration.name ||
-                  domainToName(this.hass.localize, this.domain)}
-                </span>
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </mwc-list-item>`}`
+              </ha-integration-list-item>`}`
         : ""}
     `;
   }

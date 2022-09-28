@@ -5,6 +5,7 @@ import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
@@ -48,6 +49,7 @@ export interface IntegrationListItem {
   supported_flows?: string[];
   cloud?: boolean;
   is_built_in?: boolean;
+  is_add?: boolean;
 }
 
 @customElement("dialog-add-integration")
@@ -132,9 +134,21 @@ class AddIntegrationDialog extends LitElement {
       i: Integrations,
       h: Integrations,
       sb: Record<string, SupportedBrandHandler>,
+      components: HomeAssistant["config"]["components"],
       localize: LocalizeFunc,
       filter?: string
     ): IntegrationListItem[] => {
+      const addDeviceRows: IntegrationListItem[] = ["zha", "zwave_js"]
+        .filter((domain) => components.includes(domain))
+        .map((domain) => ({
+          name: localize(`ui.panel.config.integrations.add_${domain}_device`),
+          domain,
+          config_flow: true,
+          is_built_in: true,
+          is_add: true,
+        }))
+        .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
+
       const integrations: IntegrationListItem[] = Object.entries(i)
         .filter(
           ([_domain, integration]) =>
@@ -214,9 +228,12 @@ class AddIntegrationDialog extends LitElement {
             .map((result) => result.item),
         ];
       }
-      return integrations.sort((a, b) =>
-        caseInsensitiveStringCompare(a.name || "", b.name || "")
-      );
+      return [
+        ...addDeviceRows,
+        ...integrations.sort((a, b) =>
+          caseInsensitiveStringCompare(a.name || "", b.name || "")
+        ),
+      ];
     }
   );
 
@@ -225,6 +242,7 @@ class AddIntegrationDialog extends LitElement {
       this._integrations!,
       this._helpers!,
       this._supportedBrands!,
+      this.hass.config.components,
       this.hass.localize,
       this._filter
     );
@@ -433,6 +451,12 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
 
+    if (integration.is_add) {
+      protocolIntegrationPicked(this, this.hass, integration.domain);
+      this.closeDialog();
+      return;
+    }
+
     if (integration.is_helper) {
       this.closeDialog();
       navigate(`/config/helpers/add?domain=${integration.domain}`);
@@ -441,6 +465,14 @@ class AddIntegrationDialog extends LitElement {
 
     if (integration.integrations) {
       this._fetchFlowsInProgress(Object.keys(integration.integrations));
+      this._pickedBrand = integration.domain;
+      return;
+    }
+
+    if (
+      ["zha", "zwave_js"].includes(integration.domain) &&
+      isComponentLoaded(this.hass, integration.domain)
+    ) {
       this._pickedBrand = integration.domain;
       return;
     }
