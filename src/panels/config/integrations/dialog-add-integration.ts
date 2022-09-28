@@ -262,19 +262,23 @@ class AddIntegrationDialog extends LitElement {
       scrimClickAction
       escapeKeyAction
       hideActions
-      .heading=${createCloseHeading(
-        this.hass,
-        this._pickedBrand
-          ? html`<ha-icon-button-prev
-                @click=${this._prevClicked}
-                style="--mdc-icon-button-size: 30px; color: var(--secondary-text-color);"
-              ></ha-icon-button-prev>
-              ${this._calculateBrandHeading()}`
-          : this.hass.localize("ui.panel.config.integrations.new")
-      )}
+      .heading=${this._pickedBrand
+        ? true
+        : createCloseHeading(
+            this.hass,
+            this.hass.localize("ui.panel.config.integrations.new")
+          )}
     >
       ${this._pickedBrand
-        ? this._renderIntegration()
+        ? html`<div slot="heading">
+              <ha-icon-button-prev
+                @click=${this._prevClicked}
+              ></ha-icon-button-prev>
+              <h2 class="mdc-dialog__title">
+                ${this._calculateBrandHeading()}
+              </h2>
+            </div>
+            ${this._renderIntegration()}`
         : this._renderAll(integrations)}
     </ha-dialog>`;
   }
@@ -306,7 +310,7 @@ class AddIntegrationDialog extends LitElement {
       .flowsInProgress=${this._flowsInProgress}
       style=${styleMap({
         minWidth: `${this._width}px`,
-        minHeight: `${this._height}px`,
+        minHeight: `589px`,
       })}
       @close-dialog=${this.closeDialog}
     ></ha-domain-integrations>`;
@@ -570,10 +574,10 @@ class AddIntegrationDialog extends LitElement {
     }
   }
 
-  private _prevClicked = () => {
+  private _prevClicked() {
     this._pickedBrand = undefined;
     this._flowsInProgress = undefined;
-  };
+  }
 
   static styles = [
     haStyleScrollbar,
@@ -612,6 +616,33 @@ class AddIntegrationDialog extends LitElement {
       }
       ha-integration-list-item {
         width: 100%;
+      }
+      ha-icon-button-prev {
+        color: var(--secondary-text-color);
+        position: absolute;
+        left: 16px;
+        top: 14px;
+        inset-inline-end: initial;
+        inset-inline-start: 16px;
+        direction: var(--direction);
+      }
+      .mdc-dialog__title {
+        margin: 0;
+        margin-left: 48px;
+        padding: 24px 24px 0 24px;
+        color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
+        font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
+        line-height: var(--mdc-typography-headline6-line-height, 2rem);
+        font-weight: var(--mdc-typography-headline6-font-weight, 500);
+        letter-spacing: var(
+          --mdc-typography-headline6-letter-spacing,
+          0.0125em
+        );
+        text-decoration: var(
+          --mdc-typography-headline6-text-decoration,
+          inherit
+        );
+        text-transform: var(--mdc-typography-headline6-text-transform, inherit);
       }
     `,
   ];
