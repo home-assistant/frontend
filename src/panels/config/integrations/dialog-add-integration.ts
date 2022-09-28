@@ -8,6 +8,7 @@ import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -398,7 +399,6 @@ class AddIntegrationDialog extends LitElement {
       getIntegrationDescriptions(this.hass),
       getSupportedBrands(this.hass),
     ]);
-    this._fetchManifests();
     this._integrations = {
       ...descriptions.core.integration,
       ...descriptions.custom.integration,
@@ -407,6 +407,7 @@ class AddIntegrationDialog extends LitElement {
       ...descriptions.core.helper,
       ...descriptions.custom.helper,
     };
+    this._fetchManifests();
     this._supportedBrands = supportedBrands;
     this.hass.loadBackendTranslation(
       "title",
@@ -416,7 +417,10 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private async _fetchManifests() {
-    const fetched = await fetchIntegrationManifests(this.hass);
+    const fetched = await fetchIntegrationManifests(
+      this.hass,
+      Object.keys(this._integrations!)
+    );
     const manifests = {};
     for (const manifest of fetched) {
       manifests[manifest.domain] = manifest;
@@ -448,7 +452,7 @@ class AddIntegrationDialog extends LitElement {
         confirm: () => {
           this.closeDialog();
           if (["zha", "zwave_js"].includes(domain)) {
-            // this._handleAddPicked(slug);
+            protocolIntegrationPicked(this, this.hass, domain);
             return;
           }
           const supportIntegration = this._integrations?.[domain];
@@ -500,9 +504,36 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
 
+    const manifest = this._manifests?.[integration.domain];
     this.closeDialog();
     showAlertDialog(this, {
-      text: "No config flow available check docs on how to setup",
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.yaml_only_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.yaml_only_text",
+        {
+          link:
+            manifest?.is_built_in || manifest?.documentation
+              ? html`<a
+                  href=${manifest.is_built_in
+                    ? documentationUrl(
+                        this.hass,
+                        `/integrations/${manifest.domain}`
+                      )
+                    : manifest.documentation}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_flow.documentation"
+                  )}
+                </a>`
+              : this.hass.localize(
+                  "ui.panel.config.integrations.config_flow.documentation"
+                ),
+        }
+      ),
     });
   }
 
