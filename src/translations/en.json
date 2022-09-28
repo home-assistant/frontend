@@ -5126,6 +5126,11 @@
         "confirm_text": "Restart add-on",
         "text": "Do you want to restart the add-on with your changes?"
       },
+      "uninstall_addon": {
+        "title": "Uninstall {name}?",
+        "text": "Its configuration will be permanently deleted.",
+        "uninstall": "Uninstall"
+      },
       "hardware": {
         "title": "Hardware",
         "search": "Search hardware",
