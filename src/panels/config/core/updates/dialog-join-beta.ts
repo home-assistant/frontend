@@ -21,7 +21,7 @@ export class DialogJoinBeta
 
   @state() private _dialogParams?: JoinBetaDialogParams;
 
-  public async showDialog(dialogParams: JoinBetaDialogParams): Promise<void> {
+  public showDialog(dialogParams: JoinBetaDialogParams): void {
     this._dialogParams = dialogParams;
   }
 
