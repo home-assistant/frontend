@@ -1002,6 +1002,15 @@
         "attribute": "Attribute",
         "min_max_change": "min/max/change"
       },
+      "zha_manage_device": {
+        "heading": "Manage Zigbee Device",
+        "tabs": {
+          "clusters": "Clusters",
+          "bindings": "Bindings",
+          "signature": "Signature",
+          "children": "Children"
+        }
+      },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
@@ -1010,10 +1019,8 @@
         "buttons": {
           "add": "Add devices via this device",
           "remove": "Remove",
-          "clusters": "Manage clusters",
+          "manage": "Manage zigbee device",
           "reconfigure": "Reconfigure",
-          "zigbee_information": "Zigbee signature",
-          "device_children": "View children",
           "view_network": "View network"
         },
         "services": {
@@ -1796,7 +1803,8 @@
             "dev_automation": "Debug automation",
             "show_info_automation": "Show info about automation",
             "delete": "[%key:ui::common::delete%]",
-            "delete_confirm": "Are you sure you want to delete this automation?",
+            "delete_confirm_title": "Delete automation?",
+            "delete_confirm_text": "{name} will be permanently deleted.",
             "duplicate": "[%key:ui::common::duplicate%]",
             "disabled": "Disabled",
             "headers": {
@@ -1836,7 +1844,8 @@
             "load_error_not_deletable": "Only automations in automations.yaml can be deleted.",
             "load_error_unknown": "Error loading automation ({err_no}).",
             "save": "Save",
-            "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
+            "unsaved_confirm_title": "Leave editor?",
+            "unsaved_confirm_text": "Unsaved changes will be lost.",
             "alias": "Name",
             "automation_alias": "Automation name",
             "automation_settings": "Automation settings",
@@ -1887,7 +1896,8 @@
               "change_alias": "Rename trigger",
               "alias": "Trigger name",
               "delete": "[%key:ui::common::delete%]",
-              "delete_confirm": "Are you sure you want to delete this?",
+              "delete_confirm_title": "Delete trigger?",
+              "delete_confirm_text": "It will be permanently deleted.",
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "type": {
@@ -2007,7 +2017,8 @@
               "change_alias": "Rename condition",
               "alias": "Condition name",
               "delete": "[%key:ui::common::delete%]",
-              "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
+              "delete_confirm_title": "Delete condition?",
+              "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "type": {
@@ -2101,7 +2112,8 @@
               "disable": "Disable",
               "disabled": "Disabled",
               "delete": "[%key:ui::common::delete%]",
-              "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
+              "delete_confirm_title": "Delete action?",
+              "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_action": "No visual editor support for action: {action}",
               "type_select": "Action type",
               "type": {
@@ -2253,15 +2265,15 @@
           "add": {
             "header": "Import a blueprint",
             "import_header": "Blueprint ''{name}''",
-            "import_introduction_link": "You can import blueprints of other users from Github and the {community_link}. Enter the URL of the blueprint below.",
-            "community_forums": "community forums",
-            "url": "URL of the blueprint",
+            "import_introduction": "Import blueprints of other users from GitHub and the community forums by pasting the address below.",
+            "community_forums": "View blueprints on the community forums",
+            "url": "Blueprint address",
             "raw_blueprint": "Blueprint content",
             "importing": "Loading blueprint…",
-            "import_btn": "Preview blueprint",
+            "import_btn": "Preview",
             "saving": "Importing blueprint…",
             "save_btn": "Import blueprint",
-            "error_no_url": "Please enter the URL of the blueprint.",
+            "error_no_url": "Please enter the blueprint address.",
             "unsupported_blueprint": "This blueprint is not supported",
             "file_name": "Blueprint Path"
           }
@@ -2353,7 +2365,8 @@
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
             "load_error_unknown": "Error loading scene ({err_no}).",
             "save": "Save",
-            "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
+            "unsaved_confirm_title": "Leave editor?",
+            "unsaved_confirm_text": "Unsaved changes will be lost.",
             "name": "Name",
             "icon": "Icon",
             "area": "Area",
@@ -2850,6 +2863,14 @@
             "stop_ignore": "Stop ignoring"
           },
           "config_entry": {
+            "application_credentials": {
+              "delete_title": "Application Credentials",
+              "delete_prompt": "Would you like to also remove Application Credentials for this integration?",
+              "delete_detail": "If you remove them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be acccessed from the Application Credentials menu.",
+              "delete_error_title": "Removing Application Credential failed",
+              "dismiss": "Keep",
+              "learn_more": "Learn more about Application Credentials"
+            },
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
@@ -3000,12 +3021,16 @@
           "caption": "Application Credentials",
           "description": "Manage the OAuth Application Credentials used by Integrations",
           "editor": {
-            "caption": "Add Application Credential",
-            "create": "Create",
+            "caption": "Add Credential",
+            "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a passwords. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
+            "view_documentation": "View documentation",
+            "add": "Add",
             "domain": "Integration",
             "name": "Name",
             "client_id": "OAuth Client ID",
-            "client_secret": "OAuth Client Secret"
+            "client_id_helper": "Public identifier of the OAuth application",
+            "client_secret": "OAuth Client Secret",
+            "client_secret_helper": "Secret of the OAuth application"
           },
           "picker": {
             "add_application_credential": "Add Application Credential",
@@ -3060,17 +3085,17 @@
           "clusters": {
             "header": "Clusters",
             "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
-            "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
+            "tabs": {
+              "attributes": "Attributes",
+              "commands": "Commands"
+            }
           },
           "cluster_attributes": {
             "header": "Cluster Attributes",
             "introduction": "View and edit cluster attributes.",
             "attributes_of_cluster": "Attributes of the selected cluster",
-            "get_zigbee_attribute": "Get Zigbee Attribute",
-            "set_zigbee_attribute": "Set Zigbee Attribute",
-            "help_attribute_dropdown": "Select an attribute to view or set its value.",
-            "help_get_zigbee_attribute": "Get the value for the selected attribute.",
-            "help_set_zigbee_attribute": "Set attribute value for the specified cluster on the specified entity."
+            "read_zigbee_attribute": "Read Attribute",
+            "write_zigbee_attribute": "Write Attribute"
           },
           "cluster_commands": {
             "header": "Cluster Commands",
@@ -3119,6 +3144,11 @@
             "auto_zoom": "Auto Zoom",
             "enable_physics": "Enable Physics",
             "refresh_topology": "Refresh Topology"
+          },
+          "device_binding": {
+            "bind": "Bind",
+            "unbind": "Unbind",
+            "picker_label": "Bindable Devices"
           },
           "group_binding": {
             "header": "Group Binding",
@@ -3502,7 +3532,8 @@
             "title": "Move datadisk",
             "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
             "select_device": "Select new datadisk",
-            "no_devices": "No suitable attached devices found",
+            "no_devices_title": "No suitable storage found",
+            "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk",
             "moving_desc": "Rebooting and moving datadisk. Please have patience",
             "moving": "Moving datadisk",
             "loading_devices": "Loading devices",
@@ -3734,7 +3765,11 @@
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
               "panel": "Panel (1 card)"
-            }
+            },
+            "subview": "Subview",
+            "subview_helper": "Subviews don't appear in tabs and have a back button.",
+            "back_path": "Back path (optional)",
+            "back_path_helper": "Only for subviews. If empty, clicking on back button will go to the previous page."
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
@@ -3923,13 +3958,21 @@
               "description": "The Statistics Graph card allows you to display a graph of the statistics for each of the entities listed.",
               "period": "Period",
               "stat_types": "Show stat types",
+              "stat_type_labels": {
+                "mean": "Mean",
+                "min": "Min",
+                "max": "Max",
+                "sum": "Sum"
+              },
               "chart_type": "Chart type",
               "periods": {
                 "hour": "Hour",
                 "day": "Day",
                 "month": "Month",
                 "5minute": "5 Minutes"
-              }
+              },
+              "pick_statistic": "Add a statistic",
+              "picked_statistic": "Statistic"
             },
             "horizontal-stack": {
               "name": "Horizontal Stack",

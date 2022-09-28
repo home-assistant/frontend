@@ -26,6 +26,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-area-picker";
@@ -763,24 +764,16 @@ export class HaSceneEditor extends SubscribeMixin(
     }
   }
 
-  private _backTapped = (): void => {
-    if (this._dirty) {
-      showConfirmationDialog(this, {
-        text: this.hass!.localize(
-          "ui.panel.config.scene.editor.unsaved_confirm"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        confirm: () => this._goBack(),
-      });
-    } else {
+  private _backTapped = async (): Promise<void> => {
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
       this._goBack();
     }
   };
 
   private _goBack(): void {
     applyScene(this.hass, this._storedStates);
-    history.back();
+    afterNextRender(() => history.back());
   }
 
   private _deleteTapped(): void {
@@ -790,8 +783,7 @@ export class HaSceneEditor extends SubscribeMixin(
       ),
       text: this.hass!.localize(
         "ui.panel.config.scene.picker.delete_confirm_text",
-        "name",
-        this._config?.name
+        { name: this._config?.name }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
@@ -806,32 +798,37 @@ export class HaSceneEditor extends SubscribeMixin(
     history.back();
   }
 
-  private async _duplicate() {
+  private async confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
-      if (
-        !(await showConfirmationDialog(this, {
-          text: this.hass!.localize(
-            "ui.panel.config.scene.editor.unsaved_confirm"
-          ),
-          confirmText: this.hass!.localize("ui.common.leave"),
-          dismissText: this.hass!.localize("ui.common.stay"),
-        }))
-      ) {
-        return;
-      }
-      // Wait for dialog to complete closing
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      return showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.config.scene.editor.unsaved_confirm_title"
+        ),
+        text: this.hass!.localize(
+          "ui.panel.config.scene.editor.unsaved_confirm_text"
+        ),
+        confirmText: this.hass!.localize("ui.common.leave"),
+        dismissText: this.hass!.localize("ui.common.stay"),
+        destructive: true,
+      });
     }
-    showSceneEditor(
-      {
-        ...this._config,
-        id: undefined,
-        name: `${this._config?.name} (${this.hass.localize(
-          "ui.panel.config.scene.picker.duplicate"
-        )})`,
-      },
-      this._sceneAreaIdCurrent || undefined
-    );
+    return true;
+  }
+
+  private async _duplicate() {
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
+      showSceneEditor(
+        {
+          ...this._config,
+          id: undefined,
+          name: `${this._config?.name} (${this.hass.localize(
+            "ui.panel.config.scene.picker.duplicate"
+          )})`,
+        },
+        this._sceneAreaIdCurrent || undefined
+      );
+    }
   }
 
   private _calculateMetaData(): SceneMetaData {

@@ -36,7 +36,7 @@ export class EnergyGasSettings extends LitElement {
   public preferences!: EnergyPreferences;
 
   @property({ attribute: false })
-  public statsMetadata!: Record<string, StatisticsMetaData>;
+  public statsMetadata?: Record<string, StatisticsMetaData>;
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
@@ -98,7 +98,7 @@ export class EnergyGasSettings extends LitElement {
                   >${getStatisticLabel(
                     this.hass,
                     source.stat_energy_from,
-                    this.statsMetadata[source.stat_energy_from]
+                    this.statsMetadata?.[source.stat_energy_from]
                   )}</span
                 >
                 <ha-icon-button
@@ -133,7 +133,10 @@ export class EnergyGasSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsGasDialog(this, {
-      unit: getEnergyGasUnitCategory(this.preferences, this.statsMetadata),
+      allowedGasUnitCategory: getEnergyGasUnitCategory(
+        this.preferences,
+        this.statsMetadata
+      ),
       saveCallback: async (source) => {
         delete source.unit_of_measurement;
         await this._savePreferences({
@@ -149,11 +152,12 @@ export class EnergyGasSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGasDialog(this, {
       source: { ...origSource },
-      unit: getEnergyGasUnitCategory(
+      allowedGasUnitCategory: getEnergyGasUnitCategory(
         this.preferences,
         this.statsMetadata,
         origSource.stat_energy_from
       ),
+      metadata: this.statsMetadata?.[origSource.stat_energy_from],
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,

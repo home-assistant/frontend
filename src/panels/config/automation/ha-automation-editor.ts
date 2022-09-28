@@ -31,6 +31,7 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -540,11 +541,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private async confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
       return showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.config.automation.editor.unsaved_confirm_title"
+        ),
         text: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm"
+          "ui.panel.config.automation.editor.unsaved_confirm_text"
         ),
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
+        destructive: true,
       });
     }
     return true;
@@ -553,7 +558,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private _backTapped = async () => {
     const result = await this.confirmUnsavedChanged();
     if (result) {
-      history.back();
+      afterNextRender(() => history.back());
     }
   };
 
@@ -570,10 +575,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _deleteConfirm() {
     showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.picker.delete_confirm_title"
+      ),
       text: this.hass.localize(
-        "ui.panel.config.automation.picker.delete_confirm"
+        "ui.panel.config.automation.picker.delete_confirm_text",
+        { name: this._config?.alias }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
+      destructive: true,
       dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
     });

@@ -21,6 +21,7 @@ export type Selector =
   | IconSelector
   | LocationSelector
   | MediaSelector
+  | NavigationSelector
   | NumberSelector
   | ObjectSelector
   | SelectSelector
@@ -169,6 +170,11 @@ export interface MediaSelectorValue {
     children_media_class?: string | null;
     navigateIds?: { media_content_type: string; media_content_id: string }[];
   };
+}
+
+export interface NavigationSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  navigation: {};
 }
 
 export interface NumberSelector {
