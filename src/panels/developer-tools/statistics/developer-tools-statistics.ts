@@ -33,8 +33,9 @@ const FIX_ISSUES_ORDER = {
   entity_not_recorded: 1,
   unsupported_unit_state: 2,
   unsupported_state_class: 3,
-  units_changed: 4,
-  unsupported_unit_metadata: 5,
+  units_changed_can_convert: 4,
+  units_changed: 5,
+  unsupported_unit_metadata: 6,
 };
 @customElement("developer-tools-statistics")
 class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
@@ -343,6 +344,14 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         });
         break;
       case "units_changed":
+        showFixStatisticsUnitsChangedDialog(this, {
+          issue,
+          fixedCallback: () => {
+            this._validateStatistics();
+          },
+        });
+        break;
+      case "units_changed_can_convert":
         showFixStatisticsUnitsChangedDialog(this, {
           issue,
           fixedCallback: () => {
