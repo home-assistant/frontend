@@ -5,6 +5,7 @@ import { property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
+import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
@@ -21,7 +22,7 @@ export class CloudAlexaPref extends LitElement {
     }
 
     const alexa_registered = this.cloudStatus.alexa_registered;
-    const { alexa_enabled } = this.cloudStatus!.prefs;
+    const { alexa_enabled, alexa_report_state } = this.cloudStatus!.prefs;
 
     return html`
       <ha-card
@@ -92,7 +93,24 @@ export class CloudAlexaPref extends LitElement {
                   </ul>
                 </ha-alert>
               `
-            : ""}
+            : html`
+                <ha-settings-row>
+                  <span slot="heading">
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.alexa.enable_state_reporting"
+                    )}
+                  </span>
+                  <span slot="description">
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.alexa.info_state_reporting"
+                    )}
+                  </span>
+                  <ha-switch
+                    .checked=${alexa_report_state}
+                    @change=${this._reportToggleChanged}
+                  ></ha-switch>
+                </ha-settings-row>
+              `}
         </div>
         <div class="card-actions">
           <a href="/config/cloud/alexa">
@@ -117,10 +135,36 @@ export class CloudAlexaPref extends LitElement {
     }
   }
 
+  private async _reportToggleChanged(ev) {
+    const toggle = ev.target as HaSwitch;
+    try {
+      await updateCloudPref(this.hass!, {
+        alexa_report_state: toggle.checked!,
+      });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err: any) {
+      alert(
+        `${this.hass!.localize(
+          "ui.panel.config.cloud.account.alexa.state_reporting_error",
+          "enable_disable",
+          this.hass!.localize(
+            toggle.checked
+              ? "ui.panel.config.cloud.account.alexa.enable"
+              : "ui.panel.config.cloud.account.alexa.disable"
+          )
+        )} ${err.message}`
+      );
+      toggle.checked = !toggle.checked;
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);
+      }
+      ha-settings-row {
+        padding: 0;
       }
       .header-actions {
         position: absolute;

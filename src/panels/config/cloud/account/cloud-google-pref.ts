@@ -24,7 +24,7 @@ export class CloudGooglePref extends LitElement {
     }
 
     const google_registered = this.cloudStatus.google_registered;
-    const { google_enabled, google_secure_devices_pin } =
+    const { google_enabled, google_report_state, google_secure_devices_pin } =
       this.cloudStatus.prefs;
 
     return html`
@@ -122,6 +122,23 @@ export class CloudGooglePref extends LitElement {
 
                 <ha-settings-row>
                   <span slot="heading">
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.enable_state_reporting"
+                    )}
+                  </span>
+                  <span slot="description">
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.info_state_reporting"
+                    )}
+                  </span>
+                  <ha-switch
+                    .checked=${google_report_state}
+                    @change=${this._reportToggleChanged}
+                  ></ha-switch>
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="heading">
                     ${this.hass.localize(
                       "ui.panel.config.cloud.account.google.security_devices"
                     )}
@@ -165,6 +182,23 @@ export class CloudGooglePref extends LitElement {
       await updateCloudPref(this.hass, { [toggle.id]: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
+      toggle.checked = !toggle.checked;
+    }
+  }
+
+  private async _reportToggleChanged(ev) {
+    const toggle = ev.target as HaSwitch;
+    try {
+      await updateCloudPref(this.hass, {
+        google_report_state: toggle.checked!,
+      });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err: any) {
+      alert(
+        `Unable to ${toggle.checked ? "enable" : "disable"} report state. ${
+          err.message
+        }`
+      );
       toggle.checked = !toggle.checked;
     }
   }
