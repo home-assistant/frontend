@@ -38,8 +38,6 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private _names: Record<string, string> = {};
 
-  private _fetching = false;
-
   private _interval?: number;
 
   public disconnectedCallback() {
@@ -92,7 +90,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     if (typeof config.stat_types === "string") {
       this._config = { ...config, stat_types: [config.stat_types] };
     } else if (!config.stat_types) {
-      this._config = { ...config, stat_types: ["sum", "min", "max", "mean"] };
+      this._config = {
+        ...config,
+        stat_types: ["state", "sum", "min", "max", "mean"],
+      };
     } else {
       this._config = config;
     }
@@ -156,15 +157,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _getStatistics(): Promise<void> {
-    if (this._fetching) {
-      return;
-    }
     const startDate = new Date();
     startDate.setTime(
       startDate.getTime() -
         1000 * 60 * 60 * (24 * (this._config!.days_to_show || 30) + 1)
     );
-    this._fetching = true;
     try {
       this._statistics = await fetchStatistics(
         this.hass!,
@@ -173,8 +170,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         this._entities,
         this._config!.period
       );
-    } finally {
-      this._fetching = false;
+    } catch (err) {
+      this._statistics = undefined;
     }
   }
 
