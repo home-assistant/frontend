@@ -1,7 +1,7 @@
 import { computeStateName } from "../common/entity/compute_state_name";
 import { HomeAssistant } from "../types";
 
-export type StatisticType = "sum" | "min" | "max" | "mean";
+export type StatisticType = "state" | "sum" | "min" | "max" | "mean";
 
 export interface Statistics {
   [statisticId: string]: StatisticValue[];

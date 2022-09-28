@@ -37,6 +37,7 @@ import {
 } from "../../../../data/recorder";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import { statTypeMap } from "../../../../components/chart/statistics-chart";
+import { ensureArray } from "../../../../common/ensure-array";
 
 const statTypeStruct = union([
   literal("state"),
@@ -192,7 +193,11 @@ export class HuiStatisticsGraphCardEditor
       ? Array.isArray(this._config!.stat_types)
         ? this._config!.stat_types
         : [this._config!.stat_types]
-      : stat_types;
+      : stat_types.filter((stat_type) =>
+          this._metaDatas?.every((metaData) =>
+            statisticsMetaHasType(metaData, statTypeMap[stat_type])
+          )
+        );
     const data = {
       chart_type: "line",
       period: "hour",
@@ -232,13 +237,24 @@ export class HuiStatisticsGraphCardEditor
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _entitiesChanged(ev: CustomEvent): void {
+  private async _entitiesChanged(ev: CustomEvent): Promise<void> {
     const config = { ...this._config!, entities: ev.detail.value };
     if (
       config.entities?.some((statistic_id) => statistic_id.includes(":")) &&
       config.period === "5minute"
     ) {
       delete config.period;
+    }
+    if (config.stat_types && config.entities.length) {
+      const metadata = await getStatisticMetadata(this.hass!, config.entities);
+      config.stat_types = ensureArray(config.stat_types).filter((stat_type) =>
+        metadata.every((metaData) =>
+          statisticsMetaHasType(metaData, statTypeMap[stat_type])
+        )
+      );
+      if (!config.stat_types.length) {
+        delete config.stat_types;
+      }
     }
     fireEvent(this, "config-changed", {
       config,

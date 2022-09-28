@@ -90,7 +90,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     if (typeof config.stat_types === "string") {
       this._config = { ...config, stat_types: [config.stat_types] };
     } else if (!config.stat_types) {
-      this._config = { ...config, stat_types: ["sum", "min", "max", "mean"] };
+      this._config = {
+        ...config,
+        stat_types: ["state", "sum", "min", "max", "mean"],
+      };
     } else {
       this._config = config;
     }
