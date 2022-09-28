@@ -37,6 +37,7 @@ import {
   mdiLightningBolt,
   mdiMailbox,
   mdiMapMarkerRadius,
+  mdiMicrophoneMessage,
   mdiMolecule,
   mdiMoleculeCo,
   mdiMoleculeCo2,
@@ -47,7 +48,7 @@ import {
   mdiRobotVacuum,
   mdiScriptText,
   mdiSineWave,
-  mdiMicrophoneMessage,
+  mdiSpeedometer,
   mdiThermometer,
   mdiThermostat,
   mdiTimerOutline,
@@ -121,6 +122,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   carbon_monoxide: mdiMoleculeCo,
   current: mdiCurrentAc,
   date: mdiCalendar,
+  distance: mdiSpeedometer,
   energy: mdiLightningBolt,
   frequency: mdiSineWave,
   gas: mdiGasCylinder,
@@ -140,11 +142,13 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   pressure: mdiGauge,
   reactive_power: mdiFlash,
   signal_strength: mdiWifi,
+  speed: mdiSpeedometer,
   sulphur_dioxide: mdiMolecule,
   temperature: mdiThermometer,
   timestamp: mdiClock,
   volatile_organic_compounds: mdiMolecule,
   voltage: mdiSineWave,
+  // volume: TBD, => no well matching icon found
 };
 
 /** Domains that have a state card. */
