@@ -421,7 +421,14 @@
             },
             "restart_addon": {
                 "confirm_text": "Taaskäivita lisandmoodul",
-                "text": "Kas soovid lisandmooduli taaskäivitada rakendades muudatused?"
+                "restart": "Taaskäivita",
+                "text": "Uue salvestatud konfiguratsiooni kasutamiseks tuleb see lisandmoodul taaskäivitada.",
+                "title": "Kas taaskäivitada {name} ?"
+            },
+            "uninstall_addon": {
+                "text": "Selle konfiguratsioon kustutatakse jäädavalt.",
+                "title": "Kas eemaldada {nimi}?",
+                "uninstall": "Eemalda"
             }
         },
         "my": {
@@ -1258,8 +1265,10 @@
             "join_beta_channel": {
                 "backup": "Enne selle funktsiooni aktiveerimist veendu, et andmetest oleks varukoopiad.",
                 "confirm": "Kas soovid liituda beetakanaliga?",
+                "join": "Liitu",
                 "release_items": "See hõlmab beetaversioone:",
                 "title": "Liitu beetakanaliga",
+                "view_documentation": "Vaata dokumentatsiooni",
                 "warning": "Beetaversioonid on mõeldud testijatele ja varakult kasutajatele ning need võivad sisaldada ebastabiilseid koodimuudatusi"
             },
             "more_info_control": {
@@ -1500,6 +1509,7 @@
                     "add": "Lisa seadmeid selle seadme abil",
                     "clusters": "Halda seadmekobaraid",
                     "device_children": "Kuva alamseadmed",
+                    "manage": "Zigbee seadme haldamine",
                     "reconfigure": "Seadista uuesti",
                     "remove": "Eemalda",
                     "view_in_visualization": "Visualiseeri",
@@ -1525,6 +1535,15 @@
                 "unknown": "Teadmata",
                 "zha_device_card": {
                     "device_name_placeholder": "Muuda seadme nime"
+                }
+            },
+            "zha_manage_device": {
+                "heading": "Zigbee seadme haldamine",
+                "tabs": {
+                    "bindings": "Seosed",
+                    "children": "Alamseadmed",
+                    "clusters": "Klastrid",
+                    "signature": "Signatuur"
                 }
             },
             "zha_reconfigure_device": {
@@ -1607,12 +1626,17 @@
                     "caption": "Rakenduse mandaadid",
                     "description": "Sidumiste poolt kasutatavate OAuth rakenduse mandaatide haldamine",
                     "editor": {
-                        "caption": "Lisa rakenduse mandaat",
+                        "add": "Lisa",
+                        "caption": "Lisa mandaat",
                         "client_id": "OAuthi kliendi ID",
+                        "client_id_helper": "OAuthi rakenduse avalik tunnus",
                         "client_secret": "OAuthi kliendi salasõna",
+                        "client_secret_helper": "OAuthi rakenduse salasõna",
                         "create": "Loo",
+                        "description": "OAuthi kasutatakse koduabilisele juurdepääsu andmiseks muude veebisaitide teabele ilma paroole andmata. Seda mehhanismi kasutavad sellised ettevõtted nagu Spotify, Google, Withings, Microsoft ja Twitter.",
                         "domain": "Sidumine",
-                        "name": "Nimi"
+                        "name": "Nimi",
+                        "view_documentation": "Vaata dokumentatsiooni"
                     },
                     "picker": {
                         "add_application_credential": "Lisa rakenduse mandaat",
@@ -1641,7 +1665,7 @@
                         "entities": "Olemid"
                     },
                     "delete": {
-                        "confirmation_text": "Kõik sellele ala seadmed jäävad peremehetuks.",
+                        "confirmation_text": "See kasutaja kustutatakse jäädavalt.",
                         "confirmation_title": "Oled kindel, et soovid selle ala kustutada?"
                     },
                     "description": "Seadmete ja olemite rühmitamine aladesse",
@@ -1693,6 +1717,8 @@
                             "change_alias": "Tegevuse ümbernimetamine",
                             "delete": "Kustuta",
                             "delete_confirm": "Oled kindel, et soovid kustutada?",
+                            "delete_confirm_text": "See kustutatakse jäädavalt.",
+                            "delete_confirm_title": "Kas kustutada toiming?",
                             "disable": "Keela",
                             "disabled": "Keelatud",
                             "duplicate": "Paljunda",
@@ -1812,12 +1838,15 @@
                             "no_blueprints": "Kavandid puuduvad",
                             "no_inputs": "Sellel kavandil puuduvad sisendid."
                         },
+                        "change_mode": "Muuda režiimi",
                         "conditions": {
                             "add": "Lisa tingimus",
                             "alias": "Tingimuse nimi",
                             "change_alias": "Nimeta tingimus ümber",
                             "delete": "Kustuta",
                             "delete_confirm": "Oled kindel, et soovid kustutada?",
+                            "delete_confirm_text": "See kustutatakse jäädavalt.",
+                            "delete_confirm_title": "Kas kustutada tingimus?",
                             "duplicate": "Paljunda",
                             "header": "Tingimused",
                             "introduction": "Tingimused on valikulised ja takistavad automatiseerimise käivitamist, välja arvatud juhul kui kõik tingimused on täidetud.",
@@ -1866,7 +1895,7 @@
                                     "before": "Enne",
                                     "before_offset": "Eelnev ajanihe (valikuline)",
                                     "label": "Päike",
-                                    "sunrise": "Tõusu",
+                                    "sunrise": "Päikesetõus",
                                     "sunset": "Loojangut"
                                 },
                                 "template": {
@@ -1920,6 +1949,8 @@
                         "enable": "Luba",
                         "enable_disable": "Luba/Keela automatiseering",
                         "introduction": "Kasuta automatiseeringuid oma kodule elu sisse puhumiseks.",
+                        "load_error_not_deletable": "Kustutada saab ainult automatiseerimisi mis on kirjes automations.yaml.",
+                        "load_error_not_duplicable": "Ainult automations.yaml-is olevaid automaatiseerimisi saab dubleerida.",
                         "load_error_not_editable": "Ainult automations.yaml failis asuvad automatiseeringud on muudetavad.",
                         "load_error_unknown": "Viga automatiseeringu laadimisel ({err_no}).",
                         "max": {
@@ -1939,6 +1970,12 @@
                         },
                         "move_down": "Liiguta alla",
                         "move_up": "Liiguta üles",
+                        "re_order": "Muuda järjestust",
+                        "re_order_mode": {
+                            "description": "Oled ümberjärjestamise režiimis, saad oma käivitajad, tingimused ja tegevused ümber järjestada.",
+                            "exit": "Välju",
+                            "title": "Muuda režiimide järjestust"
+                        },
                         "rename": "Nimeta ümber",
                         "run": "Käivita",
                         "save": "Salvesta",
@@ -1950,6 +1987,8 @@
                             "change_alias": "Nimeta päästik ümber",
                             "delete": "Kustuta",
                             "delete_confirm": "Oled kindel, et soovid kustutada?",
+                            "delete_confirm_text": "See kustutatakse jäädavalt.",
+                            "delete_confirm_title": "Kas kustutada päästik?",
                             "duplicate": "Paljunda",
                             "edit_id": "ID muutmine",
                             "header": "Päästikud",
@@ -2064,13 +2103,17 @@
                             "type_select": "Päästiku tüüp",
                             "unsupported_platform": "Kasutajaliides ei toeta: {platform}"
                         },
-                        "unsaved_confirm": "Sul on salvestamata muudatusi. Oled kindel, et soovid lahkuda?"
+                        "unsaved_confirm": "Sul on salvestamata muudatusi. Oled kindel, et soovid lahkuda?",
+                        "unsaved_confirm_text": "Salvestamata muudatused lähevad kaotsi.",
+                        "unsaved_confirm_title": "Kas lahkuda redigeerijast?"
                     },
                     "picker": {
                         "add_automation": "Loo automatiseering",
                         "delete": "Kustuta",
                         "delete_automation": "Kustuta automatiseering",
                         "delete_confirm": "Oled kindel, et soovid selle automatiseeringu kustutada?",
+                        "delete_confirm_text": "{name} kustutatakse jäädavalt.",
+                        "delete_confirm_title": "Kas kustutada automatiseerimine?",
                         "dev_automation": "Automatiseeringu silumine",
                         "dev_only_editable": "Siluda saab ainult kordumatu ID-ga automatiseeringuid.",
                         "disabled": "Keelatud",
@@ -2143,26 +2186,28 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "kogukonna foorumid",
-                        "error_no_url": "Sisesta kavandi URL.",
+                        "community_forums": "Vaata kavandeid kogukonna foorumites",
+                        "error_no_url": "Sisesta kavandi aadress.",
                         "file_name": "Kohaliku kavandifaili asukoht",
                         "header": "Impordi kavand",
-                        "import_btn": "Kavandi eelvaade",
+                        "import_btn": "Eelvaade",
                         "import_header": "Kavand \"{name}\"",
+                        "import_introduction": "Impordi teiste kasutajate kavandeid GitHubist ja kogukonna foorumitest lisades alloleva aadressi.",
                         "import_introduction_link": "Teiste kasutajate kavandeid saad importida Githubist ja lehelt {community_link}. Sisesta allpool kavandi URL.",
                         "importing": "Kavandi laadimine…",
                         "raw_blueprint": "Kavandi sisu",
                         "save_btn": "Impordi kavand",
                         "saving": "Kavandi importimine…",
                         "unsupported_blueprint": "Seda kavandit ei toetata",
-                        "url": "Kavandi URL"
+                        "url": "Kavandi aadress"
                     },
                     "caption": "Kavandid",
                     "description": "Kavandite haldamine",
                     "overview": {
                         "add_blueprint": "Laadi kavand",
                         "confirm_delete_header": "Kas kustutada see kavand?",
-                        "confirm_delete_text": "Kas soovid kindlasti selle kavandi kustutada?",
+                        "confirm_delete_text": "{name} kustutatakse jäädavalt.",
+                        "confirm_delete_title": "Kas kustutada kavand?",
                         "create_automation": "Loo automatiseering",
                         "create_script": "Loo skript",
                         "delete_blueprint": "Kustuta kavand",
@@ -2309,10 +2354,13 @@
                         "available_at": "Veebihook on saadaval järgmisel URL-il:",
                         "close": "Sulge",
                         "confirm_disable": "Oled kindel, et soovid selle veebihaagi keelata?",
+                        "confirm_disable_text": "Kasutaja {name} veebihaak keelatakse.",
+                        "confirm_disable_title": "Keela veebihaak",
                         "copied_to_clipboard": "Kopeeritud lõikepuhvrisse",
                         "info_disable_webhook": "Kui sa ei soovi enam seda veebihaaki kasutada, võid",
                         "link_disable_webhook": "keela see",
                         "managed_by_integration": "Seda veebihaaki haldab integreerimine ja seda ei saa keelata.",
+                        "public_url": "Avalik aadress",
                         "view_documentation": "Vaata dokumentatsiooni",
                         "webhook_for": "Veebihaak {name} jaoks"
                     },
@@ -2843,16 +2891,22 @@
                     "description": "Seadista oma jaotur ja ühendatud riistvara",
                     "documentation": "Dokumentatsioon",
                     "documentation_description": "Seadme kohta lisateabe otsimine",
-                    "failed_to_reboot_host": "Hosti taaskäivitamine nurjus",
-                    "failed_to_shutdown_host": "Hosti väljalülitamine nurjus",
-                    "host_shutting_down": "Host sulgub",
+                    "failed_to_reboot_host": "Taaskäivitamine nurjus",
+                    "failed_to_shutdown_host": "Väljalülitamine nurjus",
+                    "host_shutting_down": "süsteem sulgub",
                     "memory": "Mälu",
                     "processor": "Protsessor",
-                    "reboot_host": "Taaskäivita host",
+                    "reboot": "Taaskäivita",
+                    "reboot_host": "Taaskäivita süsteem",
                     "reboot_host_confirm": "Kas soovid kindlasti hosti taaskäivitada?",
-                    "rebooting_host": "Hosti taaskäivitamine",
-                    "shutdown_host": "Sulge host",
-                    "shutdown_host_confirm": "Kas oled kindel, et soovid oma hosti sulgeda?"
+                    "reboot_host_text": "See taaskäivitab kogu süsteemi mis sisaldab tuuma ja kõiki lisandmooduleid.",
+                    "reboot_host_title": "Kas taaskäivitada süsteem?",
+                    "rebooting_host": "Taaskäivitamine",
+                    "shutdown": "Seiskamine",
+                    "shutdown_host": "Süsteemi väljalülitamine",
+                    "shutdown_host_confirm": "Kas oled kindel, et soovid oma hosti sulgeda?",
+                    "shutdown_host_text": "See sulgeb kogu süsteemi mis sisaldab tuuma ja kõiki lisandmooduleid.",
+                    "shutdown_host_title": "Kas seisata süsteem?"
                 },
                 "header": "Home Assistant'i seadistamine",
                 "helpers": {
@@ -2928,11 +2982,21 @@
                     "attention": "Vajalik on sekkumine",
                     "caption": "Sidumised",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "Kui need eemaldate, pead sidumise uuesti seadistamisel sisestama mandaadid. Kui jätad need alles, kasutatakse neid integratsiooni uuesti seadistamisel automaatselt või neile pääseb juurde menüüst Rakenduse mandaadid.",
+                            "delete_error_title": "Rakenduse volituste eemaldamine ebaõnnestus",
+                            "delete_prompt": "Kas soovid selle sidumise puhul ka rakenduse volitused eemaldada?",
+                            "delete_title": "Rakenduse volitused",
+                            "dismiss": "Säilita",
+                            "learn_more": "Lisateave rakenduse volituste kohta"
+                        },
                         "area": "alas {area}",
                         "check_the_logs": "Kontrolli logisid",
                         "configure": "Seadista",
                         "delete": "Kustuta",
                         "delete_confirm": "Oled kindel, et soovid selle sidumise {title} kustutada?",
+                        "delete_confirm_text": "Selle seadmed ja olemid kustutatakse jäädavalt.",
+                        "delete_confirm_title": "Kas kustutada {title} ?",
                         "depends_on_cloud": "Sõltub pilveteenusest",
                         "devices": "{count} {count, plural,\n  one {seade}\n  other {seadet}\n}",
                         "disable": {
@@ -2945,6 +3009,8 @@
                             },
                             "disabled_cause": "Keelatud {cause} põhjusel"
                         },
+                        "disable_confirm_text": "Selle seadmed ja olemid keelatakse.",
+                        "disable_confirm_title": "Kas keelata {title} ?",
                         "disable_error": "Sidumise lubamine või keelamine nurjus",
                         "disable_restart_confirm": "Taaskäivita Home Assistant, et lõpetada selle sidumise keelamine",
                         "disabled_polling": "Uuendatud andmete automaatne päring on välja lülitatud",
@@ -3132,6 +3198,8 @@
                         "cant_edit_yaml": "Kasutate Lovelace YAML režiimis. Seega ei saa Te hallata oma ressursse kasutajaliidese kaudu. Halda neid kirjes configuration.yaml.",
                         "caption": "Ressursid",
                         "confirm_delete": "Kas soovite selle ressursi kindlasti kustutada?",
+                        "confirm_delete_text": "{url} kustutatakse jäädavalt.",
+                        "confirm_delete_title": "Kas kustutada ressurss?",
                         "detail": {
                             "create": "Loo",
                             "delete": "Kustuta",
@@ -3203,6 +3271,8 @@
                     "caption": "Isikud",
                     "confirm_delete": "Oled kindel, et soovid selle isiku kustutada?",
                     "confirm_delete2": "Kõik sellele isikule kuuluvad seadmed jäävad peremehetuks.",
+                    "confirm_delete_text": "See inimene kustutatakse jäädavalt ja kõik sellele inimesele kuuluvad seadmed tühistatakse.",
+                    "confirm_delete_title": "Kas kustutada {name} ?",
                     "create_person": "Loo isik",
                     "description": "Halda isikuid keda Home Assistant jälgib.",
                     "detail": {
@@ -3284,11 +3354,17 @@
                         "load_error_unknown": "Viga stseeni laadimisel ({err_no}).",
                         "name": "Nimi",
                         "save": "Salvesta",
-                        "unsaved_confirm": "Sul on salvestamata muudatusi. Oled kindel, et soovid lahkuda?"
+                        "unsaved_confirm": "Sul on salvestamata muudatusi. Oled kindel, et soovid lahkuda?",
+                        "unsaved_confirm_text": "Salvestamata muudatused lähevad kaotsi.",
+                        "unsaved_confirm_title": "Kas lahkuda redigeerijast?"
                     },
                     "picker": {
+                        "activate": "Aktiveeri",
                         "add_scene": "Lisa stseen",
+                        "delete": "Kustuta",
                         "delete_confirm": "Oled kindel, et soovid selle stseeni kustutada?",
+                        "delete_confirm_text": "{name} kustutatakse jäädavalt.",
+                        "delete_confirm_title": "Kas kustutada stseen?",
                         "delete_scene": "Kustuta stseen",
                         "duplicate": "Paljunda",
                         "duplicate_scene": "Paljunda stseen",
@@ -3297,6 +3373,7 @@
                         "headers": {
                             "activate": "Aktiveeri",
                             "edit": "Muuda",
+                            "last_activated": "Viimati aktiveeritud",
                             "name": "Nimi",
                             "show_info": "Teabe kuvamine",
                             "state": "Olek"
@@ -3306,6 +3383,7 @@
                         "no_scenes": "Ei leitud ühtegi stseeni",
                         "only_editable": "Ainult scenes.yaml failis defineeritud stseenid on muudetavad.",
                         "pick_scene": "Vali stseen mida muuta",
+                        "show_info": "Teave",
                         "show_info_scene": "Kuva stseeni teave"
                     }
                 },
@@ -3316,6 +3394,8 @@
                         "alias": "Nimi",
                         "default_name": "Uus skript",
                         "delete_confirm": "Oled kindel, et soovid selle skripti kustutada?",
+                        "delete_confirm_text": "{name} kustutatakse jäädavalt.",
+                        "delete_confirm_title": "Kas kustutada skript?",
                         "delete_script": "Kustuta skript",
                         "header": "Skript: {name}",
                         "icon": "Ikoon",
@@ -3324,6 +3404,8 @@
                         "id_already_exists_save_error": "Te ei saa seda skripti salvestada kuna ID pole kordumatu. Valige mõni teine ID või jätke see väli tühjaks, et see automaatselt luua.",
                         "introduction": "Skriptide abil saad käivitada toimingute jada.",
                         "link_available_actions": "Vaadake lisateavet saadaolevate toimingute kohta.",
+                        "load_error_not_deletable": "Kustutada saab ainult failis scripts.yaml olevaid skripte.",
+                        "load_error_not_duplicable": "Dubleerida saab ainult failis scripts.yaml olevaid skripte.",
                         "load_error_not_editable": "Ainult scripts.yaml failis asuvad skriptid on muudetavad.",
                         "load_error_unknown": "Viga skripti laadimisel ({err_no}).",
                         "max": {
@@ -3343,6 +3425,7 @@
                         "save_script": "Salvesta skript",
                         "sequence": "Jada",
                         "sequence_sentence": "Selle skripti toimingute jada.",
+                        "show_info": "Teave",
                         "show_trace": "Kuva täitmise samme"
                     },
                     "picker": {
@@ -3360,8 +3443,13 @@
                         "introduction": "Skriptiredaktor võimaldab Teil skripte luua ja redigeerida. Juhiste lugemiseks järgige allolevat linki ja veenduge, et olete Home Assistanti õigesti konfigureerinud.",
                         "learn_more": "Lisateave skriptide kohta",
                         "no_scripts": "Ei leitud ühtegi skripti",
+                        "run": "Käivita",
                         "run_script": "Käivita skript",
-                        "show_info": "Kuva stseeni teave"
+                        "show_info": "Teave",
+                        "show_trace": "Täitmise sammud"
+                    },
+                    "trace": {
+                        "edit_script": "Skripti redigeerimine"
                     }
                 },
                 "storage": {
@@ -3375,6 +3463,8 @@
                         "moving": "Andmeketta teisaldamine",
                         "moving_desc": "Taaskäivitamine ja andmeketta teisaldamine. Palun ole kannatlik",
                         "no_devices": "Sobivaid ühendatud seadmeid ei leitud",
+                        "no_devices_text": "Sobivat välisseadet ei leitud. Välise andmeketta salvestusmaht peab olema suurem olemasoleva ketta mälumahust",
+                        "no_devices_title": "Sobivat salvestusruumi ei leitud",
                         "select_device": "Vali uus andmeketas",
                         "title": "Teisalda andmeketas"
                     },
@@ -3384,7 +3474,7 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "Oled kindel, et soovid Home Assistant'i taaskäivitada?",
-                    "confirm_restart_text": "Home assistanti taaskäivitamine peatab kõik aktiivsed vaated automaatika ja skriptid.",
+                    "confirm_restart_text": "Toiming peatab kõik aktiivsed vaated, automaatika ja skriptid.",
                     "confirm_restart_title": "Kas taaskäivitada Home Assistant?",
                     "restart_error": "Home Assistanti taaskäivitamine nurjus",
                     "restart_homeassistant": "Taaskäivita Home Assistant",
@@ -3484,6 +3574,14 @@
                         "password_not_match": "Salasõnad ei ühti"
                     },
                     "caption": "Kasutajad",
+                    "change_password": {
+                        "caption": "Muuda salasõna",
+                        "change": "Muuda",
+                        "new_password": "Uus salasõna",
+                        "password_changed": "Salasõna on edukalt muudetud.",
+                        "password_confirm": "Kinnita salasõna",
+                        "password_no_match": "Salasõnad ei ühti"
+                    },
                     "description": "Halda kasutakontosid",
                     "editor": {
                         "activate_user": "Aktiveeri kasutaja",
@@ -3493,6 +3591,8 @@
                         "caption": "Vaata kasutajat",
                         "change_password": "Muuda salasõna",
                         "confirm_user_deletion": "Oled kindel, et soovid kustutada {name}?",
+                        "confirm_user_deletion_text": "See kasutaja kustutatakse jäädavalt.",
+                        "confirm_user_deletion_title": "Kas kustutada {name} ?",
                         "deactivate_user": "Deaktiveeri kasutaja",
                         "delete_user": "Kustuta kasutaja",
                         "group": "Grupp",
@@ -3544,7 +3644,9 @@
                         "help_get_zigbee_attribute": "Hangi valitud atribuudi väärtus.",
                         "help_set_zigbee_attribute": "Määra määratud olemile määratud klastri atribuudi väärtus.",
                         "introduction": "Vaata ja muuda klastri atribuute.",
-                        "set_zigbee_attribute": "Määra Zigbee atribuut"
+                        "read_zigbee_attribute": "Loe atribuut",
+                        "set_zigbee_attribute": "Määra Zigbee atribuut",
+                        "write_zigbee_attribute": "Kirjuta atribuut"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Valitud klastri käsud",
@@ -3556,7 +3658,11 @@
                     "clusters": {
                         "header": "Klastrid",
                         "help_cluster_dropdown": "Atribuutide ja käskude vaatamiseks vali klaster.",
-                        "introduction": "Klastrid on Zigbee funktsioonide alustalad. Need eraldavad funktsioonid loogilisteks üksusteks. On kliendi ja serveri tüübid ja mis koosnevad atribuutidest ja käskudest."
+                        "introduction": "Klastrid on Zigbee funktsioonide alustalad. Need eraldavad funktsioonid loogilisteks üksusteks. On kliendi ja serveri tüübid ja mis koosnevad atribuutidest ja käskudest.",
+                        "tabs": {
+                            "attributes": "Atribuudid",
+                            "commands": "Käsud"
+                        }
                     },
                     "common": {
                         "clusters": "Klastrid",
@@ -3569,6 +3675,11 @@
                         "network_settings_title": "Võrgusätted",
                         "shortcuts_title": "Otseteed",
                         "update_button": "Seadete värskendamine"
+                    },
+                    "device_binding": {
+                        "bind": "Seo",
+                        "picker_label": "Seotavad seadmed",
+                        "unbind": "Seo lahti"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Seadistamine on lõpetatud",
@@ -4556,6 +4667,14 @@
                                 "hour": "Tund",
                                 "month": "Kuu"
                             },
+                            "pick_statistic": "Statistika lisamine",
+                            "picked_statistic": "Statistika",
+                            "stat_type_labels": {
+                                "max": "Max",
+                                "mean": "Keskmine",
+                                "min": "Min",
+                                "sum": "Summa"
+                            },
                             "stat_types": "Kuva statistika valikuid"
                         },
                         "thermostat": {
@@ -4623,12 +4742,16 @@
                     },
                     "edit_view": {
                         "add": "Lisa vaade",
+                        "back_path": "Tagasitee (valikuline)",
+                        "back_path_helper": "Ainult alamvaatuste puhul. Kui see on tühi, läheb tagasi nupule vajutades eelmisele lehele.",
                         "delete": "Kustuta vaade",
                         "edit": "Muuda vaadet",
                         "header": "Vaata seadeid",
                         "header_name": "{name} Vaata seadeid",
                         "move_left": "Liiguta vaadet vasakule",
                         "move_right": "Liiguta vaadet paremale",
+                        "subview": "Alamvaade",
+                        "subview_helper": "Alamvaateid ei kuvata vahekaartidel ja neil puudub tagasitee nupp.",
                         "tab_badges": "Märgid",
                         "tab_settings": "Seaded",
                         "tab_visibility": "Nähtavus",

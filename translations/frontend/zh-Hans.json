@@ -741,6 +741,7 @@
             "copied_clipboard": "已复制到剪贴板",
             "delete": "删除",
             "disable": "禁用",
+            "duplicate": "复制",
             "edit": "编辑",
             "enable": "启用",
             "error_required": "必填",
@@ -1640,7 +1641,7 @@
                         "entities": "实体"
                     },
                     "delete": {
-                        "confirmation_text": "此区域中的所有设备都将取消分配。",
+                        "confirmation_text": "此用户将被永久删除。",
                         "confirmation_title": "您确定要删除此区域吗？"
                     },
                     "description": "管理家中的区域",
@@ -1692,6 +1693,8 @@
                             "change_alias": "重命名动作",
                             "delete": "删除",
                             "delete_confirm": "确认删除？",
+                            "delete_confirm_text": "此动作将被永久删除。",
+                            "delete_confirm_title": "删除动作？",
                             "disable": "禁用",
                             "disabled": "已禁用",
                             "duplicate": "复制",
@@ -1811,12 +1814,15 @@
                             "no_blueprints": "您还没有 Blueprint。",
                             "no_inputs": "该 Blueprint 没有任何输入。"
                         },
+                        "change_mode": "更改模式",
                         "conditions": {
                             "add": "添加环境条件",
                             "alias": "环境条件名称",
                             "change_alias": "重命名环境条件",
                             "delete": "删除",
                             "delete_confirm": "确认删除？",
+                            "delete_confirm_text": "此环境条件将被永久删除。",
+                            "delete_confirm_title": "删除环境条件？",
                             "duplicate": "复制",
                             "header": "环境条件",
                             "introduction": "“环境条件”是自动化流程中的可选部分。除非所有环境条件都符合，否则“动作”不会执行。",
@@ -1919,6 +1925,8 @@
                         "enable": "启用",
                         "enable_disable": "启用/禁用自动化",
                         "introduction": "家居智能化，始于自动化。",
+                        "load_error_not_deletable": "只能删除 automations.yaml 中的自动化。",
+                        "load_error_not_duplicable": "只能复制 automations.yaml 中的自动化。",
                         "load_error_not_editable": "只能编辑 automations.yaml 中的自动化。",
                         "load_error_unknown": "加载自动化错误 ({err_no})。",
                         "max": {
@@ -1938,9 +1946,16 @@
                         },
                         "move_down": "下移",
                         "move_up": "上移",
+                        "re_order": "排序",
+                        "re_order_mode": {
+                            "description": "现在处于排序模式，您可以重新排列触发条件、环境条件和动作的顺序。",
+                            "exit": "退出",
+                            "title": "排序模式"
+                        },
                         "rename": "重命名",
                         "run": "执行动作",
                         "save": "保存",
+                        "show_info": "信息",
                         "show_trace": "跟踪执行过程",
                         "triggers": {
                             "add": "添加触发条件",
@@ -1948,6 +1963,8 @@
                             "change_alias": "重命名触发条件",
                             "delete": "删除",
                             "delete_confirm": "确认删除？",
+                            "delete_confirm_text": "此触发条件将被永久删除。",
+                            "delete_confirm_title": "删除触发条件？",
                             "duplicate": "复制",
                             "edit_id": "编辑触发条件 ID",
                             "header": "触发条件",
@@ -2062,15 +2079,20 @@
                             "type_select": "触发条件类型",
                             "unsupported_platform": "图形界面暂不支持平台：{platform}"
                         },
-                        "unsaved_confirm": "有更改尚未保存，确定离开页面吗？"
+                        "unsaved_confirm": "有更改尚未保存，确定离开页面吗？",
+                        "unsaved_confirm_text": "未保存的更改将会丢失。",
+                        "unsaved_confirm_title": "退出编辑器？"
                     },
                     "picker": {
                         "add_automation": "创建自动化",
                         "delete": "删除",
                         "delete_automation": "删除自动化",
                         "delete_confirm": "您确定要删除此自动化吗？",
+                        "delete_confirm_text": "“{name}”将被永久删除。",
+                        "delete_confirm_title": "删除自动化？",
                         "dev_automation": "调试自动化",
                         "dev_only_editable": "只能调试具有 unique ID 的自动化。",
+                        "disabled": "已禁用",
                         "duplicate": "制作副本",
                         "duplicate_automation": "复制自动化",
                         "edit_automation": "编辑自动化",
@@ -2140,26 +2162,28 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "社区论坛",
+                        "community_forums": "在社区论坛上浏览 Blueprint",
                         "error_no_url": "请输入 Blueprint 的 URL。",
                         "file_name": "Blueprint 路径",
                         "header": "导入 Blueprint",
                         "import_btn": "预览 Blueprint",
                         "import_header": "Blueprint “{name}”",
+                        "import_introduction": "要从 Github 或社区论坛导入其他用户的 Blueprint，请在下方粘贴其网址。",
                         "import_introduction_link": "您可以从 Github 和{community_link}导入其他用户的 Blueprint。请在下方输入 Blueprint 的 URL。",
                         "importing": "正在加载 Blueprint…",
                         "raw_blueprint": "Blueprint 内容",
                         "save_btn": "保存 Blueprint",
                         "saving": "正在导入 Blueprint…",
                         "unsupported_blueprint": "此 Blueprint 不受支持",
-                        "url": "Blueprint URL"
+                        "url": "Blueprint 网址"
                     },
                     "caption": "Blueprint",
                     "description": "管理 Blueprint",
                     "overview": {
                         "add_blueprint": "添加 Blueprint",
                         "confirm_delete_header": "删除此 Blueprint？",
-                        "confirm_delete_text": "您确定要删除此 Blueprint 吗？",
+                        "confirm_delete_text": "“{name}”将被永久删除。",
+                        "confirm_delete_title": "删除 Blueprint？",
                         "create_automation": "创建自动化",
                         "create_script": "创建脚本",
                         "delete_blueprint": "删除 Blueprint",
@@ -2306,10 +2330,13 @@
                         "available_at": "Webhook 可从以下 URL 获得：",
                         "close": "关闭",
                         "confirm_disable": "您确定要禁用此Webhook吗？",
+                        "confirm_disable_text": "“{name}”的 Webhook 将被禁用。",
+                        "confirm_disable_title": "禁用 Webhook",
                         "copied_to_clipboard": "复制到剪贴板",
                         "info_disable_webhook": "如果您不再要使用此 Webhook，您可以",
                         "link_disable_webhook": "禁用",
                         "managed_by_integration": "该Webhook由集成管理，无法禁用。",
+                        "public_url": "公共地址",
                         "view_documentation": "查看文档",
                         "webhook_for": "{name}的Webhook"
                     },
@@ -2504,6 +2531,7 @@
                     "cant_edit": "您只能编辑在 UI 中创建的项目。",
                     "caption": "设备",
                     "confirm_delete": "您确定要删除此设备吗？",
+                    "confirm_delete_integration": "您确定要从”{integration}“删除此设备吗？",
                     "confirm_disable_config_entry": "配置条目 {entry_name} 没有更多设备了，是否要转而禁用整个配置条目？",
                     "confirm_rename_entity_ids": "是否要将实体 ID 一并重命名？",
                     "confirm_rename_entity_ids_warning": "此操作不会改变正在使用这些实体的配置（如自动化、脚本、场景、仪表盘），您必须手动更新它们以便使用新的实体 ID。",
@@ -2520,7 +2548,7 @@
                     },
                     "delete": "删除",
                     "delete_device": "删除设备",
-                    "delete_device_integration": "删除设备的“{integration}”集成",
+                    "delete_device_integration": "从“{integration}”删除设备",
                     "description": "管理已连接的设备",
                     "device_info": "{type}信息",
                     "device_not_found": "未找到设备或服务。",
@@ -2842,11 +2870,19 @@
                     "failed_to_reboot_host": "重启主机失败",
                     "failed_to_shutdown_host": "关闭主机失败",
                     "host_shutting_down": "关闭主机",
+                    "memory": "内存",
+                    "processor": "处理器",
+                    "reboot": "重启",
                     "reboot_host": "重启主机",
                     "reboot_host_confirm": "您确定要重启主机吗？",
+                    "reboot_host_text": "将会重启整个系统，包括 Core 和所有加载项。",
+                    "reboot_host_title": "重启系统？",
                     "rebooting_host": "重启主机",
+                    "shutdown": "关闭",
                     "shutdown_host": "关闭主机",
-                    "shutdown_host_confirm": "您确定要关闭主机吗？"
+                    "shutdown_host_confirm": "您确定要关闭主机吗？",
+                    "shutdown_host_text": "将会关闭整个系统，包括 Core 和所有加载项。",
+                    "shutdown_host_title": "关闭系统？"
                 },
                 "header": "配置 Home Assistant",
                 "helpers": {
@@ -2876,6 +2912,7 @@
                         "input_number": "数值",
                         "input_select": "下拉菜单",
                         "input_text": "文本",
+                        "schedule": "排程",
                         "timer": "计时器"
                     }
                 },
@@ -2900,6 +2937,7 @@
                         "feature": "功能请求",
                         "help": "帮助",
                         "license": "许可",
+                        "merch": "商品",
                         "thanks": "感谢"
                     },
                     "license": "根据 Apache 2.0 许可发布",
@@ -2920,11 +2958,21 @@
                     "attention": "需要注意",
                     "caption": "集成",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "如果您将其删除，再次设置此集成时，需要重新输入凭据。如果将其保留，再次设置此集成时可以自动使用这些凭据，还可以通过“应用程序凭据”菜单访问它们。",
+                            "delete_error_title": "删除应用程序凭据失败",
+                            "delete_prompt": "您要一并删除此集成的应用程序凭据吗？",
+                            "delete_title": "应用程序凭据",
+                            "dismiss": "保留",
+                            "learn_more": "详细了解应用程序凭据"
+                        },
                         "area": "位于：{area}",
                         "check_the_logs": "检查日志",
                         "configure": "选项",
                         "delete": "删除",
                         "delete_confirm": "您确定要删除集成“{title}”吗？",
+                        "delete_confirm_text": "其设备和实体将被永久删除。",
+                        "delete_confirm_title": "删除“{title}”？",
                         "depends_on_cloud": "依赖云端服务",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
                         "disable": {
@@ -2937,6 +2985,8 @@
                             },
                             "disabled_cause": "通过{cause}禁用"
                         },
+                        "disable_confirm_text": "其设备和实体将被禁用。",
+                        "disable_confirm_title": "禁用“{title}”？",
                         "disable_error": "启用/禁用集成失败",
                         "disable_restart_confirm": "重启 Home Assistant 以完成此集成的禁用",
                         "disabled_polling": "自动轮询刷新数据已禁用",
@@ -3084,7 +3134,7 @@
                             "storage": "UI 控制",
                             "yaml": "YAML 文件"
                         },
-                        "confirm_delete_text": "该仪表盘将被永久删除。",
+                        "confirm_delete_text": "此仪表盘将被永久删除。",
                         "confirm_delete_title": "确认删除“{dashboard_title}”？",
                         "default_dashboard": "这是默认的仪表盘",
                         "detail": {
@@ -3124,6 +3174,8 @@
                         "cant_edit_yaml": "您正在 YAML 模式下使用仪表盘，因此无法通过 UI 管理资源。请在 configuration.yaml 中管理它们。",
                         "caption": "资源",
                         "confirm_delete": "您确定要删除此资源吗？",
+                        "confirm_delete_text": "“{url}”将被永久删除。",
+                        "confirm_delete_title": "删除资源？",
                         "detail": {
                             "create": "创建",
                             "delete": "删除",
@@ -3195,6 +3247,8 @@
                     "caption": "人员",
                     "confirm_delete": "您确定要删除此人员吗？",
                     "confirm_delete2": "属于此人的所有设备都将被取消分配。",
+                    "confirm_delete_text": "此人员将被永久删除，并且属于此人的所有设备都将被取消分配。",
+                    "confirm_delete_title": "删除“{name}”？",
                     "create_person": "创建人员",
                     "description": "管理 Home Assistant 跟踪的人员",
                     "detail": {
@@ -3242,7 +3296,7 @@
                     "error": "错误",
                     "hide_ignored": "隐藏已忽略的修复",
                     "integration_startup_time": "集成启动时长",
-                    "more_repairs": "还有 {count} 项修复",
+                    "more_repairs": "显示所有维修",
                     "no_repairs": "没有可用的修复",
                     "show_ignored": "显示已忽略的修复",
                     "system_information": "系统信息",
@@ -3276,11 +3330,17 @@
                         "load_error_unknown": "加载场景错误 ({err_no})。",
                         "name": "名称",
                         "save": "保存",
-                        "unsaved_confirm": "有更改尚未保存，确定离开页面吗？"
+                        "unsaved_confirm": "有更改尚未保存，确定离开页面吗？",
+                        "unsaved_confirm_text": "未保存的更改将会丢失。",
+                        "unsaved_confirm_title": "退出编辑器？"
                     },
                     "picker": {
+                        "activate": "激活",
                         "add_scene": "添加场景",
+                        "delete": "删除",
                         "delete_confirm": "您确定要删除此场景吗？",
+                        "delete_confirm_text": "“{name}”将被永久删除。",
+                        "delete_confirm_title": "删除场景？",
                         "delete_scene": "删除场景",
                         "duplicate": "制作副本",
                         "duplicate_scene": "复制场景",
@@ -3289,6 +3349,7 @@
                         "headers": {
                             "activate": "激活",
                             "edit": "编辑",
+                            "last_activated": "上次激活",
                             "name": "名称",
                             "show_info": "显示信息",
                             "state": "状态"
@@ -3298,6 +3359,7 @@
                         "no_scenes": "未找到可编辑的场景",
                         "only_editable": "只能编辑 scenes.yaml 中的场景。",
                         "pick_scene": "选取要编辑的场景",
+                        "show_info": "信息",
                         "show_info_scene": "显示有关场景的信息"
                     }
                 },
@@ -3308,6 +3370,8 @@
                         "alias": "名称",
                         "default_name": "新建脚本",
                         "delete_confirm": "您确定要删除此脚本吗？",
+                        "delete_confirm_text": "“{name}”将被永久删除。",
+                        "delete_confirm_title": "删除脚本？",
                         "delete_script": "删除脚本",
                         "header": "脚本：{name}",
                         "icon": "图标",
@@ -3316,6 +3380,8 @@
                         "id_already_exists_save_error": "无法保存此脚本，因为 ID 不唯一。请选择其他 ID 或将其留空，以自动生成一个 ID。",
                         "introduction": "操作有条不紊，一切交给脚本。",
                         "link_available_actions": "详细了解可用操作。",
+                        "load_error_not_deletable": "只能删除 scripts.yaml 中的脚本。",
+                        "load_error_not_duplicable": "只能复制 scripts.yaml 中的脚本。",
                         "load_error_not_editable": "只能编辑 scripts.yaml 中的脚本。",
                         "load_error_unknown": "加载脚本错误 ({err_no})。",
                         "max": {
@@ -3335,10 +3401,12 @@
                         "save_script": "保存脚本",
                         "sequence": "顺序",
                         "sequence_sentence": "该脚本的操作顺序。",
+                        "show_info": "信息",
                         "show_trace": "跟踪执行过程"
                     },
                     "picker": {
                         "add_script": "添加脚本",
+                        "delete": "删除",
                         "dev_script": "调试脚本",
                         "duplicate": "制作副本",
                         "duplicate_script": "复制脚本",
@@ -3351,8 +3419,13 @@
                         "introduction": "脚本编辑器方便您创建及编辑脚本。请按照下面的链接阅读说明，以确保配置正确。",
                         "learn_more": "详细了解脚本",
                         "no_scripts": "未找到可编辑的脚本",
+                        "run": "执行动作",
                         "run_script": "运行脚本",
-                        "show_info": "显示有关脚本的信息"
+                        "show_info": "信息",
+                        "show_trace": "跟踪执行过程"
+                    },
+                    "trace": {
+                        "edit_script": "运行脚本"
                     }
                 },
                 "storage": {
@@ -3366,6 +3439,8 @@
                         "moving": "正在迁移数据磁盘",
                         "moving_desc": "正在重新启动并迁移数据磁盘。请耐心等待",
                         "no_devices": "未找到合适的已连接设备",
+                        "no_devices_text": "未找到合适的外部设备。外部数据磁盘的容量必须大于现有磁盘的容量",
+                        "no_devices_title": "未找到合适的存储设备",
                         "select_device": "选择新的数据磁盘",
                         "title": "迁移数据磁盘"
                     },
@@ -3436,7 +3511,7 @@
                     "hide_skipped": "隐藏已跳过的更新",
                     "join_beta": "加入测试频道",
                     "leave_beta": "退出测试频道",
-                    "more_updates": "还有 {count} 项更新",
+                    "more_updates": "显示所有更新",
                     "no_new_updates": "没有找到新的更新",
                     "no_update_entities": {
                         "description": "没有集成可以提供更新。",
@@ -3484,6 +3559,8 @@
                         "caption": "用户信息",
                         "change_password": "更改密码",
                         "confirm_user_deletion": "您确定要删除{name}吗？",
+                        "confirm_user_deletion_text": "此用户将被永久删除。",
+                        "confirm_user_deletion_title": "删除“{name}”？",
                         "deactivate_user": "停用用户",
                         "delete_user": "删除用户",
                         "group": "群组",
@@ -3556,6 +3633,7 @@
                     },
                     "configuration_page": {
                         "download_backup": "下载网络备份",
+                        "migrate_radio": "迁移网络",
                         "network_settings_title": "网络设置",
                         "shortcuts_title": "捷径",
                         "update_button": "更新配置"
@@ -4545,6 +4623,14 @@
                                 "day": "天",
                                 "hour": "小时",
                                 "month": "月"
+                            },
+                            "pick_statistic": "添加统计数据",
+                            "picked_statistic": "统计数据",
+                            "stat_type_labels": {
+                                "max": "最大值",
+                                "mean": "平均值",
+                                "min": "最小值",
+                                "sum": "求和"
                             },
                             "stat_types": "显示统计类型"
                         },
