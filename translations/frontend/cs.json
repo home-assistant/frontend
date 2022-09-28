@@ -49,7 +49,7 @@
             },
             "hvac_action": {
                 "cooling": "Chlazení",
-                "drying": "Sušení",
+                "drying": "Vysoušení",
                 "fan": "Ventilátor",
                 "heating": "Vytápění",
                 "idle": "Nečinné",
@@ -741,6 +741,7 @@
             "copied_clipboard": "Zkopírováno do schránky",
             "delete": "Smazat",
             "disable": "Zakázat",
+            "duplicate": "Duplikovat",
             "edit": "Upravit",
             "enable": "Povolit",
             "error_required": "Vyžadováno",
@@ -753,7 +754,7 @@
             "next": "Další",
             "no": "Ne",
             "not_now": "Nyní ne",
-            "overflow_menu": "Přesah menu",
+            "overflow_menu": "Rozbalovací menu",
             "previous": "Předchozí",
             "refresh": "Obnovit",
             "remove": "Odebrat",
@@ -1640,7 +1641,7 @@
                         "entities": "Entity"
                     },
                     "delete": {
-                        "confirmation_text": "Všechna zařízení v této oblasti budou nastavena jako nepřiřazena.",
+                        "confirmation_text": "Tento uživatel bude trvale smazán.",
                         "confirmation_title": "Opravdu chcete tuto oblast smazat?"
                     },
                     "description": "Seskupte zařízení a entity do oblastí",
@@ -1692,6 +1693,8 @@
                             "change_alias": "Přejmenovat akci",
                             "delete": "Smazat",
                             "delete_confirm": "Opravdu smazat?",
+                            "delete_confirm_text": "Bude trvale smazána.",
+                            "delete_confirm_title": "Smazat akci?",
                             "disable": "Zakázat",
                             "disabled": "Zakázáno",
                             "duplicate": "Duplikovat",
@@ -1749,7 +1752,7 @@
                                     "label": "Událost"
                                 },
                                 "if": {
-                                    "add_else": "Přidat \"pak\"",
+                                    "add_else": "Přidat \"jinak\"",
                                     "else": "Jinak",
                                     "if": "Když",
                                     "label": "Když-pak",
@@ -1811,12 +1814,15 @@
                             "no_blueprints": "Nemáte žádné šablony",
                             "no_inputs": "Šablona nemá žádné vstupy."
                         },
+                        "change_mode": "Změnit režim",
                         "conditions": {
                             "add": "Přidat podmínku",
                             "alias": "Název podmínky",
                             "change_alias": "Přejmenovat podmínku",
                             "delete": "Smazat",
                             "delete_confirm": "Opravdu smazat?",
+                            "delete_confirm_text": "Bude trvale smazána.",
+                            "delete_confirm_title": "Smazat podmínku?",
                             "duplicate": "Duplikovat",
                             "header": "Podmínky",
                             "introduction": "Podmínky jsou volitelné a pokud nejsou všechny splněny, zabrání dalšímu provádění automatizace.",
@@ -1919,6 +1925,8 @@
                         "enable": "Povolit",
                         "enable_disable": "Povolit/zakázat automatizaci",
                         "introduction": "Pomocí automatizací oživte svůj domov.",
+                        "load_error_not_deletable": "Smazat lze pouze automatizace ze souboru automations.yaml.",
+                        "load_error_not_duplicable": "Duplikovat lze pouze automatizace ze souboru automations.yaml.",
                         "load_error_not_editable": "Lze upravovat pouze automatizace v automations.yaml.",
                         "load_error_unknown": "Chyba při načítání automatizace ({err_no}).",
                         "max": {
@@ -1938,6 +1946,12 @@
                         },
                         "move_down": "Posunout dolů",
                         "move_up": "Posunout nahoru",
+                        "re_order": "Změnit pořadí",
+                        "re_order_mode": {
+                            "description": "Jste v režimu změny pořadí, můžete změnit pořadí spouštěčů, podmínek a akcí.",
+                            "exit": "Ukončit",
+                            "title": "Režim změny pořadí"
+                        },
                         "rename": "Přejmenovat",
                         "run": "Spustit",
                         "save": "Uložit",
@@ -1949,6 +1963,8 @@
                             "change_alias": "Přejmenovat spouštěč",
                             "delete": "Smazat",
                             "delete_confirm": "Opravdu smazat?",
+                            "delete_confirm_text": "Bude trvale smazána.",
+                            "delete_confirm_title": "Smazat spouštěč?",
                             "duplicate": "Duplikovat",
                             "edit_id": "Upravit ID",
                             "header": "Spouštěče",
@@ -2063,17 +2079,21 @@
                             "type_select": "Typ spouštěče",
                             "unsupported_platform": "Platforma {platform} není podporována v uživatelském rozhraní"
                         },
-                        "unsaved_confirm": "Máte neuložené změny. Opravdu chcete odejít?"
+                        "unsaved_confirm": "Máte neuložené změny. Opravdu chcete odejít?",
+                        "unsaved_confirm_text": "Neuložené změny budou ztraceny.",
+                        "unsaved_confirm_title": "Opustit editor?"
                     },
                     "picker": {
                         "add_automation": "Vytvořit automatizaci",
                         "delete": "Smazat",
                         "delete_automation": "Smazat automatizaci",
                         "delete_confirm": "Opravdu chcete smazat tuto automatizaci?",
+                        "delete_confirm_text": "Automatizace {name} bude trvale smazána.",
+                        "delete_confirm_title": "Smazat automatizaci?",
                         "dev_automation": "Ladit automatizaci",
                         "dev_only_editable": "Ladit lze pouze automatizace s unikátním ID.",
                         "disabled": "Zakázáno",
-                        "duplicate": "Duplikát",
+                        "duplicate": "Duplikovat",
                         "duplicate_automation": "Duplikovat automatizaci",
                         "edit_automation": "Upravit automatizaci",
                         "header": "Editor automatizací",
@@ -2142,12 +2162,13 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "komunitních fór",
-                        "error_no_url": "Zadejte adresu URL adresu šablony",
+                        "community_forums": "Prohlédněte si šablony na komunitních fórech",
+                        "error_no_url": "Zadejte adresu URL adresu šablony.",
                         "file_name": "Cesta k šabloně",
                         "header": "Import šablony",
-                        "import_btn": "Náhled šablony",
+                        "import_btn": "Náhled",
                         "import_header": "Šablona \"{name}\"",
+                        "import_introduction": "Importovat šablony ostatních uživatelů z GitHubu a komunitních fór můžete vložením URL adresy níže.",
                         "import_introduction_link": "Můžete importovat šablony od ostatních uživatelů z GitHubu a {community_link}. Níže zadejte URL adresu šablony.",
                         "importing": "Načítám šablonu…",
                         "raw_blueprint": "Obsah šablony",
@@ -2161,7 +2182,8 @@
                     "overview": {
                         "add_blueprint": "Import šablony",
                         "confirm_delete_header": "Smazat tuto šablonu?",
-                        "confirm_delete_text": "Opravdu chcete smazat tuto šablonu?",
+                        "confirm_delete_text": "Šablona {name} bude trvale smazána.",
+                        "confirm_delete_title": "Smazat šablonu?",
                         "create_automation": "Vytvořit automatizaci",
                         "create_script": "Vytvořit skript",
                         "delete_blueprint": "Smazat šablonu",
@@ -2308,10 +2330,13 @@
                         "available_at": "Webhook je k dispozici na následující URL adrese:",
                         "close": "Zavřít",
                         "confirm_disable": "Opravdu chcete deaktivovat tento webhook?",
+                        "confirm_disable_text": "Webhook pro {name} bude zakázán.",
+                        "confirm_disable_title": "Zakázat webhook",
                         "copied_to_clipboard": "Zkopírováno do schránky",
                         "info_disable_webhook": "Pokud již nechcete tento webhook používat, můžete",
                         "link_disable_webhook": "zakázat",
                         "managed_by_integration": "Tento webhook je řízen integrací a nelze jej zakázat.",
+                        "public_url": "Veřejná adresa",
                         "view_documentation": "Zobrazit dokumentaci",
                         "webhook_for": "Webhook pro {name}"
                     },
@@ -2842,16 +2867,22 @@
                     "description": "Nastavení rozbočovače a připojeného hardwaru",
                     "documentation": "Dokumentace",
                     "documentation_description": "Zjištěte další informace o zařízení",
-                    "failed_to_reboot_host": "Nepodařilo se restartovat hostitele",
-                    "failed_to_shutdown_host": "Nepodařilo se vypnout hostitele",
-                    "host_shutting_down": "Hostitel se vypíná",
+                    "failed_to_reboot_host": "Nepodařilo se restartovat systém",
+                    "failed_to_shutdown_host": "Nepodařilo se vypnout systém",
+                    "host_shutting_down": "Systém se vypíná",
                     "memory": "Paměť",
                     "processor": "Procesor",
-                    "reboot_host": "Restartovat hostitele",
+                    "reboot": "Restartovat",
+                    "reboot_host": "Restartovat systém",
                     "reboot_host_confirm": "Opravdu chcete restartovat hostitele?",
-                    "rebooting_host": "Hostitel se restartuje",
-                    "shutdown_host": "Vypnout hostitele",
-                    "shutdown_host_confirm": "Opravdu chcete vypnout hostitele?"
+                    "reboot_host_text": "Tím se restartuje celý systém včetně jádra a všech doplňků.",
+                    "reboot_host_title": "Restartovat systém?",
+                    "rebooting_host": "Systém se restartuje",
+                    "shutdown": "Vypnout",
+                    "shutdown_host": "Vypnout systém",
+                    "shutdown_host_confirm": "Opravdu chcete vypnout hostitele?",
+                    "shutdown_host_text": "Tím se vypne celý systém včetně jádra a všech doplňků.",
+                    "shutdown_host_title": "Vypnout systém?"
                 },
                 "header": "Nastavení Home Assistant",
                 "helpers": {
@@ -2927,11 +2958,21 @@
                     "attention": "Vyžadována pozornost",
                     "caption": "Integrace",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "Pokud je odeberete, budete přihlašovací údaje muset znovu zadat při opětovném nastavování integrace. Pokud si je ponecháte, budou použity automaticky při opětovném nastavování integrace nebo mohou být přístupné z nabídky Přihlašovací údaje aplikace.",
+                            "delete_error_title": "Odebrání přihlašovacích údajů aplikace se nezdařilo",
+                            "delete_prompt": "Chcete také odebrat přihlašovací údaje aplikace pro tuto integraci?",
+                            "delete_title": "Přihlašovací údaje aplikace",
+                            "dismiss": "Ponechat",
+                            "learn_more": "Další informace o přihlašovacích údajích aplikace"
+                        },
                         "area": "V {area}",
                         "check_the_logs": "Zkontrolujte logy",
                         "configure": "Nastavit",
                         "delete": "Smazat",
                         "delete_confirm": "Opravdu chcete smazat integraci {title}?",
+                        "delete_confirm_text": "Její zařízení a entity budou trvale smazány.",
+                        "delete_confirm_title": "Smazat {title}?",
                         "depends_on_cloud": "Závisí na cloudu",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
                         "disable": {
@@ -2944,6 +2985,8 @@
                             },
                             "disabled_cause": "Zakázáno {cause}"
                         },
+                        "disable_confirm_text": "Její zařízení a entity budou zakázány.",
+                        "disable_confirm_title": "Zakázat {title}?",
                         "disable_error": "Povolení nebo zakázání integrace se nezdařilo",
                         "disable_restart_confirm": "Restartujte Home Assistant pro dokončení zakázání této integrace",
                         "disabled_polling": "Automatické dotazování na aktualizovaná data je zakázáno",
@@ -3091,7 +3134,7 @@
                             "storage": "Řízeno uživatelským rozhraním",
                             "yaml": "Soubor YAML"
                         },
-                        "confirm_delete_text": "Váš ovládací panel bude trvale smazán.",
+                        "confirm_delete_text": "Tento ovládací panel bude trvale smazán.",
                         "confirm_delete_title": "Smazat {dashboard_title}?",
                         "default_dashboard": "Toto je výchozí ovládací panel",
                         "detail": {
@@ -3131,6 +3174,8 @@
                         "cant_edit_yaml": "Používáte ovládací panel v režimu YAML, proto nemůžete spravovat své zdroje prostřednictvím uživatelského rozhraní. Spravujte je v souboru configuration.yaml.",
                         "caption": "Zdroje",
                         "confirm_delete": "Opravdu chcete tento zdroj smazat?",
+                        "confirm_delete_text": "{url} bude trvale smazáno.",
+                        "confirm_delete_title": "Smazat zdroj?",
                         "detail": {
                             "create": "Vytvořit",
                             "delete": "Smazat",
@@ -3202,6 +3247,8 @@
                     "caption": "Lidé",
                     "confirm_delete": "Opravdu chcete smazat tuto osobu?",
                     "confirm_delete2": "Všechna zařízení patřící této osobě budou nastavena jako nepřiřazena.",
+                    "confirm_delete_text": "Tato osoba bude trvale smazána a všechna zařízení patřící této osobě přestanou být přiřazena.",
+                    "confirm_delete_title": "Smazat {name}?",
                     "create_person": "Vytvořit osobu",
                     "description": "Správa osob, které Home Assistant sleduje",
                     "detail": {
@@ -3283,11 +3330,17 @@
                         "load_error_unknown": "Chyba při načítání scény ({err_no}).",
                         "name": "Název",
                         "save": "Uložit",
-                        "unsaved_confirm": "Máte neuložené změny. Opravdu chcete odejít?"
+                        "unsaved_confirm": "Máte neuložené změny. Opravdu chcete odejít?",
+                        "unsaved_confirm_text": "Neuložené změny budou ztraceny.",
+                        "unsaved_confirm_title": "Opustit editor?"
                     },
                     "picker": {
+                        "activate": "Aktivovat",
                         "add_scene": "Přidat scénu",
+                        "delete": "Smazat",
                         "delete_confirm": "Opravdu chcete tuto scénu smazat?",
+                        "delete_confirm_text": "Scéna {name} bude trvale smazána.",
+                        "delete_confirm_title": "Smazat scénu?",
                         "delete_scene": "Smazat scénu",
                         "duplicate": "Duplikovat",
                         "duplicate_scene": "Duplikovat scénu",
@@ -3296,6 +3349,7 @@
                         "headers": {
                             "activate": "Aktivovat",
                             "edit": "Upravit",
+                            "last_activated": "Naposledy aktivováno",
                             "name": "Název",
                             "show_info": "Zobrazit informace",
                             "state": "Stav"
@@ -3305,6 +3359,7 @@
                         "no_scenes": "Nenašli jsme žádné scény",
                         "only_editable": "Lze upravovat pouze scény definované v souboru scenes.yaml.",
                         "pick_scene": "Vyberte scénu, kterou chcete upravit",
+                        "show_info": "Informace",
                         "show_info_scene": "Zobrazit informace o scéně"
                     }
                 },
@@ -3315,6 +3370,8 @@
                         "alias": "Název",
                         "default_name": "Nový skript",
                         "delete_confirm": "Opravdu chcete tento skript smazat?",
+                        "delete_confirm_text": "Skript {name} bude trvale smazán.",
+                        "delete_confirm_title": "Smazat skript?",
                         "delete_script": "Smazat skript",
                         "header": "Skript: {name}",
                         "icon": "Ikona",
@@ -3323,6 +3380,8 @@
                         "id_already_exists_save_error": "Tento skript nelze uložit, protože ID není jedinečné, vyberte jiné ID nebo jej nechte prázdné a bude automaticky vygenerováno.",
                         "introduction": "K provedení posloupnosti akcí použijte skripty.",
                         "link_available_actions": "Další informace o dostupných akcích.",
+                        "load_error_not_deletable": "Smazat lze pouze skripty ze souboru scripts.yaml.",
+                        "load_error_not_duplicable": "Duplikovat lze pouze skripty ze souboru scripts.yaml.",
                         "load_error_not_editable": "Upravovat lze pouze skripty uvnitř scripts.yaml.",
                         "load_error_unknown": "Chyba při načítání skriptu ({err_no}).",
                         "max": {
@@ -3342,12 +3401,14 @@
                         "save_script": "Uložit skript",
                         "sequence": "Posloupnost",
                         "sequence_sentence": "Posloupnost akcí tohoto skriptu.",
+                        "show_info": "Informace",
                         "show_trace": "Trasy"
                     },
                     "picker": {
                         "add_script": "Přidat skript",
+                        "delete": "Smazat",
                         "dev_script": "Ladit skript",
-                        "duplicate": "Duplikát",
+                        "duplicate": "Duplikovat",
                         "duplicate_script": "Duplikovat skript",
                         "edit_script": "Upravit skript",
                         "header": "Editor skriptů",
@@ -3358,8 +3419,13 @@
                         "introduction": "Editor skriptů umožňuje vytvářet a upravovat skripty. Přečtěte si pokyny na odkazy níže, abyste se ujistili, že jste Home Assistant nastavili správně.",
                         "learn_more": "Další informace o skriptech",
                         "no_scripts": "Nenašli jsme žádné skripty",
+                        "run": "Spustit",
                         "run_script": "Spustit skript",
-                        "show_info": "Zobrazit informace o skriptu"
+                        "show_info": "Informace",
+                        "show_trace": "Trasy"
+                    },
+                    "trace": {
+                        "edit_script": "Upravit skript"
                     }
                 },
                 "storage": {
@@ -3373,6 +3439,8 @@
                         "moving": "Přesouvání datového disku",
                         "moving_desc": "Restartování a přesun datového disku. Prosím, mějte trpělivost",
                         "no_devices": "Nebyla nalezena žádná vhodná připojená zařízení",
+                        "no_devices_text": "Nebylo nalezeno žádné vhodné externí zařízení. Kapacita externího datového disku musí být větší než kapacita stávajícího disku.",
+                        "no_devices_title": "Nebylo nalezeno žádné vhodné úložiště",
                         "select_device": "Vyberte nový datový disk",
                         "title": "Přesunout datový disk"
                     },
@@ -3382,7 +3450,7 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "Opravdu chcete restartovat Home Assistant?",
-                    "confirm_restart_text": "Restartováním Home Assistanta se zastaví všechny aktivní ovládací panely, automatizace a skripty.",
+                    "confirm_restart_text": "Tím se zastaví všechny aktivní ovládací panely, automatizace a skripty.",
                     "confirm_restart_title": "Restartovat Home Assistant?",
                     "restart_error": "Nepodařilo se restartovat Home Assistant",
                     "restart_homeassistant": "Restartovat Home Assistant",
@@ -3491,6 +3559,8 @@
                         "caption": "Zobrazit uživatele",
                         "change_password": "Změnit heslo",
                         "confirm_user_deletion": "Opravdu chcete smazat {name} ?",
+                        "confirm_user_deletion_text": "Tento uživatel bude trvale smazán.",
+                        "confirm_user_deletion_title": "Smazat {name}?",
                         "deactivate_user": "Deaktivovat uživatele",
                         "delete_user": "Smazat uživatele",
                         "group": "Skupina",
@@ -3528,7 +3598,7 @@
                 "zha": {
                     "add_device": "Přidat zařízení",
                     "add_device_page": {
-                        "discovered_text": "Jakmile se objeví nalezne, zobrazí se zde.",
+                        "discovered_text": "Zařízení se zde zobrazí, jakmile bude objeveno.",
                         "no_devices_found": "Nebyla nalezena žádná zařízení. Ujistěte se, že jsou v režimu párování a udržujte je vzhůru, zatímco Home Assistant vyhledává.",
                         "pairing_mode": "Zkontrolujte, zda jsou zařízení v režimu párování. Podívejte se do pokynů k zařízení, jak to provést.",
                         "search_again": "Hledat znovu",
@@ -3563,6 +3633,7 @@
                     },
                     "configuration_page": {
                         "download_backup": "Stáhnout zálohu",
+                        "migrate_radio": "Vyměnit Koordinátor",
                         "network_settings_title": "Nastavení sítě",
                         "shortcuts_title": "Zástupci",
                         "update_button": "Aktualizovat nastavení"
@@ -3721,7 +3792,7 @@
                             },
                             "timeout_ack": {
                                 "label": "Časový limit ACK",
-                                "tooltip": "Počet pokusů o přenos, při kterých chybělo ACK z řídicí jednotky"
+                                "tooltip": "Počet pokusů o přenos, při kterých chybělo potvrzení z řídicí jednotky"
                             },
                             "timeout_callback": {
                                 "label": "Časový limit zpětného volání",
@@ -3755,7 +3826,7 @@
                         "healing_complete": "Uzdravení sítě je dokončeno.",
                         "healing_failed": "Uzdravení se nezdařilo. V logách mohou být k dispozici další informace.",
                         "in_progress": "Probíhá uzdravování sítě. Bude to chvíli trvat.",
-                        "introduction": "Spusťte léčbu sítě ve vaší síti Z-Wave. Oprava sítě způsobí, že všechna zařízení přepočítají své trasy zpět k řídící jednotce, a doporučuje se, pokud jste nedávno přesunuli zařízení nebo řídící jednotku.",
+                        "introduction": "Spusťte léčbu sítě ve vaší síti Z-Wave. Oprava sítě způsobí, že všechna zařízení přepočítají své trasy zpět k řídící jednotce. Doporučuje se, pokud jste nedávno přesunuli zařízení nebo řídící jednotku.",
                         "run_in_background": "Tento dialog můžete zavřít a uzdravování sítě bude pokračovat na pozadí.",
                         "start_heal": "Spustit uzdravování",
                         "stop_heal": "Zastavit uzdravování",
@@ -3767,7 +3838,7 @@
                         "healing_failed": "{device} nemohlo být uzdraveno.",
                         "healing_failed_check_logs": "Další informace mohou být k dispozici v logách.",
                         "in_progress": "Probíhá uzdravování {device}.",
-                        "introduction": "Požádejte {device}, aby aktualizoval své trasy zpět do řídící jednotky. To vám může pomoci při problémech s komunikací, pokud jste nedávno přesunuli zařízení nebo řídící jednotku.",
+                        "introduction": "Požádejte {device} o aktualizaci tras zpět k řídící jednotce. Toto může pomoci při problémech s komunikací, pokud jste nedávno přesunuli zařízení nebo řídící jednotku.",
                         "network_heal_in_progress": "Uzdravení sítě Z-Wave již probíhá. Před léčením konkrétního zařízení počkejte, až se dokončí.",
                         "start_heal": "Uzdravit zařízení",
                         "title": "Uzdravit zařízení Z-Wave",
@@ -3823,13 +3894,15 @@
                         "nlwr": "Další do poslední funkční trasy",
                         "rssi": {
                             "label": "RSSI",
-                            "tooltip": "Průměr RSSI v dBm přijatých snímků přijatých tímto uzlem"
+                            "tooltip": "Průměr RSSI (v dBm) rámců přijatých tímto uzlem"
                         },
                         "rtt": {
-                            "label": "RTT"
+                            "label": "RTT",
+                            "tooltip": "Průměrná doba přenosu příkazů do tohoto uzlu v ms"
                         },
                         "timeout_response": {
-                            "label": "Časový limit odpovědi"
+                            "label": "Časový limit odpovědi",
+                            "tooltip": "Počet příkazů typu Get, na které uzel neodpověděl včas"
                         },
                         "title": "Statistiky zařízení"
                     },
@@ -3902,20 +3975,24 @@
                             "direct": "Žádné, přímé připojení",
                             "label": "Opakovače + RSSI",
                             "repeaters": "Zařízení opakovače",
-                            "rssi": "RSSI"
+                            "rssi": "RSSI",
+                            "tooltip": "Které uzly jsou opakovači pro tuto trasu a jejich RSSI"
                         },
                         "route_failed_between": {
+                            "label": "Selhání cestou mezi",
                             "not_applicable": "N/A",
                             "tooltip": "Uzly, mezi kterými se přenos naposledy nezdařil"
                         },
                         "rssi": {
-                            "label": "RSSI"
+                            "label": "RSSI",
+                            "tooltip": "RSSI potrzovacího rámce přijatého řídicí jednotkou"
                         }
                     },
                     "rssi": {
                         "rssi_error": {
                             "NoSignalDetected": "Nebyl zjištěn žádný signál",
-                            "NotAvailable": "Není k dispozici"
+                            "NotAvailable": "Není k dispozici",
+                            "ReceiverSaturated": "Přijímač nasycen"
                         },
                         "unit": "dBm"
                     },
@@ -3968,6 +4045,7 @@
                             "try_again": "Chcete-li se znovu pokusit o aktualizaci firmwaru, vyberte nový soubor firmwaru, který chcete použít."
                         },
                         "firmware_target": "Cíl firmwaru (chip)",
+                        "firmware_target_intro": "Vyberte cíl firmwaru (0 pro čip Z-Wave, ≥1 pro ostatní čipy, pokud existují) pro tuto aktualizaci nebo zrušte zaškrtnutí políčka, aby se ovladač pokusil zjistit cíl ze souboru firmwaru.",
                         "in_progress": "Probíhá aktualizace firmwaru {device} ({progress} %).",
                         "introduction": "Vyberte soubor firmwaru, který chcete použít k aktualizaci {device}.",
                         "queued": "Aktualizace firmwaru je připravena k odeslání do {device}, ale zařízení je uspané, probuďte zařízení a spusťte aktualizaci.",
@@ -4403,7 +4481,7 @@
                             "secondary_info": "Sekundární informace"
                         },
                         "entity": {
-                            "description": "Karta Entity vám poskytuje rychlý přehled o stavu vaší entity.",
+                            "description": "Karta Entita poskytuje rychlý přehled o stavu vaší entity.",
                             "name": "Entita"
                         },
                         "gauge": {
@@ -4545,6 +4623,14 @@
                                 "day": "Den",
                                 "hour": "Hodina",
                                 "month": "Měsíc"
+                            },
+                            "pick_statistic": "Přidat statistiku",
+                            "picked_statistic": "Statistika",
+                            "stat_type_labels": {
+                                "max": "Maximum",
+                                "mean": "Průměr",
+                                "min": "Minimum",
+                                "sum": "Součet"
                             },
                             "stat_types": "Zobrazit typy statistik"
                         },

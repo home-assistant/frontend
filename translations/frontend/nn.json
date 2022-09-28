@@ -3219,6 +3219,7 @@
                         "unsaved_confirm": "Du har gjort endringar som ikkje er lagra. Er du sikker på at du vil lukke?"
                     },
                     "picker": {
+                        "activate": "Aktiver",
                         "add_scene": "Legg til scene",
                         "delete_confirm": "Er du sikker på at du vil slette denne scena?",
                         "delete_scene": "Slett scene",
@@ -3229,6 +3230,7 @@
                         "headers": {
                             "activate": "Aktiver",
                             "edit": "Redigere",
+                            "last_activated": "Sist aktivert",
                             "name": "Namn",
                             "show_info": "Vis informasjon ",
                             "state": "Tilstand"
@@ -3238,6 +3240,7 @@
                         "no_scenes": "Vi fant ingen scener",
                         "only_editable": "Berre scener som er definert i scenes.yaml kan redigerast.",
                         "pick_scene": "Vel scene du vil redigere",
+                        "show_info": "Informasjon",
                         "show_info_scene": "Vis informasjon om scene"
                     }
                 },

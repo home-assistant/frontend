@@ -1674,6 +1674,8 @@
                             "add": "Lisää toiminto",
                             "delete": "Poista",
                             "delete_confirm": "Haluatko varmasti poistaa tämän?",
+                            "delete_confirm_text": "Poistetaan pysyvästi.",
+                            "delete_confirm_title": "Poista toiminto?",
                             "disable": "Poista käytöstä",
                             "disabled": "Poistettu käytöstä",
                             "duplicate": "Kopioi",
@@ -1790,6 +1792,7 @@
                             "add": "Lisää ehto",
                             "delete": "Poista",
                             "delete_confirm": "Haluatko varmasti poistaa tämän?",
+                            "delete_confirm_text": "Poistetaan pysyvästi.",
                             "duplicate": "Kopioi",
                             "header": "Ehdot",
                             "introduction": "Ehdot ovat vapaaehtoinen osa automaatiosääntöä. Niillä voidaan estää toimintoa tapahtumasta, vaikka se olisi laukaistu. Ehdot näyttävät hyvin samanlaisilta kuin laukaisimet, mutta ne ovat eri asia. Laukaisimen tehtävä on tarkkailla järjestelmän tapahtumia. Ehto kuitenkin katsoo järjestelmän tilaa ainoastaan tietyllä hetkellä. Laukaisin voi esimerkiksi huomata, jos jokin vipu käännetään päälle. Ehto voi nähdä vain onko vipu päällä vai pois päältä.",
@@ -2028,6 +2031,8 @@
                         "add_automation": "Lisää automaatio",
                         "delete_automation": "Poista automaatio",
                         "delete_confirm": "Haluatko varmasti poistaa tämän automaation?",
+                        "delete_confirm_text": "{name} poistetaan pystyvästi.",
+                        "delete_confirm_title": "Poista automaatio?",
                         "dev_automation": "Automaation vianmääritys",
                         "dev_only_editable": "Vain automaatiot, joille on määritetty yksilöllinen tunnus, ovat vianmäärityskelpoisia.",
                         "duplicate": "Kopioi",
@@ -2105,6 +2110,7 @@
                         "header": "Tuo piirustus",
                         "import_btn": "Piirustuksen esikatselu",
                         "import_header": "Piirustus \"{name}\"",
+                        "import_introduction": "Tuo muiden käyttäjien tekemiä piirrustuksia GitHubista ja yhteisön foorumeilta liittämällä osoite alle.",
                         "import_introduction_link": "Voit tuoda muiden käyttäjien piirustuksia GitHubista ja {community_link}. Kirjoita piirustuksen URL-osoite alle.",
                         "importing": "Ladataan piirustusta…",
                         "raw_blueprint": "Piirustuksen sisältö",
@@ -2877,6 +2883,14 @@
                     "attention": "Huomiota tarvitaan",
                     "caption": "Integraatiot",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "Jos poistat nämä, sinun on annettava kirjautumistiedot, kun määrität integroinnin uudelleen. Jos säilytät ne, niitä käytetään automaattisesti, kun määrität integroinnin uudelleen. Voit myös päästäkäsiksi niihin Sovelluksen tunnistetiedot -valikosta.",
+                            "delete_error_title": "Sovelluksen kirjautumistietojen poistaminen epäonnistui",
+                            "delete_prompt": "Haluatko poistaa myös tämän integroinnin sovelluksen tunnistetiedot?",
+                            "delete_title": "Sovelluksen tunnistetiedot",
+                            "dismiss": "Pidä",
+                            "learn_more": "Lisätietoja sovelluksen tunnistetiedoista"
+                        },
                         "area": "Huoneessa {area}",
                         "check_the_logs": "Tarkista lokitiedot",
                         "configure": "Määrittele",
@@ -3150,6 +3164,7 @@
                     "caption": "Henkilöt",
                     "confirm_delete": "Haluatko varmasti poistaa tämän henkilön?",
                     "confirm_delete2": "Tälle henkilölle kuuluvien laitteiden osoitus poistetaan.",
+                    "confirm_delete_title": "Poistetaanko {name}?",
                     "create_person": "Luo henkilö",
                     "description": "Hallitse henkilöitä, joita Home Assistant seuraa",
                     "detail": {
@@ -3235,6 +3250,7 @@
                     "picker": {
                         "add_scene": "Lisää tilanne",
                         "delete_confirm": "Haluatko varmasti poistaa tämän tilanteen?",
+                        "delete_confirm_text": "{name} poistetaan lopullisesti.",
                         "delete_scene": "Poista tilanne",
                         "duplicate": "Kopioi",
                         "duplicate_scene": "Kopioi tilanne",
@@ -3262,6 +3278,7 @@
                         "alias": "Nimi",
                         "default_name": "Uusi skripti",
                         "delete_confirm": "Haluatko varmasti poistaa tämän skriptin?",
+                        "delete_confirm_text": "{name} poistetaan lopullisesti.",
                         "delete_script": "Poista skripti",
                         "header": "Skripti: {name}",
                         "icon": "Kuvake",
@@ -3318,6 +3335,8 @@
                         "moving": "Siirretään levyä",
                         "moving_desc": "Uudelleenkäynnistetään ja siirretään levy. Ole hyvä ja ole kärsivällinen",
                         "no_devices": "Ei löytynyt sopivia yhdistettyjä laitteita",
+                        "no_devices_text": "Sopivaa ulkoista laitetta ei löydy. Ulkoisen levyn tallennuskapasiteetin on oltava suurempi kuin olemassa olevan levyn tallennuskapasiteetti",
+                        "no_devices_title": "Sopivaa tallennustilaa ei löytynyt",
                         "select_device": "Valitse uusi levy",
                         "title": "Siirrä levy"
                     },
@@ -4490,6 +4509,12 @@
                                 "day": "Päivä",
                                 "hour": "Tunti",
                                 "month": "Kuukausi"
+                            },
+                            "stat_type_labels": {
+                                "max": "Maksimi",
+                                "mean": "Keskiarvo",
+                                "min": "Minimi",
+                                "sum": "Summa"
                             },
                             "stat_types": "Näytä tilastotyypit"
                         },

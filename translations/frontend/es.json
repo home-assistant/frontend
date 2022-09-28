@@ -321,7 +321,7 @@
             "description": "Descripción",
             "error": {
                 "unknown": "Error desconocido",
-                "update_failed": "La actualización falló"
+                "update_failed": "No se pudo actualizar"
             },
             "failed_to_restart_name": "No se pudo reiniciar {name}",
             "failed_to_update_name": "No se pudo actualizar {name}",
@@ -421,7 +421,14 @@
             },
             "restart_addon": {
                 "confirm_text": "Reiniciar el complemento",
-                "text": "¿Quieres reiniciar el complemento con tus cambios?"
+                "restart": "Reiniciar",
+                "text": "Para usar la nueva configuración guardada, este complemento debe reiniciarse.",
+                "title": "¿Reiniciar {name}?"
+            },
+            "uninstall_addon": {
+                "text": "Su configuración será eliminada permanentemente.",
+                "title": "¿Desinstalar {name}?",
+                "uninstall": "Desinstalar"
             }
         },
         "my": {
@@ -467,7 +474,7 @@
                 "failed_to_import_from_usb": "No se pudo importar desde USB",
                 "failed_to_move": "No se pudo mover el disco de datos",
                 "failed_to_reboot": "No se pudo reiniciar el host",
-                "failed_to_set_hostname": "Error al configurar el nombre de host",
+                "failed_to_set_hostname": "No se pudo configurar el nombre de host",
                 "failed_to_shutdown": "No se pudo apagar el host",
                 "hardware": "Hardware",
                 "hostname": "Nombre de host",
@@ -509,7 +516,7 @@
                 "unhealthy_reason": {
                     "docker": "El entorno de Docker no funciona correctamente",
                     "privileged": "El Supervisor no es privilegiado",
-                    "setup": "La configuración del Supervisor falló",
+                    "setup": "No se pudo configurar el Supervisor",
                     "supervisor": "El Supervisor no se pudo actualizar",
                     "untrusted": "Contenido no confiable detectado"
                 },
@@ -956,7 +963,7 @@
                     "manage": "Administrar",
                     "no_items": "No se encontraron elementos multimedia",
                     "title": "Administración de medios",
-                    "upload_failed": "La subida ha fallado: {reason}",
+                    "upload_failed": "No se pudo subir: {reason}",
                     "uploading": "Subiendo {count} {count, plural,\n  one {archivo}\n  other {archivos}\n}"
                 },
                 "learn_adding_local_media": "Saber más sobre cómo añadir contenido multimedia en la {documentation}.",
@@ -1060,6 +1067,7 @@
                     "max": "max",
                     "mean": "media",
                     "min": "min",
+                    "state": "estado",
                     "sum": "suma"
                 }
             },
@@ -1182,6 +1190,20 @@
                     "preload_stream": "Precargar el flujo de la cámara",
                     "preload_stream_description": "Esto mantiene el flujo de la cámara abierto en segundo plano para que se muestre más rápido. ¡Advertencia! Esto requiere un uso intensivo del dispositivo.",
                     "pressure_unit": "Unidad de presión barométrica",
+                    "stream": {
+                        "preload_stream": "Precargar el flujo de la cámara",
+                        "preload_stream_description": "Esto mantiene el flujo de la cámara abierto en segundo plano para que se muestre más rápido. ¡Advertencia! Esto requiere un uso intensivo del dispositivo.",
+                        "stream_orientation": "Orientación del flujo de la cámara",
+                        "stream_orientation_1": "Sin transformación de orientación",
+                        "stream_orientation_2": "Espejo",
+                        "stream_orientation_3": "Girar 180º",
+                        "stream_orientation_4": "Dar la vuelta",
+                        "stream_orientation_5": "Girar a la izquierda y voltear",
+                        "stream_orientation_6": "Girar a la izquierda",
+                        "stream_orientation_7": "Girar a la derecha y voltear",
+                        "stream_orientation_8": "Girar a la derecha",
+                        "stream_orientation_description": "La transformación de orientación que se usará para la transmisión de la cámara."
+                    },
                     "switch_as_x_confirm": "Este interruptor se ocultará y se añadirá un nuevo {domain}. Tus configuraciones existentes que utilizan el interruptor seguirán funcionando.",
                     "temperature_unit": "Unidad de temperatura",
                     "unavailable": "Esta entidad no está disponible.",
@@ -1258,8 +1280,10 @@
             "join_beta_channel": {
                 "backup": "Asegúrate de tener copias de seguridad de tus datos antes de activar esta función.",
                 "confirm": "¿Quieres unirte al canal beta?",
+                "join": "Unirse",
                 "release_items": "Esto incluye versiones beta para:",
                 "title": "Únete al canal beta",
+                "view_documentation": "Ver documentación",
                 "warning": "Las versiones beta son para probadores y usuarios pioneros y pueden contener cambios de código inestables"
             },
             "more_info_control": {
@@ -1460,7 +1484,7 @@
                 "reasons": {
                     "docker": "El entorno de Docker no funciona correctamente",
                     "privileged": "El Supervisor no es privilegiado",
-                    "setup": "La configuración del Supervisor falló",
+                    "setup": "No se pudo configurar el Supervisor",
                     "supervisor": "El Supervisor no se pudo actualizar",
                     "untrusted": "Contenido no confiable detectado"
                 },
@@ -1500,6 +1524,7 @@
                     "add": "Añadir dispositivos a través de este dispositivo",
                     "clusters": "Administrar clústeres",
                     "device_children": "Ver hijos",
+                    "manage": "Administrar dispositivo Zigbee",
                     "reconfigure": "Reconfigurar",
                     "remove": "Eliminar",
                     "view_in_visualization": "Ver en Visualización",
@@ -1527,6 +1552,15 @@
                     "device_name_placeholder": "Cambiar el nombre del dispositivo"
                 }
             },
+            "zha_manage_device": {
+                "heading": "Administrar dispositivo Zigbee",
+                "tabs": {
+                    "bindings": "Vínculos",
+                    "children": "Hijos",
+                    "clusters": "Clústeres",
+                    "signature": "Firma"
+                }
+            },
             "zha_reconfigure_device": {
                 "attribute": "Atributo",
                 "battery_device_warning": "Antes de iniciar el proceso de reconfiguración deberás despertar los dispositivos que funcionan con batería. Consulta el manual de tu dispositivo para obtener instrucciones sobre cómo despertar el dispositivo.",
@@ -1535,7 +1569,7 @@
                 "button_show": "Mostrar detalles",
                 "cluster_header": "Clúster",
                 "configuration_complete": "Reconfiguración del dispositivo completada.",
-                "configuration_failed": "Error en la reconfiguración del dispositivo. Es posible que haya información adicional disponible en los registros.",
+                "configuration_failed": "No se pudo volver a configurar el dispositivo. Es posible que haya información adicional disponible en los registros.",
                 "configuring_alt": "Configurando",
                 "heading": "Reconfigurando el dispositivo",
                 "in_progress": "El dispositivo se está reconfigurando. Esto puede llevar algún tiempo.",
@@ -1607,12 +1641,17 @@
                     "caption": "Credenciales de la aplicación",
                     "description": "Administra las credenciales OAuth de la aplicación utilizadas por las integraciones",
                     "editor": {
-                        "caption": "Añadir credencial de aplicación",
+                        "add": "Añadir",
+                        "caption": "Añadir credencial",
                         "client_id": "ID de cliente OAuth",
+                        "client_id_helper": "Identificador público de la aplicación OAuth",
                         "client_secret": "Secreto del cliente OAuth",
+                        "client_secret_helper": "Secreto de la aplicación OAuth",
                         "create": "Crear",
+                        "description": "OAuth se utiliza para permitir que Home Assistant acceda a la información de otros sitios web sin proporcionar contraseñas. Este mecanismo es utilizado por empresas como Spotify, Google, Withings, Microsoft y Twitter.",
                         "domain": "Integración",
-                        "name": "Nombre"
+                        "name": "Nombre",
+                        "view_documentation": "Ver documentación"
                     },
                     "picker": {
                         "add_application_credential": "Añadir credencial de aplicación",
@@ -1625,7 +1664,7 @@
                             "button": "Eliminar seleccionado",
                             "confirm_text": "Las credenciales de aplicación en uso por una integración no se pueden eliminar.",
                             "confirm_title": "¿Quieres eliminar {number} {number, plural,\n  one {credencial}\n  other {credenciales}\n}?",
-                            "error_title": "Error al quitar la credencial de la aplicación"
+                            "error_title": "No se pudieron eliminar las credenciales de aplicación"
                         },
                         "selected": "{number} {number, plural,\n one {seleccionada}\n other {seleccionadas}\n}"
                     }
@@ -1641,7 +1680,7 @@
                         "entities": "Entidades"
                     },
                     "delete": {
-                        "confirmation_text": "Todos los dispositivos en esta área quedarán sin asignar.",
+                        "confirmation_text": "Este usuario será eliminado permanentemente.",
                         "confirmation_title": "¿Estás seguro de que deseas eliminar esta área?"
                     },
                     "description": "Agrupa dispositivos y entidades en áreas",
@@ -1692,7 +1731,9 @@
                             "alias": "Nombre de la acción",
                             "change_alias": "Renombrar acción",
                             "delete": "Eliminar",
-                            "delete_confirm": "¿Seguro que quieres eliminarlo?",
+                            "delete_confirm": "¿Estás seguro de que quieres eliminarlo?",
+                            "delete_confirm_text": "Se eliminará de forma permanente.",
+                            "delete_confirm_title": "¿Eliminar acción?",
                             "disable": "Deshabilitar",
                             "disabled": "Deshabilitado",
                             "duplicate": "Duplicar",
@@ -1819,6 +1860,8 @@
                             "change_alias": "Renombrar condición",
                             "delete": "Eliminar",
                             "delete_confirm": "¿Estás seguro de que quieres eliminarlo?",
+                            "delete_confirm_text": "Se eliminará de forma permanente.",
+                            "delete_confirm_title": "¿Eliminar condición?",
                             "duplicate": "Duplicar",
                             "header": "Condiciones",
                             "introduction": "Las condiciones son opcionales y evitarán que la automatización funcione a menos que se cumplan todas las condiciones.",
@@ -1921,6 +1964,8 @@
                         "enable": "Habilitar",
                         "enable_disable": "Habilitar/Deshabilitar la automatización",
                         "introduction": "Usa automatizaciones para darle vida a tu hogar.",
+                        "load_error_not_deletable": "Solo se pueden eliminar las automatizaciones en automations.yaml.",
+                        "load_error_not_duplicable": "Solo se pueden duplicar las automatizaciones en automations.yaml.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
                         "load_error_unknown": "Error al cargar la automatización ({err_no}).",
                         "max": {
@@ -1957,6 +2002,8 @@
                             "change_alias": "Renombrar disparador",
                             "delete": "Eliminar",
                             "delete_confirm": "¿Estás seguro de que quieres eliminarlo?",
+                            "delete_confirm_text": "Se eliminará de forma permanente.",
+                            "delete_confirm_title": "¿Eliminar disparador?",
                             "duplicate": "Duplicar",
                             "edit_id": "Editar ID",
                             "header": "Desencadenantes",
@@ -2071,13 +2118,17 @@
                             "type_select": "Tipo de desencadenante",
                             "unsupported_platform": "No hay soporte del editor visual para la plataforma: {platform}"
                         },
-                        "unsaved_confirm": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?"
+                        "unsaved_confirm": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?",
+                        "unsaved_confirm_text": "Los cambios no guardados se perderán.",
+                        "unsaved_confirm_title": "¿Abandonar el editor?"
                     },
                     "picker": {
                         "add_automation": "Crear automatización",
                         "delete": "Eliminar",
                         "delete_automation": "Eliminar la automatización",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta automatización?",
+                        "delete_confirm_text": "{name} se eliminará de forma permanente.",
+                        "delete_confirm_title": "¿Eliminar la automatización?",
                         "dev_automation": "Depurar automatización",
                         "dev_only_editable": "Solo las automatizaciones que tienen un ID único asignado se pueden depurar.",
                         "disabled": "Deshabilitado",
@@ -2150,26 +2201,28 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "foros de la comunidad",
-                        "error_no_url": "Por favor, introduce la URL del plano",
+                        "community_forums": "Ver planos en los foros de la comunidad",
+                        "error_no_url": "Por favor, introduce la dirección del plano",
                         "file_name": "Ruta del plano",
                         "header": "Importar un plano",
-                        "import_btn": "Vista previa del plano",
+                        "import_btn": "Vista previa",
                         "import_header": "Plano \"{name}\"",
+                        "import_introduction": "Importa planos de otros usuarios desde GitHub y los foros de la comunidad pegando la dirección a continuación.",
                         "import_introduction_link": "Puedes importar planos de otros usuarios desde Github y {community_link}. Introduce la URL del plano a continuación.",
                         "importing": "Cargando plano…",
                         "raw_blueprint": "Contenido del plano",
                         "save_btn": "Importar plano",
                         "saving": "Importando plano…",
                         "unsupported_blueprint": "Este plano no es compatible",
-                        "url": "URL del plano"
+                        "url": "Dirección del plano"
                     },
                     "caption": "Planos",
                     "description": "Administra los planos",
                     "overview": {
                         "add_blueprint": "Importar plano",
                         "confirm_delete_header": "¿Eliminar este plano?",
-                        "confirm_delete_text": "¿Estás seguro de que quieres borrar este plano?",
+                        "confirm_delete_text": "{name} se eliminará permanentemente.",
+                        "confirm_delete_title": "¿Eliminar plano?",
                         "create_automation": "Crear automatización",
                         "create_script": "Crear script",
                         "delete_blueprint": "Eliminar plano",
@@ -2201,6 +2254,7 @@
                             "enable_state_reporting": "Habilitar informes de estado",
                             "info": "Con la integración de Alexa para Home Assistant Cloud podrás controlar todos tus dispositivos Home Assistant a través de cualquier dispositivo habilitado para Alexa.",
                             "info_state_reporting": "Si activas los informes de estado, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Amazon. Esto te permite ver siempre los estados más recientes en la aplicación Alexa y usar los cambios de estado para crear rutinas.",
+                            "link_learn_how_it_works": "Aprende cómo funciona",
                             "manage_entities": "Administrar entidades",
                             "not_configured_text": "Antes de poder usar Alexa, debes activar la skill de Home Assistant para Alexa en la aplicación Alexa.",
                             "not_configured_title": "Alexa no está activada",
@@ -2225,13 +2279,14 @@
                             "http_use_ssl_warning_title": "Comunicación local no disponible",
                             "info": "Con la integración del Asistente de Google para Home Assistant Cloud, podrás controlar todos tus dispositivos Home Assistant a través de cualquier dispositivo habilitado para Asistente de Google.",
                             "info_state_reporting": "Si habilitas los informes de estado, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Google. Esto acelera los comandos de voz y te permite ver siempre los últimos estados en la aplicación de Google.",
+                            "link_learn_how_it_works": "Aprende cómo funciona",
                             "manage_entities": "Administrar entidades",
                             "not_configured_text": "Antes de poder usar Google Assistant, debes activar la skill de Home Assistant Cloud para Google Assistant en la aplicación Google Home.",
                             "not_configured_title": "Google Assistant no está activado",
                             "security_devices": "Dispositivos de seguridad",
                             "sync_entities": "Sincronizar entidades con Google",
-                            "sync_failed_text": "Error al sincronizar las entidades, inténtalo de nuevo o comprueba los registros.",
-                            "sync_failed_title": "Sincronización fallida",
+                            "sync_failed_text": "No se pudieron sincronizar las entidades, inténtalo de nuevo o comprueba los registros.",
+                            "sync_failed_title": "No se pudo sincronizar",
                             "title": "Asistente de Google"
                         },
                         "integrations": "Integraciones",
@@ -2300,6 +2355,8 @@
                         "manage_domains": "Administrar dominios",
                         "not_exposed": "{selected} no expuesta",
                         "not_exposed_entities": "Entidades no expuestas",
+                        "sync_entities": "Sincronizar entidades",
+                        "sync_entities_error": "No se pudieron sincronizar las entidades:",
                         "title": "Alexa"
                     },
                     "description_features": "Controla tu hogar cuando estés fuera e intégralo con Alexa y Google Assistant",
@@ -2316,10 +2373,13 @@
                         "available_at": "El webhook está disponible en la siguiente URL:",
                         "close": "Cerrar",
                         "confirm_disable": "¿Seguro que quieres deshabilitar este webhook?",
+                        "confirm_disable_text": "Se desactivará el webhook para {name}.",
+                        "confirm_disable_title": "Deshabilitar webhook",
                         "copied_to_clipboard": "Copiado al portapapeles",
                         "info_disable_webhook": "Si ya no quieres usar este webhook, puedes",
                         "link_disable_webhook": "deshabilitarlo",
                         "managed_by_integration": "Este webhook se administra mediante una integración y no se puede deshabilitar.",
+                        "public_url": "Dirección pública",
                         "view_documentation": "Ver documentación",
                         "webhook_for": "Webhook para {name}"
                     },
@@ -2344,8 +2404,14 @@
                         "manage_defaults": "Administrar los valores predeterminados",
                         "manage_defaults_dialog_description": "Las entidades se pueden exponer de forma predeterminada en función de su tipo.",
                         "manage_domains": "Administrar dominios",
+                        "not_configured_text": "Antes de poder usar Google Assistant, debes activar la skill de Home Assistant Cloud para Google Assistant en la aplicación Google Home.",
+                        "not_configured_title": "Google Assistant no está activado",
                         "not_exposed": "{selected} no expuesta",
                         "not_exposed_entities": "Entidades no expuestas",
+                        "sync_entities": "Sincronizar entidades",
+                        "sync_entities_error": "No se pudieron sincronizar las entidades:",
+                        "sync_failed_text": "No se pudieron sincronizar las entidades, inténtalo de nuevo o comprueba los registros.",
+                        "sync_failed_title": "No se pudo sincronizar",
                         "sync_to_google": "Sincronización de cambios a Google.",
                         "title": "Asistente de Google"
                     },
@@ -2596,7 +2662,7 @@
                     "unknown_error": "Error desconocido",
                     "unnamed_device": "{type} sin nombre",
                     "update": "Actualizar",
-                    "update_device_error": "Error al actualizar el dispositivo"
+                    "update_device_error": "No se pudo actualizar el dispositivo"
                 },
                 "energy": {
                     "battery": {
@@ -2850,16 +2916,22 @@
                     "description": "Configura tu concentrador y el hardware conectado",
                     "documentation": "Documentación",
                     "documentation_description": "Encuentra información adicional sobre tu dispositivo",
-                    "failed_to_reboot_host": "No se pudo reiniciar el host",
-                    "failed_to_shutdown_host": "No se pudo apagar el host",
-                    "host_shutting_down": "Apagado del host",
+                    "failed_to_reboot_host": "No se pudo reiniciar el sistema",
+                    "failed_to_shutdown_host": "No se pudo apagar el sistema",
+                    "host_shutting_down": "Apagado del sistema",
                     "memory": "Memoria",
                     "processor": "Procesador",
-                    "reboot_host": "Reiniciar el host",
+                    "reboot": "Reiniciar",
+                    "reboot_host": "Reiniciar el sistema",
                     "reboot_host_confirm": "¿Estás seguro de que quieres reiniciar tu host?",
-                    "rebooting_host": "Reinicio del host",
-                    "shutdown_host": "Apagar el host",
-                    "shutdown_host_confirm": "¿Estás seguro de que quieres apagar tu host?"
+                    "reboot_host_text": "Esto reiniciará el sistema completo, que incluye el núcleo y todos los complementos.",
+                    "reboot_host_title": "¿Reiniciar el sistema?",
+                    "rebooting_host": "Reinicio del sistema",
+                    "shutdown": "Apagar",
+                    "shutdown_host": "Apagar el sistema",
+                    "shutdown_host_confirm": "¿Estás seguro de que quieres apagar tu host?",
+                    "shutdown_host_text": "Esto apagará el sistema completo, que incluye el núcleo y todos los complementos.",
+                    "shutdown_host_title": "¿Apagar el sistema?"
                 },
                 "header": "Configurar Home Assistant",
                 "helpers": {
@@ -2935,11 +3007,21 @@
                     "attention": "Atención requerida",
                     "caption": "Integraciones",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "Si las eliminas, deberás introducir las credenciales cuando vuelvas a configurar la integración. Si las conservas, se utilizarán automáticamente al volver a configurar la integración o podrás acceder a ellas desde el menú Credenciales de la aplicación.",
+                            "delete_error_title": "No se pudieron eliminar las credenciales de aplicación",
+                            "delete_prompt": "¿Quieres eliminar también las credenciales de aplicación para esta integración?",
+                            "delete_title": "Credenciales de la aplicación",
+                            "dismiss": "Mantener",
+                            "learn_more": "Saber más sobre las credenciales de aplicación"
+                        },
                         "area": "En {area}",
                         "check_the_logs": "Revisa los registros",
                         "configure": "Configurar",
                         "delete": "Eliminar",
                         "delete_confirm": "¿Estás seguro de que deseas eliminar la integración {title}?",
+                        "delete_confirm_text": "Sus dispositivos y entidades se eliminarán de forma permanente.",
+                        "delete_confirm_title": "¿Eliminar {title}?",
                         "depends_on_cloud": "Depende de la nube",
                         "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
                         "disable": {
@@ -2952,7 +3034,9 @@
                             },
                             "disabled_cause": "Deshabilitada por {cause}"
                         },
-                        "disable_error": "Error al habilitar o deshabilitar la integración",
+                        "disable_confirm_text": "Sus dispositivos y entidades serán deshabilitados.",
+                        "disable_confirm_title": "¿Deshabilitar {title}?",
+                        "disable_error": "No se pudo habilitar o deshabilitar la integración",
                         "disable_restart_confirm": "Reinicia Home Assistant para terminar de deshabilitar esta integración",
                         "disabled_polling": "Sondeo automático para datos actualizados deshabilitado",
                         "documentation": "Documentación",
@@ -2987,7 +3071,8 @@
                         "unknown_via_device": "Dispositivo desconocido",
                         "unnamed_entry": "Entrada sin nombre",
                         "version": "Versión: {version}",
-                        "via": "Conectado a través de"
+                        "via": "Conectado a través de",
+                        "yaml_only": "No se puede configurar desde la IU"
                     },
                     "config_flow": {
                         "aborted": "Abortado",
@@ -2995,6 +3080,7 @@
                         "could_not_load": "No se pudo cargar el flujo de configuración",
                         "created_config": "Configuración creada para {name}.",
                         "dismiss": "Descartar diálogo",
+                        "documentation": "documentación",
                         "error": "Error",
                         "error_saving_area": "Error al guardar el área: {error}",
                         "external_step": {
@@ -3009,6 +3095,7 @@
                             "loading_step": "Cargando el siguiente paso para {integration}"
                         },
                         "missing_credentials": "La configuración de {integration} requiere la configuración de las credenciales de la aplicación. ¿Quieres hacerlo ahora?",
+                        "missing_credentials_title": "¿Añadir credenciales de aplicación?",
                         "missing_zha": "Para añadir un dispositivo Zigbee, primero tienes que configurar la integración de Zigbee Home Automation. ¿Quieres hacerlo ahora?",
                         "missing_zwave_js": "Para añadir un dispositivo Z-Wave, primero tienes que configurar la integración Z-Wave. ¿Quieres hacerlo ahora?",
                         "missing_zwave_zigbee": "Para añadir un dispositivo de {integration} se necesita {supported_hardware_link} y la integración {integration} configurada. Si ya tienes el hardware, puedes continuar con la configuración de {integration}.",
@@ -3024,7 +3111,9 @@
                         "submit": "Enviar",
                         "success": "Éxito",
                         "supported_brand_flow": "La compatibilidad con los dispositivos {supported_brand} es proporcionada por {flow_domain_name}. ¿Quieres continuar?",
-                        "supported_hardware": "hardware compatible"
+                        "supported_hardware": "hardware compatible",
+                        "yaml_only_text": "Puede añadir este dispositivo añadiéndolo a tu `configuration.yaml`. Consulta el {link} para obtener más información.",
+                        "yaml_only_title": "Este dispositivo no se puede añadir desde la IU"
                     },
                     "configure": "Configurar",
                     "configured": "Configurado",
@@ -3050,7 +3139,7 @@
                     },
                     "integration": "integración",
                     "integration_not_found": "Integración no encontrada.",
-                    "new": "Configurar una nueva integración.",
+                    "new": "Seleccionar marca",
                     "no_integrations": "Parece que todavía no tienes ninguna integración configurada. ¡Pulsa en el botón de abajo para añadir tu primera integración!",
                     "none": "Todavía no hay nada configurado",
                     "none_found": "No se han encontrado integraciones",
@@ -3060,7 +3149,8 @@
                     "reconfigure": "Reconfigurar",
                     "rename_dialog": "Edita el nombre de esta entrada de configuración",
                     "rename_input_label": "Nombre de la entrada",
-                    "search": "Buscar integraciones"
+                    "search": "Buscar integraciones",
+                    "search_brand": "Buscar un nombre de marca"
                 },
                 "logs": {
                     "caption": "Registros",
@@ -3099,7 +3189,7 @@
                             "storage": "Controlado por la IU",
                             "yaml": "Archivo YAML"
                         },
-                        "confirm_delete_text": "Tu panel de control se eliminará permanentemente.",
+                        "confirm_delete_text": "Este panel se eliminará permanentemente.",
                         "confirm_delete_title": "¿Eliminar {dashboard_title}?",
                         "default_dashboard": "Este es el panel de control predeterminado",
                         "detail": {
@@ -3139,6 +3229,8 @@
                         "cant_edit_yaml": "Estás utilizando el panel de control en modo YAML, por lo que no puedes administrar los recursos a través de la IU. Adminístralos en configuration.yaml.",
                         "caption": "Recursos",
                         "confirm_delete": "¿Estás seguro de que quieres eliminar este recurso?",
+                        "confirm_delete_text": "{url} se eliminará de forma permanente.",
+                        "confirm_delete_title": "¿Eliminar recurso?",
                         "detail": {
                             "create": "Crear",
                             "delete": "Eliminar",
@@ -3210,6 +3302,8 @@
                     "caption": "Personas",
                     "confirm_delete": "¿Estás seguro de que deseas eliminar a esta persona?",
                     "confirm_delete2": "Todos los dispositivos que pertenecen a esta persona quedarán sin asignar.",
+                    "confirm_delete_text": "Esta persona se eliminará de forma permanente y todos los dispositivos que pertenezcan a esta persona quedarán sin asignar.",
+                    "confirm_delete_title": "¿Eliminar {name}?",
                     "create_person": "Crear persona",
                     "description": "Administra las personas a las que rastrea Home Assistant.",
                     "detail": {
@@ -3291,11 +3385,17 @@
                         "load_error_unknown": "Error al cargar la escena ({err_no}).",
                         "name": "Nombre",
                         "save": "Guardar",
-                        "unsaved_confirm": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?"
+                        "unsaved_confirm": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?",
+                        "unsaved_confirm_text": "Los cambios no guardados se perderán.",
+                        "unsaved_confirm_title": "¿Abandonar el editor?"
                     },
                     "picker": {
+                        "activate": "Activar",
                         "add_scene": "Añadir escena",
+                        "delete": "Eliminar",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta escena?",
+                        "delete_confirm_text": "{name} se eliminará de forma permanente.",
+                        "delete_confirm_title": "¿Eliminar escena?",
                         "delete_scene": "Eliminar escena",
                         "duplicate": "Duplicar",
                         "duplicate_scene": "Duplicar la escena",
@@ -3304,6 +3404,7 @@
                         "headers": {
                             "activate": "Activar",
                             "edit": "Editar",
+                            "last_activated": "Última activación",
                             "name": "Nombre",
                             "show_info": "Mostrar información",
                             "state": "Estado"
@@ -3313,6 +3414,7 @@
                         "no_scenes": "No pudimos encontrar ninguna escena",
                         "only_editable": "Solo las escenas definidas en scenes.yaml son editables.",
                         "pick_scene": "Elige una escena para editar",
+                        "show_info": "Información",
                         "show_info_scene": "Mostrar información sobre la escena"
                     }
                 },
@@ -3323,6 +3425,8 @@
                         "alias": "Nombre",
                         "default_name": "Nuevo script",
                         "delete_confirm": "¿Seguro que quieres eliminar este script?",
+                        "delete_confirm_text": "{name} se eliminará permanentemente.",
+                        "delete_confirm_title": "¿Eliminar script?",
                         "delete_script": "Eliminar script",
                         "header": "Script: {name}",
                         "icon": "Icono",
@@ -3331,6 +3435,8 @@
                         "id_already_exists_save_error": "No puedes guardar este script porque el ID no es único, elige otro ID o déjalo en blanco para generar uno automáticamente.",
                         "introduction": "Utiliza scripts para ejecutar una secuencia de acciones.",
                         "link_available_actions": "Saber más sobre las acciones disponibles.",
+                        "load_error_not_deletable": "Solo se pueden eliminar los scripts en scripts.yaml.",
+                        "load_error_not_duplicable": "Solo se pueden duplicar los scripts en scripts.yaml.",
                         "load_error_not_editable": "Solo los scripts dentro de scripts.yaml son editables.",
                         "load_error_unknown": "Error al cargar el script ({err_no}).",
                         "max": {
@@ -3350,6 +3456,7 @@
                         "save_script": "Guardar script",
                         "sequence": "Secuencia",
                         "sequence_sentence": "La secuencia de acciones de este script.",
+                        "show_info": "Información",
                         "show_trace": "Trazas"
                     },
                     "picker": {
@@ -3367,8 +3474,13 @@
                         "introduction": "El editor de scripts te permite crear y editar scripts. Por favor, sigue el siguiente enlace para leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
                         "learn_more": "Saber más sobre los scripts",
                         "no_scripts": "No pudimos encontrar ningún script",
+                        "run": "Ejecutar",
                         "run_script": "Ejecutar script",
-                        "show_info": "Mostrar información sobre el script"
+                        "show_info": "Información",
+                        "show_trace": "Trazas"
+                    },
+                    "trace": {
+                        "edit_script": "Editar script"
                     }
                 },
                 "storage": {
@@ -3382,6 +3494,8 @@
                         "moving": "Moviendo el disco de datos",
                         "moving_desc": "Reiniciando y moviendo el disco de datos. Por favor, ten paciencia",
                         "no_devices": "No se encontraron dispositivos conectados adecuados",
+                        "no_devices_text": "No se ha encontrado ningún dispositivo externo adecuado. La capacidad de almacenamiento del disco de datos externo debe ser mayor que la capacidad de almacenamiento del disco existente",
+                        "no_devices_title": "No se encontró un almacenamiento adecuado",
                         "select_device": "Selecciona el nuevo disco de datos",
                         "title": "Mover el disco de datos"
                     },
@@ -3391,9 +3505,9 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "¿Estás seguro de que quieres reiniciar Home Assistant?",
-                    "confirm_restart_text": "Reiniciar Home Assistant detendrá todos tus paneles, automatizaciones y scripts activos.",
+                    "confirm_restart_text": "Esto detendrá todos tus paneles, automatizaciones y scripts activos.",
                     "confirm_restart_title": "¿Reiniciar Home Assistant?",
-                    "restart_error": "No se ha podido reiniciar Home Assistant",
+                    "restart_error": "No se pudo reiniciar Home Assistant",
                     "restart_homeassistant": "Reiniciar Home Assistant",
                     "restart_homeassistant_short": "Reiniciar"
                 },
@@ -3491,6 +3605,14 @@
                         "password_not_match": "Las contraseñas no coinciden"
                     },
                     "caption": "Usuarios",
+                    "change_password": {
+                        "caption": "Cambiar contraseña",
+                        "change": "Cambiar",
+                        "new_password": "Nueva contraseña",
+                        "password_changed": "La contraseña ha sido cambiada con éxito.",
+                        "password_confirm": "Confirmar contraseña",
+                        "password_no_match": "Las contraseñas no coinciden"
+                    },
                     "description": "Administra las cuentas de usuario de Home Assistant",
                     "editor": {
                         "activate_user": "Activar usuario",
@@ -3500,6 +3622,8 @@
                         "caption": "Ver usuario",
                         "change_password": "Cambiar la contraseña",
                         "confirm_user_deletion": "¿Seguro que quieres eliminar {name}?",
+                        "confirm_user_deletion_text": "Este usuario será eliminado permanentemente.",
+                        "confirm_user_deletion_title": "¿Eliminar {name}?",
                         "deactivate_user": "Desactivar usuario",
                         "delete_user": "Eliminar usuario",
                         "group": "Grupo",
@@ -3551,7 +3675,9 @@
                         "help_get_zigbee_attribute": "Obtenga el valor del atributo seleccionado.",
                         "help_set_zigbee_attribute": "Establece el valor del atributo para el clúster especificado en la entidad especificada.",
                         "introduction": "Ver y editar los atributos del clúster.",
-                        "set_zigbee_attribute": "Establecer atributo de Zigbee"
+                        "read_zigbee_attribute": "Leer atributo",
+                        "set_zigbee_attribute": "Establecer atributo de Zigbee",
+                        "write_zigbee_attribute": "Escribir atributo"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Comandos del clúster seleccionado",
@@ -3563,7 +3689,11 @@
                     "clusters": {
                         "header": "Clústeres",
                         "help_cluster_dropdown": "Selecciona un clúster para ver atributos y comandos.",
-                        "introduction": "Los clústeres son los bloques de construcción para la funcionalidad de Zigbee. Separan la funcionalidad en unidades lógicas. Hay tipos de cliente y de servidor y se componen de atributos y comandos."
+                        "introduction": "Los clústeres son los bloques de construcción para la funcionalidad de Zigbee. Separan la funcionalidad en unidades lógicas. Hay tipos de cliente y de servidor y se componen de atributos y comandos.",
+                        "tabs": {
+                            "attributes": "Atributos",
+                            "commands": "Comandos"
+                        }
                     },
                     "common": {
                         "clusters": "Clústeres",
@@ -3576,6 +3706,11 @@
                         "network_settings_title": "Configuración de la red",
                         "shortcuts_title": "Atajos",
                         "update_button": "Actualizar la configuración"
+                    },
+                    "device_binding": {
+                        "bind": "Vincular",
+                        "picker_label": "Dispositivos vinculables",
+                        "unbind": "Desvincular"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuración completada",
@@ -3671,7 +3806,7 @@
                         "follow_device_instructions": "Sigue las instrucciones que vienen con el dispositivo para activar el emparejamiento en el dispositivo.",
                         "inclusion_failed": "No se pudo añadir el dispositivo.",
                         "inclusion_finished": "Se ha agregado el dispositivo.",
-                        "interview_failed": "La entrevista del dispositivo falló. Es posible que haya información adicional disponible en los registros.",
+                        "interview_failed": "No se pudo entrevistar el dispositivo. Es posible que haya información adicional disponible en los registros.",
                         "interview_started": "El dispositivo está siendo entrevistado. Esto puede llevar algún tiempo.",
                         "provisioning_finished": "Se ha añadido el dispositivo. Una vez que lo enciendas, estará disponible.",
                         "qr_code": "Código QR",
@@ -3753,7 +3888,7 @@
                         "node_statistics": "Estadísticas",
                         "node_status": "Estado",
                         "reinterview_device": "Volver a entrevistar",
-                        "remove_failed": "Eliminar fallido",
+                        "remove_failed": "No se pudo eliminar",
                         "unknown": "Desconocido",
                         "update_firmware": "Actualizar",
                         "zwave_info": "Información de Z-Wave",
@@ -3763,7 +3898,7 @@
                     "heal_network": {
                         "healing_cancelled": "Se ha cancelado la recuperación de la red.",
                         "healing_complete": "La recuperación de la red se ha completado.",
-                        "healing_failed": "La recuperación falló. Puede haber información adicional disponible en los registros.",
+                        "healing_failed": "No se pudo recuperar. Es posible que haya información adicional disponible en los registros.",
                         "in_progress": "La recuperación de la red está en curso. Esto llevará algún tiempo.",
                         "introduction": "Inicia un proceso de recuperación de red en tu red Z-Wave. Una recuperación de la red hará que todos los dispositivos vuelvan a calcular sus rutas hacia el controlador y se recomienda si has cambiado algún dispositivo de sitio o tu controlador recientemente.",
                         "run_in_background": "Puedes cerrar este cuadro de diálogo y la recuperación de la red continuará en segundo plano.",
@@ -3775,7 +3910,7 @@
                     "heal_node": {
                         "healing_complete": "{device} ha sido recuperado.",
                         "healing_failed": "{device} no se pudo recuperar.",
-                        "healing_failed_check_logs": "Puede haber información adicional disponible en los registros.",
+                        "healing_failed_check_logs": "Es posible que haya información adicional disponible en los registros.",
                         "in_progress": "La recuperación de {device} está en curso.",
                         "introduction": "Dile a {device} que actualice sus rutas al controlador. Esto puede ayudar con problemas de comunicación si recientemente has movido el dispositivo o tu controlador.",
                         "network_heal_in_progress": "Ya se está realizando una recuperación de la red Z-Wave. Espera a que termine antes de recuperar un dispositivo individual.",
@@ -3865,7 +4000,7 @@
                         "battery_device_warning": "Antes de iniciar el proceso de reentrevista deberás despertar los dispositivos que funcionan con batería. Consulta el manual de tu dispositivo para obtener instrucciones sobre cómo despertar el dispositivo.",
                         "in_progress": "El dispositivo está siendo entrevistado. Esto puede llevar algún tiempo.",
                         "interview_complete": "Entrevista con el dispositivo completa.",
-                        "interview_failed": "La entrevista del dispositivo falló. Es posible que haya información adicional disponible en los registros.",
+                        "interview_failed": "No se pudo entrevistar el dispositivo. Es posible que haya información adicional disponible en los registros.",
                         "introduction": "Vuelve a entrevistar un dispositivo en tu red Z-Wave. Utiliza esta función si tu dispositivo tiene una funcionalidad incorrecta o ausente.",
                         "run_in_background": "Puedes cerrar este cuadro de diálogo y la entrevista continuará en segundo plano.",
                         "start_reinterview": "Iniciar la reentrevista",
@@ -3958,7 +4093,7 @@
                     },
                     "update_firmware": {
                         "abort": "Cancelar actualización de firmware",
-                        "abort_failed": "Error al cancelar",
+                        "abort_failed": "No se pudo abortar",
                         "awake": "La actualización del firmware debería comenzar a enviarse a {device} en breve.",
                         "begin_update": "Iniciar actualización de firmware",
                         "close": "Si cierras este cuadro de diálogo, la actualización continuará en segundo plano.",
@@ -3989,7 +4124,7 @@
                         "introduction": "Selecciona el archivo de firmware que deseas utilizar para actualizar {dispositivo}.",
                         "queued": "La actualización de firmware está lista para enviarse a {device} pero el dispositivo está inactivo, activa el dispositivo para iniciar la actualización.",
                         "title": "Actualizar el firmware del dispositivo",
-                        "upload_failed": "Error en la carga",
+                        "upload_failed": "No se pudo cargar",
                         "upload_firmware": "Cargar firmware",
                         "warning": "ADVERTENCIA: Las actualizaciones de firmware pueden bloquear tu dispositivo si no sigues correctamente las instrucciones del fabricante. Los equipos de Home Assistant y Z-Wave JS no asumen ninguna responsabilidad por los daños a tu dispositivo como resultado de la actualización del firmware y no podrán ayudarte si bloqueas tu dispositivo. ¿Todavía te gustaría continuar?"
                     }
@@ -4147,7 +4282,7 @@
                                 "heading": "Home Assistant",
                                 "introduction": "Al reiniciar Home Assistant se pararán tus paneles y automatizaciones.\nDespués del reinicio cada configuración se volverá a cargar.",
                                 "restart": "Reiniciar",
-                                "restart_error": "No se ha podido reiniciar Home Assistant",
+                                "restart_error": "No se pudo reiniciar Home Assistant",
                                 "restart_home_assistant": "Reiniciar Home Assistant",
                                 "stop": "Detener"
                             },
@@ -4195,7 +4330,7 @@
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "Solo puedes utilizar esta función cuando hayas tomado el control de tu panel de control.",
-                    "saving_failed": "Error al guardar la configuración del panel de control.",
+                    "saving_failed": "No se pudo guardar la configuración del panel de control.",
                     "yaml_unsupported": "No puedes utilizar esta función cuando se utiliza el panel de control en modo YAML."
                 },
                 "cards": {
@@ -4563,6 +4698,15 @@
                                 "hour": "Hora",
                                 "month": "Mes"
                             },
+                            "pick_statistic": "Añadir una estadística",
+                            "picked_statistic": "Estadística",
+                            "stat_type_labels": {
+                                "max": "Máx",
+                                "mean": "Media",
+                                "min": "Mín",
+                                "state": "Estado",
+                                "sum": "Suma (cambio durante el período)"
+                            },
                             "stat_types": "Mostrar tipos de estadísticas"
                         },
                         "thermostat": {
@@ -4630,12 +4774,16 @@
                     },
                     "edit_view": {
                         "add": "Añadir vista",
+                        "back_path": "Ruta de vuelta (opcional)",
+                        "back_path_helper": "Solo para subvistas. Si está vacío, al hacer clic en el botón Atrás se volverá a la página anterior.",
                         "delete": "Eliminar vista",
                         "edit": "Editar vista",
                         "header": "Ver configuración",
                         "header_name": "{name} Ver configuración",
                         "move_left": "Mover vista a la izquierda",
                         "move_right": "Mover vista a la derecha",
+                        "subview": "Subvista",
+                        "subview_helper": "Las subvistas no aparecen en las pestañas y tienen un botón Atrás.",
                         "tab_badges": "Insignias",
                         "tab_settings": "Configuración",
                         "tab_visibility": "Visibilidad",
@@ -5057,7 +5205,7 @@
                 "long_lived_access_tokens": {
                     "confirm_delete": "¿Estás seguro de que quieres eliminar el token de acceso para {name}?",
                     "create": "Crear Token",
-                    "create_failed": "No se ha podido crear el token de acceso.",
+                    "create_failed": "No se pudo crear el token de acceso.",
                     "created": "Creado {date}",
                     "delete_failed": "No se pudo eliminar el token de acceso.",
                     "description": "Crea tokens de acceso de larga duración para permitir que tus scripts interactúen con tu instancia de Home Assistant. Cada token será válido por 10 años desde la creación. Los siguientes tokens de acceso de larga duración están actualmente activos.",

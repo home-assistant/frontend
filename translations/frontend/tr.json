@@ -741,6 +741,7 @@
             "copied_clipboard": "Panoya kopyalandı",
             "delete": "Sil",
             "disable": "Devre dışı bırak",
+            "duplicate": "Yineleme",
             "edit": "Düzenle",
             "enable": "Etkinleştir",
             "error_required": "Gerekli",
@@ -813,6 +814,9 @@
                 "temperature_down": "Sıcaklığı düşür",
                 "temperature_up": "Sıcaklığı artır"
             },
+            "config-entry-picker": {
+                "config_entry": "Entegrasyon"
+            },
             "data-table": {
                 "clear": "Temizle",
                 "filtering_by": "Filtreleme ölçütü",
@@ -852,6 +856,9 @@
                     "no_entities": "Herhangi bir varlığın yok",
                     "no_match": "Eşleşen varlık bulunamadı",
                     "show_entities": "Varlıkları göster"
+                },
+                "entity-state-picker": {
+                    "state": "Durum"
                 }
             },
             "history_charts": {
@@ -900,7 +907,7 @@
                 },
                 "not_loaded": "{platform} entegrasyonu yüklenmedi. Lütfen 'default_config:' veya ''{platform}:'' ekleyerek onu yapılandırmanıza dahil edin.",
                 "retrieval_error": "Günlük defteri girdisi alma sırasında hata oluştu",
-                "show_trace": "İzi göster",
+                "show_trace": "İzler",
                 "triggered_by": "tarafından tetiklenir",
                 "triggered_by_automation": "otomasyon tarafından tetiklenir",
                 "triggered_by_event": "olay tarafından tetiklenir",
@@ -1267,27 +1274,31 @@
                 "dismiss": "İletişim kutusunu kapat",
                 "edit": "Varlığı düzenle",
                 "history": "Geçmiş",
+                "info": "Bilgi",
                 "last_changed": "Son değişiklik",
                 "last_updated": "Son güncelleme",
                 "logbook": "Kayıt Defteri",
                 "person": {
                     "create_zone": "Geçerli konumdan bölge oluşturma"
                 },
+                "related": "İlgili",
                 "remote": {
                     "activity": "Şu anki aktivite"
                 },
                 "restored": {
                     "confirm_remove_text": "Bu varlığı kaldırmak istediğinizden emin misiniz?",
                     "confirm_remove_title": "Varlık kaldırılsın mı?",
+                    "no_longer_provided": "Bu varlık artık {integration} entegrasyonu tarafından sağlanmıyor. Varlık artık kullanımda değilse ayarlarda silin.",
                     "not_provided": "Bu varlık şu anda kullanılamıyor ve kaldırılmış, değiştirilmiş veya işlevsiz bir entegrasyon veya cihaz için öksüz durumda.",
                     "remove_action": "Varlığı kaldır",
-                    "remove_intro": "Varlık artık kullanılmıyorsa, kaldırarak temizleyebilirsiniz."
+                    "remove_intro": "Varlık artık kullanılmıyorsa, kaldırarak temizleyebilirsiniz.",
+                    "title": "Varlık kullanılamıyor"
                 },
                 "script": {
                     "last_action": "Son eylem",
                     "last_triggered": "Son Tetiklenen"
                 },
-                "settings": "Varlık ayarları",
+                "settings": "Ayarlar",
                 "show_more": "Daha fazla göster",
                 "sun": {
                     "elevation": "Yükseklik",
@@ -1318,6 +1329,9 @@
                     "start_pause": "Başlat/Duraklat",
                     "status": "Durum",
                     "stop": "Durdur"
+                },
+                "zone": {
+                    "graph_unit": "İnsanlar ana sayfası"
                 }
             },
             "mqtt_device_debug_info": {
@@ -1483,12 +1497,13 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Bu cihaz üzerinden Aygıt Ekleme",
+                    "add": "Bu cihaz aracılığıyla cihaz ekle",
                     "clusters": "Kümeleri Yönet",
                     "device_children": "Alt cihazları görüntüle",
-                    "reconfigure": "Cihazı Yeniden Yapılandır",
-                    "remove": "Cihazı Kaldır",
+                    "reconfigure": "Yeniden Yapılandır",
+                    "remove": "Kaldır",
                     "view_in_visualization": "Görselleştirmede Görüntüle",
+                    "view_network": "Ağı görüntüle",
                     "zigbee_information": "Zigbee cihaz imzası"
                 },
                 "confirmations": {
@@ -1674,26 +1689,31 @@
                     "editor": {
                         "actions": {
                             "add": "İşlem ekle",
+                            "alias": "Eylem adı",
+                            "change_alias": "Eylemi yeniden adlandır",
                             "delete": "Sil",
                             "delete_confirm": "Bunu silmek istediğinizden emin misiniz?",
                             "disable": "Devre dışı bırak",
                             "disabled": "Devre dışı",
-                            "duplicate": "Yedekle",
+                            "duplicate": "Yineleme",
                             "enable": "Etkinleştir",
                             "header": "Aksiyonlar",
                             "introduction": "İşlemler, otomasyon tetiklendiğinde Home Assistant'ın yapacağı işlemlerdir.",
                             "invalid_action": "Geçersiz eylem",
                             "learn_more": "İşlemler hakkında daha fazla bilgi edinin",
                             "name": "Aksiyon",
+                            "rename": "Yeniden adlandır",
+                            "run": "Çalıştır",
                             "run_action": "Eylemi çalıştır",
                             "run_action_error": "Eylem yürütülürken hata oluştu",
                             "run_action_success": "Eylem başarıyla çalıştırıldı",
                             "type": {
                                 "activate_scene": {
-                                    "label": "Sahneyi etkinleştir",
+                                    "label": "Senaryo",
                                     "scene": "Senaryo"
                                 },
                                 "choose": {
+                                    "add_default": "Varsayılan eylemler ekle",
                                     "add_option": "Seçenek ekle",
                                     "conditions": "Koşullar",
                                     "default": "Varsayılan eylemler",
@@ -1727,9 +1747,10 @@
                                 "event": {
                                     "event": "Olay:",
                                     "event_data": "Etkinlik Verisi",
-                                    "label": "Olayı Çalıştır"
+                                    "label": "Olay"
                                 },
                                 "if": {
+                                    "add_else": "Başka ekle",
                                     "else": "Başka",
                                     "if": "Eğer",
                                     "label": "Eğer-o zaman",
@@ -1783,24 +1804,32 @@
                             "unsupported_action": "Eylem için görsel düzenleyici desteği yok: {action}"
                         },
                         "alias": "İsim",
+                        "automation_alias": "Otomasyon adı",
+                        "automation_settings": "Otomasyon ayarları",
                         "blueprint": {
                             "blueprint_to_use": "Kullanılacak taslak",
                             "header": "Taslak",
                             "no_blueprints": "Hiç taslağın yok.",
                             "no_inputs": "Bu taslağın herhangi bir girdisi yok."
                         },
+                        "change_mode": "Mod değiştirme",
                         "conditions": {
                             "add": "Koşul ekle",
+                            "alias": "Koşul adı",
+                            "change_alias": "Koşulu yeniden adlandır",
                             "delete": "Sil",
                             "delete_confirm": "Bunu silmek istediğinizden emin misiniz?",
-                            "duplicate": "Yedekle",
+                            "duplicate": "Yineleme",
                             "header": "Koşullar",
                             "introduction": "Koşullar isteğe bağlıdır ve tüm koşullar yerine getirilmediği sürece otomasyonun çalışmasını engeller.",
                             "invalid_condition": "Geçersiz koşul yapılandırması",
                             "learn_more": "Koşullar hakkında daha fazla bilgi edinin",
                             "name": "Şart",
+                            "rename": "Yeniden adlandır",
                             "test": "Test",
                             "test_failed": "Durum test edilirken hata oluştu",
+                            "testing_error": "Durum geçmedi",
+                            "testing_pass": "Koşul türü",
                             "type": {
                                 "and": {
                                     "label": "Ve"
@@ -1885,16 +1914,22 @@
                             "label": "Açıklama",
                             "placeholder": "İsteğe bağlı açıklama"
                         },
+                        "disable": "Devre dışı bırak",
+                        "disabled": "Otomasyon devre dışı",
                         "edit_ui": "Görsel düzenleyicide düzenle",
                         "edit_yaml": "YAML'de düzenle",
+                        "enable": "Etkinleştir",
                         "enable_disable": "Otomasyonu etkinleştirme / devre dışı bırakma",
                         "introduction": "Evinizi canlandırmak için otomasyonları kullanın.",
+                        "load_error_not_deletable": "Yalnızca automations.yaml dosyasındaki otomasyonlar silinebilir.",
+                        "load_error_not_duplicable": "Yalnızca automations.yaml dosyasındaki otomasyonlar çoğaltılabilir.",
                         "load_error_not_editable": "Yalnızca automations.yaml içindeki otomasyonlar düzenlenebilir.",
                         "load_error_unknown": "Otomasyon yüklenirken hata oluştu ( {err_no} ).",
                         "max": {
                             "parallel": "Maksimum paralel çalışma sayısı",
                             "queued": "Kuyruk uzunluğu"
                         },
+                        "missing_name": "Bir ad olmadan otomasyon kaydedilemez",
                         "modes": {
                             "description": "Mod, eylemler önceki bir tetikleyiciden çalışmaya devam ederken otomasyon tetiklendiğinde ne olacağını kontrol eder. Daha fazla bilgi için {documentation_link} bakın.",
                             "documentation": "otomasyon belgeleri",
@@ -1907,19 +1942,31 @@
                         },
                         "move_down": "Aşağı taşı",
                         "move_up": "Yukarı Taşı",
+                        "re_order": "Yeniden sipariş",
+                        "re_order_mode": {
+                            "description": "Yeniden sıralama modundasınız, tetikleyicilerinizi, koşullarınızı ve eylemlerinizi yeniden sıralayabilirsiniz.",
+                            "exit": "Çıkış",
+                            "title": "Yeniden sipariş modu"
+                        },
+                        "rename": "Yeniden adlandır",
+                        "run": "Çalıştır",
                         "save": "Kaydet",
-                        "show_trace": "İzi göster",
+                        "show_info": "Bilgi",
+                        "show_trace": "İzler",
                         "triggers": {
                             "add": "Tetikleyici ekle",
+                            "alias": "Tetikleyici adı",
+                            "change_alias": "Tetikleyiciyi yeniden adlandır",
                             "delete": "Sil",
                             "delete_confirm": "Bunu silmek istediğinizden emin misiniz?",
-                            "duplicate": "Yedekle",
-                            "edit_id": "Tetikleyici kimliğini düzenle",
+                            "duplicate": "Yineleme",
+                            "edit_id": "Kimliği Düzenle",
                             "header": "Tetikleyiciler",
                             "id": "Tetikleyici Kimliği",
                             "introduction": "Tetikleyiciler, bir otomasyon kuralının işlenmesini başlatan şeydir. Aynı kural için birden çok tetikleyici belirtmek mümkündür. Bir tetikleyici başladıktan sonra, Home Assistant varsa koşulları doğrular ve eylemi çağırır.",
                             "learn_more": "Tetikleyiciler hakkında daha fazla bilgi edinin",
                             "name": "Tetik",
+                            "rename": "Yeniden adlandır",
                             "triggered": "Tetiklendi",
                             "type": {
                                 "calendar": {
@@ -2030,11 +2077,13 @@
                     },
                     "picker": {
                         "add_automation": "Otomasyon oluşturun",
+                        "delete": "Sil",
                         "delete_automation": "Otomasyonu sil",
                         "delete_confirm": "Bu otomasyonu silmek istediğinizden emin misiniz?",
                         "dev_automation": "Hata ayıklama otomasyonu",
                         "dev_only_editable": "Yalnızca automations.yaml'de tanımlanan otomasyonlarda hata ayıklama yapılabilir.",
-                        "duplicate": "Çiftleme",
+                        "disabled": "Devre dışı",
+                        "duplicate": "Yineleme",
                         "duplicate_automation": "Otomasyonu çiftleme",
                         "edit_automation": "Otomasyonu düzenle",
                         "header": "Otomasyon Düzenleyici",
@@ -2467,6 +2516,7 @@
                     "cant_edit": "Yalnızca kullanıcı arayüzünde oluşturulan öğeleri düzenleyebilirsiniz.",
                     "caption": "Cihazlar",
                     "confirm_delete": "Bu cihazı silmek istediğinizden emin misiniz?",
+                    "confirm_delete_integration": "Bu cihazı {integration}'dan kaldırmak istediğinizden emin misiniz?",
                     "confirm_disable_config_entry": "Yapılandırma girişi {entry_name} için başka cihaz yok, bunun yerine yapılandırma girişini devre dışı bırakmak ister misiniz?",
                     "confirm_rename_entity_ids": "Varlıklarınızın varlık kimliklerini de yeniden adlandırmak istiyor musunuz?",
                     "confirm_rename_entity_ids_warning": "Bu, şu anda bu varlıkları kullanan herhangi bir yapılandırmayı (otomasyonlar, senaryolar, sahneler, kontrol panelleri gibi) değiştirmeyecektir! Yeni varlık kimliklerini kullanmak için bunları kendiniz güncellemeniz gerekecek!",
@@ -2482,8 +2532,8 @@
                         "no_integration": "Entegrasyon yok"
                     },
                     "delete": "Sil",
-                    "delete_device": "Cihazı sil",
-                    "delete_device_integration": "{integration} öğesini cihazdan kaldırın",
+                    "delete_device": "Sil",
+                    "delete_device_integration": "Cihazı {integration}'dan kaldırın",
                     "description": "Yapılandırılmış aygıtları yönetme",
                     "device_info": "{type} bilgisi",
                     "device_not_found": "Cihaz / hizmet bulunamadı.",
@@ -2513,6 +2563,7 @@
                     },
                     "name": "Ad",
                     "no_devices": "Cihaz yok",
+                    "open_configuration_url": "Ziyaret",
                     "open_configuration_url_device": "Cihazı ziyaret et",
                     "open_configuration_url_service": "Hizmeti ziyaret et",
                     "picker": {
@@ -2804,6 +2855,8 @@
                     "failed_to_reboot_host": "Ana bilgisayar yeniden başlatılamadı",
                     "failed_to_shutdown_host": "Ana bilgisayar kapatılamadı",
                     "host_shutting_down": "Ana bilgisayar kapatılıyor",
+                    "memory": "Hafıza",
+                    "processor": "İşlemci",
                     "reboot_host": "Sunucuyu yeniden başlatın",
                     "reboot_host_confirm": "Ana bilgisayarınızı yeniden başlatmak istediğinizden emin misiniz?",
                     "rebooting_host": "Ana bilgisayar yeniden başlatılıyor",
@@ -2922,12 +2975,14 @@
                         "rename": "Yeniden adlandır",
                         "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
                         "services": "{count} {count, plural,\n  one {hizmet}\n  other {hizmetler}\n}",
+                        "setup_in_progress": "Başlatılıyor",
                         "state": {
                             "failed_unload": "Kaldırılamadı",
                             "loaded": "Yüklendi",
                             "migration_error": "Taşıma hatası",
                             "not_loaded": "Yüklenmedi",
                             "setup_error": "Kurulum başarısız oldu",
+                            "setup_in_progress": "Başlatılıyor",
                             "setup_retry": "Kurulum yeniden deneniyor"
                         },
                         "system_options": "Sistem seçenekleri",
@@ -3241,7 +3296,9 @@
                         "unsaved_confirm": "Kaydedilmemiş değişiklikleriniz mevcut. Ayrılmak istediğinden emin misin?"
                     },
                     "picker": {
+                        "activate": "Etkinleştir",
                         "add_scene": "Sahne ekle",
+                        "delete": "Sil",
                         "delete_confirm": "Bu sahneyi silmek istediğinize emin misiniz?",
                         "delete_scene": "Sahneyi sil",
                         "duplicate": "Yineleme",
@@ -3251,6 +3308,7 @@
                         "headers": {
                             "activate": "Etkinleştir",
                             "edit": "Düzenle",
+                            "last_activated": "Son etkinleştirilen",
                             "name": "Ad",
                             "show_info": "Bilgileri göster",
                             "state": "Durum"
@@ -3260,6 +3318,7 @@
                         "no_scenes": "Herhangi bir sahne bulamadık",
                         "only_editable": "Sadece scenes.yaml içinde belirlenmiş sahneler düzenlenebilinir.",
                         "pick_scene": "Düzenlenecek sahneyi seç",
+                        "show_info": "Bilgi",
                         "show_info_scene": "Sahne hakkında bilgi göster"
                     }
                 },
@@ -3278,6 +3337,8 @@
                         "id_already_exists_save_error": "Kimlik benzersiz olmadığından bu komut dosyasını kaydedemezsiniz, başka bir kimlik seçin veya otomatik olarak bir tane oluşturmak için boş bırakın.",
                         "introduction": "Bir dizi eylemi çalıştırmak için senaryolarını kullanın.",
                         "link_available_actions": "Kullanılabilir aksiyonlar hakkında daha fazla bilgi edinin.",
+                        "load_error_not_deletable": "Yalnızca scripts.yaml dosyasındaki komut dosyaları silinebilir.",
+                        "load_error_not_duplicable": "Yalnızca scripts.yaml dosyasındaki komut dosyaları çoğaltılabilir.",
                         "load_error_not_editable": "Yalnızca scripts.yaml içindeki senaryolar düzenlenebilir.",
                         "load_error_unknown": "Komut dosyası yüklenirken hata oluştu ( {err_no} ).",
                         "max": {
@@ -3297,12 +3358,14 @@
                         "save_script": "Senaryoyu kaydet",
                         "sequence": "Sıra",
                         "sequence_sentence": "Bu komut dosyasının eylem sırası.",
-                        "show_trace": "İzi göster"
+                        "show_info": "Bilgi",
+                        "show_trace": "İzler"
                     },
                     "picker": {
                         "add_script": "Senaryo ekle",
+                        "delete": "Sil",
                         "dev_script": "Hata ayıklama komut dosyası",
-                        "duplicate": "Çiftleme",
+                        "duplicate": "Yineleme",
                         "duplicate_script": "Senaryoyu Çoğalt",
                         "edit_script": "Komut dosyasını düzenle",
                         "header": "Senaryo Düzenleyicisi",
@@ -3312,9 +3375,14 @@
                         },
                         "introduction": "Senaryo düzenleyici, senaryo oluşturmanıza ve düzenlemenize olanak tanır. Home Assistant'ı doğru şekilde yapılandırdığınızdan emin olmak için talimatları okumak için lütfen aşağıdaki bağlantıyı izleyin.",
                         "learn_more": "Senaryolar hakkında daha fazla bilgi edinin",
-                        "no_scripts": "Herhangi bir senaryo bulamadık.",
+                        "no_scripts": "Herhangi bir senaryo bulamadık",
+                        "run": "Çalıştır",
                         "run_script": "Senaryoyu çalıştır",
-                        "show_info": "Komut dosyası hakkında bilgi göster"
+                        "show_info": "Bilgi",
+                        "show_trace": "İzler"
+                    },
+                    "trace": {
+                        "edit_script": "Komut dosyasını düzenle"
                     }
                 },
                 "storage": {
@@ -3517,6 +3585,9 @@
                         "value": "Değer"
                     },
                     "configuration_page": {
+                        "download_backup": "Yedeklemeyi İndir",
+                        "migrate_radio": "Migrate Radyo",
+                        "network_settings_title": "Ağ Ayarları",
                         "shortcuts_title": "Kısayollar",
                         "update_button": "Uygulama ayarları"
                     },
@@ -3689,15 +3760,16 @@
                     },
                     "device_info": {
                         "device_config": "Cihazı Yapılandır",
-                        "heal_node": "Cihazı İyileştir",
-                        "highest_security": "En Yüksek Güvenlik",
+                        "heal_node": "İyileşmek",
+                        "highest_security": "En yüksek güvenlik",
+                        "node_id": "KIMLIK",
                         "node_ready": "Cihaz Hazır",
-                        "node_statistics": "Cihaz İstatistiklerini Göster",
+                        "node_statistics": "İstatistikler",
                         "node_status": "Aygıt Durumu",
-                        "reinterview_device": "Cihazı Yeniden Görüştür",
-                        "remove_failed": "Başarısız Cihazı Kaldır",
+                        "reinterview_device": "Yeniden görüşme",
+                        "remove_failed": "Kaldırma başarısız",
                         "unknown": "Bilinmeyen",
-                        "update_firmware": "Cihaz Ürün Yazılımını Güncelle",
+                        "update_firmware": "Güncelle",
                         "zwave_info": "Z-Wave Bilgisi",
                         "zwave_plus": "Z-Wave +",
                         "zwave_plus_version": "Sürüm {version}"
@@ -4926,6 +4998,7 @@
                     "full_backup": "Tam Yedekleme",
                     "hide_log": "Tam günlüğü gizle",
                     "in_progress": "Geri yükleme devam ediyor",
+                    "name": "Yedek adı",
                     "partial_backup": "Kısmi anlık görüntü",
                     "password": "Parola",
                     "password_protection": "Parola koruması",
