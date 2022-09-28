@@ -35,6 +35,7 @@ export type StatisticsValidationResult =
   | StatisticsValidationResultEntityNoLongerRecorded
   | StatisticsValidationResultUnsupportedStateClass
   | StatisticsValidationResultUnitsChanged
+  | StatisticsValidationResultUnitsChangedCanConvert
   | StatisticsValidationResultUnsupportedUnitMetadata
   | StatisticsValidationResultUnsupportedUnitState;
 
@@ -60,6 +61,11 @@ export interface StatisticsValidationResultUnsupportedStateClass {
 
 export interface StatisticsValidationResultUnitsChanged {
   type: "units_changed";
+  data: { statistic_id: string; state_unit: string; metadata_unit: string };
+}
+
+export interface StatisticsValidationResultUnitsChangedCanConvert {
+  type: "units_changed_can_convert";
   data: { statistic_id: string; state_unit: string; metadata_unit: string };
 }
 
@@ -148,6 +154,19 @@ export const updateStatisticsMetadata = (
     type: "recorder/update_statistics_metadata",
     statistic_id,
     unit_of_measurement,
+  });
+
+export const changeStatisticUnit = (
+  hass: HomeAssistant,
+  statistic_id: string,
+  old_unit_of_measurement: string | null,
+  new_unit_of_measurement: string | null
+) =>
+  hass.callWS<void>({
+    type: "recorder/change_statistics_unit",
+    statistic_id,
+    old_unit_of_measurement,
+    new_unit_of_measurement,
   });
 
 export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
