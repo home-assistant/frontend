@@ -38,6 +38,7 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
+import { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 
 export interface IntegrationListItem {
   name: string;
@@ -78,8 +79,9 @@ class AddIntegrationDialog extends LitElement {
 
   private _height?: number;
 
-  public showDialog(params): void {
+  public showDialog(params: AddIntegrationDialogParams): void {
     this._open = true;
+    this._pickedBrand = params.brand;
     this._initialFilter = params.initialFilter;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"

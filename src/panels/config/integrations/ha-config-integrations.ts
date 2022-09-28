@@ -678,8 +678,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   }
 
   private async _handleAdd(localizePromise: Promise<LocalizeFunc>) {
+    const brand = extractSearchParam("brand");
     const domain = extractSearchParam("domain");
     navigate("/config/integrations", { replace: true });
+
+    if (brand) {
+      showAddIntegrationDialog(this, {
+        brand,
+      });
+      return;
+    }
     if (!domain) {
       return;
     }
@@ -714,14 +722,14 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
     // Supported brand exists, so we can just create a flow
     if (Object.keys(supportedBrandsIntegrations).includes(domain)) {
-      const brand = supportedBrandsIntegrations[domain];
-      const slug = brand.supported_flows![0];
+      const supBrand = supportedBrandsIntegrations[domain];
+      const slug = supBrand.supported_flows![0];
 
       showConfirmationDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.supported_brand_flow",
           {
-            supported_brand: brand.name,
+            supported_brand: supBrand.name,
             flow_domain_name: domainToName(this.hass.localize, slug),
           }
         ),
