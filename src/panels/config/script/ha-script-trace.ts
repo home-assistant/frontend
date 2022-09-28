@@ -326,7 +326,7 @@ export class HaScriptTrace extends LitElement {
   public willUpdate(changedProps) {
     super.willUpdate(changedProps);
 
-    // Only reset if scriptEntityId has changed and we had one before.
+    // Only reset if scriptId has changed and we had one before.
     if (changedProps.get("scriptId")) {
       this._traces = undefined;
       this._runId = undefined;
