@@ -143,28 +143,41 @@ class HaDomainIntegrations extends LitElement {
 
   private async _integrationPicked(ev) {
     const domain = ev.currentTarget.domain;
-    showConfigFlowDialog(this, {
-      startFlowHandler: domain,
-      showAdvanced: this.hass.userData?.showAdvanced,
-      manifest: await fetchIntegrationManifest(this.hass, domain),
-    });
+    const root = this.getRootNode();
+    showConfigFlowDialog(
+      root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
+      {
+        startFlowHandler: domain,
+        showAdvanced: this.hass.userData?.showAdvanced,
+        manifest: await fetchIntegrationManifest(this.hass, domain),
+      }
+    );
     fireEvent(this, "close-dialog");
   }
 
   private async _flowInProgressPicked(ev) {
     const flow: DataEntryFlowProgress = ev.currentTarget.flow;
-    showConfigFlowDialog(this, {
-      continueFlowId: flow.flow_id,
-      showAdvanced: this.hass.userData?.showAdvanced,
-      manifest: await fetchIntegrationManifest(this.hass, flow.handler),
-    });
+    const root = this.getRootNode();
+    showConfigFlowDialog(
+      root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
+      {
+        continueFlowId: flow.flow_id,
+        showAdvanced: this.hass.userData?.showAdvanced,
+        manifest: await fetchIntegrationManifest(this.hass, flow.handler),
+      }
+    );
     fireEvent(this, "close-dialog");
   }
 
   private _standardPicked(ev) {
     const domain = ev.currentTarget.domain;
+    const root = this.getRootNode();
     fireEvent(this, "close-dialog");
-    protocolIntegrationPicked(this, this.hass, domain);
+    protocolIntegrationPicked(
+      root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
+      this.hass,
+      domain
+    );
   }
 
   static styles = [
