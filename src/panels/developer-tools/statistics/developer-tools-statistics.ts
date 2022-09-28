@@ -35,7 +35,8 @@ const FIX_ISSUES_ORDER = {
   unsupported_state_class: 3,
   units_changed_can_convert: 4,
   units_changed: 5,
-  unsupported_unit_metadata: 6,
+  unsupported_unit_metadata_can_convert: 6,
+  unsupported_unit_metadata: 7,
 };
 @customElement("developer-tools-statistics")
 class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
@@ -316,6 +317,14 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         });
         break;
       case "unsupported_unit_metadata":
+        showFixStatisticsUnsupportedUnitMetadataDialog(this, {
+          issue,
+          fixedCallback: () => {
+            this._validateStatistics();
+          },
+        });
+        break;
+      case "unsupported_unit_metadata_can_convert":
         showFixStatisticsUnsupportedUnitMetadataDialog(this, {
           issue,
           fixedCallback: () => {
