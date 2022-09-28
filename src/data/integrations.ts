@@ -7,6 +7,8 @@ export interface Integration {
   config_flow?: boolean;
   integrations?: Integrations;
   iot_standards?: IotStandards[];
+  is_built_in?: boolean;
+  iot_class?: string;
 }
 
 export interface Integrations {

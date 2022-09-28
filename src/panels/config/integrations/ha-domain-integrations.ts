@@ -4,12 +4,16 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
 import { localizeConfigFlowTitle } from "../../../data/config_flow";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
-import { domainToName, IntegrationManifest } from "../../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationManifest,
+} from "../../../data/integration";
 import { Integration } from "../../../data/integrations";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import "./ha-integration-list-item";
 
 const standardToDomain = { zigbee: "zha", "z-wave": "zwave_js" } as const;
 
@@ -23,11 +27,6 @@ class HaDomainIntegrations extends LitElement {
 
   @property({ attribute: false })
   public flowsInProgress?: DataEntryFlowProgress[];
-
-  @property({ attribute: false }) public manifests?: Record<
-    string,
-    IntegrationManifest
-  >;
 
   protected render() {
     return html`
@@ -89,28 +88,19 @@ class HaDomainIntegrations extends LitElement {
         : ""}
       ${this.integration?.integrations
         ? Object.entries(this.integration.integrations).map(
-            ([dom, val]) => html`<mwc-list-item
-              graphic="medium"
+            ([dom, val]) => html`<ha-integration-list-item
+              .hass=${this.hass}
               .domain=${dom}
+              .integration=${{
+                ...val,
+                domain: dom,
+                name: val.name || domainToName(this.hass.localize, dom),
+                is_built_in: val.is_built_in !== false,
+                cloud: val.iot_class?.startsWith("cloud_"),
+              }}
               @click=${this._integrationPicked}
-              hasMeta
             >
-              <img
-                slot="graphic"
-                loading="lazy"
-                src=${brandsUrl({
-                  domain: dom,
-                  type: "icon",
-                  useFallback: true,
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-                referrerpolicy="no-referrer"
-              />
-              <span>
-                ${val.name || domainToName(this.hass.localize, dom)}
-              </span>
-              <ha-icon-next slot="meta"></ha-icon-next>
-            </mwc-list-item>`
+            </ha-integration-list-item>`
           )
         : ""}
       ${this.integration?.config_flow
@@ -151,24 +141,24 @@ class HaDomainIntegrations extends LitElement {
     `;
   }
 
-  private _integrationPicked(ev) {
+  private async _integrationPicked(ev) {
     const domain = ev.currentTarget.domain;
-    fireEvent(this, "close-dialog");
     showConfigFlowDialog(this, {
       startFlowHandler: domain,
       showAdvanced: this.hass.userData?.showAdvanced,
-      manifest: this.manifests?.[domain],
+      manifest: await fetchIntegrationManifest(this.hass, domain),
     });
+    fireEvent(this, "close-dialog");
   }
 
-  private _flowInProgressPicked(ev) {
+  private async _flowInProgressPicked(ev) {
     const flow: DataEntryFlowProgress = ev.currentTarget.flow;
-    fireEvent(this, "close-dialog");
     showConfigFlowDialog(this, {
       continueFlowId: flow.flow_id,
       showAdvanced: this.hass.userData?.showAdvanced,
-      manifest: this.manifests?.[flow.handler],
+      manifest: await fetchIntegrationManifest(this.hass, flow.handler),
     });
+    fireEvent(this, "close-dialog");
   }
 
   private _standardPicked(ev) {
