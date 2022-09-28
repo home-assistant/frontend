@@ -88,8 +88,8 @@ class HaConfigScript extends HassRouterPage {
       this._currentPage !== "dashboard"
     ) {
       pageEl.creatingNew = undefined;
-      const scriptEntityId = this.routeTail.path.substr(1);
-      pageEl.scriptEntityId = scriptEntityId === "new" ? null : scriptEntityId;
+      const scriptId = this.routeTail.path.substr(1);
+      pageEl.scriptId = scriptId === "new" ? null : scriptId;
     }
   }
 }
