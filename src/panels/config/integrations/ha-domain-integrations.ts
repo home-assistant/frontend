@@ -10,9 +10,11 @@ import {
 } from "../../../data/integration";
 import { Integration } from "../../../data/integrations";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-integration-list-item";
 
 const standardToDomain = { zigbee: "zha", "z-wave": "zwave_js" } as const;
@@ -165,6 +167,42 @@ class HaDomainIntegrations extends LitElement {
 
   private async _integrationPicked(ev) {
     const domain = ev.currentTarget.domain;
+    if (
+      (domain === this.domain && !this.integration.config_flow) ||
+      !this.integration.integrations?.[domain]?.config_flow
+    ) {
+      const manifest = await fetchIntegrationManifest(this.hass, domain);
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.yaml_only_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.yaml_only_text",
+          {
+            link:
+              manifest?.is_built_in || manifest?.documentation
+                ? html`<a
+                    href=${manifest.is_built_in
+                      ? documentationUrl(
+                          this.hass,
+                          `/integrations/${manifest.domain}`
+                        )
+                      : manifest.documentation}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_flow.documentation"
+                    )}
+                  </a>`
+                : this.hass.localize(
+                    "ui.panel.config.integrations.config_flow.documentation"
+                  ),
+          }
+        ),
+      });
+      return;
+    }
     const root = this.getRootNode();
     showConfigFlowDialog(
       root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
