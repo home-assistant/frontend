@@ -60,7 +60,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     clearInterval(this._interval);
     this._interval = window.setInterval(
       () => this._getStatistics(),
-      1000 * 60 * 60
+      this._intervalTimeout
     );
   }
 
@@ -125,7 +125,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       clearInterval(this._interval);
       this._interval = window.setInterval(
         () => this._getStatistics(),
-        1000 * 60 * 60
+        this._intervalTimeout
       );
     }
   }
@@ -153,6 +153,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         </div>
       </ha-card>
     `;
+  }
+
+  private get _intervalTimeout(): number {
+    return (this._config?.period === "5minute" ? 5 : 60) * 1000 * 60;
   }
 
   private async _getStatistics(): Promise<void> {
