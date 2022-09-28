@@ -41,7 +41,7 @@ export class HaSelectSelector extends LitElement {
     );
 
     if (!this.selector.select.custom_value && this._mode === "list") {
-      if (!this.selector.select.multiple || this.required) {
+      if (!this.selector.select.multiple) {
         return html`
           <div>
             ${this.label}
@@ -64,7 +64,8 @@ export class HaSelectSelector extends LitElement {
 
       return html`
         <div>
-          ${this.label}${options.map(
+          ${this.label}
+          ${options.map(
             (item: SelectOption) => html`
               <ha-formfield .label=${item.label}>
                 <ha-checkbox
@@ -114,7 +115,7 @@ export class HaSelectSelector extends LitElement {
           .required=${this.required && !value.length}
           .value=${this._filter}
           .items=${options.filter(
-            (item) => !item.disabled && !this.value?.includes(item.value)
+            (option) => !option.disabled && !value?.includes(option.value)
           )}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
@@ -289,6 +290,9 @@ export class HaSelectSelector extends LitElement {
     mwc-formfield,
     ha-formfield {
       display: block;
+    }
+    mwc-list-item[disabled] {
+      --mdc-theme-text-primary-on-background: var(--disabled-text-color);
     }
   `;
 }

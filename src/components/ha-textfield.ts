@@ -82,6 +82,13 @@ export class HaTextField extends TextFieldBase {
         direction: var(--direction);
       }
 
+      .mdc-floating-label:not(.mdc-floating-label--float-above) {
+        text-overflow: ellipsis;
+        width: inherit;
+        padding-right: 30px;
+        box-sizing: border-box;
+      }
+
       input {
         text-align: var(--text-field-text-align, start);
       }

@@ -14,6 +14,7 @@ import {
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
+import "../../../components/ha-navigation-picker";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -89,14 +90,14 @@ export class HuiActionEditor extends LitElement {
       </div>
       ${this.config?.action === "navigate"
         ? html`
-            <ha-textfield
-              label=${this.hass!.localize(
+            <ha-navigation-picker
+              .hass=${this.hass}
+              .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.action-editor.navigation_path"
               )}
               .value=${this._navigation_path}
-              .configValue=${"navigation_path"}
-              @input=${this._valueChanged}
-            ></ha-textfield>
+              @value-changed=${this._navigateValueChanged}
+            ></ha-navigation-picker>
           `
         : ""}
       ${this.config?.action === "url"
@@ -189,6 +190,16 @@ export class HuiActionEditor extends LitElement {
     if ("service_data" in value) {
       delete value.service_data;
     }
+
+    fireEvent(this, "value-changed", { value });
+  }
+
+  private _navigateValueChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const value = {
+      ...this.config!,
+      navigation_path: ev.detail.value,
+    };
 
     fireEvent(this, "value-changed", { value });
   }

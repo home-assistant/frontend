@@ -327,7 +327,6 @@ class HaScriptPicker extends LitElement {
       ),
       text: this.hass.localize(
         "ui.panel.config.script.editor.delete_confirm_text",
-        "name",
         { name: script.name }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
