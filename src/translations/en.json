@@ -517,6 +517,7 @@
           "min": "min",
           "max": "max",
           "mean": "mean",
+          "state": "state",
           "sum": "sum"
         }
       },
@@ -3969,7 +3970,8 @@
                 "mean": "Mean",
                 "min": "Min",
                 "max": "Max",
-                "sum": "Sum"
+                "state": "State",
+                "sum": "Sum (change during period)"
               },
               "chart_type": "Chart type",
               "periods": {
