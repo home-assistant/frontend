@@ -87,20 +87,22 @@ class HaDomainIntegrations extends LitElement {
           })
         : ""}
       ${this.integration?.integrations
-        ? Object.entries(this.integration.integrations).map(
-            ([dom, val]) => html`<ha-integration-list-item
-              .hass=${this.hass}
-              .domain=${dom}
-              .integration=${{
-                ...val,
-                domain: dom,
-                name: val.name || domainToName(this.hass.localize, dom),
-                is_built_in: val.is_built_in !== false,
-                cloud: val.iot_class?.startsWith("cloud_"),
-              }}
-              @click=${this._integrationPicked}
-            >
-            </ha-integration-list-item>`
+        ? Object.entries(this.integration.integrations).map(([dom, val]) =>
+            val.config_flow
+              ? html`<ha-integration-list-item
+                  .hass=${this.hass}
+                  .domain=${dom}
+                  .integration=${{
+                    ...val,
+                    domain: dom,
+                    name: val.name || domainToName(this.hass.localize, dom),
+                    is_built_in: val.is_built_in !== false,
+                    cloud: val.iot_class?.startsWith("cloud_"),
+                  }}
+                  @click=${this._integrationPicked}
+                >
+                </ha-integration-list-item>`
+              : ""
           )
         : ""}
       ${["zha", "zwave_js"].includes(this.domain)
