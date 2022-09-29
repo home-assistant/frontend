@@ -87,15 +87,6 @@ class HaConfigAutomation extends HassRouterPage {
         this._debouncedUpdateAutomations(pageEl);
       }
     }
-
-    if (
-      (!changedProps || changedProps.has("route")) &&
-      this._currentPage === "edit"
-    ) {
-      const automationId = decodeURIComponent(this.routeTail.path.substr(1));
-      pageEl.automationId = automationId === "new" ? null : automationId;
-      pageEl.entityId = null;
-    }
     if (
       (!changedProps || changedProps.has("route")) &&
       this._currentPage === "show"
@@ -103,6 +94,15 @@ class HaConfigAutomation extends HassRouterPage {
       const automationId = decodeURIComponent(this.routeTail.path.substr(1));
       pageEl.automationId = null;
       pageEl.entityId = automationId === "new" ? null : automationId;
+      return;
+    }
+    if (
+      (!changedProps || changedProps.has("route")) &&
+      this._currentPage !== "dashboard"
+    ) {
+      const automationId = decodeURIComponent(this.routeTail.path.substr(1));
+      pageEl.automationId = automationId === "new" ? null : automationId;
+      pageEl.entityId = null;
     }
   }
 }
