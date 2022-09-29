@@ -18,6 +18,8 @@ export class HaMQTTTrigger extends LitElement implements TriggerElement {
 
   @property({ attribute: false }) public trigger!: MqttTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return { topic: "" };
   }
@@ -28,6 +30,7 @@ export class HaMQTTTrigger extends LitElement implements TriggerElement {
         .schema=${SCHEMA}
         .data=${this.trigger}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>

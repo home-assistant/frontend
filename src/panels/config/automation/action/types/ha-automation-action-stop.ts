@@ -12,6 +12,8 @@ export class HaStopAction extends LitElement implements ActionElement {
 
   @property() public action!: StopAction;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return { stop: "" };
   }
@@ -25,14 +27,17 @@ export class HaStopAction extends LitElement implements ActionElement {
           "ui.panel.config.automation.editor.actions.type.stop.stop"
         )}
         .value=${stop}
+        .disabled=${this.disabled}
         @change=${this._stopChanged}
       ></ha-textfield>
       <ha-formfield
+        .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.stop.error"
         )}
       >
         <ha-switch
+          .disabled=${this.disabled}
           .checked=${error ?? false}
           @change=${this._errorChanged}
         ></ha-switch>

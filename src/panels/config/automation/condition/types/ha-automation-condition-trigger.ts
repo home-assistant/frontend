@@ -18,6 +18,8 @@ export class HaTriggerCondition extends LitElement {
 
   @property({ attribute: false }) public condition!: TriggerCondition;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _triggers: Trigger[] = [];
 
   private _unsub?: UnsubscribeFunc;
@@ -55,6 +57,7 @@ export class HaTriggerCondition extends LitElement {
         "ui.panel.config.automation.editor.conditions.type.trigger.id"
       )}
       .value=${id}
+      .disabled=${this.disabled}
       @selected=${this._triggerPicked}
     >
       ${this._triggers.map(

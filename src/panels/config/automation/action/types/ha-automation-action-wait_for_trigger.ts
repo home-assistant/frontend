@@ -21,6 +21,8 @@ export class HaWaitForTriggerAction
 
   @property({ attribute: false }) public action!: WaitForTriggerAction;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return { wait_for_trigger: [] };
   }
@@ -34,22 +36,26 @@ export class HaWaitForTriggerAction
           "ui.panel.config.automation.editor.actions.type.wait_for_trigger.timeout"
         )}
         .data=${timeData}
+        .disabled=${this.disabled}
         enableMillisecond
         @value-changed=${this._timeoutChanged}
       ></ha-duration-input>
       <ha-formfield
+        .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.wait_for_trigger.continue_timeout"
         )}
       >
         <ha-switch
           .checked=${this.action.continue_on_timeout ?? true}
+          .disabled=${this.disabled}
           @change=${this._continueChanged}
         ></ha-switch>
       </ha-formfield>
       <ha-automation-trigger
         .triggers=${ensureArray(this.action.wait_for_trigger)}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         .name=${"wait_for_trigger"}
         @value-changed=${this._valueChanged}
       ></ha-automation-trigger>

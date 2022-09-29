@@ -17,6 +17,8 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
 
   @property({ attribute: false }) public trigger!: CalendarTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
       [
@@ -97,6 +99,7 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
         .schema=${schema}
         .data=${data}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>

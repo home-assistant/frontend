@@ -15,6 +15,8 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
   @property() public trigger!: TagTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _tags?: Tag[];
 
   public static get defaultConfig() {
@@ -35,7 +37,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.tag.label"
         )}
-        .disabled=${this._tags.length === 0}
+        .disabled=${this.disabled || this._tags.length === 0}
         .value=${this.trigger.tag_id}
         @selected=${this._tagChanged}
       >

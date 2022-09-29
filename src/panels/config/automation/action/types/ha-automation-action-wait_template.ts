@@ -32,6 +32,8 @@ export class HaWaitAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: WaitAction;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return { wait_template: "", continue_on_timeout: true };
   }
@@ -42,6 +44,7 @@ export class HaWaitAction extends LitElement implements ActionElement {
         .hass=${this.hass}
         .data=${this.action}
         .schema=${SCHEMA}
+        .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>
     `;
