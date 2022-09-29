@@ -2,6 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { localizeConfigFlowTitle } from "../../../data/config_flow";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
@@ -90,7 +91,18 @@ class HaDomainIntegrations extends LitElement {
         : ""}
       ${this.integration?.integrations
         ? Object.entries(this.integration.integrations)
-            .filter(([_dom, val]) => val.config_flow)
+            .sort((a, b) => {
+              if (a[1].config_flow && !b[1].config_flow) {
+                return -1;
+              }
+              if (b[1].config_flow && !a[1].config_flow) {
+                return 0;
+              }
+              return caseInsensitiveStringCompare(
+                a[1].name || domainToName(this.hass.localize, a[0]),
+                b[1].name || domainToName(this.hass.localize, b[0])
+              );
+            })
             .map(
               ([dom, val]) =>
                 html`<ha-integration-list-item
@@ -193,8 +205,8 @@ class HaDomainIntegrations extends LitElement {
                   >
                     ${this.hass.localize(
                       "ui.panel.config.integrations.config_flow.documentation"
-                    )}
-                  </a>`
+                    )}</a
+                  >`
                 : this.hass.localize(
                     "ui.panel.config.integrations.config_flow.documentation"
                   ),

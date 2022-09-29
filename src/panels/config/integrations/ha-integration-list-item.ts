@@ -3,7 +3,11 @@ import {
   ListItemBase,
 } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
-import { mdiCloudOutline, mdiCodeBraces, mdiPackageVariant } from "@mdi/js";
+import {
+  mdiCloudOutline,
+  mdiOpenInNew,
+  mdiPackageVariant,
+} from "@mdi/js";
 import { css, CSSResultGroup, html } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property } from "lit/decorators";
@@ -62,18 +66,6 @@ export class HaIntegrationListItem extends ListItemBase {
       return html``;
     }
     return html`<span class="mdc-deprecated-list-item__meta material-icons">
-      ${!this.integration.config_flow &&
-      !this.integration.integrations &&
-      !this.integration.iot_standards
-        ? html`<span
-            ><ha-svg-icon .path=${mdiCodeBraces}></ha-svg-icon
-            ><paper-tooltip animation-delay="0" position="left"
-              >${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.yaml_only"
-              )}</paper-tooltip
-            ></span
-          >`
-        : ""}
       ${this.integration.cloud
         ? html`<span
             ><ha-svg-icon .path=${mdiCloudOutline}></ha-svg-icon
@@ -94,7 +86,17 @@ export class HaIntegrationListItem extends ListItemBase {
             ></span
           >`
         : ""}
-      <ha-icon-next></ha-icon-next>
+      ${!this.integration.config_flow &&
+      !this.integration.integrations &&
+      !this.integration.iot_standards
+        ? html`<span
+            ><paper-tooltip animation-delay="0" position="left"
+              >${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.yaml_only"
+              )}</paper-tooltip
+            ><ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon
+          ></span>`
+        : html`<ha-icon-next></ha-icon-next>`}
     </span>`;
   }
 
@@ -129,6 +131,7 @@ export class HaIntegrationListItem extends ListItemBase {
         }
         .mdc-deprecated-list-item__meta {
           width: auto;
+          white-space: nowrap;
         }
         .mdc-deprecated-list-item__meta > * {
           margin-right: 8px;
