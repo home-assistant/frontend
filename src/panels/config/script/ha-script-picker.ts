@@ -254,6 +254,8 @@ class HaScriptPicker extends LitElement {
     const entry = this.hass.entities[ev.detail.id];
     if (entry) {
       navigate(`/config/script/edit/${entry.unique_id}`);
+    } else {
+      navigate(`/config/script/show/${ev.detail.id}`);
     }
   }
 
