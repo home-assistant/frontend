@@ -2935,7 +2935,7 @@
             },
             "provided_by_custom_integration": "Provided by a custom integration",
             "depends_on_cloud": "Depends on the cloud",
-            "yaml_only": "Can not be setup from the UI",
+            "yaml_only": "Needs manual configuration",
             "disabled_polling": "Automatic polling for updated data disabled",
             "state": {
               "loaded": "Loaded",
