@@ -504,7 +504,9 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (integration.integrations) {
-      this._fetchFlowsInProgress(Object.keys(integration.integrations));
+      const integrations =
+        this._integrations![integration.domain].integrations!;
+      this._fetchFlowsInProgress(Object.keys(integrations));
       this._pickedBrand = integration.domain;
       return;
     }

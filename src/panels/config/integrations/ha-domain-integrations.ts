@@ -32,7 +32,7 @@ class HaDomainIntegrations extends LitElement {
   public flowsInProgress?: DataEntryFlowProgress[];
 
   protected render() {
-    return html`
+    return html`<mwc-list>
       ${this.flowsInProgress?.length
         ? html`<h3>We discovered the following:</h3>
             ${this.flowsInProgress.map(
@@ -174,7 +174,7 @@ class HaDomainIntegrations extends LitElement {
               >
               </ha-integration-list-item>`}`
         : ""}
-    `;
+    </mwc-list> `;
   }
 
   private async _integrationPicked(ev) {
