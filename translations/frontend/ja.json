@@ -619,7 +619,7 @@
                 "target_humidity_entity": "目標湿度 {name}"
             },
             "light": {
-                "brightness": "明るさ",
+                "brightness": "輝度",
                 "cold_white_value": "冷たい白い明るさ",
                 "color_brightness": "色の明るさ",
                 "color_temperature": "色温度",
@@ -741,6 +741,7 @@
             "copied_clipboard": "クリップボードにコピー",
             "delete": "削除",
             "disable": "無効",
+            "duplicate": "複製",
             "edit": "編集",
             "enable": "有効",
             "error_required": "必須",
@@ -803,7 +804,7 @@
             "blueprint-picker": {
                 "add_user": "ユーザーの追加",
                 "remove_user": "ユーザーの削除",
-                "select_blueprint": "設計図の選択"
+                "select_blueprint": "ブループリントの選択"
             },
             "calendar": {
                 "my_calendars": "マイカレンダー",
@@ -891,13 +892,13 @@
                     "was_at_home": "帰宅しました",
                     "was_at_state": "{state}で検出されました",
                     "was_away": "外出しました",
-                    "was_closed": "閉鎖されました",
+                    "was_closed": "閉じました",
                     "was_connected": "接続されました",
                     "was_disconnected": "切断されました",
                     "was_locked": "施錠しました",
                     "was_low": "低かった",
                     "was_normal": "正常でした",
-                    "was_opened": "開いています",
+                    "was_opened": "開きました",
                     "was_plugged_in": "接続されました",
                     "was_safe": "安全でした",
                     "was_unlocked": "解錠しました",
@@ -906,16 +907,16 @@
                 },
                 "not_loaded": "{platform} 統合がロードされていません。 'default_config:' または、''{platform}:'' を追加して、設定に追加してください。",
                 "retrieval_error": "ログブックを読み込めませんでした",
-                "show_trace": "トレースを表示",
+                "show_trace": "トレース",
                 "triggered_by": "トリガーは、",
-                "triggered_by_automation": "オートメーションによってトリガー",
+                "triggered_by_automation": "オートメーションによりトリガー",
                 "triggered_by_event": "イベントによってトリガー",
                 "triggered_by_homeassistant_starting": "Home Assistantの開始によってトリガー",
                 "triggered_by_homeassistant_stopping": "Home Assistantの停止によってトリガー",
-                "triggered_by_numeric_state_of": "～の数値の状態によってトリガー",
+                "triggered_by_numeric_state_of": "数値の状態によりトリガー:",
                 "triggered_by_script": "スクリプトによってトリガー",
                 "triggered_by_service": "サービスによってトリガー",
-                "triggered_by_state_of": "～の状態によってトリガー",
+                "triggered_by_state_of": "状態によりトリガー:",
                 "triggered_by_time": "時間によってトリガー",
                 "triggered_by_time_pattern": "時間のパターンによってトリガー"
             },
@@ -1288,7 +1289,7 @@
                     "confirm_remove_text": "このエンティティを削除しますか？",
                     "confirm_remove_title": "エンティティを削除しますか？",
                     "no_longer_provided": "このエンティティは、{integration} の統合によって提供されなくなりました。このエンティティが不要な場合は、設定で削除してください。",
-                    "not_provided": "このエンティティは現在利用できません。削除や変更され機能しなくなり孤立した統合やデバイスとなっています。",
+                    "not_provided": "このエンティティは、{integration} 統合によって提供されなくなりました。 エンティティを使用しない場合は、設定で削除してください。",
                     "remove_action": "エンティティの削除",
                     "remove_intro": "エンティティが使用されなくなった場合は、削除することでクリーンアップできます。",
                     "title": "エンティティが使用できません"
@@ -1297,7 +1298,7 @@
                     "last_action": "最後のアクション",
                     "last_triggered": "最後のトリガー"
                 },
-                "settings": "エンティティの設定",
+                "settings": "設定",
                 "show_more": "詳細を表示",
                 "sun": {
                     "elevation": "高度",
@@ -1330,7 +1331,7 @@
                     "stop": "停止"
                 },
                 "zone": {
-                    "graph_unit": "ピープルホーム"
+                    "graph_unit": "在宅"
                 }
             },
             "mqtt_device_debug_info": {
@@ -1368,7 +1369,7 @@
                         "automation": "オートメーション",
                         "backup": "バックアップ",
                         "backups": "バックアップ",
-                        "blueprint": "設計図",
+                        "blueprint": "ブループリント",
                         "devices": "デバイス",
                         "energy": "エネルギーの設定",
                         "entities": "エンティティ",
@@ -1489,8 +1490,8 @@
             "voice_command": {
                 "did_not_hear": "Home Assistant は何も聞きませんでした",
                 "error": "エラーが発生しました",
-                "found": "以下のようなものを見つけました:",
-                "how_can_i_help": "どうなご用でしょう？",
+                "found": "以下のものを見つけました:",
+                "how_can_i_help": "どのようなご用でしょう？",
                 "label": "質問を入力して「Enter」を押してください。",
                 "label_voice": "入力して「enter」を押すか、マイクをタップして話します"
             },
@@ -1499,11 +1500,11 @@
                     "add": "このデバイス経由でデバイスを追加",
                     "clusters": "クラスタの管理",
                     "device_children": "子機を表示",
-                    "reconfigure": "デバイスを再設定",
-                    "remove": "デバイスを削除",
+                    "reconfigure": "再設定",
+                    "remove": "削除",
                     "view_in_visualization": "視覚的に表示",
                     "view_network": "ネットワークを表示",
-                    "zigbee_information": "Zigbee デバイスの署名"
+                    "zigbee_information": "Zigbee 署名"
                 },
                 "confirmations": {
                     "remove": "デバイスを削除してもよろしいですか？"
@@ -1672,7 +1673,7 @@
                     "description": "カスタム行動ルールを作成する",
                     "dialog_new": {
                         "blueprint": {
-                            "use_blueprint": "設計図を使用する"
+                            "use_blueprint": "ブループリントを使用する"
                         },
                         "header": "新しいオートメーションを作成する",
                         "how": "新しいオートメーションをどのように作成しますか？",
@@ -1692,6 +1693,8 @@
                             "change_alias": "アクション名を変更",
                             "delete": "削除",
                             "delete_confirm": "削除してもよろしいですか？",
+                            "delete_confirm_text": "完全に削除されます。",
+                            "delete_confirm_title": "アクションを削除？",
                             "disable": "無効化",
                             "disabled": "無効",
                             "duplicate": "複製",
@@ -1731,7 +1734,7 @@
                                 "device_id": {
                                     "action": "アクション",
                                     "extra_fields": {
-                                        "brightness_pct": "明るさ",
+                                        "brightness_pct": "輝度",
                                         "code": "コード",
                                         "flash": "フラッシュ",
                                         "humidity": "湿度",
@@ -1746,7 +1749,7 @@
                                 "event": {
                                     "event": "イベント",
                                     "event_data": "イベントのデータ",
-                                    "label": "イベントを実行"
+                                    "label": "イベント"
                                 },
                                 "if": {
                                     "add_else": "その他を追加",
@@ -1794,7 +1797,7 @@
                                 },
                                 "wait_template": {
                                     "continue_timeout": "タイムアウト時に続行",
-                                    "label": "テンプレートを待つ",
+                                    "label": "待機テンプレート",
                                     "timeout": "タイムアウト(オプション)",
                                     "wait_template": "待機テンプレート"
                                 }
@@ -1806,17 +1809,20 @@
                         "automation_alias": "オートメーション名",
                         "automation_settings": "オートメーション設定",
                         "blueprint": {
-                            "blueprint_to_use": "使用する設計図",
-                            "header": "設計図",
-                            "no_blueprints": "設計図はありません",
-                            "no_inputs": "この設計図には入力がありません。"
+                            "blueprint_to_use": "使用するブループリント",
+                            "header": "ブループリント",
+                            "no_blueprints": "ブループリントはありません",
+                            "no_inputs": "このブループリントには入力がありません。"
                         },
+                        "change_mode": "モード変更",
                         "conditions": {
                             "add": "条件を追加",
                             "alias": "条件名",
                             "change_alias": "条件名を変更",
                             "delete": "削除",
                             "delete_confirm": "削除してもよろしいですか？",
+                            "delete_confirm_text": "完全に削除されます。",
+                            "delete_confirm_title": "条件を削除？",
                             "duplicate": "複製",
                             "header": "条件",
                             "introduction": "条件はオプションであり、すべての条件が満たされない限り、オートメーション(自動化)は実行されません。",
@@ -1826,8 +1832,8 @@
                             "rename": "リネーム",
                             "test": "テスト",
                             "test_failed": "テスト中にエラーが発生しました",
-                            "testing_error": "条件不合格(Condition did not pass)",
-                            "testing_pass": "条件パス(Condition passes)",
+                            "testing_error": "条件不一致",
+                            "testing_pass": "条件一致",
                             "type": {
                                 "and": {
                                     "label": "AND"
@@ -1919,6 +1925,8 @@
                         "enable": "有効",
                         "enable_disable": "オートメーションの有効化/無効化",
                         "introduction": "オートメーションを使用して、あなたの家に命を吹き込みましょう。",
+                        "load_error_not_deletable": "automations.yaml のオートメーションのみ削除できます。",
+                        "load_error_not_duplicable": "automations.yaml のオートメーションのみ複製できます。",
                         "load_error_not_editable": "編集できるのは、automations.yamlのオートメーションのみです。",
                         "load_error_unknown": "オートメーションの読み込み中にエラーが発生しました ({err_no})。",
                         "max": {
@@ -1934,21 +1942,29 @@
                             "parallel": "並列",
                             "queued": "待機中",
                             "restart": "再起動",
-                            "single": "シングル(デフォルト)"
+                            "single": "シングル"
                         },
                         "move_down": "下に移動",
                         "move_up": "上に移動",
+                        "re_order": "並べ替え",
+                        "re_order_mode": {
+                            "description": "現在、並べ替えモードです。トリガーや条件、アクションを並べ替えできます。",
+                            "exit": "解除",
+                            "title": "並べ替えモード"
+                        },
                         "rename": "リネーム",
                         "run": "実行",
                         "save": "保存",
                         "show_info": "情報",
-                        "show_trace": "トレースを表示",
+                        "show_trace": "トレース",
                         "triggers": {
                             "add": "トリガーを追加",
                             "alias": "トリガー名",
                             "change_alias": "トリガー名を変更",
                             "delete": "削除",
                             "delete_confirm": "削除してもよろしいですか？",
+                            "delete_confirm_text": "完全に削除されます。",
+                            "delete_confirm_title": "トリガーを削除？",
                             "duplicate": "複製",
                             "edit_id": "ID を編集",
                             "header": "トリガー",
@@ -2063,13 +2079,17 @@
                             "type_select": "トリガーの種類",
                             "unsupported_platform": "プラットフォームに対するビジュアルエディタでのサポートなし: {platform}"
                         },
-                        "unsaved_confirm": "未保存の変更があります。このまま離れてしまってもよろしいですか？"
+                        "unsaved_confirm": "未保存の変更があります。このまま離れてしまってもよろしいですか？",
+                        "unsaved_confirm_text": "保存されていない変更は失われます。",
+                        "unsaved_confirm_title": "編集をやめますか？"
                     },
                     "picker": {
                         "add_automation": "オートメーションの作成",
                         "delete": "削除",
                         "delete_automation": "オートメーションを削除",
                         "delete_confirm": "このオートメーションを削除してもよろしいですか？",
+                        "delete_confirm_text": "{name} は、完全に削除されます。",
+                        "delete_confirm_title": "オートメーションを削除しますか？",
                         "dev_automation": "オートメーションのデバッグ",
                         "dev_only_editable": "ユニークID(一意)が定義されたオートメーションのみがデバッグ可能です。",
                         "disabled": "無効",
@@ -2143,40 +2163,42 @@
                 "blueprint": {
                     "add": {
                         "community_forums": "コミュニティフォーラム",
-                        "error_no_url": "ひな形のURLを入力してください。",
-                        "file_name": "設計図のパス",
-                        "header": "ひな形をインポート",
-                        "import_btn": "ひな形のプレビュー",
-                        "import_header": "設計図「{name}」",
-                        "import_introduction_link": "他のユーザーの設計図をGithubと{community_link}からインポートできます。以下に設計図のURLを入力します。",
-                        "importing": "設計図を読み込んでいます…",
-                        "raw_blueprint": "設計図コンテンツ",
-                        "save_btn": "設計図のインポート",
-                        "saving": "設計図をインポートしています…",
-                        "unsupported_blueprint": "この設計図はサポートされていません",
-                        "url": "設計図のURL"
+                        "error_no_url": "ブループリントのURLを入力してください。",
+                        "file_name": "ブループリントのパス",
+                        "header": "ブループリントをインポート",
+                        "import_btn": "ブループリントのプレビュー",
+                        "import_header": "ブループリント「{name}」",
+                        "import_introduction": "以下にURLを貼り付けることで、GitHub およびコミュニティ フォーラムから他のユーザーのブループリントをインポートします。",
+                        "import_introduction_link": "他のユーザーのブループリントをGithubと{community_link}からインポートできます。以下にブループリントのURLを入力します。",
+                        "importing": "ブループリントを読み込んでいます…",
+                        "raw_blueprint": "ブループリントコンテンツ",
+                        "save_btn": "ブループリントのインポート",
+                        "saving": "ブループリントをインポートしています…",
+                        "unsupported_blueprint": "このブループリントはサポートされていません",
+                        "url": "ブループリントのURL"
                     },
-                    "caption": "設計図",
-                    "description": "設計図の管理",
+                    "caption": "ブループリント",
+                    "description": "ブループリントの管理",
                     "overview": {
-                        "add_blueprint": "ひな形を追加する",
-                        "confirm_delete_header": "この設計図を削除しますか？",
-                        "confirm_delete_text": "この設計図を削除してもよろしいですか？",
+                        "add_blueprint": "ブループリントを追加する",
+                        "confirm_delete_header": "このブループリントを削除しますか？",
+                        "confirm_delete_text": "このブループリントを削除してもよろしいですか？",
+                        "confirm_delete_title": "ブループリントを削除しますか？",
                         "create_automation": "オートメーションを作成",
                         "create_script": "スクリプトを作成",
-                        "delete_blueprint": "設計図を削除",
-                        "discover_more": "より多くの設計図を探す",
-                        "header": "設計図エディタ",
+                        "delete_blueprint": "ブループリントを削除",
+                        "discover_more": "より多くのブループリントを探す",
+                        "header": "ブループリントエディタ",
                         "headers": {
                             "file_name": "ファイル名",
                             "name": "名前",
                             "type": "タイプ"
                         },
-                        "introduction": "設計図の設定では、設計図のインポートと管理を行うことができます。",
-                        "learn_more": "ひな形の使用方法をさらに学ぶ",
-                        "no_blueprints": "設計図はありません",
-                        "share_blueprint": "設計図を共有する",
-                        "share_blueprint_no_url": "設計図を共有できません: ソースURLがありません",
+                        "introduction": "ブループリントの設定では、ブループリントのインポートと管理を行うことができます。",
+                        "learn_more": "ブループリントの使用方法をさらに学ぶ",
+                        "no_blueprints": "ブループリントはありません",
+                        "share_blueprint": "ブループリントを共有する",
+                        "share_blueprint_no_url": "ブループリントを共有できません: ソースURLがありません",
                         "types": {
                             "automation": "オートメーション",
                             "script": "スクリプト"
@@ -2308,10 +2330,13 @@
                         "available_at": "Webhookは次のURLで入手できます:",
                         "close": "閉じる",
                         "confirm_disable": "このWebhookを無効化してもよろしいですか？",
+                        "confirm_disable_text": "{name} のWebhookは、無効になります。",
+                        "confirm_disable_title": "Webhookを無効にする",
                         "copied_to_clipboard": "クリップボードにコピーしました",
                         "info_disable_webhook": "このWebhookを使用したくない場合は、次の手順を実行します。",
                         "link_disable_webhook": "無効にする",
                         "managed_by_integration": "この Webhook は、統合によって管理されているため、無効にすることはできません。",
+                        "public_url": "パブリックアドレス",
                         "view_documentation": "ドキュメントを見る",
                         "webhook_for": "{name} Webhook"
                     },
@@ -2434,7 +2459,7 @@
                     },
                     "automations": {
                         "main": "オートメーションとシーン",
-                        "secondary": "オートメーション、シーン、スクリプトと設計図"
+                        "secondary": "オートメーション、シーン、スクリプトとブループリント"
                     },
                     "backup": {
                         "description": "Home Assistant の設定のバックアップを生成する",
@@ -2553,7 +2578,7 @@
                     },
                     "name": "名前",
                     "no_devices": "デバイスなし",
-                    "open_configuration_url": "訪問(Visit)",
+                    "open_configuration_url": "開く",
                     "open_configuration_url_device": "デバイスにアクセス",
                     "open_configuration_url_service": "サービスにアクセス",
                     "picker": {
@@ -2810,7 +2835,7 @@
                         "introduction2": "エンティティレジストリを使用して、名前を上書きしたり、エンティティIDを変更したり、Home Assistantからエントリを削除したりします。",
                         "remove_selected": {
                             "button": "選択したものを削除",
-                            "confirm_partly_text": "選択した {selected}個のエンティティのうち、{removable}個のみを削除できます。エンティティは、統合がエンティティを提供しなくなった場合にだけ削除できます。統合からエンティティを削除するには、前もってHome Assistantの再起動が必要なことがあります。削除可能なエンティティを削除してもよろしいですか？",
+                            "confirm_partly_text": "選択した {selected}個のエンティティのうち、{removable}個のみを削除できます。エンティティは、統合がエンティティを提供しなくなった場合にだけ削除できます。統合からエンティティを削除するには、事前にHome Assistantを再起動しておくことがが必要になることがあります。削除可能なエンティティを削除してもよろしいですか？",
                             "confirm_partly_title": "削除できるのは、選択された {number} {number, plural,\n  one {個}\n  other {個}\n} のエンティティのみです。",
                             "confirm_text": "これらのエンティティが含まれている場合は、ダッシュボードの設定およびオートメーションからそれらを削除する必要があります。",
                             "confirm_title": "{number} {number, plural,\n  one {個}\n  other {個}\n} のエンティティを削除しますか？"
@@ -2847,11 +2872,17 @@
                     "host_shutting_down": "ホストをシャットダウン",
                     "memory": "メモリー",
                     "processor": "プロセッサー",
+                    "reboot": "再起動",
                     "reboot_host": "ホストを再起動",
                     "reboot_host_confirm": "ホストを再起動してもよろしいですか？",
+                    "reboot_host_text": "これにより、コアとすべてのアドオンを含んだシステム全体が再起動されます。",
+                    "reboot_host_title": "システムを再起動しますか？",
                     "rebooting_host": "ホストを再起動中",
+                    "shutdown": "シャットダウン",
                     "shutdown_host": "ホストをシャットダウン",
-                    "shutdown_host_confirm": "ホストをシャットダウンしてもよろしいですか？"
+                    "shutdown_host_confirm": "ホストをシャットダウンしてもよろしいですか？",
+                    "shutdown_host_text": "これにより、コアとすべてのアドオンを含んだシステム全体がシャットダウンされます。",
+                    "shutdown_host_title": "システムをシャットダウンしますか？"
                 },
                 "header": "Home Assistant の設定",
                 "helpers": {
@@ -2927,11 +2958,21 @@
                     "attention": "注意が必要",
                     "caption": "統合",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "これらを削除すると、統合を再度設定するときに認証情報を入力する必要があります。 それらを保持すると、統合を再度設定するときに自動的に使用されるか、おそらく、アプリケーション認証情報メニューからアクセスできます。",
+                            "delete_error_title": "アプリケーション認証情報の削除に失敗しました",
+                            "delete_prompt": "この統合のアプリケーション認証情報も削除しますか?",
+                            "delete_title": "アプリケーション認証",
+                            "dismiss": "保持",
+                            "learn_more": "アプリケーション認証情報の詳細"
+                        },
                         "area": "In {area}",
                         "check_the_logs": "ログの確認",
                         "configure": "設定",
                         "delete": "削除",
                         "delete_confirm": "統合 {title} を削除してもよろしいですか？",
+                        "delete_confirm_text": "そのデバイスとエンティティは、完全に削除されます。",
+                        "delete_confirm_title": "{title} を削除しますか？",
                         "depends_on_cloud": "クラウドに依存",
                         "devices": "{count} {count, plural,\n  one {デバイス}\n  other {デバイス}\n}",
                         "disable": {
@@ -2944,6 +2985,8 @@
                             },
                             "disabled_cause": "{cause}によって無効化"
                         },
+                        "disable_confirm_text": "そのデバイスとエンティティは、無効になります。",
+                        "disable_confirm_title": "{title} を無効化しますか？",
                         "disable_error": "統合の有効化または無効化に失敗しました",
                         "disable_restart_confirm": "Home Assistantを再起動して、この統合を無効にします",
                         "disabled_polling": "データ更新の自動ポーリングが無効",
@@ -2960,7 +3003,7 @@
                         "open_configuration_url": "デバイスにアクセス",
                         "provided_by_custom_integration": "カスタム統合によって提供されています",
                         "reload": "再読込",
-                        "reload_confirm": "統合が再読み込みされました",
+                        "reload_confirm": "統合がリロードされました",
                         "reload_restart_confirm": "Home Assistant を再起動すると、この統合の再読み込みが完了します",
                         "rename": "名前を変更",
                         "restart_confirm": "Home Assistant を再起動することで、この統合の削除は完了します。",
@@ -3003,10 +3046,10 @@
                         "missing_credentials": "{integration} を設定するには、アプリケーションの認証情報を設定する必要があります。今すぐ行いますか？",
                         "missing_zha": "Zigbeeデバイスを追加するには、最初にZigbeeホームオートメーション統合をセットアップする必要があります。セットアップしますか？",
                         "missing_zwave_js": "Z-Waveデバイスを追加するには、最初にZ-Wave統合をセットアップする必要があります。セットアップしますか？",
-                        "missing_zwave_zigbee": "{integration} デバイスを追加するには、まず {supported_hardware_link} と {integration} の統合をセッタップする必要があります。すでにそのハードウェアを持っている場合は、{integration} のセットアップに進むことができます。",
+                        "missing_zwave_zigbee": "{integration} デバイスを追加するには、最初に {supported_hardware_link} と {integration} の統合をセットアップする必要があります。すでにそのハードウェアを持っている場合は、{integration} のセットアップに進むことができます。",
                         "next": "次",
                         "no_config_flow": "この統合は、UI からの設定には対応していません。ただし、Home Assistant の Web サイト経由でこのリンクを辿ってきた場合は、最新バージョンのHome Assistant を実行していることを確認してください。",
-                        "not_all_required_fields": "すべての必須項目に入力されていません。",
+                        "not_all_required_fields": "すべての必須項目が入力されていません。",
                         "not_loaded": "統合ファイルを読み込めませんでした。Home Assistant を再起動してください。",
                         "pick_flow_step": {
                             "new_flow": "いいえ、{integration} の他のインスタンスを設定します",
@@ -3131,6 +3174,8 @@
                         "cant_edit_yaml": "ダッシュボードをYAMLモードで使用しているため、UIを使用してリソースを管理することはできません。configuration.yamlで管理してください。",
                         "caption": "リソース",
                         "confirm_delete": "このリソースを削除してもよろしいですか？",
+                        "confirm_delete_text": "{url} は、完全に削除されます。",
+                        "confirm_delete_title": "リソースを削除しますか？",
                         "detail": {
                             "create": "作成",
                             "delete": "削除",
@@ -3202,6 +3247,8 @@
                     "caption": "メンバー",
                     "confirm_delete": "このユーザーを削除しますか？",
                     "confirm_delete2": "このユーザーに属するすべてのデバイスは、割り当てが解除されます。",
+                    "confirm_delete_text": "この人物は完全に削除され、この人物に属しているすべてのデバイスの割り当ては解除されます。",
+                    "confirm_delete_title": "{name} を削除しますか？",
                     "create_person": "メンバーを作成",
                     "description": "Home Assistant が追跡しているメンバーの管理",
                     "detail": {
@@ -3283,11 +3330,17 @@
                         "load_error_unknown": "シーンの読み込みエラー ({err_no})。",
                         "name": "名前",
                         "save": "保存",
-                        "unsaved_confirm": "未保存の変更があります、終了してもよろしいですか？"
+                        "unsaved_confirm": "未保存の変更があります、終了してもよろしいですか？",
+                        "unsaved_confirm_text": "保存されていない変更は失われます。",
+                        "unsaved_confirm_title": "編集をやめますか？"
                     },
                     "picker": {
+                        "activate": "有効化",
                         "add_scene": "シーンを追加",
+                        "delete": "削除",
                         "delete_confirm": "このシーンを削除してもよろしいですか？",
+                        "delete_confirm_text": "{name} は、完全に削除されます。",
+                        "delete_confirm_title": "シーンを削除しますか？",
                         "delete_scene": "シーンを削除",
                         "duplicate": "複製",
                         "duplicate_scene": "シーンを複製",
@@ -3296,6 +3349,7 @@
                         "headers": {
                             "activate": "アクティベート",
                             "edit": "編集",
+                            "last_activated": "最終有効化",
                             "name": "名前",
                             "show_info": "情報を表示",
                             "state": "状態"
@@ -3305,6 +3359,7 @@
                         "no_scenes": "シーンが見つかりませんでした",
                         "only_editable": "scenes.yaml で定義されたシーンのみが編集可能です。",
                         "pick_scene": "編集するシーンを選択",
+                        "show_info": "情報",
                         "show_info_scene": "シーンに関する情報を表示"
                     }
                 },
@@ -3315,6 +3370,8 @@
                         "alias": "別名",
                         "default_name": "新しいスクリプト",
                         "delete_confirm": "このスクリプトを削除しますか？",
+                        "delete_confirm_text": "{name} は、完全に削除されます。",
+                        "delete_confirm_title": "スクリプトを削除しますか？",
                         "delete_script": "スクリプトを削除",
                         "header": "スクリプト: {name}",
                         "icon": "アイコン",
@@ -3323,6 +3380,8 @@
                         "id_already_exists_save_error": "IDがユニーク(一意)ではないため、このスクリプトを保存できません。別のIDを選択するか、空白のままにして自動的に生成します。",
                         "introduction": "スクリプトを使用して一連のアクションを実行する。",
                         "link_available_actions": "使用可能なアクションに関する情報をもっと見る。",
+                        "load_error_not_deletable": "scripts.yaml のスクリプトのみ削除できます。",
+                        "load_error_not_duplicable": "scripts.yaml のスクリプトのみ複製できます。",
                         "load_error_not_editable": "scripts.yaml内のスクリプトのみが編集可能です。",
                         "load_error_unknown": "スクリプトのロード中にエラーが発生しました ({err_no})",
                         "max": {
@@ -3337,15 +3396,17 @@
                             "parallel": "並列",
                             "queued": "待機中",
                             "restart": "再起動",
-                            "single": "シングル(デフォルト)"
+                            "single": "シングル"
                         },
                         "save_script": "スクリプトを保存",
                         "sequence": "シーケンス",
                         "sequence_sentence": "このスクリプトの一連の動作。",
-                        "show_trace": "トレースを表示"
+                        "show_info": "情報",
+                        "show_trace": "トレース"
                     },
                     "picker": {
                         "add_script": "スクリプトを追加",
+                        "delete": "削除",
                         "dev_script": "スクリプトをデバグ",
                         "duplicate": "複製",
                         "duplicate_script": "スクリプトを複製",
@@ -3358,8 +3419,13 @@
                         "introduction": "スクリプトエディタを使用すると、スクリプトを作成および編集できます。以下のリンクに従って手順を読み、Home Assistantが正しく設定されていることを確認してください。",
                         "learn_more": "スクリプトの詳細",
                         "no_scripts": "スクリプトが見つかりませんでした",
+                        "run": "実行",
                         "run_script": "スクリプトを実行する",
-                        "show_info": "スクリプトに関する情報を表示"
+                        "show_info": "情報",
+                        "show_trace": "トレース"
+                    },
+                    "trace": {
+                        "edit_script": "スクリプトを編集"
                     }
                 },
                 "storage": {
@@ -3373,6 +3439,8 @@
                         "moving": "データディスクの移動",
                         "moving_desc": "再起動してデータディスクを移動します。長時間かかることがあります。",
                         "no_devices": "接続された適切なデバイスが見つかりません",
+                        "no_devices_text": "適切な外部デバイスが見つかりません。 外部データ ディスクのストレージ容量は、既存のディスクのストレージ容量より大きくする必要があります",
+                        "no_devices_title": "適切なストレージが見つかりません",
                         "select_device": "新しいデータディスクを選択",
                         "title": "データディスクを移動"
                     },
@@ -3491,6 +3559,8 @@
                         "caption": "ユーザーを表示",
                         "change_password": "パスワードの変更",
                         "confirm_user_deletion": "{name}を削除してもよろしいですか？",
+                        "confirm_user_deletion_text": "このユーザーは、完全に削除されます。",
+                        "confirm_user_deletion_title": "{name} を削除しますか？",
                         "deactivate_user": "ユーザーを無効化",
                         "delete_user": "ユーザーを削除",
                         "group": "グループ",
@@ -3736,14 +3806,14 @@
                         }
                     },
                     "device_info": {
-                        "device_config": "デバイスの設定",
-                        "heal_node": "ヒールデバイス",
+                        "device_config": "設定",
+                        "heal_node": "修復",
                         "highest_security": "最高のセキュリティ",
                         "node_id": "ID",
-                        "node_ready": "デバイスの準備完了",
+                        "node_ready": "準備完了",
                         "node_statistics": "統計学",
-                        "node_status": "デバイスの状態",
-                        "reinterview_device": "再インタビューデバイス",
+                        "node_status": "状態",
+                        "reinterview_device": "再インタビュー",
                         "remove_failed": "削除できませんでした",
                         "unknown": "不明",
                         "update_firmware": "アップデート",
@@ -4181,7 +4251,7 @@
             "history": {
                 "add_all": "すべてのエンティティを追加する",
                 "remove_all": "選択項目をすべて削除",
-                "start_search": "まず、上記のエリア、デバイス、またはエンティティを選択します"
+                "start_search": "始めに上記のエリア、デバイス、またはエンティティを選択します"
             },
             "lovelace": {
                 "add_entities": {
@@ -4390,7 +4460,7 @@
                             "entity_row_editor": "エンティティエディタ",
                             "name": "エンティティ",
                             "secondary_info_values": {
-                                "brightness": "明るさ",
+                                "brightness": "輝度",
                                 "entity-id": "エンティティ ID",
                                 "last-changed": "最終変更",
                                 "last-triggered": "最後にトリガーされた",
@@ -4553,6 +4623,14 @@
                                 "day": "日",
                                 "hour": "時間",
                                 "month": "月"
+                            },
+                            "pick_statistic": "統計を追加",
+                            "picked_statistic": "統計",
+                            "stat_type_labels": {
+                                "max": "最大",
+                                "mean": "平均",
+                                "min": "最小",
+                                "sum": "合計"
                             },
                             "stat_types": "統計タイプの表示"
                         },

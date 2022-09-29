@@ -11,6 +11,8 @@ export class HaTemplateCondition extends LitElement {
 
   @property({ attribute: false }) public condition!: TemplateCondition;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return { value_template: "" };
   }
@@ -29,6 +31,7 @@ export class HaTemplateCondition extends LitElement {
         mode="jinja2"
         .hass=${this.hass}
         .value=${value_template}
+        .readOnly=${this.disabled}
         autocomplete-entities
         @value-changed=${this._valueChanged}
         dir="ltr"

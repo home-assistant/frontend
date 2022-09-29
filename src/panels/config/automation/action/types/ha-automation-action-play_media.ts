@@ -12,6 +12,8 @@ import { ActionElement } from "../ha-automation-action-row";
 export class HaPlayMediaAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false }) public action!: PlayMediaAction;
 
   @property({ type: Boolean }) public narrow = false;
@@ -38,6 +40,7 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
     return html`
       <ha-selector-media
         .hass=${this.hass}
+        .disabled=${this.disabled}
         .value=${this._getSelectorValue(this.action)}
         @value-changed=${this._valueChanged}
       ></ha-selector-media>

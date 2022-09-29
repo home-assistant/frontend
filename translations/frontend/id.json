@@ -366,11 +366,11 @@
         "dialog": {
             "datadisk_move": {
                 "cancel": "Batalkan",
-                "description": "Anda sedang menggunakan ''{current_path}'' sebagai datadisk. Memindahkan disk data akan memulai ulang perangkat Anda dan diperkirakan memakan waktu {time} menit. Instalasi Home Assistant Anda tidak akan dapat diakses selama periode ini. Jangan lepaskan daya selama proses pemindahan!",
+                "description": "Anda sedang menggunakan ''{current_path}'' sebagai datadisk. Memindahkan disk data akan me-reboot perangkat Anda dan diperkirakan memakan waktu {time} menit. Instalasi Home Assistant Anda tidak akan dapat diakses selama periode ini. Jangan lepaskan daya selama proses pemindahan!",
                 "loading_devices": "Memuat perangkat",
                 "move": "Pindahkan",
                 "moving": "Memindahkan disk data",
-                "moving_desc": "Menghidupkan ulang dan memindahkan datadisk. Mohon tunggu",
+                "moving_desc": "Me-reboot dan memindahkan datadisk. Mohon tunggu",
                 "no_devices": "Tidak ditemukan perangkat terpasang yang cocok",
                 "select_device": "Pilih disk data baru",
                 "title": "Pindahkan disk data"
@@ -476,7 +476,7 @@
                 "move_datadisk": "Pindahkan disk data",
                 "new_hostname": "Masukkan nama host baru:",
                 "operating_system": "Sistem Operasi",
-                "reboot_host": "Nyalakan ulang host",
+                "reboot_host": "Reboot host",
                 "shutdown_host": "Matikan host",
                 "used_space": "Ruang yang digunakan"
             },
@@ -1641,7 +1641,7 @@
                         "entities": "Entitas"
                     },
                     "delete": {
-                        "confirmation_text": "Semua perangkat di area ini akan dibatalkan penetapan areanya.",
+                        "confirmation_text": "Pengguna ini akan dihapus secara permanen.",
                         "confirmation_title": "Yakin ingin menghapus area ini?"
                     },
                     "description": "Kelompokkan perangkat dan entitas ke dalam area",
@@ -1693,6 +1693,8 @@
                             "change_alias": "Ganti nama aksi",
                             "delete": "Hapus",
                             "delete_confirm": "Yakin ingin menghapus?",
+                            "delete_confirm_text": "Ini akan dihapus secara permanen.",
+                            "delete_confirm_title": "Hapus tindakan?",
                             "disable": "Nonaktifkan",
                             "disabled": "Dinonaktifkan",
                             "duplicate": "Gandakan",
@@ -1812,12 +1814,15 @@
                             "no_blueprints": "Anda tidak memiliki blueprint",
                             "no_inputs": "Blueprint ini tidak memiliki input."
                         },
+                        "change_mode": "Ubah mode",
                         "conditions": {
                             "add": "Tambah kondisi",
                             "alias": "Nama kondisi",
                             "change_alias": "Ganti nama kondisi",
                             "delete": "Hapus",
                             "delete_confirm": "Yakin ingin menghapus?",
+                            "delete_confirm_text": "Ini akan dihapus secara permanen.",
+                            "delete_confirm_title": "Hapus kondisi?",
                             "duplicate": "Gandakan",
                             "header": "Kondisi",
                             "introduction": "Kondisi bersifat opsional dan akan mencegah eksekusi lebih lanjut kecuali semua kondisi terpenuhi.",
@@ -1920,6 +1925,8 @@
                         "enable": "Aktifkan",
                         "enable_disable": "Aktifkan/Nonaktifkan otomasi",
                         "introduction": "Gunakan otomasi untuk menghidupkan rumah Anda",
+                        "load_error_not_deletable": "Hanya otomasi yang ada di automations.yaml yang bisa dihapus.",
+                        "load_error_not_duplicable": "Hanya otomasi yang ada di automations.yaml yang bisa digandakan.",
                         "load_error_not_editable": "Hanya otomasi yang ada di automations.yaml yang bisa diedit.",
                         "load_error_unknown": "Kesalahan saat memuat otomasi ({err_no}).",
                         "max": {
@@ -1939,6 +1946,12 @@
                         },
                         "move_down": "Pindahkan ke bawah",
                         "move_up": "Pindahkan ke atas",
+                        "re_order": "Urutkan",
+                        "re_order_mode": {
+                            "description": "Anda berada dalam mode pengurutan, Anda dapat menyusun ulang pemicu, kondisi dan aksi Anda.",
+                            "exit": "Keluar",
+                            "title": "Mode pengurutan"
+                        },
                         "rename": "Ganti nama",
                         "run": "Jalankan",
                         "save": "Simpan",
@@ -1950,6 +1963,8 @@
                             "change_alias": "Ganti nama pemicu",
                             "delete": "Hapus",
                             "delete_confirm": "Yakin ingin menghapus?",
+                            "delete_confirm_text": "Ini akan dihapus secara permanen.",
+                            "delete_confirm_title": "Hapus pemicu?",
                             "duplicate": "Gandakan",
                             "edit_id": "Edit ID",
                             "header": "Pemicu",
@@ -2064,14 +2079,18 @@
                             "type_select": "Jenis pemicu",
                             "unsupported_platform": "Tidak ada dukungan editor visual untuk platform: {platform}"
                         },
-                        "unsaved_confirm": "Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan?"
+                        "unsaved_confirm": "Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan?",
+                        "unsaved_confirm_text": "Perubahan yang tidak disimpan akan hilang.",
+                        "unsaved_confirm_title": "Keluar dari editor?"
                     },
                     "picker": {
                         "add_automation": "Buat otomasi",
                         "delete": "Hapus",
                         "delete_automation": "Hapus otomasi",
                         "delete_confirm": "Yakin ingin menghapus otomasi ini?",
-                        "dev_automation": "Otomatisasi debug",
+                        "delete_confirm_text": "{name} akan dihapus secara permanen.",
+                        "delete_confirm_title": "Hapus otomasi?",
+                        "dev_automation": "Otomasi debug",
                         "dev_only_editable": "Hanya otomasi yang memiliki ID unik yang ditetapkan yang bisa didebug.",
                         "disabled": "Dinonaktifkan",
                         "duplicate": "Gandakan",
@@ -2143,26 +2162,28 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "forum komunitas",
-                        "error_no_url": "Masukkan URL blueprint",
+                        "community_forums": "Lihat blueprint di forum komunitas",
+                        "error_no_url": "Masukkan alamat blueprint.",
                         "file_name": "Path Blueprint",
                         "header": "Impor blueprint",
-                        "import_btn": "Pratinjau blueprint",
+                        "import_btn": "Pratinjau",
                         "import_header": "Blueprint ''{name}''",
+                        "import_introduction": "Impor blueprint pengguna lain dari GitHub dan forum komunitas dengan menempelkan alamatnya di bawah ini.",
                         "import_introduction_link": "Anda dapat mengimpor blueprint pengguna lain dari Github dan {community_link}. Masukkan URL blueprint di bawah ini.",
                         "importing": "Memuat blueprint…",
                         "raw_blueprint": "Isi blueprint",
                         "save_btn": "Impor blueprint",
                         "saving": "Mengimpor blueprint…",
                         "unsupported_blueprint": "Blueprint ini tidak didukung",
-                        "url": "URL blueprint"
+                        "url": "Alamat blueprint"
                     },
                     "caption": "Blueprint",
                     "description": "Kelola blueprint",
                     "overview": {
                         "add_blueprint": "Impor blueprint",
                         "confirm_delete_header": "Hapus blueprint ini?",
-                        "confirm_delete_text": "Yakin ingin menghapus blueprint ini?",
+                        "confirm_delete_text": "{name} akan dihapus secara permanen.",
+                        "confirm_delete_title": "Hapus blueprint?",
                         "create_automation": "Buat otomasi",
                         "create_script": "Buat skrip",
                         "delete_blueprint": "Hapus blueprint",
@@ -2309,10 +2330,13 @@
                         "available_at": "Webhook tersedia di URL berikut:",
                         "close": "Tutup",
                         "confirm_disable": "Yakin ingin menghapus webhook ini?",
+                        "confirm_disable_text": "Webhook untuk {name} akan dinonaktifkan.",
+                        "confirm_disable_title": "Nonaktifkan webhook",
                         "copied_to_clipboard": "Disalin ke papan klip",
                         "info_disable_webhook": "Jika Anda tidak ingin lagi menggunakan webhook ini, Anda bisa",
                         "link_disable_webhook": "menonaktifkannya",
                         "managed_by_integration": "Webhook ini dikelola dengan integrasi dan tidak dapat dinonaktifkan.",
+                        "public_url": "Alamat publik",
                         "view_documentation": "Lihat dokumentasi",
                         "webhook_for": "Webhook untuk {name}"
                     },
@@ -2843,16 +2867,22 @@
                     "description": "Konfigurasikan hub Anda dan perangkat keras yang terhubung",
                     "documentation": "Dokumentasi",
                     "documentation_description": "Temukan informasi tambahan tentang perangkat Anda",
-                    "failed_to_reboot_host": "Gagal me-reboot host",
-                    "failed_to_shutdown_host": "Gagal mematikan host",
-                    "host_shutting_down": "Host sedang dimatikan",
+                    "failed_to_reboot_host": "Gagal me-reboot sistem",
+                    "failed_to_shutdown_host": "Gagal mematikan sistem",
+                    "host_shutting_down": "sistem sedang dimatikan",
                     "memory": "Memori",
                     "processor": "Prosesor",
-                    "reboot_host": "Reboot host",
+                    "reboot": "Reboot",
+                    "reboot_host": "Reboot sistem",
                     "reboot_host_confirm": "Yakin ingin me-reboot host Anda?",
-                    "rebooting_host": "Mem-boot ulang host",
-                    "shutdown_host": "Matikan host",
-                    "shutdown_host_confirm": "Yakin ingin mematikan host Anda?"
+                    "reboot_host_text": "Ini akan me-reboot sistem secara menyeluruh yang mencakup Core dan semua Add-on.",
+                    "reboot_host_title": "Reboot sistem?",
+                    "rebooting_host": "Me-reboot sistem",
+                    "shutdown": "Matikan",
+                    "shutdown_host": "Matikan sistem",
+                    "shutdown_host_confirm": "Yakin ingin mematikan host Anda?",
+                    "shutdown_host_text": "Ini akan mematikan sistem secara menyeluruh yang mencakup Core dan semua Add-on.",
+                    "shutdown_host_title": "Matikan sistem?"
                 },
                 "header": "Mengonfigurasi Home Assistant",
                 "helpers": {
@@ -2928,11 +2958,21 @@
                     "attention": "Perlu perhatian",
                     "caption": "Integrasi",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "Jika Anda menghapusnya, Anda harus memasukkan kredensial saat mengatur integrasi lagi. Jika Anda menyimpannya, mereka akan digunakan secara otomatis saat mengatur integrasi lagi atau dapat diakses dari menu Kredensial Aplikasi.",
+                            "delete_error_title": "Gagal menghapus Kredensial Aplikasi",
+                            "delete_prompt": "Apakah Anda juga ingin menghapus Kredensial Aplikasi untuk integrasi ini?",
+                            "delete_title": "Kredensial Aplikasi",
+                            "dismiss": "Simpan",
+                            "learn_more": "Pelajari lebih lanjut tentang Kredensial Aplikasi"
+                        },
                         "area": "Di {area}",
                         "check_the_logs": "Periksa log",
                         "configure": "Konfigurasikan",
                         "delete": "Hapus",
                         "delete_confirm": "Yakin ingin menghapus integrasi {title}?",
+                        "delete_confirm_text": "Perangkat dan entitasnya akan dihapus secara permanen.",
+                        "delete_confirm_title": "Hapus {title}?",
                         "depends_on_cloud": "Tergantung pada cloud",
                         "devices": "{count} {count, plural,\n  one {perangkat}\n  other {perangkat}\n}",
                         "disable": {
@@ -2945,6 +2985,8 @@
                             },
                             "disabled_cause": "Dinonaktifkan oleh {cause}"
                         },
+                        "disable_confirm_text": "Perangkat dan entitasnya akan dinonaktifkan.",
+                        "disable_confirm_title": "Nonaktifkan {title}?",
                         "disable_error": "Gagal mengaktifkan atau menonaktifkan integrasi",
                         "disable_restart_confirm": "Mulai ulang Home Assistant untuk menyelesaikan penonaktifan integrasi ini",
                         "disabled_polling": "Polling otomatis untuk data yang diperbarui dinonaktifkan",
@@ -3092,7 +3134,7 @@
                             "storage": "Dikendalikan antarmuka",
                             "yaml": "File YAML"
                         },
-                        "confirm_delete_text": "Dasbor Anda akan dihapus secara permanen.",
+                        "confirm_delete_text": "Dasbor ini akan dihapus secara permanen.",
                         "confirm_delete_title": "Hapus {dashboard_title}?",
                         "default_dashboard": "Ini adalah dasbor baku",
                         "detail": {
@@ -3132,6 +3174,8 @@
                         "cant_edit_yaml": "Anda menggunakan dasbor dalam mode YAML, oleh karena itu Anda tidak dapat mengelola sumber daya Anda melalui antarmuka. Kelola di configuration.yaml.",
                         "caption": "Sumber Daya",
                         "confirm_delete": "Yakin ingin menghapus sumberdaya ini?",
+                        "confirm_delete_text": "{url} akan dihapus secara permanen.",
+                        "confirm_delete_title": "Hapus sumber daya?",
                         "detail": {
                             "create": "Buat",
                             "delete": "Hapus",
@@ -3203,6 +3247,8 @@
                     "caption": "Orang",
                     "confirm_delete": "Yakin ingin menghapus orang ini?",
                     "confirm_delete2": "Semua perangkat milik orang ini akan dibatalkan penetapan kepemilikannnya.",
+                    "confirm_delete_text": "Orang ini akan dihapus secara permanen dan semua perangkat milik orang ini akan dibatalkan penetapannya.",
+                    "confirm_delete_title": "Hapus {name}?",
                     "create_person": "Buat Orang",
                     "description": "Kelola orang yang Home Assistant lacak",
                     "detail": {
@@ -3238,8 +3284,8 @@
                     "description": "Temukan dan perbaiki masalah dengan instans Home Assistant Anda",
                     "dialog": {
                         "alert_not_fixable": "Kami tidak dapat memperbaiki masalah ini untuk Anda.",
-                        "breaks_in_version": "Ini berhenti bekerja pada  versi {version}. Harap selesaikan masalah sebelum memperbarui.",
-                        "fix": "Perbaikan",
+                        "breaks_in_version": "Ini akan berhenti bekerja pada  versi {version}. Harap selesaikan masalah sebelum memperbarui.",
+                        "fix": "Perbaiki",
                         "ignore": "Abaikan",
                         "ignored_in_version": "Masalah ini diabaikan pada versi {version}.",
                         "ignored_in_version_short": "Diabaikan pada versi {version}",
@@ -3284,11 +3330,17 @@
                         "load_error_unknown": "Kesalahan saat memuat skenario ({err_no}).",
                         "name": "Nama",
                         "save": "Simpan",
-                        "unsaved_confirm": "Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan?"
+                        "unsaved_confirm": "Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan?",
+                        "unsaved_confirm_text": "Perubahan yang tidak disimpan akan hilang.",
+                        "unsaved_confirm_title": "Keluar dari editor?"
                     },
                     "picker": {
+                        "activate": "Aktifkan",
                         "add_scene": "Tambahkan skenario",
+                        "delete": "Hapus",
                         "delete_confirm": "Yakin ingin menghapus skenario ini?",
+                        "delete_confirm_text": "{name} akan dihapus secara permanen.",
+                        "delete_confirm_title": "Hapus skenario?",
                         "delete_scene": "Hapus skenario",
                         "duplicate": "Gandakan",
                         "duplicate_scene": "Gandakan skenario",
@@ -3297,6 +3349,7 @@
                         "headers": {
                             "activate": "Aktifkan",
                             "edit": "Edit",
+                            "last_activated": "Terakhir diaktifkan",
                             "name": "Nama",
                             "show_info": "Tampilkan informasi",
                             "state": "Status"
@@ -3306,6 +3359,7 @@
                         "no_scenes": "Tidak ada skenario yang ditemukan",
                         "only_editable": "Hanya skenario yang ditentukan dalam scenes.yaml yang dapat diedit.",
                         "pick_scene": "Pilih skenario untuk diedit",
+                        "show_info": "Informasi",
                         "show_info_scene": "Tampilkan info tentang skenario"
                     }
                 },
@@ -3316,6 +3370,8 @@
                         "alias": "Nama",
                         "default_name": "Skrip Baru",
                         "delete_confirm": "Yakin ingin menghapus skrip ini?",
+                        "delete_confirm_text": "{name} akan dihapus secara permanen.",
+                        "delete_confirm_title": "Hapus skrip?",
                         "delete_script": "Hapus skrip",
                         "header": "Skrip: {name}",
                         "icon": "Ikon",
@@ -3324,6 +3380,8 @@
                         "id_already_exists_save_error": "Anda tidak dapat menyimpan skrip ini karena ID tidak unik, pilih ID lain atau biarkan kosong untuk membuat ID secara otomatis.",
                         "introduction": "Gunakan skrip untuk menjalankan serangkaian aksi berurutan.",
                         "link_available_actions": "Pelajari lebih lanjut tentang tindakan yang tersedia.",
+                        "load_error_not_deletable": "Hanya skrip di dalam scripts.yaml yang dapat dihapus.",
+                        "load_error_not_duplicable": "Hanya skrip di dalam scripts.yaml yang dapat digandakan.",
                         "load_error_not_editable": "Hanya skrip di dalam scripts.yaml yang dapat diedit.",
                         "load_error_unknown": "Kesalahan saat memuat skrip ({err_no}).",
                         "max": {
@@ -3343,6 +3401,7 @@
                         "save_script": "Simpan skrip",
                         "sequence": "Urutan",
                         "sequence_sentence": "Urutan tindakan skrip ini.",
+                        "show_info": "Informasi",
                         "show_trace": "Jejak"
                     },
                     "picker": {
@@ -3360,21 +3419,28 @@
                         "introduction": "Editor skrip memungkinkan Anda membuat dan mengedit skrip. Ikuti tautan di bawah untuk membaca petunjuk guna memastikan bahwa Anda telah mengonfigurasi Home Assistant dengan benar.",
                         "learn_more": "Pelajari lebih lanjut tentang skrip",
                         "no_scripts": "Tidak ada skrip yang ditemukan",
+                        "run": "Jalankan",
                         "run_script": "Jalankan skrip",
-                        "show_info": "Tampilkan info tentang skrip"
+                        "show_info": "Informasi",
+                        "show_trace": "Jejak"
+                    },
+                    "trace": {
+                        "edit_script": "Edit skrip"
                     }
                 },
                 "storage": {
                     "caption": "Penyimpanan",
                     "datadisk": {
                         "cancel": "Batalkan",
-                        "description": "Anda sedang menggunakan ''{current_path}'' sebagai disk data. Memindahkan disk data akan memulai ulang perangkat Anda dan diperkirakan memakan waktu {time} menit. Instalasi Home Assistant Anda tidak akan dapat diakses selama periode ini. Jangan lepaskan daya selama proses pemindahan!",
+                        "description": "Anda sedang menggunakan ''{current_path}'' sebagai disk data. Memindahkan disk data akan me-reboot perangkat Anda dan diperkirakan memakan waktu {time} menit. Instalasi Home Assistant Anda tidak akan dapat diakses selama periode ini. Jangan lepaskan daya selama proses pemindahan!",
                         "failed_to_move": "Gagal memindahkan disk data",
                         "loading_devices": "Memuat perangkat",
                         "move": "Pindahkan",
                         "moving": "Memindahkan disk data",
-                        "moving_desc": "Menghidupkan ulang dan memindahkan disk data. Mohon tunggu",
+                        "moving_desc": "Me-reboot dan memindahkan disk data. Mohon tunggu",
                         "no_devices": "Tidak ditemukan perangkat terpasang yang cocok",
+                        "no_devices_text": "Tidak ditemukan perangkat eksternal yang sesuai. Kapasitas penyimpanan disk data eksternal harus lebih besar daripada kapasitas penyimpanan disk yang ada.",
+                        "no_devices_title": "Tidak ditemukan penyimpanan yang sesuai",
                         "select_device": "Pilih disk data baru",
                         "title": "Pindahkan disk data"
                     },
@@ -3384,7 +3450,7 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "Yakin ingin memulai ulang Home Assistant?",
-                    "confirm_restart_text": "Memulai ulang Home Assistant akan menghentikan semua dasbor, otomatisasi, dan skrip aktif Anda.",
+                    "confirm_restart_text": "Proses ini akan menghentikan semua dasbor, otomasi, dan skrip aktif Anda.",
                     "confirm_restart_title": "Mulai ulang Home Assistant?",
                     "restart_error": "Gagal memulai ulang Home Assistant",
                     "restart_homeassistant": "Mulai ulang Home Assistant",
@@ -3493,6 +3559,8 @@
                         "caption": "Lihat pengguna",
                         "change_password": "Ganti kata sandi",
                         "confirm_user_deletion": "Yakin ingin menghapus {name}?",
+                        "confirm_user_deletion_text": "Pengguna ini akan dihapus secara permanen.",
+                        "confirm_user_deletion_title": "Hapus {name}?",
                         "deactivate_user": "Nonaktifkan pengguna",
                         "delete_user": "Hapus pengguna",
                         "group": "Grup",
@@ -4134,11 +4202,11 @@
                             },
                             "server_management": {
                                 "confirm_restart": "Yakin ingin memulai ulang Home Assistant?",
-                                "confirm_restart_text": "Memulai ulang Home Assistant akan menghentikan semua dasbor, otomatisasi, dan skrip aktif Anda.",
+                                "confirm_restart_text": "Memulai ulang Home Assistant akan menghentikan semua dasbor, otomasi, dan skrip aktif Anda.",
                                 "confirm_restart_title": "Mulai ulang Home Assistant?",
                                 "confirm_stop": "Yakin ingin menghentikan Home Assistant?",
                                 "heading": "Home Assistant",
-                                "introduction": "Memulai ulang Home Assistant akan menghentikan dasbor dan otomasi Anda. Setelah menyalakan ulang, setiap konfigurasi akan dimuat ulang.",
+                                "introduction": "Memulai ulang Home Assistant akan menghentikan dasbor dan otomasi Anda. Setelah me-reboot, setiap konfigurasi akan dimuat ulang.",
                                 "restart": "Mulai ulang",
                                 "restart_error": "Gagal memulai ulang Home Assistant",
                                 "restart_home_assistant": "Mulai ulang Home Assistant",
@@ -4555,6 +4623,14 @@
                                 "day": "Hari",
                                 "hour": "Jam",
                                 "month": "Bulan"
+                            },
+                            "pick_statistic": "Tambahkan statistik",
+                            "picked_statistic": "Statistik",
+                            "stat_type_labels": {
+                                "max": "Maks",
+                                "mean": "Rata-rata",
+                                "min": "Min",
+                                "sum": "Jumlah"
                             },
                             "stat_types": "Tampilkan jenis statistik"
                         },

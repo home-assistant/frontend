@@ -19,6 +19,8 @@ export class HaDeviceTrigger extends LitElement {
 
   @property({ type: Object }) public trigger!: DeviceTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _deviceId?: string;
 
   @state() private _capabilities?: DeviceCapabilities;
@@ -53,6 +55,7 @@ export class HaDeviceTrigger extends LitElement {
         .value=${deviceId}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.device.label"
         )}
@@ -62,6 +65,7 @@ export class HaDeviceTrigger extends LitElement {
         .deviceId=${deviceId}
         @value-changed=${this._deviceTriggerPicked}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.device.trigger"
         )}
@@ -72,6 +76,7 @@ export class HaDeviceTrigger extends LitElement {
               .hass=${this.hass}
               .data=${this._extraFieldsData(this.trigger, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
+              .disabled=${this.disabled}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
                 this.hass.localize
               )}

@@ -23,6 +23,8 @@ const getType = (action) => OPTIONS.find((option) => option in action);
 export class HaRepeatAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false }) public action!: RepeatAction;
 
   @property({ type: Boolean }) public reOrderMode = false;
@@ -42,6 +44,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
           "ui.panel.config.automation.editor.actions.type.repeat.type_select"
         )}
         .value=${type}
+        .disabled=${this.disabled}
         @selected=${this._typeChanged}
       >
         ${OPTIONS.map(
@@ -63,6 +66,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                 )}
                 name="count"
                 .value=${(action as CountRepeat).count || "0"}
+                .disabled=${this.disabled}
                 @change=${this._countChanged}
               ></ha-textfield>
             `
@@ -75,6 +79,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               <ha-automation-condition
                 .conditions=${(action as WhileRepeat).while || []}
                 .hass=${this.hass}
+                .disabled=${this.disabled}
                 @value-changed=${this._conditionChanged}
               ></ha-automation-condition>`
           : type === "until"
@@ -86,6 +91,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               <ha-automation-condition
                 .conditions=${(action as UntilRepeat).until || []}
                 .hass=${this.hass}
+                .disabled=${this.disabled}
                 @value-changed=${this._conditionChanged}
               ></ha-automation-condition>`
           : ""}
@@ -98,6 +104,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       <ha-automation-action
         .actions=${action.sequence}
         .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
         @value-changed=${this._actionChanged}
         .hass=${this.hass}
       ></ha-automation-action>

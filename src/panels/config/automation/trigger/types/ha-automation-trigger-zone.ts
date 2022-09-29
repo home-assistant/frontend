@@ -22,6 +22,8 @@ export class HaZoneTrigger extends LitElement {
 
   @property() public trigger!: ZoneTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return {
       entity_id: "",
@@ -38,6 +40,7 @@ export class HaZoneTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.zone.entity"
         )}
         .value=${entity_id}
+        .disabled=${this.disabled}
         @value-changed=${this._entityPicked}
         .hass=${this.hass}
         allow-custom-entity
@@ -48,6 +51,7 @@ export class HaZoneTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.zone.zone"
         )}
         .value=${zone}
+        .disabled=${this.disabled}
         @value-changed=${this._zonePicked}
         .hass=${this.hass}
         allow-custom-entity
@@ -59,6 +63,7 @@ export class HaZoneTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.zone.event"
         )}
         <ha-formfield
+          .disabled=${this.disabled}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.zone.enter"
           )}
@@ -66,11 +71,13 @@ export class HaZoneTrigger extends LitElement {
           <ha-radio
             name="event"
             value="enter"
+            .disabled=${this.disabled}
             .checked=${event === "enter"}
             @change=${this._radioGroupPicked}
           ></ha-radio>
         </ha-formfield>
         <ha-formfield
+          .disabled=${this.disabled}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.zone.leave"
           )}
@@ -78,6 +85,7 @@ export class HaZoneTrigger extends LitElement {
           <ha-radio
             name="event"
             value="leave"
+            .disabled=${this.disabled}
             .checked=${event === "leave"}
             @change=${this._radioGroupPicked}
           ></ha-radio>

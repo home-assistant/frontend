@@ -421,7 +421,14 @@
             },
             "restart_addon": {
                 "confirm_text": "重啟附加元件",
-                "text": "是否要套用變更重啟附加元件？"
+                "restart": "重啟",
+                "text": "欲套用附加元件新設定，需要先行重啟。",
+                "title": "重啟 {name}？"
+            },
+            "uninstall_addon": {
+                "text": "設定將進行永久刪除。",
+                "title": "移除 {name}？",
+                "uninstall": "移除"
             }
         },
         "my": {
@@ -1060,6 +1067,7 @@
                     "max": "最高",
                     "mean": "平均",
                     "min": "最低",
+                    "state": "狀態",
                     "sum": "總和"
                 }
             },
@@ -1258,8 +1266,10 @@
             "join_beta_channel": {
                 "backup": "請於啟用此功能前確定已經備份所有資料。",
                 "confirm": "是否要加入測試版本測試？",
+                "join": "參與測試",
                 "release_items": "包含測試版本：",
                 "title": "參與測試",
+                "view_documentation": "檢視文件",
                 "warning": "Beta 測試版本為供測試人員與所需人員使用、因此可能會有不穩定的狀況"
             },
             "more_info_control": {
@@ -1500,6 +1510,7 @@
                     "add": "透過裝置新增裝置",
                     "clusters": "管理叢集",
                     "device_children": "檢視子設備",
+                    "manage": "管理 Zigbee 裝置",
                     "reconfigure": "重新設定",
                     "remove": "移除",
                     "view_in_visualization": "網路形象化",
@@ -1525,6 +1536,15 @@
                 "unknown": "未知",
                 "zha_device_card": {
                     "device_name_placeholder": "變更裝置名稱"
+                }
+            },
+            "zha_manage_device": {
+                "heading": "管理 Zigbee 裝置",
+                "tabs": {
+                    "bindings": "綁定",
+                    "children": "子設備",
+                    "clusters": "叢集",
+                    "signature": "簽章"
                 }
             },
             "zha_reconfigure_device": {
@@ -1607,12 +1627,17 @@
                     "caption": "應用憑證",
                     "description": "使用整合以管理 OAuth 應用憑證",
                     "editor": {
-                        "caption": "新增應用憑證",
+                        "add": "新增",
+                        "caption": "新增憑證",
                         "client_id": "OAuth 客戶端 ID",
+                        "client_id_helper": "OAuth 應用程式公開識別",
                         "client_secret": "OAuth 客戶端私鑰",
+                        "client_secret_helper": "OAuth 應用程式密鑰",
                         "create": "新增",
+                        "description": "OAuth 為用以授權其他網站存取 Home Assistant 資訊、同時不需要提供密碼的方式。許多大型公司如 Spotify、Google、Withings、Microsoft 及 Twitter 皆採用此機制。",
                         "domain": "整合",
-                        "name": "名稱"
+                        "name": "名稱",
+                        "view_documentation": "檢視文件"
                     },
                     "picker": {
                         "add_application_credential": "新增應用憑證",
@@ -1641,7 +1666,7 @@
                         "entities": "實體"
                     },
                     "delete": {
-                        "confirmation_text": "所有該分區所屬裝置都將變成未指派狀態。",
+                        "confirmation_text": "使用者將會永久刪除。",
                         "confirmation_title": "確定要刪除此分區？"
                     },
                     "description": "群組分區裝置與實體",
@@ -1693,6 +1718,8 @@
                             "change_alias": "重新命名動作",
                             "delete": "刪除",
                             "delete_confirm": "確定要刪除嗎？",
+                            "delete_confirm_text": "將進行永久刪除。",
+                            "delete_confirm_title": "刪除觸發動作？",
                             "disable": "關閉",
                             "disabled": "已關閉",
                             "duplicate": "複製",
@@ -1812,12 +1839,15 @@
                             "no_blueprints": "目前沒有任何 Blueprint",
                             "no_inputs": "Blueprint 未包含任何輸入。"
                         },
+                        "change_mode": "變更模式",
                         "conditions": {
                             "add": "新增一個判斷式",
                             "alias": "觸發判斷名稱",
                             "change_alias": "重新命名觸發判斷",
                             "delete": "刪除",
                             "delete_confirm": "確定要刪除嗎？",
+                            "delete_confirm_text": "將進行永久刪除。",
+                            "delete_confirm_title": "刪除觸發判斷？",
                             "duplicate": "複製",
                             "header": "觸發判斷",
                             "introduction": "「觸發判斷」為自動化規則中，選項使用的部分。可以用於滿足所有條件方執行、以避免誤觸發自動化。",
@@ -1920,6 +1950,8 @@
                         "enable": "開啟",
                         "enable_disable": "開啟/關閉自動化",
                         "introduction": "運用自動化、讓智能家居更具魅力吧。",
+                        "load_error_not_deletable": "僅有 automations.yaml 內的自動化，方能進行刪除。",
+                        "load_error_not_duplicable": "僅有 automations.yaml 內的自動化，方能進行複製。",
                         "load_error_not_editable": "僅有 automations.yaml 內的自動化方能編輯。",
                         "load_error_unknown": "載入自動化錯誤（{err_no}）。",
                         "max": {
@@ -1939,6 +1971,12 @@
                         },
                         "move_down": "向下移動",
                         "move_up": "向上移動",
+                        "re_order": "重新排序",
+                        "re_order_mode": {
+                            "description": "正處於重新排序模式、可以重新排列觸發、條件與觸發動作順序。",
+                            "exit": "退出",
+                            "title": "重新排序模式"
+                        },
                         "rename": "重新命名",
                         "run": "執行",
                         "save": "儲存",
@@ -1950,6 +1988,8 @@
                             "change_alias": "重新命名觸發條件",
                             "delete": "刪除",
                             "delete_confirm": "確定要刪除嗎？",
+                            "delete_confirm_text": "將進行永久刪除。",
+                            "delete_confirm_title": "刪除觸發？",
                             "duplicate": "複製",
                             "edit_id": "編輯 ID",
                             "header": "觸發",
@@ -2064,13 +2104,17 @@
                             "type_select": "觸發條件類別",
                             "unsupported_platform": "視覺化編輯器不支援平台：{platform}"
                         },
-                        "unsaved_confirm": "設定尚未儲存，確定要放棄嗎？"
+                        "unsaved_confirm": "設定尚未儲存，確定要放棄嗎？",
+                        "unsaved_confirm_text": "將喪失未儲存之變更。",
+                        "unsaved_confirm_title": "退出編輯器？"
                     },
                     "picker": {
                         "add_automation": "新增自動化",
                         "delete": "刪除",
                         "delete_automation": "刪除自動化",
                         "delete_confirm": "確定要刪除此自動化？",
+                        "delete_confirm_text": "{name} 將會永久刪除。",
+                        "delete_confirm_title": "刪除自動化？",
                         "dev_automation": "自動化除錯",
                         "dev_only_editable": "僅有具有唯一 ID 指派的自動化、方能進行除錯。",
                         "disabled": "已關閉",
@@ -2143,26 +2187,28 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "社區討論區",
-                        "error_no_url": "請輸入 Blueprint 之 URL。",
+                        "community_forums": "檢視社區討論區 Blueprint",
+                        "error_no_url": "請輸入 Blueprint 位址。",
                         "file_name": "Blueprint 路徑",
                         "header": "匯入 Blueprint",
-                        "import_btn": "預覽 Blueprint",
+                        "import_btn": "預覽",
                         "import_header": "Blueprint ''{name}''",
+                        "import_introduction": "自 Github 及社群論壇匯入其他使用者的 Blueprint。於下方輸入 Blueprint 之位址。",
                         "import_introduction_link": "可以自 Github 及{community_link}匯入其他使用者的 Blueprint。於下方輸入 Blueprint 之URL。",
                         "importing": "正在載入 Blueprint…",
                         "raw_blueprint": "Blueprint 內容",
                         "save_btn": "匯入 Blueprint",
                         "saving": "正在匯入 Blueprint…",
                         "unsupported_blueprint": "不支援此 Blueprint",
-                        "url": "Blueprint 之 URL"
+                        "url": "Blueprint 位址"
                     },
                     "caption": "Blueprint",
                     "description": "管理 Blueprint 自動化範本",
                     "overview": {
                         "add_blueprint": "匯入 Blueprint",
                         "confirm_delete_header": "刪除此 Blueprint？",
-                        "confirm_delete_text": "確定要刪除此 Blueprint？",
+                        "confirm_delete_text": "{name} 將會永久刪除。",
+                        "confirm_delete_title": "刪除 Blueprint？",
                         "create_automation": "新增自動化",
                         "create_script": "新增腳本",
                         "delete_blueprint": "刪除 Blueprint",
@@ -2194,6 +2240,7 @@
                             "enable_state_reporting": "開啟狀態回報",
                             "info": "藉由 Home Assistant Cloud 雲服務  Alexa 整合，將能透過 Alexa 支援裝置以控制所有 Home Assistant 裝置。",
                             "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Amazon。以確保於 Alexa app 中裝置永遠保持最新狀態、並藉以創建例行自動化。",
+                            "link_learn_how_it_works": "了解如何運作",
                             "manage_entities": "管理實體",
                             "not_configured_text": "於開始使用 Alexa 之前、將需要先於 Alexa app 中啟用 Home Assistant skill for Alexa。",
                             "not_configured_title": "Alexa 未啟動",
@@ -2218,6 +2265,7 @@
                             "http_use_ssl_warning_title": "本地通訊無法使用",
                             "info": "藉由 Home Assistant Cloud 雲服務  Google Assistant 整合，將能透過 Google Assistant 支援裝置以控制所有 Home Assistant 裝置。",
                             "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結實體的狀態改變至 Google。將可以有效加快語音指令並確保您於 Google app 中裝置永遠保持最新狀態。",
+                            "link_learn_how_it_works": "了解如何運作",
                             "manage_entities": "管理實體",
                             "not_configured_text": "於開始使用 Google Assistant 之前、必須先於 Google Home App 中的 Google Assistant 啟用 Home Assistant Cloud 技能。",
                             "not_configured_title": "Google Assistant 未啟用",
@@ -2293,6 +2341,8 @@
                         "manage_domains": "管理實體類群",
                         "not_exposed": "{selected} 未公開",
                         "not_exposed_entities": "未公開實體",
+                        "sync_entities": "同步實體",
+                        "sync_entities_error": "同步實體失敗：",
                         "title": "Alexa"
                     },
                     "description_features": "遠端控制家庭與 Alexa 及 Google 助理整合",
@@ -2309,10 +2359,13 @@
                         "available_at": "Webhook 可透過以下 URL 獲得：",
                         "close": "關閉",
                         "confirm_disable": "確定要關閉此 Webhook？",
+                        "confirm_disable_text": "{name} Webhook 將會停用。",
+                        "confirm_disable_title": "關閉 webhook",
                         "copied_to_clipboard": "複製至剪貼簿",
                         "info_disable_webhook": "假如不再使用此 Webhook，可以",
                         "link_disable_webhook": "關閉",
                         "managed_by_integration": "此 Webhook 由整合所管理、無法關閉。",
+                        "public_url": "公眾位址",
                         "view_documentation": "檢視文件",
                         "webhook_for": "{name} Webhook"
                     },
@@ -2337,8 +2390,14 @@
                         "manage_defaults": "管理預設值",
                         "manage_defaults_dialog_description": "預設狀況、公開的實體類別。",
                         "manage_domains": "管理實體類群",
+                        "not_configured_text": "於開始使用 Google Assistant 之前、必須先於 Google Home App 中的 Google Assistant 啟用 Home Assistant Cloud 技能。",
+                        "not_configured_title": "Google Assistant 未啟用",
                         "not_exposed": "{selected} 未公開",
                         "not_exposed_entities": "未公開實體",
+                        "sync_entities": "同步實體",
+                        "sync_entities_error": "同步實體失敗：",
+                        "sync_failed_text": "同步實體失敗，請再試一次或參閱日誌。",
+                        "sync_failed_title": "同步失敗",
                         "sync_to_google": "正與 Google 同步變更。",
                         "title": "Google Assistant"
                     },
@@ -2843,16 +2902,22 @@
                     "description": "設定中心與已連線硬體",
                     "documentation": "相關文件",
                     "documentation_description": "了解裝置的額外資訊",
-                    "failed_to_reboot_host": "重啟主機失敗",
-                    "failed_to_shutdown_host": "無法關閉主機",
-                    "host_shutting_down": "主機關機",
+                    "failed_to_reboot_host": "重啟系統失敗",
+                    "failed_to_shutdown_host": "無法關閉系統",
+                    "host_shutting_down": "關閉系統",
                     "memory": "記憶體",
                     "processor": "處理器",
-                    "reboot_host": "重啟主機",
+                    "reboot": "重啟",
+                    "reboot_host": "重啟系統",
                     "reboot_host_confirm": "確定要重啟主機？",
-                    "rebooting_host": "重啟主機",
-                    "shutdown_host": "關閉主機",
-                    "shutdown_host_confirm": "確定要關閉主機？"
+                    "reboot_host_text": "將會重新啟動整個系統、包含 Core 與所有附加元件。",
+                    "reboot_host_title": "重啟系統？",
+                    "rebooting_host": "重啟系統",
+                    "shutdown": "關機",
+                    "shutdown_host": "關閉系統",
+                    "shutdown_host_confirm": "確定要關閉主機？",
+                    "shutdown_host_text": "將會關閉整個系統、包含 Core 與所有附加元件。",
+                    "shutdown_host_title": "將系統關機？"
                 },
                 "header": "設定 Home Assistant",
                 "helpers": {
@@ -2928,11 +2993,21 @@
                     "attention": "需要注意",
                     "caption": "整合",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "假如進行移除、當再次設定整合時需要輸入憑證。假如選擇保留，當再次設定整合時、將自動使用、或者從應用憑證選單中取得。",
+                            "delete_error_title": "應用憑證移除失敗",
+                            "delete_prompt": "是否要移除此整合的應用憑證？",
+                            "delete_title": "應用憑證",
+                            "dismiss": "保留",
+                            "learn_more": "應用憑證詳細資訊"
+                        },
                         "area": "於 {area}",
                         "check_the_logs": "檢查日誌",
                         "configure": "設定",
                         "delete": "刪除",
                         "delete_confirm": "確定要刪除{title}整合？",
+                        "delete_confirm_text": "裝置與實體將會永久移除。",
+                        "delete_confirm_title": "刪除 {title}？",
                         "depends_on_cloud": "使用雲服務",
                         "devices": "{count} {count, plural,\n  one {個裝置}\n  other {個裝置}\n}",
                         "disable": {
@@ -2945,6 +3020,8 @@
                             },
                             "disabled_cause": "由 {cause} 關閉。"
                         },
+                        "disable_confirm_text": "裝置與實體將會停用。",
+                        "disable_confirm_title": "關閉 {title}？",
                         "disable_error": "開啟或關閉整合失敗",
                         "disable_restart_confirm": "重啟 Home Assistant 以完成整合關閉",
                         "disabled_polling": "自動輪詢更新資料已關閉。",
@@ -3132,6 +3209,8 @@
                         "cant_edit_yaml": "正使用 YAML 模式、因此無法藉由 UI 變更主面板設定。請於「configuration.yaml」進行管理。",
                         "caption": "資源",
                         "confirm_delete": "確定要刪除此資源？",
+                        "confirm_delete_text": "{url} 將會永久刪除。",
+                        "confirm_delete_title": "刪除來源？",
                         "detail": {
                             "create": "新增",
                             "delete": "刪除",
@@ -3203,6 +3282,8 @@
                     "caption": "人員",
                     "confirm_delete": "確定要刪除此人員？",
                     "confirm_delete2": "所有該人員所屬裝置將成為未指派狀態。",
+                    "confirm_delete_text": "該人員將會永久刪除、所有屬於此人員的裝置將會變成未指定狀態。",
+                    "confirm_delete_title": "刪除 {name}？",
                     "create_person": "新增人員",
                     "description": "管理 Home Assistant 追蹤人員",
                     "detail": {
@@ -3284,11 +3365,17 @@
                         "load_error_unknown": "載入場景錯誤（{err_no}）。",
                         "name": "名稱",
                         "save": "儲存",
-                        "unsaved_confirm": "設定尚未儲存，確定要放棄嗎？"
+                        "unsaved_confirm": "設定尚未儲存，確定要放棄嗎？",
+                        "unsaved_confirm_text": "將喪失未儲存之變更。",
+                        "unsaved_confirm_title": "退出編輯器？"
                     },
                     "picker": {
+                        "activate": "啟用",
                         "add_scene": "新增場景",
+                        "delete": "刪除",
                         "delete_confirm": "確定要刪除此場景？",
+                        "delete_confirm_text": "{name} 將會永久刪除。",
+                        "delete_confirm_title": "刪除場景？",
                         "delete_scene": "刪除場景",
                         "duplicate": "複製",
                         "duplicate_scene": "複製場景",
@@ -3297,6 +3384,7 @@
                         "headers": {
                             "activate": "啟用",
                             "edit": "編輯",
+                            "last_activated": "上次啟用",
                             "name": "名稱",
                             "show_info": "顯示資訊",
                             "state": "狀態"
@@ -3306,6 +3394,7 @@
                         "no_scenes": "找不到任何場景",
                         "only_editable": "僅有於 scenes.yaml 檔案內定義的場景、方能進行編輯。",
                         "pick_scene": "選擇欲編輯的場景",
+                        "show_info": "資訊",
                         "show_info_scene": "顯示關於場景資訊"
                     }
                 },
@@ -3316,6 +3405,8 @@
                         "alias": "名稱",
                         "default_name": "新腳本",
                         "delete_confirm": "確定要刪除此腳本？",
+                        "delete_confirm_text": "{name} 將會永久刪除。",
+                        "delete_confirm_title": "刪除腳本？",
                         "delete_script": "刪除腳本",
                         "header": "腳本：{name}",
                         "icon": "圖示",
@@ -3324,6 +3415,8 @@
                         "id_already_exists_save_error": "由於該 ID 非獨一 ID，因此無法儲存此腳本。請選擇其他 ID 或者保留空白以自動產生。",
                         "introduction": "使用腳本以執行一連串的動作。",
                         "link_available_actions": "詳細了解可使用動作",
+                        "load_error_not_deletable": "僅有於 scripts.yaml 檔案內的腳本，方能進行刪除。",
+                        "load_error_not_duplicable": "僅有於 scripts.yaml 檔案內的腳本，方能進行複製。",
                         "load_error_not_editable": "僅有於 scripts.yaml 檔案內的腳本，方能進行編輯。",
                         "load_error_unknown": "載入腳本錯誤 ({err_no})。",
                         "max": {
@@ -3343,6 +3436,7 @@
                         "save_script": "儲存腳本",
                         "sequence": "連續",
                         "sequence_sentence": "此腳本所含的操作動作。",
+                        "show_info": "資訊",
                         "show_trace": "紀錄"
                     },
                     "picker": {
@@ -3360,8 +3454,13 @@
                         "introduction": "腳本編輯器允許新增或編輯腳本。請參考下方教學連結，以確保正確的設定 Home Assistant。",
                         "learn_more": "詳細了解腳本",
                         "no_scripts": "找不到任何腳本",
+                        "run": "執行",
                         "run_script": "執行腳本",
-                        "show_info": "顯示關於腳本資訊"
+                        "show_info": "資訊",
+                        "show_trace": "紀錄"
+                    },
+                    "trace": {
+                        "edit_script": "編輯腳本"
                     }
                 },
                 "storage": {
@@ -3375,6 +3474,8 @@
                         "moving": "搬移資料碟",
                         "moving_desc": "重新啟動並搬移資料碟，請耐心稍候",
                         "no_devices": "找不到適合的連接裝置",
+                        "no_devices_text": "找不到適合的外接裝置。外接資料磁碟之儲存空間必須大於現有的儲存空間",
+                        "no_devices_title": "找不到適合的儲設備",
                         "select_device": "選擇新資料碟",
                         "title": "搬移資料碟"
                     },
@@ -3384,7 +3485,7 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "確定要重啟 Home Assistant 嗎？",
-                    "confirm_restart_text": "重新啟動 Home Assistant 將停止所有啟用主畫面、自動化與腳本。",
+                    "confirm_restart_text": "將停止所有啟用主畫面、自動化與腳本。",
                     "confirm_restart_title": "重啟 Home Assistant？",
                     "restart_error": "重新啟動 Home Assistant 失敗",
                     "restart_homeassistant": "重新啟動 Home Assistant",
@@ -3484,6 +3585,14 @@
                         "password_not_match": "密碼不相符"
                     },
                     "caption": "使用者",
+                    "change_password": {
+                        "caption": "更改密碼",
+                        "change": "變更",
+                        "new_password": "新密碼",
+                        "password_changed": "密碼成功變更。",
+                        "password_confirm": "確認密碼",
+                        "password_no_match": "密碼不相符"
+                    },
                     "description": "管理 Home Assistant 使用者帳號",
                     "editor": {
                         "activate_user": "啟用使用者",
@@ -3493,6 +3602,8 @@
                         "caption": "檢視使用者",
                         "change_password": "更改密碼",
                         "confirm_user_deletion": "確定要刪除 {name}？",
+                        "confirm_user_deletion_text": "使用者將會永久刪除。",
+                        "confirm_user_deletion_title": "刪除 {name}？",
                         "deactivate_user": "停用使用者",
                         "delete_user": "刪除使用者",
                         "group": "群組",
@@ -3544,7 +3655,9 @@
                         "help_get_zigbee_attribute": "獲取所選屬性數值。",
                         "help_set_zigbee_attribute": "設定特定實體之特定叢集屬性數值。",
                         "introduction": "檢視或編輯叢集屬性。",
-                        "set_zigbee_attribute": "設定 Zigbee 屬性"
+                        "read_zigbee_attribute": "讀取屬性",
+                        "set_zigbee_attribute": "設定 Zigbee 屬性",
+                        "write_zigbee_attribute": "寫入屬性"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "所選叢集之命令",
@@ -3556,7 +3669,11 @@
                     "clusters": {
                         "header": "叢集",
                         "help_cluster_dropdown": "選擇叢集以檢視屬性及命令。",
-                        "introduction": "叢集為 Zigbee 功能的構建基礎，能夠將功能分為邏輯單位。具有客戶端與伺服端類別、由屬性與命令所組成。"
+                        "introduction": "叢集為 Zigbee 功能的構建基礎，能夠將功能分為邏輯單位。具有客戶端與伺服端類別、由屬性與命令所組成。",
+                        "tabs": {
+                            "attributes": "屬性",
+                            "commands": "命令"
+                        }
                     },
                     "common": {
                         "clusters": "叢集",
@@ -3569,6 +3686,11 @@
                         "network_settings_title": "網路設定",
                         "shortcuts_title": "捷徑",
                         "update_button": "更新設定"
+                    },
+                    "device_binding": {
+                        "bind": "綁定",
+                        "picker_label": "可綁定裝置",
+                        "unbind": "解綁"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "設定完成",
@@ -4556,6 +4678,15 @@
                                 "hour": "時",
                                 "month": "月"
                             },
+                            "pick_statistic": "新增統計資料",
+                            "picked_statistic": "統計資料",
+                            "stat_type_labels": {
+                                "max": "最高",
+                                "mean": "平均",
+                                "min": "最低",
+                                "state": "狀態",
+                                "sum": "總和（期間變化）"
+                            },
                             "stat_types": "顯示狀態類別"
                         },
                         "thermostat": {
@@ -4623,12 +4754,16 @@
                     },
                     "edit_view": {
                         "add": "新增視圖",
+                        "back_path": "返回路徑（選項）",
+                        "back_path_helper": "僅用於 subviews。假如為空白、點選返回按鈕則會回到上一頁。",
                         "delete": "刪除視圖",
                         "edit": "編輯視圖",
                         "header": "視圖設定",
                         "header_name": "{name}視圖設定",
                         "move_left": "向左移動視圖",
                         "move_right": "向右移動視圖",
+                        "subview": "Subview",
+                        "subview_helper": "Subviews 不會顯示於頁面中、並顯示為按鈕。",
                         "tab_badges": "圓標圖示",
                         "tab_settings": "設定",
                         "tab_visibility": "顯示選項",
