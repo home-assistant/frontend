@@ -19,6 +19,8 @@ export class HaDeviceCondition extends LitElement {
 
   @property({ type: Object }) public condition!: DeviceCondition;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _deviceId?: string;
 
   @state() private _capabilities?: DeviceCapabilities;
@@ -53,7 +55,8 @@ export class HaDeviceCondition extends LitElement {
         .value=${deviceId}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}
-        label=${this.hass.localize(
+        .disabled=${this.disabled}
+        .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.device.label"
         )}
       ></ha-device-picker>
@@ -62,7 +65,8 @@ export class HaDeviceCondition extends LitElement {
         .deviceId=${deviceId}
         @value-changed=${this._deviceConditionPicked}
         .hass=${this.hass}
-        label=${this.hass.localize(
+        .disabled=${this.disabled}
+        .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.device.condition"
         )}
       ></ha-device-condition-picker>
@@ -72,6 +76,7 @@ export class HaDeviceCondition extends LitElement {
               .hass=${this.hass}
               .data=${this._extraFieldsData(this.condition, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
+              .disabled=${this.disabled}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
                 this.hass.localize
               )}

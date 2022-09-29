@@ -107,6 +107,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _mode: "gui" | "yaml" = "gui";
 
+  @state() private _readOnly = false;
+
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
   @query("manual-automation-editor")
@@ -201,7 +203,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 <mwc-list-item
                   graphic="icon"
                   @click=${this._promptAutomationMode}
-                  .disabled=${this.entityId || this._mode === "yaml"}
+                  .disabled=${this._readOnly || this._mode === "yaml"}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.change_mode"
@@ -217,7 +219,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             ? html`<mwc-list-item
                 graphic="icon"
                 @click=${this._toggleReOrderMode}
-                .disabled=${this.entityId || this._mode === "yaml"}
+                .disabled=${this._readOnly || this._mode === "yaml"}
               >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.re_order"
@@ -317,8 +319,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           .isWide=${this.isWide}
                           .stateObj=${stateObj}
                           .config=${this._config}
-                          .disabled=${Boolean(this.entityId)}
+                          .disabled=${Boolean(this._readOnly)}
                           @value-changed=${this._valueChanged}
+                          @duplicate=${this._duplicate}
                         ></blueprint-automation-editor>
                       `
                     : html`
@@ -328,12 +331,25 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           .isWide=${this.isWide}
                           .stateObj=${stateObj}
                           .config=${this._config}
-                          .disabled=${Boolean(this.entityId)}
+                          .disabled=${Boolean(this._readOnly)}
                           @value-changed=${this._valueChanged}
+                          @duplicate=${this._duplicate}
                         ></manual-automation-editor>
                       `
                   : this._mode === "yaml"
                   ? html`
+                      ${this._readOnly
+                        ? html`<ha-alert alert-type="warning">
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.read_only"
+                            )}
+                            <mwc-button slot="action" @click=${this._duplicate}>
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.migrate"
+                              )}
+                            </mwc-button>
+                          </ha-alert>`
+                        : ""}
                       ${stateObj?.state === "off"
                         ? html`
                             <ha-alert alert-type="info">
@@ -351,6 +367,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                       <ha-yaml-editor
                         .hass=${this.hass}
                         .defaultValue=${this._preprocessYaml()}
+                        .readOnly=${this._readOnly}
                         @value-changed=${this._yamlChanged}
                       ></ha-yaml-editor>
                       <ha-card outlined>
@@ -417,6 +434,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ...initData,
       } as AutomationConfig;
       this._entityId = undefined;
+      this._readOnly = false;
       this._dirty = true;
     }
 
@@ -426,6 +444,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       });
       this._entityId = this.entityId;
       this._dirty = false;
+      this._readOnly = true;
     }
 
     if (
@@ -466,10 +485,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
       }
       this._dirty = false;
+      this._readOnly = false;
       this._config = config;
     } catch (err: any) {
       const entity = Object.values(this.hass.entities).find(
-        (ent) => ent.unique_id === this.automationId
+        (ent) =>
+          ent.platform === "automation" && ent.unique_id === this.automationId
       );
       if (entity) {
         navigate(`/config/automation/show/${entity.entity_id}`, {
@@ -495,6 +516,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
+    if (this._readOnly) {
+      return;
+    }
     this._config = ev.detail.value;
     this._dirty = true;
     this._errors = undefined;

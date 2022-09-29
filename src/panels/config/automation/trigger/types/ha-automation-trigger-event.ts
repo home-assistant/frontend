@@ -17,6 +17,8 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
 
   @property() public trigger!: EventTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return { event_type: "" };
   }
@@ -30,6 +32,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         )}
         name="event_type"
         .value=${event_type}
+        .disabled=${this.disabled}
         @change=${this._valueChanged}
       ></ha-textfield>
       <ha-yaml-editor
@@ -38,6 +41,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
           "ui.panel.config.automation.editor.triggers.type.event.event_data"
         )}
         .name=${"event_data"}
+        .readOnly=${this.disabled}
         .defaultValue=${event_data}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
@@ -53,6 +57,7 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
           "ui.panel.config.automation.editor.triggers.type.event.context_user_pick"
         )}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         .value=${this._wrapUsersInArray(context?.user_id)}
         @value-changed=${this._usersChanged}
       ></ha-users-picker>

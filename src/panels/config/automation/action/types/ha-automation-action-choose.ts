@@ -14,6 +14,8 @@ import { ActionElement } from "../ha-automation-action-row";
 export class HaChooseAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property() public action!: ChooseAction;
 
   @property({ type: Boolean }) public reOrderMode = false;
@@ -32,6 +34,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
         (option, idx) => html`<ha-card>
           <ha-icon-button
             .idx=${idx}
+            .disabled=${this.disabled}
             @click=${this._removeOption}
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.actions.type.choose.remove_option"
@@ -54,6 +57,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
             <ha-automation-condition
               .conditions=${option.conditions}
               .reOrderMode=${this.reOrderMode}
+              .disabled=${this.disabled}
               .hass=${this.hass}
               .idx=${idx}
               @value-changed=${this._conditionChanged}
@@ -66,6 +70,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
             <ha-automation-action
               .actions=${option.sequence || []}
               .reOrderMode=${this.reOrderMode}
+              .disabled=${this.disabled}
               .hass=${this.hass}
               .idx=${idx}
               @value-changed=${this._actionChanged}
@@ -78,6 +83,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.choose.add_option"
         )}
+        .disabled=${this.disabled}
         @click=${this._addOption}
       >
         <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
@@ -92,12 +98,17 @@ export class HaChooseAction extends LitElement implements ActionElement {
             <ha-automation-action
               .actions=${action.default || []}
               .reOrderMode=${this.reOrderMode}
+              .disabled=${this.disabled}
               @value-changed=${this._defaultChanged}
               .hass=${this.hass}
             ></ha-automation-action>
           `
-        : html` <div class="link-button-row">
-            <button class="link" @click=${this._addDefault}>
+        : html`<div class="link-button-row">
+            <button
+              class="link"
+              @click=${this._addDefault}
+              .disabled=${this.disabled}
+            >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.choose.add_default"
               )}

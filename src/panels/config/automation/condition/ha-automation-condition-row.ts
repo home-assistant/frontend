@@ -74,6 +74,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _yamlMode = false;
 
   @state() private _warnings?: string[];
@@ -131,7 +133,7 @@ export default class HaAutomationConditionRow extends LitElement {
                     )}
                     <ha-svg-icon slot="graphic" .path=${mdiFlask}></ha-svg-icon>
                   </mwc-list-item>
-                  <mwc-list-item graphic="icon">
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.conditions.rename"
                     )}
@@ -140,7 +142,7 @@ export default class HaAutomationConditionRow extends LitElement {
                       .path=${mdiRenameBox}
                     ></ha-svg-icon>
                   </mwc-list-item>
-                  <mwc-list-item graphic="icon">
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.duplicate"
                     )}
@@ -180,7 +182,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
                   <li divider role="separator"></li>
 
-                  <mwc-list-item graphic="icon">
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.condition.enabled === false
                       ? this.hass.localize(
                           "ui.panel.config.automation.editor.actions.enable"
@@ -195,7 +197,11 @@ export default class HaAutomationConditionRow extends LitElement {
                         : mdiStopCircleOutline}
                     ></ha-svg-icon>
                   </mwc-list-item>
-                  <mwc-list-item class="warning" graphic="icon">
+                  <mwc-list-item
+                    class="warning"
+                    graphic="icon"
+                    .disabled=${this.disabled}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.delete"
                     )}
@@ -238,6 +244,7 @@ export default class HaAutomationConditionRow extends LitElement {
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
               @value-changed=${this._handleChangeEvent}
               .yamlMode=${this._yamlMode}
+              .disabled=${this.disabled}
               .hass=${this.hass}
               .condition=${this.condition}
               .reOrderMode=${this.reOrderMode}

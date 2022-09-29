@@ -23,6 +23,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: ServiceAction;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ type: Boolean }) public narrow = false;
 
   @state() private _action!: ServiceAction;
@@ -66,6 +68,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .narrow=${this.narrow}
         .hass=${this.hass}
         .value=${this._action}
+        .disabled=${this.disabled}
         .showAdvanced=${this.hass.userData?.showAdvanced}
         @value-changed=${this._actionChanged}
       ></ha-service-control>

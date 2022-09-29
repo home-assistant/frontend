@@ -27,6 +27,8 @@ export class HaBlueprintAutomationEditor extends LitElement {
 
   @property() public isWide!: boolean;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
   @property() public config!: BlueprintAutomationConfig;
@@ -50,6 +52,14 @@ export class HaBlueprintAutomationEditor extends LitElement {
   protected render() {
     const blueprint = this._blueprint;
     return html`
+      ${this.disabled
+        ? html`<ha-alert alert-type="warning">
+            ${this.hass.localize("ui.panel.config.automation.editor.read_only")}
+            <mwc-button slot="action" @click=${this._duplicate}>
+              ${this.hass.localize("ui.panel.config.automation.editor.migrate")}
+            </mwc-button>
+          </ha-alert>`
+        : ""}
       ${this.stateObj?.state === "off"
         ? html`
             <ha-alert alert-type="info">
@@ -85,6 +95,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
                     )}
                     .blueprints=${this._blueprints}
                     .value=${this.config.use_blueprint.path}
+                    .disabled=${this.disabled}
                     @value-changed=${this._blueprintChanged}
                   ></ha-blueprint-picker>
                 `
@@ -126,6 +137,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
                               value?.default}
+                              .disabled=${this.disabled}
                               @value-changed=${this._inputChanged}
                             ></ha-selector>`
                           : html`<ha-textfield
@@ -134,6 +146,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
                               value?.default}
+                              .disabled=${this.disabled}
                               @input=${this._inputChanged}
                             ></ha-textfield>`}
                       </ha-settings-row>`
@@ -203,6 +216,10 @@ export class HaBlueprintAutomationEditor extends LitElement {
     await this.hass.callService("automation", "turn_on", {
       entity_id: this.stateObj.entity_id,
     });
+  }
+
+  private _duplicate() {
+    fireEvent(this, "duplicate");
   }
 
   static get styles(): CSSResultGroup {
