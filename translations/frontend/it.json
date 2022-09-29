@@ -1641,7 +1641,7 @@
                         "entities": "Entità"
                     },
                     "delete": {
-                        "confirmation_text": "Tutti i dispositivi in quest'area non saranno assegnati.",
+                        "confirmation_text": "Questo utente sarà eliminato definitivamente.",
                         "confirmation_title": "Sei sicuro di voler eliminare quest'area?"
                     },
                     "description": "Raggruppa dispositivi ed entità in aree",
@@ -1693,6 +1693,8 @@
                             "change_alias": "Rinomina azione",
                             "delete": "Elimina",
                             "delete_confirm": "Sei sicuro di volerlo eliminare?",
+                            "delete_confirm_text": "Sarà cancellato definitivamente.",
+                            "delete_confirm_title": "Eliminare l'azione?",
                             "disable": "Disabilita",
                             "disabled": "Disabilitate",
                             "duplicate": "Duplica",
@@ -1812,12 +1814,15 @@
                             "no_blueprints": "Non hai progetti",
                             "no_inputs": "Questo progetto non ha ingressi."
                         },
+                        "change_mode": "Cambia modalità",
                         "conditions": {
                             "add": "Aggiungi condizione",
                             "alias": "Nome della condizione",
                             "change_alias": "Rinomina condizione",
                             "delete": "Elimina",
                             "delete_confirm": "Sei sicuro di volerlo eliminare?",
+                            "delete_confirm_text": "Sarà cancellato definitivamente.",
+                            "delete_confirm_title": "Eliminare la condizione?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
                             "introduction": "Le condizioni sono facoltative e impediranno l'esecuzione dell'automazione a meno che non siano soddisfatte tutte.",
@@ -1920,6 +1925,8 @@
                         "enable": "Abilita",
                         "enable_disable": "Abilitare/Disabilitare l'automazione",
                         "introduction": "Usa le automazioni per dare vita alla tua casa.",
+                        "load_error_not_deletable": "Solo le automazioni in automations.yaml possono essere cancellate.",
+                        "load_error_not_duplicable": "Solo le automazioni in automations.yaml possono essere duplicate.",
                         "load_error_not_editable": "Solo le automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'automazione ({err_no}).",
                         "max": {
@@ -1939,6 +1946,12 @@
                         },
                         "move_down": "Sposta sotto",
                         "move_up": "Sposta sopra",
+                        "re_order": "Riordina",
+                        "re_order_mode": {
+                            "description": "Sei in modalità di riordino, puoi riordinare le attivazioni, le condizioni e le azioni.",
+                            "exit": "Esci",
+                            "title": "Modalità di riordino"
+                        },
                         "rename": "Rinomina",
                         "run": "Esegui",
                         "save": "Salva",
@@ -1950,6 +1963,8 @@
                             "change_alias": "Rinomina attivazione",
                             "delete": "Elimina",
                             "delete_confirm": "Sei sicuro di volerlo eliminare?",
+                            "delete_confirm_text": "Sarà cancellato definitivamente.",
+                            "delete_confirm_title": "Eliminare l'attivazione?",
                             "duplicate": "Duplica",
                             "edit_id": "Modifica ID",
                             "header": "Attivazioni",
@@ -2064,13 +2079,17 @@
                             "type_select": "Tipo di attivazione",
                             "unsupported_platform": "Nessun supporto dell'interfaccia utente per la piattaforma: {platform}"
                         },
-                        "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?"
+                        "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?",
+                        "unsaved_confirm_text": "Le modifiche non salvate andranno perse.",
+                        "unsaved_confirm_title": "Lasciare l'editor?"
                     },
                     "picker": {
                         "add_automation": "Crea automazione",
                         "delete": "Elimina",
                         "delete_automation": "Elimina automazione",
                         "delete_confirm": "Sei sicuro di voler eliminare questa automazione?",
+                        "delete_confirm_text": "{name} sarà cancellato definitivamente.",
+                        "delete_confirm_title": "Cancella automazione?",
                         "dev_automation": "Debug dell'automazione",
                         "dev_only_editable": "Solo le automazioni che hanno assegnato un ID univoco sono debuggabili.",
                         "disabled": "Disabilitato",
@@ -2143,26 +2162,28 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "forum della comunità",
-                        "error_no_url": "Inserisci l'URL del progetto.",
+                        "community_forums": "Guarda i progetti sul forum della comunità",
+                        "error_no_url": "Inserisci l'indirizzo del progetto.",
                         "file_name": "Percorso del progetto",
                         "header": "Importa un progetto",
-                        "import_btn": "Anteprima del progetto",
+                        "import_btn": "Anteprima",
                         "import_header": "Progetto \"{name}\"",
+                        "import_introduction": "Importa i progetti di altri utenti da GitHub e dai forum della community incollando l'indirizzo di seguito.",
                         "import_introduction_link": "Puoi importare progetti di altri utenti da Github e {community_link} . Immettere l'URL del progetto di seguito.",
                         "importing": "Caricamento progetto…",
                         "raw_blueprint": "Contenuto del progetto",
                         "save_btn": "Importa progetto",
                         "saving": "Importazione del progetto…",
                         "unsupported_blueprint": "Questo progetto non è supportato",
-                        "url": "URL del progetto"
+                        "url": "Indirizzo del progetto"
                     },
                     "caption": "Progetti",
                     "description": "Gestisci i progetti",
                     "overview": {
                         "add_blueprint": "Importa progetto",
                         "confirm_delete_header": "Vuoi eliminare questo progetto?",
-                        "confirm_delete_text": "Sei sicuro di voler eliminare questo progetto?",
+                        "confirm_delete_text": "{name} sarà eliminato definitivamente.",
+                        "confirm_delete_title": "Eliminare il progetto?",
                         "create_automation": "Crea automazione",
                         "create_script": "Crea script",
                         "delete_blueprint": "Elimina progetto",
@@ -2309,10 +2330,13 @@
                         "available_at": "Il webhook è disponibile al seguente URL:",
                         "close": "Chiudi",
                         "confirm_disable": "Sei sicuro di voler disabilitare questo webhook?",
+                        "confirm_disable_text": "Il webhook per {name} sarà disabilitato.",
+                        "confirm_disable_title": "Disabilita webhook",
                         "copied_to_clipboard": "Copiato negli appunti",
                         "info_disable_webhook": "Se non desideri più utilizzare questo webhook, puoi",
                         "link_disable_webhook": "disabilitarlo",
                         "managed_by_integration": "Questo webhook è gestito da un'integrazione e non può essere disabilitato.",
+                        "public_url": "Indirizzo pubblico",
                         "view_documentation": "Visualizza la documentazione",
                         "webhook_for": "Webhook per {name}"
                     },
@@ -2843,16 +2867,22 @@
                     "description": "Configura il tuo hub e l'hardware connesso",
                     "documentation": "Documentazione",
                     "documentation_description": "Trova ulteriori informazioni sul tuo dispositivo",
-                    "failed_to_reboot_host": "Impossibile riavviare l'host",
-                    "failed_to_shutdown_host": "Impossibile arrestare l'host",
-                    "host_shutting_down": "Host in chiusura",
+                    "failed_to_reboot_host": "Impossibile riavviare il sistema",
+                    "failed_to_shutdown_host": "Impossibile arrestare il sistema",
+                    "host_shutting_down": "spegnimento del sistema",
                     "memory": "Memoria",
                     "processor": "Processore",
-                    "reboot_host": "Riavvia host",
+                    "reboot": "Riavvio",
+                    "reboot_host": "Riavvio del sistema",
                     "reboot_host_confirm": "Sei sicuro di voler riavviare il tuo host?",
-                    "rebooting_host": "Riavvio dell'host",
-                    "shutdown_host": "Spegni host",
-                    "shutdown_host_confirm": "Sei sicuro di voler spegnere il tuo host?"
+                    "reboot_host_text": "Questo riavvierà il sistema completo, includendo il Core e tutti i componenti aggiuntivi.",
+                    "reboot_host_title": "Riavvio del sistema?",
+                    "rebooting_host": "Riavvio del sistema",
+                    "shutdown": "Arresta",
+                    "shutdown_host": "Sistema di spegnimento",
+                    "shutdown_host_confirm": "Sei sicuro di voler spegnere il tuo host?",
+                    "shutdown_host_text": "Questo arresterà il sistema completo, includendo il Core e tutti i componenti aggiuntivi.",
+                    "shutdown_host_title": "Arresto del sistema?"
                 },
                 "header": "Configura Home Assistant",
                 "helpers": {
@@ -2880,7 +2910,7 @@
                         "input_button": "Pulsante",
                         "input_datetime": "Data e/o ora",
                         "input_number": "Numero",
-                        "input_select": "A discesa",
+                        "input_select": "Menu a discesa",
                         "input_text": "Testo",
                         "schedule": "Programma",
                         "timer": "Timer"
@@ -2928,11 +2958,21 @@
                     "attention": "Attenzione richiesta",
                     "caption": "Integrazioni",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "Se le rimuovi, dovrai inserire le credenziali quando configuri nuovamente l'integrazione. Se le mantieni, verranno utilizzate automaticamente durante la nuova configurazione dell'integrazione o potrebbero essere accessibili dal menu Credenziali dell'Applicazione.",
+                            "delete_error_title": "Rimozione delle Credenziali dell'Applicazione fallita",
+                            "delete_prompt": "Desideri rimuovere anche le credenziali dell'applicazione per questa integrazione?",
+                            "delete_title": "Credenziali dell'Applicazione",
+                            "dismiss": "Mantieni",
+                            "learn_more": "Per saperne di più sulle Credenziali delle Applicazioni"
+                        },
                         "area": "In {area}",
                         "check_the_logs": "Controlla i registri",
                         "configure": "Configura",
                         "delete": "Elimina",
                         "delete_confirm": "Sei sicuro di voler eliminare l'integrazione {title}?",
+                        "delete_confirm_text": "I suoi dispositivi ed entità saranno eliminati in modo permanente.",
+                        "delete_confirm_title": "Eliminare {title}?",
                         "depends_on_cloud": "Dipende dal cloud",
                         "devices": "{count} {count, plural, \none {dispositivo}\nother {dispositivi}\n}",
                         "disable": {
@@ -2945,6 +2985,8 @@
                             },
                             "disabled_cause": "Disabilitato da {cause}"
                         },
+                        "disable_confirm_text": "I suoi dispositivi ed entità saranno disabilitati.",
+                        "disable_confirm_title": "Disabilitare {title}?",
                         "disable_error": "Abilitazione o disabilitazione dell'integrazione non riuscita",
                         "disable_restart_confirm": "Riavvia Home Assistant per terminare la disabilitazione di questa integrazione",
                         "disabled_polling": "Polling automatico per i dati aggiornati disabilitato",
@@ -3092,7 +3134,7 @@
                             "storage": "Controllata dell'interfaccia utente",
                             "yaml": "File YAML"
                         },
-                        "confirm_delete_text": "La tua plancia sarà eliminata definitivamente.",
+                        "confirm_delete_text": "Questa plancia sarà eliminata definitivamente.",
                         "confirm_delete_title": "Vuoi eliminare {dashboard_title}?",
                         "default_dashboard": "Questa è la plancia predefinita",
                         "detail": {
@@ -3132,6 +3174,8 @@
                         "cant_edit_yaml": "Stai utilizzando la tua plancia in modalità YAML, pertanto non è possibile gestire le risorse tramite l'interfaccia utente. Gestiscili in configuration.yaml.",
                         "caption": "Risorse",
                         "confirm_delete": "Sei sicuro di voler eliminare questa risorsa?",
+                        "confirm_delete_text": "{url} sarà eliminato definitivamente.",
+                        "confirm_delete_title": "Eliminare la risorsa?",
                         "detail": {
                             "create": "Crea",
                             "delete": "Elimina",
@@ -3203,6 +3247,8 @@
                     "caption": "Persone",
                     "confirm_delete": "Sei sicuro di voler eliminare questa persona?",
                     "confirm_delete2": "Tutti i dispositivi appartenenti a questa persona non saranno assegnati.",
+                    "confirm_delete_text": "Questa persona sarà eliminata in modo permanente e tutti i dispositivi che le appartengono diventeranno non assegnati.",
+                    "confirm_delete_title": "Eliminare {name}?",
                     "create_person": "Crea persona",
                     "description": "Gestisci le persone tracciate da Home Assistant",
                     "detail": {
@@ -3251,7 +3297,7 @@
                     "hide_ignored": "Nascondi ignorati",
                     "integration_startup_time": "Tempo di avvio dell'integrazione",
                     "more_repairs": "Mostra tutte le riparazioni",
-                    "no_repairs": "Al momento non ci sono riparazioni disponibili",
+                    "no_repairs": "Non ci sono riparazioni disponibili al momento",
                     "show_ignored": "Mostra riparazioni ignorate",
                     "system_information": "Informazioni di sistema",
                     "title": "{count} {count, plural,\n  one {riparazione}\n  other {riparazioni}\n}",
@@ -3284,11 +3330,17 @@
                         "load_error_unknown": "Errore durante il caricamento della scena ({err_no}).",
                         "name": "Nome",
                         "save": "Salva",
-                        "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?"
+                        "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?",
+                        "unsaved_confirm_text": "Le modifiche non salvate andranno perse.",
+                        "unsaved_confirm_title": "Lasciare l'editor?"
                     },
                     "picker": {
+                        "activate": "Attiva",
                         "add_scene": "Aggiungi scena",
+                        "delete": "Elimina",
                         "delete_confirm": "Sei sicuro di voler eliminare questa scena?",
+                        "delete_confirm_text": "{name} sarà eliminato definitivamente.",
+                        "delete_confirm_title": "Eliminare la scena?",
                         "delete_scene": "Elimina scena",
                         "duplicate": "Duplica",
                         "duplicate_scene": "Scena duplicata",
@@ -3297,6 +3349,7 @@
                         "headers": {
                             "activate": "Attiva",
                             "edit": "Modifica",
+                            "last_activated": "Ultima attivazione",
                             "name": "Nome",
                             "show_info": "Mostra informazioni",
                             "state": "Stato"
@@ -3306,6 +3359,7 @@
                         "no_scenes": "Non abbiamo trovato alcuna scena",
                         "only_editable": "Solo le scene definite in scenes.yaml sono modificabili.",
                         "pick_scene": "Scegli la scena da modificare",
+                        "show_info": "Informazioni",
                         "show_info_scene": "Mostra informazioni sulla scena"
                     }
                 },
@@ -3316,6 +3370,8 @@
                         "alias": "Nome",
                         "default_name": "Nuovo script",
                         "delete_confirm": "Sei sicuro di voler eliminare questo script?",
+                        "delete_confirm_text": "{name} sarà eliminato definitivamente.",
+                        "delete_confirm_title": "Eliminare lo script?",
                         "delete_script": "Elimina script",
                         "header": "Script: {name}",
                         "icon": "Icona",
@@ -3324,6 +3380,8 @@
                         "id_already_exists_save_error": "Non puoi salvare questo script perché l'ID non è univoco, scegli un altro ID o lasciarlo vuoto per generarne automaticamente uno.",
                         "introduction": "Usa gli script per eseguire una sequenza di azioni.",
                         "link_available_actions": "Ulteriori informazioni sulle azioni disponibili.",
+                        "load_error_not_deletable": "Solo gli script all'interno di scripts.yaml possono essere cancellati.",
+                        "load_error_not_duplicable": "Solo gli script all'interno di scripts.yaml possono essere duplicati.",
                         "load_error_not_editable": "Solo gli script all'interno di scripts.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dello script ({err_no}).",
                         "max": {
@@ -3343,6 +3401,7 @@
                         "save_script": "Salva script",
                         "sequence": "Sequenza",
                         "sequence_sentence": "Sequenza delle azioni di questo script.",
+                        "show_info": "Informazioni",
                         "show_trace": "Tracce"
                     },
                     "picker": {
@@ -3360,8 +3419,13 @@
                         "introduction": "L'Editor di script consente di creare e modificare gli script. Segui il collegamento seguente per leggere le istruzioni e assicurarti di aver configurato correttamente Home Assistant.",
                         "learn_more": "Ulteriori informazioni sugli script",
                         "no_scripts": "Non abbiamo trovato alcuno script",
+                        "run": "Esegui",
                         "run_script": "Esegui script",
-                        "show_info": "Mostra informazioni sullo script"
+                        "show_info": "Informazioni",
+                        "show_trace": "Tracce"
+                    },
+                    "trace": {
+                        "edit_script": "Modifica script"
                     }
                 },
                 "storage": {
@@ -3375,6 +3439,8 @@
                         "moving": "Spostamento del disco dati",
                         "moving_desc": "Riavvio e spostamento del disco dati. Attendi",
                         "no_devices": "Nessun dispositivo collegato adatto trovato",
+                        "no_devices_text": "Non è stato trovato alcun dispositivo esterno adatto. La capacità di archiviazione del disco dati esterno deve essere maggiore della capacità di archiviazione del disco esistente.",
+                        "no_devices_title": "Nessuno spazio di archiviazione adatto trovato",
                         "select_device": "Seleziona nuovo disco dati",
                         "title": "Sposta il disco dati"
                     },
@@ -3384,7 +3450,7 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "Sei sicuro di voler riavviare Home Assistant?",
-                    "confirm_restart_text": "Il riavvio di Home Assistant fermerà tutte le plance, le automazioni e gli script attivi.",
+                    "confirm_restart_text": "In questo modo si interromperanno tutte le plance, le automazioni e gli script attivi.",
                     "confirm_restart_title": "Riavviare Home Assistant?",
                     "restart_error": "Impossibile riavviare Home Assistant",
                     "restart_homeassistant": "Riavvia Home Assistant",
@@ -3493,6 +3559,8 @@
                         "caption": "Visualizza utente",
                         "change_password": "Cambia password",
                         "confirm_user_deletion": "Sei sicuro di voler eliminare {name} ?",
+                        "confirm_user_deletion_text": "Questo utente verrà eliminato definitivamente.",
+                        "confirm_user_deletion_title": "Eliminare {name}?",
                         "deactivate_user": "Disattiva utente",
                         "delete_user": "Elimina utente",
                         "group": "Gruppo",
@@ -4555,6 +4623,14 @@
                                 "day": "Giorno",
                                 "hour": "Ora",
                                 "month": "Mese"
+                            },
+                            "pick_statistic": "Aggiungi una statistica",
+                            "picked_statistic": "Statistica",
+                            "stat_type_labels": {
+                                "max": "Max",
+                                "mean": "Media",
+                                "min": "Min",
+                                "sum": "Somma"
                             },
                             "stat_types": "Mostra i tipi di statistiche"
                         },

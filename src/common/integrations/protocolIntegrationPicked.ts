@@ -18,7 +18,7 @@ export const protocolIntegrationPicked = async (
       domain: "zwave_js",
     });
 
-    if (!entries.length) {
+    if (!isComponentLoaded(hass, "zwave_js") || !entries.length) {
       // If the component isn't loaded, ask them to load the integration first
       showConfirmationDialog(element, {
         text: hass.localize(

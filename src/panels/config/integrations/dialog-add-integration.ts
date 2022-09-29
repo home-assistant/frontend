@@ -22,6 +22,7 @@ import {
 } from "../../../data/integration";
 import {
   getIntegrationDescriptions,
+  Integration,
   Integrations,
 } from "../../../data/integrations";
 import {
@@ -38,6 +39,7 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
+import { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 
 export interface IntegrationListItem {
   name: string;
@@ -78,8 +80,9 @@ class AddIntegrationDialog extends LitElement {
 
   private _height?: number;
 
-  public showDialog(params): void {
+  public showDialog(params: AddIntegrationDialogParams): void {
     this._open = true;
+    this._pickedBrand = params.brand;
     this._initialFilter = params.initialFilter;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -149,33 +152,46 @@ class AddIntegrationDialog extends LitElement {
         }))
         .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
 
-      const integrations: IntegrationListItem[] = Object.entries(i)
-        .filter(
-          ([_domain, integration]) =>
-            integration.config_flow ||
-            integration.iot_standards ||
-            integration.integrations
-        )
-        .map(([domain, integration]) => ({
-          domain,
-          name: integration.name || domainToName(localize, domain),
-          config_flow: integration.config_flow,
-          iot_standards: integration.iot_standards,
-          integrations: integration.integrations
-            ? Object.entries(integration.integrations).map(
-                ([dom, val]) => val.name || domainToName(localize, dom)
-              )
-            : undefined,
-          is_built_in: integration.is_built_in !== false,
-          cloud: integration.iot_class?.startsWith("cloud_"),
-        }));
+      const integrations: IntegrationListItem[] = [];
+      const yamlIntegrations: IntegrationListItem[] = [];
+
+      Object.entries(i).forEach(([domain, integration]) => {
+        if (
+          integration.config_flow ||
+          integration.iot_standards ||
+          integration.integrations
+        ) {
+          integrations.push({
+            domain,
+            name: integration.name || domainToName(localize, domain),
+            config_flow: integration.config_flow,
+            iot_standards: integration.iot_standards,
+            integrations: integration.integrations
+              ? Object.entries(integration.integrations).map(
+                  ([dom, val]) => val.name || domainToName(localize, dom)
+                )
+              : undefined,
+            is_built_in: integration.is_built_in !== false,
+            cloud: integration.iot_class?.startsWith("cloud_"),
+          });
+        } else if (filter) {
+          yamlIntegrations.push({
+            domain,
+            name: integration.name || domainToName(localize, domain),
+            config_flow: integration.config_flow,
+            is_built_in: integration.is_built_in !== false,
+            cloud: integration.iot_class?.startsWith("cloud_"),
+          });
+        }
+      });
 
       for (const [domain, domainBrands] of Object.entries(sb)) {
-        const integration = i[domain];
+        const integration = this._findIntegration(domain);
         if (
-          !integration.config_flow &&
-          !integration.iot_standards &&
-          !integration.integrations
+          !integration ||
+          (!integration.config_flow &&
+            !integration.iot_standards &&
+            !integration.integrations)
         ) {
           continue;
         }
@@ -223,6 +239,9 @@ class AddIntegrationDialog extends LitElement {
           ...new Fuse(integrations, options)
             .search(filter)
             .map((result) => result.item),
+          ...new Fuse(yamlIntegrations, options)
+            .search(filter)
+            .map((result) => result.item),
           ...new Fuse(helpers, options)
             .search(filter)
             .map((result) => result.item),
@@ -236,6 +255,21 @@ class AddIntegrationDialog extends LitElement {
       ];
     }
   );
+
+  private _findIntegration(domain: string): Integration | undefined {
+    if (!this._integrations) {
+      return undefined;
+    }
+    if (domain in this._integrations) {
+      return this._integrations[domain];
+    }
+    for (const integration of Object.values(this._integrations)) {
+      if (integration.integrations && domain in integration.integrations) {
+        return integration.integrations[domain];
+      }
+    }
+    return undefined;
+  }
 
   private _getIntegrations() {
     return this._filterIntegrations(
@@ -405,8 +439,10 @@ class AddIntegrationDialog extends LitElement {
 
   private _integrationPicked(ev) {
     const listItem = ev.target.closest("ha-integration-list-item");
-    const integration: IntegrationListItem = listItem.integration;
-    this._handleIntegrationPicked(integration);
+    if (!listItem) {
+      return;
+    }
+    this._handleIntegrationPicked(listItem.integration);
   }
 
   private async _handleIntegrationPicked(integration: IntegrationListItem) {
@@ -422,7 +458,7 @@ class AddIntegrationDialog extends LitElement {
           }
         ),
         confirm: () => {
-          const supportIntegration = this._integrations?.[domain];
+          const supportIntegration = this._findIntegration(domain);
           this.closeDialog();
           if (["zha", "zwave_js"].includes(domain)) {
             protocolIntegrationPicked(this, this.hass, domain);
@@ -468,7 +504,9 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (integration.integrations) {
-      this._fetchFlowsInProgress(Object.keys(integration.integrations));
+      const integrations =
+        this._integrations![integration.domain].integrations!;
+      this._fetchFlowsInProgress(Object.keys(integrations));
       this._pickedBrand = integration.domain;
       return;
     }
@@ -495,7 +533,6 @@ class AddIntegrationDialog extends LitElement {
       this.hass,
       integration.domain
     );
-    this.closeDialog();
     showAlertDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_flow.yaml_only_title"
@@ -517,8 +554,8 @@ class AddIntegrationDialog extends LitElement {
                 >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_flow.documentation"
-                  )}
-                </a>`
+                  )}</a
+                >`
               : this.hass.localize(
                   "ui.panel.config.integrations.config_flow.documentation"
                 ),
@@ -583,6 +620,11 @@ class AddIntegrationDialog extends LitElement {
     haStyleScrollbar,
     haStyleDialog,
     css`
+      @media all and (min-width: 550px) {
+        ha-dialog {
+          --mdc-dialog-min-width: 500px;
+        }
+      }
       ha-dialog {
         --dialog-content-padding: 0;
       }

@@ -41,6 +41,8 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
   @property({ attribute: false }) public trigger!: StateTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return { entity_id: [] };
   }
@@ -155,6 +157,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         .schema=${schema}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
+        .disabled=${this.disabled}
       ></ha-form>
     `;
   }

@@ -1847,6 +1847,8 @@
             "enable": "[%key:ui::common::enable%]",
             "disable": "[%key:ui::common::disable%]",
             "disabled": "Automation is disabled",
+            "read_only": "This automation can not be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
+            "migrate": "Migrate",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
@@ -2321,6 +2323,9 @@
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
+            "read_only": "This script can not be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
+            "migrate": "Migrate",
+            "duplicate": "Duplicate",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
@@ -2935,7 +2940,7 @@
             },
             "provided_by_custom_integration": "Provided by a custom integration",
             "depends_on_cloud": "Depends on the cloud",
-            "yaml_only": "Can not be setup from the UI",
+            "yaml_only": "Needs manual configuration",
             "disabled_polling": "Automatic polling for updated data disabled",
             "state": {
               "loaded": "Loaded",
@@ -4568,6 +4573,7 @@
             "no_issue": "No issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
+              "units_changed_can_convert": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
               "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''.",
               "unsupported_unit_metadata": "The unit (''{metadata_unit}'') of the recorded statistics doesn't match the supported unit ''{supported_unit}'' of device class ''{device_class}''.",
               "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
@@ -4579,7 +4585,8 @@
               "fix": "Fix issue",
               "units_changed": {
                 "title": "The unit of this entity changed",
-                "update": "Update the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
+                "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
+                "change": "Convert all the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
                 "clear": "Delete all old statistic data for this entity"
               }
             },

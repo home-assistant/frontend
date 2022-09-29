@@ -14,6 +14,8 @@ export class HaGeolocationTrigger extends LitElement {
 
   @property({ attribute: false }) public trigger!: GeoLocationTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
       [
@@ -55,6 +57,7 @@ export class HaGeolocationTrigger extends LitElement {
         .schema=${this._schema(this.hass.localize)}
         .data=${this.trigger}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>

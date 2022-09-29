@@ -13,6 +13,8 @@ export default class HaNumericStateCondition extends LitElement {
 
   @property({ attribute: false }) public condition!: NumericStateCondition;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return {
       entity_id: "",
@@ -132,6 +134,7 @@ export default class HaNumericStateCondition extends LitElement {
         .hass=${this.hass}
         .data=${this.condition}
         .schema=${schema}
+        .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>

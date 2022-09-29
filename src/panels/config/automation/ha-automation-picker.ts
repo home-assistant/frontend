@@ -34,7 +34,7 @@ import {
   AutomationEntity,
   deleteAutomation,
   duplicateAutomation,
-  getAutomationConfig,
+  fetchAutomationFileConfig,
   triggerAutomationActions,
 } from "../../../data/automation";
 import {
@@ -376,7 +376,7 @@ class HaAutomationPicker extends LitElement {
 
   private async duplicate(automation) {
     try {
-      const config = await getAutomationConfig(
+      const config = await fetchAutomationFileConfig(
         this.hass,
         automation.attributes.id
       );
@@ -424,6 +424,8 @@ class HaAutomationPicker extends LitElement {
 
     if (automation?.attributes.id) {
       navigate(`/config/automation/edit/${automation.attributes.id}`);
+    } else {
+      navigate(`/config/automation/show/${ev.detail.id}`);
     }
   }
 

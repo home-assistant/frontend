@@ -42,6 +42,8 @@ export default class HaAutomationCondition extends LitElement {
 
   @property() public conditions!: Condition[];
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ type: Boolean }) public reOrderMode = false;
 
   private _focusLastConditionOnChange = false;
@@ -111,6 +113,7 @@ export default class HaAutomationCondition extends LitElement {
               .condition=${cond}
               .hideMenu=${this.reOrderMode}
               .reOrderMode=${this.reOrderMode}
+              .disabled=${this.disabled}
               @duplicate=${this._duplicateCondition}
               @move-condition=${this._move}
               @value-changed=${this._conditionChanged}
@@ -147,10 +150,15 @@ export default class HaAutomationCondition extends LitElement {
           `
         )}
       </div>
-      <ha-button-menu fixed @action=${this._addCondition}>
+      <ha-button-menu
+        fixed
+        @action=${this._addCondition}
+        .disabled=${this.disabled}
+      >
         <mwc-button
           slot="trigger"
           outlined
+          .disabled=${this.disabled}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.add"
           )}

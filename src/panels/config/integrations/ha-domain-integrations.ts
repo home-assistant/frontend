@@ -2,6 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { localizeConfigFlowTitle } from "../../../data/config_flow";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
@@ -10,12 +11,14 @@ import {
 } from "../../../data/integration";
 import { Integration } from "../../../data/integrations";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-integration-list-item";
 
-const standardToDomain = { zigbee: "zha", "z-wave": "zwave_js" } as const;
+const standardToDomain = { zigbee: "zha", zwave: "zwave_js" } as const;
 
 @customElement("ha-domain-integrations")
 class HaDomainIntegrations extends LitElement {
@@ -29,7 +32,7 @@ class HaDomainIntegrations extends LitElement {
   public flowsInProgress?: DataEntryFlowProgress[];
 
   protected render() {
-    return html`
+    return html`<mwc-list>
       ${this.flowsInProgress?.length
         ? html`<h3>We discovered the following:</h3>
             ${this.flowsInProgress.map(
@@ -87,21 +90,35 @@ class HaDomainIntegrations extends LitElement {
           })
         : ""}
       ${this.integration?.integrations
-        ? Object.entries(this.integration.integrations).map(
-            ([dom, val]) => html`<ha-integration-list-item
-              .hass=${this.hass}
-              .domain=${dom}
-              .integration=${{
-                ...val,
-                domain: dom,
-                name: val.name || domainToName(this.hass.localize, dom),
-                is_built_in: val.is_built_in !== false,
-                cloud: val.iot_class?.startsWith("cloud_"),
-              }}
-              @click=${this._integrationPicked}
-            >
-            </ha-integration-list-item>`
-          )
+        ? Object.entries(this.integration.integrations)
+            .sort((a, b) => {
+              if (a[1].config_flow && !b[1].config_flow) {
+                return -1;
+              }
+              if (b[1].config_flow && !a[1].config_flow) {
+                return 0;
+              }
+              return caseInsensitiveStringCompare(
+                a[1].name || domainToName(this.hass.localize, a[0]),
+                b[1].name || domainToName(this.hass.localize, b[0])
+              );
+            })
+            .map(
+              ([dom, val]) =>
+                html`<ha-integration-list-item
+                  .hass=${this.hass}
+                  .domain=${dom}
+                  .integration=${{
+                    ...val,
+                    domain: dom,
+                    name: val.name || domainToName(this.hass.localize, dom),
+                    is_built_in: val.is_built_in !== false,
+                    cloud: val.iot_class?.startsWith("cloud_"),
+                  }}
+                  @click=${this._integrationPicked}
+                >
+                </ha-integration-list-item>`
+            )
         : ""}
       ${["zha", "zwave_js"].includes(this.domain)
         ? html`<mwc-list-item
@@ -157,11 +174,47 @@ class HaDomainIntegrations extends LitElement {
               >
               </ha-integration-list-item>`}`
         : ""}
-    `;
+    </mwc-list> `;
   }
 
   private async _integrationPicked(ev) {
     const domain = ev.currentTarget.domain;
+    if (
+      (domain === this.domain && !this.integration.config_flow) ||
+      !this.integration.integrations?.[domain]?.config_flow
+    ) {
+      const manifest = await fetchIntegrationManifest(this.hass, domain);
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.yaml_only_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.yaml_only_text",
+          {
+            link:
+              manifest?.is_built_in || manifest?.documentation
+                ? html`<a
+                    href=${manifest.is_built_in
+                      ? documentationUrl(
+                          this.hass,
+                          `/integrations/${manifest.domain}`
+                        )
+                      : manifest.documentation}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_flow.documentation"
+                    )}</a
+                  >`
+                : this.hass.localize(
+                    "ui.panel.config.integrations.config_flow.documentation"
+                  ),
+          }
+        ),
+      });
+      return;
+    }
     const root = this.getRootNode();
     showConfigFlowDialog(
       root instanceof ShadowRoot ? (root.host as HTMLElement) : this,

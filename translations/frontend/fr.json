@@ -338,7 +338,7 @@
             "restart": "Redémarrer",
             "restart_name": "Redémarrer {name}",
             "running_version": "Vous utilisez actuellement la version {version}",
-            "save": "Sauvegarder",
+            "save": "Enregistrer",
             "show": "afficher",
             "show_more": "Afficher plus d'informations à ce sujet",
             "update": "Mise à jour",
@@ -762,7 +762,7 @@
             "save": "Enregistrer",
             "skip": "Passer",
             "stay": "Rester",
-            "submit": "Soumettre",
+            "submit": "Valider",
             "successfully_deleted": "Supprimé avec succès",
             "successfully_saved": "Enregistré avec succès",
             "undo": "Annuler",
@@ -1007,8 +1007,8 @@
                 "filter_by_device": "Filtrer par appareil",
                 "filter_by_entity": "Filtrer par entité",
                 "filtered_by_area": "pièce : {area_name}",
-                "filtered_by_device": "appareil: {device_name}",
-                "filtered_by_entity": "entité: {entity_name}"
+                "filtered_by_device": "appareil : {device_name}",
+                "filtered_by_entity": "entité : {entity_name}"
             },
             "related-items": {
                 "area": "Pièce",
@@ -1198,7 +1198,7 @@
             "generic": {
                 "cancel": "Annuler",
                 "close": "Fermer",
-                "default_confirmation_title": "Êtes-vous sûr(e) ?",
+                "default_confirmation_title": "Êtes-vous sûr·e ?",
                 "ok": "OK"
             },
             "helper_settings": {
@@ -1490,9 +1490,9 @@
             "voice_command": {
                 "did_not_hear": "Home Assistant n'a rien entendu",
                 "error": "Oups, une erreur est survenue",
-                "found": "J'ai trouvé ce qui suit pour vous:",
-                "how_can_i_help": "Comment puis-je vous aider ?",
-                "label": "Tapez une question et appuyez sur 'Entrée'",
+                "found": "Voici ce que j'ai trouvé pour vous :",
+                "how_can_i_help": "Comment puis-je vous aider ?",
+                "label": "Saisissez une question puis appuyez sur « Entrée »",
                 "label_voice": "Tapez et appuyez sur 'Entrée' ou appuyez sur le microphone pour parler"
             },
             "zha_device_info": {
@@ -1500,6 +1500,7 @@
                     "add": "Ajouter des appareils via cet appareil",
                     "clusters": "Gérer les clusters",
                     "device_children": "Voir les enfants",
+                    "manage": "Gérer l'appareil Zigbee",
                     "reconfigure": "Reconfigurer",
                     "remove": "Supprimer",
                     "view_in_visualization": "Afficher dans la visualisation",
@@ -1527,6 +1528,13 @@
                     "device_name_placeholder": "Nom personnalisé"
                 }
             },
+            "zha_manage_device": {
+                "heading": "Gérer l'appareil Zigbee",
+                "tabs": {
+                    "children": "Enfants",
+                    "signature": "Signature"
+                }
+            },
             "zha_reconfigure_device": {
                 "attribute": "Attribut",
                 "battery_device_warning": "Vous allez avoir besoin de réveiller les appareils sur batterie avant de commencer le processus de reconfiguration. Consultez le manuel de l'appareil pour connaître la procédure.",
@@ -1537,7 +1545,7 @@
                 "configuration_complete": "Reconfiguration de l'appareil complété.",
                 "configuration_failed": "La reconfiguration de l'appareil a échoué. Des informations additionnelles sont disponibles dans les journaux.",
                 "configuring_alt": "Configurer",
-                "heading": "Reconfigurer l'appareil",
+                "heading": "Reconfiguration de l'appareil",
                 "in_progress": "L'appareil est en cours de configuration. Cela peut prendre du temps.",
                 "introduction": "Reconfigure l'appareil sur votre réseau Zigbee. Utilisez cette fonctionnalité si votre appareil ne fonctionne pas correctement.",
                 "min_max_change": "min / max / changement",
@@ -1589,13 +1597,13 @@
         "notification_toast": {
             "connection_lost": "Connexion perdue. Reconnexion en cours…",
             "dismiss": "Ignorer",
-            "integration_starting": "Démarrage de {integration} ; certains éléments ne sont pas encore disponibles.",
+            "integration_starting": "Démarrage de {integration} – certains éléments ne sont pas encore disponibles.",
             "no_matching_link_found": "Aucun lien My link correspondant n'a été trouvé pour {path}",
             "service_call_failed": "Échec d'appel du service {service}.",
             "started": "Home Assistant a démarré !",
-            "starting": "Démarrage de Home Assistant ; certains éléments ne sont pas encore disponibles.",
+            "starting": "Démarrage de Home Assistant – certains éléments ne sont pas encore disponibles.",
             "triggered": "{name} déclenché",
-            "wrapping_up_startup": "Finalisation du démarrage ; certains éléments ne sont pas encore disponibles."
+            "wrapping_up_startup": "Finalisation du démarrage – certains éléments ne sont pas encore disponibles."
         },
         "panel": {
             "config": {
@@ -1607,12 +1615,14 @@
                     "caption": "Informations d'identification de l'application",
                     "description": "Gérer les informations d'identification de l'application OAuth utilisées par les intégrations",
                     "editor": {
+                        "add": "Ajouter",
                         "caption": "Ajouter des informations d'identification d'application",
                         "client_id": "ID client OAuth",
                         "client_secret": "Secret client OAuth",
                         "create": "Créer",
                         "domain": "Intégration",
-                        "name": "Nom"
+                        "name": "Nom",
+                        "view_documentation": "Voir la documentation"
                     },
                     "picker": {
                         "add_application_credential": "Ajouter des informations d'identification d'application",
@@ -1641,7 +1651,7 @@
                         "entities": "Entités"
                     },
                     "delete": {
-                        "confirmation_text": "Tous les appareils de cette pièce ne seront plus attribués.",
+                        "confirmation_text": "Cet utilisateur sera définitivement supprimé.",
                         "confirmation_title": "Voulez-vous vraiment supprimer cette pièce ?"
                     },
                     "description": "Regrouper les appareils et les entités en pièces",
@@ -1676,7 +1686,7 @@
                             "use_blueprint": "Utiliser un Blueprint"
                         },
                         "header": "Créer une nouvelle automatisation",
-                        "how": "Comment souhaitez-vous créer votre nouvelle automatisation?",
+                        "how": "Comment souhaitez-vous créer votre nouvelle automatisation ?",
                         "start_empty": "Commencer par une automatisation vide",
                         "start_empty_description": "Créer une nouvelle automatisation à partir de zéro",
                         "thingtalk": {
@@ -1692,7 +1702,9 @@
                             "alias": "Nom de l'action",
                             "change_alias": "Renommer l'action",
                             "delete": "Supprimer",
-                            "delete_confirm": "Voulez-vous vraiment effacer ?",
+                            "delete_confirm": "Voulez-vous vraiment supprimer cet élément ?",
+                            "delete_confirm_text": "La suppression est définitive.",
+                            "delete_confirm_title": "Supprimer l'action ?",
                             "disable": "Désactiver",
                             "disabled": "Désactivée",
                             "duplicate": "Dupliquer",
@@ -1812,12 +1824,15 @@
                             "no_blueprints": "Vous n'avez aucun Blueprint",
                             "no_inputs": "Ce Blueprint n'a aucune entrée."
                         },
+                        "change_mode": "Modifier le mode",
                         "conditions": {
                             "add": "Ajouter une condition",
                             "alias": "Nom de la condition",
                             "change_alias": "Renommer la condition",
                             "delete": "Supprimer",
                             "delete_confirm": "Voulez-vous vraiment supprimer ?",
+                            "delete_confirm_text": "La suppression est définitive.",
+                            "delete_confirm_title": "Supprimer la condition ?",
                             "duplicate": "Dupliquer",
                             "header": "Conditions",
                             "introduction": "Les conditions sont facultatives et empêcheront toute exécution ultérieure si toutes les conditions ne sont pas remplies.",
@@ -1825,7 +1840,7 @@
                             "learn_more": "En savoir plus sur les conditions",
                             "name": "Condition",
                             "rename": "Renommer",
-                            "test": "Test",
+                            "test": "Tester",
                             "test_failed": "Une erreur est survenue lors du test de la condition",
                             "testing_error": "La condition n'est pas remplie",
                             "testing_pass": "La condition est remplie",
@@ -1919,7 +1934,9 @@
                         "edit_yaml": "Modifier en tant que YAML",
                         "enable": "Activer",
                         "enable_disable": "Activer/Désactiver l'automatisation",
-                        "introduction": "Utiliser les automatisations pour donner vie à votre maison.",
+                        "introduction": "Utilisez les automatisations pour donner vie à votre maison.",
+                        "load_error_not_deletable": "Seules les automatisations dans automations.yaml peuvent être supprimées.",
+                        "load_error_not_duplicable": "Seules les automatisations dans automations.yaml peuvent être dupliquées.",
                         "load_error_not_editable": "Seules les automatisations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} ).",
                         "max": {
@@ -1933,15 +1950,21 @@
                             "label": "Mode",
                             "learn_more": "En savoir plus sur les modes",
                             "parallel": "Parallèle",
-                            "queued": "En attente",
-                            "restart": "Redémarrer",
+                            "queued": "File d'attente",
+                            "restart": "Redémarrage",
                             "single": "Unique"
                         },
                         "move_down": "Déplacer vers le bas",
                         "move_up": "Déplacer vers le haut",
+                        "re_order": "Réorganiser",
+                        "re_order_mode": {
+                            "description": "Vous êtes en mode réorganisation, vous pouvez réorganiser vos déclencheurs, conditions et actions.",
+                            "exit": "Quitter",
+                            "title": "Mode réorganisation"
+                        },
                         "rename": "Renommer",
                         "run": "Exécuter",
-                        "save": "Sauvegarder",
+                        "save": "Enregistrer",
                         "show_info": "Informations",
                         "show_trace": "Traces",
                         "triggers": {
@@ -1949,7 +1972,9 @@
                             "alias": "Nom du déclencheur",
                             "change_alias": "Renommer le déclencheur",
                             "delete": "Supprimer",
-                            "delete_confirm": "Voulez-vous vraiment supprimer ceci ?",
+                            "delete_confirm": "Voulez-vous vraiment supprimer cet élément ?",
+                            "delete_confirm_text": "La suppression est définitive.",
+                            "delete_confirm_title": "Supprimer le déclencheur ?",
                             "duplicate": "Dupliquer",
                             "edit_id": "Modifier l'ID",
                             "header": "Déclencheurs",
@@ -2064,17 +2089,21 @@
                             "type_select": "Type de déclencheur",
                             "unsupported_platform": "Pas d'interface utilisateur pour la plateforme : {platform}"
                         },
-                        "unsaved_confirm": "Certaines modifications ne sont pas enregistrées. Voulez-vous vraiment quitter ?"
+                        "unsaved_confirm": "Certaines modifications ne sont pas enregistrées. Voulez-vous vraiment quitter ?",
+                        "unsaved_confirm_text": "Les modifications non enregistrées seront perdues.",
+                        "unsaved_confirm_title": "Quitter l'éditeur ?"
                     },
                     "picker": {
                         "add_automation": "Créer une automatisation",
                         "delete": "Supprimer",
                         "delete_automation": "Supprimer l'automatisation",
                         "delete_confirm": "Voulez-vous vraiment supprimer cette automatisation ?",
+                        "delete_confirm_text": "{name} sera définitivement supprimé.",
+                        "delete_confirm_title": "Supprimer l'automatisation ?",
                         "dev_automation": "Débogage de l'automatisation",
                         "dev_only_editable": "Seules les automatisations dans automations.yaml sont debuggables.",
-                        "disabled": "Désactivé",
-                        "duplicate": "Copie",
+                        "disabled": "Désactivée",
+                        "duplicate": "Dupliquer",
                         "duplicate_automation": "Dupliquer l'automatisation",
                         "edit_automation": "Modifier l'automatisation",
                         "header": "Éditeur d'automatisation",
@@ -2101,7 +2130,7 @@
                         "task_selection": {
                             "error_empty": "Entrez une commande ou appuyez sur ignorer.",
                             "error_unsupported": "Nous n'avons pas pu créer une automatisation pour cela (pour le moment ?).",
-                            "for_example": "Par exemple :",
+                            "for_example": "Par exemple :",
                             "header": "Créer une nouvelle automatisation",
                             "introduction": "Tapez ci-dessous ce que cette automatisation devrait faire, et nous allons essayer de la convertir en une automatisation Home Assistant.",
                             "language_note": "Remarque: pour l'instant, seul l'anglais est pris en charge."
@@ -2143,30 +2172,32 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "Forum de la communauté",
-                        "error_no_url": "Veuillez entrer l'URL du Blueprint",
+                        "community_forums": "Voir les Blueprints sur les forums de la communauté",
+                        "error_no_url": "Veuillez saisir l'adresse du Blueprint.",
                         "file_name": "Chemin d'accès au blueprint",
                         "header": "Importer un Blueprint",
-                        "import_btn": "Aperçu du Blueprint",
+                        "import_btn": "Aperçu",
                         "import_header": "Blueprint \"{name}\"",
+                        "import_introduction": "Importez les Blueprints d'autres utilisateurs depuis GitHub et les forums de la communauté en collant l'adresse ci-dessous.",
                         "import_introduction_link": "Vous pouvez importer les Blueprints d'autres utilisateurs à partir de GitHub et du {community_link}. Entrez l'URL du Blueprint ci-dessous.",
                         "importing": "Chargement du Blueprint …",
                         "raw_blueprint": "Contenu du Blueprint",
                         "save_btn": "Importer un Blueprint",
                         "saving": "Importation du Blueprint …",
                         "unsupported_blueprint": "Ce Blueprint n'est pas pris en charge",
-                        "url": "URL du Blueprint"
+                        "url": "Adresse du Blueprint"
                     },
                     "caption": "Blueprints",
                     "description": "Créez des automatisations facilement à l'aide de modèles configurables",
                     "overview": {
                         "add_blueprint": "Importer un Blueprint",
                         "confirm_delete_header": "Supprimer ce Blueprint ?",
-                        "confirm_delete_text": "Voulez-vous vraiment supprimer ce blueprint ?",
+                        "confirm_delete_text": "{name} sera définitivement supprimé.",
+                        "confirm_delete_title": "Supprimer le Blueprint ?",
                         "create_automation": "Créer une automatisation",
                         "create_script": "Créer un script",
                         "delete_blueprint": "Supprimer le Blueprint",
-                        "discover_more": "Découvrez plus de Blueprints",
+                        "discover_more": "Découvrez davantage de Blueprints",
                         "header": "Éditeur de Blueprints",
                         "headers": {
                             "file_name": "Nom de fichier",
@@ -2309,10 +2340,13 @@
                         "available_at": "Le Webhook est disponible à l'URL suivante:",
                         "close": "Fermer",
                         "confirm_disable": "Voulez-vous vraiment désactiver ce webhook ?",
+                        "confirm_disable_text": "Le webhook pour {name} sera désactivé.",
+                        "confirm_disable_title": "Désactiver le webhook",
                         "copied_to_clipboard": "Copié dans le presse-papiers",
                         "info_disable_webhook": "Si vous ne souhaitez plus utiliser ce Webhook, vous pouvez",
                         "link_disable_webhook": "le désactiver",
                         "managed_by_integration": "Ce Webhook est géré par une intégration et ne peut pas être désactivé.",
+                        "public_url": "Adresse publique",
                         "view_documentation": "Voir la documentation",
                         "webhook_for": "Webhook pour {name}"
                     },
@@ -2843,16 +2877,22 @@
                     "description": "Configuration de votre hub et du matériel connecté",
                     "documentation": "Documentation",
                     "documentation_description": "Afficher des informations supplémentaires à propos de votre appareil",
-                    "failed_to_reboot_host": "Échec du redémarrage de l'hôte",
-                    "failed_to_shutdown_host": "Échec de l'arrêt de l'hôte",
-                    "host_shutting_down": "Arrêt de l'hôte",
+                    "failed_to_reboot_host": "Échec du redémarrage du système",
+                    "failed_to_shutdown_host": "Échec de l'arrêt du système",
+                    "host_shutting_down": "Arrêt du système",
                     "memory": "Mémoire",
                     "processor": "Processeur",
-                    "reboot_host": "Redémarrer l'hôte",
+                    "reboot": "Redémarrer",
+                    "reboot_host": "Redémarrer le système",
                     "reboot_host_confirm": "Voulez-vous vraiment redémarrer votre hôte ?",
-                    "rebooting_host": "Redémarrage de l'hôte",
-                    "shutdown_host": "Arrêter l'hôte",
-                    "shutdown_host_confirm": "Voulez-vous vraiment arrêter votre hôte ?"
+                    "reboot_host_text": "L'intégralité du système va redémarrer, y compris le cœur et les modules complémentaires.",
+                    "reboot_host_title": "Redémarrer le système ?",
+                    "rebooting_host": "Redémarrage du système",
+                    "shutdown": "Arrêt",
+                    "shutdown_host": "Arrêter le système",
+                    "shutdown_host_confirm": "Voulez-vous vraiment arrêter votre hôte ?",
+                    "shutdown_host_text": "L'intégralité du système va s'arrêter, y compris le cœur et les modules complémentaires.",
+                    "shutdown_host_title": "Arrêter le système ?"
                 },
                 "header": "Configurer Home Assistant",
                 "helpers": {
@@ -2861,7 +2901,7 @@
                     "dialog": {
                         "create": "Créer",
                         "create_helper": "Créer une entrée",
-                        "create_platform": "Créer un(e) {platform}"
+                        "create_platform": "Créer un·e {platform}"
                     },
                     "picker": {
                         "create_helper": "Créer une entrée",
@@ -2928,11 +2968,18 @@
                     "attention": "Attention requise",
                     "caption": "Intégrations",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_title": "Informations d'identification de l'application",
+                            "dismiss": "Conserver",
+                            "learn_more": "En savoir plus sur les informations d'identification d'application"
+                        },
                         "area": "Dans {area}",
                         "check_the_logs": "Vérifiez les journaux",
                         "configure": "Configurer",
                         "delete": "Supprimer",
                         "delete_confirm": "Voulez-vous vraiment supprimer l'intégration {title} ?",
+                        "delete_confirm_text": "Ses appareils et ses entités seront définitivement supprimés.",
+                        "delete_confirm_title": "Supprimer {title} ?",
                         "depends_on_cloud": "Dépend du cloud",
                         "devices": "{count} {count, plural,\n  one {appareil}\n  other {appareils}\n}",
                         "disable": {
@@ -2945,6 +2992,8 @@
                             },
                             "disabled_cause": "Désactivé par {cause}"
                         },
+                        "disable_confirm_text": "Ses appareils et ses entités seront désactivés.",
+                        "disable_confirm_title": "Désactiver {title} ?",
                         "disable_error": "Échec de l’activation ou de la désactivation de l’intégration",
                         "disable_restart_confirm": "Redémarrez Home Assistant pour terminer la désactivation de cette intégration",
                         "disabled_polling": "Interrogation automatique des données mises à jour désactivée",
@@ -3014,19 +3063,19 @@
                             "title": "Nous les avons découverts, vous voulez les mettre en place?"
                         },
                         "proceed": "Poursuivre",
-                        "submit": "Soumettre",
+                        "submit": "Enregistrer",
                         "success": "Succès",
                         "supported_brand_flow": "La prise en charge des appareils {supported_brand} est fournie par {flow_domain_name}. Voulez-vous poursuivre ?",
                         "supported_hardware": "matériel pris en charge"
                     },
                     "configure": "Configurer",
                     "configured": "Configuré",
-                    "confirm_new": "Voulez-vous configurer {integration} ?",
+                    "confirm_new": "Voulez-vous configurer {integration} ?",
                     "description": "Gérer les appareils et services connectés",
                     "details": "Détails de l'intégration",
                     "disable": {
                         "disabled_integrations": "{number} désactivé",
-                        "show": "Montrer",
+                        "show": "Afficher",
                         "show_disabled": "Afficher les intégrations désactivées"
                     },
                     "discovered": "Découvert",
@@ -3070,7 +3119,7 @@
                         "debug": "DEBUG",
                         "error": "ERREUR",
                         "info": "INFO",
-                        "warning": "ATTENTION"
+                        "warning": "AVERTISSEMENT"
                     },
                     "load_logs": "Charger les journaux complets",
                     "loading_log": "Chargement du journal complet…",
@@ -3092,7 +3141,7 @@
                             "storage": "Contrôlé par l'IU",
                             "yaml": "Fichier YAML"
                         },
-                        "confirm_delete_text": "Votre tableau de bord sera définitivement supprimé.",
+                        "confirm_delete_text": "Ce tableau de bord sera définitivement supprimé.",
                         "confirm_delete_title": "Supprimer {dashboard_title} ?",
                         "default_dashboard": "Ceci est le tableau de bord par défaut",
                         "detail": {
@@ -3110,7 +3159,7 @@
                             "title_required": "Le titre est requis.",
                             "update": "Mise à jour",
                             "url": "URL",
-                            "url_error_msg": "L'URL ne peut pas contenir d'espaces ni de caractères spéciaux, sauf pour _ et -"
+                            "url_error_msg": "L'URL doit contenir un tiret (« - ») et ne doit pas contenir d'espaces ni de caractères spéciaux, hormis « _ » et « - »"
                         },
                         "picker": {
                             "add_dashboard": "Ajouter un tableau de bord",
@@ -3132,6 +3181,8 @@
                         "cant_edit_yaml": "Vous utilisez votre tableau de bord en mode YAML, vous ne pouvez donc pas gérer vos ressources via l'interface utilisateur. Gérez-les dans « configuration.yaml ».",
                         "caption": "Ressources",
                         "confirm_delete": "Voulez-vous vraiment supprimer cette ressource ?",
+                        "confirm_delete_text": "{url} sera définitivement supprimé.",
+                        "confirm_delete_title": "Supprimer la ressource ?",
                         "detail": {
                             "create": "Créer",
                             "delete": "Supprimer",
@@ -3203,6 +3254,8 @@
                     "caption": "Personnes",
                     "confirm_delete": "Voulez-vous vraiment supprimer cette personne ?",
                     "confirm_delete2": "Tous les appareils appartenant à cette personne ne seront plus affectés.",
+                    "confirm_delete_text": "Cette personne sera définitivement supprimée et les appareils lui étant rattachés ne seront plus attribués.",
+                    "confirm_delete_title": "Supprimer {name} ?",
                     "create_person": "Créer une personne",
                     "description": "Gérez les personnes suivies par Home Assistant",
                     "detail": {
@@ -3249,7 +3302,7 @@
                     },
                     "error": "Erreur",
                     "hide_ignored": "Cacher les ignorées",
-                    "integration_startup_time": "Durée de démarrage de l'intégration",
+                    "integration_startup_time": "Durée de démarrage des intégrations",
                     "more_repairs": "Afficher toutes les corrections",
                     "no_repairs": "Aucune correction n'est actuellement disponible",
                     "show_ignored": "Afficher les corrections ignorées",
@@ -3283,20 +3336,27 @@
                         "load_error_not_editable": "Seules les scènes de scenes.yaml sont modifiables.",
                         "load_error_unknown": "Erreur de chargement de la scène ({err_no})",
                         "name": "Nom",
-                        "save": "Sauvegarder",
-                        "unsaved_confirm": "Certaines modifications ne sont pas enregistrées. Voulez-vous vraiment quitter ?"
+                        "save": "Enregistrer",
+                        "unsaved_confirm": "Certaines modifications ne sont pas enregistrées. Voulez-vous vraiment quitter ?",
+                        "unsaved_confirm_text": "Les modifications non enregistrées seront perdues.",
+                        "unsaved_confirm_title": "Quitter l'éditeur ?"
                     },
                     "picker": {
+                        "activate": "Activer",
                         "add_scene": "Ajouter une scène",
+                        "delete": "Supprimer",
                         "delete_confirm": "Voulez-vous vraiment supprimer cette scène ?",
+                        "delete_confirm_text": "{name} sera définitivement supprimée.",
+                        "delete_confirm_title": "Supprimer la scène ?",
                         "delete_scene": "Supprimer la scène",
-                        "duplicate": "Copie",
+                        "duplicate": "Dupliquer",
                         "duplicate_scene": "Dupliquer la scène",
                         "edit_scene": "Éditer la scène",
                         "header": "Éditeur de scène",
                         "headers": {
                             "activate": "Activer",
                             "edit": "Éditer",
+                            "last_activated": "Dernière activation",
                             "name": "Nom",
                             "show_info": "Afficher les informations",
                             "state": "État"
@@ -3306,6 +3366,7 @@
                         "no_scenes": "Aucune scène n'a été trouvée",
                         "only_editable": "Seules les scènes définies dans scenes.yaml sont modifiables.",
                         "pick_scene": "Choisir une scène à éditer",
+                        "show_info": "Informations",
                         "show_info_scene": "Afficher les informations de la scène"
                     }
                 },
@@ -3316,6 +3377,8 @@
                         "alias": "Nom",
                         "default_name": "Nouveau script",
                         "delete_confirm": "Voulez-vous vraiment supprimer ce script ?",
+                        "delete_confirm_text": "{name} sera définitivement supprimé.",
+                        "delete_confirm_title": "Supprimer le script ?",
                         "delete_script": "Supprimer le script",
                         "header": "Script: {name}",
                         "icon": "Icône",
@@ -3324,6 +3387,8 @@
                         "id_already_exists_save_error": "Vous ne pouvez pas enregistrer ce script car l'ID n'est pas unique, choisissez un autre ID ou laissez-le vide pour en générer automatiquement un.",
                         "introduction": "Utiliser des scripts pour exécuter une séquence d'actions.",
                         "link_available_actions": "En savoir plus sur les actions disponibles.",
+                        "load_error_not_deletable": "Seuls les scripts dans scripts.yaml peuvent être supprimés.",
+                        "load_error_not_duplicable": "Seuls les scripts dans scripts.yaml peuvent être dupliqués.",
                         "load_error_not_editable": "Seuls les scripts dans scripts.yaml sont modifiables.",
                         "load_error_unknown": "Erreur de chargement du script ({err_no}).",
                         "max": {
@@ -3336,20 +3401,21 @@
                             "label": "Mode",
                             "learn_more": "En savoir plus sur les modes",
                             "parallel": "Parallèle",
-                            "queued": "En attente",
-                            "restart": "Redémarrer",
+                            "queued": "File d'attente",
+                            "restart": "Redémarrage",
                             "single": "Unique"
                         },
                         "save_script": "Enregistrer le script",
                         "sequence": "Séquence",
                         "sequence_sentence": "La séquence d'actions de ce script.",
+                        "show_info": "Informations",
                         "show_trace": "Afficher la trace"
                     },
                     "picker": {
                         "add_script": "Ajouter un  script",
                         "delete": "Supprimer",
                         "dev_script": "Script de débogage",
-                        "duplicate": "Copie",
+                        "duplicate": "Dupliquer",
                         "duplicate_script": "Dupliquer le script",
                         "edit_script": "Éditer le script",
                         "header": "Éditeur de script",
@@ -3360,8 +3426,13 @@
                         "introduction": "L'éditeur de script vous permet de créer et d'éditer des scripts. Suivez le lien ci-dessous pour lire les instructions afin de vous assurer que vous avez correctement configuré Home Assistant.",
                         "learn_more": "En savoir plus sur les scripts",
                         "no_scripts": "Aucun script n'a été trouvé",
+                        "run": "Exécuter",
                         "run_script": "Exécuter le script",
-                        "show_info": "Afficher des informations sur le script"
+                        "show_info": "Informations",
+                        "show_trace": "Traces"
+                    },
+                    "trace": {
+                        "edit_script": "Modifier le script"
                     }
                 },
                 "storage": {
@@ -3375,6 +3446,8 @@
                         "moving": "Déplacement du disque de données",
                         "moving_desc": "Redémarrage et déplacement du disque de données. Veuillez patienter",
                         "no_devices": "Aucun périphérique connecté approprié n'a été trouvé",
+                        "no_devices_text": "Aucun périphérique externe approprié n'a été trouvé. La capacité de stockage du disque de données externe doit être supérieure à la capacité de stockage du disque existant",
+                        "no_devices_title": "Aucun stockage approprié n'a été trouvé",
                         "select_device": "Sélectionner un nouveau disque de données",
                         "title": "Déplacer le disque de données"
                     },
@@ -3384,7 +3457,7 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "Voulez-vous vraiment redémarrer Home Assistant ?",
-                    "confirm_restart_text": "Redémarrer Home Assistant arrêtera tous vos tableaux de bord, automatisations et scripts actifs.",
+                    "confirm_restart_text": "L'ensemble de vos tableaux de bord, automatisations et scripts actifs seront arrêtés.",
                     "confirm_restart_title": "Redémarrer Home Assistant ?",
                     "restart_error": "Échec du redémarrage de Home Assistant",
                     "restart_homeassistant": "Redémarrer Home Assistant",
@@ -3395,7 +3468,7 @@
                     "core_stats": "Données du cœur",
                     "cpu_usage": "Utilisation du processeur",
                     "description": "État, données statistiques et durée de démarrage des intégrations",
-                    "integration_start_time": "Durée de démarrage de l'intégration",
+                    "integration_start_time": "Durée de démarrage des intégrations",
                     "long_loading_integrations": "Intégrations longues à charger",
                     "ram_usage": "Utilisation de la mémoire",
                     "supervisor_stats": "Données du superviseur"
@@ -3493,6 +3566,8 @@
                         "caption": "Voir l'utilisateur",
                         "change_password": "Changer le mot de passe",
                         "confirm_user_deletion": "Voulez-vous vraiment supprimer {name} ?",
+                        "confirm_user_deletion_text": "Cet utilisateur sera définitivement supprimé.",
+                        "confirm_user_deletion_title": "Supprimer {name} ?",
                         "deactivate_user": "Désactiver l'utilisateur",
                         "delete_user": "Supprimer l'utilisateur",
                         "group": "Groupe",
@@ -3556,7 +3631,11 @@
                     "clusters": {
                         "header": "Clusters",
                         "help_cluster_dropdown": "Sélectionnez un cluster pour afficher les attributs et les commandes.",
-                        "introduction": "Les grappes sont les éléments de construction de la fonctionnalité Zigbee. Ils séparent les fonctionnalités en unités logiques. Il en existe de types client et serveur et sont composés d'attributs et de commandes."
+                        "introduction": "Les grappes sont les éléments de construction de la fonctionnalité Zigbee. Ils séparent les fonctionnalités en unités logiques. Il en existe de types client et serveur et sont composés d'attributs et de commandes.",
+                        "tabs": {
+                            "attributes": "Attributs",
+                            "commands": "Commandes"
+                        }
                     },
                     "common": {
                         "clusters": "Clusters",
@@ -4437,7 +4516,7 @@
                             "entities": "Entités",
                             "entity": "Entité",
                             "hold_action": "Appui long",
-                            "hours_to_show": "Heures à montrer",
+                            "hours_to_show": "Heures à afficher",
                             "icon": "Icône",
                             "icon_height": "Hauteur de l'icône",
                             "image": "Chemin d'accès à l'image",
@@ -4500,7 +4579,7 @@
                             "default_zoom": "Zoom par défaut",
                             "description": "La carte Map vous permet d'afficher des entités sur une carte.",
                             "geo_location_sources": "Sources de géolocalisation",
-                            "hours_to_show": "Heures à montrer",
+                            "hours_to_show": "Heures à afficher",
                             "name": "Carte",
                             "source": "Source"
                         },
@@ -4555,6 +4634,14 @@
                                 "day": "Jour",
                                 "hour": "Heure",
                                 "month": "Mois"
+                            },
+                            "pick_statistic": "Ajouter une statistique",
+                            "picked_statistic": "Statistique",
+                            "stat_type_labels": {
+                                "max": "Max",
+                                "mean": "Moyenne",
+                                "min": "Min",
+                                "sum": "Somme"
                             },
                             "stat_types": "Afficher les attributs"
                         },
@@ -4678,11 +4765,11 @@
                         "confirm_remove_config_text": "Nous générerons automatiquement les vues de votre tableau de bord avec vos pièces et vos appareils si vous supprimez la configuration de votre tableau de bord.",
                         "confirm_remove_config_title": "Voulez-vous vraiment supprimer la configuration de votre tableau de bord ?",
                         "confirm_unsaved_changes": "Certaines modifications ne sont pas enregistrées, voulez-vous vraiment quitter ?",
-                        "confirm_unsaved_comments": "Votre configuration contient des commentaires, ceux-ci ne seront pas sauvegardés. Voulez-vous continuer?",
+                        "confirm_unsaved_comments": "Votre configuration semble contenir des commentaires qui ne seront pas enregistrés. Voulez-vous continuer ?",
                         "error_invalid_config": "Votre configuration n'est pas valide : {error}",
                         "error_parse_yaml": "Impossible d'analyser le YAML : {error}",
                         "error_remove": "Impossible de supprimer la configuration: {error}",
-                        "error_save_yaml": "Impossible de sauvegarder le YAML : {error}",
+                        "error_save_yaml": "Impossible d'enregistrer le YAML : {error}",
                         "header": "Modifier la configuration",
                         "lovelace_changed": "Votre tableau de bord a été mise à jour, voulez-vous charger la configuration mise à jour dans l'éditeur et perdre vos modifications actuelles ?",
                         "reload": "Recharger",
@@ -4728,7 +4815,7 @@
                 "menu": {
                     "close": "Fermer",
                     "configure_ui": "Modifier le tableau de bord",
-                    "exit_edit_mode": "Quitter le mode d'édition de l'interface utilisateur",
+                    "exit_edit_mode": "Terminé",
                     "help": "Aide",
                     "reload_resources": "Recharger les ressources",
                     "search": "Rechercher",
@@ -4967,7 +5054,7 @@
                     "intro": "Les appareils et les services sont représentés dans Home Assistant sous forme d’intégrations. Vous pouvez les configurer maintenant ou le faire plus tard à partir de l'écran de configuration.",
                     "more_integrations": "Plus"
                 },
-                "intro": "Êtes-vous prêt(e) à réveiller votre maison, à récupérer votre vie privée et à rejoindre une communauté mondiale de bricoleurs ?",
+                "intro": "Êtes-vous prêt·e à réveiller votre maison, à récupérer votre vie privée et à rejoindre une communauté mondiale de bricoleurs ?",
                 "next": "Suivant",
                 "restore": {
                     "addons": "Modules complémentaires",
@@ -5008,14 +5095,14 @@
                     "title": "Mode avancé"
                 },
                 "change_password": {
-                    "confirm_new_password": "Confirmer le nouveau mot de passe",
+                    "confirm_new_password": "Confirmation du nouveau mot de passe",
                     "current_password": "Mot de passe actuel",
                     "error_new_is_old": "Le nouveau mot de passe doit être différent du mot de passe actuel",
                     "error_new_mismatch": "Les mots de passe saisis ne correspondent pas",
                     "error_required": "Requis",
                     "header": "Changer le mot de passe",
                     "new_password": "Nouveau mot de passe",
-                    "submit": "Envoyer",
+                    "submit": "Enregistrer",
                     "success": "Le mot de passe a été changé avec succès"
                 },
                 "current_user": "Vous êtes actuellement connecté en tant que {fullName}.",
@@ -5070,7 +5157,7 @@
                 "mfa_setup": {
                     "close": "Fermer",
                     "step_done": "Configuration terminée pour {step}",
-                    "submit": "Envoyer",
+                    "submit": "Enregistrer",
                     "title_aborted": "Abandonné",
                     "title_success": "Succès !"
                 },

@@ -55,11 +55,13 @@ export class HaServiceControl extends LitElement {
     data?: Record<string, any>;
   };
 
-  @state() private _value!: this["value"];
+  @property({ type: Boolean }) public disabled = false;
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
   @property({ type: Boolean }) public showAdvanced?: boolean;
+
+  @state() private _value!: this["value"];
 
   @state() private _checkedKeys = new Set();
 
@@ -227,6 +229,7 @@ export class HaServiceControl extends LitElement {
     return html`<ha-service-picker
         .hass=${this.hass}
         .value=${this._value?.service}
+        .disabled=${this.disabled}
         @value-changed=${this._serviceChanged}
       ></ha-service-picker>
       <div class="description">
@@ -273,6 +276,7 @@ export class HaServiceControl extends LitElement {
               .selector=${serviceData.target
                 ? { target: serviceData.target }
                 : { target: {} }}
+              .disabled=${this.disabled}
               @value-changed=${this._targetChanged}
               .value=${this._value?.target}
             ></ha-selector
@@ -280,6 +284,7 @@ export class HaServiceControl extends LitElement {
         : entityId
         ? html`<ha-entity-picker
             .hass=${this.hass}
+            .disabled=${this.disabled}
             .value=${this._value?.data?.entity_id}
             .label=${entityId.description}
             @value-changed=${this._entityPicked}
@@ -291,6 +296,7 @@ export class HaServiceControl extends LitElement {
             .hass=${this.hass}
             .label=${this.hass.localize("ui.components.service-control.data")}
             .name=${"data"}
+            .readOnly=${this.disabled}
             .defaultValue=${this._value?.data}
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
@@ -311,16 +317,18 @@ export class HaServiceControl extends LitElement {
                         .checked=${this._checkedKeys.has(dataField.key) ||
                         (this._value?.data &&
                           this._value.data[dataField.key] !== undefined)}
+                        .disabled=${this.disabled}
                         @change=${this._checkboxChanged}
                         slot="prefix"
                       ></ha-checkbox>`}
                   <span slot="heading">${dataField.name || dataField.key}</span>
                   <span slot="description">${dataField?.description}</span>
                   <ha-selector
-                    .disabled=${showOptional &&
-                    !this._checkedKeys.has(dataField.key) &&
-                    (!this._value?.data ||
-                      this._value.data[dataField.key] === undefined)}
+                    .disabled=${this.disabled ||
+                    (showOptional &&
+                      !this._checkedKeys.has(dataField.key) &&
+                      (!this._value?.data ||
+                        this._value.data[dataField.key] === undefined))}
                     .hass=${this.hass}
                     .selector=${dataField.selector}
                     .key=${dataField.key}

@@ -741,6 +741,7 @@
             "copied_clipboard": "Kopierat till urklipp",
             "delete": "Radera",
             "disable": "Inaktivera",
+            "duplicate": "Duplicera",
             "edit": "Redigera",
             "enable": "Aktivera",
             "error_required": "Krävs",
@@ -813,6 +814,9 @@
                 "temperature_down": "Sänk temperaturen",
                 "temperature_up": "Höj temperaturen"
             },
+            "config-entry-picker": {
+                "config_entry": "Integration"
+            },
             "data-table": {
                 "clear": "Rensa",
                 "filtering_by": "Filtrera efter",
@@ -852,6 +856,9 @@
                     "no_entities": "Du har inga entiteter",
                     "no_match": "Inga matchande entiteter hittades",
                     "show_entities": "Visa entiteter"
+                },
+                "entity-state-picker": {
+                    "state": "Tillstånd"
                 }
             },
             "history_charts": {
@@ -1267,21 +1274,25 @@
                 "dismiss": "Avfärda",
                 "edit": "Redigera entitet",
                 "history": "Historik",
+                "info": "Info",
                 "last_changed": "Senast ändrad",
                 "last_updated": "Senast uppdaterad",
                 "logbook": "Loggbok",
                 "person": {
                     "create_zone": "Skapa zon från aktuell plats"
                 },
+                "related": "Relaterade",
                 "remote": {
                     "activity": "Nuvarande aktivitet"
                 },
                 "restored": {
                     "confirm_remove_text": "Är du säker på att du vill ta bort den här entiteten?",
                     "confirm_remove_title": "Ta bort entitet?",
+                    "no_longer_provided": "Denna enhet tillhandahålls inte längre av {integration} -integrationen. Om enheten inte längre används, radera den i inställningarna.",
                     "not_provided": "Den här entiteten är för närvarande inte tillgänglig och är överbliven från en borttagen, ändrad eller dysfunktionell integration eller enhet.",
                     "remove_action": "Ta bort entitet",
-                    "remove_intro": "Om entiteten inte längre används kan du rensa upp den genom att ta bort den."
+                    "remove_intro": "Om entiteten inte längre används kan du rensa upp den genom att ta bort den.",
+                    "title": "Entiteten är inte tillgänglig"
                 },
                 "script": {
                     "last_action": "Senaste åtgärd",
@@ -1318,6 +1329,9 @@
                     "start_pause": "Starta/Pausa",
                     "status": "Status",
                     "stop": "Stoppa"
+                },
+                "zone": {
+                    "graph_unit": "Personer hemma"
                 }
             },
             "mqtt_device_debug_info": {
@@ -1489,6 +1503,7 @@
                     "reconfigure": "Konfigurera om enheten",
                     "remove": "Ta bort enhet",
                     "view_in_visualization": "Visa i visualisering",
+                    "view_network": "Visa nätverk",
                     "zigbee_information": "Zigbee-enhetens signatur"
                 },
                 "confirmations": {
@@ -1674,8 +1689,12 @@
                     "editor": {
                         "actions": {
                             "add": "Lägg till åtgärd",
+                            "alias": "Åtgärdsnamn",
+                            "change_alias": "Byt namn på åtgärd",
                             "delete": "Ta bort",
                             "delete_confirm": "Är du säker på att du vill radera detta?",
+                            "delete_confirm_text": "Den kommer att raderas permanent.",
+                            "delete_confirm_title": "Ta bort åtgärd?",
                             "disable": "Inaktivera",
                             "disabled": "Inaktiverad",
                             "duplicate": "Duplicera",
@@ -1685,14 +1704,18 @@
                             "invalid_action": "Ogiltig åtgärd",
                             "learn_more": "Lär dig mer om händelser",
                             "name": "Åtgärd",
+                            "rename": "Döp om",
+                            "run": "Kör",
                             "run_action": "Kör åtgärd",
                             "run_action_error": "Fel vid körning av åtgärd",
                             "run_action_success": "Åtgärden kördes framgångsrikt",
                             "type": {
                                 "activate_scene": {
-                                    "label": "Aktivera scenario"
+                                    "label": "Aktivera scenario",
+                                    "scene": "Scenario"
                                 },
                                 "choose": {
+                                    "add_default": "Lägg till standardåtgärder",
                                     "add_option": "Lägg till alternativ",
                                     "conditions": "Villkor",
                                     "default": "Standardåtgärder",
@@ -1729,6 +1752,7 @@
                                     "label": "Utlös händelse"
                                 },
                                 "if": {
+                                    "add_else": "Lägg till annars",
                                     "else": "Annars",
                                     "if": "Om",
                                     "label": "Om-sedan",
@@ -1782,24 +1806,34 @@
                             "unsupported_action": "Inget gränssnittsstöd för åtgärd: {action}"
                         },
                         "alias": "Namn",
+                        "automation_alias": "Automationsnamn",
+                        "automation_settings": "Automationsinställningar",
                         "blueprint": {
                             "blueprint_to_use": "Blueprint att använda",
                             "header": "Blueprint",
                             "no_blueprints": "Du har inga blueprints",
                             "no_inputs": "Det här blueprint:et har inga input."
                         },
+                        "change_mode": "Ändra läge",
                         "conditions": {
                             "add": "Lägg till villkor",
+                            "alias": "Villkorets namn",
+                            "change_alias": "Byt namn på villkoret",
                             "delete": "Ta bort",
                             "delete_confirm": "Är du säker på att du vill radera detta?",
+                            "delete_confirm_text": "Den kommer att raderas permanent.",
+                            "delete_confirm_title": "Ta bort villkor?",
                             "duplicate": "Duplicera",
                             "header": "Villkor",
                             "introduction": "Villkoren är valfria och kommer att förhindra att automatiseringen körs såvida inte alla villkor är uppfyllda.",
                             "invalid_condition": "Ogiltig konfiguration av villkor",
                             "learn_more": "Lär dig mer om villkor",
                             "name": "Villkor",
+                            "rename": "Döp om",
                             "test": "Testa",
                             "test_failed": "Fel inträffade under testning av villkoret",
+                            "testing_error": "Villkoret har inte godkänts",
+                            "testing_pass": "Villkoret är godkänt",
                             "type": {
                                 "and": {
                                     "label": "Och"
@@ -1884,20 +1918,27 @@
                             "label": "Beskrivning",
                             "placeholder": "Valfri beskrivning"
                         },
+                        "disable": "Inaktivera",
+                        "disabled": "Automatisering är inaktiverad",
                         "edit_ui": "Redigera i den visuella redigeraren",
                         "edit_yaml": "Redigera som YAML",
+                        "enable": "Aktivera",
                         "enable_disable": "Aktivera/inaktivera automatisering",
                         "introduction": "Använd automatiseringar för väcka liv i ditt hem",
+                        "load_error_not_deletable": "Endast automatiseringar i automations.yaml kan tas bort.",
+                        "load_error_not_duplicable": "Endast automatiseringar i automations.yaml kan dupliceras.",
                         "load_error_not_editable": "Endast automatiseringar i automations.yaml kan redigeras.",
                         "load_error_unknown": "Fel vid inläsning av automatisering ({err_no}).",
                         "max": {
                             "parallel": "Max antal parallella körningar",
                             "queued": "Kölängd"
                         },
+                        "missing_name": "Kan inte spara automatisering utan ett namn",
                         "modes": {
                             "description": "Läget styr vad som händer när automatiseringen triggas att starta medan den fortfarande kör. Mer information finns i {documentation_link}.",
                             "documentation": "Dokumentation av automatisering",
                             "label": "Läge",
+                            "learn_more": "Lär dig mer om lägen",
                             "parallel": "Parallell",
                             "queued": "På kö",
                             "restart": "Starta om",
@@ -1905,12 +1946,25 @@
                         },
                         "move_down": "Flytta nedåt",
                         "move_up": "Flytta uppåt",
+                        "re_order": "Ordna om",
+                        "re_order_mode": {
+                            "description": "Du befinner dig i omordningsläget och kan omordna dina utlösare, villkor och åtgärder.",
+                            "exit": "Avsluta",
+                            "title": "Omordningsläge"
+                        },
+                        "rename": "Döp om",
+                        "run": "Kör",
                         "save": "Spara",
+                        "show_info": "Information",
                         "show_trace": "Visa spårning",
                         "triggers": {
                             "add": "Lägg till händelse",
+                            "alias": "Namn på utlösaren",
+                            "change_alias": "Byt namn på utlösaren",
                             "delete": "Ta bort",
                             "delete_confirm": "Är du säker på att du vill radera detta?",
+                            "delete_confirm_text": "Den kommer att raderas permanent.",
+                            "delete_confirm_title": "Ta bort utlösaren?",
                             "duplicate": "Duplicera",
                             "edit_id": "Redigera ID för utlösare",
                             "header": "Händelse",
@@ -1918,6 +1972,7 @@
                             "introduction": "Triggers är det som startar en automation. Det är möjligt att ange flera triggers för samma regel. När en trigger inträffar kommer Home Assistant att validera eventuella villkor och sedan köra åtgärden.",
                             "learn_more": "Lär dig mer om utlösare",
                             "name": "Utlösare",
+                            "rename": "Döp om",
                             "triggered": "Utlöst",
                             "type": {
                                 "calendar": {
@@ -2024,14 +2079,20 @@
                             "type_select": "Aktiveringstyp",
                             "unsupported_platform": "Användargränssnittet stödjer inte plattformen: {platform}"
                         },
-                        "unsaved_confirm": "Du har osparade ändringar. Är du säker på att du vill lämna?"
+                        "unsaved_confirm": "Du har osparade ändringar. Är du säker på att du vill lämna?",
+                        "unsaved_confirm_text": "Osparade ändringar kommer att gå förlorade.",
+                        "unsaved_confirm_title": "Lämna redigeraren?"
                     },
                     "picker": {
                         "add_automation": "Lägg till automatisering",
+                        "delete": "Radera",
                         "delete_automation": "Radera automation",
                         "delete_confirm": "Är du säker på att du vill radera denna automatisering?",
+                        "delete_confirm_text": "{name} kommer att raderas permanent.",
+                        "delete_confirm_title": "Ta bort automatisering?",
                         "dev_automation": "Felsök automatisering",
                         "dev_only_editable": "Endast automatiseringar som har tilldelats ett unikt ID kan felsökas.",
+                        "disabled": "Inaktiverad",
                         "duplicate": "Dubblett",
                         "duplicate_automation": "Dubblett av en automatisering",
                         "edit_automation": "Redigera automation",
@@ -2107,6 +2168,7 @@
                         "header": "Importera blueprint",
                         "import_btn": "Förhandsgranska blueprint",
                         "import_header": "Blueprint \"{name}\"",
+                        "import_introduction": "Importera ritningar av andra användare från GitHub och communityforumen genom att klistra in adressen nedan.",
                         "import_introduction_link": "Du kan importera blueprints från andra användare och {community_link}. Ange URL för blueprint nedan.",
                         "importing": "Laddar blueprint…",
                         "raw_blueprint": "Innehåll i blueprint",
@@ -2121,6 +2183,7 @@
                         "add_blueprint": "Importera blueprint",
                         "confirm_delete_header": "Ta bort detta blueprint?",
                         "confirm_delete_text": "Är du säker på att du vill ta bort det här blueprint:et",
+                        "confirm_delete_title": "Ta bort blueprint?",
                         "create_automation": "Skapa automatisering",
                         "create_script": "Skapa skript",
                         "delete_blueprint": "Ta bort blueprint",
@@ -2267,10 +2330,13 @@
                         "available_at": "Webbhooken är tillgänglig på följande url:",
                         "close": "Stäng",
                         "confirm_disable": "Är du säker på att du vill avaktivera denna webhook?",
+                        "confirm_disable_text": "Webhook för {name} kommer att inaktiveras.",
+                        "confirm_disable_title": "Inaktivera webhook",
                         "copied_to_clipboard": "Kopierat till urklipp",
                         "info_disable_webhook": "Om du inte längre vill använda denna webhook kan du",
                         "link_disable_webhook": "Inaktivera",
                         "managed_by_integration": "Denna webhook hanteras av en integration och kan inte inaktiveras.",
+                        "public_url": "Offentlig adress",
                         "view_documentation": "Visa dokumentation",
                         "webhook_for": "Webhook för {name}"
                     },
@@ -2465,6 +2531,7 @@
                     "cant_edit": "Du kan bara redigera objekt som skapas i användargränssnittet.",
                     "caption": "Enheter",
                     "confirm_delete": "Är du säker på att du vill ta bort den här enheten?",
+                    "confirm_delete_integration": "Är du säker på att du vill ta bort den här enheten från {integration} ?",
                     "confirm_disable_config_entry": "Det finns inga fler enheter för konfigurationsposten {entry_name} , vill du istället inaktivera konfigurationsposten?",
                     "confirm_rename_entity_ids": "Vill du också byta namn på dina entiteters entitets-ID?",
                     "confirm_rename_entity_ids_warning": "Detta kommer inte att ändra någon konfiguration (som automatiseringar, skript, scener, kontrollpaneler) som för närvarande använder dessa entiteter, du måste uppdatera dem själv för att använda nya eniteters id:n.",
@@ -2511,6 +2578,7 @@
                     },
                     "name": "Namn",
                     "no_devices": "Inga enheter",
+                    "open_configuration_url": "Besök",
                     "open_configuration_url_device": "Besök enheten",
                     "open_configuration_url_service": "Besök tjänsten",
                     "picker": {
@@ -2802,11 +2870,19 @@
                     "failed_to_reboot_host": "Kunde inte starta om värddatorn",
                     "failed_to_shutdown_host": "Kunde inte stänga ner värddatorn",
                     "host_shutting_down": "Värden stängs av",
+                    "memory": "Minne",
+                    "processor": "Processor",
+                    "reboot": "Starta om",
                     "reboot_host": "Starta om värddatorn",
                     "reboot_host_confirm": "Är du säker på att du vill starta om värddatorn?",
+                    "reboot_host_text": "Detta kommer att starta om hela systemet, inklusive Core och alla tillägg.",
+                    "reboot_host_title": "Starta om systemet?",
                     "rebooting_host": "Startar om värddatorn",
+                    "shutdown": "Stäng av",
                     "shutdown_host": "Stäng ner värddatorn",
-                    "shutdown_host_confirm": "Är du säker på att du vill stänga ner värddatorn?"
+                    "shutdown_host_confirm": "Är du säker på att du vill stänga ner värddatorn?",
+                    "shutdown_host_text": "Detta kommer att stänga av hela systemet, inklusive Core och alla tillägg.",
+                    "shutdown_host_title": "Stäng av systemet?"
                 },
                 "header": "Konfigurera Home Assistant",
                 "helpers": {
@@ -2882,11 +2958,21 @@
                     "attention": "Uppmärksamhet krävs",
                     "caption": "Integrationer",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "Om du tar bort dem måste du ange autentiseringsuppgifter när du konfigurerar integreringen igen. Om du behåller dem kommer de att användas automatiskt när du ställer in integrationen igen eller kan hämtas från menyn Programuppgifter.",
+                            "delete_error_title": "Det gick inte att ta bort autentiseringsuppgifter för applikation",
+                            "delete_prompt": "Vill du även ta bort programautentiseringsuppgifter för den här integrationen?",
+                            "delete_title": "Autentiseringsuppgifter för applikation",
+                            "dismiss": "Behåll",
+                            "learn_more": "Läs mer om applikationsuppgifter"
+                        },
                         "area": "I {area}",
                         "check_the_logs": "Kontrollera loggarna",
                         "configure": "Konfigurera",
                         "delete": "Ta bort",
                         "delete_confirm": "Är du säker på att du vill radera {title}-integrationen?",
+                        "delete_confirm_text": "Dess enheter och entiteter kommer att raderas permanent.",
+                        "delete_confirm_title": "Ta bort {titel}?",
                         "depends_on_cloud": "Förlitar sig på molnet",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
                         "disable": {
@@ -2899,6 +2985,8 @@
                             },
                             "disabled_cause": "Inaktiverad på grund av {cause}"
                         },
+                        "disable_confirm_text": "Dess enheter och entiteter kommer att inaktiveras.",
+                        "disable_confirm_title": "Inaktivera {title}?",
                         "disable_error": "Aktivering eller inaktivering av integrationen misslyckades",
                         "disable_restart_confirm": "Starta om Home Assistant för att slutföra inaktiveringen av denna integration",
                         "disabled_polling": "Automatisk polling för uppdaterade data inaktiverad",
@@ -2920,12 +3008,14 @@
                         "rename": "Döp om",
                         "restart_confirm": "Starta om Home Assistant för att slutföra borttagningen av denna integration",
                         "services": "{count} {count, plural,\n  one {tjänst}\n  other {tjänster}\n}",
+                        "setup_in_progress": "Initierar",
                         "state": {
                             "failed_unload": "Det gick inte att avlasta",
                             "loaded": "Laddad",
                             "migration_error": "Migreringsfel",
                             "not_loaded": "Inte laddad",
                             "setup_error": "Det gick inte att ställa in",
+                            "setup_in_progress": "Initierar",
                             "setup_retry": "Försöker konfigurera igen"
                         },
                         "system_options": "Systemalternativ",
@@ -3084,6 +3174,8 @@
                         "cant_edit_yaml": "Du använder Lovelace i YAML-läge, därför kan du inte sköta dina resurser genom användargränssnittet. Du får göra det i configuration.yaml istället.",
                         "caption": "Resurser",
                         "confirm_delete": "Är du säker på att du vill ta bort denna resurs?",
+                        "confirm_delete_text": "{url} kommer att raderas permanent.",
+                        "confirm_delete_title": "Radera resurs?",
                         "detail": {
                             "create": "Skapa",
                             "delete": "Radera",
@@ -3155,6 +3247,8 @@
                     "caption": "Personer",
                     "confirm_delete": "Är du säker på att du vill ta bort den här personen?",
                     "confirm_delete2": "Alla enheter som tillhör denna person kommer att bli bortkopplade.",
+                    "confirm_delete_text": "Den här personen kommer att raderas permanent och alla enheter som tillhör denna person kommer att tas bort.",
+                    "confirm_delete_title": "Ta bort {namn}?",
                     "create_person": "Skapa person",
                     "description": "Hantera personer som Home Assistant spårar",
                     "detail": {
@@ -3236,11 +3330,17 @@
                         "load_error_unknown": "Fel vid inläsning av scenario ({err_no}).",
                         "name": "Namn",
                         "save": "Spara",
-                        "unsaved_confirm": "Du har osparade ändringar. Är du säker på att du vill lämna?"
+                        "unsaved_confirm": "Du har osparade ändringar. Är du säker på att du vill lämna?",
+                        "unsaved_confirm_text": "Osparade ändringar kommer att gå förlorade.",
+                        "unsaved_confirm_title": "Lämna redigeraren?"
                     },
                     "picker": {
+                        "activate": "Aktivera",
                         "add_scene": "Lägg till scenario",
+                        "delete": "Radera",
                         "delete_confirm": "Är du säker på att du vill radera detta scenario?",
+                        "delete_confirm_text": "{name} kommer att raderas permanent.",
+                        "delete_confirm_title": "Radera scenen?",
                         "delete_scene": "Ta bort scenario",
                         "duplicate": "Duplicera",
                         "duplicate_scene": "Duplicera scen",
@@ -3249,6 +3349,7 @@
                         "headers": {
                             "activate": "Aktivera",
                             "edit": "Redigera",
+                            "last_activated": "Senast aktiverad",
                             "name": "Namn",
                             "show_info": "Visa information",
                             "state": "Tillstånd"
@@ -3258,6 +3359,7 @@
                         "no_scenes": "Vi kunde inte hitta några scenarier",
                         "only_editable": "Endast scenarier definierade i scenes.yaml kan redigeras.",
                         "pick_scene": "Välj scenario att redigera",
+                        "show_info": "Information",
                         "show_info_scene": "Visa info om scenario"
                     }
                 },
@@ -3268,6 +3370,8 @@
                         "alias": "Namn",
                         "default_name": "Nytt skript",
                         "delete_confirm": "Är du säker på att du vill ta bort det här skriptet?",
+                        "delete_confirm_text": "{name} kommer att raderas permanent.",
+                        "delete_confirm_title": "Ta bort skript?",
                         "delete_script": "Ta bort skript",
                         "header": "Skript: {name}",
                         "icon": "Ikon",
@@ -3276,7 +3380,10 @@
                         "id_already_exists_save_error": "Det går inte att spara detta skript eftersom nuvarande ID inte är unikt. Välj ett annat ID eller lämna tomt för att generera ett automatiskt.",
                         "introduction": "Använd skript för att utföra en sekvens.",
                         "link_available_actions": "Lär dig mer om tillgängliga händelser",
+                        "load_error_not_deletable": "Endast skript i scripts.yaml kan tas bort.",
+                        "load_error_not_duplicable": "Endast skript i scripts.yaml kan dupliceras.",
                         "load_error_not_editable": "Endast skript i scripts.yaml kan redigeras.",
+                        "load_error_unknown": "Det gick inte att läsa in skriptet ({err_no}).",
                         "max": {
                             "parallel": "Max antal parallella körningar",
                             "queued": "Kölängd"
@@ -3285,6 +3392,7 @@
                             "description": "Läget styr vad som händer när skriptet anropas medan det fortfarande kör. Mer information finns i {documentation_link}.",
                             "documentation": "Skriptdokumentation",
                             "label": "Läge",
+                            "learn_more": "Lär dig mer om lägen",
                             "parallel": "Parallell",
                             "queued": "På kö",
                             "restart": "Starta om",
@@ -3293,10 +3401,12 @@
                         "save_script": "Spara skript",
                         "sequence": "Sekvens",
                         "sequence_sentence": "Handlingssekvensen för detta skript.",
+                        "show_info": "Information",
                         "show_trace": "Visa spårning"
                     },
                     "picker": {
                         "add_script": "Lägg till nytt skript",
+                        "delete": "Radera",
                         "dev_script": "Felsökningsskript",
                         "duplicate": "Dubblett",
                         "duplicate_script": "Duplicera skript",
@@ -3309,8 +3419,13 @@
                         "introduction": "Skriptredigeraren låter dig skapa och redigera skript. Följ länken nedan för att läsa instruktionerna för att se till att du har konfigurerat Home Assistant korrekt.",
                         "learn_more": "Lär dig mer om skript",
                         "no_scripts": "Vi kunde inte hitta några redigerbara skript",
+                        "run": "Kör",
                         "run_script": "Kör skript",
-                        "show_info": "Visa information om skript"
+                        "show_info": "Visa information om skript",
+                        "show_trace": "Visa spårning"
+                    },
+                    "trace": {
+                        "edit_script": "Redigera skript"
                     }
                 },
                 "storage": {
@@ -3324,6 +3439,8 @@
                         "moving": "Flyttar datadisk",
                         "moving_desc": "Startar om och flyttar datadisk. Ha tålamod",
                         "no_devices": "Inga lämpliga anslutna enheter hittades",
+                        "no_devices_text": "Det finns ingen lämplig extern enhet. Lagringskapaciteten för den externa datadisken måste vara större än lagringskapaciteten för den befintliga disken",
+                        "no_devices_title": "Ingen lämplig lagring har hittats",
                         "select_device": "Välj ny datadisk",
                         "title": "Flytta datadisk"
                     },
@@ -3442,6 +3559,8 @@
                         "caption": "Visa användare",
                         "change_password": "Ändra lösenord",
                         "confirm_user_deletion": "Är du säker på att du vill ta bort {name} ?",
+                        "confirm_user_deletion_text": "Denna användare kommer att raderas permanent.",
+                        "confirm_user_deletion_title": "Radera {name}",
                         "deactivate_user": "Avaktivera användare",
                         "delete_user": "Ta bort användare",
                         "group": "Grupp",
@@ -3513,6 +3632,9 @@
                         "value": "Värde"
                     },
                     "configuration_page": {
+                        "download_backup": "Ladda ner säkerhetskopia",
+                        "migrate_radio": "Migrera radio",
+                        "network_settings_title": "Nätverksinställningar",
                         "shortcuts_title": "Genvägar",
                         "update_button": "Uppdatera konfigurationen"
                     },
@@ -3584,6 +3706,7 @@
                         "icon": "Ikon",
                         "icon_error_msg": "Ikonen ska vara i format \"prefix:ikonnamn\", till exempel: \"mdi:home\"",
                         "latitude": "Latitud",
+                        "location": "Plats på kartan",
                         "longitude": "Longitud",
                         "name": "Namn",
                         "new_zone": "Ny Zon",
@@ -3686,6 +3809,7 @@
                         "device_config": "Konfigurera enhet",
                         "heal_node": "Reparera enhet",
                         "highest_security": "Högsta säkerheten",
+                        "node_id": "ID",
                         "node_ready": "Enhet redo",
                         "node_statistics": "Visa enhetsstatistik",
                         "node_status": "Nodstatus",
@@ -4500,6 +4624,14 @@
                                 "hour": "Timme",
                                 "month": "Månad"
                             },
+                            "pick_statistic": "Lägg till en statistisk",
+                            "picked_statistic": "Statistisk",
+                            "stat_type_labels": {
+                                "max": "Max",
+                                "mean": "Medelvärde",
+                                "min": "Min",
+                                "sum": "Summa"
+                            },
                             "stat_types": "Visa statistiktyper"
                         },
                         "thermostat": {
@@ -4515,7 +4647,8 @@
                             "name": "Väderprognos",
                             "show_both": "Visa aktuellt väder och prognos",
                             "show_only_current": "Visa endast aktuellt väder",
-                            "show_only_forecast": "Visa endast prognos"
+                            "show_only_forecast": "Visa endast prognos",
+                            "weather_to_show": "Väder att visa"
                         }
                     },
                     "cardpicker": {
@@ -4920,6 +5053,7 @@
                     "full_backup": "Fullständig säkerhetskopia",
                     "hide_log": "Dölj fullständig logg",
                     "in_progress": "Återställning pågår",
+                    "name": "Namn",
                     "partial_backup": "Partiell säkerhetskopia",
                     "password": "Backup lösenord",
                     "password_protection": "Lösenordsskydd",
