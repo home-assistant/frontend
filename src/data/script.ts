@@ -300,10 +300,10 @@ export const deleteScript = (hass: HomeAssistant, objectId: string) =>
 
 let inititialScriptEditorData: Partial<ScriptConfig> | undefined;
 
-export const getScriptConfig = (hass: HomeAssistant, objectId: string) =>
+export const fetchScriptFileConfig = (hass: HomeAssistant, objectId: string) =>
   hass.callApi<ScriptConfig>("GET", `config/script/config/${objectId}`);
 
-export const fetchScriptConfig = (hass: HomeAssistant, entity_id: string) =>
+export const getScriptStateConfig = (hass: HomeAssistant, entity_id: string) =>
   hass.callWS<{ config: ScriptConfig }>({
     type: "script/config",
     entity_id,

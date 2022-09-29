@@ -42,8 +42,8 @@ import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   deleteScript,
-  fetchScriptConfig,
-  getScriptConfig,
+  getScriptStateConfig,
+  fetchScriptFileConfig,
   getScriptEditorInitData,
   isMaxMode,
   MODES,
@@ -467,7 +467,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
       (!oldScript || oldScript !== this.scriptId)
     ) {
-      getScriptConfig(this.hass, this.scriptId).then(
+      fetchScriptFileConfig(this.hass, this.scriptId).then(
         (config) => {
           // Normalize data: ensure sequence is a list
           // Happens when people copy paste their scripts into the config
@@ -523,7 +523,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
 
     if (changedProps.has("entityId") && this.entityId) {
-      fetchScriptConfig(this.hass, this.entityId).then((c) => {
+      getScriptStateConfig(this.hass, this.entityId).then((c) => {
         this._config = c.config;
       });
       const regEntry = this.hass.entities[this.entityId];

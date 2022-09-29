@@ -27,7 +27,7 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import {
   deleteScript,
-  getScriptConfig,
+  fetchScriptFileConfig,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -303,7 +303,7 @@ class HaScriptPicker extends LitElement {
   private async _duplicate(script: any) {
     try {
       const entry = this.hass.entities[script.entity_id];
-      const config = await getScriptConfig(this.hass, entry.unique_id);
+      const config = await fetchScriptFileConfig(this.hass, entry.unique_id);
       showScriptEditor({
         ...config,
         alias: `${config?.alias} (${this.hass.localize(
