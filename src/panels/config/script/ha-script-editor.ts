@@ -42,7 +42,8 @@ import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   deleteScript,
-  getScriptConfig,
+  getScriptStateConfig,
+  fetchScriptFileConfig,
   getScriptEditorInitData,
   isMaxMode,
   MODES,
@@ -69,6 +70,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property() public scriptId: string | null = null;
 
+  @property() public entityId: string | null = null;
+
   @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public isWide = false;
@@ -86,6 +89,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _errors?: string;
 
   @state() private _mode: "gui" | "yaml" = "gui";
+
+  @state() private _readOnly = false;
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
@@ -241,7 +246,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                     "ui.panel.config.automation.editor.re_order"
                   )}
                   graphic="icon"
-                  .disabled=${this._mode !== "gui"}
+                  .disabled=${this._readOnly || this._mode !== "gui"}
                   @click=${this._toggleReOrderMode}
                 >
                   ${this.hass.localize(
@@ -294,14 +299,20 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           <li divider role="separator"></li>
 
           <mwc-list-item
-            .disabled=${!this.scriptId}
+            .disabled=${!this._readOnly && !this.scriptId}
             .label=${this.hass.localize(
-              "ui.panel.config.script.picker.duplicate"
+              this._readOnly
+                ? "ui.panel.config.script.editor.migrate"
+                : "ui.panel.config.script.editor.duplicate"
             )}
             graphic="icon"
             @click=${this._duplicate}
           >
-            ${this.hass.localize("ui.panel.config.script.picker.duplicate")}
+            ${this.hass.localize(
+              this._readOnly
+                ? "ui.panel.config.script.editor.migrate"
+                : "ui.panel.config.script.editor.duplicate"
+            )}
             <ha-svg-icon
               slot="graphic"
               .path=${mdiContentDuplicate}
@@ -309,7 +320,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           </mwc-list-item>
 
           <mwc-list-item
-            .disabled=${!this.scriptId}
+            .disabled=${this._readOnly || !this.scriptId}
             aria-label=${this.hass.localize(
               "ui.panel.config.script.picker.delete"
             )}
@@ -354,6 +365,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                 .schema=${schema}
                                 .data=${data}
                                 .hass=${this.hass}
+                                .disabled=${this._readOnly}
                                 .computeLabel=${this._computeLabelCallback}
                                 .computeHelper=${this._computeHelperCallback}
                                 @value-changed=${this._valueChanged}
@@ -369,6 +381,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                 .narrow=${this.narrow}
                                 .isWide=${this.isWide}
                                 .config=${this._config}
+                                .disabled=${this._readOnly}
+                                @duplicate=${this._duplicate}
                                 @value-changed=${this._configChanged}
                               ></blueprint-script-editor>
                             `
@@ -378,6 +392,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                 .narrow=${this.narrow}
                                 .isWide=${this.isWide}
                                 .config=${this._config}
+                                .disabled=${this._readOnly}
+                                @duplicate=${this._duplicate}
                                 @value-changed=${this._configChanged}
                               ></manual-script-editor>
                             `}
@@ -387,6 +403,18 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : this._mode === "yaml"
             ? html`
+                ${this._readOnly
+                  ? html`<ha-alert alert-type="warning">
+                      ${this.hass.localize(
+                        "ui.panel.config.script.editor.read_only"
+                      )}
+                      <mwc-button slot="action" @click=${this._duplicate}>
+                        ${this.hass.localize(
+                          "ui.panel.config.script.editor.migrate"
+                        )}
+                      </mwc-button>
+                    </ha-alert>`
+                  : ""}
                 ${this._errors
                   ? html`
                       <ha-alert alert-type="error">${this._errors}</ha-alert>
@@ -395,6 +423,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 <ha-yaml-editor
                   .hass=${this.hass}
                   .defaultValue=${this._preprocessYaml()}
+                  .readOnly=${this._readOnly}
                   @value-changed=${this._yamlChanged}
                 ></ha-yaml-editor>
                 <ha-card outlined>
@@ -433,11 +462,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     if (
       changedProps.has("scriptId") &&
       this.scriptId &&
+      !this.entityId &&
       this.hass &&
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
       (!oldScript || oldScript !== this.scriptId)
     ) {
-      getScriptConfig(this.hass, this.scriptId).then(
+      fetchScriptFileConfig(this.hass, this.scriptId).then(
         (config) => {
           // Normalize data: ensure sequence is a list
           // Happens when people copy paste their scripts into the config
@@ -446,9 +476,20 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             config.sequence = [value];
           }
           this._dirty = false;
+          this._readOnly = false;
           this._config = config;
         },
         (resp) => {
+          const entity = Object.values(this.hass.entities).find(
+            (ent) =>
+              ent.platform === "script" && ent.unique_id === this.scriptId
+          );
+          if (entity) {
+            navigate(`/config/script/show/${entity.entity_id}`, {
+              replace: true,
+            });
+            return;
+          }
           alert(
             resp.status_code === 404
               ? this.hass.localize(
@@ -478,6 +519,20 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         ...baseConfig,
         ...initData,
       } as ScriptConfig;
+      this._readOnly = false;
+    }
+
+    if (changedProps.has("entityId") && this.entityId) {
+      getScriptStateConfig(this.hass, this.entityId).then((c) => {
+        this._config = c.config;
+      });
+      const regEntry = this.hass.entities[this.entityId];
+      if (regEntry?.unique_id) {
+        this.scriptId = regEntry.unique_id;
+      }
+      this._entityId = this.entityId;
+      this._dirty = false;
+      this._readOnly = true;
     }
   }
 
@@ -603,6 +658,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
+    if (this._readOnly) {
+      return;
+    }
     this._errors = undefined;
     const values = ev.detail.value as any;
 
@@ -693,13 +751,20 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   };
 
   private async _duplicate() {
-    const result = await this.confirmUnsavedChanged();
+    const result = this._readOnly
+      ? await showConfirmationDialog(this, {
+          title: "Migrate script?",
+          text: "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?",
+        })
+      : await this.confirmUnsavedChanged();
     if (result) {
       showScriptEditor({
         ...this._config,
-        alias: `${this._config?.alias} (${this.hass.localize(
-          "ui.panel.config.script.picker.duplicate"
-        )})`,
+        alias: this._readOnly
+          ? this._config?.alias
+          : `${this._config?.alias} (${this.hass.localize(
+              "ui.panel.config.script.picker.duplicate"
+            )})`,
       });
     }
   }

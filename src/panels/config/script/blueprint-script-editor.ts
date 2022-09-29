@@ -27,6 +27,8 @@ export class HaBlueprintScriptEditor extends LitElement {
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false }) public config!: BlueprintScriptConfig;
 
   @state() private _blueprints?: Blueprints;
@@ -46,6 +48,14 @@ export class HaBlueprintScriptEditor extends LitElement {
   protected render() {
     const blueprint = this._blueprint;
     return html`
+      ${this.disabled
+        ? html`<ha-alert alert-type="warning">
+            ${this.hass.localize("ui.panel.config.script.editor.read_only")}
+            <mwc-button slot="action" @click=${this._duplicate}>
+              ${this.hass.localize("ui.panel.config.script.editor.migrate")}
+            </mwc-button>
+          </ha-alert>`
+        : ""}
       <ha-card
         outlined
         class="blueprint"
@@ -64,6 +74,7 @@ export class HaBlueprintScriptEditor extends LitElement {
                     )}
                     .blueprints=${this._blueprints}
                     .value=${this.config.use_blueprint.path}
+                    .disabled=${this.disabled}
                     @value-changed=${this._blueprintChanged}
                   ></ha-blueprint-picker>
                 `
@@ -97,6 +108,7 @@ export class HaBlueprintScriptEditor extends LitElement {
                               .hass=${this.hass}
                               .selector=${value.selector}
                               .key=${key}
+                              .disabled=${this.disabled}
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
                               value?.default}
@@ -105,6 +117,7 @@ export class HaBlueprintScriptEditor extends LitElement {
                           : html`<ha-textfield
                               .key=${key}
                               required
+                              .disabled=${this.disabled}
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
                               value?.default}
@@ -168,6 +181,10 @@ export class HaBlueprintScriptEditor extends LitElement {
         },
       },
     });
+  }
+
+  private _duplicate() {
+    fireEvent(this, "duplicate");
   }
 
   static get styles(): CSSResultGroup {
