@@ -16,6 +16,8 @@ import type { ActionElement } from "../ha-automation-action-row";
 export class HaConditionAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property() public action!: Condition;
 
   public static get defaultConfig() {
@@ -29,6 +31,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type_select"
         )}
+        .disabled=${this.disabled}
         .value=${this.action.condition}
         naturalMenuWidth
         @selected=${this._typeChanged}
@@ -43,6 +46,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
       </ha-select>
       <ha-automation-condition-editor
         .condition=${this.action}
+        .disabled=${this.disabled}
         .hass=${this.hass}
         @value-changed=${this._conditionChanged}
       ></ha-automation-condition-editor>

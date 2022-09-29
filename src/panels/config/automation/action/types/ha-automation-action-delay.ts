@@ -13,6 +13,8 @@ import { createDurationData } from "../../../../../common/datetime/create_durati
 export class HaDelayAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false }) public action!: DelayAction;
 
   @state() private _timeData?: HaDurationData;
@@ -43,6 +45,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
       .label=${this.hass.localize(
         `ui.panel.config.automation.editor.actions.type.delay.delay`
       )}
+      .disabled=${this.disabled}
       .data=${this._timeData}
       enableMillisecond
       @value-changed=${this._valueChanged}

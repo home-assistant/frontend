@@ -12,6 +12,8 @@ import type { ActionElement } from "../ha-automation-action-row";
 export class HaParallelAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false }) public action!: ParallelAction;
 
   @property({ type: Boolean }) public reOrderMode = false;
@@ -29,6 +31,7 @@ export class HaParallelAction extends LitElement implements ActionElement {
       <ha-automation-action
         .actions=${action.parallel}
         .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
       ></ha-automation-action>

@@ -26,6 +26,8 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   @property({ attribute: false }) public condition!: StateCondition;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return { entity_id: "", state: "" };
   }
@@ -100,6 +102,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}
+        .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>

@@ -44,6 +44,8 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property() public actions!: Action[];
 
   @property({ type: Boolean }) public reOrderMode = false;
@@ -65,6 +67,7 @@ export default class HaAutomationAction extends LitElement {
               .index=${idx}
               .action=${action}
               .narrow=${this.narrow}
+              .disabled=${this.disabled}
               .hideMenu=${this.reOrderMode}
               .reOrderMode=${this.reOrderMode}
               @duplicate=${this._duplicateAction}
@@ -102,10 +105,15 @@ export default class HaAutomationAction extends LitElement {
           `
         )}
       </div>
-      <ha-button-menu fixed @action=${this._addAction}>
+      <ha-button-menu
+        fixed
+        @action=${this._addAction}
+        .disabled=${this.disabled}
+      >
         <mwc-button
           slot="trigger"
           outlined
+          .disabled=${this.disabled}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.actions.add"
           )}

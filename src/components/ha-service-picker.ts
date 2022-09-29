@@ -20,6 +20,8 @@ const rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> = (
 class HaServicePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property() public value?: string;
 
   @state() private _filter?: string;
@@ -35,6 +37,7 @@ class HaServicePicker extends LitElement {
           this._filter
         )}
         .value=${this.value}
+        .disabled=${this.disabled}
         .renderer=${rowRenderer}
         item-value-path="service"
         item-label-path="name"

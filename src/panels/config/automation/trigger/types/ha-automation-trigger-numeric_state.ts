@@ -15,6 +15,8 @@ export class HaNumericStateTrigger extends LitElement {
 
   @property({ attribute: false }) public trigger!: NumericStateTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _schema = memoizeOne(
     (entityId) =>
       [
@@ -152,6 +154,7 @@ export class HaNumericStateTrigger extends LitElement {
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}
+        .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>

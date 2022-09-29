@@ -1,5 +1,5 @@
 /* eslint-disable lit/no-template-arrow */
-import { LitElement, TemplateResult, html } from "lit";
+import { LitElement, TemplateResult, html, css } from "lit";
 import { customElement, state } from "lit/decorators";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
@@ -83,6 +83,8 @@ const SCHEMAS: { name: string; conditions: ConditionWithShorthand[] }[] = [
 class DemoHaAutomationEditorCondition extends LitElement {
   @state() private hass!: HomeAssistant;
 
+  @state() private _disabled = false;
+
   private data: any = SCHEMAS.map((info) => info.conditions);
 
   constructor() {
@@ -103,6 +105,15 @@ class DemoHaAutomationEditorCondition extends LitElement {
       this.requestUpdate();
     };
     return html`
+      <div class="options">
+        <ha-formfield label="Disabled">
+          <ha-switch
+            .name=${"disabled"}
+            .checked=${this._disabled}
+            @change=${this._handleOptionChange}
+          ></ha-switch>
+        </ha-formfield>
+      </div>
       ${SCHEMAS.map(
         (info, sampleIdx) => html`
           <demo-black-white-row
@@ -117,6 +128,7 @@ class DemoHaAutomationEditorCondition extends LitElement {
                     .hass=${this.hass}
                     .conditions=${this.data[sampleIdx]}
                     .sampleIdx=${sampleIdx}
+                    .disabled=${this._disabled}
                     @value-changed=${valueChanged}
                   ></ha-automation-condition>
                 `
@@ -126,6 +138,20 @@ class DemoHaAutomationEditorCondition extends LitElement {
       )}
     `;
   }
+
+  private _handleOptionChange(ev) {
+    this[`_${ev.target.name}`] = ev.target.checked;
+  }
+
+  static styles = css`
+    .options {
+      max-width: 800px;
+      margin: 16px auto;
+    }
+    .options ha-formfield {
+      margin-right: 16px;
+    }
+  `;
 }
 
 declare global {
