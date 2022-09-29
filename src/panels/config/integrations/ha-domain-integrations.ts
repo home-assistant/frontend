@@ -17,7 +17,7 @@ import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-integration-list-item";
 
-const standardToDomain = { zigbee: "zha", "z-wave": "zwave_js" } as const;
+const standardToDomain = { zigbee: "zha", zwave: "zwave_js" } as const;
 
 @customElement("ha-domain-integrations")
 class HaDomainIntegrations extends LitElement {

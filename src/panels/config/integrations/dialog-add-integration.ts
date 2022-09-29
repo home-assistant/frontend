@@ -22,6 +22,7 @@ import {
 } from "../../../data/integration";
 import {
   getIntegrationDescriptions,
+  Integration,
   Integrations,
 } from "../../../data/integrations";
 import {
@@ -173,11 +174,12 @@ class AddIntegrationDialog extends LitElement {
         }));
 
       for (const [domain, domainBrands] of Object.entries(sb)) {
-        const integration = i[domain];
+        const integration = this._findIntegration(domain);
         if (
-          !integration.config_flow &&
-          !integration.iot_standards &&
-          !integration.integrations
+          !integration ||
+          (!integration.config_flow &&
+            !integration.iot_standards &&
+            !integration.integrations)
         ) {
           continue;
         }
@@ -238,6 +240,21 @@ class AddIntegrationDialog extends LitElement {
       ];
     }
   );
+
+  private _findIntegration(domain: string): Integration | undefined {
+    if (!this._integrations) {
+      return undefined;
+    }
+    if (domain in this._integrations) {
+      return this._integrations[domain];
+    }
+    for (const integration of Object.values(this._integrations)) {
+      if (integration.integrations && domain in integration.integrations) {
+        return integration.integrations[domain];
+      }
+    }
+    return undefined;
+  }
 
   private _getIntegrations() {
     return this._filterIntegrations(
@@ -424,7 +441,7 @@ class AddIntegrationDialog extends LitElement {
           }
         ),
         confirm: () => {
-          const supportIntegration = this._integrations?.[domain];
+          const supportIntegration = this._findIntegration(domain);
           this.closeDialog();
           if (["zha", "zwave_js"].includes(domain)) {
             protocolIntegrationPicked(this, this.hass, domain);
