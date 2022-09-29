@@ -152,26 +152,38 @@ class AddIntegrationDialog extends LitElement {
         }))
         .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
 
-      const integrations: IntegrationListItem[] = Object.entries(i)
-        .filter(
-          ([_domain, integration]) =>
-            integration.config_flow ||
-            integration.iot_standards ||
-            integration.integrations
-        )
-        .map(([domain, integration]) => ({
-          domain,
-          name: integration.name || domainToName(localize, domain),
-          config_flow: integration.config_flow,
-          iot_standards: integration.iot_standards,
-          integrations: integration.integrations
-            ? Object.entries(integration.integrations).map(
-                ([dom, val]) => val.name || domainToName(localize, dom)
-              )
-            : undefined,
-          is_built_in: integration.is_built_in !== false,
-          cloud: integration.iot_class?.startsWith("cloud_"),
-        }));
+      const integrations: IntegrationListItem[] = [];
+      const yamlIntegrations: IntegrationListItem[] = [];
+
+      Object.entries(i).forEach(([domain, integration]) => {
+        if (
+          integration.config_flow ||
+          integration.iot_standards ||
+          integration.integrations
+        ) {
+          integrations.push({
+            domain,
+            name: integration.name || domainToName(localize, domain),
+            config_flow: integration.config_flow,
+            iot_standards: integration.iot_standards,
+            integrations: integration.integrations
+              ? Object.entries(integration.integrations).map(
+                  ([dom, val]) => val.name || domainToName(localize, dom)
+                )
+              : undefined,
+            is_built_in: integration.is_built_in !== false,
+            cloud: integration.iot_class?.startsWith("cloud_"),
+          });
+        } else if (filter) {
+          yamlIntegrations.push({
+            domain,
+            name: integration.name || domainToName(localize, domain),
+            config_flow: integration.config_flow,
+            is_built_in: integration.is_built_in !== false,
+            cloud: integration.iot_class?.startsWith("cloud_"),
+          });
+        }
+      });
 
       for (const [domain, domainBrands] of Object.entries(sb)) {
         const integration = this._findIntegration(domain);
@@ -223,31 +235,11 @@ class AddIntegrationDialog extends LitElement {
             is_built_in: integration.is_built_in !== false,
             cloud: integration.iot_class?.startsWith("cloud_"),
           }));
-        const yaml: IntegrationListItem[] = Object.entries(i)
-          .filter(
-            ([_domain, integration]) =>
-              !integration.config_flow &&
-              !integration.iot_standards &&
-              !integration.integrations
-          )
-          .map(([domain, integration]) => ({
-            domain,
-            name: integration.name || domainToName(localize, domain),
-            config_flow: integration.config_flow,
-            iot_standards: integration.iot_standards,
-            integrations: integration.integrations
-              ? Object.entries(integration.integrations).map(
-                  ([dom, val]) => val.name || domainToName(localize, dom)
-                )
-              : undefined,
-            is_built_in: integration.is_built_in !== false,
-            cloud: integration.iot_class?.startsWith("cloud_"),
-          }));
         return [
           ...new Fuse(integrations, options)
             .search(filter)
             .map((result) => result.item),
-          ...new Fuse(yaml, options)
+          ...new Fuse(yamlIntegrations, options)
             .search(filter)
             .map((result) => result.item),
           ...new Fuse(helpers, options)
@@ -447,8 +439,10 @@ class AddIntegrationDialog extends LitElement {
 
   private _integrationPicked(ev) {
     const listItem = ev.target.closest("ha-integration-list-item");
-    const integration: IntegrationListItem = listItem.integration;
-    this._handleIntegrationPicked(integration);
+    if (!listItem) {
+      return;
+    }
+    this._handleIntegrationPicked(listItem.integration);
   }
 
   private async _handleIntegrationPicked(integration: IntegrationListItem) {
