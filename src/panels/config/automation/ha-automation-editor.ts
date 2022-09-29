@@ -229,11 +229,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             : ""}
 
           <mwc-list-item
-            .disabled=${!this.entityId && !this.automationId}
+            .disabled=${!this._readOnly && !this.automationId}
             graphic="icon"
             @click=${this._duplicate}
           >
-            ${this.hass.localize("ui.panel.config.automation.picker.duplicate")}
+            ${this.hass.localize(
+              this._readOnly
+                ? "ui.panel.config.automation.editor.migrate"
+                : "ui.panel.config.automation.editor.duplicate"
+            )}
             <ha-svg-icon
               slot="graphic"
               .path=${mdiContentDuplicate}
@@ -614,12 +618,17 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   };
 
   private async _duplicate() {
-    const result = await this.confirmUnsavedChanged();
+    const result = this._readOnly
+      ? await showConfirmationDialog(this, {
+          title: "Migrate automation?",
+          text: "You can migrate this automation, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old automation from your configuration. Do you want to migrate this automation?",
+        })
+      : await this.confirmUnsavedChanged();
     if (result) {
       showAutomationEditor({
         ...this._config,
         id: undefined,
-        alias: undefined,
+        alias: this._readOnly ? this._config?.alias : undefined,
       });
     }
   }
