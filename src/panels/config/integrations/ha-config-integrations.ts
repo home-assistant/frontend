@@ -312,6 +312,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       undefined,
       true
     );
+    this._fetchManifests();
     if (this.route.path === "/add") {
       this._handleAdd(localizePromise);
     }
