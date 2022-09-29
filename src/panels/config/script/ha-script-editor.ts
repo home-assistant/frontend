@@ -410,7 +410,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                       )}
                       <mwc-button slot="action" @click=${this._duplicate}>
                         ${this.hass.localize(
-                          "ui.panel.config.sript.editor.migrate"
+                          "ui.panel.config.script.editor.migrate"
                         )}
                       </mwc-button>
                     </ha-alert>`
