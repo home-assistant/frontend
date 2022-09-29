@@ -205,7 +205,7 @@ export class HuiStatisticsGraphCardEditor
       ...this._config,
       stat_types: configured_stat_types,
     };
-    const displayUnit = this._metaDatas?.[0]?.display_unit_of_measurement;
+    const displayUnit = this._metaDatas?.[0]?.state_unit_of_measurement;
 
     return html`
       <ha-form

@@ -642,8 +642,8 @@ export const getEnergyGasUnit = (
       continue;
     }
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
-    if (statisticIdWithMeta?.display_unit_of_measurement) {
-      return statisticIdWithMeta.display_unit_of_measurement;
+    if (statisticIdWithMeta?.state_unit_of_measurement) {
+      return statisticIdWithMeta.state_unit_of_measurement;
     }
   }
   return undefined;
