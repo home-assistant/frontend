@@ -5,7 +5,10 @@ import "../../../components/ha-dialog";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { updateStatisticsMetadata } from "../../../data/recorder";
+import {
+  changeStatisticUnit,
+  updateStatisticsMetadata,
+} from "../../../data/recorder";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
 import type { DialogStatisticsUnsupportedUnitMetaParams } from "./show-dialog-statistics-fix-unsupported-unit-meta";
@@ -43,8 +46,12 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
           should be ${this._params.issue.data.supported_unit}.
         </p>
         <p>
-          Do you want to update the unit of the history statistics to
-          ${this._params.issue.data.supported_unit}?
+          ${this._params.issue.type === "unsupported_unit_metadata_can_convert"
+            ? `Do you want to convert all the historic statistic values to
+          ${this._params.issue.data.supported_unit}?`
+            : `Do you want to update the unit of the history statistics to
+          ${this._params.issue.data.supported_unit} without converting the
+          values?`}
         </p>
 
         <mwc-button
@@ -62,11 +69,20 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   }
 
   private async _fixIssue(): Promise<void> {
-    await updateStatisticsMetadata(
-      this.hass,
-      this._params!.issue.data.statistic_id,
-      this._params!.issue.data.supported_unit
-    );
+    if (this._params!.issue.type === "unsupported_unit_metadata_can_convert") {
+      await changeStatisticUnit(
+        this.hass,
+        this._params!.issue.data.statistic_id,
+        this._params!.issue.data.metadata_unit,
+        this._params!.issue.data.supported_unit
+      );
+    } else {
+      await updateStatisticsMetadata(
+        this.hass,
+        this._params!.issue.data.statistic_id,
+        this._params!.issue.data.supported_unit
+      );
+    }
     this._params?.fixedCallback();
     this.closeDialog();
   }

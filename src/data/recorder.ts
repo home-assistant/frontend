@@ -37,6 +37,7 @@ export type StatisticsValidationResult =
   | StatisticsValidationResultUnitsChanged
   | StatisticsValidationResultUnitsChangedCanConvert
   | StatisticsValidationResultUnsupportedUnitMetadata
+  | StatisticsValidationResultUnsupportedUnitMetadataCanConvert
   | StatisticsValidationResultUnsupportedUnitState;
 
 export interface StatisticsValidationResultNoState {
@@ -71,6 +72,16 @@ export interface StatisticsValidationResultUnitsChangedCanConvert {
 
 export interface StatisticsValidationResultUnsupportedUnitMetadata {
   type: "unsupported_unit_metadata";
+  data: {
+    statistic_id: string;
+    device_class: string;
+    metadata_unit: string;
+    supported_unit: string;
+  };
+}
+
+export interface StatisticsValidationResultUnsupportedUnitMetadataCanConvert {
+  type: "unsupported_unit_metadata_can_convert";
   data: {
     statistic_id: string;
     device_class: string;
