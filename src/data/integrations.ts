@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../types";
 
-export type IotStandards = "z-wave" | "zigbee" | "homekit" | "matter";
+export type IotStandards = "zwave" | "zigbee" | "homekit" | "matter";
 
 export interface Integration {
   name?: string;

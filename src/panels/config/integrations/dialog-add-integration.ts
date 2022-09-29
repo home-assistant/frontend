@@ -22,6 +22,7 @@ import {
 } from "../../../data/integration";
 import {
   getIntegrationDescriptions,
+  Integration,
   Integrations,
 } from "../../../data/integrations";
 import {
@@ -173,11 +174,12 @@ class AddIntegrationDialog extends LitElement {
         }));
 
       for (const [domain, domainBrands] of Object.entries(sb)) {
-        const integration = i[domain];
+        const integration = this._findIntegration(domain);
         if (
-          !integration.config_flow &&
-          !integration.iot_standards &&
-          !integration.integrations
+          !integration ||
+          (!integration.config_flow &&
+            !integration.iot_standards &&
+            !integration.integrations)
         ) {
           continue;
         }
@@ -221,8 +223,31 @@ class AddIntegrationDialog extends LitElement {
             is_built_in: integration.is_built_in !== false,
             cloud: integration.iot_class?.startsWith("cloud_"),
           }));
+        const yaml: IntegrationListItem[] = Object.entries(i)
+          .filter(
+            ([_domain, integration]) =>
+              !integration.config_flow &&
+              !integration.iot_standards &&
+              !integration.integrations
+          )
+          .map(([domain, integration]) => ({
+            domain,
+            name: integration.name || domainToName(localize, domain),
+            config_flow: integration.config_flow,
+            iot_standards: integration.iot_standards,
+            integrations: integration.integrations
+              ? Object.entries(integration.integrations).map(
+                  ([dom, val]) => val.name || domainToName(localize, dom)
+                )
+              : undefined,
+            is_built_in: integration.is_built_in !== false,
+            cloud: integration.iot_class?.startsWith("cloud_"),
+          }));
         return [
           ...new Fuse(integrations, options)
+            .search(filter)
+            .map((result) => result.item),
+          ...new Fuse(yaml, options)
             .search(filter)
             .map((result) => result.item),
           ...new Fuse(helpers, options)
@@ -238,6 +263,21 @@ class AddIntegrationDialog extends LitElement {
       ];
     }
   );
+
+  private _findIntegration(domain: string): Integration | undefined {
+    if (!this._integrations) {
+      return undefined;
+    }
+    if (domain in this._integrations) {
+      return this._integrations[domain];
+    }
+    for (const integration of Object.values(this._integrations)) {
+      if (integration.integrations && domain in integration.integrations) {
+        return integration.integrations[domain];
+      }
+    }
+    return undefined;
+  }
 
   private _getIntegrations() {
     return this._filterIntegrations(
@@ -424,7 +464,7 @@ class AddIntegrationDialog extends LitElement {
           }
         ),
         confirm: () => {
-          const supportIntegration = this._integrations?.[domain];
+          const supportIntegration = this._findIntegration(domain);
           this.closeDialog();
           if (["zha", "zwave_js"].includes(domain)) {
             protocolIntegrationPicked(this, this.hass, domain);
@@ -518,8 +558,8 @@ class AddIntegrationDialog extends LitElement {
                 >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_flow.documentation"
-                  )}
-                </a>`
+                  )}</a
+                >`
               : this.hass.localize(
                   "ui.panel.config.integrations.config_flow.documentation"
                 ),
@@ -584,6 +624,11 @@ class AddIntegrationDialog extends LitElement {
     haStyleScrollbar,
     haStyleDialog,
     css`
+      @media all and (min-width: 550px) {
+        ha-dialog {
+          --mdc-dialog-min-width: 500px;
+        }
+      }
       ha-dialog {
         --dialog-content-padding: 0;
       }
