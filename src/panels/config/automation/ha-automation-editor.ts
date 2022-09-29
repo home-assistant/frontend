@@ -43,8 +43,8 @@ import {
   AutomationConfig,
   AutomationEntity,
   deleteAutomation,
-  fetchAutomationConfig,
-  getAutomationConfig,
+  getAutomationStateConfig,
+  fetchAutomationFileConfig,
   getAutomationEditorInitData,
   saveAutomationConfig,
   showAutomationEditor,
@@ -443,7 +443,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     }
 
     if (changedProps.has("entityId") && this.entityId) {
-      fetchAutomationConfig(this.hass, this.entityId).then((c) => {
+      getAutomationStateConfig(this.hass, this.entityId).then((c) => {
         this._config = c.config;
       });
       this._entityId = this.entityId;
@@ -475,7 +475,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _loadConfig() {
     try {
-      const config = await getAutomationConfig(
+      const config = await fetchAutomationFileConfig(
         this.hass,
         this.automationId as string
       );
