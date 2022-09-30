@@ -20,7 +20,7 @@ type NavigationItem = {
   title: string;
 };
 
-const DEFAULT_ITEMS: NavigationItem[] = [{ path: "", icon: "", title: "" }];
+const DEFAULT_ITEMS: NavigationItem[] = [];
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<NavigationItem> = (item) => html`
