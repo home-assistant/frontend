@@ -33,7 +33,7 @@ export class HuiViewEditor extends LitElement {
   private _suggestedPath = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, subview: boolean, showAdvanced: boolean) =>
+    (localize: LocalizeFunc) =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -69,14 +69,6 @@ export class HuiViewEditor extends LitElement {
             boolean: {},
           },
         },
-        ...(subview && showAdvanced
-          ? [
-              {
-                name: "back_path",
-                selector: { navigation: {} },
-              },
-            ]
-          : []),
       ] as const
   );
 
@@ -98,11 +90,7 @@ export class HuiViewEditor extends LitElement {
       return html``;
     }
 
-    const schema = this._schema(
-      this.hass.localize,
-      this._config.subview ?? false,
-      this.hass.userData?.showAdvanced ?? false
-    );
+    const schema = this._schema(this.hass.localize);
 
     const data = {
       theme: "Backend-selected",
@@ -128,9 +116,6 @@ export class HuiViewEditor extends LitElement {
     if (config.type === "masonry") {
       delete config.type;
     }
-    if (!config.subview) {
-      delete config.back_path;
-    }
 
     if (
       this.isNew &&
@@ -155,10 +140,6 @@ export class HuiViewEditor extends LitElement {
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.type");
       case "subview":
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.subview");
-      case "back_path":
-        return this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.back_path"
-        );
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
@@ -173,10 +154,6 @@ export class HuiViewEditor extends LitElement {
       case "subview":
         return this.hass.localize(
           "ui.panel.lovelace.editor.edit_view.subview_helper"
-        );
-      case "back_path":
-        return this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.back_path_helper"
         );
       default:
         return undefined;
