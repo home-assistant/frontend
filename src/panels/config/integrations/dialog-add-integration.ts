@@ -80,10 +80,10 @@ class AddIntegrationDialog extends LitElement {
 
   private _height?: number;
 
-  public showDialog(params: AddIntegrationDialogParams): void {
+  public showDialog(params?: AddIntegrationDialogParams): void {
     this._open = true;
-    this._pickedBrand = params.brand;
-    this._initialFilter = params.initialFilter;
+    this._pickedBrand = params?.brand;
+    this._initialFilter = params?.initialFilter;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
