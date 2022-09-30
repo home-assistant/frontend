@@ -28,7 +28,7 @@ class HaDomainIntegrations extends LitElement {
 
   @property() public domain!: string;
 
-  @property({ attribute: false }) public integration!: Integration;
+  @property({ attribute: false }) public integration?: Integration;
 
   @property({ attribute: false })
   public flowsInProgress?: DataEntryFlowProgress[];
@@ -192,8 +192,8 @@ class HaDomainIntegrations extends LitElement {
     }
 
     if (
-      (domain === this.domain && !this.integration.config_flow) ||
-      !this.integration.integrations?.[domain]?.config_flow
+      (domain === this.domain && !this.integration!.config_flow) ||
+      !this.integration!.integrations?.[domain]?.config_flow
     ) {
       const manifest = await fetchIntegrationManifest(this.hass, domain);
       showAlertDialog(this, {
