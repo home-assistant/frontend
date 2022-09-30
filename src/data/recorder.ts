@@ -20,7 +20,7 @@ export interface StatisticValue {
 }
 
 export interface StatisticsMetaData {
-  display_unit_of_measurement: string;
+  state_unit_of_measurement: string;
   statistics_unit_of_measurement: string;
   statistic_id: string;
   source: string;
@@ -254,14 +254,14 @@ export const adjustStatisticsSum = (
   statistic_id: string,
   start_time: string,
   adjustment: number,
-  display_unit: string
+  adjustment_unit_of_measurement: string
 ): Promise<void> =>
   hass.callWS({
     type: "recorder/adjust_sum_statistics",
     statistic_id,
     start_time,
     adjustment,
-    display_unit,
+    adjustment_unit_of_measurement,
   });
 
 export const getStatisticLabel = (
