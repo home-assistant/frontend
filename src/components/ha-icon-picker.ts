@@ -13,7 +13,7 @@ type IconItem = {
   icon: string;
   keywords: string[];
 };
-let iconItems: IconItem[] = [{ icon: "", keywords: [] }];
+let iconItems: IconItem[] = [];
 let iconLoaded = false;
 
 // eslint-disable-next-line lit/prefer-static-styles
