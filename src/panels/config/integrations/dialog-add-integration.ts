@@ -385,7 +385,11 @@ class AddIntegrationDialog extends LitElement {
       return html``;
     }
     return html`
-      <ha-integration-list-item .hass=${this.hass} .integration=${integration}>
+      <ha-integration-list-item
+        brand
+        .hass=${this.hass}
+        .integration=${integration}
+      >
       </ha-integration-list-item>
     `;
   };
