@@ -741,6 +741,7 @@
             "copied_clipboard": "클립보드에 복사되었습니다",
             "delete": "삭제하기",
             "disable": "비활성화하기",
+            "duplicate": "복제",
             "edit": "편집하기",
             "enable": "활성화하기",
             "error_required": "필수 요소",
@@ -813,6 +814,9 @@
                 "temperature_down": "온도 감소",
                 "temperature_up": "온도 증가"
             },
+            "config-entry-picker": {
+                "config_entry": "통합구성요소"
+            },
             "data-table": {
                 "clear": "지우기",
                 "filtering_by": "필터링",
@@ -852,6 +856,9 @@
                     "no_entities": "구성요소가 없습니다",
                     "no_match": "일치하는 구성요소를 찾을 수 없습니다",
                     "show_entities": "구성요소 표시하기"
+                },
+                "entity-state-picker": {
+                    "state": "상태"
                 }
             },
             "history_charts": {
@@ -1214,6 +1221,7 @@
                 },
                 "input_number": {
                     "box": "입력란",
+                    "initial": "초기값",
                     "max": "최댓값",
                     "min": "최솟값",
                     "mode": "디스플레이 모드",
@@ -1266,6 +1274,7 @@
                 "dismiss": "대화창 닫기",
                 "edit": "구성요소 편집하기",
                 "history": "기록 내용",
+                "info": "정보",
                 "last_changed": "최근 변경 됨",
                 "last_updated": "최근 업데이트 됨",
                 "logbook": "로그북",
@@ -1675,6 +1684,8 @@
                     "editor": {
                         "actions": {
                             "add": "동작 추가하기",
+                            "alias": "동작 이름",
+                            "change_alias": "동작 이름 바꾸기",
                             "delete": "삭제하기",
                             "delete_confirm": "정말 삭제하시겠습니까?",
                             "disable": "비활성화",
@@ -1693,9 +1704,11 @@
                             "run_action_success": "동작이 성공적으로 실행되었습니다.",
                             "type": {
                                 "activate_scene": {
-                                    "label": "장면 활성화"
+                                    "label": "장면 활성화",
+                                    "scene": "장면"
                                 },
                                 "choose": {
+                                    "add_default": "기본 동작 추가",
                                     "add_option": "옵션 추가하기",
                                     "conditions": "조건",
                                     "default": "기본 동작",
@@ -1732,6 +1745,7 @@
                                     "label": "이벤트 발행"
                                 },
                                 "if": {
+                                    "add_else": "기타 추가하기",
                                     "else": "Else",
                                     "if": "If",
                                     "label": "If-then",
@@ -1793,8 +1807,11 @@
                             "no_blueprints": "블루프린트가 존재하지 않습니다",
                             "no_inputs": "이 블루프린트에는 입력이 없습니다."
                         },
+                        "change_mode": "모드 변경하기",
                         "conditions": {
                             "add": "조건 추가하기",
+                            "alias": "조건 이름",
+                            "change_alias": "조건 이름 바꾸기",
                             "delete": "삭제하기",
                             "delete_confirm": "정말 삭제하시겠습니까?",
                             "duplicate": "복제하기",
@@ -1803,8 +1820,11 @@
                             "invalid_condition": "잘못된 조건 구성",
                             "learn_more": "조건에 대해 더 알아보기",
                             "name": "조건",
+                            "rename": "이름 변경",
                             "test": "테스트",
                             "test_failed": "조건을 테스트하는 동안 오류가 발생했습니다.",
+                            "testing_error": "조건 만족하지 못함",
+                            "testing_pass": "조건 만족됨",
                             "type": {
                                 "and": {
                                     "label": "다중조건 (And)"
@@ -1896,6 +1916,8 @@
                         "enable": "활성화",
                         "enable_disable": "자동화 활성화 / 비활성화",
                         "introduction": "자동화를 사용하여 집에 활기를 불어넣어 보세요.",
+                        "load_error_not_deletable": "automations.yaml의 자동화만 삭제할 수 있습니다.",
+                        "load_error_not_duplicable": "automations.yaml의 자동화만 복제할 수 있습니다.",
                         "load_error_not_editable": "automations.yaml 의 자동화만 편집할 수 있습니다.",
                         "load_error_unknown": "자동화를 읽어오는 도중 오류가 발생했습니다 ({err_no}).",
                         "max": {
@@ -1914,12 +1936,21 @@
                         },
                         "move_down": "아래로 이동",
                         "move_up": "위로 이동",
+                        "re_order": "재정렬",
+                        "re_order_mode": {
+                            "description": "재정렬 모드에 있으며 트리거, 조건 및 작업을 재정렬할 수 있습니다.",
+                            "exit": "나가기",
+                            "title": "재정렬 모드"
+                        },
                         "rename": "이름 변경",
                         "run": "실행",
                         "save": "저장하기",
+                        "show_info": "정보",
                         "show_trace": "추적 표시하기",
                         "triggers": {
                             "add": "트리거 추가하기",
+                            "alias": "트리거 이름",
+                            "change_alias": "트리거 이름 바꾸기",
                             "delete": "삭제하기",
                             "delete_confirm": "정말 삭제하시겠습니까?",
                             "duplicate": "복제하기",
@@ -1929,6 +1960,7 @@
                             "introduction": "트리거는 자동화 규칙을 처리하는 시작점입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant는 조건을 확인하고 동작을 호출합니다.",
                             "learn_more": "트리거에 대해 더 알아보기",
                             "name": "트리거",
+                            "rename": "이름 변경",
                             "triggered": "트리거됨",
                             "type": {
                                 "calendar": {
@@ -2044,6 +2076,7 @@
                         "delete_confirm": "이 자동화를 삭제하시겠습니까?",
                         "dev_automation": "자동화 디버그하기",
                         "dev_only_editable": "automations.yaml에 정의된 자동화 만 디버깅할 수 있습니다.",
+                        "disabled": "비활성화됨",
                         "duplicate": "복제하기",
                         "duplicate_automation": "자동화 복제하기",
                         "edit_automation": "자동화 편집하기",
@@ -2133,6 +2166,7 @@
                         "add_blueprint": "블루프린트 가져오기",
                         "confirm_delete_header": "이 블루프린트를 삭제하시겠습니까?",
                         "confirm_delete_text": "이 블루프린트를 삭제하시겠습니까?",
+                        "confirm_delete_title": "블루프린트를 삭제하시겠습니까?",
                         "create_automation": "자동화 만들기",
                         "create_script": "스크립트 만들기",
                         "delete_blueprint": "블루프린트 삭제하기",
@@ -2278,10 +2312,13 @@
                         "available_at": "웹 훅은 다음의 URL을 사용해 주세요:",
                         "close": "닫기",
                         "confirm_disable": "이 웹 훅을 비활성화하시겠습니까?",
+                        "confirm_disable_text": "{name}에 대한 웹훅이 비활성화됩니다.",
+                        "confirm_disable_title": "웹훅 비활성화",
                         "copied_to_clipboard": "클립보드에 복사됨",
                         "info_disable_webhook": "이 웹 훅을 더 이상 사용하지 않으려면, 다음을 해보세요: ",
                         "link_disable_webhook": "비활성화",
                         "managed_by_integration": "이 웹 훅은 통합구성요소에 의해 관리되고 있어 비활성화할 수 없습니다.",
+                        "public_url": "공개된 주소",
                         "view_documentation": "관련 문서 보기",
                         "webhook_for": "{name} 웹 훅"
                     },
@@ -2475,6 +2512,7 @@
                     "cant_edit": "UI에서 작성된 항목만 편집할 수 있습니다.",
                     "caption": "기기",
                     "confirm_delete": "이 기기를 삭제하시겠습니까?",
+                    "confirm_delete_integration": "{integration} 에서 이 기기를 제거하시겠습니까?",
                     "confirm_disable_config_entry": "{entry_name} 구성 항목에 대한 기기가 더 이상 존재하지 않습니다. 구성 항목을 비활성화하시겠습니까?",
                     "confirm_rename_entity_ids": "구성요소의 ID 이름 또한 바꾸시겠습니까?",
                     "confirm_rename_entity_ids_warning": "이렇게 해도 현재 이러한 구성요소를 사용하고 있는 구성(예: 자동화, 스크립트, 장면, 대시보드)은 변경되지 않습니다! 새 구성요소 ID를 사용하려면 직접 업데이트해야 합니다!",
@@ -2521,6 +2559,7 @@
                     },
                     "name": "이름",
                     "no_devices": "기기 없음",
+                    "open_configuration_url": "방문",
                     "open_configuration_url_device": "기기 열기",
                     "open_configuration_url_service": "서비스 열기",
                     "picker": {
@@ -2814,11 +2853,17 @@
                     "host_shutting_down": "호스트 종료",
                     "memory": "메모리",
                     "processor": "프로세서",
+                    "reboot": "재부팅",
                     "reboot_host": "호스트 재부팅",
                     "reboot_host_confirm": "호스트를 재부팅하시겠습니까?",
+                    "reboot_host_text": "Core 및 모든 애드온을 포함하는 전체 시스템을 재부팅합니다.",
+                    "reboot_host_title": "시스템을 재부팅하시겠습니까?",
                     "rebooting_host": "호스트 재부팅",
+                    "shutdown": "종료",
                     "shutdown_host": "호스트 종료",
-                    "shutdown_host_confirm": "호스트를 종료하시겠습니까?"
+                    "shutdown_host_confirm": "호스트를 종료하시겠습니까?",
+                    "shutdown_host_text": "Core 및 모든 추가 기능을 포함하는 전체 시스템이 종료됩니다.",
+                    "shutdown_host_title": "시스템을 끄시겠습니까?"
                 },
                 "header": "Home Assistant 구성하기",
                 "helpers": {
@@ -2898,6 +2943,8 @@
                         "configure": "구성",
                         "delete": "삭제하기",
                         "delete_confirm": "{title} 통합구성요소를 제거하시겠습니까?",
+                        "delete_confirm_text": "해당 장치와 엔티티는 영구적으로 삭제됩니다.",
+                        "delete_confirm_title": "{title}을 삭제하시겠습니까?",
                         "depends_on_cloud": "클라우드 서비스",
                         "devices": "{count} {count, plural,\none{개의 기기}\nother{개의 기기}\n}",
                         "disable": {
@@ -2910,6 +2957,8 @@
                             },
                             "disabled_cause": "{cause}에 의해 비활성화되었습니다"
                         },
+                        "disable_confirm_text": "해당 장치와 엔티티가 비활성화됩니다.",
+                        "disable_confirm_title": "{title}을 사용하지 않도록 설정하시겠습니까?",
                         "disable_error": "통합구성요소 활성화 혹은 비활성화 실패",
                         "disable_restart_confirm": "이 통합구성요소를 비활성화하려면 Home Assistant를 재시작해주세요",
                         "disabled_polling": "데이터 업데이트를 위한 자동 폴링 비활성화",
@@ -2931,12 +2980,14 @@
                         "rename": "이름 변경하기",
                         "restart_confirm": "이 통합구성요소를 제거하려면 Home Assistant를 재시작해주세요",
                         "services": "{count} {count, plural,\n  one{개의 서비스}\n  other{개의 서비스}\n}",
+                        "setup_in_progress": "초기화 중",
                         "state": {
                             "failed_unload": "언로드 실패",
                             "loaded": "로드 됨",
                             "migration_error": "마이그레이션 오류",
                             "not_loaded": "로드되지 않음",
                             "setup_error": "설정 실패",
+                            "setup_in_progress": "초기화 중",
                             "setup_retry": "설정 재시도"
                         },
                         "system_options": "시스템 옵션",
@@ -3095,6 +3146,8 @@
                         "cant_edit_yaml": "YAML 모드에서 대시보드를 사용하고 있으므로 UI를 통해 리소스를 관리할 수 없습니다. configuration.yaml에서 관리해주세요.",
                         "caption": "리소스",
                         "confirm_delete": "이 리소스를 삭제하시겠습니까?",
+                        "confirm_delete_text": "{url} 이(가) 영구적으로 삭제됩니다.",
+                        "confirm_delete_title": "리소스를 삭제하시겠습니까?",
                         "detail": {
                             "create": "만들기",
                             "delete": "삭제하기",
@@ -3166,6 +3219,8 @@
                     "caption": "구성원",
                     "confirm_delete": "이 구성원을 삭제하시겠습니까?",
                     "confirm_delete2": "이 구성원에게 속한 모든 기기는 비할당 상태로 남게됩니다.",
+                    "confirm_delete_text": "이 사용자는 영구적으로 삭제되며이 사람에게 속한 모든 장치는 할당되지 않습니다.",
+                    "confirm_delete_title": "{name} 을(를) 삭제하시겠습니까?",
                     "create_person": "구성원 만들기",
                     "description": "Home Assistant가 추적하는 구성원을 관리합니다",
                     "detail": {
@@ -3250,8 +3305,12 @@
                         "unsaved_confirm": "변경된 내용을 저장하지 않았습니다. 이 페이지를 떠나시겠습니까?"
                     },
                     "picker": {
+                        "activate": "활성화",
                         "add_scene": "장면 추가하기",
+                        "delete": "삭제",
                         "delete_confirm": "이 장면을 삭제하시겠습니까?",
+                        "delete_confirm_text": "{name} 은(는) 영구적으로 삭제됩니다.",
+                        "delete_confirm_title": "장면을 삭제하시겠습니까?",
                         "delete_scene": "장면 삭제하기",
                         "duplicate": "복제하기",
                         "duplicate_scene": "장면 복제하기",
@@ -3260,6 +3319,7 @@
                         "headers": {
                             "activate": "활성화",
                             "edit": "편집하기",
+                            "last_activated": "마지막으로 활성화됨",
                             "name": "이름",
                             "show_info": "정보 표시",
                             "state": "상태"
@@ -3269,6 +3329,7 @@
                         "no_scenes": "장면을 찾을 수 없습니다",
                         "only_editable": "scenes.yaml에 정의된 장면만 편집할 수 있습니다.",
                         "pick_scene": "편집할 장면 선택하기",
+                        "show_info": "정보",
                         "show_info_scene": "장면에 대한 정보 표시하기"
                     }
                 },
@@ -3279,6 +3340,8 @@
                         "alias": "이름",
                         "default_name": "새로운 스크립트",
                         "delete_confirm": "이 스크립트를 삭제하시겠습니까?",
+                        "delete_confirm_text": "{name} 은(는) 영구적으로 삭제됩니다.",
+                        "delete_confirm_title": "스크립트를 삭제하시겠습니까?",
                         "delete_script": "스크립트 삭제하기",
                         "header": "스크립트: {name}",
                         "icon": "아이콘",
@@ -3287,6 +3350,8 @@
                         "id_already_exists_save_error": "고유한 ID가 아니므로 이 스크립트를 저장할 수 없습니다. 다른 ID를 선택하거나 자동생성하려면 비워두세요.",
                         "introduction": "스크립트를 사용하여 일련의 동작을 실행합니다.",
                         "link_available_actions": "사용가능한 동작에 대해 더 알아보기.",
+                        "load_error_not_deletable": "scripts.yaml에 있는 스크립트만 삭제할 수 있습니다.",
+                        "load_error_not_duplicable": "scripts.yaml의 스크립트만 복제할 수 있습니다.",
                         "load_error_not_editable": "scripts.yaml 의 스크립트만 편집할 수 있습니다.",
                         "max": {
                             "parallel": "최대 병렬 실행 수",
@@ -3304,10 +3369,12 @@
                         "save_script": "스크립트 저장",
                         "sequence": "시퀀스",
                         "sequence_sentence": "이 스크립트의 동작 시퀀스.",
+                        "show_info": "정보",
                         "show_trace": "추적 표시하기"
                     },
                     "picker": {
                         "add_script": "스크립트 추가하기",
+                        "delete": "삭제",
                         "dev_script": "스크립트 디버그",
                         "duplicate": "복제하기",
                         "duplicate_script": "스크립트 복제하기",
@@ -3320,8 +3387,13 @@
                         "introduction": "스크립트 편집기를 사용하여 스크립트를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "스크립트에 대해 더 알아보기",
                         "no_scripts": "스크립트를 찾을 수 없습니다",
+                        "run": "실행",
                         "run_script": "스크립트 실행",
-                        "show_info": "스크립트에 대한 정보 표시하기"
+                        "show_info": "스크립트에 대한 정보 표시하기",
+                        "show_trace": "추적표시"
+                    },
+                    "trace": {
+                        "edit_script": "스크립트 편집"
                     }
                 },
                 "storage": {
@@ -3453,6 +3525,8 @@
                         "caption": "사용자 보기",
                         "change_password": "비밀번호 변경",
                         "confirm_user_deletion": "{name}을(를) 삭제하시겠습니까?",
+                        "confirm_user_deletion_text": "이 사용자는 영구적으로 삭제됩니다.",
+                        "confirm_user_deletion_title": "{name} 을(를) 삭제하시겠습니까?",
                         "deactivate_user": "사용자 비활성화",
                         "delete_user": "사용자 삭제하기",
                         "group": "그룹",
@@ -3597,6 +3671,7 @@
                         "icon": "아이콘",
                         "icon_error_msg": "아이콘은 \"접두사:아이콘이름\" 형식이어야 합니다. 예: \"mdi:home\"",
                         "latitude": "위도",
+                        "location": "지도 위치",
                         "longitude": "경도",
                         "name": "이름",
                         "new_zone": "새로운 지역",
@@ -3699,6 +3774,7 @@
                         "device_config": "기기 구성",
                         "heal_node": "노드 복구",
                         "highest_security": "최고등급 보안",
+                        "node_id": "ID",
                         "node_ready": "기기 준비 완료",
                         "node_statistics": "장치 통계 표시",
                         "node_status": "기기 상태",
@@ -4526,7 +4602,8 @@
                             "name": "날씨 예보",
                             "show_both": "현재 날씨 및 예보 표시",
                             "show_only_current": "현재 날씨만 표시",
-                            "show_only_forecast": "예보만 표시"
+                            "show_only_forecast": "예보만 표시",
+                            "weather_to_show": "날씨 표시"
                         }
                     },
                     "cardpicker": {

@@ -738,6 +738,7 @@
             "copied_clipboard": "Copiado al portapapeles",
             "delete": "Eliminar",
             "disable": "Deshabilitar",
+            "duplicate": "Duplicar",
             "edit": "Editar",
             "enable": "Habilitar",
             "error_required": "Requerido",
@@ -1430,6 +1431,9 @@
                 "title": "Búsqueda rápida"
             },
             "repair_flow": {
+                "form": {
+                    "header": "Reparar problema"
+                },
                 "loading": {
                     "loading_flow": "Por favor, espere mientras se inicializa la reparación de {integration}"
                 },
@@ -1648,6 +1652,7 @@
                             "change_alias": "Renombrar acción",
                             "delete": "Eliminar",
                             "delete_confirm": "¿Está seguro que quiere eliminar?",
+                            "delete_confirm_title": "¿Eliminar acción?",
                             "disable": "Deshabilitar",
                             "disabled": "Deshabilitado",
                             "duplicate": "Duplicar",
@@ -1704,6 +1709,7 @@
                                     "label": "Disparar evento"
                                 },
                                 "if": {
+                                    "add_else": "Agregar condición \"else\"",
                                     "else": "Si no",
                                     "if": "Si",
                                     "label": "Si-entonces",
@@ -1765,12 +1771,14 @@
                             "no_blueprints": "No tienes planos",
                             "no_inputs": "Este plano no tiene ninguna entrada."
                         },
+                        "change_mode": "Cambiar modo",
                         "conditions": {
                             "add": "Agregar condición",
                             "alias": "Nombre de la condición",
                             "change_alias": "Renombrar condición",
                             "delete": "Eliminar",
                             "delete_confirm": "¿Está seguro de eliminar ésto?",
+                            "delete_confirm_title": "¿Eliminar condición?",
                             "duplicate": "Duplicar",
                             "header": "Condiciones",
                             "introduction": "Las condiciones son opcionales y evitarán una mayor ejecución a menos que se cumplan todas las condiciones.",
@@ -1873,6 +1881,8 @@
                         "enable": "Habilitar",
                         "enable_disable": "Habilitar/Deshabilitar automatización",
                         "introduction": "Use automatizaciones para darle vida a su hogar.",
+                        "load_error_not_deletable": "Solo se pueden eliminar las automatizaciones de automations.yaml.",
+                        "load_error_not_duplicable": "Solo se pueden duplicar las automatizaciones en automations.yaml.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
                         "load_error_unknown": "Error al cargar la automatización ({err_no}).",
                         "max": {
@@ -1892,12 +1902,22 @@
                         },
                         "move_down": "Mover hacia abajo",
                         "move_up": "Mover hacia arriba",
+                        "re_order": "Reordenar",
+                        "re_order_mode": {
+                            "description": "Está en modo de reordenación, puede reordenar sus activadores, condiciones y acciones.",
+                            "exit": "Salir",
+                            "title": "Modo de reordenación"
+                        },
+                        "rename": "Renombrar",
+                        "run": "Ejecutar",
                         "save": "Guardar",
+                        "show_info": "Información",
                         "show_trace": "Mostrar rastro",
                         "triggers": {
                             "add": "Agregar desencadenador",
                             "delete": "Eliminar",
                             "delete_confirm": "¿Está seguro de que desea eliminar esto?",
+                            "delete_confirm_text": "Se eliminará de forma permanente.",
                             "duplicate": "Duplicar",
                             "edit_id": "Editar ID de desencadenador",
                             "header": "Desencadenadores",
@@ -2012,7 +2032,9 @@
                             "type_select": "Tipo de desencadenador",
                             "unsupported_platform": "No hay soporte en la interfaz de usuario para la plataforma: {platform}"
                         },
-                        "unsaved_confirm": "Tiene cambios sin guardar. ¿Estás seguro que quieres salir?"
+                        "unsaved_confirm": "Tiene cambios sin guardar. ¿Estás seguro que quieres salir?",
+                        "unsaved_confirm_text": "Los cambios no guardados se perderán.",
+                        "unsaved_confirm_title": "¿Salir del editor?"
                     },
                     "picker": {
                         "add_automation": "Agregar automatización",
@@ -2021,6 +2043,7 @@
                         "delete_confirm": "¿Está seguro de que desea eliminar esta automatización?",
                         "dev_automation": "Depurar automatización",
                         "dev_only_editable": "Solo las automatizaciones que tienen un ID único asignado son depurables.",
+                        "disabled": "Deshabilitado",
                         "duplicate": "Duplicar",
                         "duplicate_automation": "Duplicar automatización",
                         "edit_automation": "Editar automatización",
@@ -2253,10 +2276,13 @@
                         "available_at": "El webhook está disponible en la siguiente URL:",
                         "close": "Cerrar",
                         "confirm_disable": "¿Está seguro de que desea deshabilitar este webhook?",
+                        "confirm_disable_text": "Webhook para {name} se deshabilitará.",
+                        "confirm_disable_title": "Deshabilitar webhook",
                         "copied_to_clipboard": "Copiado al portapapeles",
                         "info_disable_webhook": "Si ya no desea utilizar este webhook, puede",
                         "link_disable_webhook": "deshabilitarlo",
                         "managed_by_integration": "Este webhook es administrado por una integración y no se puede deshabilitar.",
+                        "public_url": "Dirección pública",
                         "view_documentation": "Ver documentación",
                         "webhook_for": "Webhook para {name}"
                     },
@@ -2451,6 +2477,7 @@
                     "cant_edit": "Solo puede editar elementos que se crean en la interfaz de usuario.",
                     "caption": "Dispositivos",
                     "confirm_delete": "¿Está seguro de que desea eliminar este dispositivo?",
+                    "confirm_delete_integration": "¿Está seguro de que quiere eliminar este dispositivo desde {integration}?",
                     "confirm_disable_config_entry": "No hay más dispositivos para la entrada de configuración {entry_name} , ¿quiere deshabilitarla?",
                     "confirm_rename_entity_ids": "¿También desea cambiar el nombre de los ID de entidad de las entidades?",
                     "confirm_rename_entity_ids_warning": "Esto no cambiará ninguna configuración (como automatizaciones, scripts, escenas, tableros) que esté usando actualmente estas entidades! Deberá actualizarlas usted mismo para poder utilizar los nuevos ID de entidad!",
@@ -2789,11 +2816,19 @@
                     "failed_to_reboot_host": "No se pudo reiniciar el host",
                     "failed_to_shutdown_host": "No se pudo apagar el host",
                     "host_shutting_down": "Apagado del host",
+                    "memory": "Memoria",
+                    "processor": "Procesador",
+                    "reboot": "Reiniciar",
                     "reboot_host": "Reiniciar host",
                     "reboot_host_confirm": "¿Está seguro de que desea reiniciar su host?",
+                    "reboot_host_text": "Esto reiniciará el sistema completo que incluye el núcleo y todos los complementos.",
+                    "reboot_host_title": "¿Reiniciar el sistema?",
                     "rebooting_host": "Reinicio del host",
+                    "shutdown": "Apagar",
                     "shutdown_host": "Apagar host",
-                    "shutdown_host_confirm": "¿Está seguro de que desea apagar su host?"
+                    "shutdown_host_confirm": "¿Está seguro de que desea apagar su host?",
+                    "shutdown_host_text": "Esto cerrará el sistema completo que incluye el núcleo y todos los complementos.",
+                    "shutdown_host_title": "¿Apagar sistema?"
                 },
                 "header": "Configurar Home Assistant",
                 "helpers": {
@@ -2823,6 +2858,7 @@
                         "input_number": "Número",
                         "input_select": "Desplegable",
                         "input_text": "Texto",
+                        "schedule": "Horario",
                         "timer": "Temporizador"
                     }
                 },
@@ -2873,6 +2909,8 @@
                         "configure": "Configurar",
                         "delete": "Eliminar",
                         "delete_confirm": "¿Está seguro de que desea eliminar la integración {title}?",
+                        "delete_confirm_text": "Sus dispositivos y entidades se eliminarán de forma permanente.",
+                        "delete_confirm_title": "¿Eliminar {title}?",
                         "depends_on_cloud": "Depende de la nube",
                         "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
                         "disable": {
@@ -2885,6 +2923,8 @@
                             },
                             "disabled_cause": "El dispositivo está inhabilitado por {cause}."
                         },
+                        "disable_confirm_text": "Sus dispositivos y entidades serán deshabilitados.",
+                        "disable_confirm_title": "¿Deshabilitar {title}?",
                         "disable_error": "Ha fallado la habilitación o deshabilitación de la integración",
                         "disable_restart_confirm": "Reinicie Home Assistant para terminar de deshabilitar esta integración",
                         "disabled_polling": "Sondeo automático para datos actualizados deshabilitado",
@@ -2942,6 +2982,9 @@
                             "loading_step": "Cargando próximo paso para {integration}"
                         },
                         "missing_credentials": "Configurar {integration} requiere configurar las credenciales de la aplicación. ¿Quiere hacer eso ahora?",
+                        "missing_zha": "Para agregar un dispositivo Zigbee, primero debe configurar la integración de Zigbee Home Automation. ¿Quieres hacer eso ahora?",
+                        "missing_zwave_js": "Para agregar un dispositivo Z-Wave, primero debe configurar la integración Z-Wave. ¿Quieres hacer eso ahora?",
+                        "missing_zwave_zigbee": "Para agregar un dispositivo {integration}, primero necesita {supported_hardware_link} y la configuración de {integration}. Si ya tiene el hardware, puede continuar con la configuración de {integration}.",
                         "next": "Siguiente",
                         "no_config_flow": "Esta integración no admite la configuración a través de la interfaz de usuario. Si siguió este enlace desde el sitio web de Home Assistant, asegúrese de ejecutar la última versión de Home Assistant.",
                         "not_all_required_fields": "No todos los campos requeridos estén llenos.",
@@ -2950,8 +2993,11 @@
                             "new_flow": "No, configure otra instancia de {integration}",
                             "title": "Hemos descubierto estos, ¿quieres configurarlos?"
                         },
+                        "proceed": "Proceder",
                         "submit": "Enviar",
-                        "success": "Éxito"
+                        "success": "Éxito",
+                        "supported_brand_flow": "El soporte para los dispositivos de {supported_brand} es proporcionado por {flow_domain_name}. ¿Desea continuar?",
+                        "supported_hardware": "hardware compatible"
                     },
                     "configure": "Configurar",
                     "configured": "Configurado",
@@ -3066,6 +3112,8 @@
                         "cant_edit_yaml": "Está utilizando Lovelace en modo YAML, por lo tanto, no puede administrar sus recursos a través de la interfaz de usuario. Adminístrelos en configuration.yaml.",
                         "caption": "Recursos",
                         "confirm_delete": "¿Estás seguro de que desea eliminar este recurso?",
+                        "confirm_delete_text": "{url} se eliminará de forma permanente.",
+                        "confirm_delete_title": "¿Eliminar recurso?",
                         "detail": {
                             "create": "Crear",
                             "delete": "Eliminar",
@@ -3137,6 +3185,8 @@
                     "caption": "Personas",
                     "confirm_delete": "¿Está seguro de que desea eliminar a esta persona?",
                     "confirm_delete2": "Todos los dispositivos que pertenecen a esta persona quedarán sin asignar.",
+                    "confirm_delete_text": "Esta persona se eliminará de forma permanente y todos los dispositivos que pertenezcan a esta persona quedarán sin asignar.",
+                    "confirm_delete_title": "¿Eliminar {name}?",
                     "create_person": "Crear persona",
                     "description": "Gestione las personas que rastrea Home Assistant.",
                     "detail": {
@@ -3218,11 +3268,17 @@
                         "load_error_unknown": "Error al cargar la escena ( {err_no} ).",
                         "name": "Nombre",
                         "save": "Guardar",
-                        "unsaved_confirm": "Tiene cambios sin guardar. ¿Estás seguro que quieres salir?"
+                        "unsaved_confirm": "Tiene cambios sin guardar. ¿Estás seguro que quieres salir?",
+                        "unsaved_confirm_text": "Los cambios no guardados se perderán.",
+                        "unsaved_confirm_title": "¿Salir del editor?"
                     },
                     "picker": {
+                        "activate": "Activar",
                         "add_scene": "Agregar escena",
+                        "delete": "Borrar",
                         "delete_confirm": "¿Estás seguro de que desea eliminar esta escena?",
+                        "delete_confirm_text": "{name} se eliminará de forma permanente.",
+                        "delete_confirm_title": "¿Eliminar escena?",
                         "delete_scene": "Eliminar escena",
                         "duplicate": "Duplicar",
                         "duplicate_scene": "Duplicar la escena",
@@ -3231,6 +3287,7 @@
                         "headers": {
                             "activate": "Activar",
                             "edit": "Editar",
+                            "last_activated": "Última activación",
                             "name": "Nombre",
                             "show_info": "Mostrar información",
                             "state": "Estado"
@@ -3240,6 +3297,7 @@
                         "no_scenes": "No pudimos encontrar ninguna escena.",
                         "only_editable": "Solo las escenas definidas en scenes.yaml son editables.",
                         "pick_scene": "Elija una escena para editar",
+                        "show_info": "Información",
                         "show_info_scene": "Mostrar información sobre la escena"
                     }
                 },
@@ -3250,6 +3308,8 @@
                         "alias": "Nombre",
                         "default_name": "Nuevo script",
                         "delete_confirm": "¿Está seguro de que desea eliminar este script?",
+                        "delete_confirm_text": "{name} se eliminará de forma permanente.",
+                        "delete_confirm_title": "¿Eliminar script?",
                         "delete_script": "Eliminar script",
                         "header": "Script: {name}",
                         "icon": "Ícono",
@@ -3258,6 +3318,8 @@
                         "id_already_exists_save_error": "No puede guardar este script porque el ID no es único, elija otro ID o déjelo en blanco para generar uno automáticamente.",
                         "introduction": "Utilice scripts para ejecutar una secuencia de acciones.",
                         "link_available_actions": "Obtenga más información sobre las acciones disponibles.",
+                        "load_error_not_deletable": "Solo se pueden eliminar los scripts de scripts.yaml.",
+                        "load_error_not_duplicable": "Solo se pueden duplicar los scripts de scripts.yaml.",
                         "load_error_not_editable": "Solo los scripts dentro de scripts.yaml son editables.",
                         "load_error_unknown": "Error al cargar el script ({err_no}).",
                         "max": {
@@ -3280,6 +3342,7 @@
                     },
                     "picker": {
                         "add_script": "Agregar script",
+                        "delete": "Borrar",
                         "dev_script": "Depurar Script",
                         "duplicate": "Duplicado",
                         "duplicate_script": "Duplicar script",
@@ -3294,6 +3357,9 @@
                         "no_scripts": "No pudimos encontrar ningún script",
                         "run_script": "Ejecutar script",
                         "show_info": "Mostrar información sobre el script"
+                    },
+                    "trace": {
+                        "edit_script": "Editar script"
                     }
                 },
                 "storage": {
@@ -3307,6 +3373,8 @@
                         "moving": "Mover disco de datos",
                         "moving_desc": "Reiniciar y mover el disco de datos. por favor ten paciencia",
                         "no_devices": "No se encontraron dispositivos conectados adecuados",
+                        "no_devices_text": "No se ha encontrado ningún dispositivo externo adecuado. La capacidad de almacenamiento del disco de datos externo debe ser mayor que la capacidad de almacenamiento del disco existente",
+                        "no_devices_title": "No se ha encontrado un almacenamiento adecuado",
                         "select_device": "Seleccionar nuevo disco de datos",
                         "title": "Mover disco de datos"
                     },
@@ -3421,6 +3489,8 @@
                         "caption": "Ver usuario",
                         "change_password": "Cambiar contraseña",
                         "confirm_user_deletion": "¿Está seguro de que desea eliminar el {name}?",
+                        "confirm_user_deletion_text": "Este usuario será eliminado permanentemente.",
+                        "confirm_user_deletion_title": "¿Eliminar {name}?",
                         "deactivate_user": "Desactivar usuario",
                         "delete_user": "Eliminar usuario",
                         "group": "Grupo",
@@ -3493,6 +3563,7 @@
                     },
                     "configuration_page": {
                         "download_backup": "Descargar copia de seguridad de la red",
+                        "migrate_radio": "Migrar Radio",
                         "network_settings_title": "Configuración de la red",
                         "shortcuts_title": "Atajos",
                         "update_button": "Actualizar configuración"
@@ -4108,7 +4179,8 @@
                 }
             },
             "history": {
-                "add_all": "Agregar todas las entidades"
+                "add_all": "Agregar todas las entidades",
+                "remove_all": "Eliminar todas las selecciones"
             },
             "lovelace": {
                 "add_entities": {

@@ -14,7 +14,6 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
@@ -75,6 +74,7 @@ import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
+import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -599,7 +599,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     // Make a copy so we can keep track of previously loaded manifests
     // for discovered flows (which are not part of these results)
     const manifests = { ...this._manifests };
-    for (const manifest of fetched) manifests[manifest.domain] = manifest;
+    for (const manifest of fetched) {
+      manifests[manifest.domain] = manifest;
+    }
     this._manifests = manifests;
   }
 
@@ -630,15 +632,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   }
 
   private _createFlow() {
-    showConfigFlowDialog(this, {
-      searchQuery: this._filter,
-      dialogClosedCallback: () => {
-        this._handleFlowUpdated();
-      },
-      showAdvanced: this.showAdvanced,
+    showAddIntegrationDialog(this, {
+      initialFilter: this._filter,
     });
-    // For config entries. Also loading config flow ones for added integration
-    this.hass.loadBackendTranslation("title", undefined, true);
   }
 
   private _handleMenuAction(ev: CustomEvent<ActionDetail>) {
@@ -683,8 +679,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   }
 
   private async _handleAdd(localizePromise: Promise<LocalizeFunc>) {
+    const brand = extractSearchParam("brand");
     const domain = extractSearchParam("domain");
     navigate("/config/integrations", { replace: true });
+
+    if (brand) {
+      showAddIntegrationDialog(this, {
+        brand,
+      });
+      return;
+    }
     if (!domain) {
       return;
     }
@@ -719,14 +723,14 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
     // Supported brand exists, so we can just create a flow
     if (Object.keys(supportedBrandsIntegrations).includes(domain)) {
-      const brand = supportedBrandsIntegrations[domain];
-      const slug = brand.supported_flows![0];
+      const supBrand = supportedBrandsIntegrations[domain];
+      const slug = supBrand.supported_flows![0];
 
       showConfirmationDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.supported_brand_flow",
           {
-            supported_brand: brand.name,
+            supported_brand: supBrand.name,
             flow_domain_name: domainToName(this.hass.localize, slug),
           }
         ),
@@ -735,9 +739,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             protocolIntegrationPicked(this, this.hass, slug);
             return;
           }
-
-          fireEvent(this, "handler-picked", {
-            handler: slug,
+          showConfigFlowDialog(this, {
+            dialogClosedCallback: () => {
+              this._handleFlowUpdated();
+            },
+            startFlowHandler: slug,
+            manifest: this._manifests[slug],
+            showAdvanced: this.hass.userData?.showAdvanced,
           });
         },
       });

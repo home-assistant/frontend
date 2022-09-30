@@ -619,6 +619,7 @@
                         "actions": {
                             "alias": "Nome da acción",
                             "change_alias": "Ronomear acción",
+                            "delete_confirm_title": "¿Borrar acción?",
                             "type": {
                                 "device_id": {
                                     "extra_fields": {
@@ -671,6 +672,8 @@
                     },
                     "picker": {
                         "delete": "Borrar",
+                        "delete_confirm_text": "{name} borrarase permanentemente.",
+                        "delete_confirm_title": "¿Borrar automatización?",
                         "dev_automation": "Depurar automatización",
                         "dev_only_editable": "Só se poden depurar os automatismos definidos en automations.yaml",
                         "show_info_automation": "Amosar información sobre a automatización"
@@ -722,6 +725,16 @@
                 },
                 "common": {
                     "learn_more": "Saber máis"
+                },
+                "core": {
+                    "section": {
+                        "core": {
+                            "core_config": {
+                                "latitude": "Latitude",
+                                "longitude": "Lonxitude"
+                            }
+                        }
+                    }
                 },
                 "devices": {
                     "confirm_disable_config_entry": "Non hai máis dispositivos para a entrada de configuración {entry_name} . Queres deshabilitar a entrada de configuración?",
@@ -793,6 +806,9 @@
                         }
                     }
                 },
+                "hardware": {
+                    "host_shutting_down": "sistema apagándose"
+                },
                 "helpers": {
                     "types": {
                         "input_text": "Texto"
@@ -800,6 +816,11 @@
                 },
                 "integrations": {
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_error_title": "Fallou o borrado de Credenciais de Aplicación",
+                            "delete_title": "Credenciais de Aplicación",
+                            "learn_more": "Aprende máis sobre Credenciais de Aplicacións"
+                        },
                         "disable": {
                             "disable_confirm": "Seguro que queres desactivar esta entrada de configuración? Os seus dispositivos e entidades estarán desactivados.",
                             "disabled": "Desactivado",
@@ -900,6 +921,12 @@
                     "visualization": {
                         "auto_zoom": "Zoom automático",
                         "refresh_topology": "Actualizar topoloxía"
+                    }
+                },
+                "zone": {
+                    "detail": {
+                        "latitude": "Latitude",
+                        "longitude": "Lonxitude"
                     }
                 },
                 "zwave_js": {
@@ -1094,6 +1121,16 @@
                         "shopping-list": {
                             "description": "A tarxeta da lista da compra permíte engadir, editar, marcar e eliminar elementos da súa lista da compra.",
                             "integration_not_loaded": "Esta tarxeta precisa configurar a integración \"Lista de compras\"."
+                        },
+                        "statistics-graph": {
+                            "pick_statistic": "Engade unha estatística",
+                            "picked_statistic": "Estatística",
+                            "stat_type_labels": {
+                                "max": "Máximo",
+                                "mean": "Media",
+                                "min": "Mínimo",
+                                "sum": "Suma"
+                            }
                         },
                         "thermostat": {
                             "description": "A tarxeta de Termostato ofréce o control da súa entidade climática. Permite cambiar a temperatura e o modo da entidade."

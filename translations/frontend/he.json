@@ -741,6 +741,7 @@
             "copied_clipboard": "הועתק ללוח",
             "delete": "מחיקה",
             "disable": "השבת",
+            "duplicate": "שיכפול",
             "edit": "עריכה",
             "enable": "אפשר",
             "error_required": "נדרש",
@@ -812,6 +813,9 @@
             "climate-control": {
                 "temperature_down": "הורדת טמפרטורה",
                 "temperature_up": "הגברת טמפרטורה"
+            },
+            "config-entry-picker": {
+                "config_entry": "שילוב"
             },
             "data-table": {
                 "clear": "נקה",
@@ -903,7 +907,7 @@
                 },
                 "not_loaded": "השילוב {platform} לא נטען. נא להוסיף אותו לתצורה שלך על ידי הוספת 'default_config:' או \"{platform}:\".",
                 "retrieval_error": "לא היתה אפשרות לטעון יומן רישום",
-                "show_trace": "הצג מעקב",
+                "show_trace": "עקבות",
                 "triggered_by": "הופעל על ידי",
                 "triggered_by_automation": "הופעל על ידי אוטומציה",
                 "triggered_by_event": "הופעל על ידי אירוע",
@@ -1284,9 +1288,11 @@
                 "restored": {
                     "confirm_remove_text": "האם בוודאות ברצונך להסיר ישות זו?",
                     "confirm_remove_title": "להסיר את הישות?",
-                    "not_provided": "ישות זו אינה זמינה כעת והיא יתומה משילוב או התקן שהוסרו, שונו או לא מתפקדים.",
+                    "no_longer_provided": "ישות זו אינה מסופקת עוד על ידי האינטגרציה של {integration}. אם הישות אינה בשימוש עוד, יש למחוק אותה בהגדרות.",
+                    "not_provided": "ישות זו אינה מסופקת עוד על ידי האינטגרציה של {integration}. אם הישות אינה בשימוש עוד, יש למחוק אותה בהגדרות.",
                     "remove_action": "הסר יישות",
-                    "remove_intro": "אם הישות כבר אינה בשימוש, ניתן לנקות אותה על ידי הסרתה."
+                    "remove_intro": "אם הישות כבר אינה בשימוש, ניתן לנקות אותה על ידי הסרתה.",
+                    "title": "הישות אינה זמינה"
                 },
                 "script": {
                     "last_action": "פעולה אחרונה",
@@ -1323,6 +1329,9 @@
                     "start_pause": "התחלה/השהיה",
                     "status": "מצב",
                     "stop": "עצירה"
+                },
+                "zone": {
+                    "graph_unit": "אנשים בבית"
                 }
             },
             "mqtt_device_debug_info": {
@@ -1632,7 +1641,7 @@
                         "entities": "ישויות"
                     },
                     "delete": {
-                        "confirmation_text": "כל ההתקנים באזור זה לא יהיו מוקצים.",
+                        "confirmation_text": "המשתמש הזה יימחק לצמיתות.",
                         "confirmation_title": "האם בוודאות ברצונך למחוק אזור זה?"
                     },
                     "description": "קיבוץ התקנים וישויות לאזורים",
@@ -1684,6 +1693,8 @@
                             "change_alias": "שינוי שם הפעולה",
                             "delete": "מחיקה",
                             "delete_confirm": "האם בוודאות ברצונך למחוק זאת?",
+                            "delete_confirm_text": "זה יימחק לצמיתות.",
+                            "delete_confirm_title": "למחוק פעולה?",
                             "disable": "השבתה",
                             "disabled": "מושבת",
                             "duplicate": "שיכפול",
@@ -1694,15 +1705,17 @@
                             "learn_more": "למד עוד על פעולות",
                             "name": "פעולה",
                             "rename": "שינוי שם",
+                            "run": "רוץ",
                             "run_action": "הרצת פעולות",
                             "run_action_error": "שגיאה בהרצת הפעולה",
                             "run_action_success": "הפעולה הורצה בהצלחה",
                             "type": {
                                 "activate_scene": {
-                                    "label": "הפעלת סצנה",
+                                    "label": "סצנה",
                                     "scene": "סצנה"
                                 },
                                 "choose": {
+                                    "add_default": "הוספת פעולות ברירת מחדל",
                                     "add_option": "הוספת אפשרות",
                                     "conditions": "תנאים",
                                     "default": "פעולות ברירת מחדל",
@@ -1736,9 +1749,10 @@
                                 "event": {
                                     "event": "אירוע",
                                     "event_data": "נתוני אירוע",
-                                    "label": "ירה אירוע"
+                                    "label": "אירוע"
                                 },
                                 "if": {
+                                    "add_else": "הוספת גם",
                                     "else": "אחרת",
                                     "if": "אם",
                                     "label": "אם-אז",
@@ -1792,18 +1806,23 @@
                             "unsupported_action": "אין תמיכה בעורך חזותי לפעולה: {action}"
                         },
                         "alias": "שם",
+                        "automation_alias": "שם אוטומציה",
+                        "automation_settings": "הגדרות אוטומציה",
                         "blueprint": {
                             "blueprint_to_use": "שרטוטים לשימוש",
                             "header": "שרטוט",
                             "no_blueprints": "אין לך שרטוטים",
                             "no_inputs": "לשרטוט זה אין קלט."
                         },
+                        "change_mode": "שינוי מצב",
                         "conditions": {
                             "add": "הוסף תנאי",
                             "alias": "שם התנאי",
                             "change_alias": "שינוי שם התנאי",
                             "delete": "מחיקה",
                             "delete_confirm": "האם בוודאות ברצונך למחוק זאת?",
+                            "delete_confirm_text": "זה יימחק לצמיתות.",
+                            "delete_confirm_title": "למחוק את התנאי?",
                             "duplicate": "שיכפול",
                             "header": "תנאים",
                             "introduction": "התנאים הם אופציונליים וימנעו מהאוטומציה לפעול אלא אם כן כל התנאים מתקיימים.",
@@ -1813,6 +1832,8 @@
                             "rename": "שינוי שם",
                             "test": "בדיקה",
                             "test_failed": "אירעה שגיאה בעת בדיקת מצב",
+                            "testing_error": "התנאי לא עבר",
+                            "testing_pass": "תנאי עובר",
                             "type": {
                                 "and": {
                                     "label": "וגם"
@@ -1897,16 +1918,22 @@
                             "label": "תיאור",
                             "placeholder": "תיאור אופציונלי"
                         },
+                        "disable": "השבת",
+                        "disabled": "אוטומציה מושבתת",
                         "edit_ui": "עריכה בעורך חזותי",
                         "edit_yaml": "עריכה ב-YAML",
+                        "enable": "אפשר",
                         "enable_disable": "הפעל / השבת אוטומציה",
                         "introduction": "השתמש באוטומציות כדי לעורר את ביתך לחיים.",
+                        "load_error_not_deletable": "ניתן למחוק רק אוטומציות הנמצאות ב-automations.yaml.",
+                        "load_error_not_duplicable": "ניתן לשכפל רק אוטומציות הנמצאות ב-automations.yaml.",
                         "load_error_not_editable": "רק אוטומציה ב automations.yaml ניתנים לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת אוטומציה ({err_no}).",
                         "max": {
                             "parallel": "המספר המרבי של ריצות מקבילות",
                             "queued": "אורך התור"
                         },
+                        "missing_name": "לא ניתן לשמור אוטומציה ללא שם",
                         "modes": {
                             "description": "המצב קובע מה קורה כאשר האוטומציה מופעלת כאשר הפעולות עדיין פועלות מגורם מפעיל קודם. מידע נוסף ב{documentation_link}.",
                             "documentation": "תיעוד אוטומציה",
@@ -1919,16 +1946,27 @@
                         },
                         "move_down": "הזז למטה",
                         "move_up": "הזז למעלה",
+                        "re_order": "הזמנה מחדש",
+                        "re_order_mode": {
+                            "description": "הינך במצב הזמנה מחדש, ניתן להזמין מחדש את המפעילים, התנאים והפעולות שלך.",
+                            "exit": "יציאה",
+                            "title": "מצב הזמנה מחדש"
+                        },
+                        "rename": "שינוי שם",
+                        "run": "רוץ",
                         "save": "שמור",
-                        "show_trace": "הצג מעקב",
+                        "show_info": "מידע",
+                        "show_trace": "עקבות",
                         "triggers": {
                             "add": "הוספת גורם מפעיל",
                             "alias": "שם גורם מפעיל",
                             "change_alias": "שינוי שם גורם מפעיל",
                             "delete": "מחיקה",
                             "delete_confirm": "האם בוודאות ברצונך למחוק זאת?",
+                            "delete_confirm_text": "זה יימחק לצמיתות.",
+                            "delete_confirm_title": "למחוק גורם מפעיל?",
                             "duplicate": "שיכפול",
-                            "edit_id": "עריכת מזהה גורם מפעיל",
+                            "edit_id": "עריכת מזהה",
                             "header": "גורמים מפעילים",
                             "id": "מזהה גורם מפעיל",
                             "introduction": "גורמים מפעילים הם מה שמתחיל כל אוטומציה. ניתן לציין מספר גורמים מפעילים עבור אותו כלל. לאחר הפעלת גורם מפעיל, Home Assistant יאמת את התנאים, אם ישנם, ויפעיל את הפעולה.",
@@ -2041,15 +2079,21 @@
                             "type_select": "סוג גורם מפעיל",
                             "unsupported_platform": "אין תמיכה בעורך חזותי עבור פלטפורמה: {platform}"
                         },
-                        "unsaved_confirm": "יש לך שינויים שלא נשמרו. האם בוודאות ברצונך להפסיק?"
+                        "unsaved_confirm": "יש לך שינויים שלא נשמרו. האם בוודאות ברצונך להפסיק?",
+                        "unsaved_confirm_text": "שינויים שלא נשמרו יאבדו.",
+                        "unsaved_confirm_title": "לעזוב את העורך?"
                     },
                     "picker": {
                         "add_automation": "יצירת אוטומציה",
+                        "delete": "מחיקה",
                         "delete_automation": "מחק אוטומציה",
                         "delete_confirm": "האם בוודאות ברצונך למחוק אוטומציה זו?",
+                        "delete_confirm_text": "{name} יימחק לצמיתות.",
+                        "delete_confirm_title": "למחוק אוטומציה?",
                         "dev_automation": "דבג אוטומציה",
                         "dev_only_editable": "רק אוטומציות שהוקצה להן מזהה ייחודי ניתנות לדיבוג.",
-                        "duplicate": "שכפל",
+                        "disabled": "מושבת",
+                        "duplicate": "שיכפול",
                         "duplicate_automation": "שכפול אוטומציה",
                         "edit_automation": "עריכת אוטומציה",
                         "header": "עורך אוטומציה",
@@ -2118,12 +2162,13 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "פורומים קהילתיים",
+                        "community_forums": "הצגת שרטוטים בפורומים הקהילתיים",
                         "error_no_url": "נא להזין את כתובת האתר של השרטוט.",
                         "file_name": "נתיב שרטוט",
                         "header": "ייבוא שרטוט",
-                        "import_btn": "תצוגה מקדימה של שרטוט",
+                        "import_btn": "תצוגה מקדימה",
                         "import_header": "שרטוט ''{name}''",
+                        "import_introduction": "יבא שרטוטים של משתמשים אחרים מ-GitHub ומהפורומים הקהילתיים על ידי הדבקת הכתובת שלהלן.",
                         "import_introduction_link": "באפשרותך לייבא שרטוטים של משתמשים אחרים מ-Github ומ-{community_link}. יש להזין את כתובת האתר של השרטוט.",
                         "importing": "טוען שרטוט…",
                         "raw_blueprint": "תוכן שרטוט",
@@ -2137,7 +2182,8 @@
                     "overview": {
                         "add_blueprint": "יבוא שרטוט",
                         "confirm_delete_header": "האם למחוק את השרטוט הזה?",
-                        "confirm_delete_text": "האם בוודאות ברצונך למחוק שרטוט זו?",
+                        "confirm_delete_text": "{name} יימחק לצמיתות.",
+                        "confirm_delete_title": "למחוק שרטוט?",
                         "create_automation": "יצירת אוטומציה",
                         "create_script": "יצירת סקריפט",
                         "delete_blueprint": "מחיקת שרטוט",
@@ -2284,10 +2330,13 @@
                         "available_at": "ה-webhook זמין בכתובת הבאה:",
                         "close": "סגור",
                         "confirm_disable": "האם בוודאות ברצונך להשבית את ה-webhook?",
+                        "confirm_disable_text": "Webhook יושבת עבור {name}.",
+                        "confirm_disable_title": "השבתת webhook",
                         "copied_to_clipboard": "הועתק ללוח",
                         "info_disable_webhook": "אם אינך מעוניין עוד להשתמש ב-webhook זה, באפשרותך",
                         "link_disable_webhook": "השבת אותו",
                         "managed_by_integration": "webhook זה מנוהל על ידי שילוב ולא ניתן להשבית.",
+                        "public_url": "כתובת ציבורית",
                         "view_documentation": "הצג תיעוד",
                         "webhook_for": "Webhook עבור {name}"
                     },
@@ -2482,6 +2531,7 @@
                     "cant_edit": "באפשרותך לערוך פריטים שנוצרו בממשק המשתמש בלבד.",
                     "caption": "התקנים",
                     "confirm_delete": "האם בוודאות ברצונך למחוק התקן זה?",
+                    "confirm_delete_integration": "האם בוודאות ברצונך להסיר את ההתקן הזה מ-{integration}?",
                     "confirm_disable_config_entry": "אין התקנים נוספים עבור ערך התצורה {entry_name} , האם ברצונך להשבית את ערך התצורה?",
                     "confirm_rename_entity_ids": "האם ברצונך גם לשנות את שמות מזהי הישויות של הישויות שלך?",
                     "confirm_rename_entity_ids_warning": "שינוי זה לא ישפיע על התצורה (כמו אוטומציות, קבצי סקריפט, סצנות, Lovelace) המשתמשת כעת בישויות אלה! יהיה עליך לעדכן אותן בעצמך כדי להשתמש במזהים של הישויות החדשות.",
@@ -2498,7 +2548,7 @@
                     },
                     "delete": "מחיקה",
                     "delete_device": "מחיקה",
-                    "delete_device_integration": "הסרת {integration} מההתקן",
+                    "delete_device_integration": "הסרת ההתקן מ-{integration}",
                     "description": "ניהול התקנים שתצורתם נקבעה",
                     "device_info": "מידע על {type}",
                     "device_not_found": "התקן / שירות לא נמצא.",
@@ -2817,14 +2867,22 @@
                     "description": "קביעת התצורה של הרכזת והחומרה המחוברת",
                     "documentation": "תיעוד",
                     "documentation_description": "חיפוש מידע נוסף על ההתקן שלך",
-                    "failed_to_reboot_host": "אתחול המארח נכשל",
-                    "failed_to_shutdown_host": "כיבוי המארח נכשל",
-                    "host_shutting_down": "מארח כובה",
-                    "reboot_host": "אתחל מארח",
+                    "failed_to_reboot_host": "אתחול המערכת נכשל",
+                    "failed_to_shutdown_host": "כיבוי המערכת נכשל",
+                    "host_shutting_down": "המערכת בתהליך כיבוי",
+                    "memory": "זיכרון",
+                    "processor": "מעבד",
+                    "reboot": "הפעלה מחדש",
+                    "reboot_host": "הפעלת המערכת מחדש",
                     "reboot_host_confirm": "האם בוודאות ברצונך לאתחל את השרת המארח שלך?",
-                    "rebooting_host": "מאתחל מחדש את המארח",
-                    "shutdown_host": "כיבוי שרת מארח",
-                    "shutdown_host_confirm": "האם בוודאות ברצונך לכבות את השרת המארח שלך?"
+                    "reboot_host_text": "פעולה זו תאתחל מחדש את כל המערכת וכוללת את הליבה ואת כל התוספות.",
+                    "reboot_host_title": "הפעלת המערכת מחדש?",
+                    "rebooting_host": "מאתחל את המערכת",
+                    "shutdown": "כיבוי",
+                    "shutdown_host": "כיבוי המערכת",
+                    "shutdown_host_confirm": "האם בוודאות ברצונך לכבות את השרת המארח שלך?",
+                    "shutdown_host_text": "פעולה זו תכבה את כל המערכת וכוללת את הליבה ואת כל התוספות.",
+                    "shutdown_host_title": "לכבות את המערכת?"
                 },
                 "header": "הגדרת Home Assistant",
                 "helpers": {
@@ -2900,11 +2958,21 @@
                     "attention": "נדרשת תשומת לב",
                     "caption": "שילובים",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "אם תסיר אותם, ידרש להזין אישורים שוב בעת הגדרת השילוב. אם תשמור אותם, הם ישמשו באופן אוטומטי בעת הגדרת השילוב שוב או שהם עשויים לקבל אותם מתפריט אישורי יישום.",
+                            "delete_error_title": "הסרת אישור היישום נכשלה",
+                            "delete_prompt": "האם ברצונך להסיר גם אישורי יישום עבור שילוב זה?",
+                            "delete_title": "אישורי יישום",
+                            "dismiss": "לשמור",
+                            "learn_more": "למידע נוסף על אישורי יישומים"
+                        },
                         "area": "ב-{area}",
                         "check_the_logs": "בדוק את היומנים",
                         "configure": "הגדר",
                         "delete": "מחק",
                         "delete_confirm": "האם בוודאות ברצונך למחוק את השילוב {title}?",
+                        "delete_confirm_text": "ההתקנים והישויות שלהם יימחקו לצמיתות.",
+                        "delete_confirm_title": "למחוק את {title}?",
                         "depends_on_cloud": "תלוי בענן",
                         "devices": "{count, plural,\n  one {התקן אחד}\n  other {{count} התקנים}\n}",
                         "disable": {
@@ -2917,6 +2985,8 @@
                             },
                             "disabled_cause": "מושבת על ידי {cause}"
                         },
+                        "disable_confirm_text": "ההתקנים והישויות שלהם יושבתו.",
+                        "disable_confirm_title": "להשבית את {title}?",
                         "disable_error": "ההפעלה או השבתה של השילוב נכשלה",
                         "disable_restart_confirm": "הפעל מחדש את Home Assistant כדי לסיים את השבתת השילוב הזה",
                         "disabled_polling": "תשאול אוטומטי עבור עדכוני נתונים אינו זמין",
@@ -2938,12 +3008,14 @@
                         "rename": "שנה שם",
                         "restart_confirm": "הפעל מחדש את Home Assistant כדי לסיים את הסרת השילוב",
                         "services": "{count, plural,\n  one {שירות אחד}\n  other {{count} שירותים}\n}",
+                        "setup_in_progress": "מאתחל",
                         "state": {
                             "failed_unload": "ביטול הטעינה נכשל",
                             "loaded": "טעון",
                             "migration_error": "שגיאת המרה",
                             "not_loaded": "לא טעון",
                             "setup_error": "ההגדרה נכשלה",
+                            "setup_in_progress": "מאתחל",
                             "setup_retry": "מנסה להתקין מחדש"
                         },
                         "system_options": "אפשרויות מערכת",
@@ -3062,7 +3134,7 @@
                             "storage": "ממשק המשתמש נשלט",
                             "yaml": "קובץ YAML"
                         },
-                        "confirm_delete_text": "לוח המחוונים שלך יימחק לצמיתות.",
+                        "confirm_delete_text": "לוח המחוונים הזה יימחק לצמיתות.",
                         "confirm_delete_title": "האם למחוק את {dashboard_title}?",
                         "default_dashboard": "זהו לוח הבקרה ברירת המחדל",
                         "detail": {
@@ -3102,6 +3174,8 @@
                         "cant_edit_yaml": "כעת השימוש בלוח המחוונים שלך הוא במצב YAML, ולכן אין באפשרותך לנהל את המשאבים שלך באמצעות ממשק המשתמש. יש לנהל אותם ב- configuration.yaml.",
                         "caption": "משאבים",
                         "confirm_delete": "האם בוודאות ברצונך למחוק משאב זה?",
+                        "confirm_delete_text": "{url} יימחק לצמיתות.",
+                        "confirm_delete_title": "למחוק משאב?",
                         "detail": {
                             "create": "יצירה",
                             "delete": "מחק",
@@ -3173,6 +3247,8 @@
                     "caption": "אנשים",
                     "confirm_delete": "האם בוודאות ברצונך למחוק אדם זה?",
                     "confirm_delete2": "כל ההתקנים השייכים לאדם זה לא יהיו מוקצים.",
+                    "confirm_delete_text": "אדם זה יימחק לצמיתות וכל ההתקנים השייכים לאדם זה יהפכו ללא מוקצים.",
+                    "confirm_delete_title": "למחוק את {name}?",
                     "create_person": "יצירת אדם",
                     "description": "נהל את האנשים ש-Home Assistant עוקב אחריהם.",
                     "detail": {
@@ -3254,28 +3330,36 @@
                         "load_error_unknown": "שגיאה בטעינת סצנה ({err_no}).",
                         "name": "שם",
                         "save": "שמור",
-                        "unsaved_confirm": "יש לך שינויים שלא נשמרו. האם בוודאות ברצונך להפסיק?"
+                        "unsaved_confirm": "יש לך שינויים שלא נשמרו. האם בוודאות ברצונך להפסיק?",
+                        "unsaved_confirm_text": "שינויים שלא נשמרו יאבדו.",
+                        "unsaved_confirm_title": "לעזוב את העורך?"
                     },
                     "picker": {
+                        "activate": "הפעל",
                         "add_scene": "הוסף סצנה",
+                        "delete": "מחיקה",
                         "delete_confirm": "האם בוודאות ברצונך למחוק את הסצינה הזו?",
+                        "delete_confirm_text": "{name} יימחק לצמיתות.",
+                        "delete_confirm_title": "למחוק סצנה?",
                         "delete_scene": "מחק סצנה",
-                        "duplicate": "שכפל",
+                        "duplicate": "שיכפול",
                         "duplicate_scene": "שכפל סצנה",
                         "edit_scene": "עריכת סצנה",
                         "header": "עורך סצנות",
                         "headers": {
                             "activate": "הפעל",
                             "edit": "עריכה",
+                            "last_activated": "הופעל לאחרונה",
                             "name": "שם",
                             "show_info": "הצגת מידע",
                             "state": "מצב"
                         },
                         "introduction": "עורך הסצנות מאפשר לך ליצור ולערוך סצנות. נא עקוב אחר הקישור שלהלן כדי לקרוא את ההוראות כדי לוודא שתצורת Home Assistant נקבעה כראוי.",
                         "learn_more": "למידע נוסף על סצנות",
-                        "no_scenes": "לא הצלחנו למצוא סצנות",
+                        "no_scenes": "לא מצאנו שום סצנה",
                         "only_editable": "רק סצנות שהוגדרו ב-scenes.yaml ניתנות לעריכה.",
                         "pick_scene": "בחר סצינה לעריכה",
+                        "show_info": "מידע",
                         "show_info_scene": "הצג מידע על הסצנה"
                     }
                 },
@@ -3286,6 +3370,8 @@
                         "alias": "שם",
                         "default_name": "סקריפט חדש",
                         "delete_confirm": "האם בוודאות ברצונך למחוק סקריפט זה?",
+                        "delete_confirm_text": "{name} יימחק לצמיתות.",
+                        "delete_confirm_title": "למחוק סקריפט?",
                         "delete_script": "מחק סקריפט",
                         "header": "סקריפט: {name}",
                         "icon": "סמליל",
@@ -3294,6 +3380,8 @@
                         "id_already_exists_save_error": "לא ניתן לשמור סקריפט זה מכיוון שהמזהה אינו ייחודי, יש לבחור מזהה אחר או להשאיר אותו ריק כדי ליצור אוטומטית.",
                         "introduction": "השתמש בסקריפטים כדי לבצע רצף של הרצות.",
                         "link_available_actions": "למד עוד אודות פעולות זמינות.",
+                        "load_error_not_deletable": "ניתן למחוק רק סקריפטים הנמצאים ב-scripts.yaml.",
+                        "load_error_not_duplicable": "ניתן לשכפל רק סקריפטים הנמצאים ב-scripts.yaml.",
                         "load_error_not_editable": "רק סקריפטים בתוך קובץ scripts.yaml ניתנים לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת סקריפט ({err_no}).",
                         "max": {
@@ -3313,12 +3401,14 @@
                         "save_script": "שמור סקריפט",
                         "sequence": "סדר פעולות",
                         "sequence_sentence": "רצף הפעולות של סקריפט זה.",
-                        "show_trace": "הצג מעקב"
+                        "show_info": "מידע",
+                        "show_trace": "עקבות"
                     },
                     "picker": {
                         "add_script": "הוסף סקריפט",
+                        "delete": "מחיקה",
                         "dev_script": "ניפוי באגים סקריפט",
-                        "duplicate": "שכפל",
+                        "duplicate": "שיכפול",
                         "duplicate_script": "שכפול סקריפט",
                         "edit_script": "עריכת סקריפט",
                         "header": "עורך סקריפטים",
@@ -3328,9 +3418,14 @@
                         },
                         "introduction": "עורך הסקריפטים מאפשר לך ליצור ולערוך סקריפטים. נא כנס לקישור שלמטה כדי לקרוא את ההוראות בכדי לוודא שקבעת את תצורת Home Assistant כהלה.",
                         "learn_more": "למד עוד אודות קבצי סקריפטים",
-                        "no_scripts": "לא הצלחנו למצוא סקריפטים",
+                        "no_scripts": "לא מצאנו שום סקריפט",
+                        "run": "רוץ",
                         "run_script": "הרץ סקריפט",
-                        "show_info": "הצג מידע על התסריט"
+                        "show_info": "מידע",
+                        "show_trace": "עקבות"
+                    },
+                    "trace": {
+                        "edit_script": "עריכת סקריפט"
                     }
                 },
                 "storage": {
@@ -3344,6 +3439,8 @@
                         "moving": "מעביר ערכת נתונים",
                         "moving_desc": "מאתחל ומעביר את ערכת הנתונים. נא להתאזר בסבלנות.",
                         "no_devices": "לא נמצאו התקנים מחוברים מתאימים",
+                        "no_devices_text": "לא נמצא התקן חיצוני מתאים. קיבולת האחסון של דיסק הנתונים החיצוני חייבת להיות גדולה מקיבולת האחסון של הדיסק הקיים",
+                        "no_devices_title": "לא נמצא אחסון מתאים",
                         "select_device": "בחירת ערכת נתונים חדשה",
                         "title": "העברת ערכת נתונים"
                     },
@@ -3353,7 +3450,7 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "האם בוודאות ברצונך להפעיל מחדש את Home Assistant?",
-                    "confirm_restart_text": "הפעלה מחדש של Home Assistant תעצור את כל לוחות המחוונים, האוטומציות והסקריפטים הפעילים שלך.",
+                    "confirm_restart_text": "פעולה זו תעצור את כל לוחות המחוונים הפעילים, האוטומציות והסקריפטים שלך.",
                     "confirm_restart_title": "לאתחל את Home Assistant?",
                     "restart_error": "הפעלה מחדש של Home Assistant נכשלה",
                     "restart_homeassistant": "הפעלה מחדש של Home Assistant",
@@ -3462,6 +3559,8 @@
                         "caption": "הצג משתמש",
                         "change_password": "שינוי סיסמה",
                         "confirm_user_deletion": "האם בוודאות ברצונך למחוק את {name}?",
+                        "confirm_user_deletion_text": "המשתמש הזה יימחק לצמיתות.",
+                        "confirm_user_deletion_title": "למחוק את {name}?",
                         "deactivate_user": "בטל את המשתמש",
                         "delete_user": "מחיקת משתמש",
                         "group": "קבוצה",
@@ -3533,7 +3632,8 @@
                         "value": "ערך"
                     },
                     "configuration_page": {
-                        "download_backup": "הורדת גיבוי רשת",
+                        "download_backup": "הורדת גיבוי",
+                        "migrate_radio": "העברת רדיו",
                         "network_settings_title": "הגדרות רשת",
                         "shortcuts_title": "קיצורי דרך",
                         "update_button": "עדכן תצורה"
@@ -4381,7 +4481,7 @@
                             "secondary_info": "מידע משני"
                         },
                         "entity": {
-                            "description": "כרטיס היישות מעניק לך סקירה מהירה של מצב היישות שלך.",
+                            "description": "כרטיס הישות מספק לך סקירה מהירה של מצב הישות שלך.",
                             "name": "ישות"
                         },
                         "gauge": {
@@ -4523,6 +4623,14 @@
                                 "day": "יום",
                                 "hour": "שעה",
                                 "month": "חודש"
+                            },
+                            "pick_statistic": "הוספת סטטיסטיקה",
+                            "picked_statistic": "סטטיסטיקות",
+                            "stat_type_labels": {
+                                "max": "מקסימום",
+                                "mean": "הכוונה",
+                                "min": "מינימום",
+                                "sum": "סכום"
                             },
                             "stat_types": "הצגת סוגי סטטיסטיקה"
                         },

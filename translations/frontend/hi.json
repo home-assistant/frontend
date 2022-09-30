@@ -7,7 +7,7 @@
         "mailbox": "मेलबॉक्स",
         "map": "नक्शा",
         "shopping_list": "खरीदारी की सूची",
-        "states": "स्थिति"
+        "states": "स्थअवलोकन"
     },
     "state": {
         "default": {
@@ -168,6 +168,7 @@
                         }
                     },
                     "picker": {
+                        "delete_confirm_text": "{name} स्थायी रूप से हटा दिया जाएगा",
                         "headers": {
                             "name": "नाम"
                         },

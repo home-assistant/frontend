@@ -614,6 +614,7 @@
             "copied_clipboard": "نسخت إلى الحافظة",
             "delete": "حذف",
             "disable": "تعطيل",
+            "duplicate": "تكرار",
             "enable": "تغعيل",
             "error_required": "مطلوب",
             "leave": "غادر",
@@ -1279,6 +1280,7 @@
                             "no_blueprints": "ليس لديك أي مخططات",
                             "no_inputs": "لا يحتوي هذا المخطط على أي مدخلات."
                         },
+                        "change_mode": "تغيير وضع",
                         "conditions": {
                             "add": "إضافة شرط",
                             "delete": "حذف",
@@ -1389,6 +1391,12 @@
                         },
                         "move_down": "تحرك لأسفل",
                         "move_up": "تحريك لأعلى",
+                        "re_order": "اعادة ترتيب",
+                        "re_order_mode": {
+                            "exit": "خروج",
+                            "title": "وضع اعادة الترتيب"
+                        },
+                        "rename": "اعادة تسمية",
                         "save": "حفظ",
                         "show_trace": "عرض التتبع",
                         "triggers": {
@@ -1499,6 +1507,7 @@
                         "delete_confirm": "هل أنت متأكد أنك تريد حذف هذه الأتمتة؟",
                         "dev_automation": "تصحيح الأتمتة",
                         "dev_only_editable": "فقط عمليات الاتمتة التي تم تعيين معرف فريد لها يمكن تصحيح أخطاءها.",
+                        "disabled": "معطل",
                         "duplicate": "تكرار",
                         "duplicate_automation": "تكرار الاتمتة",
                         "edit_automation": "تحرير الأتمتة",
@@ -1973,6 +1982,10 @@
                         }
                     }
                 },
+                "hardware": {
+                    "memory": "ذاكرة مؤقتة",
+                    "processor": "معالج"
+                },
                 "header": "تكوين Home Assistant",
                 "helpers": {
                     "caption": "المساعدين",
@@ -2277,15 +2290,19 @@
                         "unsaved_confirm": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟"
                     },
                     "picker": {
+                        "activate": "تفعيل",
+                        "delete": "حذف",
                         "duplicate": "تكرار",
                         "duplicate_scene": "تكرار بطاقة",
                         "header": "محرر المشهد",
                         "headers": {
+                            "last_activated": "اخر تفعيل",
                             "name": "الاسم"
                         },
                         "learn_more": "تعرف على المزيد حول المشاهد",
                         "no_scenes": "لم نتمكن من العثور على أي مشاهد",
-                        "pick_scene": "اختر مشهدًا لتحريره"
+                        "pick_scene": "اختر مشهدًا لتحريره",
+                        "show_info": "معلومات"
                     }
                 },
                 "script": {
@@ -2300,6 +2317,8 @@
                         "id": "معرف الكيان",
                         "id_already_exists": "هذا المعرف موجود بالفعل",
                         "introduction": "استخدم البرامج النصية لتشغيل سلسلة من الإجراءات.",
+                        "load_error_not_deletable": "فقط النصوص في scripts.yaml يمكن حذفها. ",
+                        "load_error_not_duplicable": "فقط النصوص في scripts.yaml يمكن تكرارها.",
                         "load_error_not_editable": "فقط البرامج النصية داخل scripts.yaml قابلة للتحرير.",
                         "max": {
                             "parallel": "أقصى عدد من التشغيلات المتوازية",
@@ -2315,10 +2334,12 @@
                         },
                         "save_script": "حفظ السكربت",
                         "sequence": "تسلسل",
+                        "show_info": "معلومات",
                         "show_trace": "عرض التتبع"
                     },
                     "picker": {
                         "add_script": "اضف سكريبت",
+                        "delete": "حذف",
                         "dev_script": "تصحيح البرنامج النصي",
                         "duplicate": "تكرار",
                         "duplicate_script": "تكرار السكربت",
@@ -2329,7 +2350,12 @@
                         "introduction": "يتيح لك محرر البرنامج النصي إنشاء البرامج النصية وتحريرها. يرجى اتباع الرابط أدناه لقراءة التعليمات للتأكد من تهيئة Home Assistant بشكل صحيح.",
                         "learn_more": "تعرف على المزيد حول البرامج النصية",
                         "no_scripts": "لم نتمكن من العثور على أي سكريبت",
-                        "show_info": "عرض معلومات حول السكربت"
+                        "run": "شغل",
+                        "show_info": "عرض معلومات حول السكربت",
+                        "show_trace": "يتعقب"
+                    },
+                    "trace": {
+                        "edit_script": "تعديل السكربت"
                     }
                 },
                 "tag": {

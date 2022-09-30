@@ -33,8 +33,10 @@ const FIX_ISSUES_ORDER = {
   entity_not_recorded: 1,
   unsupported_unit_state: 2,
   unsupported_state_class: 3,
-  units_changed: 4,
-  unsupported_unit_metadata: 5,
+  units_changed_can_convert: 4,
+  units_changed: 5,
+  unsupported_unit_metadata_can_convert: 6,
+  unsupported_unit_metadata: 7,
 };
 @customElement("developer-tools-statistics")
 class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
@@ -72,7 +74,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         hidden: this.narrow,
         width: "20%",
       },
-      display_unit_of_measurement: {
+      state_unit_of_measurement: {
         title: "Display unit",
         sortable: true,
         filterable: true,
@@ -218,7 +220,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         this._data.push({
           statistic_id: statisticId,
           statistics_unit_of_measurement: "",
-          display_unit_of_measurement: "",
+          state_unit_of_measurement: "",
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
@@ -322,6 +324,14 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           },
         });
         break;
+      case "unsupported_unit_metadata_can_convert":
+        showFixStatisticsUnsupportedUnitMetadataDialog(this, {
+          issue,
+          fixedCallback: () => {
+            this._validateStatistics();
+          },
+        });
+        break;
       case "unsupported_unit_state":
         showAlertDialog(this, {
           title: "Unsupported unit",
@@ -343,6 +353,14 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         });
         break;
       case "units_changed":
+        showFixStatisticsUnitsChangedDialog(this, {
+          issue,
+          fixedCallback: () => {
+            this._validateStatistics();
+          },
+        });
+        break;
+      case "units_changed_can_convert":
         showFixStatisticsUnitsChangedDialog(this, {
           issue,
           fixedCallback: () => {

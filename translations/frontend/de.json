@@ -421,7 +421,14 @@
             },
             "restart_addon": {
                 "confirm_text": "Add-on neu starten",
-                "text": "Möchtest du das Add-on mit deinen Änderungen neu starten?"
+                "restart": "Neu starten",
+                "text": "Um die neue gespeicherte Konfiguration zu verwenden, muss dieses Add-on neu gestartet werden.",
+                "title": "{name} neu starten?"
+            },
+            "uninstall_addon": {
+                "text": "Seine Konfiguration wird dauerhaft gelöscht.",
+                "title": "{name} deinstallieren?",
+                "uninstall": "Deinstallieren"
             }
         },
         "my": {
@@ -1060,6 +1067,7 @@
                     "max": "max",
                     "mean": "mittel",
                     "min": "min",
+                    "state": "Zustand",
                     "sum": "Summe"
                 }
             },
@@ -1258,8 +1266,10 @@
             "join_beta_channel": {
                 "backup": "Stelle sicher dass du Backups gemacht hast, bevor du diese Funktion aktivierst.",
                 "confirm": "Möchtest du dem Beta-Kanal beitreten?",
+                "join": "Beitreten",
                 "release_items": "Dies beinhaltet Beta-Versionen für:",
                 "title": "Dem Beta-Kanal beitreten",
+                "view_documentation": "Dokumentation anzeigen",
                 "warning": "Beta-Versionen sind für Tester und Early Adopters gedacht und können instabile Codeänderungen enthalten"
             },
             "more_info_control": {
@@ -1500,6 +1510,7 @@
                     "add": "Geräte über dieses Gerät hinzufügen",
                     "clusters": "Cluster verwalten",
                     "device_children": "Endgeräte anzeigen",
+                    "manage": "Zigbee-Gerät verwalten",
                     "reconfigure": "Neu konfigurieren",
                     "remove": "Entfernen",
                     "view_in_visualization": "Visualisierung in einer Map",
@@ -1525,6 +1536,15 @@
                 "unknown": "Unbekannt",
                 "zha_device_card": {
                     "device_name_placeholder": "Gerätename ändern"
+                }
+            },
+            "zha_manage_device": {
+                "heading": "Zigbee-Gerät verwalten",
+                "tabs": {
+                    "bindings": "Bindungen",
+                    "children": "Kinder",
+                    "clusters": "Cluster",
+                    "signature": "Signatur"
                 }
             },
             "zha_reconfigure_device": {
@@ -1607,12 +1627,17 @@
                     "caption": "Anmeldeinformationen",
                     "description": "Verwalten der von Integrationen verwendeten OAuth-Anwendungsanmeldeinformationen",
                     "editor": {
-                        "caption": "Anwendungsanmeldeinformationen hinzufügen",
+                        "add": "Hinzufügen",
+                        "caption": "Anmeldedaten hinzufügen",
                         "client_id": "OAuth-Client-ID",
+                        "client_id_helper": "Öffentliche Kennung der OAuth-Anwendung",
                         "client_secret": "OAuth-Client-Secret",
+                        "client_secret_helper": "Geheimnis der OAuth-Anwendung",
                         "create": "Erstellen",
+                        "description": "OAuth wird verwendet, um Home Assistant Zugriff auf Informationen auf anderen Websites zu gewähren, ohne ein Passwort anzugeben. Dieser Mechanismus wird von Unternehmen wie Spotify, Google, Withings, Microsoft und Twitter verwendet.",
                         "domain": "Integration",
-                        "name": "Name"
+                        "name": "Name",
+                        "view_documentation": "Dokumentation anzeigen"
                     },
                     "picker": {
                         "add_application_credential": "Anwendungsanmeldeinformationen hinzufügen",
@@ -1641,7 +1666,7 @@
                         "entities": "Entitäten"
                     },
                     "delete": {
-                        "confirmation_text": "Die Zuordnung aller Geräte zu diesem Bereich wird aufgelöst.",
+                        "confirmation_text": "Dieser Benutzer wird dauerhaft gelöscht.",
                         "confirmation_title": "Möchtest du diesen Bereich wirklich löschen?"
                     },
                     "description": "Geräte und Entitäten in Bereiche gruppieren",
@@ -1693,6 +1718,8 @@
                             "change_alias": "Aktion umbenennen",
                             "delete": "Löschen",
                             "delete_confirm": "Möchtest du das wirklich löschen?",
+                            "delete_confirm_text": "Sie wird endgültig gelöscht.",
+                            "delete_confirm_title": "Aktion löschen?",
                             "disable": "Deaktivieren",
                             "disabled": "Deaktiviert",
                             "duplicate": "Duplizieren",
@@ -1819,6 +1846,8 @@
                             "change_alias": "Bedingung umbenennen",
                             "delete": "Löschen",
                             "delete_confirm": "Möchtest du das wirklich löschen?",
+                            "delete_confirm_text": "Sie wird endgültig gelöscht.",
+                            "delete_confirm_title": "Bedingung löschen?",
                             "duplicate": "Duplizieren",
                             "header": "Bedingungen",
                             "introduction": "Die Bedingungen sind optional und verhindern die weitere Ausführung, sofern nicht alle Bedingungen erfüllt sind.",
@@ -1921,6 +1950,8 @@
                         "enable": "Aktivieren",
                         "enable_disable": "Automatisierung aktivieren/deaktivieren",
                         "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen.",
+                        "load_error_not_deletable": "Nur Automatisierungen in automations.yaml können gelöscht werden.",
+                        "load_error_not_duplicable": "Nur Automatisierungen in automations.yaml können dupliziert werden.",
                         "load_error_not_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no}).",
                         "max": {
@@ -1957,6 +1988,8 @@
                             "change_alias": "Auslöser umbenennen",
                             "delete": "Löschen",
                             "delete_confirm": "Möchtest du das wirklich löschen?",
+                            "delete_confirm_text": "Sie wird endgültig gelöscht.",
+                            "delete_confirm_title": "Trigger löschen?",
                             "duplicate": "Duplizieren",
                             "edit_id": "ID bearbeiten",
                             "header": "Auslöser",
@@ -2071,13 +2104,17 @@
                             "type_select": "Auslösertyp",
                             "unsupported_platform": "Visueller Editor nicht unterstützt für Plattform: {platform}"
                         },
-                        "unsaved_confirm": "Du hast ungespeicherte Änderungen. Bist du dir sicher, dass du den Editor verlassen möchtest?"
+                        "unsaved_confirm": "Du hast ungespeicherte Änderungen. Bist du dir sicher, dass du den Editor verlassen möchtest?",
+                        "unsaved_confirm_text": "Nicht gespeicherte Änderungen gehen verloren.",
+                        "unsaved_confirm_title": "Editor verlassen?"
                     },
                     "picker": {
                         "add_automation": "Automatisierung erstellen",
                         "delete": "Löschen",
                         "delete_automation": "Automatisierung löschen",
                         "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen möchtest?",
+                        "delete_confirm_text": "{name} wird dauerhaft gelöscht.",
+                        "delete_confirm_title": "Automatisierung löschen?",
                         "dev_automation": "Automatisierung debuggen",
                         "dev_only_editable": "Nur Automatisierungen, die eine eindeutige ID haben, können debuggt werden.",
                         "disabled": "Deaktiviert",
@@ -2150,26 +2187,28 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "Community-Foren",
-                        "error_no_url": "Bitte gebe die URL der Vorlage ein.",
+                        "community_forums": "Blaupausen in den Community-Foren ansehen",
+                        "error_no_url": "Bitte gib die Adresse der Vorlage ein.",
                         "file_name": "Vorlagenpfad",
                         "header": "Vorlage importieren",
-                        "import_btn": "Vorschau Vorlage",
+                        "import_btn": "Vorschau",
                         "import_header": "Vorlage \"{name}\"",
+                        "import_introduction": "Importieren von Blaupausen anderer Benutzer von GitHub und den Community-Foren, durch Einfügen der unten stehenden Adresse.",
                         "import_introduction_link": "Du kannst Vorlagen anderer Benutzer aus GitHub und den {community_link} importieren. Gib unten die URL der Vorlage ein.",
                         "importing": "Vorlage wird geladen …",
                         "raw_blueprint": "Inhalt der Vorlage",
                         "save_btn": "Vorlage importieren",
                         "saving": "Vorlage wird importiert …",
                         "unsupported_blueprint": "Diese Vorlage wird nicht unterstützt",
-                        "url": "URL der Vorlage"
+                        "url": "Adresse der Vorlage"
                     },
                     "caption": "Vorlagen",
                     "description": "Vorlagen verwalten",
                     "overview": {
                         "add_blueprint": "Vorlage hinzufügen",
                         "confirm_delete_header": "Diese Vorlage löschen?",
-                        "confirm_delete_text": "Bist du sicher, dass du diese Vorlage löschen möchtest?",
+                        "confirm_delete_text": "{name} wird dauerhaft gelöscht.",
+                        "confirm_delete_title": "Vorlage löschen?",
                         "create_automation": "Automatisierung erstellen",
                         "create_script": "Skript erstellen",
                         "delete_blueprint": "Vorlage löschen",
@@ -2201,6 +2240,7 @@
                             "enable_state_reporting": "Statusbericht-Erstellung aktivieren",
                             "info": "Mit der Alexa-Integration für Home Assistant Cloud kannst du alle deine Home Assistant-Geräte über jedes Alexa-fähige Gerät steuern.",
                             "info_state_reporting": "Wenn die Statusberichterstellung aktiviert wird, sendet Home Assistant alle Statusänderungen exponierter Entitäten an Amazon. So wird in der Alexa-App immer der neueste Status angezeigt.",
+                            "link_learn_how_it_works": "Lerne, wie es funktioniert",
                             "manage_entities": "Entitäten verwalten",
                             "not_configured_text": "Bevor du Alexa verwenden kannst, musst du den Home Assistant-Skill für Alexa in der Alexa-App aktivieren.",
                             "not_configured_title": "Alexa ist nicht aktiviert",
@@ -2225,6 +2265,7 @@
                             "http_use_ssl_warning_title": "Lokale Kommunikation nicht verfügbar",
                             "info": "Mit der Google Assistant-Integration für Home Assistant Cloud kannst du alle deine Home Assistant-Geräte über jedes Google Assistant-fähige Gerät steuern.",
                             "info_state_reporting": "Wenn du die Zustandsberichterstattung aktivierst, sendet Home Assistant alle Zustandsänderungen von exponierten Einheiten an Google. Dies beschleunigt Sprachbefehle und ermöglicht es dir, immer die neuesten Zustände in der Google-App zu sehen.",
+                            "link_learn_how_it_works": "Lerne, wie es funktioniert",
                             "manage_entities": "Entitäten verwalten",
                             "not_configured_text": "Bevor du Google Assistant verwenden kannst, musst du in der Google Home-App den Home Assistant Cloud-Skill für Google Assistant aktivieren.",
                             "not_configured_title": "Google Assistant ist nicht aktiviert",
@@ -2300,6 +2341,8 @@
                         "manage_domains": "Domains verwalten",
                         "not_exposed": "{selected} wird nicht verfügbar gemacht",
                         "not_exposed_entities": "Nicht angezeigte Entitäten",
+                        "sync_entities": "Entitäten synchronisieren",
+                        "sync_entities_error": "Fehler beim Synchronisieren von Entitäten:",
                         "title": "Alexa"
                     },
                     "description_features": "Fernsteuerung und Integration mit Alexa und Google Assistant",
@@ -2316,10 +2359,13 @@
                         "available_at": "Der Webhook ist unter der folgenden URL verfügbar:",
                         "close": "Schließen",
                         "confirm_disable": "Möchtest du diesen Webhook wirklich deaktivieren?",
+                        "confirm_disable_text": "Webhook für {name} wird deaktiviert.",
+                        "confirm_disable_title": "Webhook deaktivieren",
                         "copied_to_clipboard": "In die Zwischenablage kopiert",
                         "info_disable_webhook": "Wenn du diesen Webhook nicht mehr nutzen willst, kannst du",
                         "link_disable_webhook": "deaktiviere es",
                         "managed_by_integration": "Dieser Webhook wird von einer Integration verwaltet und kann nicht deaktiviert werden.",
+                        "public_url": "Öffentliche Adresse",
                         "view_documentation": "Dokumentation anzeigen",
                         "webhook_for": "Webhook für {name}"
                     },
@@ -2344,8 +2390,14 @@
                         "manage_defaults": "Standardeinstellungen verwalten",
                         "manage_defaults_dialog_description": "Entitäten können standardmäßig basierend auf ihrem Typ verfügbar gemacht werden.",
                         "manage_domains": "Domains verwalten",
+                        "not_configured_text": "Bevor du Google Assistant verwenden kannst, musst du in der Google Home-App den Home Assistant Cloud-Skill für Google Assistant aktivieren.",
+                        "not_configured_title": "Google Assistant ist nicht aktiviert",
                         "not_exposed": "{selected} wird nicht verfügbar gemacht",
                         "not_exposed_entities": "Nicht angezeigte Entitäten",
+                        "sync_entities": "Entitäten synchronisieren",
+                        "sync_entities_error": "Fehler beim Synchronisieren von Entitäten:",
+                        "sync_failed_text": "Die Synchronisierung deiner Entitäten ist fehlgeschlagen, versuche es erneut oder überprüfe die Protokolle.",
+                        "sync_failed_title": "Synchronisierung fehlgeschlagen",
                         "sync_to_google": "Änderungen mit Google synchronisieren.",
                         "title": "Google Assistant"
                     },
@@ -2850,16 +2902,22 @@
                     "description": "Konfigurieren des Hubs und der angeschlossenen Hardware",
                     "documentation": "Dokumentation",
                     "documentation_description": "Finde zusätzliche Informationen zu deinem Gerät",
-                    "failed_to_reboot_host": "Fehler beim Neustart des Hosts",
-                    "failed_to_shutdown_host": "Fehler beim Herunterfahren des Hosts",
-                    "host_shutting_down": "Host wird heruntergefahren",
+                    "failed_to_reboot_host": "Neustart des Systems fehlgeschlagen",
+                    "failed_to_shutdown_host": "Herunterfahren des Systems fehlgeschlagen",
+                    "host_shutting_down": "Herunterfahren des Systems",
                     "memory": "Speicher",
                     "processor": "Prozessor",
-                    "reboot_host": "Host neu starten",
+                    "reboot": "Neustart",
+                    "reboot_host": "System neu starten",
                     "reboot_host_confirm": "Bist du sicher, dass du deinen Host neu starten willst?",
-                    "rebooting_host": "Host wird neugestartet",
-                    "shutdown_host": "Host herunterfahren",
-                    "shutdown_host_confirm": "Bist du sicher, dass du deinen Host herunterfahren willst?"
+                    "reboot_host_text": "Dadurch wird das gesamte System neu gestartet, einschließlich des Kerns und aller Add-ons.",
+                    "reboot_host_title": "System neu starten?",
+                    "rebooting_host": "Neustart des Systems",
+                    "shutdown": "Herunterfahren",
+                    "shutdown_host": "System herunterfahren",
+                    "shutdown_host_confirm": "Bist du sicher, dass du deinen Host herunterfahren willst?",
+                    "shutdown_host_text": "Dadurch wird das gesamte System heruntergefahren, einschließlich des Kerns und aller Add-ons.",
+                    "shutdown_host_title": "System herunterfahren?"
                 },
                 "header": "Home Assistant konfigurieren",
                 "helpers": {
@@ -2935,11 +2993,21 @@
                     "attention": "Aufmerksamkeit erforderlich",
                     "caption": "Integrationen",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "Wenn du sie entfernst, musst du beim erneuten Einrichten der Integration Anmeldeinformationen eingeben. Wenn du sie beibehältst, werden sie beim erneuten Einrichten der Integration automatisch verwendet oder über das Menü Anwendungsanmeldeinformationen aufgerufen.",
+                            "delete_error_title": "Entfernen der Anwendungsanmeldeinformationen fehlgeschlagen",
+                            "delete_prompt": "Möchtest du auch Anwendungsanmeldeinformationen für diese Integration entfernen?",
+                            "delete_title": "Anmeldeinformationen",
+                            "dismiss": "Behalten",
+                            "learn_more": "Erfahre mehr über Anwendungsanmeldeinformationen"
+                        },
                         "area": "In {area}",
                         "check_the_logs": "Prüfe die Protokolle",
                         "configure": "Konfigurieren",
                         "delete": "Löschen",
                         "delete_confirm": "Möchtest du die {title} Integration wirklich löschen?",
+                        "delete_confirm_text": "Seine Geräte und Entitäten werden dauerhaft gelöscht.",
+                        "delete_confirm_title": "{title} löschen?",
                         "depends_on_cloud": "Abhängig von der Cloud",
                         "devices": "{count} {count, plural,\n one {Gerät}\n other {Geräte}\n}",
                         "disable": {
@@ -2952,6 +3020,8 @@
                             },
                             "disabled_cause": "Deaktiviert durch {cause}."
                         },
+                        "disable_confirm_text": "Seine Geräte und Entitäten werden deaktiviert.",
+                        "disable_confirm_title": "{title} deaktivieren?",
                         "disable_error": "Aktivieren oder Deaktivieren der Integration fehlgeschlagen",
                         "disable_restart_confirm": "Home Assistant neu starten, um das Deaktivieren dieser Integration abzuschließen",
                         "disabled_polling": "Automatisches Abfragen von aktualisierten Daten deaktiviert",
@@ -3099,7 +3169,7 @@
                             "storage": "Grafischer Editor",
                             "yaml": "YAML-Datei"
                         },
-                        "confirm_delete_text": "Dein Dashboard wird dauerhaft gelöscht.",
+                        "confirm_delete_text": "Dieses Dashboard wird dauerhaft gelöscht.",
                         "confirm_delete_title": "{dashboard_title} löschen?",
                         "default_dashboard": "Dies ist das Standard-Dashboard",
                         "detail": {
@@ -3139,6 +3209,8 @@
                         "cant_edit_yaml": "Du verwendest dein Dashboard im YAML-Modus. Daher kannst du deine Ressourcen nicht über die Benutzeroberfläche verwalten. Verwalte sie in der configuration.yaml.",
                         "caption": "Ressourcen",
                         "confirm_delete": "Bist du sicher, dass du diese Ressource löschen möchtest?",
+                        "confirm_delete_text": "{url} wird dauerhaft gelöscht.",
+                        "confirm_delete_title": "Ressource löschen?",
                         "detail": {
                             "create": "Erstellen",
                             "delete": "Löschen",
@@ -3210,6 +3282,8 @@
                     "caption": "Personen",
                     "confirm_delete": "Möchtest du diese Person wirklich löschen?",
                     "confirm_delete2": "Alle Geräte, die zu dieser Person gehören, werden nicht mehr zugeordnet.",
+                    "confirm_delete_text": "Diese Person wird dauerhaft gelöscht und die Zuweisung aller Geräte, die dieser Person gehören, wird aufgehoben.",
+                    "confirm_delete_title": "{name} löschen?",
                     "create_person": "Person erstellen",
                     "description": "Personen verwalten, denen Home Assistant folgt",
                     "detail": {
@@ -3291,11 +3365,17 @@
                         "load_error_unknown": "Fehler beim Laden der Szene ({err_no}).",
                         "name": "Name",
                         "save": "Speichern",
-                        "unsaved_confirm": "Du hast ungespeicherte Änderungen. Bist du dir sicher, dass du den Editor verlassen möchtest?"
+                        "unsaved_confirm": "Du hast ungespeicherte Änderungen. Bist du dir sicher, dass du den Editor verlassen möchtest?",
+                        "unsaved_confirm_text": "Nicht gespeicherte Änderungen gehen verloren.",
+                        "unsaved_confirm_title": "Editor verlassen?"
                     },
                     "picker": {
+                        "activate": "Aktivieren",
                         "add_scene": "Szene hinzufügen",
+                        "delete": "Löschen",
                         "delete_confirm": "Bist du sicher, dass du diese Szene löschen möchtest?",
+                        "delete_confirm_text": "{name} wird dauerhaft gelöscht.",
+                        "delete_confirm_title": "Szene löschen?",
                         "delete_scene": "Szene löschen",
                         "duplicate": "Duplizieren",
                         "duplicate_scene": "Szene duplizieren",
@@ -3304,6 +3384,7 @@
                         "headers": {
                             "activate": "Aktivieren",
                             "edit": "Bearbeiten",
+                            "last_activated": "Zuletzt aktiviert",
                             "name": "Name",
                             "show_info": "Informationen anzeigen",
                             "state": "Zustand"
@@ -3313,6 +3394,7 @@
                         "no_scenes": "Wir konnten keine Szenen finden",
                         "only_editable": "Nur Szenen in der scenes.yaml sind editierbar.",
                         "pick_scene": "Wähle eine Szene zum Bearbeiten aus.",
+                        "show_info": "Informationen",
                         "show_info_scene": "Informationen über die Szene anzeigen"
                     }
                 },
@@ -3323,6 +3405,8 @@
                         "alias": "Name",
                         "default_name": "Neues Skript",
                         "delete_confirm": "Möchtest du dieses Skript wirklich löschen?",
+                        "delete_confirm_text": "{name} wird dauerhaft gelöscht.",
+                        "delete_confirm_title": "Skript löschen?",
                         "delete_script": "Skript löschen",
                         "header": "Skript: {name}",
                         "icon": "Symbol",
@@ -3331,6 +3415,8 @@
                         "id_already_exists_save_error": "Du kannst dieses Skript nicht speichern, da die ID nicht eindeutig ist. Wähle eine andere ID oder lass das Feld leer, um eine automatisch generieren zu lassen.",
                         "introduction": "Verwende Skripte, um eine Abfolge von Aktionen auszuführen.",
                         "link_available_actions": "Erfahre mehr über verfügbare Aktionen.",
+                        "load_error_not_deletable": "Nur Skripte in scripts.yaml können gelöscht werden.",
+                        "load_error_not_duplicable": "Nur Skripte in scripts.yaml können dupliziert werden.",
                         "load_error_not_editable": "Nur Skripte in scripts.yaml können bearbeitet werden.",
                         "load_error_unknown": "Fehler beim Laden des Skripts ({err_no}).",
                         "max": {
@@ -3350,6 +3436,7 @@
                         "save_script": "Skript speichern",
                         "sequence": "Sequenz",
                         "sequence_sentence": "Die Abfolge der Aktionen dieses Skripts.",
+                        "show_info": "Informationen",
                         "show_trace": "Traces"
                     },
                     "picker": {
@@ -3367,8 +3454,13 @@
                         "introduction": "Mit dem Skript-Editor können Skripte erstellt und bearbeitet werden. Bitte folge dem untenstehenden Link, um die Anleitung zu finden. Das stellt sicher, dass Home Assistant richtig konfiguriert ist.",
                         "learn_more": "Weitere Informationen zu Skripten",
                         "no_scripts": "Wir konnten keine Skripte finden",
+                        "run": "Ausführen",
                         "run_script": "Skript ausführen",
-                        "show_info": "Informationen zum Skript anzeigen"
+                        "show_info": "Informationen",
+                        "show_trace": "Traces"
+                    },
+                    "trace": {
+                        "edit_script": "Skript bearbeiten"
                     }
                 },
                 "storage": {
@@ -3382,6 +3474,8 @@
                         "moving": "Verschieben von Datenträgern",
                         "moving_desc": "Neustart und Verschieben der Datenträger. Bitte habe etwas Geduld",
                         "no_devices": "Keine geeigneten angeschlossenen Geräte gefunden",
+                        "no_devices_text": "Es wurde kein geeignetes externes Gerät gefunden. Die Speicherkapazität des externen Datenträgers muss größer sein als die Speicherkapazität des vorhandenen Datenträgers",
+                        "no_devices_title": "Kein geeigneter Speicher gefunden",
                         "select_device": "Wähle einen neuen Datenträger aus",
                         "title": "Datenträger verschieben"
                     },
@@ -3391,7 +3485,7 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "Möchtest du Home Assistant wirklich neu starten?",
-                    "confirm_restart_text": "Wenn Home Assistant neu gestartet wird, werden alle aktiven Dashboards, Automatisierungen und Skripte gestoppt.",
+                    "confirm_restart_text": "Dadurch werden alle Ihre aktiven Dashboards, Automatisierungen und Skripte angehalten.",
                     "confirm_restart_title": "Home Assistant neu starten?",
                     "restart_error": "Fehler beim Neustart von Home Assistant",
                     "restart_homeassistant": "Home Assistant neu starten",
@@ -3491,6 +3585,14 @@
                         "password_not_match": "Passwörter stimmen nicht überein"
                     },
                     "caption": "Benutzer",
+                    "change_password": {
+                        "caption": "Passwort ändern",
+                        "change": "Ändern",
+                        "new_password": "Neues Passwort",
+                        "password_changed": "Das Passwort wurde erfolgreich geändert.",
+                        "password_confirm": "Passwort bestätigen",
+                        "password_no_match": "Passwörter stimmen nicht überein"
+                    },
                     "description": "Home Assistant-Benutzerkonten verwalten",
                     "editor": {
                         "activate_user": "Benutzer aktivieren",
@@ -3500,6 +3602,8 @@
                         "caption": "Benutzer anzeigen",
                         "change_password": "Passwort ändern",
                         "confirm_user_deletion": "Möchtest du {name} wirklich löschen?",
+                        "confirm_user_deletion_text": "Dieser Benutzer wird dauerhaft gelöscht.",
+                        "confirm_user_deletion_title": "{name} löschen?",
                         "deactivate_user": "Benutzer deaktivieren",
                         "delete_user": "Benutzer löschen",
                         "group": "Gruppe",
@@ -3551,7 +3655,9 @@
                         "help_get_zigbee_attribute": "Ruft den Wert für das ausgewählte Attribut ab.",
                         "help_set_zigbee_attribute": "Setzt den Attributwert für den angegebenen Cluster auf der angegebenen Entität.",
                         "introduction": "Anzeigen und Bearbeiten von Cluster-Attributen.",
-                        "set_zigbee_attribute": "Zigbee-Attribut setzen"
+                        "read_zigbee_attribute": "Attribut lesen",
+                        "set_zigbee_attribute": "Zigbee-Attribut setzen",
+                        "write_zigbee_attribute": "Attribut schreiben"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Befehle des ausgewählten Clusters",
@@ -3563,7 +3669,11 @@
                     "clusters": {
                         "header": "Cluster",
                         "help_cluster_dropdown": "Wähle einen Cluster aus, um Attribute und Befehle anzuzeigen.",
-                        "introduction": "Cluster sind die Bausteine für die Zigbee-Funktionalität. Sie trennen die Funktionalität in logische Einheiten. Es gibt Client- und Server-Typen, die sich aus Attributen und Befehlen zusammensetzen."
+                        "introduction": "Cluster sind die Bausteine für die Zigbee-Funktionalität. Sie trennen die Funktionalität in logische Einheiten. Es gibt Client- und Server-Typen, die sich aus Attributen und Befehlen zusammensetzen.",
+                        "tabs": {
+                            "attributes": "Attribute",
+                            "commands": "Befehle"
+                        }
                     },
                     "common": {
                         "clusters": "Cluster",
@@ -3576,6 +3686,11 @@
                         "network_settings_title": "Netzwerkeinstellungen",
                         "shortcuts_title": "Verknüpfungen",
                         "update_button": "Konfiguration aktualisieren"
+                    },
+                    "device_binding": {
+                        "bind": "Binden",
+                        "picker_label": "Bindungsfähige Geräte",
+                        "unbind": "Lösen"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Konfiguration abgeschlossen",
@@ -4563,6 +4678,15 @@
                                 "hour": "Stunde",
                                 "month": "Monat"
                             },
+                            "pick_statistic": "Statistik hinzufügen",
+                            "picked_statistic": "Statistik",
+                            "stat_type_labels": {
+                                "max": "Max",
+                                "mean": "Mittel",
+                                "min": "Min",
+                                "state": "Zustand",
+                                "sum": "Summe (Veränderung während des Zeitraums)"
+                            },
                             "stat_types": "Statustypen anzeigen"
                         },
                         "thermostat": {
@@ -4630,12 +4754,16 @@
                     },
                     "edit_view": {
                         "add": "Ansicht hinzufügen",
+                        "back_path": "Rückweg (optional)",
+                        "back_path_helper": "Nur für Unteransichten. Wenn leer, wird durch Klicken auf die Schaltfläche \"Zurück\" die vorherige Seite angezeigt.",
                         "delete": "Ansicht löschen",
                         "edit": "Ansicht bearbeiten",
                         "header": "Konfiguration anzeigen",
                         "header_name": "{name} Konfiguration anzeigen",
                         "move_left": "Ansicht nach links verschieben",
                         "move_right": "Ansicht nach rechts verschieben",
+                        "subview": "Unteransicht",
+                        "subview_helper": "Unteransichten erscheinen nicht in Registerkarten und haben eine Zurück-Schaltfläche.",
                         "tab_badges": "Plaketten",
                         "tab_settings": "Einstellungen",
                         "tab_visibility": "Sichtbarkeit",

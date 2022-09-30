@@ -1,7 +1,7 @@
 import { computeStateName } from "../common/entity/compute_state_name";
 import { HomeAssistant } from "../types";
 
-export type StatisticType = "sum" | "min" | "max" | "mean";
+export type StatisticType = "state" | "sum" | "min" | "max" | "mean";
 
 export interface Statistics {
   [statisticId: string]: StatisticValue[];
@@ -20,7 +20,7 @@ export interface StatisticValue {
 }
 
 export interface StatisticsMetaData {
-  display_unit_of_measurement: string;
+  state_unit_of_measurement: string;
   statistics_unit_of_measurement: string;
   statistic_id: string;
   source: string;
@@ -35,7 +35,9 @@ export type StatisticsValidationResult =
   | StatisticsValidationResultEntityNoLongerRecorded
   | StatisticsValidationResultUnsupportedStateClass
   | StatisticsValidationResultUnitsChanged
+  | StatisticsValidationResultUnitsChangedCanConvert
   | StatisticsValidationResultUnsupportedUnitMetadata
+  | StatisticsValidationResultUnsupportedUnitMetadataCanConvert
   | StatisticsValidationResultUnsupportedUnitState;
 
 export interface StatisticsValidationResultNoState {
@@ -63,8 +65,23 @@ export interface StatisticsValidationResultUnitsChanged {
   data: { statistic_id: string; state_unit: string; metadata_unit: string };
 }
 
+export interface StatisticsValidationResultUnitsChangedCanConvert {
+  type: "units_changed_can_convert";
+  data: { statistic_id: string; state_unit: string; metadata_unit: string };
+}
+
 export interface StatisticsValidationResultUnsupportedUnitMetadata {
   type: "unsupported_unit_metadata";
+  data: {
+    statistic_id: string;
+    device_class: string;
+    metadata_unit: string;
+    supported_unit: string;
+  };
+}
+
+export interface StatisticsValidationResultUnsupportedUnitMetadataCanConvert {
+  type: "unsupported_unit_metadata_can_convert";
   data: {
     statistic_id: string;
     device_class: string;
@@ -150,6 +167,19 @@ export const updateStatisticsMetadata = (
     unit_of_measurement,
   });
 
+export const changeStatisticUnit = (
+  hass: HomeAssistant,
+  statistic_id: string,
+  old_unit_of_measurement: string | null,
+  new_unit_of_measurement: string | null
+) =>
+  hass.callWS<void>({
+    type: "recorder/change_statistics_unit",
+    statistic_id,
+    old_unit_of_measurement,
+    new_unit_of_measurement,
+  });
+
 export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
   hass.callWS<void>({
     type: "recorder/clear_statistics",
@@ -224,14 +254,14 @@ export const adjustStatisticsSum = (
   statistic_id: string,
   start_time: string,
   adjustment: number,
-  display_unit: string
+  adjustment_unit_of_measurement: string
 ): Promise<void> =>
   hass.callWS({
     type: "recorder/adjust_sum_statistics",
     statistic_id,
     start_time,
     adjustment,
-    display_unit,
+    adjustment_unit_of_measurement,
   });
 
 export const getStatisticLabel = (

@@ -24,6 +24,8 @@ export class HaWebhookTrigger extends LitElement {
 
   @property() public trigger!: WebhookTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _config?: AutomationConfig;
 
   private _unsub?: UnsubscribeFunc;
@@ -88,6 +90,7 @@ export class HaWebhookTrigger extends LitElement {
         .helper=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
         )}
+        .disabled=${this.disabled}
         iconTrailing
         .value=${webhookId || ""}
         @input=${this._valueChanged}

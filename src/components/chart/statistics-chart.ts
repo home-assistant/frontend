@@ -30,6 +30,15 @@ import {
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
+export type ExtendedStatisticType = StatisticType | "state";
+
+export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
+  mean: "mean",
+  min: "min",
+  max: "max",
+  sum: "sum",
+  state: "sum",
+};
 @customElement("statistics-chart")
 class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -42,7 +51,7 @@ class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ type: Array }) public statTypes: Array<StatisticType> = [
+  @property({ type: Array }) public statTypes: Array<ExtendedStatisticType> = [
     "sum",
     "min",
     "mean",
@@ -249,8 +258,8 @@ class StatisticsChart extends LitElement {
 
       if (!this.unit) {
         if (unit === undefined) {
-          unit = meta?.display_unit_of_measurement;
-        } else if (unit !== meta?.display_unit_of_measurement) {
+          unit = meta?.state_unit_of_measurement;
+        } else if (unit !== meta?.state_unit_of_measurement) {
           unit = null;
         }
       }
@@ -307,7 +316,7 @@ class StatisticsChart extends LitElement {
         : this.statTypes;
 
       sortedTypes.forEach((type) => {
-        if (statisticsHaveType(stats, type)) {
+        if (statisticsHaveType(stats, statTypeMap[type])) {
           const band = drawBands && (type === "min" || type === "max");
           statTypes.push(type);
           statDataSets.push({
@@ -335,7 +344,6 @@ class StatisticsChart extends LitElement {
 
       let prevDate: Date | null = null;
       // Process chart data.
-      let initVal: number | null = null;
       let prevSum: number | null = null;
       stats.forEach((stat) => {
         const date = new Date(stat.start);
@@ -347,11 +355,11 @@ class StatisticsChart extends LitElement {
         statTypes.forEach((type) => {
           let val: number | null;
           if (type === "sum") {
-            if (initVal === null) {
-              initVal = val = stat.state || 0;
+            if (prevSum === null) {
+              val = 0;
               prevSum = stat.sum;
             } else {
-              val = initVal + ((stat.sum || 0) - prevSum!);
+              val = (stat.sum || 0) - prevSum;
             }
           } else {
             val = stat[type];

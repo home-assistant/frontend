@@ -20,6 +20,8 @@ export class HaManualScriptEditor extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false }) public config!: ScriptConfig;
 
   @property({ type: Boolean, reflect: true, attribute: "re-order-mode" })
@@ -27,6 +29,14 @@ export class HaManualScriptEditor extends LitElement {
 
   protected render() {
     return html`
+      ${this.disabled
+        ? html`<ha-alert alert-type="warning">
+            ${this.hass.localize("ui.panel.config.script.editor.read_only")}
+            <mwc-button slot="action" @click=${this._duplicate}>
+              ${this.hass.localize("ui.panel.config.script.editor.migrate")}
+            </mwc-button>
+          </ha-alert>`
+        : ""}
       ${this.reOrderMode
         ? html`
             <ha-alert
@@ -72,6 +82,7 @@ export class HaManualScriptEditor extends LitElement {
         @value-changed=${this._sequenceChanged}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .disabled=${this.disabled}
         .reOrderMode=${this.reOrderMode}
       ></ha-automation-action>
     `;
@@ -86,6 +97,10 @@ export class HaManualScriptEditor extends LitElement {
 
   private _exitReOrderMode() {
     this.reOrderMode = !this.reOrderMode;
+  }
+
+  private _duplicate() {
+    fireEvent(this, "duplicate");
   }
 
   static get styles(): CSSResultGroup {

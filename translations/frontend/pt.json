@@ -352,7 +352,7 @@
                 "title": "Opções de reposição"
             },
             "restart": {
-                "text": "Tem a certeza que pretende reiniciar {name}?",
+                "text": "Tem a certeza de que pretende reiniciar {name}?",
                 "title": "Reiniciar {name}"
             }
         },
@@ -458,8 +458,8 @@
             "host": {
                 "change": "Alterar",
                 "change_hostname": "Alterar o Nome do Servidor",
-                "confirm_reboot": "Tem a certeza que pretende reiniciar o servidor?",
-                "confirm_shutdown": "Tem a certeza que pretende encerrar o servidor?",
+                "confirm_reboot": "Tem a certeza de que pretende reiniciar o servidor?",
+                "confirm_shutdown": "Tem a certeza de que pretende encerrar o servidor?",
                 "deployment": "Implementação",
                 "docker_version": "Versão Docker",
                 "emmc_lifetime_used": "Vida Útil de eMMC Utilizada",
@@ -907,7 +907,7 @@
                 },
                 "not_loaded": "A integração {platform} não foi carregada. Para isso, por favor adicione ''default_config:''  ou ''{platform}:'' ao ficheiro configuration.yaml.",
                 "retrieval_error": "Não foi possível carregar o diário de bordo",
-                "show_trace": "Mostrar registo",
+                "show_trace": "Rastreios de execução",
                 "triggered_by": "despoletado por",
                 "triggered_by_automation": "pela automatização",
                 "triggered_by_event": "pelo evento",
@@ -1286,7 +1286,7 @@
                     "activity": "Atividade atual"
                 },
                 "restored": {
-                    "confirm_remove_text": "Tem a certeza de que deseja eliminar esta entidade?",
+                    "confirm_remove_text": "Tem a certeza de que pretende eliminar esta entidade?",
                     "confirm_remove_title": "Eliminar a entidade?",
                     "no_longer_provided": "Esta entidade deixou de ser fornecida pela integração {integration}. Se a entidade não estiver a ser utilizada, apague-a nas definições.",
                     "not_provided": "Esta entidade deixou de ser fornecida pela integração {integration}. Se a entidade não estiver a ser utilizada, apague-a nas definições.",
@@ -1641,7 +1641,7 @@
                         "entities": "Entidades"
                     },
                     "delete": {
-                        "confirmation_text": "Todos os dispositivos nesta área ficarão sem área atribuída.",
+                        "confirmation_text": "Este utilizador será permanentemente eliminado.",
                         "confirmation_title": "Tem a certeza de que pretende eliminar esta área?"
                     },
                     "description": "Agrupar dispositivos e entidades em áreas",
@@ -1692,7 +1692,9 @@
                             "alias": "Nome da ação",
                             "change_alias": "Renomear ação",
                             "delete": "Eliminar",
-                            "delete_confirm": "Tem a certeza de que pretende apagar?",
+                            "delete_confirm": "Tem a certeza de que pretende eliminar?",
+                            "delete_confirm_text": "Será eliminado permanentemente.",
+                            "delete_confirm_title": "Eliminar ação?",
                             "disable": "Desativar",
                             "disabled": "Desativado",
                             "duplicate": "Duplicar",
@@ -1709,7 +1711,7 @@
                             "run_action_success": "Ação executada com sucesso",
                             "type": {
                                 "activate_scene": {
-                                    "label": "Ativar cenário",
+                                    "label": "Ativar Cenário",
                                     "scene": "Cena"
                                 },
                                 "choose": {
@@ -1812,12 +1814,15 @@
                             "no_blueprints": "Não tem nenhum *blueprint*",
                             "no_inputs": "Este *blueprint* não tem nenhuma entrada"
                         },
+                        "change_mode": "Alterar modo",
                         "conditions": {
                             "add": "Acrescentar condição",
                             "alias": "Nome da condição",
                             "change_alias": "Renomear condição",
                             "delete": "Eliminar",
-                            "delete_confirm": "Tem a certeza de que pretende apagar?",
+                            "delete_confirm": "Tem a certeza de que pretende eliminar?",
+                            "delete_confirm_text": "Será eliminado permanentemente.",
+                            "delete_confirm_title": "Eliminar condição?",
                             "duplicate": "Duplicar",
                             "header": "Condições",
                             "introduction": "As condições são opcionais e impedem a execução da automatização a menos que todas sejam satisfeitas.",
@@ -1920,6 +1925,8 @@
                         "enable": "Ativar",
                         "enable_disable": "Ativar/desativar automatização",
                         "introduction": "Use as automatizações para dar vida à sua casa.",
+                        "load_error_not_deletable": "Apenas as automatizações presentes em automations.yaml poderão ser eliminadas.",
+                        "load_error_not_duplicable": "Apenas as automatizações presentes em automations.yaml poderão ser duplicadas.",
                         "load_error_not_editable": "Apenas as automatizações definidas no ficheiro automations.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automatização ({err_no}).",
                         "max": {
@@ -1939,17 +1946,25 @@
                         },
                         "move_down": "Mover para baixo",
                         "move_up": "Mover para cima",
+                        "re_order": "Reordenar",
+                        "re_order_mode": {
+                            "description": "Está no modo de reordenação, poderá reordenar os seus gatilhos, condições e ações.",
+                            "exit": "Sair",
+                            "title": "Modo de reordenação"
+                        },
                         "rename": "Renomear",
                         "run": "Executar",
                         "save": "Guardar",
                         "show_info": "Informação",
-                        "show_trace": "Mostrar registo",
+                        "show_trace": "Rastreios de execução",
                         "triggers": {
                             "add": "Adicionar gatilho",
                             "alias": "Nome do gatilho",
                             "change_alias": "Renomear gatilho",
                             "delete": "Eliminar",
-                            "delete_confirm": "Tem a certeza de que pretende apagar?",
+                            "delete_confirm": "Tem a certeza de que pretende eliminar?",
+                            "delete_confirm_text": "Será eliminado permanentemente.",
+                            "delete_confirm_title": "Eliminar gatilho?",
                             "duplicate": "Duplicar",
                             "edit_id": "Editar ID",
                             "header": "Gatilhos",
@@ -2064,13 +2079,17 @@
                             "type_select": "Tipo de gatilho",
                             "unsupported_platform": "Nenhum editor visual disponível para a plataforma \"{platform}\"."
                         },
-                        "unsaved_confirm": "Existem alterações não guardadas. Tem a certeza de que quer sair?"
+                        "unsaved_confirm": "Existem alterações não guardadas. Tem a certeza de que quer sair?",
+                        "unsaved_confirm_text": "As alterações não guardadas serão perdidas.",
+                        "unsaved_confirm_title": "Sair do editor?"
                     },
                     "picker": {
                         "add_automation": "Criar automatização",
                         "delete": "Eliminar",
                         "delete_automation": "Eliminar automatização",
                         "delete_confirm": "Tem a certeza de que pretende eliminar esta automatização?",
+                        "delete_confirm_text": "{name} será permanentemente eliminado.",
+                        "delete_confirm_title": "Eliminar automatização?",
                         "dev_automation": "Depurar automatização",
                         "dev_only_editable": "Apenas as automatizações que têm uma identificação única atribuída são depuráveis.",
                         "disabled": "Desativado",
@@ -2143,26 +2162,28 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "fóruns da comunidade",
-                        "error_no_url": "Por favor introduza o URL do *blueprint*",
+                        "community_forums": "Encontre *blueprints* nos fóruns da comunidade",
+                        "error_no_url": "Por favor introduza o endereço do *blueprint*",
                         "file_name": "Caminho do *blueprint*",
                         "header": "Importar um *Blueprint*",
-                        "import_btn": "Pré-visualizar *blueprint*",
+                        "import_btn": "Pré-visualizar",
                         "import_header": "*Blueprint* \"{name}\"",
+                        "import_introduction": "Importe *blueprints* de outros utilizadores do GitHub e de fóruns da comunidade inserindo o endereço abaixo.",
                         "import_introduction_link": "Pode importar *blueprints* de outros utilizadores do Github e de {community_link}. Insira o URL do *blueprint* abaixo.",
                         "importing": "A carregar *blueprint*…",
                         "raw_blueprint": "Conteúdo do *blueprint*",
                         "save_btn": "Importar *blueprint*",
                         "saving": "A importar *blueprint*…",
                         "unsupported_blueprint": "Este *blueprint* não é suportado",
-                        "url": "URL do *blueprint*"
+                        "url": "Endereço do *blueprint*"
                     },
                     "caption": "*Blueprints*",
                     "description": "Gerir *blueprints*",
                     "overview": {
                         "add_blueprint": "Importar *blueprint*",
                         "confirm_delete_header": "Eliminar *blueprint*",
-                        "confirm_delete_text": "Tem a certeza que pretende eliminar este *blueprint*?",
+                        "confirm_delete_text": "{name} será permanentemente eliminado.",
+                        "confirm_delete_title": "Eliminar *blueprint*?",
                         "create_automation": "Criar automatização",
                         "create_script": "Criar script",
                         "delete_blueprint": "Eliminar *blueprint*",
@@ -2309,10 +2330,13 @@
                         "available_at": "O webhook está disponível no seguinte endereço:",
                         "close": "Fechar",
                         "confirm_disable": "Tem a certeza de que pretende desativar este webhook?",
+                        "confirm_disable_text": "Webhook para {name} será desativado.",
+                        "confirm_disable_title": "Desativar webhook",
                         "copied_to_clipboard": "Copiado para a área de transferência",
                         "info_disable_webhook": "Se não quiser utilizar mais este webhook, poderá",
                         "link_disable_webhook": "desativá-lo",
                         "managed_by_integration": "Este webhook é gerido por uma integração e não pode ser desativado.",
+                        "public_url": "Endereço público",
                         "view_documentation": "Ver documentação",
                         "webhook_for": "Webhook para {name}"
                     },
@@ -2506,7 +2530,7 @@
                     },
                     "cant_edit": "Apenas é possível editar itens criados na interface de utilizador.",
                     "caption": "Dispositivos",
-                    "confirm_delete": "Tem a certeza que pretende eliminar este dispositivo?",
+                    "confirm_delete": "Tem a certeza de que pretende eliminar este dispositivo?",
                     "confirm_delete_integration": "Tem certeza de que pretende remover este dispositivo de {integration} ?",
                     "confirm_disable_config_entry": "Não há mais dispositivos para a entrada de configuração {entry_name}, deseja antes desativar a entrada de configuração?",
                     "confirm_rename_entity_ids": "Também pretende renomear os IDs de Entidade de suas entidades?",
@@ -2848,11 +2872,17 @@
                     "host_shutting_down": "O servidor está a encerrar",
                     "memory": "Memória",
                     "processor": "Processador",
+                    "reboot": "Reiniciar",
                     "reboot_host": "Reiniciar o servidor",
-                    "reboot_host_confirm": "Tem a certeza que pretende reiniciar o servidor?",
+                    "reboot_host_confirm": "Tem a certeza de que pretende reiniciar o servidor?",
+                    "reboot_host_text": "Reiniciará o sistema completo, incluindo todos os add-ons.",
+                    "reboot_host_title": "Reiniciar o servidor?",
                     "rebooting_host": "O servidor está a reiniciar",
+                    "shutdown": "Encerrar",
                     "shutdown_host": "Encerrar o servidor",
-                    "shutdown_host_confirm": "Tem a certeza que pretende encerrar o servidor?"
+                    "shutdown_host_confirm": "Tem a certeza de que pretende encerrar o servidor?",
+                    "shutdown_host_text": "Desligará o sistema completo, incluindo todos os add-ons.",
+                    "shutdown_host_title": "Encerrar o servidor?"
                 },
                 "header": "Configurar o Home Assistant",
                 "helpers": {
@@ -2928,15 +2958,25 @@
                     "attention": "Atenção necessária",
                     "caption": "Integrações",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "Se as remover, será necessário introduzir credenciais quando configurar a integração novamente. Se as mantiver, serão utilizadas automaticamente, ou poderão ser acedidas a partir do menu de Credenciais Aplicacionais.",
+                            "delete_error_title": "Ocorreu um erro a remover a Credencial Aplicacional",
+                            "delete_prompt": "Gostaria também de remover as Credenciais Aplicacionais para esta integração?",
+                            "delete_title": "Credenciais Aplicacionais",
+                            "dismiss": "Manter",
+                            "learn_more": "Saiba mais sobre Credenciais Aplicacionais"
+                        },
                         "area": "Em {area}",
                         "check_the_logs": "Verifique os logs",
                         "configure": "Configurar",
                         "delete": "Eliminar",
                         "delete_confirm": "Tem a certeza de que pretende eliminar a integração {title}?",
+                        "delete_confirm_text": "Os respetivos dispositivos e entidades serão permanentemente eliminados.",
+                        "delete_confirm_title": "Eliminar {title}?",
                         "depends_on_cloud": "Depende da nuvem",
                         "devices": "{count} {count, plural,\n one {dispositivo}\n other {dispositivos}\n}",
                         "disable": {
-                            "disable_confirm": "Tem a certeza de que deseja desativar esta entrada de configuração? Os respetivos dispositivos e entidades serão desativados.",
+                            "disable_confirm": "Tem a certeza de que pretende desativar esta entrada de configuração? Os respetivos dispositivos e entidades serão desativados.",
                             "disabled": "Desativado",
                             "disabled_by": {
                                 "device": "dispositivo",
@@ -2945,6 +2985,8 @@
                             },
                             "disabled_cause": "Desativado pelo {cause}."
                         },
+                        "disable_confirm_text": "Os respetivos dispositivos e entidades serão desativados.",
+                        "disable_confirm_title": "Desativar {title}?",
                         "disable_error": "A ativação ou desativação da integração falhou",
                         "disable_restart_confirm": "Reinicie o Home Assistant para terminar a desativação desta integração",
                         "disabled_polling": "Procura automática de dados atualizados desativada",
@@ -3132,6 +3174,8 @@
                         "cant_edit_yaml": "Está a utilizar o painel de instrumentos no modo YAML, portanto, não é possível gerir os seus recursos através do interface do utilizador. Configure-os no ficheiro configuration.yaml.",
                         "caption": "Recursos externos",
                         "confirm_delete": "Tem a certeza de que pretende eliminar este recurso?",
+                        "confirm_delete_text": "{url} será permanentemente eliminado.",
+                        "confirm_delete_title": "Eliminar recurso?",
                         "detail": {
                             "create": "Criar",
                             "delete": "Eliminar",
@@ -3203,6 +3247,8 @@
                     "caption": "Pessoas",
                     "confirm_delete": "Tem a certeza de que pretende eliminar esta pessoa?",
                     "confirm_delete2": "Todos os dispositivos pertencentes a esta pessoa ficarão sem atribuição.",
+                    "confirm_delete_text": "Esta pessoa será permanentemente eliminada e os dispositivos que lhe pertençam ficarão sem atribuição.",
+                    "confirm_delete_title": "Eliminar {name}?",
                     "create_person": "Criar Pessoa",
                     "description": "Gerir as pessoas que o Home Assistant segue.",
                     "detail": {
@@ -3284,11 +3330,17 @@
                         "load_error_unknown": "Erro ao carregar cenário ({err_no}).",
                         "name": "Nome",
                         "save": "Guardar",
-                        "unsaved_confirm": "Existem alterações não guardadas. Tem a certeza de que quer sair?"
+                        "unsaved_confirm": "Existem alterações não guardadas. Tem a certeza de que quer sair?",
+                        "unsaved_confirm_text": "As alterações não guardadas serão perdidas.",
+                        "unsaved_confirm_title": "Sair do editor?"
                     },
                     "picker": {
+                        "activate": "Ativar",
                         "add_scene": "Adicionar cenário",
+                        "delete": "Eliminar",
                         "delete_confirm": "Tem a certeza de que pretende eliminar este cenário?",
+                        "delete_confirm_text": "{name} será permanentemente eliminado.",
+                        "delete_confirm_title": "Eliminar cenário?",
                         "delete_scene": "Eliminar cenário",
                         "duplicate": "Duplicar",
                         "duplicate_scene": "Duplicar cenário",
@@ -3297,6 +3349,7 @@
                         "headers": {
                             "activate": "Ativar",
                             "edit": "Editar",
+                            "last_activated": "Última ativação",
                             "name": "Nome",
                             "show_info": "Mostrar informação",
                             "state": "Estado"
@@ -3306,6 +3359,7 @@
                         "no_scenes": "Não conseguimos encontrar nenhum cenário",
                         "only_editable": "Apenas os cenários definidos em scenes.yaml são editáveis.",
                         "pick_scene": "Escolha um cenário para editar",
+                        "show_info": "Informação",
                         "show_info_scene": "Informações sobre este cenário"
                     }
                 },
@@ -3316,6 +3370,8 @@
                         "alias": "Nome",
                         "default_name": "Novo Script",
                         "delete_confirm": "Tem a certeza de que pretende eliminar este script?",
+                        "delete_confirm_text": "{name} será permanentemente eliminado.",
+                        "delete_confirm_title": "Eliminar script?",
                         "delete_script": "Eliminar script",
                         "header": "Script: {name}",
                         "icon": "Ícone",
@@ -3324,6 +3380,8 @@
                         "id_already_exists_save_error": "Nāo é possível gravar este script porque o ID não é único, escolha outro ID ou deixe em branco para ser gerado automaticamente.",
                         "introduction": "Utilize scripts para executar uma sequência de ações.",
                         "link_available_actions": "Saiba mais sobre ações disponíveis.",
+                        "load_error_not_deletable": "Apenas os scripts presentes em scripts.yaml poderão ser eliminados.",
+                        "load_error_not_duplicable": "Apenas os scripts presentes em scripts.yaml poderão ser duplicados.",
                         "load_error_not_editable": "Apenas os scripts em scripts.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar script ({err_no}).",
                         "max": {
@@ -3343,7 +3401,8 @@
                         "save_script": "Guardar script",
                         "sequence": "Sequência",
                         "sequence_sentence": "A sequência de ações para este script.",
-                        "show_trace": "Mostrar registo"
+                        "show_info": "Informação",
+                        "show_trace": "Rastreios de execução"
                     },
                     "picker": {
                         "add_script": "Adicionar script",
@@ -3360,8 +3419,13 @@
                         "introduction": "O editor de scripts permite criar e editar scripts. Leia as instruções do link abaixo para se certificar de que configurou o Home Assistant corretamente.",
                         "learn_more": "Saber mais sobre scripts",
                         "no_scripts": "Não conseguimos encontrar nenhum script",
+                        "run": "Executar",
                         "run_script": "Executar script",
-                        "show_info": "Mostrar informações sobre o script"
+                        "show_info": "Informação",
+                        "show_trace": "Rastreios de execução"
+                    },
+                    "trace": {
+                        "edit_script": "Editar script"
                     }
                 },
                 "storage": {
@@ -3375,6 +3439,8 @@
                         "moving": "A mover datadisk",
                         "moving_desc": "A reiniciar e a mover o datadisk. Por favor aguarde",
                         "no_devices": "Não foram encontrados dispositivos adequados",
+                        "no_devices_text": "Não foi encontrado nenhum dispositivo externo adequado. A capacidade de armazenamento do disco de dados externo deve ser maior do que a capacidade de armazenamento do disco existente.",
+                        "no_devices_title": "Não foi encontrado um dispositivos de armazenamento adequado.",
                         "select_device": "Selecione um novo datadisk",
                         "title": "Mover datadisk"
                     },
@@ -3384,7 +3450,7 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "Tem a certeza de que pretende reiniciar o Home Assistant?",
-                    "confirm_restart_text": "Reiniciar o Home Assistant irá parar o seu painel de instrumentos e a execução de automatizações e scripts.",
+                    "confirm_restart_text": "Irá parar o seu painel de instrumentos e a execução de automatizações e scripts.",
                     "confirm_restart_title": "Reiniciar o Home Assistant?",
                     "restart_error": "Ocorreu um erro ao reiniciar o Home Assistant",
                     "restart_homeassistant": "Reiniciar o Home Assistant",
@@ -3493,6 +3559,8 @@
                         "caption": "Ver utilizador",
                         "change_password": "Alterar palavra-passe",
                         "confirm_user_deletion": "Tem a certeza de que pretende eliminar {name} ?",
+                        "confirm_user_deletion_text": "Este utilizador será permanentemente eliminado.",
+                        "confirm_user_deletion_title": "Eliminar {name}?",
                         "deactivate_user": "Desativar utilizador",
                         "delete_user": "Eliminar utilizador",
                         "group": "Grupo",
@@ -3834,7 +3902,7 @@
                         },
                         "timeout_response": {
                             "label": "Tempo limite de Resposta",
-                            "tooltip": "# de comandos Get em que a resposta do nó não chegou atempadamente"
+                            "tooltip": "# de comandos do tipo Get em que a resposta do nó não chegou atempadamente"
                         },
                         "title": "Estatísticas do Dispositivo"
                     },
@@ -3956,7 +4024,7 @@
                         "begin_update": "Iniciar Atualização de Firmware",
                         "close": "Se fechar esta caixa de diálogo, a atualização continuará em segundo plano.",
                         "close_queued": "Se fechar este diálogo, a actualização continuará a ser enfileirada em segundo plano e começará automaticamente assim que o dispositivo acordar.",
-                        "confirm_abort": "Tem a certeza que quer abortar a actualização de firmware em {device}?",
+                        "confirm_abort": "Tem a certeza de que pretende abortar a atualização de firmware em {device}?",
                         "finished_status": {
                             "Error_Checksum": "Erro de Checksum",
                             "Error_InsufficientMemory": "Memória Insuficiente",
@@ -4556,6 +4624,14 @@
                                 "hour": "Hora",
                                 "month": "Mês"
                             },
+                            "pick_statistic": "Acrescentar uma estatística",
+                            "picked_statistic": "Estatística",
+                            "stat_type_labels": {
+                                "max": "Máx.",
+                                "mean": "Média",
+                                "min": "Mín.",
+                                "sum": "Soma"
+                            },
                             "stat_types": "Estatísticas a Mostrar"
                         },
                         "thermostat": {
@@ -4759,8 +4835,8 @@
                 "views": {
                     "confirm_delete": "Eliminar vista?",
                     "confirm_delete_existing_cards": "Eliminar esta vista vai também remover os cartões",
-                    "confirm_delete_existing_cards_text": "Tem a certeza de que deseja eliminar a vista ''{name}''? A vista contém {number} cartões que serão apagados. Esta ação não pode ser revertida.",
-                    "confirm_delete_text": "Tem a certeza de que deseja eliminar a vista ''{name}''?"
+                    "confirm_delete_existing_cards_text": "Tem a certeza de que pretende eliminar a vista ''{name}''? A vista contém {number} cartões que serão apagados. Esta ação não pode ser revertida.",
+                    "confirm_delete_text": "Tem a certeza de que pretende eliminar a vista ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "O atributo {attribute} não está disponível em: {entity}",
@@ -5100,7 +5176,7 @@
                     "push_notifications": "Notificações push"
                 },
                 "refresh_tokens": {
-                    "confirm_delete": "Tem a certeza de que deseja eliminar o token temporário para {name}?",
+                    "confirm_delete": "Tem a certeza de que pretende eliminar o token temporário para {name}?",
                     "created_at": "Criado {date}",
                     "current_token_tooltip": "Não é possível eliminar o token temporário que está em utilização",
                     "delete_failed": "Ocorreu um erro ao eliminar o token temporário.",

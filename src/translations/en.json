@@ -517,6 +517,7 @@
           "min": "min",
           "max": "max",
           "mean": "mean",
+          "state": "state",
           "sum": "sum"
         }
       },
@@ -897,8 +898,20 @@
           "follow_device_area": "Follow device area",
           "change_device_area": "Change device area",
           "configure_state": "{integration} options",
-          "preload_stream": "Preload camera stream",
-          "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive."
+          "stream": {
+            "preload_stream": "Preload camera stream",
+            "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
+            "stream_orientation": "Camera stream orientation",
+            "stream_orientation_description": "The orientation transformation to use for the camera stream.",
+            "stream_orientation_1": "No orientation transform",
+            "stream_orientation_2": "Mirror",
+            "stream_orientation_3": "Rotate 180",
+            "stream_orientation_4": "Flip",
+            "stream_orientation_5": "Rotate left and flip",
+            "stream_orientation_6": "Rotate left",
+            "stream_orientation_7": "Rotate right and flip",
+            "stream_orientation_8": "Rotate right"
+          }
         }
       },
       "helper_settings": {
@@ -1002,6 +1015,15 @@
         "attribute": "Attribute",
         "min_max_change": "min/max/change"
       },
+      "zha_manage_device": {
+        "heading": "Manage Zigbee Device",
+        "tabs": {
+          "clusters": "Clusters",
+          "bindings": "Bindings",
+          "signature": "Signature",
+          "children": "Children"
+        }
+      },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
@@ -1010,10 +1032,8 @@
         "buttons": {
           "add": "Add devices via this device",
           "remove": "Remove",
-          "clusters": "Manage clusters",
+          "manage": "Manage zigbee device",
           "reconfigure": "Reconfigure",
-          "zigbee_information": "Zigbee signature",
-          "device_children": "View children",
           "view_network": "View network"
         },
         "services": {
@@ -1083,10 +1103,11 @@
       },
       "join_beta_channel": {
         "title": "Join the beta channel",
-        "warning": "[%key:supervisor::system::supervisor::beta_warning%]",
-        "backup": "[%key:supervisor::system::supervisor::beta_backup%]",
-        "release_items": "[%key:supervisor::system::supervisor::beta_release_items%]",
-        "confirm": "[%key:supervisor::system::supervisor::beta_join_confirm%]"
+        "backup": "Make sure you have backups of your data before you activate this feature.",
+        "warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
+        "release_items": "This includes beta releases for:",
+        "view_documentation": "View documentation",
+        "join": "Join"
       }
     },
     "duration": {
@@ -1826,6 +1847,8 @@
             "enable": "[%key:ui::common::enable%]",
             "disable": "[%key:ui::common::disable%]",
             "disabled": "Automation is disabled",
+            "read_only": "This automation can not be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
+            "migrate": "Migrate",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
@@ -2300,6 +2323,9 @@
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
+            "read_only": "This script can not be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
+            "migrate": "Migrate",
+            "duplicate": "Duplicate",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
@@ -2485,14 +2511,13 @@
               "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
-              "sync_entities": "Sync Entities to Amazon",
-              "manage_entities": "Manage Entities",
-              "sync_entities_error": "Failed to sync entities:",
               "state_reporting_error": "Unable to {enable_disable} report state.",
+              "manage_entities": "Manage Entities",
               "enable": "enable",
               "disable": "disable",
               "not_configured_title": "Alexa is not activated",
-              "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app."
+              "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app.",
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
             },
             "google": {
               "title": "Google Assistant",
@@ -2507,13 +2532,11 @@
               "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say/enter this PIN when interacting with such devices via Google Assistant.",
               "devices_pin": "Security Devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
-              "sync_entities": "Sync Entities to Google",
               "manage_entities": "Manage Entities",
               "enter_pin_error": "Unable to store PIN:",
               "not_configured_title": "Google Assistant is not activated",
               "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
-              "sync_failed_title": "Syncing failed",
-              "sync_failed_text": "Syncing your entities failed, try again or check the logs."
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
             },
             "webhooks": {
               "title": "Webhooks",
@@ -2540,7 +2563,9 @@
             "follow_domain": "[%key:ui::panel::config::cloud::google::follow_domain%]",
             "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
             "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
-            "expose": "Expose to Alexa"
+            "expose": "Expose to Alexa",
+            "sync_entities": "Synchronize entities",
+            "sync_entities_error": "Failed to sync entities:"
           },
           "dialog_certificate": {
             "certificate_information": "Certificate Information",
@@ -2563,7 +2588,13 @@
             "follow_domain": "Follow domain",
             "exposed": "{selected} exposed",
             "not_exposed": "{selected} not exposed",
-            "sync_to_google": "Synchronizing changes to Google."
+            "sync_to_google": "Synchronizing changes to Google.",
+            "sync_entities": "Synchronize entities",
+            "sync_entities_error": "Failed to sync entities:",
+            "not_configured_title": "[%key:ui::panel::config::cloud::account::google::not_configured_title%]",
+            "not_configured_text": "[%key:ui::panel::config::cloud::account::google::not_configured_text%]",
+            "sync_failed_title": "Syncing failed",
+            "sync_failed_text": "Syncing your entities failed, try again or check the logs."
           },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
@@ -2821,7 +2852,7 @@
           "discovered": "Discovered",
           "attention": "Attention required",
           "configured": "Configured",
-          "new": "Set up a new integration",
+          "new": "Select brand",
           "confirm_new": "Do you want to set up {integration}?",
           "add_integration": "Add integration",
           "no_integrations": "Seems like you don't have any integrations configured yet. Click on the button below to add your first integration!",
@@ -2838,6 +2869,7 @@
           "rename_dialog": "Edit the name of this config entry",
           "rename_input_label": "Entry name",
           "search": "Search integrations",
+          "search_brand": "Search for a brand name",
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
           "disable": {
@@ -2908,6 +2940,7 @@
             },
             "provided_by_custom_integration": "Provided by a custom integration",
             "depends_on_cloud": "Depends on the cloud",
+            "yaml_only": "Needs manual configuration",
             "disabled_polling": "Automatic polling for updated data disabled",
             "state": {
               "loaded": "Loaded",
@@ -2929,6 +2962,9 @@
             "submit": "Submit",
             "next": "Next",
             "found_following_devices": "We found the following devices",
+            "yaml_only_title": "This device can not be added from the UI",
+            "yaml_only_text": "You can add this device by adding it to your `configuration.yaml`. See the {link} for more information.",
+            "documentation": "documentation",
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
@@ -2949,6 +2985,7 @@
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
+            "missing_credentials_title": "Add application credentials?",
             "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?",
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
             "missing_zwave_zigbee": "To add a {integration} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
@@ -2981,8 +3018,6 @@
             "name": "Display name",
             "username": "Username",
             "change_password": "Change password",
-            "new_password": "New Password",
-            "password_changed": "Password was changed successfully",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -3008,18 +3043,30 @@
             "password_not_match": "Passwords don't match",
             "local_only": "Local only",
             "create": "Create"
+          },
+          "change_password": {
+            "caption": "Change password",
+            "new_password": "New Password",
+            "password_confirm": "Confirm Password",
+            "change": "Change",
+            "password_no_match": "Passwords don't match",
+            "password_changed": "The password has been changed successfully."
           }
         },
         "application_credentials": {
           "caption": "Application Credentials",
           "description": "Manage the OAuth Application Credentials used by Integrations",
           "editor": {
-            "caption": "Add Application Credential",
-            "create": "Create",
+            "caption": "Add Credential",
+            "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a passwords. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
+            "view_documentation": "View documentation",
+            "add": "Add",
             "domain": "Integration",
             "name": "Name",
             "client_id": "OAuth Client ID",
-            "client_secret": "OAuth Client Secret"
+            "client_id_helper": "Public identifier of the OAuth application",
+            "client_secret": "OAuth Client Secret",
+            "client_secret_helper": "Secret of the OAuth application"
           },
           "picker": {
             "add_application_credential": "Add Application Credential",
@@ -3074,17 +3121,17 @@
           "clusters": {
             "header": "Clusters",
             "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
-            "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
+            "tabs": {
+              "attributes": "Attributes",
+              "commands": "Commands"
+            }
           },
           "cluster_attributes": {
             "header": "Cluster Attributes",
             "introduction": "View and edit cluster attributes.",
             "attributes_of_cluster": "Attributes of the selected cluster",
-            "get_zigbee_attribute": "Get Zigbee Attribute",
-            "set_zigbee_attribute": "Set Zigbee Attribute",
-            "help_attribute_dropdown": "Select an attribute to view or set its value.",
-            "help_get_zigbee_attribute": "Get the value for the selected attribute.",
-            "help_set_zigbee_attribute": "Set attribute value for the specified cluster on the specified entity."
+            "read_zigbee_attribute": "Read Attribute",
+            "write_zigbee_attribute": "Write Attribute"
           },
           "cluster_commands": {
             "header": "Cluster Commands",
@@ -3133,6 +3180,11 @@
             "auto_zoom": "Auto Zoom",
             "enable_physics": "Enable Physics",
             "refresh_topology": "Refresh Topology"
+          },
+          "device_binding": {
+            "bind": "Bind",
+            "unbind": "Unbind",
+            "picker_label": "Bindable Devices"
           },
           "group_binding": {
             "header": "Group Binding",
@@ -3749,7 +3801,11 @@
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
               "panel": "Panel (1 card)"
-            }
+            },
+            "subview": "Subview",
+            "subview_helper": "Subviews don't appear in tabs and have a back button.",
+            "back_path": "Back path (optional)",
+            "back_path_helper": "Only for subviews. If empty, clicking on back button will go to the previous page."
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
@@ -3942,7 +3998,8 @@
                 "mean": "Mean",
                 "min": "Min",
                 "max": "Max",
-                "sum": "Sum"
+                "state": "State",
+                "sum": "Sum (change during period)"
               },
               "chart_type": "Chart type",
               "periods": {
@@ -4516,6 +4573,7 @@
             "no_issue": "No issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
+              "units_changed_can_convert": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
               "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''.",
               "unsupported_unit_metadata": "The unit (''{metadata_unit}'') of the recorded statistics doesn't match the supported unit ''{supported_unit}'' of device class ''{device_class}''.",
               "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
@@ -4527,7 +4585,8 @@
               "fix": "Fix issue",
               "units_changed": {
                 "title": "The unit of this entity changed",
-                "update": "Update the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
+                "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
+                "change": "Convert all the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
                 "clear": "Delete all old statistic data for this entity"
               }
             },
@@ -4973,10 +5032,6 @@
         "reload_supervisor": "Reload Supervisor",
         "warning": "WARNING",
         "search": "Search",
-        "beta_warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
-        "beta_backup": "Make sure you have backups of your data before you activate this feature.",
-        "beta_release_items": "This includes beta releases for:",
-        "beta_join_confirm": "Do you want to join the beta channel?",
         "share_diagonstics_title": "Help Improve Home Assistant",
         "share_diagonstics_description": "Would you want to automatically share crash reports and diagnostic information when the Supervisor encounters unexpected errors? {line_break} This will allow us to fix the problems, the information is only accessible to the Home Assistant Core team and will not be shared with others.{line_break} The data does not include any private/sensitive information and you can disable this in settings at any time you want.",
         "unsupported_reason": {
@@ -5103,8 +5158,14 @@
         "used": "Repository is in use for installed add-ons and can't be removed."
       },
       "restart_addon": {
-        "confirm_text": "Restart add-on",
-        "text": "Do you want to restart the add-on with your changes?"
+        "title": "Restart {name}?",
+        "text": "To use the new saved configuration this add-on must be restarted.",
+        "restart": "Restart"
+      },
+      "uninstall_addon": {
+        "title": "Uninstall {name}?",
+        "text": "Its configuration will be permanently deleted.",
+        "uninstall": "Uninstall"
       },
       "hardware": {
         "title": "Hardware",

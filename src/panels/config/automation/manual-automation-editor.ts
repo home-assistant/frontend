@@ -28,6 +28,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false }) public config!: ManualAutomationConfig;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
@@ -37,6 +39,14 @@ export class HaManualAutomationEditor extends LitElement {
 
   protected render() {
     return html`
+      ${this.disabled
+        ? html`<ha-alert alert-type="warning">
+            ${this.hass.localize("ui.panel.config.automation.editor.read_only")}
+            <mwc-button slot="action" @click=${this._duplicate}>
+              ${this.hass.localize("ui.panel.config.automation.editor.migrate")}
+            </mwc-button>
+          </ha-alert>`
+        : ""}
       ${this.stateObj?.state === "off"
         ? html`
             <ha-alert alert-type="info">
@@ -100,6 +110,7 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
         .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
       ></ha-automation-trigger>
 
       <div class="header">
@@ -129,6 +140,7 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
       ></ha-automation-condition>
 
       <div class="header">
@@ -161,6 +173,7 @@ export class HaManualAutomationEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
       ></ha-automation-action>
     `;
   }
@@ -200,6 +213,10 @@ export class HaManualAutomationEditor extends LitElement {
     await this.hass.callService("automation", "turn_on", {
       entity_id: this.stateObj.entity_id,
     });
+  }
+
+  private _duplicate() {
+    fireEvent(this, "duplicate");
   }
 
   static get styles(): CSSResultGroup {

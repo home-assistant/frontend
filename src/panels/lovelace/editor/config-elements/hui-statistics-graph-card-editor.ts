@@ -36,8 +36,11 @@ import {
   statisticsMetaHasType,
 } from "../../../../data/recorder";
 import { deepEqual } from "../../../../common/util/deep-equal";
+import { statTypeMap } from "../../../../components/chart/statistics-chart";
+import { ensureArray } from "../../../../common/ensure-array";
 
 const statTypeStruct = union([
+  literal("state"),
   literal("sum"),
   literal("min"),
   literal("max"),
@@ -64,7 +67,7 @@ const cardConfigStruct = assign(
 );
 
 const periods = ["5minute", "hour", "day", "month"] as const;
-const stat_types = ["mean", "min", "max", "sum"] as const;
+const stat_types = ["mean", "min", "max", "sum", "state"] as const;
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor
@@ -156,7 +159,7 @@ export class HuiStatisticsGraphCardEditor
                     disabled:
                       !metaDatas ||
                       !metaDatas?.every((metaData) =>
-                        statisticsMetaHasType(metaData, stat_type)
+                        statisticsMetaHasType(metaData, statTypeMap[stat_type])
                       ),
                   })),
                 },
@@ -190,7 +193,11 @@ export class HuiStatisticsGraphCardEditor
       ? Array.isArray(this._config!.stat_types)
         ? this._config!.stat_types
         : [this._config!.stat_types]
-      : stat_types;
+      : stat_types.filter((stat_type) =>
+          this._metaDatas?.every((metaData) =>
+            statisticsMetaHasType(metaData, statTypeMap[stat_type])
+          )
+        );
     const data = {
       chart_type: "line",
       period: "hour",
@@ -198,7 +205,7 @@ export class HuiStatisticsGraphCardEditor
       ...this._config,
       stat_types: configured_stat_types,
     };
-    const displayUnit = this._metaDatas?.[0]?.display_unit_of_measurement;
+    const displayUnit = this._metaDatas?.[0]?.state_unit_of_measurement;
 
     return html`
       <ha-form
@@ -230,9 +237,27 @@ export class HuiStatisticsGraphCardEditor
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _entitiesChanged(ev: CustomEvent): void {
+  private async _entitiesChanged(ev: CustomEvent): Promise<void> {
+    const config = { ...this._config!, entities: ev.detail.value };
+    if (
+      config.entities?.some((statistic_id) => statistic_id.includes(":")) &&
+      config.period === "5minute"
+    ) {
+      delete config.period;
+    }
+    if (config.stat_types && config.entities.length) {
+      const metadata = await getStatisticMetadata(this.hass!, config.entities);
+      config.stat_types = ensureArray(config.stat_types).filter((stat_type) =>
+        metadata.every((metaData) =>
+          statisticsMetaHasType(metaData, statTypeMap[stat_type])
+        )
+      );
+      if (!config.stat_types.length) {
+        delete config.stat_types;
+      }
+    }
     fireEvent(this, "config-changed", {
-      config: { ...this._config!, entities: ev.detail.value },
+      config,
     });
   }
 

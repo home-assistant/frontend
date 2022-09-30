@@ -421,7 +421,14 @@
             },
             "restart_addon": {
                 "confirm_text": "Uruchom ponownie dodatek",
-                "text": "Czy chcesz ponownie uruchomić dodatek ze zmianami?"
+                "restart": "Uruchom ponownie",
+                "text": "Aby użyć nowej zapisanej konfiguracji, należy ponownie uruchomić ten dodatek.",
+                "title": "Uruchomić ponownie {name}?"
+            },
+            "uninstall_addon": {
+                "text": "Konfiguracja zostanie trwale usunięta.",
+                "title": "Odinstalować {name}?",
+                "uninstall": "Odinstaluj"
             }
         },
         "my": {
@@ -741,6 +748,7 @@
             "copied_clipboard": "Skopiowano do schowka",
             "delete": "Usuń",
             "disable": "Wyłącz",
+            "duplicate": "Duplikuj",
             "edit": "Edytuj",
             "enable": "Włącz",
             "error_required": "To pole jest wymagane",
@@ -906,7 +914,7 @@
                 },
                 "not_loaded": "Komponent {platform} nie jest wczytany, dodaj go do swojej konfiguracji dodając 'default_config:' lub ''{platform}:''.",
                 "retrieval_error": "Nie udało się załadować dziennika",
-                "show_trace": "Pokaż ślad",
+                "show_trace": "Ślady",
                 "triggered_by": "wyzwolony przez",
                 "triggered_by_automation": "wyzwolony przez automatyzację",
                 "triggered_by_event": "wyzwolony przez zdarzenie",
@@ -1059,6 +1067,7 @@
                     "max": "maks",
                     "mean": "średnia",
                     "min": "min",
+                    "state": "stan",
                     "sum": "suma"
                 }
             },
@@ -1257,8 +1266,10 @@
             "join_beta_channel": {
                 "backup": "Przed aktywacją tej funkcji upewnij się, że masz kopie zapasowe swoich danych.",
                 "confirm": "Czy chcesz dołączyć do kanału beta?",
+                "join": "Dołącz",
                 "release_items": "Obejmuje to wersje beta dla:",
                 "title": "Dołącz do kanału beta",
+                "view_documentation": "Dokumentacja",
                 "warning": "Wersje beta są przeznaczone dla testerów i wczesnych użytkowników i mogą zawierać niestabilne zmiany w kodzie"
             },
             "more_info_control": {
@@ -1287,8 +1298,8 @@
                 "restored": {
                     "confirm_remove_text": "Czy na pewno chcesz usunąć tę encję?",
                     "confirm_remove_title": "Usunąć encję?",
-                    "no_longer_provided": "Ta encja nie jest już dostarczana przez {integracja}. Jeśli encja nie jest już używana, usuń ją w ustawieniach.",
-                    "not_provided": "Ta encja jest obecnie niedostępna i jest osierocona po usuniętej, zmienionej lub dysfunkcyjnej integracji, lub urządzeniu.",
+                    "no_longer_provided": "Ta encja nie jest już dostarczana przez {integration}. Jeśli encja nie jest już używana, usuń ją w ustawieniach.",
+                    "not_provided": "Ta encja nie jest już dostarczana przez {integration}. Jeśli encja nie jest już używana, usuń ją w ustawieniach.",
                     "remove_action": "Usuń encję",
                     "remove_intro": "Jeśli encja nie jest używana możesz ją usunąć.",
                     "title": "Encja niedostępna"
@@ -1297,7 +1308,7 @@
                     "last_action": "Ostatnia akcja",
                     "last_triggered": "Ostatnie uruchomienie"
                 },
-                "settings": "Ustawienia encji",
+                "settings": "Ustawienia",
                 "show_more": "Pokaż więcej",
                 "sun": {
                     "elevation": "Wysokość",
@@ -1499,11 +1510,12 @@
                     "add": "Dodaj urządzenia za pomocą tego urządzenia",
                     "clusters": "Zarządzaj klastrami",
                     "device_children": "Wyświetl urządzenia-dzieci",
-                    "reconfigure": "Rekonfiguracja urządzenia",
-                    "remove": "Usuń urządzenie",
+                    "manage": "Zarządzaj urządzeniem Zigbee",
+                    "reconfigure": "Rekonfiguracja",
+                    "remove": "Usuń",
                     "view_in_visualization": "Wyświetl w wizualizacji",
                     "view_network": "Wyświetl sieć",
-                    "zigbee_information": "Sygnatura urządzenia Zigbee"
+                    "zigbee_information": "Sygnatura Zigbee"
                 },
                 "confirmations": {
                     "remove": "Czy na pewno chcesz usunąć urządzenie?"
@@ -1524,6 +1536,15 @@
                 "unknown": "Nieznany",
                 "zha_device_card": {
                     "device_name_placeholder": "Zmień nazwę urządzenia"
+                }
+            },
+            "zha_manage_device": {
+                "heading": "Zarządzaj urządzeniem Zigbee",
+                "tabs": {
+                    "bindings": "Wiązania",
+                    "children": "Dzieci",
+                    "clusters": "Klastry",
+                    "signature": "Sygnatura"
                 }
             },
             "zha_reconfigure_device": {
@@ -1606,12 +1627,17 @@
                     "caption": "Poświadczenia aplikacji",
                     "description": "Zarządzaj poświadczeniami aplikacji OAuth używanymi przez integracje",
                     "editor": {
-                        "caption": "Dodaj poświadczenia aplikacji",
+                        "add": "Dodaj",
+                        "caption": "Dodaj poświadczenia",
                         "client_id": "Identyfikator klienta OAuth",
+                        "client_id_helper": "Publiczny identyfikator aplikacji OAuth",
                         "client_secret": "Hasło klienta OAuth",
+                        "client_secret_helper": "Sekretne hasło aplikacji OAuth",
                         "create": "Utwórz",
+                        "description": "OAuth służy do przyznawania Home Assistantowi dostępu do informacji na innych stronach internetowych bez podawania haseł. Z mechanizmu tego korzystają takie firmy jak Spotify, Google, Withings, Microsoft czy Twitter.",
                         "domain": "Integracja",
-                        "name": "Nazwa"
+                        "name": "Nazwa",
+                        "view_documentation": "Dokumentacja"
                     },
                     "picker": {
                         "add_application_credential": "Dodaj poświadczenia aplikacji",
@@ -1640,7 +1666,7 @@
                         "entities": "Encje"
                     },
                     "delete": {
-                        "confirmation_text": "Wszystkie urządzenia z tego obszaru pozostaną bez przypisanego obszaru.",
+                        "confirmation_text": "Ten użytkownik zostanie trwale usunięty.",
                         "confirmation_title": "Czy na pewno chcesz usunąć ten obszar?"
                     },
                     "description": "Grupuj urządzenia i encje w obszary",
@@ -1692,6 +1718,8 @@
                             "change_alias": "Zmień nazwę akcji",
                             "delete": "Usuń",
                             "delete_confirm": "Czy na pewno chcesz to usunąć?",
+                            "delete_confirm_text": "Ten element zostanie trwale usunięty.",
+                            "delete_confirm_title": "Usunąć akcję?",
                             "disable": "Wyłącz",
                             "disabled": "Wyłączona",
                             "duplicate": "Duplikuj",
@@ -1708,7 +1736,7 @@
                             "run_action_success": "Akcja uruchomiona pomyślnie",
                             "type": {
                                 "activate_scene": {
-                                    "label": "Aktywuj scenę",
+                                    "label": "Scena",
                                     "scene": "Scena"
                                 },
                                 "choose": {
@@ -1746,9 +1774,10 @@
                                 "event": {
                                     "event": "Zdarzenie",
                                     "event_data": "Dane zdarzenia",
-                                    "label": "Wywołanie zdarzenia"
+                                    "label": "Zdarzenie"
                                 },
                                 "if": {
+                                    "add_else": "Dodaj warunek \"w przeciwnym razie\"",
                                     "else": "W przeciwnym razie",
                                     "if": "Gdy",
                                     "label": "gdy coś - wtedy coś",
@@ -1810,12 +1839,15 @@
                             "no_blueprints": "Nie masz żadnych schematów",
                             "no_inputs": "Ten schemat nie ma żadnych danych wejściowych"
                         },
+                        "change_mode": "Zmień tryb",
                         "conditions": {
                             "add": "Dodaj warunek",
                             "alias": "Nazwa warunku",
                             "change_alias": "Zmień nazwę warunku",
                             "delete": "Usuń",
                             "delete_confirm": "Czy na pewno chcesz to usunąć?",
+                            "delete_confirm_text": "Ten element zostanie trwale usunięty.",
+                            "delete_confirm_title": "Usunąć warunek?",
                             "duplicate": "Duplikuj",
                             "header": "Warunki",
                             "introduction": "Warunki nie są wymagane w automatyzacji, ale zastosowanie ich wykluczy jej potencjalnie niechciane uruchomienia, póki logika każdego z nich przyjmuje wartość pozytywną.",
@@ -1825,6 +1857,8 @@
                             "rename": "Zmień nazwę",
                             "test": "Test",
                             "test_failed": "Wystąpił błąd podczas testowania warunku",
+                            "testing_error": "Warunek nie został spełniony",
+                            "testing_pass": "Warunek został spełniony",
                             "type": {
                                 "and": {
                                     "label": "I"
@@ -1862,7 +1896,7 @@
                                     "before": "Przed",
                                     "before_offset": "Przed przesunięciem (opcjonalnie)",
                                     "label": "Słońce",
-                                    "sunrise": "Wschód słońca",
+                                    "sunrise": "wschód słońca",
                                     "sunset": "zachód słońca"
                                 },
                                 "template": {
@@ -1916,6 +1950,8 @@
                         "enable": "Włącz",
                         "enable_disable": "Włącz/wyłącz automatyzację",
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
+                        "load_error_not_deletable": "Tylko automatyzacje w pliku automations.yaml mogą być usunięte.",
+                        "load_error_not_duplicable": "Tylko automatyzacje w pliku automations.yaml mogą być duplikowane.",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne",
                         "load_error_unknown": "Wystąpił błąd podczas wczytywania automatyzacji ({err_no})",
                         "max": {
@@ -1931,22 +1967,31 @@
                             "parallel": "Równolegle",
                             "queued": "Kolejkowanie",
                             "restart": "Restart",
-                            "single": "Pojedynczy (domyślnie)"
+                            "single": "Pojedynczy"
                         },
                         "move_down": "Przesuń w dół",
                         "move_up": "Przesuń w górę",
+                        "re_order": "Zmień kolejność",
+                        "re_order_mode": {
+                            "description": "Jesteś w trybie zmiany kolejności, możesz zmienić kolejność wyzwalaczy, warunków i akcji.",
+                            "exit": "Wyjdź",
+                            "title": "Tryb zmiany kolejności"
+                        },
                         "rename": "Zmień nazwę",
                         "run": "Uruchom",
                         "save": "Zapisz",
-                        "show_trace": "Pokaż ślad",
+                        "show_info": "Informacje",
+                        "show_trace": "Ślady",
                         "triggers": {
                             "add": "Dodaj wyzwalacz",
                             "alias": "Nazwa wyzwalacza",
                             "change_alias": "Zmień nazwę wyzwalacza",
                             "delete": "Usuń",
                             "delete_confirm": "Czy na pewno chcesz to usunąć?",
+                            "delete_confirm_text": "Ten element zostanie trwale usunięty.",
+                            "delete_confirm_title": "Usunąć wyzwalacz?",
                             "duplicate": "Duplikuj",
-                            "edit_id": "Edytuj identyfikator wyzwalacza",
+                            "edit_id": "Edytuj identyfikator",
                             "header": "Wyzwalacze",
                             "id": "Identyfikator wyzwalacza",
                             "introduction": "Wyzwalacze uruchamiają przetwarzanie automatyzacji. Możliwe jest stworzenie wielu wyzwalaczy dla tej samej automatyzacji. Po uruchomieniu wyzwalacza Home Assistant sprawdzi ewentualne warunki i wywoła akcje.",
@@ -2059,15 +2104,20 @@
                             "type_select": "Typ wyzwalacza",
                             "unsupported_platform": "Brak wsparcia edytora wizualnego dla platformy: {platform}"
                         },
-                        "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
+                        "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?",
+                        "unsaved_confirm_text": "Niezapisane zmiany zostaną utracone.",
+                        "unsaved_confirm_title": "Opuścić edytor?"
                     },
                     "picker": {
                         "add_automation": "Utwórz automatyzację",
                         "delete": "Usuń",
                         "delete_automation": "Usuń automatyzację",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę automatyzację?",
+                        "delete_confirm_text": "{name} zostanie trwale usunięta.",
+                        "delete_confirm_title": "Usunąć automatyzację?",
                         "dev_automation": "Debuguj automatyzację",
                         "dev_only_editable": "Można debugować tylko automatyzacje mające unikalne identyfikatory.",
+                        "disabled": "Wyłączona",
                         "duplicate": "Duplikuj",
                         "duplicate_automation": "Duplikuj automatyzację",
                         "edit_automation": "Edytuj automatyzację",
@@ -2137,26 +2187,28 @@
                 },
                 "blueprint": {
                     "add": {
-                        "community_forums": "fora społeczności",
+                        "community_forums": "Zobacz schematy na forach społeczności",
                         "error_no_url": "Wprowadź adres URL schematu.",
                         "file_name": "Ścieżka do schematu",
                         "header": "Importuj schemat",
-                        "import_btn": "Podgląd schematu",
+                        "import_btn": "Podgląd",
                         "import_header": "Schemat: \"{name}\"",
+                        "import_introduction": "Importuj schematy innych użytkowników z GitHub i forów społeczności, wklejając adres poniżej.",
                         "import_introduction_link": "Możesz importować schematy innych użytkowników z Githuba i {community_link}. Wpisz poniżej adres URL schematu.",
                         "importing": "Wczytywanie schematu…",
                         "raw_blueprint": "Zawartość schematu",
                         "save_btn": "Importuj schemat",
                         "saving": "Importowanie schematu…",
                         "unsupported_blueprint": "Ten schemat nie jest obsługiwany",
-                        "url": "URL schematu"
+                        "url": "Adres URL schematu"
                     },
                     "caption": "Schematy",
                     "description": "Zarządzaj schematami",
                     "overview": {
                         "add_blueprint": "Importuj schemat",
                         "confirm_delete_header": "Usunąć ten schemat?",
-                        "confirm_delete_text": "Czy na pewno chcesz usunąć ten schemat?",
+                        "confirm_delete_text": "{name} zostanie trwale usunięty.",
+                        "confirm_delete_title": "Usunąć schemat?",
                         "create_automation": "Utwórz automatyzację",
                         "create_script": "Utwórz skrypt",
                         "delete_blueprint": "Usuń schemat",
@@ -2287,6 +2339,8 @@
                         "manage_domains": "Zarządzaj domenami",
                         "not_exposed": "{selected} nieudostępniona",
                         "not_exposed_entities": "Nieudostępnione encje",
+                        "sync_entities": "Synchronizuj encje",
+                        "sync_entities_error": "Nie udało się zsynchronizować encji:",
                         "title": "Alexa"
                     },
                     "description_features": "Sterowanie spoza domu i integracja z Alexą i Asystentem Google",
@@ -2303,10 +2357,13 @@
                         "available_at": "Webhook jest dostępny pod następującym adresem URL:",
                         "close": "Zamknij",
                         "confirm_disable": "Czy na pewno chcesz wyłączyć ten webhook?",
+                        "confirm_disable_text": "Webhook dla {name} zostanie wyłączony.",
+                        "confirm_disable_title": "Wyłącz webhooki",
                         "copied_to_clipboard": "Skopiowano do schowka",
                         "info_disable_webhook": "Jeśli nie chcesz już używać tego webhooka, możesz",
                         "link_disable_webhook": "wyłączyć go",
                         "managed_by_integration": "Ten webhook jest zarządzany przez integrację i nie można go wyłączyć.",
+                        "public_url": "Adres publiczny",
                         "view_documentation": "Dokumentacja",
                         "webhook_for": "Webhook dla {name}"
                     },
@@ -2331,8 +2388,14 @@
                         "manage_defaults": "Zarządzaj ustawieniami domyślnymi",
                         "manage_defaults_dialog_description": "Encje mogą być domyślnie udostępnione na podstawie ich typu.",
                         "manage_domains": "Zarządzaj domenami",
+                        "not_configured_text": "Aby móc korzystać z Asystenta Google, musisz aktywować skill Chmury Home Assistant dla Asystenta Google w aplikacji Google Home.",
+                        "not_configured_title": "Asystent Google nie jest aktywowany",
                         "not_exposed": "{selected} nieudostępniona",
                         "not_exposed_entities": "Nieudostępnione encje",
+                        "sync_entities": "Synchronizuj encje",
+                        "sync_entities_error": "Nie udało się zsynchronizować encji:",
+                        "sync_failed_text": "Synchronizacja encji nie powiodła się, spróbuj ponownie lub sprawdź logi.",
+                        "sync_failed_title": "Synchronizacja nie powiodła się",
                         "sync_to_google": "Synchronizowanie zmian z Google.",
                         "title": "Asystent Google"
                     },
@@ -2501,6 +2564,7 @@
                     "cant_edit": "Możesz edytować tylko elementy utworzone w interfejsie użytkownika.",
                     "caption": "Urządzenia",
                     "confirm_delete": "Czy na pewno chcesz usunąć to urządzenie?",
+                    "confirm_delete_integration": "Czy na pewno chcesz usunąć to urządzenie z {integration}?",
                     "confirm_disable_config_entry": "Nie ma więcej urządzeń dla wpisu konfiguracji {entry_name}, czy zamiast tego chcesz wyłączyć ten wpis konfiguracyjny?",
                     "confirm_rename_entity_ids": "Czy chcesz także zmienić identyfikatory encji?",
                     "confirm_rename_entity_ids_warning": "Nie zmieni to konfiguracji (automatyzacji, skryptów, scen, dashboardów), które obecnie używają tych encji. Będziesz musiał je zaktualizować samemu, by używać nowych identyfikatorów encji!",
@@ -2516,8 +2580,8 @@
                         "no_integration": "Brak integracji"
                     },
                     "delete": "Usuń",
-                    "delete_device": "Usuń urządzenie",
-                    "delete_device_integration": "Usuń {integration} z urządzenia",
+                    "delete_device": "Usuń",
+                    "delete_device_integration": "Usuń urządzenie z {integration}",
                     "description": "Zarządzaj skonfigurowanymi urządzeniami",
                     "device_info": "Informacje o {type}",
                     "device_not_found": "Urządzenie/usługa nie została znaleziona.",
@@ -2547,6 +2611,7 @@
                     },
                     "name": "Nazwa",
                     "no_devices": "Brak urządzeń",
+                    "open_configuration_url": "Odwiedź",
                     "open_configuration_url_device": "Przejdź do urządzenia",
                     "open_configuration_url_service": "Przejdź do usługi",
                     "picker": {
@@ -2835,14 +2900,22 @@
                     "description": "Konfiguruj hub i podłączony sprzęt",
                     "documentation": "Dokumentacja",
                     "documentation_description": "Znajdź dodatkowe informacje o swoim urządzeniu",
-                    "failed_to_reboot_host": "Nie udało się ponownie uruchomić hosta",
-                    "failed_to_shutdown_host": "Nie udało się wyłączyć hosta",
-                    "host_shutting_down": "Wyłączanie hosta",
-                    "reboot_host": "Uruchom ponownie",
+                    "failed_to_reboot_host": "Nie udało się ponownie uruchomić systemu",
+                    "failed_to_shutdown_host": "Nie udało się wyłączyć systemu",
+                    "host_shutting_down": "Wyłączanie systemu",
+                    "memory": "Pamięć",
+                    "processor": "Procesor",
+                    "reboot": "Uruchom ponownie",
+                    "reboot_host": "Uruchom ponownie system",
                     "reboot_host_confirm": "Czy na pewno chcesz ponownie uruchomić hosta?",
-                    "rebooting_host": "Ponowne uruchamianie hosta",
-                    "shutdown_host": "Wyłącz",
-                    "shutdown_host_confirm": "Czy na pewno chcesz wyłączyć hosta?"
+                    "reboot_host_text": "Spowoduje to ponowne uruchomienie całego systemu, czyli Core i wszystkie Dodatki.",
+                    "reboot_host_title": "Uruchomić ponownie system?",
+                    "rebooting_host": "Ponowne uruchamianie systemu",
+                    "shutdown": "Wyłącz",
+                    "shutdown_host": "Wyłącz system",
+                    "shutdown_host_confirm": "Czy na pewno chcesz wyłączyć hosta?",
+                    "shutdown_host_text": "Spowoduje to wyłączenie całego systemu, czyli Core i wszystkie Dodatki.",
+                    "shutdown_host_title": "Wyłączyć system?"
                 },
                 "header": "Konfiguruj Home Assistanta",
                 "helpers": {
@@ -2918,11 +2991,21 @@
                     "attention": "Wymaga uwagi",
                     "caption": "Integracje",
                     "config_entry": {
+                        "application_credentials": {
+                            "delete_detail": "Jeśli je usuniesz, będziesz musiał wprowadzić dane uwierzytelniające podczas ponownego konfigurowania integracji. Jeśli je zachowasz, zostaną użyte automatycznie podczas ponownej konfiguracji integracji lub będą dostępne z menu \"Poświadczenia aplikacji\".",
+                            "delete_error_title": "Błąd podczas usuwania poświadczeń aplikacji",
+                            "delete_prompt": "Czy chcesz również usunąć poświadczenia aplikacji dla tej integracji?",
+                            "delete_title": "Poświadczenia aplikacji",
+                            "dismiss": "Zachowaj",
+                            "learn_more": "Dowiedz się więcej o poświadczeniach aplikacji"
+                        },
                         "area": "obszar: {area}",
                         "check_the_logs": "Sprawdź logi",
                         "configure": "Konfiguruj",
                         "delete": "Usuń",
                         "delete_confirm": "Czy na pewno chcesz usunąć integrację {title}?",
+                        "delete_confirm_text": "Jego urządzenia i encje zostaną trwale usunięte.",
+                        "delete_confirm_title": "Usunąć {title}?",
                         "depends_on_cloud": "Zależny od chmury",
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
                         "disable": {
@@ -2935,6 +3018,8 @@
                             },
                             "disabled_cause": "Wyłączone przez {cause}."
                         },
+                        "disable_confirm_text": "Jego urządzenia i encje zostaną wyłączone.",
+                        "disable_confirm_title": "Wyłączyć {title}?",
                         "disable_error": "Nie udało się włączyć lub wyłączyć integracji",
                         "disable_restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć wyłączanie tej integracji",
                         "disabled_polling": "Automatyczne odpytywanie o zaktualizowane dane jest wyłączone",
@@ -2956,12 +3041,14 @@
                         "rename": "Zmień nazwę",
                         "restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć usuwanie tej integracji",
                         "services": "{count} {count, plural,\n  one {usługa}\n  few {usługi}\n  many {usług}\n  other {usług}\n}",
+                        "setup_in_progress": "Inicjalizacja",
                         "state": {
                             "failed_unload": "Błąd usuwania",
                             "loaded": "Wczytano",
                             "migration_error": "Błąd migracji",
                             "not_loaded": "Nie wczytano",
                             "setup_error": "Błąd konfiguracji",
+                            "setup_in_progress": "Inicjalizacja",
                             "setup_retry": "Próbuję ponownie skonfigurować"
                         },
                         "system_options": "Opcje systemowe",
@@ -3041,7 +3128,8 @@
                     "reconfigure": "Zmień konfigurację",
                     "rename_dialog": "Edytuj nazwę tego wpisu konfiguracji",
                     "rename_input_label": "Nazwa wpisu",
-                    "search": "Szukaj integracji"
+                    "search": "Szukaj integracji",
+                    "search_brand": "Wyszukaj nazwę marki"
                 },
                 "logs": {
                     "caption": "Logi",
@@ -3080,7 +3168,7 @@
                             "storage": "Konfigurowalny z interfejsu użytkownika",
                             "yaml": "Plik YAML"
                         },
-                        "confirm_delete_text": "Twój dashboard zostanie trwale usunięty.",
+                        "confirm_delete_text": "Ten dashboard zostanie trwale usunięty.",
                         "confirm_delete_title": "Usunąć {dashboard_title}?",
                         "default_dashboard": "To jest domyślny dashboard",
                         "detail": {
@@ -3120,6 +3208,8 @@
                         "cant_edit_yaml": "Korzystasz z dashboarda w trybie YAML, dlatego nie możesz zarządzać zasobami za pomocą interfejsu użytkownika. Zarządzaj nimi w pliku configuration.yaml.",
                         "caption": "Zasoby",
                         "confirm_delete": "Czy na pewno chcesz usunąć ten zasób?",
+                        "confirm_delete_text": "{url} zostanie trwale usunięty.",
+                        "confirm_delete_title": "Usunąć zasób?",
                         "detail": {
                             "create": "Utwórz",
                             "delete": "Usuń",
@@ -3191,6 +3281,8 @@
                     "caption": "Osoby",
                     "confirm_delete": "Czy na pewno chcesz usunąć tę osobę?",
                     "confirm_delete2": "Wszystkie urządzenia należące do tej osoby zostaną nieprzypisane.",
+                    "confirm_delete_text": "Ta osoba zostanie trwale usunięta, a wszystkie należące do niej urządzenia będą nieprzypisane.",
+                    "confirm_delete_title": "Usunąć {name}?",
                     "create_person": "Utwórz osobę",
                     "description": "Zarządzaj osobami, które śledzi Home Assistant",
                     "detail": {
@@ -3272,11 +3364,17 @@
                         "load_error_unknown": "Błąd wczytywania sceny ({err_no})",
                         "name": "Nazwa",
                         "save": "Zapisz",
-                        "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
+                        "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?",
+                        "unsaved_confirm_text": "Niezapisane zmiany zostaną utracone.",
+                        "unsaved_confirm_title": "Opuścić edytor?"
                     },
                     "picker": {
+                        "activate": "Aktywuj",
                         "add_scene": "Dodaj scenę",
+                        "delete": "Usuń",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę scenę?",
+                        "delete_confirm_text": "{name} zostanie trwale usunięty.",
+                        "delete_confirm_title": "Usunąć scenę?",
                         "delete_scene": "Usuń scenę",
                         "duplicate": "Duplikuj",
                         "duplicate_scene": "Duplikuj scenę",
@@ -3285,6 +3383,7 @@
                         "headers": {
                             "activate": "Aktywuj",
                             "edit": "Edytuj",
+                            "last_activated": "Ostatnia aktywacja",
                             "name": "Nazwa",
                             "show_info": "Pokaż informacje",
                             "state": "Stan"
@@ -3294,6 +3393,7 @@
                         "no_scenes": "Nie znaleziono żadnych scen",
                         "only_editable": "Tylko sceny zdefiniowane w pliku scenes.yaml są edytowalne.",
                         "pick_scene": "Wybierz scenę do edycji",
+                        "show_info": "Informacje",
                         "show_info_scene": "Pokaż informacje o scenie"
                     }
                 },
@@ -3304,6 +3404,8 @@
                         "alias": "Nazwa",
                         "default_name": "Nowy skrypt",
                         "delete_confirm": "Czy na pewno chcesz usunąć ten skrypt?",
+                        "delete_confirm_text": "{name} zostanie trwale usunięty.",
+                        "delete_confirm_title": "Usunąć skrypt?",
                         "delete_script": "Usuń skrypt",
                         "header": "Skrypt: {name}",
                         "icon": "Ikona",
@@ -3312,6 +3414,8 @@
                         "id_already_exists_save_error": "Nie możesz zapisać tego skryptu, ponieważ identyfikator nie jest unikalny, wprowadź inny identyfikator lub pozostaw pole puste, aby wygenerować go automatycznie.",
                         "introduction": "Użyj skryptów, aby uruchomić sekwencję akcji.",
                         "link_available_actions": "Dowiedz się więcej o dostępnych akcjach.",
+                        "load_error_not_deletable": "Tylko skrypty w pliku scripts.yaml mogą być usunięte.",
+                        "load_error_not_duplicable": "Tylko skrypty w pliku scripts.yaml mogą być duplikowane.",
                         "load_error_not_editable": "Tylko skrypty zdefiniowane w pliku scripts.yaml są edytowalne",
                         "load_error_unknown": "Błąd wczytywania skryptu ({err_no}).",
                         "max": {
@@ -3326,15 +3430,17 @@
                             "parallel": "Równolegle",
                             "queued": "Kolejkowanie",
                             "restart": "Restart",
-                            "single": "Pojedynczy (domyślnie)"
+                            "single": "Pojedynczy"
                         },
                         "save_script": "Zapisz skrypt",
                         "sequence": "Sekwencja",
                         "sequence_sentence": "Sekwencja akcji tego skryptu.",
-                        "show_trace": "Pokaż ślad"
+                        "show_info": "Informacje",
+                        "show_trace": "Ślady"
                     },
                     "picker": {
                         "add_script": "Dodaj skrypt",
+                        "delete": "Usuń",
                         "dev_script": "Debuguj skrypt",
                         "duplicate": "Duplikuj",
                         "duplicate_script": "Duplikuj skrypt",
@@ -3347,8 +3453,13 @@
                         "introduction": "Edytor skryptów pozwala tworzyć i edytować skrypty. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować skrypty w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o skryptach",
                         "no_scripts": "Nie znaleziono żadnych skryptów",
+                        "run": "Uruchom",
                         "run_script": "Uruchom skrypt",
-                        "show_info": "Pokaż informacje o skrypcie"
+                        "show_info": "Informacje",
+                        "show_trace": "Ślady"
+                    },
+                    "trace": {
+                        "edit_script": "Edytuj skrypt"
                     }
                 },
                 "storage": {
@@ -3362,6 +3473,8 @@
                         "moving": "Przenoszenie dysku danych",
                         "moving_desc": "Ponowne uruchamianie i przenoszenie dysku danych. Prosimy o cierpliwość.",
                         "no_devices": "Nie znaleziono odpowiednich podłączonych urządzeń",
+                        "no_devices_text": "Nie znaleziono odpowiedniego urządzenia zewnętrznego. Pojemność zewnętrznego dysku danych musi być większa niż pojemność istniejącego dysku.",
+                        "no_devices_title": "Nie znaleziono odpowiedniego miejsca do przechowywania",
                         "select_device": "Wybierz nowy dysk danych",
                         "title": "Przenieś dysk danych"
                     },
@@ -3371,7 +3484,7 @@
                 },
                 "system_dashboard": {
                     "confirm_restart": "Czy na pewno chcesz ponownie uruchomić Home Assistanta?",
-                    "confirm_restart_text": "Ponowne uruchomienie Home Assistanta zatrzyma wszystkie aktywne dashboardy, automatyzacje i skrypty.",
+                    "confirm_restart_text": "To zatrzyma wszystkie aktywne dashboardy, automatyzacje i skrypty.",
                     "confirm_restart_title": "Uruchomić ponownie Home Assistanta?",
                     "restart_error": "Nie udało się ponownie uruchomić Home Assistanta",
                     "restart_homeassistant": "Uruchom ponownie Home Assistanta",
@@ -3471,6 +3584,14 @@
                         "password_not_match": "Hasła nie są takie same"
                     },
                     "caption": "Użytkownicy",
+                    "change_password": {
+                        "caption": "Zmień hasło",
+                        "change": "Zmień",
+                        "new_password": "Nowe hasło",
+                        "password_changed": "Hasło zostało pomyślnie zmienione.",
+                        "password_confirm": "Potwierdź hasło",
+                        "password_no_match": "Hasła nie są takie same"
+                    },
                     "description": "Zarządzaj kontami użytkowników Home Assistanta",
                     "editor": {
                         "activate_user": "Aktywuj użytkownika",
@@ -3480,6 +3601,8 @@
                         "caption": "Wyświetl użytkownika",
                         "change_password": "Zmień hasło",
                         "confirm_user_deletion": "Czy na pewno chcesz usunąć {name}?",
+                        "confirm_user_deletion_text": "Ten użytkownik zostanie trwale usunięty.",
+                        "confirm_user_deletion_title": "Usunąć {name}?",
                         "deactivate_user": "Dezaktywuj użytkownika",
                         "delete_user": "Usuń użytkownika",
                         "group": "Grupa",
@@ -3531,7 +3654,9 @@
                         "help_get_zigbee_attribute": "Wyświetl wartość dla wybranego atrybutu",
                         "help_set_zigbee_attribute": "Ustaw wartość atrybutu dla określonego klastra i określonej encji",
                         "introduction": "Wyświetl i edytuj atrybuty klastra.",
-                        "set_zigbee_attribute": "Ustaw atrybut Zigbee"
+                        "read_zigbee_attribute": "Odczytaj atrybut",
+                        "set_zigbee_attribute": "Ustaw atrybut Zigbee",
+                        "write_zigbee_attribute": "Napisz atrybut"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Polecenia wybranego klastra",
@@ -3543,7 +3668,11 @@
                     "clusters": {
                         "header": "Klastry",
                         "help_cluster_dropdown": "Wybierz klaster, aby wyświetlić atrybuty i polecenia.",
-                        "introduction": "Klastry są elementami składowymi funkcjonalności Zigbee. Dzielą one funkcjonalność na jednostki logiczne. Istnieją typy klientów i serwerów, które składają się z atrybutów i poleceń."
+                        "introduction": "Klastry są elementami składowymi funkcjonalności Zigbee. Dzielą one funkcjonalność na jednostki logiczne. Istnieją typy klientów i serwerów, które składają się z atrybutów i poleceń.",
+                        "tabs": {
+                            "attributes": "Atrybuty",
+                            "commands": "Polecenia"
+                        }
                     },
                     "common": {
                         "clusters": "Klastry",
@@ -3551,10 +3680,16 @@
                         "value": "Wartość"
                     },
                     "configuration_page": {
-                        "download_backup": "Pobierz kopię zapasową sieci",
+                        "download_backup": "Pobierz kopię zapasową",
+                        "migrate_radio": "Migracja radia",
                         "network_settings_title": "Ustawienia sieci",
                         "shortcuts_title": "Skróty",
                         "update_button": "Zaktualizuj konfigurację"
+                    },
+                    "device_binding": {
+                        "bind": "Powiąż",
+                        "picker_label": "Urządzenia do powiązania",
+                        "unbind": "Rozwiąż"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Konfigurowanie zakończone",
@@ -3724,17 +3859,17 @@
                         }
                     },
                     "device_info": {
-                        "device_config": "Konfiguruj urządzenie",
-                        "heal_node": "Uzdrawiaj urządzenie",
+                        "device_config": "Konfiguruj",
+                        "heal_node": "Uzdrawiaj",
                         "highest_security": "Najwyższe bezpieczeństwo",
-                        "node_id": "ID",
-                        "node_ready": "Urządzenie gotowe",
-                        "node_statistics": "Pokaż statystyki urządzenia",
-                        "node_status": "Status urządzenia",
-                        "reinterview_device": "Ponownie odpytaj urządzenie",
-                        "remove_failed": "Usuń uszkodzone urządzenie",
+                        "node_id": "Identyfikator",
+                        "node_ready": "Gotowe",
+                        "node_statistics": "Statystyki",
+                        "node_status": "Status",
+                        "reinterview_device": "Odpytaj ponownie",
+                        "remove_failed": "Usuń uszkodzone",
                         "unknown": "Nieznany",
-                        "update_firmware": "Aktualizuj oprogramowanie urządzenia",
+                        "update_firmware": "Aktualizuj",
                         "zwave_info": "Informacje Z-Wave",
                         "zwave_plus": "Z-Wave Plus",
                         "zwave_plus_version": "Wersja {version}"
@@ -4542,6 +4677,15 @@
                                 "hour": "Godzina",
                                 "month": "Miesiąc"
                             },
+                            "pick_statistic": "Dodaj statystykę",
+                            "picked_statistic": "Statystyka",
+                            "stat_type_labels": {
+                                "max": "Maks.",
+                                "mean": "Średnia",
+                                "min": "Min",
+                                "state": "Stan",
+                                "sum": "Suma"
+                            },
                             "stat_types": "Pokaż typy statystyk"
                         },
                         "thermostat": {
@@ -4609,12 +4753,16 @@
                     },
                     "edit_view": {
                         "add": "Dodaj widok",
+                        "back_path": "Ścieżka powrotna (opcjonalnie)",
+                        "back_path_helper": "Tylko dla widoków podrzędnych. Jeśli pozostawisz pusty, kliknięcie przycisku wstecz spowoduje przejście do poprzedniej strony.",
                         "delete": "Usuń widok",
                         "edit": "Edytuj widok",
                         "header": "Konfiguracja widoku",
                         "header_name": "Konfiguracja widoku {name}",
                         "move_left": "Przesuń widok w lewo",
                         "move_right": "Przesuń widok w prawo",
+                        "subview": "Widok podrzędny",
+                        "subview_helper": "Widoki podrzędne nie są wyświetlane na kartach i mają przycisk Wstecz.",
                         "tab_badges": "Odznaki",
                         "tab_settings": "Ustawienia",
                         "tab_visibility": "Widzialność",
@@ -4963,7 +5111,7 @@
                     "full_backup": "Pełna kopia zapasowa",
                     "hide_log": "Ukryj cały log",
                     "in_progress": "Trwa przywracanie",
-                    "name": "Nazwa kopii",
+                    "name": "Nazwa kopii zapasowej",
                     "partial_backup": "Częściowa kopia zapasowa",
                     "password": "Hasło kopii zapasowej",
                     "password_protection": "Ochrona hasłem",

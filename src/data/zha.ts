@@ -309,7 +309,7 @@ export const fetchCommandsForCluster = (
     cluster_type: clusterType,
   });
 
-export const fetchClustersForZhaNode = (
+export const fetchClustersForZhaDevice = (
   hass: HomeAssistant,
   ieeeAddress: string
 ): Promise<Cluster[]> =>
