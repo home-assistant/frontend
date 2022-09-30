@@ -533,6 +533,15 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
 
+    if (
+      ["cloud", "google_assistant", "alexa"].includes(integration.domain) &&
+      isComponentLoaded(this.hass, "cloud")
+    ) {
+      this.closeDialog();
+      navigate("/config/cloud");
+      return;
+    }
+
     const manifest = await fetchIntegrationManifest(
       this.hass,
       integration.domain

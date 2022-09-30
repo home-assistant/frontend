@@ -1,7 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
+import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { localizeConfigFlowTitle } from "../../../data/config_flow";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
@@ -179,6 +181,16 @@ class HaDomainIntegrations extends LitElement {
 
   private async _integrationPicked(ev) {
     const domain = ev.currentTarget.domain;
+
+    if (
+      ["cloud", "google_assistant", "alexa"].includes(domain) &&
+      isComponentLoaded(this.hass, "cloud")
+    ) {
+      fireEvent(this, "close-dialog");
+      navigate("/config/cloud");
+      return;
+    }
+
     if (
       (domain === this.domain && !this.integration.config_flow) ||
       !this.integration.integrations?.[domain]?.config_flow
