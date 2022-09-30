@@ -296,14 +296,13 @@ class AddIntegrationDialog extends LitElement {
       scrimClickAction
       escapeKeyAction
       hideActions
-      .heading=${this._pickedBrand
-        ? true
-        : createCloseHeading(
-            this.hass,
-            this.hass.localize("ui.panel.config.integrations.new")
-          )}
+      .heading=${createCloseHeading(
+        this.hass,
+        this.hass.localize("ui.panel.config.integrations.new")
+      )}
     >
-      ${this._pickedBrand
+      ${this._pickedBrand &&
+      (!this._integrations || this._pickedBrand in this._integrations)
         ? html`<div slot="heading">
               <ha-icon-button-prev
                 @click=${this._prevClicked}
@@ -530,6 +529,15 @@ class AddIntegrationDialog extends LitElement {
 
     if (integration.config_flow) {
       this._createFlow(integration);
+      return;
+    }
+
+    if (
+      ["cloud", "google_assistant", "alexa"].includes(integration.domain) &&
+      isComponentLoaded(this.hass, "cloud")
+    ) {
+      this.closeDialog();
+      navigate("/config/cloud");
       return;
     }
 
