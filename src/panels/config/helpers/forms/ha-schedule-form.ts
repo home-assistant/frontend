@@ -221,14 +221,16 @@ class HaScheduleForm extends LitElement {
         start.setDate(start.getDate() + distance);
         start.setHours(
           parseInt(item.from.slice(0, 2)),
-          parseInt(item.from.slice(-2))
+          parseInt(item.from.slice(3, 5)),
+          0,
+          0
         );
 
         const end = new Date();
         end.setDate(end.getDate() + distance);
         end.setHours(
           parseInt(item.to.slice(0, 2)),
-          parseInt(item.to.slice(-2)),
+          parseInt(item.to.slice(3, 5)),
           0,
           0
         );
