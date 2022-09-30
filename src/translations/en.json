@@ -2610,6 +2610,7 @@
         },
         "devices": {
           "add_prompt": "No {name} have been added using this {type} yet. You can add one by clicking the + button above.",
+          "add_device": "Add Device",
           "caption": "Devices",
           "description": "Manage configured devices",
           "device_info": "{type} info",
