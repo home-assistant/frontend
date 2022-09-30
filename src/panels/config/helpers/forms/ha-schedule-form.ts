@@ -219,21 +219,18 @@ class HaScheduleForm extends LitElement {
 
         const start = new Date();
         start.setDate(start.getDate() + distance);
+        const start_tokens = item.from.split(":");
         start.setHours(
-          parseInt(item.from.split(":")[0]),
-          parseInt(item.from.split(":")[1]),
+          parseInt(start_tokens[0]),
+          parseInt(start_tokens[1]),
           0,
           0
         );
 
         const end = new Date();
         end.setDate(end.getDate() + distance);
-        end.setHours(
-          parseInt(item.to.split(":")[0]),
-          parseInt(item.to.split(":")[1]),
-          0,
-          0
-        );
+        const end_tokens = item.to.split(":");
+        end.setHours(parseInt(end_tokens[0]), parseInt(end_tokens[1]), 0, 0);
 
         events.push({
           id: `${day}-${index}`,
