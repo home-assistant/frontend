@@ -636,5 +636,9 @@ export const getEnergyGasUnit = (
   if (unitClass === undefined) {
     return undefined;
   }
-  return unitClass === "volume" ? hass.config.unit_system.volume : "kWh";
+  return unitClass === "energy"
+    ? "kWh"
+    : hass.config.unit_system.length === "km"
+    ? "m³"
+    : "ft³";
 };
