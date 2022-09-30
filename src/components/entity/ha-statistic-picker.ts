@@ -121,7 +121,7 @@ export class HaStatisticPicker extends LitElement {
       if (includeDisplayUnitOfMeasurement) {
         const includeUnits = ensureArray(includeDisplayUnitOfMeasurement);
         statisticIds = statisticIds.filter((meta) =>
-          includeUnits.includes(meta.display_unit_of_measurement)
+          includeUnits.includes(meta.state_unit_of_measurement)
         );
       }
 

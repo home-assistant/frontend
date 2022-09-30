@@ -49,7 +49,7 @@ export class DialogEnergyGasSettings
     this._source = params.source
       ? { ...params.source }
       : emptyGasEnergyPreference();
-    this._pickedDisplayUnit = params.metadata?.display_unit_of_measurement;
+    this._pickedDisplayUnit = params.metadata?.state_unit_of_measurement;
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
@@ -269,7 +269,7 @@ export class DialogEnergyGasSettings
       } else {
         this._pickedDisplayUnit = (
           await getStatisticMetadata(this.hass, [ev.detail.value])
-        )[0]?.display_unit_of_measurement;
+        )[0]?.state_unit_of_measurement;
       }
     } else {
       this._pickedDisplayUnit = undefined;
