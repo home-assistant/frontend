@@ -138,10 +138,6 @@ class MoveDatadiskDialog extends LitElement {
                       ${device}
                     </mwc-list-item>`
                 )}
-                <mwc-list-item>Test</mwc-list-item>
-                <mwc-list-item>Test</mwc-list-item>
-                <mwc-list-item>Test</mwc-list-item>
-                <mwc-list-item>Test</mwc-list-item>
               </ha-select>
 
               <mwc-button
