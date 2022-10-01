@@ -524,7 +524,14 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = c.config;
+        const config = c.config;
+        // Normalize data: ensure sequence is a list
+        // Happens when people copy paste their scripts into the config
+        const value = config.sequence;
+        if (value && !Array.isArray(value)) {
+          config.sequence = [value];
+        }
+        this._config = config;
       });
       const regEntry = this.hass.entities[this.entityId];
       if (regEntry?.unique_id) {
