@@ -21,6 +21,7 @@ import {
   numberFormatToLocale,
 } from "../../common/number/format_number";
 import {
+  getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
   Statistics,
@@ -258,8 +259,11 @@ class StatisticsChart extends LitElement {
 
       if (!this.unit) {
         if (unit === undefined) {
-          unit = meta?.state_unit_of_measurement;
-        } else if (unit !== meta?.state_unit_of_measurement) {
+          unit = getDisplayUnit(this.hass, firstStat.statistic_id, meta);
+        } else if (
+          unit !== getDisplayUnit(this.hass, firstStat.statistic_id, meta)
+        ) {
+          // Clear unit if not all statistics have same unit
           unit = null;
         }
       }

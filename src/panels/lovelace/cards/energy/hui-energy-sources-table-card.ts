@@ -130,7 +130,8 @@ export class HuiEnergySourcesTableCard
       );
 
     const gasUnit =
-      getEnergyGasUnit(this._data.prefs, this._data.statsMetadata) || "";
+      getEnergyGasUnit(this.hass, this._data.prefs, this._data.statsMetadata) ||
+      "";
 
     const compare = this._data.statsCompare !== undefined;
 
