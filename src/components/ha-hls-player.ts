@@ -23,6 +23,8 @@ class HaHLSPlayer extends LitElement {
 
   @property() public url!: string;
 
+  @property() public posterUrl!: string;
+
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
 
@@ -78,6 +80,7 @@ class HaHLSPlayer extends LitElement {
         : ""}
       ${!this._errorIsFatal
         ? html`<video
+            poster=${this.posterUrl}
             ?autoplay=${this.autoPlay}
             .muted=${this.muted}
             ?playsinline=${this.playsInline}
