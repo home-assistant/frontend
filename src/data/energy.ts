@@ -600,20 +600,14 @@ export const getEnergySolarForecasts = (hass: HomeAssistant) =>
     type: "energy/solar_forecast",
   });
 
-export const ENERGY_GAS_VOLUME_UNITS = ["m³"];
-export const ENERGY_GAS_ENERGY_UNITS = ["kWh"];
-export const ENERGY_GAS_UNITS = [
-  ...ENERGY_GAS_VOLUME_UNITS,
-  ...ENERGY_GAS_ENERGY_UNITS,
-];
+const energyGasUnitClass = ["volume", "energy"] as const;
+export type EnergyGasUnitClass = typeof energyGasUnitClass[number];
 
-export type EnergyGasUnit = "volume" | "energy";
-
-export const getEnergyGasUnitCategory = (
+export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {},
   excludeSource?: string
-): EnergyGasUnit | undefined => {
+): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
       continue;
@@ -622,29 +616,29 @@ export const getEnergyGasUnitCategory = (
       continue;
     }
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
-    if (statisticIdWithMeta) {
-      return ENERGY_GAS_VOLUME_UNITS.includes(
-        statisticIdWithMeta.statistics_unit_of_measurement
+    if (
+      energyGasUnitClass.includes(
+        statisticIdWithMeta.unit_class as EnergyGasUnitClass
       )
-        ? "volume"
-        : "energy";
+    ) {
+      return statisticIdWithMeta.unit_class as EnergyGasUnitClass;
     }
   }
   return undefined;
 };
 
 export const getEnergyGasUnit = (
+  hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string | undefined => {
-  for (const source of prefs.energy_sources) {
-    if (source.type !== "gas") {
-      continue;
-    }
-    const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
-    if (statisticIdWithMeta?.state_unit_of_measurement) {
-      return statisticIdWithMeta.state_unit_of_measurement;
-    }
+  const unitClass = getEnergyGasUnitClass(prefs, statisticsMetaData);
+  if (unitClass === undefined) {
+    return undefined;
   }
-  return undefined;
+  return unitClass === "energy"
+    ? "kWh"
+    : hass.config.unit_system.length === "km"
+    ? "m³"
+    : "ft³";
 };

@@ -10,7 +10,7 @@ import {
   EnergyPreferencesValidation,
   EnergyValidationIssue,
   GasSourceTypeEnergyPreference,
-  getEnergyGasUnitCategory,
+  getEnergyGasUnitClass,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import {
@@ -133,7 +133,7 @@ export class EnergyGasSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsGasDialog(this, {
-      allowedGasUnitCategory: getEnergyGasUnitCategory(
+      allowedGasUnitClass: getEnergyGasUnitClass(
         this.preferences,
         this.statsMetadata
       ),
@@ -152,7 +152,7 @@ export class EnergyGasSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGasDialog(this, {
       source: { ...origSource },
-      allowedGasUnitCategory: getEnergyGasUnitCategory(
+      allowedGasUnitClass: getEnergyGasUnitClass(
         this.preferences,
         this.statsMetadata,
         origSource.stat_energy_from

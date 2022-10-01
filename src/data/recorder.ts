@@ -20,13 +20,13 @@ export interface StatisticValue {
 }
 
 export interface StatisticsMetaData {
-  state_unit_of_measurement: string;
-  statistics_unit_of_measurement: string;
+  statistics_unit_of_measurement: string | null;
   statistic_id: string;
   source: string;
   name?: string | null;
   has_sum: boolean;
   has_mean: boolean;
+  unit_class: string | null;
 }
 
 export type StatisticsValidationResult =
@@ -254,7 +254,7 @@ export const adjustStatisticsSum = (
   statistic_id: string,
   start_time: string,
   adjustment: number,
-  adjustment_unit_of_measurement: string
+  adjustment_unit_of_measurement: string | null
 ): Promise<void> =>
   hass.callWS({
     type: "recorder/adjust_sum_statistics",
@@ -274,4 +274,18 @@ export const getStatisticLabel = (
     return computeStateName(entity);
   }
   return statisticsMetaData?.name || statisticsId;
+};
+
+export const getDisplayUnit = (
+  hass: HomeAssistant,
+  statisticsId: string | undefined,
+  statisticsMetaData: StatisticsMetaData | undefined
+): string | null | undefined => {
+  let unit: string | undefined;
+  if (statisticsId) {
+    unit = hass.states[statisticsId]?.attributes.unit_of_measurement;
+  }
+  return unit === undefined
+    ? statisticsMetaData?.statistics_unit_of_measurement
+    : unit;
 };
