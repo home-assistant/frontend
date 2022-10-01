@@ -7,7 +7,9 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { handleWebRtcOffer, WebRtcAnswer } from "../data/camera";
+import { fetchWebRtcSettings } from "../data/rtsp_to_webrtc";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 
@@ -83,7 +85,8 @@ class HaWebRtcPlayer extends LitElement {
   private async _startWebRtc(): Promise<void> {
     this._error = undefined;
 
-    const peerConnection = new RTCPeerConnection();
+    const configuration = await this._fetchPeerConfiguration();
+    const peerConnection = new RTCPeerConnection(configuration);
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.
     peerConnection.createDataChannel("dataSendChannel");
@@ -99,12 +102,25 @@ class HaWebRtcPlayer extends LitElement {
     );
     await peerConnection.setLocalDescription(offer);
 
+    let candidates = ""; // Build an Offer SDP string with ice candidates
+    const iceResolver = new Promise((resolve) => {
+      peerConnection.addEventListener("icecandidate", async (event) => {
+        if (!event.candidate) {
+          resolve(); // Gathering complete
+          return;
+        }
+        candidates += "a=" + event.candidate.candidate + "\r\n";
+      });
+    });
+    await iceResolver;
+    const offer_sdp = offer.sdp! + candidates;
+
     let webRtcAnswer: WebRtcAnswer;
     try {
       webRtcAnswer = await handleWebRtcOffer(
         this.hass,
         this.entityid,
-        offer.sdp!
+        offer_sdp
       );
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
@@ -133,6 +149,23 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
     this._peerConnection = peerConnection;
+  }
+
+  private async _fetchPeerConfiguration(): Promise<RTCConfiguration> {
+    if (!isComponentLoaded(this.hass!, "rtsp_to_webrtc")) {
+      return {};
+    }
+    const settings = await fetchWebRtcSettings(this.hass!);
+    if (!settings || !settings.stun_server) {
+      return {};
+    }
+    return {
+      iceServers: [
+        {
+          urls: ["stun:" + settings.stun_server!],
+        },
+      ],
+    };
   }
 
   private _cleanUp() {
