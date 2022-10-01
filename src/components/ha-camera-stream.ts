@@ -39,7 +39,7 @@ class HaCameraStream extends LitElement {
   public allowExoPlayer = false;
 
   // Video background image before its loaded
-  @state() private _posterUrl: string;
+  @state() private _posterUrl?: string;
 
   // We keep track if we should force MJPEG if there was a failure
   // to get the HLS stream url. This is reset if we change entities.
@@ -57,7 +57,6 @@ class HaCameraStream extends LitElement {
       (changedProps.get("stateObj") as CameraEntity | undefined)?.entity_id !==
         this.stateObj.entity_id
     ) {
-      this._posterUrl = undefined;
       this._getPosterUrl();
       if (this.stateObj!.attributes.frontend_stream_type === STREAM_TYPE_HLS) {
         this._forceMJPEG = undefined;
@@ -139,12 +138,17 @@ class HaCameraStream extends LitElement {
   }
 
   private async _getPosterUrl(): Promise<void> {
-    this._posterUrl = await fetchThumbnailUrlWithCache(
-      this.hass,
-      this.stateObj!.entity_id,
-      this.clientWidth,
-      this.clientHeight
-    );
+    try {
+      this._posterUrl = await fetchThumbnailUrlWithCache(
+        this.hass,
+        this.stateObj!.entity_id,
+        this.clientWidth,
+        this.clientHeight
+      );
+    } catch (err: any) {
+      // poster url is optional
+      this._posterUrl = undefined;
+    }
   }
 
   private async _getStreamUrl(): Promise<void> {
