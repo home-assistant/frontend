@@ -469,15 +469,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     ) {
       fetchScriptFileConfig(this.hass, this.scriptId).then(
         (config) => {
-          // Normalize data: ensure sequence is a list
-          // Happens when people copy paste their scripts into the config
-          const value = config.sequence;
-          if (value && !Array.isArray(value)) {
-            config.sequence = [value];
-          }
           this._dirty = false;
           this._readOnly = false;
-          this._config = config;
+          this._config = this._normalizeConfig(config);
         },
         (resp) => {
           const entity = Object.values(this.hass.entities).find(
@@ -524,7 +518,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = c.config;
+        this._config = this._normalizeConfig(c.config);
       });
       const regEntry = this.hass.entities[this.entityId];
       if (regEntry?.unique_id) {
@@ -534,6 +528,16 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       this._dirty = false;
       this._readOnly = true;
     }
+  }
+
+  private _normalizeConfig(config: ScriptConfig): ScriptConfig {
+    // Normalize data: ensure sequence is a list
+    // Happens when people copy paste their scripts into the config
+    const value = config.sequence;
+    if (value && !Array.isArray(value)) {
+      config.sequence = [value];
+    }
+    return config;
   }
 
   private _computeLabelCallback = (
