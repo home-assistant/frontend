@@ -509,7 +509,14 @@ class AddIntegrationDialog extends LitElement {
     if (integration.integrations) {
       const integrations =
         this._integrations![integration.domain].integrations!;
-      this._fetchFlowsInProgress(Object.keys(integrations));
+      let domains = Object.keys(integrations);
+      if (integration.iot_standards?.includes("homekit")) {
+        domains.push("homekit_controller");
+      }
+      if (integration.domain === "apple") {
+        domains = domains.filter((domain) => domain !== "homekit_controller");
+      }
+      this._fetchFlowsInProgress(domains);
       this._pickedBrand = integration.domain;
       return;
     }
@@ -603,7 +610,12 @@ class AddIntegrationDialog extends LitElement {
   private async _fetchFlowsInProgress(domains: string[]) {
     const flowsInProgress = (
       await fetchConfigFlowInProgress(this.hass.connection)
-    ).filter((flow) => domains.includes(flow.handler));
+    ).filter(
+      (flow) =>
+        domains.includes(flow.handler) ||
+        ("alternative_domain" in flow.context &&
+          domains.includes(flow.context.alternative_domain))
+    );
 
     if (flowsInProgress.length) {
       this._flowsInProgress = flowsInProgress;
