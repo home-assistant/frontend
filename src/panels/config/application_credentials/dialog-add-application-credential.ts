@@ -17,7 +17,7 @@ import {
   createApplicationCredential,
   fetchApplicationCredentialsConfig,
 } from "../../../data/application_credential";
-import { domainToName } from "../../../data/integration";
+import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -45,6 +45,8 @@ export class DialogAddApplicationCredential extends LitElement {
 
   @state() private _domain?: string;
 
+  @state() private _manifest?: IntegrationManifest | null;
+
   @state() private _name?: string;
 
   @state() private _description?: string;
@@ -60,6 +62,7 @@ export class DialogAddApplicationCredential extends LitElement {
   public showDialog(params: AddApplicationCredentialDialogParams) {
     this._params = params;
     this._domain = params.selectedDomain;
+    this._manifest = params.manifest;
     this._name = "";
     this._description = "";
     this._clientId = "";
@@ -113,22 +116,26 @@ export class DialogAddApplicationCredential extends LitElement {
                     integration: selectedDomainName,
                   }
                 )}
-                <a
-                  href=${documentationUrl(
-                    this.hass,
-                    `/integrations/${this._domain}`
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.application_credentials.editor.missing_credentials_domain_link",
-                    {
-                      integration: selectedDomainName,
-                    }
-                  )}
-                  <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-                </a>
+                ${this._manifest?.is_built_in || this._manifest?.documentation
+                  ? html`<a
+                      href=${this._manifest.is_built_in
+                        ? documentationUrl(
+                            this.hass,
+                            `/integrations/${this._domain}`
+                          )
+                        : this._manifest.documentation}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.application_credentials.editor.missing_credentials_domain_link",
+                        {
+                          integration: selectedDomainName,
+                        }
+                      )}
+                      <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                    </a>`
+                  : ""}
               </p>`
             : ""}
           ${!this._params.selectedDomain || !this._description
