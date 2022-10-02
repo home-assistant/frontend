@@ -28,6 +28,7 @@ import "../../../components/ha-svg-icon";
 import {
   deleteScript,
   fetchScriptFileConfig,
+  getScriptStateConfig,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -311,17 +312,20 @@ class HaScriptPicker extends LitElement {
         )})`,
       });
     } catch (err: any) {
+      if (err.status_code === 404) {
+        const response = await getScriptStateConfig(
+          this.hass,
+          script.entity_id
+        );
+        showScriptEditor(response.config);
+        return;
+      }
       await showAlertDialog(this, {
-        text:
-          err.status_code === 404
-            ? this.hass.localize(
-                "ui.panel.config.script.editor.load_error_not_duplicable"
-              )
-            : this.hass.localize(
-                "ui.panel.config.script.editor.load_error_unknown",
-                "err_no",
-                err.status_code
-              ),
+        text: this.hass.localize(
+          "ui.panel.config.script.editor.load_error_unknown",
+          "err_no",
+          err.status_code
+        ),
       });
     }
   }
