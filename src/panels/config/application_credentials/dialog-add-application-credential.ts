@@ -85,6 +85,9 @@ export class DialogAddApplicationCredential extends LitElement {
     if (!this._params || !this._domains) {
       return html``;
     }
+    const selectedDomainName = this._params.selectedDomain
+      ? domainToName(this.hass.localize, this._domain!)
+      : "";
     return html`
       <ha-dialog
         open
@@ -107,19 +110,31 @@ export class DialogAddApplicationCredential extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.application_credentials.editor.missing_credentials",
                   {
-                    integration: domainToName(
-                      this.hass.localize,
-                      this._domain!
-                    ),
+                    integration: selectedDomainName,
                   }
                 )}
+                <a
+                  href=${documentationUrl(
+                    this.hass,
+                    `/integrations/${this._domain}`
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.application_credentials.editor.missing_credentials_domain_link",
+                    {
+                      integration: selectedDomainName,
+                    }
+                  )}
+                  <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                </a>
               </p>`
             : ""}
           <p>
             ${this.hass.localize(
               "ui.panel.config.application_credentials.editor.description"
             )}
-            <br />
             <a
               href=${documentationUrl(
                 this.hass!,
