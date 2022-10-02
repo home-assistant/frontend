@@ -35,6 +35,8 @@ import {
   deleteAutomation,
   duplicateAutomation,
   fetchAutomationFileConfig,
+  getAutomationStateConfig,
+  showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
 import {
@@ -329,6 +331,14 @@ class HaAutomationPicker extends LitElement {
   }
 
   private _showTrace(automation: any) {
+    if (!automation.attributes.id) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.automation.picker.traces_not_available"
+        ),
+      });
+      return;
+    }
     navigate(`/config/automation/trace/${automation.attributes.id}`);
   }
 
@@ -382,17 +392,20 @@ class HaAutomationPicker extends LitElement {
       );
       duplicateAutomation(config);
     } catch (err: any) {
+      if (err.status_code === 404) {
+        const response = await getAutomationStateConfig(
+          this.hass,
+          automation.entity_id
+        );
+        showAutomationEditor({ ...response.config, id: undefined });
+        return;
+      }
       await showAlertDialog(this, {
-        text:
-          err.status_code === 404
-            ? this.hass.localize(
-                "ui.panel.config.automation.editor.load_error_not_duplicable"
-              )
-            : this.hass.localize(
-                "ui.panel.config.automation.editor.load_error_unknown",
-                "err_no",
-                err.status_code
-              ),
+        text: this.hass.localize(
+          "ui.panel.config.automation.editor.load_error_unknown",
+          "err_no",
+          err.status_code
+        ),
       });
     }
   }

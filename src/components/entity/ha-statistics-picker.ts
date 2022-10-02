@@ -32,11 +32,11 @@ class HaStatisticsPicker extends LitElement {
   public includeStatisticsUnitOfMeasurement?: string[] | string;
 
   /**
-   * Show only statistics displayed with these units of measurements.
-   * @attr include-display-unit-of-measurement
+   * Show only statistics with these unit classes.
+   * @attr include-unit-class
    */
-  @property({ attribute: "include-display-unit-of-measurement" })
-  public includeDisplayUnitOfMeasurement?: string[] | string;
+  @property({ attribute: "include-unit-class" })
+  public includeUnitClass?: string | string[];
 
   /**
    * Ignore filtering of statistics type and units when only a single statistic is selected.
@@ -58,12 +58,12 @@ class HaStatisticsPicker extends LitElement {
       this.ignoreRestrictionsOnFirstStatistic &&
       this._currentStatistics.length <= 1;
 
-    const includeDisplayUnitCurrent = ignoreRestriction
-      ? undefined
-      : this.includeDisplayUnitOfMeasurement;
     const includeStatisticsUnitCurrent = ignoreRestriction
       ? undefined
       : this.includeStatisticsUnitOfMeasurement;
+    const includeUnitClassCurrent = ignoreRestriction
+      ? undefined
+      : this.includeUnitClass;
     const includeStatisticTypesCurrent = ignoreRestriction
       ? undefined
       : this.statisticTypes;
@@ -75,8 +75,8 @@ class HaStatisticsPicker extends LitElement {
             <ha-statistic-picker
               .curValue=${statisticId}
               .hass=${this.hass}
-              .includeDisplayUnitOfMeasurement=${includeDisplayUnitCurrent}
               .includeStatisticsUnitOfMeasurement=${includeStatisticsUnitCurrent}
+              .includeUnitClass=${includeUnitClassCurrent}
               .value=${statisticId}
               .statisticTypes=${includeStatisticTypesCurrent}
               .statisticIds=${this.statisticIds}
@@ -89,10 +89,9 @@ class HaStatisticsPicker extends LitElement {
       <div>
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeDisplayUnitOfMeasurement=${this
-            .includeDisplayUnitOfMeasurement}
           .includeStatisticsUnitOfMeasurement=${this
             .includeStatisticsUnitOfMeasurement}
+          .includeUnitClass=${this.includeUnitClass}
           .statisticTypes=${this.statisticTypes}
           .statisticIds=${this.statisticIds}
           .label=${this.pickStatisticLabel}

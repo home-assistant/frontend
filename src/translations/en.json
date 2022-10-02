@@ -1855,8 +1855,8 @@
             "show_info": "Information",
             "default_name": "New Automation",
             "missing_name": "Cannot save automation without a name",
+            "traces_not_available": "Automations need an ID for history to be tracked. Add an ID to your automation to make it available in traces.",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
-            "load_error_not_duplicable": "Only automations in automations.yaml can be duplicated.",
             "load_error_not_deletable": "Only automations in automations.yaml can be deleted.",
             "load_error_unknown": "Error loading automation ({err_no}).",
             "save": "Save",
@@ -2341,7 +2341,6 @@
               "parallel": "Max number of parallel runs"
             },
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
-            "load_error_not_duplicable": "Only scripts in scripts.yaml can be duplicated.",
             "load_error_not_deletable": "Only scripts in scripts.yaml can be deleted.",
             "load_error_unknown": "Error loading script ({err_no}).",
             "delete_confirm_title": "Delete script?",
@@ -2610,6 +2609,7 @@
         },
         "devices": {
           "add_prompt": "No {name} have been added using this {type} yet. You can add one by clicking the + button above.",
+          "add_device": "Add Device",
           "caption": "Devices",
           "description": "Manage configured devices",
           "device_info": "{type} info",
@@ -2985,8 +2985,6 @@
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
-            "missing_credentials_title": "Add application credentials?",
-            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?",
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
             "missing_zwave_zigbee": "To add a {integration} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
             "supported_hardware": "supported hardware",
@@ -3059,7 +3057,9 @@
           "editor": {
             "caption": "Add Credential",
             "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a passwords. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
-            "view_documentation": "View documentation",
+            "missing_credentials": "Setting up {integration} requires configuring application credentials.",
+            "missing_credentials_domain_link": "View {integration} documentation",
+            "view_documentation": "View application credentials documentation",
             "add": "Add",
             "domain": "Integration",
             "name": "Name",
@@ -3804,8 +3804,8 @@
             },
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
-            "back_path": "Back path (optional)",
-            "back_path_helper": "Only for subviews. If empty, clicking on back button will go to the previous page."
+            "edit_ui": "Edit in visual editor",
+            "edit_yaml": "Edit in YAML"
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
