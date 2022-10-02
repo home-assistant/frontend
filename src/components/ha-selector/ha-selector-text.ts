@@ -66,6 +66,7 @@ export class HaTextSelector extends LitElement {
             .label=${`${this._unmaskedPassword ? "Hide" : "Show"} password`}
             @click=${this._toggleUnmaskedPassword}
             .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
+            tabindex="-1"
           ></ha-icon-button>`
         : ""}`;
   }
