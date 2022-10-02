@@ -22,9 +22,11 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { STATES_OFF } from "../../../common/const";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import { handleAction } from "../common/handle-action";
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
 import { subscribeOne } from "../../../common/util/subscribe-one";
@@ -60,7 +62,7 @@ const ALERT_DOMAINS = ["binary_sensor"];
 
 const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 
-const OTHER_DOMAINS = ["camera"];
+const OTHER_DOMAINS = ["camera", "climate", "media_player"];
 
 const DEVICE_CLASSES = {
   sensor: ["temperature", "humidity"],
@@ -436,6 +438,31 @@ export class HuiAreaCard
                     `
                   : "";
               })}
+              ${OTHER_DOMAINS.map((domain) => {
+                if (domain === "camera") {
+                  return "";
+                }
+
+                if (!(domain in entitiesByDomain)) {
+                  return "";
+                }
+
+                return entitiesByDomain[domain].map((entity) => {
+                  const on = !STATES_OFF.includes(entity.state);
+                  const icon = domainIcon(domain, entity);
+
+                  return html`
+                    <ha-icon-button
+                      class=${on ? "on" : "off"}
+                      .path=${icon}
+                      .domain=${domain}
+                      .entity=${entity.entity_id}
+                      @click=${this._handleAction}
+                    >
+                    </ha-icon-button>
+                  `;
+                });
+              })}
             </div>
           </div>
         </div>
@@ -465,6 +492,11 @@ export class HuiAreaCard
     if (this._config!.navigation_path) {
       navigate(this._config!.navigation_path);
     }
+  }
+
+  private _handleAction(ev: ActionHandlerEvent) {
+    const config = { entity: (ev.currentTarget as any).entity };
+    handleAction(this, this.hass!, config, ev.detail.action!);
   }
 
   private _toggle(ev: Event) {
