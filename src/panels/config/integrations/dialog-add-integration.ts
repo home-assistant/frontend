@@ -511,9 +511,11 @@ class AddIntegrationDialog extends LitElement {
         this._integrations![integration.domain].integrations!;
       let domains = Object.keys(integrations);
       if (integration.iot_standards?.includes("homekit")) {
+        // if homekit is supported, also fetch the discovered homekit devices
         domains.push("homekit_controller");
       }
       if (integration.domain === "apple") {
+        // we show discoverd homekit devices in their own brand section, dont show them at apple
         domains = domains.filter((domain) => domain !== "homekit_controller");
       }
       this._fetchFlowsInProgress(domains);
@@ -612,7 +614,9 @@ class AddIntegrationDialog extends LitElement {
       await fetchConfigFlowInProgress(this.hass.connection)
     ).filter(
       (flow) =>
+        // filter config flows that are not for the integration we are looking for
         domains.includes(flow.handler) ||
+        // filter config flows of other domains (like homekit) that are for the domains we are looking for
         ("alternative_domain" in flow.context &&
           domains.includes(flow.context.alternative_domain))
     );
