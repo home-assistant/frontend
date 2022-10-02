@@ -5,6 +5,7 @@ import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-combo-box";
 import { createCloseHeading } from "../../../components/ha-dialog";
