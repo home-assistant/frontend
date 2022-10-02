@@ -131,7 +131,7 @@ export class DialogAddApplicationCredential extends LitElement {
                 </a>
               </p>`
             : ""}
-          ${this._params.selectedDomain && !this._description
+          ${!this._params.selectedDomain || !this._description
             ? html`<p>
                 ${this.hass.localize(
                   "ui.panel.config.application_credentials.editor.description"
