@@ -189,7 +189,11 @@ export const describeTrigger = (
   // Time Trigger
   if (trigger.platform === "time" && trigger.at) {
     const at = trigger.at.includes(".")
-      ? `entity ${computeStateName(hass.states[trigger.at]) || trigger.at}`
+      ? `entity ${
+          hass.states[trigger.at]
+            ? computeStateName(hass.states[trigger.at])
+            : trigger.at
+        }`
       : trigger.at;
 
     return `When the time is equal to ${at}`;
@@ -566,6 +570,13 @@ export const describeCondition = (
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
       config.type
     }`;
+  }
+
+  if (condition.condition === "trigger") {
+    if (!condition.id) {
+      return "Trigger condition";
+    }
+    return `When triggered by ${condition.id}`;
   }
 
   return `${

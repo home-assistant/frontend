@@ -80,10 +80,10 @@ class AddIntegrationDialog extends LitElement {
 
   private _height?: number;
 
-  public showDialog(params: AddIntegrationDialogParams): void {
+  public showDialog(params?: AddIntegrationDialogParams): void {
     this._open = true;
-    this._pickedBrand = params.brand;
-    this._initialFilter = params.initialFilter;
+    this._pickedBrand = params?.brand;
+    this._initialFilter = params?.initialFilter;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
@@ -296,14 +296,13 @@ class AddIntegrationDialog extends LitElement {
       scrimClickAction
       escapeKeyAction
       hideActions
-      .heading=${this._pickedBrand
-        ? true
-        : createCloseHeading(
-            this.hass,
-            this.hass.localize("ui.panel.config.integrations.new")
-          )}
+      .heading=${createCloseHeading(
+        this.hass,
+        this.hass.localize("ui.panel.config.integrations.new")
+      )}
     >
-      ${this._pickedBrand
+      ${this._pickedBrand &&
+      (!this._integrations || this._pickedBrand in this._integrations)
         ? html`<div slot="heading">
               <ha-icon-button-prev
                 @click=${this._prevClicked}
@@ -385,7 +384,11 @@ class AddIntegrationDialog extends LitElement {
       return html``;
     }
     return html`
-      <ha-integration-list-item .hass=${this.hass} .integration=${integration}>
+      <ha-integration-list-item
+        brand
+        .hass=${this.hass}
+        .integration=${integration}
+      >
       </ha-integration-list-item>
     `;
   };
@@ -506,7 +509,16 @@ class AddIntegrationDialog extends LitElement {
     if (integration.integrations) {
       const integrations =
         this._integrations![integration.domain].integrations!;
-      this._fetchFlowsInProgress(Object.keys(integrations));
+      let domains = Object.keys(integrations);
+      if (integration.iot_standards?.includes("homekit")) {
+        // if homekit is supported, also fetch the discovered homekit devices
+        domains.push("homekit_controller");
+      }
+      if (integration.domain === "apple") {
+        // we show discoverd homekit devices in their own brand section, dont show them at apple
+        domains = domains.filter((domain) => domain !== "homekit_controller");
+      }
+      this._fetchFlowsInProgress(domains);
       this._pickedBrand = integration.domain;
       return;
     }
@@ -526,6 +538,15 @@ class AddIntegrationDialog extends LitElement {
 
     if (integration.config_flow) {
       this._createFlow(integration);
+      return;
+    }
+
+    if (
+      ["cloud", "google_assistant", "alexa"].includes(integration.domain) &&
+      isComponentLoaded(this.hass, "cloud")
+    ) {
+      this.closeDialog();
+      navigate("/config/cloud");
       return;
     }
 
@@ -591,7 +612,14 @@ class AddIntegrationDialog extends LitElement {
   private async _fetchFlowsInProgress(domains: string[]) {
     const flowsInProgress = (
       await fetchConfigFlowInProgress(this.hass.connection)
-    ).filter((flow) => domains.includes(flow.handler));
+    ).filter(
+      (flow) =>
+        // filter config flows that are not for the integration we are looking for
+        domains.includes(flow.handler) ||
+        // filter config flows of other domains (like homekit) that are for the domains we are looking for
+        ("alternative_domain" in flow.context &&
+          domains.includes(flow.context.alternative_domain))
+    );
 
     if (flowsInProgress.length) {
       this._flowsInProgress = flowsInProgress;

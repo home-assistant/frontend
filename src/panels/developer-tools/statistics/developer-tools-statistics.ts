@@ -74,12 +74,6 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         hidden: this.narrow,
         width: "20%",
       },
-      display_unit_of_measurement: {
-        title: "Display unit",
-        sortable: true,
-        filterable: true,
-        width: "10%",
-      },
       statistics_unit_of_measurement: {
         title: "Statistics unit",
         sortable: true,
@@ -220,12 +214,12 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         this._data.push({
           statistic_id: statisticId,
           statistics_unit_of_measurement: "",
-          display_unit_of_measurement: "",
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
           has_mean: false,
           has_sum: false,
+          unit_class: null,
         });
       }
     });

@@ -36,6 +36,7 @@ const conditions = [
   { condition: "sun", after: "sunset" },
   { condition: "sun", after: "sunrise", offset: "-01:00" },
   { condition: "zone", entity_id: "device_tracker.person", zone: "zone.home" },
+  { condition: "trigger", id: "motion" },
   { condition: "time" },
   { condition: "template" },
 ];

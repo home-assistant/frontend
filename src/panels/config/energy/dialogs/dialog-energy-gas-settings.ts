@@ -5,9 +5,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
 import {
   emptyGasEnergyPreference,
-  ENERGY_GAS_ENERGY_UNITS,
-  ENERGY_GAS_UNITS,
-  ENERGY_GAS_VOLUME_UNITS,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -21,7 +18,10 @@ import "../../../../components/ha-radio";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-textfield";
 import type { HaRadio } from "../../../../components/ha-radio";
-import { getStatisticMetadata } from "../../../../data/recorder";
+import {
+  getStatisticMetadata,
+  getDisplayUnit,
+} from "../../../../data/recorder";
 
 @customElement("dialog-energy-gas-settings")
 export class DialogEnergyGasSettings
@@ -38,7 +38,7 @@ export class DialogEnergyGasSettings
 
   @state() private _pickableUnit?: string;
 
-  @state() private _pickedDisplayUnit?: string;
+  @state() private _pickedDisplayUnit?: string | null;
 
   @state() private _error?: string;
 
@@ -49,7 +49,11 @@ export class DialogEnergyGasSettings
     this._source = params.source
       ? { ...params.source }
       : emptyGasEnergyPreference();
-    this._pickedDisplayUnit = params.metadata?.display_unit_of_measurement;
+    this._pickedDisplayUnit = getDisplayUnit(
+      this.hass,
+      params.source?.stat_energy_from,
+      params.metadata
+    );
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
@@ -75,9 +79,9 @@ export class DialogEnergyGasSettings
 
     const pickableUnit =
       this._pickableUnit ||
-      (this._params.allowedGasUnitCategory === undefined
+      (this._params.allowedGasUnitClass === undefined
         ? "ft³, m³, Wh, kWh or MWh"
-        : this._params.allowedGasUnitCategory === "energy"
+        : this._params.allowedGasUnitClass === "energy"
         ? "Wh, kWh or MWh"
         : "ft³ or m³");
 
@@ -98,17 +102,12 @@ export class DialogEnergyGasSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeStatisticsUnitOfMeasurement=${this._params
-            .allowedGasUnitCategory === undefined
-            ? ENERGY_GAS_UNITS
-            : this._params.allowedGasUnitCategory === "energy"
-            ? ENERGY_GAS_ENERGY_UNITS
-            : ENERGY_GAS_VOLUME_UNITS}
+          .includeUnitClass=${this._params.allowedGasUnitClass}
           .value=${this._source.stat_energy_from}
           .label=${`${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.gas_usage"
           )} (${
-            this._params.allowedGasUnitCategory === undefined
+            this._params.allowedGasUnitClass === undefined
               ? this.hass.localize(
                   "ui.panel.config.energy.gas.dialog.m3_or_kWh"
                 )
@@ -263,14 +262,12 @@ export class DialogEnergyGasSettings
 
   private async _statisticChanged(ev: CustomEvent<{ value: string }>) {
     if (ev.detail.value) {
-      const entity = this.hass.states[ev.detail.value];
-      if (entity?.attributes.unit_of_measurement) {
-        this._pickedDisplayUnit = entity.attributes.unit_of_measurement;
-      } else {
-        this._pickedDisplayUnit = (
-          await getStatisticMetadata(this.hass, [ev.detail.value])
-        )[0]?.display_unit_of_measurement;
-      }
+      const metadata = await getStatisticMetadata(this.hass, [ev.detail.value]);
+      this._pickedDisplayUnit = getDisplayUnit(
+        this.hass,
+        ev.detail.value,
+        metadata[0]
+      );
     } else {
       this._pickedDisplayUnit = undefined;
     }

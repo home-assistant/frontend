@@ -22,6 +22,8 @@ export class HaIntegrationListItem extends ListItemBase {
 
   @property({ type: Boolean }) hasMeta = true;
 
+  @property({ type: Boolean }) brand = false;
+
   renderSingleLine() {
     if (!this.integration) {
       return html``;
@@ -51,6 +53,7 @@ export class HaIntegrationListItem extends ListItemBase {
           type: "icon",
           useFallback: true,
           darkOptimized: this.hass.themes?.darkMode,
+          brand: this.brand,
         })}
         referrerpolicy="no-referrer"
       />
