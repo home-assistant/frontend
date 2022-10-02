@@ -105,7 +105,7 @@ export class DialogAddApplicationCredential extends LitElement {
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
             : ""}
-          ${this._params.selectedDomain
+          ${this._params.selectedDomain && !this._description
             ? html`<p>
                 ${this.hass.localize(
                   "ui.panel.config.application_credentials.editor.missing_credentials",
@@ -131,24 +131,26 @@ export class DialogAddApplicationCredential extends LitElement {
                 </a>
               </p>`
             : ""}
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.application_credentials.editor.description"
-            )}
-            <a
-              href=${documentationUrl(
-                this.hass!,
-                "/integrations/application_credentials"
-              )}
-              target="_blank"
-              rel="noreferrer"
-            >
-              ${this.hass!.localize(
-                "ui.panel.config.application_credentials.editor.view_documentation"
-              )}
-              <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-            </a>
-          </p>
+          ${this._params.selectedDomain && !this._description
+            ? html`<p>
+                ${this.hass.localize(
+                  "ui.panel.config.application_credentials.editor.description"
+                )}
+                <a
+                  href=${documentationUrl(
+                    this.hass!,
+                    "/integrations/application_credentials"
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${this.hass!.localize(
+                    "ui.panel.config.application_credentials.editor.view_documentation"
+                  )}
+                  <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                </a>
+              </p>`
+            : ""}
           ${this._params.selectedDomain
             ? ""
             : html`<ha-combo-box
@@ -254,7 +256,11 @@ export class DialogAddApplicationCredential extends LitElement {
     this._updateDescription();
   }
 
-  private _updateDescription() {
+  private async _updateDescription() {
+    await this.hass.loadBackendTranslation(
+      "application_credentials",
+      this._domain
+    );
     const info = this._config!.integrations[this._domain!];
     this._description = this.hass.localize(
       `component.${this._domain}.application_credentials.description`,
@@ -328,6 +334,9 @@ export class DialogAddApplicationCredential extends LitElement {
         }
         a ha-svg-icon {
           --mdc-icon-size: 16px;
+        }
+        ha-markdown {
+          margin-bottom: 16px;
         }
       `,
     ];
