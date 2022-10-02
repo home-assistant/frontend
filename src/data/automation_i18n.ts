@@ -572,6 +572,13 @@ export const describeCondition = (
     }`;
   }
 
+  if (condition.condition === "trigger") {
+    if (!condition.id) {
+      return "Trigger condition";
+    }
+    return `When triggered by ${condition.id}`;
+  }
+
   return `${
     condition.condition ? condition.condition.replace(/_/g, " ") : "Unknown"
   } condition`;
