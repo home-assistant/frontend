@@ -58,8 +58,7 @@ export class DialogAddApplicationCredential extends LitElement {
 
   public showDialog(params: AddApplicationCredentialDialogParams) {
     this._params = params;
-    this._domain =
-      params.selectedDomain !== undefined ? params.selectedDomain : "";
+    this._domain = params.selectedDomain;
     this._name = "";
     this._description = "";
     this._clientId = "";
@@ -76,7 +75,7 @@ export class DialogAddApplicationCredential extends LitElement {
       name: domainToName(this.hass.localize, domain),
     }));
     await this.hass.loadBackendTranslation("application_credentials");
-    if (this._domain !== "") {
+    if (this._domain) {
       this._updateDescription();
     }
   }
@@ -99,7 +98,22 @@ export class DialogAddApplicationCredential extends LitElement {
         )}
       >
         <div>
-          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
+            : ""}
+          ${this._params.selectedDomain
+            ? html`<p>
+                ${this.hass.localize(
+                  "ui.panel.config.application_credentials.editor.missing_credentials",
+                  {
+                    integration: domainToName(
+                      this.hass.localize,
+                      this._domain!
+                    ),
+                  }
+                )}
+              </p>`
+            : ""}
           <p>
             ${this.hass.localize(
               "ui.panel.config.application_credentials.editor.description"
@@ -119,22 +133,23 @@ export class DialogAddApplicationCredential extends LitElement {
               <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
             </a>
           </p>
-          <ha-combo-box
-            name="domain"
-            .hass=${this.hass}
-            .disabled=${!!this._params.selectedDomain}
-            .label=${this.hass.localize(
-              "ui.panel.config.application_credentials.editor.domain"
-            )}
-            .value=${this._domain}
-            .renderer=${rowRenderer}
-            .items=${this._domains}
-            item-id-path="id"
-            item-value-path="id"
-            item-label-path="name"
-            required
-            @value-changed=${this._handleDomainPicked}
-          ></ha-combo-box>
+          ${this._params.selectedDomain
+            ? ""
+            : html`<ha-combo-box
+                name="domain"
+                .hass=${this.hass}
+                .label=${this.hass.localize(
+                  "ui.panel.config.application_credentials.editor.domain"
+                )}
+                .value=${this._domain}
+                .renderer=${rowRenderer}
+                .items=${this._domains}
+                item-id-path="id"
+                item-value-path="id"
+                item-label-path="name"
+                required
+                @value-changed=${this._handleDomainPicked}
+              ></ha-combo-box>`}
           ${this._description
             ? html`<ha-markdown
                 breaks
