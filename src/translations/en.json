@@ -1855,7 +1855,7 @@
             "show_info": "Information",
             "default_name": "New Automation",
             "missing_name": "Cannot save automation without a name",
-            "traces_not_available": "This automation doesn't have an ID, so we can't show traces, add an ID to your automation to make it available in traces.",
+            "traces_not_available": "Automations need an ID for history to be tracked. Add an ID to your automation to make it available in traces.",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
             "load_error_not_deletable": "Only automations in automations.yaml can be deleted.",
             "load_error_unknown": "Error loading automation ({err_no}).",
