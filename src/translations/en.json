@@ -1855,8 +1855,8 @@
             "show_info": "Information",
             "default_name": "New Automation",
             "missing_name": "Cannot save automation without a name",
+            "traces_not_available": "Automations need an ID for history to be tracked. Add an ID to your automation to make it available in traces.",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
-            "load_error_not_duplicable": "Only automations in automations.yaml can be duplicated.",
             "load_error_not_deletable": "Only automations in automations.yaml can be deleted.",
             "load_error_unknown": "Error loading automation ({err_no}).",
             "save": "Save",
@@ -2341,7 +2341,6 @@
               "parallel": "Max number of parallel runs"
             },
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
-            "load_error_not_duplicable": "Only scripts in scripts.yaml can be duplicated.",
             "load_error_not_deletable": "Only scripts in scripts.yaml can be deleted.",
             "load_error_unknown": "Error loading script ({err_no}).",
             "delete_confirm_title": "Delete script?",
