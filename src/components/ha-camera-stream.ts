@@ -140,7 +140,7 @@ class HaCameraStream extends LitElement {
   private async _getPosterUrl(): Promise<void> {
     try {
       this._posterUrl = await fetchThumbnailUrlWithCache(
-        this.hass,
+        this.hass!,
         this.stateObj!.entity_id,
         this.clientWidth,
         this.clientHeight
