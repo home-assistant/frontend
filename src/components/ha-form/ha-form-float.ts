@@ -26,6 +26,7 @@ export class HaFormFloat extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     return html`
       <ha-textfield
+        type="numeric"
         inputMode="decimal"
         .label=${this.label}
         .value=${this.data !== undefined ? this.data : ""}
@@ -52,6 +53,11 @@ export class HaFormFloat extends LitElement implements HaFormElement {
     let value: number | undefined;
 
     if (rawValue.endsWith(".")) {
+      return;
+    }
+
+    // Allow user to start typing a negative value
+    if (rawValue === "-") {
       return;
     }
 
