@@ -238,10 +238,10 @@ export class HaConfigDeviceDashboard extends LitElement {
       const columns: DataTableColumnContainer = narrow
         ? {
             name: {
-              main: true,
               title: this.hass.localize(
                 "ui.panel.config.devices.data_table.device"
               ),
+              main: true,
               sortable: true,
               filterable: true,
               direction: "asc",
@@ -259,6 +259,7 @@ export class HaConfigDeviceDashboard extends LitElement {
               title: this.hass.localize(
                 "ui.panel.config.devices.data_table.device"
               ),
+              main: true,
               sortable: true,
               filterable: true,
               grows: true,
