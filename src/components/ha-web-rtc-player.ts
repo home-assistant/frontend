@@ -34,6 +34,8 @@ class HaWebRtcPlayer extends LitElement {
   @property({ type: Boolean, attribute: "playsinline" })
   public playsInline = false;
 
+  @property() public posterUrl!: string;
+
   @state() private _error?: string;
 
   // don't cache this, as we remove it on disconnects
@@ -54,6 +56,7 @@ class HaWebRtcPlayer extends LitElement {
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
+        .poster=${this.posterUrl}
       ></video>
     `;
   }
