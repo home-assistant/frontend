@@ -91,6 +91,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         },
         name: {
           title: localize("ui.panel.config.helpers.picker.headers.name"),
+          main: true,
           sortable: true,
           filterable: true,
           grows: true,

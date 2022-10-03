@@ -93,6 +93,7 @@ class HaScriptPicker extends LitElement {
       },
       name: {
         title: this.hass.localize("ui.panel.config.script.picker.headers.name"),
+        main: true,
         sortable: true,
         filterable: true,
         direction: "asc",

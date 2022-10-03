@@ -95,6 +95,7 @@ class HaSceneDashboard extends LitElement {
           title: this.hass.localize(
             "ui.panel.config.scene.picker.headers.name"
           ),
+          main: true,
           sortable: true,
           filterable: true,
           direction: "asc",
