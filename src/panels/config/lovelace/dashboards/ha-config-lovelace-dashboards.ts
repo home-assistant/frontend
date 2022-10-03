@@ -78,6 +78,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           title: this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.title"
           ),
+          main: true,
           sortable: true,
           filterable: true,
           grows: true,
