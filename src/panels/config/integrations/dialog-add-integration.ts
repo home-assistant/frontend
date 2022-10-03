@@ -510,10 +510,6 @@ class AddIntegrationDialog extends LitElement {
       const integrations =
         this._integrations![integration.domain].integrations!;
       let domains = Object.keys(integrations);
-      if (integration.iot_standards?.includes("homekit")) {
-        // if homekit is supported, also fetch the discovered homekit devices
-        domains.push("homekit_controller");
-      }
       if (integration.domain === "apple") {
         // we show discoverd homekit devices in their own brand section, dont show them at apple
         domains = domains.filter((domain) => domain !== "homekit_controller");
