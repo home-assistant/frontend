@@ -42,8 +42,11 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+
+const DAY_IN_MILLISECONDS = 86400000;
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -109,11 +112,21 @@ class HaSceneDashboard extends LitElement {
           ),
           sortable: true,
           width: "30%",
-          template: (last_activated) => html`
-            ${last_activated && !UNAVAILABLE_STATES.includes(last_activated)
-              ? formatDateTime(new Date(last_activated), this.hass.locale)
-              : this.hass.localize("ui.components.relative_time.never")}
-          `,
+          template: (last_activated) => {
+            const date = new Date(last_activated);
+            const now = new Date();
+
+            const diff = now.getTime() - date.getTime();
+            const dayDiff = diff / DAY_IN_MILLISECONDS;
+
+            return html`
+              ${last_activated && !UNAVAILABLE_STATES.includes(last_activated)
+                ? dayDiff > 3
+                  ? formatShortDateTime(date, this.hass.locale)
+                  : relativeTime(date, this.hass.locale)
+                : this.hass.localize("ui.components.relative_time.never")}
+            `;
+          },
         };
       }
       columns.only_editable = {
