@@ -1313,8 +1313,8 @@
             "no_linked_entities": "There are no entities linked to this area."
           },
           "delete": {
-            "confirmation_title": "Are you sure you want to delete this area?",
-            "confirmation_text": "This user will be permanently deleted."
+            "confirmation_title": "Delete {name}?",
+            "confirmation_text": "This area will be permanently deleted and all devices belonging to this area will become unassigned."
           }
         },
         "backup": {
