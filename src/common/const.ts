@@ -125,6 +125,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   current: mdiCurrentAc,
   date: mdiCalendar,
   distance: mdiArrowLeftRight,
+  duration: mdiTimerOutline,
   energy: mdiLightningBolt,
   frequency: mdiSineWave,
   gas: mdiMeterGas,
