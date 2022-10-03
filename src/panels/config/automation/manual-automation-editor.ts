@@ -81,7 +81,11 @@ export class HaManualAutomationEditor extends LitElement {
           `
         : ""}
       ${this.config.description
-        ? html`<p class="description">${this.config.description}</p>`
+        ? html`<ha-markdown
+            class="description"
+            breaks
+            .content=${this.config.description}
+          ></ha-markdown>`
         : ""}
       <div class="header">
         <h2 id="triggers-heading" class="name">

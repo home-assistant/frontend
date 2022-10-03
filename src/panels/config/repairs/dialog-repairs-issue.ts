@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { formatDateNumeric } from "../../../common/datetime/format_date";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-markdown";
@@ -92,8 +93,9 @@ class DialogRepairsIssue extends LitElement {
             </span>
             -
             ${this._issue.created
-              ? new Date(this._issue.created).toLocaleDateString(
-                  this.hass.language
+              ? formatDateNumeric(
+                  new Date(this._issue.created),
+                  this.hass.locale
                 )
               : ""}
           </div>

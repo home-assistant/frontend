@@ -69,6 +69,7 @@ export interface DataTableSortColumnData {
 }
 
 export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
+  main?: boolean;
   title: TemplateResult | string;
   label?: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
@@ -406,7 +407,7 @@ export class HaDataTable extends LitElement {
           }
           return html`
             <div
-              role="cell"
+              role=${column.main ? "rowheader" : "cell"}
               class="mdc-data-table__cell ${classMap({
                 "mdc-data-table__cell--numeric": column.type === "numeric",
                 "mdc-data-table__cell--icon": column.type === "icon",

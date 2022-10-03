@@ -43,6 +43,7 @@ export class HaConfigUsers extends LitElement {
       const columns: DataTableColumnContainer<User> = {
         name: {
           title: localize("ui.panel.config.users.picker.headers.name"),
+          main: true,
           sortable: true,
           filterable: true,
           width: "25%",

@@ -289,3 +289,6 @@ export const getDisplayUnit = (
     ? statisticsMetaData?.statistics_unit_of_measurement
     : unit;
 };
+
+export const isExternalStatistic = (statisticsId: string): boolean =>
+  statisticsId.includes(":");
