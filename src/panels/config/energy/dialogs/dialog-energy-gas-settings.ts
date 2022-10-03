@@ -21,6 +21,7 @@ import type { HaRadio } from "../../../../components/ha-radio";
 import {
   getStatisticMetadata,
   getDisplayUnit,
+  isExternalStatistic,
 } from "../../../../data/recorder";
 
 @customElement("dialog-energy-gas-settings")
@@ -86,7 +87,7 @@ export class DialogEnergyGasSettings
         : "ft³ or m³");
 
     const externalSource =
-      this._source.stat_cost && this._source.stat_cost.includes(":");
+      this._source.stat_cost && isExternalStatistic(this._source.stat_cost);
 
     return html`
       <ha-dialog
@@ -274,7 +275,7 @@ export class DialogEnergyGasSettings
     } else {
       this._pickedDisplayUnit = undefined;
     }
-    if (ev.detail.value.includes(":") && this._costs !== "statistic") {
+    if (isExternalStatistic(ev.detail.value) && this._costs !== "statistic") {
       this._costs = "no-costs";
     }
     this._source = {
