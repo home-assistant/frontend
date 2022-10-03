@@ -11,7 +11,8 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
@@ -42,6 +43,8 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
+
+const DAY_IN_MILLISECONDS = 86400000;
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -99,18 +102,25 @@ class HaScriptPicker extends LitElement {
         direction: "asc",
         grows: true,
         template: narrow
-          ? (name, script: any) => html`
-              ${name}
-              <div class="secondary">
-                ${this.hass.localize("ui.card.automation.last_triggered")}:
-                ${script.attributes.last_triggered
-                  ? formatDateTime(
-                      new Date(script.attributes.last_triggered),
-                      this.hass.locale
-                    )
-                  : this.hass.localize("ui.components.relative_time.never")}
-              </div>
-            `
+          ? (name, script: any) => {
+              const date = new Date(script.attributes.last_triggered);
+              const now = new Date();
+
+              const diff = now.getTime() - date.getTime();
+              const dayDiff = diff / DAY_IN_MILLISECONDS;
+
+              return html`
+                ${name}
+                <div class="secondary">
+                  ${this.hass.localize("ui.card.automation.last_triggered")}:
+                  ${script.attributes.last_triggered
+                    ? dayDiff > 3
+                      ? formatShortDateTime(date, this.hass.locale)
+                      : relativeTime(date, this.hass.locale)
+                    : this.hass.localize("ui.components.relative_time.never")}
+                </div>
+              `;
+            }
           : undefined,
       },
     };
@@ -119,11 +129,21 @@ class HaScriptPicker extends LitElement {
         sortable: true,
         width: "40%",
         title: this.hass.localize("ui.card.automation.last_triggered"),
-        template: (last_triggered) => html`
-          ${last_triggered
-            ? formatDateTime(new Date(last_triggered), this.hass.locale)
-            : this.hass.localize("ui.components.relative_time.never")}
-        `,
+        template: (last_triggered) => {
+          const date = new Date(last_triggered);
+          const now = new Date();
+
+          const diff = now.getTime() - date.getTime();
+          const dayDiff = diff / DAY_IN_MILLISECONDS;
+
+          return html`
+            ${last_triggered
+              ? dayDiff > 3
+                ? formatShortDateTime(date, this.hass.locale)
+                : relativeTime(date, this.hass.locale)
+              : this.hass.localize("ui.components.relative_time.never")}
+          `;
+        },
       };
     }
 
