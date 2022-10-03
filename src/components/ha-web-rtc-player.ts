@@ -109,7 +109,7 @@ class HaWebRtcPlayer extends LitElement {
           resolve(); // Gathering complete
           return;
         }
-        candidates += "a=" + event.candidate.candidate + "\r\n";
+        candidates += `a=${event.candidate.candidate}\r\n`;
       });
     });
     await iceResolver;
@@ -162,7 +162,7 @@ class HaWebRtcPlayer extends LitElement {
     return {
       iceServers: [
         {
-          urls: ["stun:" + settings.stun_server!],
+          urls: [`stun:${settings.stun_server!}`],
         },
       ],
     };
