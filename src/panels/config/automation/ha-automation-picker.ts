@@ -100,6 +100,7 @@ class HaAutomationPicker extends LitElement {
           title: this.hass.localize(
             "ui.panel.config.automation.picker.headers.name"
           ),
+          main: true,
           sortable: true,
           filterable: true,
           direction: "asc",
