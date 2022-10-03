@@ -3805,6 +3805,8 @@
             },
             "subview": "Subview",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
+            "back_path": "Back button navigation",
+            "back_path_default": "Go back to previous page in history",
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML"
           },

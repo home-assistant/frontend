@@ -5,7 +5,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
 import type { LovelaceViewConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import {
@@ -33,8 +33,8 @@ export class HuiViewEditor extends LitElement {
   private _suggestedPath = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
-      [
+    (localize: LocalizeFunc, subview: boolean, showAdvanced: boolean) => {
+      const schema = [
         { name: "title", selector: { text: {} } },
         {
           name: "icon",
@@ -69,7 +69,19 @@ export class HuiViewEditor extends LitElement {
             boolean: {},
           },
         },
-      ] as const
+      ] as HaFormSchema[];
+
+      if (subview && showAdvanced) {
+        schema.push({
+          name: "back_path",
+          selector: {
+            navigation: {},
+          },
+        });
+      }
+
+      return schema;
+    }
   );
 
   set config(config: LovelaceViewConfig) {
@@ -90,12 +102,21 @@ export class HuiViewEditor extends LitElement {
       return html``;
     }
 
-    const schema = this._schema(this.hass.localize);
+    const schema = this._schema(
+      this.hass.localize,
+      Boolean(this._config.subview),
+      Boolean(this.hass!.userData?.showAdvanced)
+    );
 
     const data = {
       theme: "Backend-selected",
       ...this._config,
       type: this._type,
+      back_path:
+        this._config.back_path ||
+        this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.back_path_default"
+        ),
     };
 
     return html`
@@ -116,6 +137,16 @@ export class HuiViewEditor extends LitElement {
     if (config.type === "masonry") {
       delete config.type;
     }
+    if (
+      !config.back_path ||
+      !config.subview ||
+      config.back_path ===
+        this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.back_path_default"
+        )
+    ) {
+      delete config.back_path;
+    }
 
     if (
       this.isNew &&
@@ -130,9 +161,7 @@ export class HuiViewEditor extends LitElement {
     fireEvent(this, "view-config-changed", { config });
   }
 
-  private _computeLabel = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
+  private _computeLabel = (schema: HaFormSchema) => {
     switch (schema.name) {
       case "path":
         return this.hass!.localize("ui.panel.lovelace.editor.card.generic.url");
@@ -140,6 +169,10 @@ export class HuiViewEditor extends LitElement {
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.type");
       case "subview":
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.subview");
+      case "back_path":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.back_path"
+        );
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
@@ -147,9 +180,7 @@ export class HuiViewEditor extends LitElement {
     }
   };
 
-  private _computeHelper = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
+  private _computeHelper = (schema: HaFormSchema) => {
     switch (schema.name) {
       case "subview":
         return this.hass.localize(
