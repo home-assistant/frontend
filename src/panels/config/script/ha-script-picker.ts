@@ -11,6 +11,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { differenceInDays } from "date-fns/esm";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
@@ -43,8 +44,6 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-
-const DAY_IN_MILLISECONDS = 86400000;
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -105,16 +104,13 @@ class HaScriptPicker extends LitElement {
           ? (name, script: any) => {
               const date = new Date(script.attributes.last_triggered);
               const now = new Date();
-
-              const diff = now.getTime() - date.getTime();
-              const dayDiff = diff / DAY_IN_MILLISECONDS;
-
+              const dayDifference = differenceInDays(now, date);
               return html`
                 ${name}
                 <div class="secondary">
                   ${this.hass.localize("ui.card.automation.last_triggered")}:
                   ${script.attributes.last_triggered
-                    ? dayDiff > 3
+                    ? dayDifference > 3
                       ? formatShortDateTime(date, this.hass.locale)
                       : relativeTime(date, this.hass.locale)
                     : this.hass.localize("ui.components.relative_time.never")}
@@ -132,13 +128,10 @@ class HaScriptPicker extends LitElement {
         template: (last_triggered) => {
           const date = new Date(last_triggered);
           const now = new Date();
-
-          const diff = now.getTime() - date.getTime();
-          const dayDiff = diff / DAY_IN_MILLISECONDS;
-
+          const dayDifference = differenceInDays(now, date);
           return html`
             ${last_triggered
-              ? dayDiff > 3
+              ? dayDifference > 3
                 ? formatShortDateTime(date, this.hass.locale)
                 : relativeTime(date, this.hass.locale)
               : this.hass.localize("ui.components.relative_time.never")}
