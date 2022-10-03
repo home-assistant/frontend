@@ -56,7 +56,7 @@ class HaWebRtcPlayer extends LitElement {
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
-        poster=${this.posterUrl}
+        .poster=${this.posterUrl}
       ></video>
     `;
   }
