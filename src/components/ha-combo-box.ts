@@ -297,7 +297,7 @@ export class HaComboBox extends LitElement {
     const newValue = ev.detail.value;
 
     if (newValue !== this.value) {
-      fireEvent(this, "value-changed", { value: newValue });
+      fireEvent(this, "value-changed", { value: newValue || undefined });
     }
   }
 
