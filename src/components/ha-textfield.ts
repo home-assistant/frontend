@@ -86,7 +86,10 @@ export class HaTextField extends TextFieldBase {
         text-overflow: ellipsis;
         width: inherit;
         padding-right: 30px;
+        padding-inline-end: 30px;
+        padding-inline-start: initial;
         box-sizing: border-box;
+        direction: var(--direction);
       }
 
       input {
@@ -118,7 +121,7 @@ export class HaTextField extends TextFieldBase {
         inset-inline-end: initial !important;
         transform-origin: var(--float-start);
         direction: var(--direction);
-        transform-origin: var(--float-start);
+        text-align: var(--float-start);
       }
 
       .mdc-text-field--with-leading-icon.mdc-text-field--filled
