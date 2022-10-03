@@ -102,7 +102,10 @@ export class DialogEnergyGasSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitClass=${this._params.allowedGasUnitClass}
+          .includeUnitClass=${this._params.allowedGasUnitClass || [
+            "volume",
+            "energy",
+          ]}
           .value=${this._source.stat_energy_from}
           .label=${`${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.gas_usage"
