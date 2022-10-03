@@ -290,4 +290,5 @@ export const getDisplayUnit = (
     : unit;
 };
 
-export const isExternalStatistic = (statisticsId: string): boolean => statisticsId.includes(":");
+export const isExternalStatistic = (statisticsId: string): boolean =>
+  statisticsId.includes(":");
