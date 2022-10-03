@@ -80,7 +80,7 @@ class HaHLSPlayer extends LitElement {
         : ""}
       ${!this._errorIsFatal
         ? html`<video
-            poster=${this.posterUrl}
+            .poster=${this.posterUrl}
             ?autoplay=${this.autoPlay}
             .muted=${this.muted}
             ?playsinline=${this.playsInline}
