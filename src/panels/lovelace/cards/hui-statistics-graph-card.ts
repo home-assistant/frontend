@@ -15,7 +15,12 @@ import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
 import { StatisticsGraphCardConfig } from "./types";
-import { fetchStatistics, Statistics } from "../../../data/recorder";
+import {
+  fetchStatistics,
+  getDisplayUnit,
+  getStatisticMetadata,
+  Statistics,
+} from "../../../data/recorder";
 
 @customElement("hui-statistics-graph-card")
 export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
@@ -167,12 +172,21 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         1000 * 60 * 60 * (24 * (this._config!.days_to_show || 30) + 1)
     );
     try {
+      const metadata = await getStatisticMetadata(this.hass!, this._entities);
+      const unitClass = metadata?.[0]?.unit_class;
+      const displayUnit = getDisplayUnit(
+        this.hass!,
+        metadata?.[0]?.statistic_id,
+        metadata?.[0]
+      );
+      const unitconfig = unitClass ? { [unitClass]: displayUnit } : undefined;
       this._statistics = await fetchStatistics(
         this.hass!,
         startDate,
         undefined,
         this._entities,
-        this._config!.period
+        this._config!.period,
+        unitconfig
       );
     } catch (err) {
       this._statistics = undefined;

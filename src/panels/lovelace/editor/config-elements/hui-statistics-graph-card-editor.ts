@@ -206,6 +206,9 @@ export class HuiStatisticsGraphCardEditor
       stat_types: configured_stat_types,
     };
     const unitClass = this._metaDatas?.[0]?.unit_class;
+    const statisticsUnit = unitClass
+      ? undefined
+      : this._metaDatas?.[0]?.statistics_unit_of_measurement;
 
     return html`
       <ha-form
@@ -223,6 +226,7 @@ export class HuiStatisticsGraphCardEditor
           .pickedStatisticLabel=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.statistics-graph.picked_statistic"
           )}
+          .includeStatisticsUnitOfMeasurement=${statisticsUnit}
           .includeUnitClass=${unitClass}
           .ignoreRestrictionsOnFirstStatistic=${true}
           .value=${this._configEntities}
