@@ -1,12 +1,7 @@
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../../../../src/components/ha-card";
-import {
-  LightColorModes,
-  SUPPORT_EFFECT,
-  SUPPORT_FLASH,
-  SUPPORT_TRANSITION,
-} from "../../../../src/data/light";
+import { LightColorMode, LightEntityFeature } from "../../../../src/data/light";
 import "../../../../src/dialogs/more-info/more-info-content";
 import { getEntity } from "../../../../src/fake_data/entity";
 import {
@@ -22,8 +17,8 @@ const ENTITIES = [
   getEntity("light", "kitchen_light", "on", {
     friendly_name: "Brightness Light",
     brightness: 200,
-    supported_color_modes: [LightColorModes.BRIGHTNESS],
-    color_mode: LightColorModes.BRIGHTNESS,
+    supported_color_modes: [LightColorMode.BRIGHTNESS],
+    color_mode: LightColorMode.BRIGHTNESS,
   }),
   getEntity("light", "color_temperature_light", "on", {
     friendly_name: "White Color Temperature Light",
@@ -32,10 +27,10 @@ const ENTITIES = [
     min_mireds: 30,
     max_mireds: 150,
     supported_color_modes: [
-      LightColorModes.BRIGHTNESS,
-      LightColorModes.COLOR_TEMP,
+      LightColorMode.BRIGHTNESS,
+      LightColorMode.COLOR_TEMP,
     ],
-    color_mode: LightColorModes.COLOR_TEMP,
+    color_mode: LightColorMode.COLOR_TEMP,
   }),
   getEntity("light", "color_hs_light", "on", {
     friendly_name: "Color HS Light",
@@ -44,13 +39,16 @@ const ENTITIES = [
     rgb_color: [30, 100, 255],
     min_mireds: 30,
     max_mireds: 150,
-    supported_features: SUPPORT_EFFECT + SUPPORT_FLASH + SUPPORT_TRANSITION,
+    supported_features:
+      LightEntityFeature.EFFECT +
+      LightEntityFeature.FLASH +
+      LightEntityFeature.TRANSITION,
     supported_color_modes: [
-      LightColorModes.BRIGHTNESS,
-      LightColorModes.COLOR_TEMP,
-      LightColorModes.HS,
+      LightColorMode.BRIGHTNESS,
+      LightColorMode.COLOR_TEMP,
+      LightColorMode.HS,
     ],
-    color_mode: LightColorModes.HS,
+    color_mode: LightColorMode.HS,
     effect_list: ["random", "colorloop"],
   }),
   getEntity("light", "color_rgb_ct_light", "on", {
@@ -59,22 +57,28 @@ const ENTITIES = [
     color_temp: 75,
     min_mireds: 30,
     max_mireds: 150,
-    supported_features: SUPPORT_EFFECT + SUPPORT_FLASH + SUPPORT_TRANSITION,
+    supported_features:
+      LightEntityFeature.EFFECT +
+      LightEntityFeature.FLASH +
+      LightEntityFeature.TRANSITION,
     supported_color_modes: [
-      LightColorModes.BRIGHTNESS,
-      LightColorModes.COLOR_TEMP,
-      LightColorModes.RGB,
+      LightColorMode.BRIGHTNESS,
+      LightColorMode.COLOR_TEMP,
+      LightColorMode.RGB,
     ],
-    color_mode: LightColorModes.COLOR_TEMP,
+    color_mode: LightColorMode.COLOR_TEMP,
     effect_list: ["random", "colorloop"],
   }),
   getEntity("light", "color_RGB_light", "on", {
     friendly_name: "Color Effects Light",
     brightness: 255,
     rgb_color: [30, 100, 255],
-    supported_features: SUPPORT_EFFECT + SUPPORT_FLASH + SUPPORT_TRANSITION,
-    supported_color_modes: [LightColorModes.BRIGHTNESS, LightColorModes.RGB],
-    color_mode: LightColorModes.RGB,
+    supported_features:
+      LightEntityFeature.EFFECT +
+      LightEntityFeature.FLASH +
+      LightEntityFeature.TRANSITION,
+    supported_color_modes: [LightColorMode.BRIGHTNESS, LightColorMode.RGB],
+    color_mode: LightColorMode.RGB,
     effect_list: ["random", "colorloop"],
   }),
   getEntity("light", "color_rgbw_light", "on", {
@@ -83,13 +87,16 @@ const ENTITIES = [
     rgbw_color: [30, 100, 255, 125],
     min_mireds: 30,
     max_mireds: 150,
-    supported_features: SUPPORT_EFFECT + SUPPORT_FLASH + SUPPORT_TRANSITION,
+    supported_features:
+      LightEntityFeature.EFFECT +
+      LightEntityFeature.FLASH +
+      LightEntityFeature.TRANSITION,
     supported_color_modes: [
-      LightColorModes.BRIGHTNESS,
-      LightColorModes.COLOR_TEMP,
-      LightColorModes.RGBW,
+      LightColorMode.BRIGHTNESS,
+      LightColorMode.COLOR_TEMP,
+      LightColorMode.RGBW,
     ],
-    color_mode: LightColorModes.RGBW,
+    color_mode: LightColorMode.RGBW,
     effect_list: ["random", "colorloop"],
   }),
   getEntity("light", "color_rgbww_light", "on", {
@@ -98,13 +105,16 @@ const ENTITIES = [
     rgbww_color: [30, 100, 255, 125, 10],
     min_mireds: 30,
     max_mireds: 150,
-    supported_features: SUPPORT_EFFECT + SUPPORT_FLASH + SUPPORT_TRANSITION,
+    supported_features:
+      LightEntityFeature.EFFECT +
+      LightEntityFeature.FLASH +
+      LightEntityFeature.TRANSITION,
     supported_color_modes: [
-      LightColorModes.BRIGHTNESS,
-      LightColorModes.COLOR_TEMP,
-      LightColorModes.RGBWW,
+      LightColorMode.BRIGHTNESS,
+      LightColorMode.COLOR_TEMP,
+      LightColorMode.RGBWW,
     ],
-    color_mode: LightColorModes.RGBWW,
+    color_mode: LightColorMode.RGBWW,
     effect_list: ["random", "colorloop"],
   }),
   getEntity("light", "color_xy_light", "on", {
@@ -114,13 +124,16 @@ const ENTITIES = [
     rgb_color: [30, 100, 255],
     min_mireds: 30,
     max_mireds: 150,
-    supported_features: SUPPORT_EFFECT + SUPPORT_FLASH + SUPPORT_TRANSITION,
+    supported_features:
+      LightEntityFeature.EFFECT +
+      LightEntityFeature.FLASH +
+      LightEntityFeature.TRANSITION,
     supported_color_modes: [
-      LightColorModes.BRIGHTNESS,
-      LightColorModes.COLOR_TEMP,
-      LightColorModes.XY,
+      LightColorMode.BRIGHTNESS,
+      LightColorMode.COLOR_TEMP,
+      LightColorMode.XY,
     ],
-    color_mode: LightColorModes.XY,
+    color_mode: LightColorMode.XY,
     effect_list: ["random", "colorloop"],
   }),
 ];

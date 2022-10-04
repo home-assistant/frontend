@@ -33,6 +33,8 @@ class HaInputNumberForm extends LitElement {
   // eslint-disable-next-line: variable-name
   @state() private _unit_of_measurement?: string;
 
+  /* Configuring initial value is intentionally not supported because the behavior
+     compared to restoring the value after restart is hard to explain */
   set item(item: InputNumber) {
     this._item = item;
     if (item) {

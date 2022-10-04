@@ -15,6 +15,8 @@ export class HaSunCondition extends LitElement implements ConditionElement {
 
   @property({ attribute: false }) public condition!: SunCondition;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return {};
   }
@@ -72,6 +74,7 @@ export class HaSunCondition extends LitElement implements ConditionElement {
         .schema=${schema}
         .data=${this.condition}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>

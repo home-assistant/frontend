@@ -78,6 +78,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           title: this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.title"
           ),
+          main: true,
           sortable: true,
           filterable: true,
           grows: true,
@@ -365,6 +366,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
               "ui.panel.config.lovelace.dashboards.confirm_delete_text"
             ),
             confirmText: this.hass!.localize("ui.common.delete"),
+            destructive: true,
           }))
         ) {
           return false;

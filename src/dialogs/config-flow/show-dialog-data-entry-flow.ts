@@ -22,8 +22,6 @@ export interface FlowHandlers {
 export interface FlowConfig {
   loadDevicesAndAreas: boolean;
 
-  getFlowHandlers?: (hass: HomeAssistant) => Promise<FlowHandlers>;
-
   createFlow(hass: HomeAssistant, handler: string): Promise<DataEntryFlowStep>;
 
   fetchFlow(hass: HomeAssistant, flowId: string): Promise<DataEntryFlowStep>;

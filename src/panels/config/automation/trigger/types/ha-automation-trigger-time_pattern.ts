@@ -19,6 +19,8 @@ export class HaTimePatternTrigger extends LitElement implements TriggerElement {
 
   @property({ attribute: false }) public trigger!: TimePatternTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return {};
   }
@@ -29,6 +31,7 @@ export class HaTimePatternTrigger extends LitElement implements TriggerElement {
         .hass=${this.hass}
         .schema=${SCHEMA}
         .data=${this.trigger}
+        .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>

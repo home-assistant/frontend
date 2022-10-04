@@ -42,6 +42,9 @@ class HaConfigScript extends HassRouterPage {
       edit: {
         tag: "ha-script-editor",
       },
+      show: {
+        tag: "ha-script-editor",
+      },
       trace: {
         tag: "ha-script-trace",
         load: () => import("./ha-script-trace"),
@@ -59,7 +62,8 @@ class HaConfigScript extends HassRouterPage {
   private _getScripts = memoizeOne(
     (states: HassEntities): ScriptEntity[] =>
       Object.values(states).filter(
-        (entity) => computeStateDomain(entity) === "script"
+        (entity) =>
+          computeStateDomain(entity) === "script" && !entity.attributes.restored
       ) as ScriptEntity[]
   );
 
@@ -85,11 +89,21 @@ class HaConfigScript extends HassRouterPage {
 
     if (
       (!changedProps || changedProps.has("route")) &&
+      this._currentPage === "show"
+    ) {
+      pageEl.creatingNew = undefined;
+      const scriptId = this.routeTail.path.substr(1);
+      pageEl.entityId = scriptId === "new" ? null : scriptId;
+      return;
+    }
+
+    if (
+      (!changedProps || changedProps.has("route")) &&
       this._currentPage !== "dashboard"
     ) {
       pageEl.creatingNew = undefined;
-      const scriptEntityId = this.routeTail.path.substr(1);
-      pageEl.scriptEntityId = scriptEntityId === "new" ? null : scriptEntityId;
+      const scriptId = this.routeTail.path.substr(1);
+      pageEl.scriptId = scriptId === "new" ? null : scriptId;
     }
   }
 }

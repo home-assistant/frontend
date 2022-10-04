@@ -2,13 +2,14 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   BatterySourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
-  EnergyGasUnit,
+  EnergyGasUnitClass,
   EnergyInfo,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GasSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
+import { StatisticsMetaData } from "../../../../data/recorder";
 
 export interface EnergySettingsGridFlowDialogParams {
   source?:
@@ -45,7 +46,8 @@ export interface EnergySettingsBatteryDialogParams {
 
 export interface EnergySettingsGasDialogParams {
   source?: GasSourceTypeEnergyPreference;
-  unit?: EnergyGasUnit;
+  allowedGasUnitClass?: EnergyGasUnitClass;
+  metadata?: StatisticsMetaData;
   saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
 }
 

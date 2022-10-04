@@ -11,9 +11,10 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { differenceInDays } from "date-fns/esm";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -28,7 +29,8 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import {
   deleteScript,
-  getScriptConfig,
+  fetchScriptFileConfig,
+  getScriptStateConfig,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -93,23 +95,28 @@ class HaScriptPicker extends LitElement {
       },
       name: {
         title: this.hass.localize("ui.panel.config.script.picker.headers.name"),
+        main: true,
         sortable: true,
         filterable: true,
         direction: "asc",
         grows: true,
         template: narrow
-          ? (name, script: any) => html`
-              ${name}
-              <div class="secondary">
-                ${this.hass.localize("ui.card.automation.last_triggered")}:
-                ${script.attributes.last_triggered
-                  ? formatDateTime(
-                      new Date(script.attributes.last_triggered),
-                      this.hass.locale
-                    )
-                  : this.hass.localize("ui.components.relative_time.never")}
-              </div>
-            `
+          ? (name, script: any) => {
+              const date = new Date(script.attributes.last_triggered);
+              const now = new Date();
+              const dayDifference = differenceInDays(now, date);
+              return html`
+                ${name}
+                <div class="secondary">
+                  ${this.hass.localize("ui.card.automation.last_triggered")}:
+                  ${script.attributes.last_triggered
+                    ? dayDifference > 3
+                      ? formatShortDateTime(date, this.hass.locale)
+                      : relativeTime(date, this.hass.locale)
+                    : this.hass.localize("ui.components.relative_time.never")}
+                </div>
+              `;
+            }
           : undefined,
       },
     };
@@ -118,11 +125,18 @@ class HaScriptPicker extends LitElement {
         sortable: true,
         width: "40%",
         title: this.hass.localize("ui.card.automation.last_triggered"),
-        template: (last_triggered) => html`
-          ${last_triggered
-            ? formatDateTime(new Date(last_triggered), this.hass.locale)
-            : this.hass.localize("ui.components.relative_time.never")}
-        `,
+        template: (last_triggered) => {
+          const date = new Date(last_triggered);
+          const now = new Date();
+          const dayDifference = differenceInDays(now, date);
+          return html`
+            ${last_triggered
+              ? dayDifference > 3
+                ? formatShortDateTime(date, this.hass.locale)
+                : relativeTime(date, this.hass.locale)
+              : this.hass.localize("ui.components.relative_time.never")}
+          `;
+        },
       };
     }
 
@@ -252,11 +266,17 @@ class HaScriptPicker extends LitElement {
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    navigate(`/config/script/edit/${ev.detail.id}`);
+    const entry = this.hass.entities[ev.detail.id];
+    if (entry) {
+      navigate(`/config/script/edit/${entry.unique_id}`);
+    } else {
+      navigate(`/config/script/show/${ev.detail.id}`);
+    }
   }
 
   private _runScript = async (script: any) => {
-    await triggerScript(this.hass, script.entity_id);
+    const entry = this.hass.entities[script.entity_id];
+    await triggerScript(this.hass, entry.unique_id);
     showToast(this, {
       message: this.hass.localize(
         "ui.notification_toast.triggered",
@@ -271,7 +291,10 @@ class HaScriptPicker extends LitElement {
   }
 
   private _showTrace(script: any) {
-    navigate(`/config/script/trace/${script.entity_id}`);
+    const entry = this.hass.entities[script.entity_id];
+    if (entry) {
+      navigate(`/config/script/trace/${entry.unique_id}`);
+    }
   }
 
   private _showHelp() {
@@ -294,10 +317,8 @@ class HaScriptPicker extends LitElement {
 
   private async _duplicate(script: any) {
     try {
-      const config = await getScriptConfig(
-        this.hass,
-        computeObjectId(script.entity_id)
-      );
+      const entry = this.hass.entities[script.entity_id];
+      const config = await fetchScriptFileConfig(this.hass, entry.unique_id);
       showScriptEditor({
         ...config,
         alias: `${config?.alias} (${this.hass.localize(
@@ -305,33 +326,44 @@ class HaScriptPicker extends LitElement {
         )})`,
       });
     } catch (err: any) {
+      if (err.status_code === 404) {
+        const response = await getScriptStateConfig(
+          this.hass,
+          script.entity_id
+        );
+        showScriptEditor(response.config);
+        return;
+      }
       await showAlertDialog(this, {
-        text:
-          err.status_code === 404
-            ? this.hass.localize(
-                "ui.panel.config.script.editor.load_error_not_duplicable"
-              )
-            : this.hass.localize(
-                "ui.panel.config.script.editor.load_error_unknown",
-                "err_no",
-                err.status_code
-              ),
+        text: this.hass.localize(
+          "ui.panel.config.script.editor.load_error_unknown",
+          "err_no",
+          err.status_code
+        ),
       });
     }
   }
 
   private async _deleteConfirm(script: any) {
     showConfirmationDialog(this, {
-      text: this.hass.localize("ui.panel.config.script.editor.delete_confirm"),
+      title: this.hass.localize(
+        "ui.panel.config.script.editor.delete_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.script.editor.delete_confirm_text",
+        { name: script.name }
+      ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(script),
+      destructive: true,
     });
   }
 
   private async _delete(script: any) {
     try {
-      await deleteScript(this.hass, computeObjectId(script.entity_id));
+      const entry = this.hass.entities[script.entity_id];
+      await deleteScript(this.hass, entry.unique_id);
     } catch (err: any) {
       await showAlertDialog(this, {
         text:

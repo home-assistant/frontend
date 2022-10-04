@@ -1,11 +1,16 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { StatisticsValidationResultUnsupportedUnitMetadata } from "../../../data/recorder";
+import {
+  StatisticsValidationResultUnsupportedUnitMetadata,
+  StatisticsValidationResultUnsupportedUnitMetadataCanConvert,
+} from "../../../data/recorder";
 
 export const loadFixUnsupportedUnitMetaDialog = () =>
   import("./dialog-statistics-fix-unsupported-unit-meta");
 
 export interface DialogStatisticsUnsupportedUnitMetaParams {
-  issue: StatisticsValidationResultUnsupportedUnitMetadata;
+  issue:
+    | StatisticsValidationResultUnsupportedUnitMetadata
+    | StatisticsValidationResultUnsupportedUnitMetadataCanConvert;
   fixedCallback: () => void;
 }
 

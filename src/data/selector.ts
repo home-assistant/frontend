@@ -21,6 +21,7 @@ export type Selector =
   | IconSelector
   | LocationSelector
   | MediaSelector
+  | NavigationSelector
   | NumberSelector
   | ObjectSelector
   | SelectSelector
@@ -171,6 +172,11 @@ export interface MediaSelectorValue {
   };
 }
 
+export interface NavigationSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  navigation: {};
+}
+
 export interface NumberSelector {
   number: {
     min?: number;
@@ -189,6 +195,7 @@ export interface ObjectSelector {
 export interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 export interface SelectSelector {

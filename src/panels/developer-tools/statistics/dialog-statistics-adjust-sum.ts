@@ -23,6 +23,7 @@ import "../../../components/ha-svg-icon";
 import {
   adjustStatisticsSum,
   fetchStatistics,
+  getDisplayUnit,
   StatisticValue,
 } from "../../../data/recorder";
 import type { DateTimeSelector, NumberSelector } from "../../../data/selector";
@@ -59,7 +60,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   };
 
   private _amountSelector = memoizeOne(
-    (unit_of_measurement: string): NumberSelector => ({
+    (unit_of_measurement: string | undefined): NumberSelector => ({
       number: {
         step: 0.01,
         unit_of_measurement,
@@ -135,7 +136,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     } else {
       const data =
         this._stats5min.length >= 2 ? this._stats5min : this._statsHour;
-      const unit = this._params!.statistic.display_unit_of_measurement;
+      const unit = getDisplayUnit(
+        this.hass,
+        this._params!.statistic.statistic_id,
+        this._params!.statistic
+      );
       const rows: TemplateResult[] = [];
       for (let i = 1; i < data.length; i++) {
         const stat = data[i];
@@ -192,6 +197,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   }
 
   private _renderAdjustStat() {
+    const unit = getDisplayUnit(
+      this.hass,
+      this._params!.statistic.statistic_id,
+      this._params!.statistic
+    );
     return html`
       <div class="text-content">
         <b>Statistic:</b> ${this._params!.statistic.statistic_id}
@@ -220,9 +230,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       <ha-selector-number
         label="New Value"
         .hass=${this.hass}
-        .selector=${this._amountSelector(
-          this._params!.statistic.display_unit_of_measurement
-        )}
+        .selector=${this._amountSelector(unit || undefined)}
         .value=${this._amount}
         .disabled=${this._busy}
         @value-changed=${(ev) => {
@@ -299,13 +307,19 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   }
 
   private async _fixIssue(): Promise<void> {
+    const unit = getDisplayUnit(
+      this.hass,
+      this._params!.statistic.statistic_id,
+      this._params!.statistic
+    );
     this._busy = true;
     try {
       await adjustStatisticsSum(
         this.hass,
         this._params!.statistic.statistic_id,
         this._chosenStat!.start,
-        this._amount! - this._origAmount!
+        this._amount! - this._origAmount!,
+        unit || null
       );
     } catch (err: any) {
       this._busy = false;

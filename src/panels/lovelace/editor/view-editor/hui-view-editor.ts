@@ -1,10 +1,10 @@
-import "../../../../components/ha-form/ha-form";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { LovelaceViewConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
@@ -63,6 +63,12 @@ export class HuiViewEditor extends LitElement {
             },
           },
         },
+        {
+          name: "subview",
+          selector: {
+            boolean: {},
+          },
+        },
       ] as const
   );
 
@@ -85,6 +91,7 @@ export class HuiViewEditor extends LitElement {
     }
 
     const schema = this._schema(this.hass.localize);
+
     const data = {
       theme: "Backend-selected",
       ...this._config,
@@ -96,14 +103,15 @@ export class HuiViewEditor extends LitElement {
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}
-        .computeLabel=${this._computeLabelCallback}
+        .computeLabel=${this._computeLabel}
+        .computeHelper=${this._computeHelper}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value;
+    const config = ev.detail.value as LovelaceViewConfig;
 
     if (config.type === "masonry") {
       delete config.type;
@@ -122,7 +130,7 @@ export class HuiViewEditor extends LitElement {
     fireEvent(this, "view-config-changed", { config });
   }
 
-  private _computeLabelCallback = (
+  private _computeLabel = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
@@ -130,10 +138,25 @@ export class HuiViewEditor extends LitElement {
         return this.hass!.localize("ui.panel.lovelace.editor.card.generic.url");
       case "type":
         return this.hass.localize("ui.panel.lovelace.editor.edit_view.type");
+      case "subview":
+        return this.hass.localize("ui.panel.lovelace.editor.edit_view.subview");
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
+    }
+  };
+
+  private _computeHelper = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "subview":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.subview_helper"
+        );
+      default:
+        return undefined;
     }
   };
 }

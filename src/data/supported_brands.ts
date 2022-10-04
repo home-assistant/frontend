@@ -1,5 +1,12 @@
-import { SupportedBrandObj } from "../dialogs/config-flow/step-flow-pick-handler";
 import type { HomeAssistant } from "../types";
+
+export interface SupportedBrandObj {
+  name: string;
+  slug: string;
+  is_add?: boolean;
+  is_helper?: boolean;
+  supported_flows: string[];
+}
 
 export type SupportedBrandHandler = Record<string, string>;
 

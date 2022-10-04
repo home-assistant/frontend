@@ -15,6 +15,8 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
 
   @property({ attribute: false }) public trigger!: SunTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
       [
@@ -55,6 +57,7 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
         .schema=${schema}
         .data=${this.trigger}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>

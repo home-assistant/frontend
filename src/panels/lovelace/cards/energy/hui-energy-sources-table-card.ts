@@ -19,7 +19,6 @@ import {
 } from "../../../../common/color/convert-color";
 import { labBrighten, labDarken } from "../../../../common/color/lab";
 import { formatNumber } from "../../../../common/number/format_number";
-import "../../../../components/chart/statistics-chart";
 import "../../../../components/ha-card";
 import {
   EnergyData,
@@ -131,7 +130,8 @@ export class HuiEnergySourcesTableCard
       );
 
     const gasUnit =
-      getEnergyGasUnit(this._data.prefs, this._data.statsMetadata) || "";
+      getEnergyGasUnit(this.hass, this._data.prefs, this._data.statsMetadata) ||
+      "";
 
     const compare = this._data.statsCompare !== undefined;
 

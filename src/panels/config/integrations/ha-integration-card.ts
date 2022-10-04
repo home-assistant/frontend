@@ -31,6 +31,10 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
+import {
+  fetchApplicationCredentialsConfigEntry,
+  deleteApplicationCredential,
+} from "../../../data/application_credential";
 import { getSignedPath } from "../../../data/auth";
 import {
   ConfigEntry,
@@ -634,9 +638,16 @@ export class HaIntegrationCard extends LitElement {
     const entryId = configEntry.entry_id;
 
     const confirmed = await showConfirmationDialog(this, {
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.disable.disable_confirm"
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.disable_confirm_title",
+        { title: configEntry.title }
       ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.disable_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.disable"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      destructive: true,
     });
 
     if (!confirmed) {
@@ -691,11 +702,21 @@ export class HaIntegrationCard extends LitElement {
   private async _removeIntegration(configEntry: ConfigEntry) {
     const entryId = configEntry.entry_id;
 
+    const applicationCredentialsId = await this._applicationCredentialForRemove(
+      entryId
+    );
+
     const confirmed = await showConfirmationDialog(this, {
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.delete_confirm",
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_title",
         { title: configEntry.title }
       ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      destructive: true,
     });
 
     if (!confirmed) {
@@ -708,6 +729,70 @@ export class HaIntegrationCard extends LitElement {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_entry.restart_confirm"
         ),
+      });
+    }
+    if (applicationCredentialsId) {
+      this._removeApplicationCredential(applicationCredentialsId);
+    }
+  }
+
+  // Return an application credentials id for this config entry to prompt the
+  // user for removal. This is best effort so we don't stop overall removal
+  // if the integration isn't loaded or there is some other error.
+  private async _applicationCredentialForRemove(entryId: string) {
+    try {
+      return (await fetchApplicationCredentialsConfigEntry(this.hass, entryId))
+        .application_credentials_id;
+    } catch (err: any) {
+      // We won't prompt the user to remove credentials
+      return null;
+    }
+  }
+
+  private async _removeApplicationCredential(applicationCredentialsId: string) {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.application_credentials.delete_title"
+      ),
+      text: html`${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt"
+        )},
+        <br />
+        <br />
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_detail"
+        )}
+        <br />
+        <br />
+        <a
+          href=${documentationUrl(
+            this.hass,
+            "/integrations/application_credentials/"
+          )}
+          target="_blank"
+          rel="noreferrer"
+        >
+          ${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.application_credentials.learn_more"
+          )}
+        </a>`,
+      destructive: true,
+      confirmText: this.hass.localize("ui.common.remove"),
+      dismissText: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.application_credentials.dismiss"
+      ),
+    });
+    if (!confirmed) {
+      return;
+    }
+    try {
+      await deleteApplicationCredential(this.hass, applicationCredentialsId);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_error_title"
+        ),
+        text: err.message,
       });
     }
   }

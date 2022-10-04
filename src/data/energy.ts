@@ -20,6 +20,7 @@ import {
   getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
+  StatisticsUnitConfiguration,
 } from "./recorder";
 
 const energyCollectionKeys: (string | undefined)[] = [];
@@ -28,7 +29,6 @@ export const emptyFlowFromGridSourceEnergyPreference =
   (): FlowFromGridSourceEnergyPreference => ({
     stat_energy_from: "",
     stat_cost: null,
-    entity_energy_from: null,
     entity_energy_price: null,
     number_energy_price: null,
   });
@@ -37,7 +37,6 @@ export const emptyFlowToGridSourceEnergyPreference =
   (): FlowToGridSourceEnergyPreference => ({
     stat_energy_to: "",
     stat_compensation: null,
-    entity_energy_to: null,
     entity_energy_price: null,
     number_energy_price: null,
   });
@@ -67,7 +66,6 @@ export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
   type: "gas",
   stat_energy_from: "",
   stat_cost: null,
-  entity_energy_from: null,
   entity_energy_price: null,
   number_energy_price: null,
 });
@@ -92,7 +90,6 @@ export interface FlowFromGridSourceEnergyPreference {
   stat_cost: string | null;
 
   // Can be used to generate costs if stat_cost omitted
-  entity_energy_from: string | null;
   entity_energy_price: string | null;
   number_energy_price: number | null;
 }
@@ -104,8 +101,7 @@ export interface FlowToGridSourceEnergyPreference {
   // $ meter
   stat_compensation: string | null;
 
-  // Can be used to generate costs if stat_cost omitted
-  entity_energy_to: string | null;
+  // Can be used to generate costs if stat_compensation omitted
   entity_energy_price: string | null;
   number_energy_price: number | null;
 }
@@ -141,7 +137,6 @@ export interface GasSourceTypeEnergyPreference {
   stat_cost: string | null;
 
   // Can be used to generate costs if stat_cost omitted
-  entity_energy_from: string | null;
   entity_energy_price: string | null;
   number_energy_price: number | null;
   unit_of_measurement?: string | null;
@@ -358,12 +353,19 @@ const getEnergyData = async (
   // Subtract 1 hour from start to get starting point data
   const startMinHour = addHours(start, -1);
 
+  const lengthUnit = hass.config.unit_system.length || "";
+  const units: StatisticsUnitConfiguration = {
+    energy: "kWh",
+    volume: lengthUnit === "km" ? "m³" : "ft³",
+  };
+
   const stats = await fetchStatistics(
     hass!,
     startMinHour,
     end,
     statIDs,
-    period
+    period,
+    units
   );
 
   let statsCompare;
@@ -385,7 +387,8 @@ const getEnergyData = async (
       compareStartMinHour,
       endCompare,
       statIDs,
-      period
+      period,
+      units
     );
   }
 
@@ -597,20 +600,14 @@ export const getEnergySolarForecasts = (hass: HomeAssistant) =>
     type: "energy/solar_forecast",
   });
 
-export const ENERGY_GAS_VOLUME_UNITS = ["m³"];
-export const ENERGY_GAS_ENERGY_UNITS = ["kWh"];
-export const ENERGY_GAS_UNITS = [
-  ...ENERGY_GAS_VOLUME_UNITS,
-  ...ENERGY_GAS_ENERGY_UNITS,
-];
+const energyGasUnitClass = ["volume", "energy"] as const;
+export type EnergyGasUnitClass = typeof energyGasUnitClass[number];
 
-export type EnergyGasUnit = "volume" | "energy";
-
-export const getEnergyGasUnitCategory = (
+export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {},
   excludeSource?: string
-): EnergyGasUnit | undefined => {
+): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
       continue;
@@ -619,29 +616,29 @@ export const getEnergyGasUnitCategory = (
       continue;
     }
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
-    if (statisticIdWithMeta) {
-      return ENERGY_GAS_VOLUME_UNITS.includes(
-        statisticIdWithMeta.display_unit_of_measurement
+    if (
+      energyGasUnitClass.includes(
+        statisticIdWithMeta.unit_class as EnergyGasUnitClass
       )
-        ? "volume"
-        : "energy";
+    ) {
+      return statisticIdWithMeta.unit_class as EnergyGasUnitClass;
     }
   }
   return undefined;
 };
 
 export const getEnergyGasUnit = (
+  hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string | undefined => {
-  for (const source of prefs.energy_sources) {
-    if (source.type !== "gas") {
-      continue;
-    }
-    const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
-    if (statisticIdWithMeta?.display_unit_of_measurement) {
-      return statisticIdWithMeta.display_unit_of_measurement;
-    }
+  const unitClass = getEnergyGasUnitClass(prefs, statisticsMetaData);
+  if (unitClass === undefined) {
+    return undefined;
   }
-  return undefined;
+  return unitClass === "energy"
+    ? "kWh"
+    : hass.config.unit_system.length === "km"
+    ? "m³"
+    : "ft³";
 };

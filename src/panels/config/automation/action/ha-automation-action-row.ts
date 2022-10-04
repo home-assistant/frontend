@@ -100,6 +100,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ type: Boolean }) public hideMenu = false;
 
   @property({ type: Boolean }) public reOrderMode = false;
@@ -179,7 +181,7 @@ export default class HaAutomationActionRow extends LitElement {
                     <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
                   </mwc-list-item>
 
-                  <mwc-list-item graphic="icon">
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.rename"
                     )}
@@ -188,7 +190,7 @@ export default class HaAutomationActionRow extends LitElement {
                       .path=${mdiRenameBox}
                     ></ha-svg-icon>
                   </mwc-list-item>
-                  <mwc-list-item graphic="icon">
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.duplicate"
                     )}
@@ -234,7 +236,7 @@ export default class HaAutomationActionRow extends LitElement {
 
                   <li divider role="separator"></li>
 
-                  <mwc-list-item graphic="icon">
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.action.enabled === false
                       ? this.hass.localize(
                           "ui.panel.config.automation.editor.actions.enable"
@@ -249,7 +251,11 @@ export default class HaAutomationActionRow extends LitElement {
                         : mdiStopCircleOutline}
                     ></ha-svg-icon>
                   </mwc-list-item>
-                  <mwc-list-item class="warning" graphic="icon">
+                  <mwc-list-item
+                    class="warning"
+                    graphic="icon"
+                    .disabled=${this.disabled}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.delete"
                     )}
@@ -302,6 +308,7 @@ export default class HaAutomationActionRow extends LitElement {
                   <ha-yaml-editor
                     .hass=${this.hass}
                     .defaultValue=${this.action}
+                    .readOnly=${this.disabled}
                     @value-changed=${this._onYamlChange}
                   ></ha-yaml-editor>
                 `
@@ -312,6 +319,7 @@ export default class HaAutomationActionRow extends LitElement {
                       action: this.action,
                       narrow: this.narrow,
                       reOrderMode: this.reOrderMode,
+                      disabled: this.disabled,
                     })}
                   </div>
                 `}
@@ -404,11 +412,15 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _onDelete() {
     showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.delete_confirm_title"
+      ),
       text: this.hass.localize(
-        "ui.panel.config.automation.editor.actions.delete_confirm"
+        "ui.panel.config.automation.editor.actions.delete_confirm_text"
       ),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirmText: this.hass.localize("ui.common.delete"),
+      destructive: true,
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
       },

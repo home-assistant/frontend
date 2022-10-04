@@ -8,7 +8,14 @@ import type {
   ComboBoxLightValueChangedEvent,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -225,11 +232,13 @@ export class HaComboBox extends LitElement {
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail);
 
-    if (
-      opened &&
-      "MutationObserver" in window &&
-      !this._overlayMutationObserver
-    ) {
+    if (opened) {
+      this.removeInertOnOverlay();
+    }
+  }
+
+  private removeInertOnOverlay() {
+    if ("MutationObserver" in window && !this._overlayMutationObserver) {
       const overlay = document.querySelector<HTMLElement>(
         "vaadin-combo-box-overlay"
       );
@@ -268,6 +277,16 @@ export class HaComboBox extends LitElement {
     }
   }
 
+  updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (
+      changedProps.has("filteredItems") ||
+      (changedProps.has("items") && this.opened)
+    ) {
+      this.removeInertOnOverlay();
+    }
+  }
+
   private _filterChanged(ev: ComboBoxLightFilterChangedEvent) {
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail, { composed: false });
@@ -278,7 +297,7 @@ export class HaComboBox extends LitElement {
     const newValue = ev.detail.value;
 
     if (newValue !== this.value) {
-      fireEvent(this, "value-changed", { value: newValue });
+      fireEvent(this, "value-changed", { value: newValue || undefined });
     }
   }
 
@@ -290,6 +309,7 @@ export class HaComboBox extends LitElement {
       }
       vaadin-combo-box-light {
         position: relative;
+        --vaadin-combo-box-overlay-max-height: calc(45vh);
       }
       ha-textfield {
         width: 100%;

@@ -206,6 +206,7 @@ class HaScheduleForm extends LitElement {
   private get _events() {
     const events: any[] = [];
     const currentDay = new Date().getDay();
+    const baseDay = currentDay === 0 ? 7 : currentDay;
 
     for (const [i, day] of weekdays.entries()) {
       if (!this[`_${day}`].length) {
@@ -214,23 +215,22 @@ class HaScheduleForm extends LitElement {
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
         // Add 7 to 0 because we start the calendar on Monday
-        const distance = i - currentDay + (i === 0 ? 7 : 0);
+        const distance = i - baseDay + (i === 0 ? 7 : 0);
 
         const start = new Date();
         start.setDate(start.getDate() + distance);
+        const start_tokens = item.from.split(":");
         start.setHours(
-          parseInt(item.from.slice(0, 2)),
-          parseInt(item.from.slice(-2))
+          parseInt(start_tokens[0]),
+          parseInt(start_tokens[1]),
+          0,
+          0
         );
 
         const end = new Date();
         end.setDate(end.getDate() + distance);
-        end.setHours(
-          parseInt(item.to.slice(0, 2)),
-          parseInt(item.to.slice(-2)),
-          0,
-          0
-        );
+        const end_tokens = item.to.split(":");
+        end.setHours(parseInt(end_tokens[0]), parseInt(end_tokens[1]), 0, 0);
 
         events.push({
           id: `${day}-${index}`,

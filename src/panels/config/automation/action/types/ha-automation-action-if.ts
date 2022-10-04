@@ -13,6 +13,8 @@ import type { ActionElement } from "../ha-automation-action-row";
 export class HaIfAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false }) public action!: IfAction;
 
   @property({ type: Boolean }) public reOrderMode = false;
@@ -38,6 +40,7 @@ export class HaIfAction extends LitElement implements ActionElement {
       <ha-automation-condition
         .conditions=${action.if}
         .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
         @value-changed=${this._ifChanged}
         .hass=${this.hass}
       ></ha-automation-condition>
@@ -50,6 +53,7 @@ export class HaIfAction extends LitElement implements ActionElement {
       <ha-automation-action
         .actions=${action.then}
         .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
         @value-changed=${this._thenChanged}
         .hass=${this.hass}
       ></ha-automation-action>
@@ -63,12 +67,17 @@ export class HaIfAction extends LitElement implements ActionElement {
             <ha-automation-action
               .actions=${action.else || []}
               .reOrderMode=${this.reOrderMode}
+              .disabled=${this.disabled}
               @value-changed=${this._elseChanged}
               .hass=${this.hass}
             ></ha-automation-action>
           `
         : html` <div class="link-button-row">
-            <button class="link" @click=${this._addElse}>
+            <button
+              class="link"
+              @click=${this._addElse}
+              .disabled=${this.disabled}
+            >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.if.add_else"
               )}
