@@ -2850,6 +2850,8 @@
           "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
+          "available_integrations": "Available integrations",
+          "new_flow": "Setup another instance of {integration}",
           "attention": "Attention required",
           "configured": "Configured",
           "new": "Select brand",
@@ -2972,10 +2974,6 @@
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
-            },
-            "pick_flow_step": {
-              "title": "We discovered these, want to set them up?",
-              "new_flow": "No, set up an other instance of {integration}"
             },
             "loading": {
               "loading_flow": "Please wait, starting configuration wizard for {integration}",

@@ -36,7 +36,9 @@ class HaDomainIntegrations extends LitElement {
   protected render() {
     return html`<mwc-list>
       ${this.flowsInProgress?.length
-        ? html`<h3>Discovered</h3>
+        ? html`<h3>
+              ${this.hass.localize("ui.panel.config.integrations.discovered")}
+            </h3>
             ${this.flowsInProgress.map(
               (flow) => html`<mwc-list-item
                 graphic="medium"
@@ -63,7 +65,11 @@ class HaDomainIntegrations extends LitElement {
             )}
             <li divider role="separator"></li>
             ${this.integration?.integrations
-              ? html`<h3>Available integrations</h3>`
+              ? html`<h3>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.available_integrations"
+                  )}
+                </h3>`
               : ""}`
         : ""}
       ${this.integration?.iot_standards
@@ -161,9 +167,11 @@ class HaDomainIntegrations extends LitElement {
                 @click=${this._integrationPicked}
                 hasMeta
               >
-                Setup another instance of
-                ${this.integration.name ||
-                domainToName(this.hass.localize, this.domain)}
+                ${this.hass.localize("ui.panel.config.integrations.new_flow", {
+                  integration:
+                    this.integration.name ||
+                    domainToName(this.hass.localize, this.domain),
+                })}
                 <ha-icon-next slot="meta"></ha-icon-next>
               </mwc-list-item>`
             : html`<ha-integration-list-item
