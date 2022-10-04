@@ -63,33 +63,35 @@ class HaDomainIntegrations extends LitElement {
             )}`
         : ""}
       ${this.integration?.iot_standards
-        ? this.integration.iot_standards.map((standard) => {
-            const domain: string = standardToDomain[standard] || standard;
-            return html`<mwc-list-item
-              graphic="medium"
-              .domain=${domain}
-              @click=${this._standardPicked}
-              hasMeta
-            >
-              <img
-                slot="graphic"
-                loading="lazy"
-                src=${brandsUrl({
-                  domain,
-                  type: "icon",
-                  useFallback: true,
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-                referrerpolicy="no-referrer"
-              />
-              <span
-                >${this.hass.localize(
-                  `ui.panel.config.integrations.add_${domain}_device`
-                )}</span
+        ? this.integration.iot_standards
+            .filter((standard) => standard in standardToDomain)
+            .map((standard) => {
+              const domain: string = standardToDomain[standard];
+              return html`<mwc-list-item
+                graphic="medium"
+                .domain=${domain}
+                @click=${this._standardPicked}
+                hasMeta
               >
-              <ha-icon-next slot="meta"></ha-icon-next>
-            </mwc-list-item>`;
-          })
+                <img
+                  slot="graphic"
+                  loading="lazy"
+                  src=${brandsUrl({
+                    domain,
+                    type: "icon",
+                    useFallback: true,
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                  referrerpolicy="no-referrer"
+                />
+                <span
+                  >${this.hass.localize(
+                    `ui.panel.config.integrations.add_${domain}_device`
+                  )}</span
+                >
+                <ha-icon-next slot="meta"></ha-icon-next>
+              </mwc-list-item>`;
+            })
         : ""}
       ${this.integration?.integrations
         ? Object.entries(this.integration.integrations)
