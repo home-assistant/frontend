@@ -1117,6 +1117,15 @@
       "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
       "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
     },
+    "weekdays": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
     "errors": {
       "config": {
         "no_type_provided": "No type provided.",
@@ -4275,14 +4284,14 @@
           "header": "First day of the week",
           "dropdown_label": "First day of the week",
           "description": "Choose the starting day for calendars.",
-          "weekdays": {
-            "mon": "Monday",
-            "tue": "Tuesday",
-            "wed": "Wednesday",
-            "thu": "Thursday",
-            "fri": "Friday",
-            "sat": "Saturday",
-            "sun": "Sunday"
+          "values": {
+            "monday": "[%key:ui::weekdays::monday%]",
+            "tuesday": "[%key:ui::weekdays::tuesday%]",
+            "wednesday": "[%key:ui::weekdays::wednesday%]",
+            "thursday": "[%key:ui::weekdays::thursday%]",
+            "friday": "[%key:ui::weekdays::friday%]",
+            "saturday": "[%key:ui::weekdays::saturday%]",
+            "sunday": "[%key:ui::weekdays::sunday%]"
           }
         },
         "themes": {
