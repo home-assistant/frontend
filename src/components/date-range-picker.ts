@@ -33,6 +33,10 @@ const Component = Vue.extend({
         return new Date();
       },
     },
+    firstDay: {
+      type: Number,
+      default: 1,
+    },
   },
   render(createElement) {
     // @ts-ignore
@@ -48,6 +52,9 @@ const Component = Vue.extend({
         disabled: this.disabled,
         // @ts-ignore
         ranges: this.ranges ? {} : false,
+        "locale-data": {
+          firstDay: this.firstDay,
+        },
       },
       model: {
         value: {
