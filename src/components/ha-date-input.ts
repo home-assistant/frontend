@@ -2,6 +2,7 @@ import { mdiCalendar } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateNumeric } from "../common/datetime/format_date";
+import { weekdayIndex } from "../common/datetime/weekday";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
@@ -14,6 +15,7 @@ export interface datePickerDialogParams {
   min?: string;
   max?: string;
   locale?: string;
+  firstWeekday?: number;
   onChange: (value: string) => void;
 }
 
@@ -67,6 +69,7 @@ export class HaDateInput extends LitElement {
       value: this.value,
       onChange: (value) => this._valueChanged(value),
       locale: this.locale.language,
+      firstWeekday: weekdayIndex(this.locale.first_weekday),
     });
   }
 
