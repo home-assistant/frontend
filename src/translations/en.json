@@ -4271,6 +4271,20 @@
             "24": "24 hours"
           }
         },
+        "first_weekday": {
+          "header": "First day of the week",
+          "dropdown_label": "First day of the week",
+          "description": "Choose the starting day for calendars.",
+          "weekdays": {
+            "mon": "Monday",
+            "tue": "Tuesday",
+            "wed": "Wednesday",
+            "thu": "Thursday",
+            "fri": "Friday",
+            "sat": "Saturday",
+            "sun": "Sunday"
+          }
+        },
         "themes": {
           "header": "Theme",
           "error_no_theme": "No themes available.",
