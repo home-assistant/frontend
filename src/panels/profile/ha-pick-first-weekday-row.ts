@@ -32,7 +32,7 @@ class FirstWeekdayRow extends LitElement {
         >
           ${Object.values(Weekday).map((day) => {
             const value = this.hass.localize(
-              `ui.panel.profile.first_weekday.weekdays.${day}`
+              `ui.panel.profile.first_weekday.values.${day}`
             );
             return html`
               <mwc-list-item .value=${day}>

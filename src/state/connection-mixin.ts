@@ -58,7 +58,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           language,
           number_format: NumberFormat.language,
           time_format: TimeFormat.language,
-          first_weekday: Weekday.mon,
+          first_weekday: Weekday.monday,
         },
         resources: null as any,
         localize: () => "",

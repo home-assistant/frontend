@@ -18,13 +18,13 @@ export enum TimeFormat {
 }
 
 export enum Weekday {
-  "mon" = "mon",
-  "tue" = "tue",
-  "wed" = "wed",
-  "thu" = "thu",
-  "fri" = "fri",
-  "sat" = "sat",
-  "sun" = "sun",
+  monday = "monday",
+  tuesday = "tuesday",
+  wednesday = "wednesday",
+  thursday = "thursday",
+  friday = "friday",
+  saturday = "saturday",
+  sunday = "sunday",
 }
 
 export interface FrontendLocaleData {

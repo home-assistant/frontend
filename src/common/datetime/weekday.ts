@@ -1,13 +1,13 @@
 import { Weekday } from "../../data/translation";
 
-export const weekdays: Weekday[] = [
-  Weekday.sun,
-  Weekday.mon,
-  Weekday.tue,
-  Weekday.wed,
-  Weekday.thu,
-  Weekday.fri,
-  Weekday.sat,
+export const weekdays = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
 ];
 
 export const weekdayIndex = (weekday: Weekday): number =>
