@@ -34,12 +34,13 @@ export const saveFrontendUserData = async <
   conn: Connection,
   key: UserDataKey,
   value: FrontendUserData[UserDataKey]
-): Promise<void> =>
+): Promise<void> => {
   conn.sendMessagePromise<void>({
     type: "frontend/set_user_data",
     key,
     value,
   });
+};
 
 export const getOptimisticFrontendUserDataCollection = <
   UserDataKey extends ValidUserDataKey

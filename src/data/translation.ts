@@ -17,10 +17,21 @@ export enum TimeFormat {
   twenty_four = "24",
 }
 
+export enum FirstWeekday {
+  "mon" = "mon",
+  "tue" = "tue",
+  "wed" = "wed",
+  "thu" = "thu",
+  "fri" = "fri",
+  "sat" = "sat",
+  "sun" = "sun",
+}
+
 export interface FrontendLocaleData {
   language: string;
   number_format: NumberFormat;
   time_format: TimeFormat;
+  first_weekday: FirstWeekday;
 }
 
 declare global {
