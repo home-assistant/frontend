@@ -316,7 +316,7 @@ export interface ZWaveJSNodeFirmwareUpdateProgressMessage {
 export interface ZWaveJSNodeFirmwareUpdateFinishedMessage {
   event: "firmware update finished";
   status: FirmwareUpdateStatus;
-  success: boolean
+  success: boolean;
   wait_time?: number;
   reinterview: boolean;
 }
