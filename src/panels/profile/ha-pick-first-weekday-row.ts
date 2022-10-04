@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
-import { FirstWeekday } from "../../data/translation";
+import { Weekday } from "../../data/translation";
 import { HomeAssistant } from "../../types";
 
 @customElement("ha-pick-first-weekday-row")
@@ -30,7 +30,7 @@ class FirstWeekdayRow extends LitElement {
           .value=${this.hass.locale.first_weekday}
           @selected=${this._handleFormatSelection}
         >
-          ${Object.values(FirstWeekday).map((day) => {
+          ${Object.values(Weekday).map((day) => {
             const value = this.hass.localize(
               `ui.panel.profile.first_weekday.weekdays.${day}`
             );

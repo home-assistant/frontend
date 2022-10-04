@@ -6,7 +6,7 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeLocalize } from "../common/translations/localize";
 import { DEFAULT_PANEL } from "../data/panel";
-import { FirstWeekday, NumberFormat, TimeFormat } from "../data/translation";
+import { Weekday, NumberFormat, TimeFormat } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
@@ -224,7 +224,7 @@ export const provideHass = (
       language: localLanguage,
       number_format: NumberFormat.language,
       time_format: TimeFormat.language,
-      first_weekday: FirstWeekday.mon,
+      first_weekday: Weekday.mon,
     },
     resources: null as any,
     localize: () => "",
