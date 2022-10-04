@@ -187,12 +187,7 @@ class AddIntegrationDialog extends LitElement {
 
       for (const [domain, domainBrands] of Object.entries(sb)) {
         const integration = this._findIntegration(domain);
-        if (
-          !integration ||
-          (!integration.config_flow &&
-            !integration.iot_standards &&
-            !integration.integrations)
-        ) {
+        if (!integration) {
           continue;
         }
         for (const [slug, name] of Object.entries(domainBrands)) {
