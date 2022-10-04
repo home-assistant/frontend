@@ -61,7 +61,10 @@ class HaDomainIntegrations extends LitElement {
                 <ha-icon-next slot="meta"></ha-icon-next>
               </mwc-list-item>`
             )}
-            <li divider role="separator"></li>`
+            <li divider role="separator"></li>
+            ${this.integration?.integrations
+              ? html`<h3>Or setup another integration:</h3>`
+              : ""}`
         : ""}
       ${this.integration?.iot_standards
         ? this.integration.iot_standards
@@ -278,9 +281,12 @@ class HaDomainIntegrations extends LitElement {
         --mdc-list-side-padding: 20px;
       }
       h3 {
-        margin: 0 24px;
+        margin: 8px 20px 0;
         color: var(--primary-text-color);
         font-size: 14px;
+      }
+      h3:first-of-type {
+        margin-top: 0;
       }
       img {
         width: 40px;
