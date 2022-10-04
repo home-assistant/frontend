@@ -63,7 +63,7 @@ class HaDomainIntegrations extends LitElement {
             )}
             <li divider role="separator"></li>
             ${this.integration?.integrations
-              ? html`<h3>Setup another integration</h3>`
+              ? html`<h3>Available integrations</h3>`
               : ""}`
         : ""}
       ${this.integration?.iot_standards
@@ -278,12 +278,14 @@ class HaDomainIntegrations extends LitElement {
     css`
       :host {
         display: block;
-        --mdc-list-side-padding: 20px;
+        --mdc-list-item-graphic-size: 40px;
+        --mdc-list-side-padding: 24px;
       }
       h3 {
-        margin: 8px 20px 0;
-        color: var(--primary-text-color);
+        margin: 8px 24px 0;
+        color: var(--secondary-text-color);
         font-size: 14px;
+        font-weight: 500;
       }
       h3:first-of-type {
         margin-top: 0;
@@ -291,6 +293,9 @@ class HaDomainIntegrations extends LitElement {
       img {
         width: 40px;
         height: 40px;
+      }
+      li[divider] {
+        margin-top: 8px;
       }
     `,
   ];
