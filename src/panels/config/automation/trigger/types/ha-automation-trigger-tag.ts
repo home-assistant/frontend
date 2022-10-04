@@ -15,7 +15,9 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
   @property() public trigger!: TagTrigger;
 
-  @state() private _tags: Tag[] = [];
+  @property({ type: Boolean }) public disabled = false;
+
+  @state() private _tags?: Tag[];
 
   public static get defaultConfig() {
     return { tag_id: "" };
@@ -27,14 +29,16 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
   }
 
   protected render() {
-    const { tag_id } = this.trigger;
+    if (!this._tags) {
+      return html``;
+    }
     return html`
       <ha-select
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.tag.label"
         )}
-        .disabled=${this._tags.length === 0}
-        .value=${tag_id}
+        .disabled=${this.disabled || this._tags.length === 0}
+        .value=${this.trigger.tag_id}
         @selected=${this._tagChanged}
       >
         ${this._tags.map(
@@ -49,13 +53,19 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
   }
 
   private async _fetchTags() {
-    this._tags = await fetchTags(this.hass);
-    this._tags.sort((a, b) =>
+    this._tags = (await fetchTags(this.hass)).sort((a, b) =>
       caseInsensitiveStringCompare(a.name || a.id, b.name || b.id)
     );
   }
 
   private _tagChanged(ev) {
+    if (
+      !ev.target.value ||
+      !this._tags ||
+      this.trigger.tag_id === ev.target.value
+    ) {
+      return;
+    }
     fireEvent(this, "value-changed", {
       value: {
         ...this.trigger,

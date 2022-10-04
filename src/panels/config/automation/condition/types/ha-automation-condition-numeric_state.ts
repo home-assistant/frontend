@@ -13,6 +13,8 @@ export default class HaNumericStateCondition extends LitElement {
 
   @property({ attribute: false }) public condition!: NumericStateCondition;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return {
       entity_id: "",
@@ -28,7 +30,7 @@ export default class HaNumericStateCondition extends LitElement {
           selector: {
             attribute: {
               entity_id: entityId,
-              exclude_attributes: [
+              hide_attributes: [
                 "access_token",
                 "auto_update",
                 "available_modes",
@@ -95,11 +97,31 @@ export default class HaNumericStateCondition extends LitElement {
             },
           },
         },
-        { name: "above", selector: { text: {} } },
-        { name: "below", selector: { text: {} } },
+        {
+          name: "above",
+          selector: {
+            number: {
+              mode: "box",
+              min: Number.MIN_SAFE_INTEGER,
+              max: Number.MAX_SAFE_INTEGER,
+              step: 0.1,
+            },
+          },
+        },
+        {
+          name: "below",
+          selector: {
+            number: {
+              mode: "box",
+              min: Number.MIN_SAFE_INTEGER,
+              max: Number.MAX_SAFE_INTEGER,
+              step: 0.1,
+            },
+          },
+        },
         {
           name: "value_template",
-          selector: { text: { multiline: true } },
+          selector: { template: {} },
         },
       ] as const
   );
@@ -112,6 +134,7 @@ export default class HaNumericStateCondition extends LitElement {
         .hass=${this.hass}
         .data=${this.condition}
         .schema=${schema}
+        .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>

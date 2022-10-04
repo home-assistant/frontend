@@ -37,7 +37,7 @@ import {
   Statistics,
   StatisticsMetaData,
   getStatisticLabel,
-} from "../../../../data/history";
+} from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -620,7 +620,11 @@ export class HuiEnergyUsageGraphCard
           label:
             type in labels
               ? labels[type]
-              : getStatisticLabel(this.hass, statId, statisticsMetaData),
+              : getStatisticLabel(
+                  this.hass,
+                  statId,
+                  statisticsMetaData[statId]
+                ),
           order:
             type === "used_solar"
               ? 1

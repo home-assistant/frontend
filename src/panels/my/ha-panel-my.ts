@@ -53,6 +53,12 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
       domain: "string",
     },
   },
+  brand: {
+    redirect: "/config/integrations/add",
+    params: {
+      brand: "string",
+    },
+  },
   integrations: {
     redirect: "/config/integrations",
   },

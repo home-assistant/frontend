@@ -20,7 +20,9 @@ import { HomeAssistant } from "../../types";
 import {
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS,
-  DOMAINS_MORE_INFO_NO_HISTORY,
+  DOMAINS_WITH_MORE_INFO,
+  computeShowHistoryComponent,
+  computeShowLogBookComponent,
 } from "./const";
 import "./controls/more-info-default";
 import "./ha-more-info-info";
@@ -47,13 +49,11 @@ export class MoreInfoDialog extends LitElement {
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
-    if (params.tab) {
-      this._currTab = params.tab;
-    }
     if (!this._entityId) {
       this.closeDialog();
       return;
     }
+    this._currTab = params.tab || "info";
     this.large = false;
   }
 
@@ -90,7 +90,7 @@ export class MoreInfoDialog extends LitElement {
     const stateObj = this.hass.states[entityId];
 
     const domain = computeDomain(entityId);
-    const name = stateObj ? computeStateName(stateObj) : entityId;
+    const name = (stateObj && computeStateName(stateObj)) || entityId;
     const tabs = this._getTabs(entityId, this.hass.user!.is_admin);
 
     return html`
@@ -152,6 +152,7 @@ export class MoreInfoDialog extends LitElement {
               `
             : ""}
         </div>
+
         <div class="content" tabindex="-1" dialogInitialFocus>
           ${cache(
             this._currTab === "info"
@@ -216,7 +217,13 @@ export class MoreInfoDialog extends LitElement {
     const domain = computeDomain(entityId);
     const tabs: Tab[] = ["info"];
 
-    if (!DOMAINS_MORE_INFO_NO_HISTORY.includes(domain)) {
+    // Info and history are combined in info when there are no
+    // dedicated more-info controls. If not combined, add a history tab.
+    if (
+      DOMAINS_WITH_MORE_INFO.includes(domain) &&
+      (computeShowHistoryComponent(this.hass, entityId) ||
+        computeShowLogBookComponent(this.hass, entityId))
+    ) {
       tabs.push("history");
     }
 
@@ -262,6 +269,7 @@ export class MoreInfoDialog extends LitElement {
         ha-dialog {
           --dialog-surface-position: static;
           --dialog-content-position: static;
+          --vertial-align-dialog: flex-start;
         }
 
         ha-header-bar {
@@ -294,13 +302,8 @@ export class MoreInfoDialog extends LitElement {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
             --mdc-dialog-max-width: 560px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
+            --dialog-surface-margin-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
-          }
-
-          ha-icon-button[slot="navigationIcon"] {
-            display: none;
           }
 
           .main-title {
@@ -318,13 +321,6 @@ export class MoreInfoDialog extends LitElement {
 
         ha-dialog[data-domain="camera"] {
           --dialog-content-padding: 0;
-        }
-
-        state-card-content,
-        ha-more-info-history,
-        ha-more-info-logbook:not(:last-child) {
-          display: block;
-          margin-bottom: 16px;
         }
       `,
     ];

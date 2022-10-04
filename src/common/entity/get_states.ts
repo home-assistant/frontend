@@ -37,6 +37,7 @@ const FIXED_DOMAIN_STATES = {
   siren: ["on", "off"],
   sun: ["above_horizon", "below_horizon"],
   switch: ["on", "off"],
+  timer: ["active", "idle", "paused"],
   update: ["on", "off"],
   vacuum: ["cleaning", "docked", "error", "idle", "paused", "returning"],
   weather: [
@@ -239,10 +240,13 @@ export const getStates = (
       }
       break;
     case "light":
-      if (attribute === "effect") {
+      if (attribute === "effect" && state.attributes.effect_list) {
         result.push(...state.attributes.effect_list);
-      } else if (attribute === "color_mode") {
-        result.push(...state.attributes.color_modes);
+      } else if (
+        attribute === "color_mode" &&
+        state.attributes.supported_color_modes
+      ) {
+        result.push(...state.attributes.supported_color_modes);
       }
       break;
     case "media_player":

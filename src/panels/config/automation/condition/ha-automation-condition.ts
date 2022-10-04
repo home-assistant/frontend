@@ -1,14 +1,15 @@
-import { mdiPlus } from "@mdi/js";
-import { repeat } from "lit/directives/repeat";
-import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
+import type { ActionDetail } from "@material/mwc-list";
+import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import type { ActionDetail } from "@material/mwc-list";
+import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-button-menu";
+import "../../../../components/ha-svg-icon";
 import type { Condition } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-row";
@@ -16,6 +17,14 @@ import type HaAutomationConditionRow from "./ha-automation-condition-row";
 // Uncommenting these and this element doesn't load
 // import "./types/ha-automation-condition-not";
 // import "./types/ha-automation-condition-or";
+import { stringCompare } from "../../../../common/string/compare";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { HaSelect } from "../../../../components/ha-select";
+import { CONDITION_TYPES } from "../../../../data/condition";
+import {
+  loadSortable,
+  SortableInstance,
+} from "../../../../resources/sortable.ondemand";
 import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-device";
 import "./types/ha-automation-condition-numeric_state";
@@ -25,10 +34,7 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
-import { CONDITION_TYPES } from "../../../../data/condition";
-import { stringCompare } from "../../../../common/string/compare";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import type { HaSelect } from "../../../../components/ha-select";
+import { sortableStyles } from "../../../../resources/ha-sortable-style";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
@@ -36,11 +42,25 @@ export default class HaAutomationCondition extends LitElement {
 
   @property() public conditions!: Condition[];
 
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public reOrderMode = false;
+
   private _focusLastConditionOnChange = false;
 
   private _conditionKeys = new WeakMap<Condition, string>();
 
+  private _sortable?: SortableInstance;
+
   protected updated(changedProperties: PropertyValues) {
+    if (changedProperties.has("reOrderMode")) {
+      if (this.reOrderMode) {
+        this._createSortable();
+      } else {
+        this._destroySortable();
+      }
+    }
+
     if (!changedProperties.has("conditions")) {
       return;
     }
@@ -69,8 +89,11 @@ export default class HaAutomationCondition extends LitElement {
       const row = this.shadowRoot!.querySelector<HaAutomationConditionRow>(
         "ha-automation-condition-row:last-of-type"
       )!;
-      row.expand();
-      row.focus();
+      row.updateComplete.then(() => {
+        row.expand();
+        row.scrollIntoView();
+        row.focus();
+      });
     }
   }
 
@@ -79,23 +102,63 @@ export default class HaAutomationCondition extends LitElement {
       return html``;
     }
     return html`
-      ${repeat(
-        this.conditions,
-        (condition) => this._getKey(condition),
-        (cond, idx) => html`
-          <ha-automation-condition-row
-            .index=${idx}
-            .condition=${cond}
-            @duplicate=${this._duplicateCondition}
-            @value-changed=${this._conditionChanged}
-            .hass=${this.hass}
-          ></ha-automation-condition-row>
-        `
-      )}
-      <ha-button-menu fixed @action=${this._addCondition}>
+      <div class="conditions">
+        ${repeat(
+          this.conditions,
+          (condition) => this._getKey(condition),
+          (cond, idx) => html`
+            <ha-automation-condition-row
+              .index=${idx}
+              .totalConditions=${this.conditions.length}
+              .condition=${cond}
+              .hideMenu=${this.reOrderMode}
+              .reOrderMode=${this.reOrderMode}
+              .disabled=${this.disabled}
+              @duplicate=${this._duplicateCondition}
+              @move-condition=${this._move}
+              @value-changed=${this._conditionChanged}
+              .hass=${this.hass}
+            >
+              ${this.reOrderMode
+                ? html`
+                    <ha-icon-button
+                      .index=${idx}
+                      slot="icons"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.move_up"
+                      )}
+                      .path=${mdiArrowUp}
+                      @click=${this._moveUp}
+                      .disabled=${idx === 0}
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      .index=${idx}
+                      slot="icons"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.move_down"
+                      )}
+                      .path=${mdiArrowDown}
+                      @click=${this._moveDown}
+                      .disabled=${idx === this.conditions.length - 1}
+                    ></ha-icon-button>
+                    <div class="handle" slot="icons">
+                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                    </div>
+                  `
+                : ""}
+            </ha-automation-condition-row>
+          `
+        )}
+      </div>
+      <ha-button-menu
+        fixed
+        @action=${this._addCondition}
+        .disabled=${this.disabled}
+      >
         <mwc-button
           slot="trigger"
           outlined
+          .disabled=${this.disabled}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.add"
           )}
@@ -103,12 +166,44 @@ export default class HaAutomationCondition extends LitElement {
           <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
         </mwc-button>
         ${this._processedTypes(this.hass.localize).map(
-          ([opt, label]) => html`
-            <mwc-list-item .value=${opt}>${label}</mwc-list-item>
+          ([opt, label, icon]) => html`
+            <mwc-list-item .value=${opt} aria-label=${label} graphic="icon">
+              ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
+            ></mwc-list-item>
           `
         )}
       </ha-button-menu>
     `;
+  }
+
+  private async _createSortable() {
+    const Sortable = await loadSortable();
+    this._sortable = new Sortable(
+      this.shadowRoot!.querySelector(".conditions")!,
+      {
+        animation: 150,
+        fallbackClass: "sortable-fallback",
+        handle: ".handle",
+        onChoose: (evt: SortableEvent) => {
+          (evt.item as any).placeholder =
+            document.createComment("sort-placeholder");
+          evt.item.after((evt.item as any).placeholder);
+        },
+        onEnd: (evt: SortableEvent) => {
+          // put back in original location
+          if ((evt.item as any).placeholder) {
+            (evt.item as any).placeholder.replaceWith(evt.item);
+            delete (evt.item as any).placeholder;
+          }
+          this._dragged(evt);
+        },
+      }
+    );
+  }
+
+  private _destroySortable() {
+    this._sortable?.destroy();
+    this._sortable = undefined;
   }
 
   private _getKey(condition: Condition) {
@@ -134,6 +229,30 @@ export default class HaAutomationCondition extends LitElement {
       ...elClass.defaultConfig,
     });
     this._focusLastConditionOnChange = true;
+    fireEvent(this, "value-changed", { value: conditions });
+  }
+
+  private _moveUp(ev) {
+    const index = (ev.target as any).index;
+    const newIndex = index - 1;
+    this._move(index, newIndex);
+  }
+
+  private _moveDown(ev) {
+    const index = (ev.target as any).index;
+    const newIndex = index + 1;
+    this._move(index, newIndex);
+  }
+
+  private _dragged(ev: SortableEvent): void {
+    if (ev.oldIndex === ev.newIndex) return;
+    this._move(ev.oldIndex!, ev.newIndex!);
+  }
+
+  private _move(index: number, newIndex: number) {
+    const conditions = this.conditions.concat();
+    const condition = conditions.splice(index, 1)[0];
+    conditions.splice(newIndex, 0, condition);
     fireEvent(this, "value-changed", { value: conditions });
   }
 
@@ -165,28 +284,43 @@ export default class HaAutomationCondition extends LitElement {
   }
 
   private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string][] =>
-      CONDITION_TYPES.map(
-        (condition) =>
-          [
-            condition,
-            localize(
-              `ui.panel.config.automation.editor.conditions.type.${condition}.label`
-            ),
-          ] as [string, string]
-      ).sort((a, b) => stringCompare(a[1], b[1]))
+    (localize: LocalizeFunc): [string, string, string][] =>
+      Object.entries(CONDITION_TYPES)
+        .map(
+          ([condition, icon]) =>
+            [
+              condition,
+              localize(
+                `ui.panel.config.automation.editor.conditions.type.${condition}.label`
+              ),
+              icon,
+            ] as [string, string, string]
+        )
+        .sort((a, b) => stringCompare(a[1], b[1]))
   );
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-automation-condition-row {
-        display: block;
-        margin-bottom: 16px;
-      }
-      ha-svg-icon {
-        height: 20px;
-      }
-    `;
+    return [
+      sortableStyles,
+      css`
+        ha-automation-condition-row {
+          display: block;
+          margin-bottom: 16px;
+          scroll-margin-top: 48px;
+        }
+        ha-svg-icon {
+          height: 20px;
+        }
+        .handle {
+          cursor: move;
+          padding: 12px;
+        }
+        .handle ha-svg-icon {
+          pointer-events: none;
+          height: 24px;
+        }
+      `,
+    ];
   }
 }
 

@@ -375,3 +375,9 @@ export class HaTabsSubpageDataTable extends LitElement {
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hass-tabs-subpage-data-table": HaTabsSubpageDataTable;
+  }
+}

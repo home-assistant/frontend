@@ -1,11 +1,19 @@
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
   mdiContentDuplicate,
   mdiContentSave,
+  mdiDebugStepOver,
   mdiDelete,
   mdiDotsVertical,
+  mdiInformationOutline,
+  mdiPlay,
+  mdiPlayCircleOutline,
+  mdiRenameBox,
+  mdiSort,
+  mdiStopCircleOutline,
+  mdiTransitConnection,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -18,10 +26,12 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, state, query } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -33,8 +43,10 @@ import {
   AutomationConfig,
   AutomationEntity,
   deleteAutomation,
-  getAutomationConfig,
+  getAutomationStateConfig,
+  fetchAutomationFileConfig,
   getAutomationEditorInitData,
+  saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
@@ -43,15 +55,17 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
-import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
+import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
+import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import type { HaManualAutomationEditor } from "./manual-automation-editor";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -73,6 +87,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property() public automationId: string | null = null;
 
+  @property() public entityId: string | null = null;
+
   @property() public automations!: AutomationEntity[];
 
   @property() public isWide?: boolean;
@@ -91,7 +107,12 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _mode: "gui" | "yaml" = "gui";
 
-  @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
+  @state() private _readOnly = false;
+
+  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
+
+  @query("manual-automation-editor")
+  private _manualEditor?: HaManualAutomationEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -105,19 +126,28 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       ? this.hass.states[this._entityId]
       : undefined;
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .tabs=${configSections.automations}
+        .header=${!this._config
+          ? ""
+          : this._config.alias ||
+            this.hass.localize(
+              "ui.panel.config.automation.editor.default_name"
+            )}
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._handleMenuAction}
-          activatable
-        >
+        ${this._config?.id && !this.narrow
+          ? html`
+              <mwc-button @click=${this._showTrace} slot="toolbar-icon">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.show_trace"
+                )}
+              </mwc-button>
+            `
+          : ""}
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -125,12 +155,98 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           ></ha-icon-button>
 
           <mwc-list-item
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.editor.edit_ui"
-            )}
             graphic="icon"
-            ?activated=${this._mode === "gui"}
+            .disabled=${!stateObj}
+            @click=${this._showInfo}
           >
+            ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiInformationOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._runActions}
+          >
+            ${this.hass.localize("ui.panel.config.automation.editor.run")}
+            <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
+          </mwc-list-item>
+
+          ${stateObj && this._config && this.narrow
+            ? html`<a href="/config/automation/trace/${this._config.id}">
+                <mwc-list-item graphic="icon">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.show_trace"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiTransitConnection}
+                  ></ha-svg-icon>
+                </mwc-list-item>
+              </a>`
+            : ""}
+
+          <mwc-list-item
+            graphic="icon"
+            @click=${this._promptAutomationAlias}
+            .disabled=${!this.automationId || this._mode === "yaml"}
+          >
+            ${this.hass.localize("ui.panel.config.automation.editor.rename")}
+            <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+          </mwc-list-item>
+
+          ${this._config && !("use_blueprint" in this._config)
+            ? html`
+                <mwc-list-item
+                  graphic="icon"
+                  @click=${this._promptAutomationMode}
+                  .disabled=${this._readOnly || this._mode === "yaml"}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.change_mode"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiDebugStepOver}
+                  ></ha-svg-icon>
+                </mwc-list-item>
+              `
+            : ""}
+          ${this._config && !("use_blueprint" in this._config)
+            ? html`<mwc-list-item
+                graphic="icon"
+                @click=${this._toggleReOrderMode}
+                .disabled=${this._readOnly || this._mode === "yaml"}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.re_order"
+                )}
+                <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
+              </mwc-list-item>`
+            : ""}
+
+          <mwc-list-item
+            .disabled=${!this._readOnly && !this.automationId}
+            graphic="icon"
+            @click=${this._duplicate}
+          >
+            ${this.hass.localize(
+              this._readOnly
+                ? "ui.panel.config.automation.editor.migrate"
+                : "ui.panel.config.automation.editor.duplicate"
+            )}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiContentDuplicate}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <li divider role="separator"></li>
+
+          <mwc-list-item graphic="icon" @click=${this._switchUiMode}>
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
               ? html`<ha-svg-icon
@@ -140,13 +256,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 ></ha-svg-icon>`
               : ``}
           </mwc-list-item>
-          <mwc-list-item
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.editor.edit_yaml"
-            )}
-            graphic="icon"
-            ?activated=${this._mode === "yaml"}
-          >
+          <mwc-list-item graphic="icon" @click=${this._switchYamlMode}>
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
               ? html`<ha-svg-icon
@@ -160,32 +270,28 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           <li divider role="separator"></li>
 
           <mwc-list-item
-            .disabled=${!this.automationId}
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.picker.duplicate_automation"
-            )}
             graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._toggle}
           >
-            ${this.hass.localize(
-              "ui.panel.config.automation.picker.duplicate_automation"
-            )}
+            ${stateObj?.state === "off"
+              ? this.hass.localize("ui.panel.config.automation.editor.enable")
+              : this.hass.localize("ui.panel.config.automation.editor.disable")}
             <ha-svg-icon
               slot="graphic"
-              .path=${mdiContentDuplicate}
+              .path=${stateObj?.state === "off"
+                ? mdiPlayCircleOutline
+                : mdiStopCircleOutline}
             ></ha-svg-icon>
           </mwc-list-item>
 
           <mwc-list-item
             .disabled=${!this.automationId}
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.picker.delete_automation"
-            )}
             class=${classMap({ warning: Boolean(this.automationId) })}
             graphic="icon"
+            @click=${this._deleteConfirm}
           >
-            ${this.hass.localize(
-              "ui.panel.config.automation.picker.delete_automation"
-            )}
+            ${this.hass.localize("ui.panel.config.automation.picker.delete")}
             <ha-svg-icon
               class=${classMap({ warning: Boolean(this.automationId) })}
               slot="graphic"
@@ -197,9 +303,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
         ${this._config
           ? html`
-              ${this.narrow
-                ? html`<span slot="header">${this._config?.alias}</span>`
-                : ""}
               <div
                 class="content ${classMap({
                   "yaml-mode": this._mode === "yaml",
@@ -207,70 +310,68 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 @subscribe-automation-config=${this._subscribeAutomationConfig}
               >
                 ${this._errors
-                  ? html`<div class="errors">${this._errors}</div>`
+                  ? html`<ha-alert alert-type="error">
+                      ${this._errors}
+                    </ha-alert>`
                   : ""}
                 ${this._mode === "gui"
-                  ? html`
-                      ${"use_blueprint" in this._config
-                        ? html`
-                            <blueprint-automation-editor
-                              .hass=${this.hass}
-                              .narrow=${this.narrow}
-                              .isWide=${this.isWide}
-                              .stateObj=${stateObj}
-                              .config=${this._config}
-                              @value-changed=${this._valueChanged}
-                            ></blueprint-automation-editor>
-                          `
-                        : html`
-                            <manual-automation-editor
-                              .hass=${this.hass}
-                              .narrow=${this.narrow}
-                              .isWide=${this.isWide}
-                              .stateObj=${stateObj}
-                              .config=${this._config}
-                              @value-changed=${this._valueChanged}
-                            ></manual-automation-editor>
-                          `}
-                    `
+                  ? "use_blueprint" in this._config
+                    ? html`
+                        <blueprint-automation-editor
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .isWide=${this.isWide}
+                          .stateObj=${stateObj}
+                          .config=${this._config}
+                          .disabled=${Boolean(this._readOnly)}
+                          @value-changed=${this._valueChanged}
+                          @duplicate=${this._duplicate}
+                        ></blueprint-automation-editor>
+                      `
+                    : html`
+                        <manual-automation-editor
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .isWide=${this.isWide}
+                          .stateObj=${stateObj}
+                          .config=${this._config}
+                          .disabled=${Boolean(this._readOnly)}
+                          @value-changed=${this._valueChanged}
+                          @duplicate=${this._duplicate}
+                        ></manual-automation-editor>
+                      `
                   : this._mode === "yaml"
                   ? html`
-                      ${!this.narrow
+                      ${this._readOnly
+                        ? html`<ha-alert alert-type="warning">
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.read_only"
+                            )}
+                            <mwc-button slot="action" @click=${this._duplicate}>
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.migrate"
+                              )}
+                            </mwc-button>
+                          </ha-alert>`
+                        : ""}
+                      ${stateObj?.state === "off"
                         ? html`
-                            <ha-card outlined>
-                              <div class="card-header">
-                                ${this._config.alias}
-                              </div>
-                              ${stateObj
-                                ? html`
-                                    <div
-                                      class="card-actions layout horizontal justified center"
-                                    >
-                                      <ha-entity-toggle
-                                        .hass=${this.hass}
-                                        .stateObj=${stateObj}
-                                        .label=${this.hass.localize(
-                                          "ui.panel.config.automation.editor.enable_disable"
-                                        )}
-                                      ></ha-entity-toggle>
-
-                                      <mwc-button
-                                        @click=${this._runActions}
-                                        .stateObj=${stateObj}
-                                      >
-                                        ${this.hass.localize(
-                                          "ui.card.automation.trigger"
-                                        )}
-                                      </mwc-button>
-                                    </div>
-                                  `
-                                : ""}
-                            </ha-card>
+                            <ha-alert alert-type="info">
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.disabled"
+                              )}
+                              <mwc-button slot="action" @click=${this._toggle}>
+                                ${this.hass.localize(
+                                  "ui.panel.config.automation.editor.enable"
+                                )}
+                              </mwc-button>
+                            </ha-alert>
                           `
-                        : ``}
+                        : ""}
                       <ha-yaml-editor
                         .hass=${this.hass}
                         .defaultValue=${this._preprocessYaml()}
+                        .readOnly=${this._readOnly}
                         @value-changed=${this._yamlChanged}
                       ></ha-yaml-editor>
                       <ha-card outlined>
@@ -296,7 +397,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -315,14 +416,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       this._loadConfig();
     }
 
-    if (changedProps.has("automationId") && !this.automationId && this.hass) {
+    if (
+      changedProps.has("automationId") &&
+      !this.automationId &&
+      !this.entityId &&
+      this.hass
+    ) {
       const initData = getAutomationEditorInitData();
-      let baseConfig: Partial<AutomationConfig> = {
-        alias: this.hass.localize(
-          "ui.panel.config.automation.editor.default_name"
-        ),
-        description: "",
-      };
+      let baseConfig: Partial<AutomationConfig> = { description: "" };
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig = {
           ...baseConfig,
@@ -337,6 +438,17 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ...initData,
       } as AutomationConfig;
       this._entityId = undefined;
+      this._readOnly = false;
+      this._dirty = true;
+    }
+
+    if (changedProps.has("entityId") && this.entityId) {
+      getAutomationStateConfig(this.hass, this.entityId).then((c) => {
+        this._config = this._normalizeConfig(c.config);
+      });
+      this._entityId = this.entityId;
+      this._dirty = false;
+      this._readOnly = true;
     }
 
     if (
@@ -361,25 +473,39 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._entityId = automation?.entity_id;
   }
 
+  private _normalizeConfig(config: AutomationConfig): AutomationConfig {
+    // Normalize data: ensure trigger, action and condition are lists
+    // Happens when people copy paste their automations into the config
+    for (const key of ["trigger", "condition", "action"]) {
+      const value = config[key];
+      if (value && !Array.isArray(value)) {
+        config[key] = [value];
+      }
+    }
+    return config;
+  }
+
   private async _loadConfig() {
     try {
-      const config = await getAutomationConfig(
+      const config = await fetchAutomationFileConfig(
         this.hass,
         this.automationId as string
       );
-
-      // Normalize data: ensure trigger, action and condition are lists
-      // Happens when people copy paste their automations into the config
-      for (const key of ["trigger", "condition", "action"]) {
-        const value = config[key];
-        if (value && !Array.isArray(value)) {
-          config[key] = [value];
-        }
-      }
       this._dirty = false;
-      this._config = config;
+      this._readOnly = false;
+      this._config = this._normalizeConfig(config);
     } catch (err: any) {
-      showAlertDialog(this, {
+      const entity = Object.values(this.hass.entities).find(
+        (ent) =>
+          ent.platform === "automation" && ent.unique_id === this.automationId
+      );
+      if (entity) {
+        navigate(`/config/automation/show/${entity.entity_id}`, {
+          replace: true,
+        });
+        return;
+      }
+      await showAlertDialog(this, {
         text:
           err.status_code === 404
             ? this.hass.localize(
@@ -390,35 +516,70 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 "err_no",
                 err.status_code
               ),
-      }).then(() => history.back());
+      });
+      history.back();
     }
   }
 
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
+    if (this._readOnly) {
+      return;
+    }
     this._config = ev.detail.value;
     this._dirty = true;
     this._errors = undefined;
   }
 
-  private _runActions(ev: Event) {
-    triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
+  private _showInfo() {
+    if (!this.hass || !this._entityId) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId: this._entityId });
+  }
+
+  private async _showTrace() {
+    if (this._config?.id) {
+      const result = await this.confirmUnsavedChanged();
+      if (result) {
+        navigate(`/config/automation/trace/${this._config.id}`);
+      }
+    }
+  }
+
+  private _runActions() {
+    if (!this.hass || !this._entityId) {
+      return;
+    }
+    triggerAutomationActions(
+      this.hass,
+      this.hass.states[this._entityId].entity_id
+    );
+  }
+
+  private async _toggle(): Promise<void> {
+    if (!this.hass || !this._entityId) {
+      return;
+    }
+    const stateObj = this.hass.states[this._entityId];
+    const service = stateObj.state === "off" ? "turn_on" : "turn_off";
+    await this.hass.callService("automation", service, {
+      entity_id: stateObj.entity_id,
+    });
   }
 
   private _preprocessYaml() {
-    const cleanConfig = this._config;
-    if (!cleanConfig) {
+    if (!this._config) {
       return {};
     }
-
+    const cleanConfig: AutomationConfig = { ...this._config };
     delete cleanConfig.id;
-
     return cleanConfig;
   }
 
   private async _copyYaml(): Promise<void> {
-    if (this._editor?.yaml) {
-      await copyToClipboard(this._editor.yaml);
+    if (this._yamlEditor?.yaml) {
+      await copyToClipboard(this._yamlEditor.yaml);
       showToast(this, {
         message: this.hass.localize("ui.common.copied_clipboard"),
       });
@@ -430,108 +591,139 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     if (!ev.detail.isValid) {
       return;
     }
-    this._config = ev.detail.value;
+    this._config = { id: this._config?.id, ...ev.detail.value };
     this._errors = undefined;
     this._dirty = true;
   }
 
-  private _backTapped = (): void => {
+  private async confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
-      showConfirmationDialog(this, {
+      return showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.config.automation.editor.unsaved_confirm_title"
+        ),
         text: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm"
+          "ui.panel.config.automation.editor.unsaved_confirm_text"
         ),
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
-        confirm: () => {
-          setTimeout(() => history.back());
-        },
+        destructive: true,
       });
-    } else {
-      history.back();
+    }
+    return true;
+  }
+
+  private _backTapped = async () => {
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
+      afterNextRender(() => history.back());
     }
   };
 
   private async _duplicate() {
-    if (this._dirty) {
-      if (
-        !(await showConfirmationDialog(this, {
-          text: this.hass!.localize(
-            "ui.panel.config.automation.editor.unsaved_confirm"
-          ),
-          confirmText: this.hass!.localize("ui.common.leave"),
-          dismissText: this.hass!.localize("ui.common.stay"),
-        }))
-      ) {
-        return;
-      }
-      // Wait for dialog to complete closing
-      await new Promise((resolve) => setTimeout(resolve, 0));
+    const result = this._readOnly
+      ? await showConfirmationDialog(this, {
+          title: "Migrate automation?",
+          text: "You can migrate this automation, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old automation from your configuration. Do you want to migrate this automation?",
+        })
+      : await this.confirmUnsavedChanged();
+    if (result) {
+      showAutomationEditor({
+        ...this._config,
+        id: undefined,
+        alias: this._readOnly ? this._config?.alias : undefined,
+      });
     }
-    showAutomationEditor({
-      ...this._config,
-      id: undefined,
-      alias: `${this._config?.alias} (${this.hass.localize(
-        "ui.panel.config.automation.picker.duplicate"
-      )})`,
-    });
   }
 
   private async _deleteConfirm() {
     showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.picker.delete_confirm_title"
+      ),
       text: this.hass.localize(
-        "ui.panel.config.automation.picker.delete_confirm"
+        "ui.panel.config.automation.picker.delete_confirm_text",
+        { name: this._config?.alias }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
+      destructive: true,
       dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
     });
   }
 
   private async _delete() {
-    await deleteAutomation(this.hass, this.automationId as string);
-    history.back();
-  }
-
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._mode = "gui";
-        break;
-      case 1:
-        this._mode = "yaml";
-        break;
-      case 2:
-        this._duplicate();
-        break;
-      case 3:
-        this._deleteConfirm();
-        break;
+    if (this.automationId) {
+      await deleteAutomation(this.hass, this.automationId);
+      history.back();
     }
   }
 
-  private _saveAutomation(): void {
-    const id = this.automationId || String(Date.now());
-    this.hass!.callApi(
-      "POST",
-      "config/automation/config/" + id,
-      this._config
-    ).then(
-      () => {
-        this._dirty = false;
+  private _switchUiMode() {
+    this._mode = "gui";
+  }
 
-        if (!this.automationId) {
-          navigate(`/config/automation/edit/${id}`, { replace: true });
-        }
-      },
-      (errors) => {
-        this._errors = errors.body.message || errors.error || errors.body;
-        showToast(this, {
-          message: errors.body.message || errors.error || errors.body,
-        });
-        throw errors;
-      }
-    );
+  private _switchYamlMode() {
+    this._mode = "yaml";
+  }
+
+  private _toggleReOrderMode() {
+    if (this._manualEditor) {
+      this._manualEditor.reOrderMode = !this._manualEditor.reOrderMode;
+    }
+  }
+
+  private async _promptAutomationAlias(): Promise<void> {
+    return new Promise((resolve) => {
+      showAutomationRenameDialog(this, {
+        config: this._config!,
+        updateAutomation: (config) => {
+          this._config = config;
+          this._dirty = true;
+          this.requestUpdate();
+          resolve();
+        },
+        onClose: () => resolve(),
+      });
+    });
+  }
+
+  private async _promptAutomationMode(): Promise<void> {
+    return new Promise((resolve) => {
+      showAutomationModeDialog(this, {
+        config: this._config!,
+        updateAutomation: (config) => {
+          this._config = config;
+          this._dirty = true;
+          this.requestUpdate();
+          resolve();
+        },
+        onClose: () => resolve(),
+      });
+    });
+  }
+
+  private async _saveAutomation(): Promise<void> {
+    const id = this.automationId || String(Date.now());
+    if (!this.automationId) {
+      await this._promptAutomationAlias();
+    }
+
+    try {
+      await saveAutomationConfig(this.hass, id, this._config!);
+    } catch (errors: any) {
+      this._errors = errors.body.message || errors.error || errors.body;
+      showToast(this, {
+        message: errors.body.message || errors.error || errors.body,
+      });
+      throw errors;
+    }
+
+    this._dirty = false;
+
+    if (!this.automationId) {
+      navigate(`/config/automation/edit/${id}`, { replace: true });
+    }
   }
 
   private _subscribeAutomationConfig(ev) {
@@ -554,11 +746,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ha-card {
           overflow: hidden;
         }
-        .errors {
-          padding: 20px;
-          font-weight: bold;
-          color: var(--error-color);
-        }
         .content {
           padding-bottom: 20px;
         }
@@ -568,7 +755,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           flex-direction: column;
           padding-bottom: 0;
         }
-        manual-automation-editor {
+        manual-automation-editor,
+        blueprint-automation-editor {
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
@@ -602,6 +790,20 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
+        }
+        ha-button-menu a {
+          text-decoration: none;
+          color: var(--primary-color);
+        }
+        h1 {
+          margin: 0;
+        }
+        .header-name {
+          display: flex;
+          align-items: center;
+          margin: 0 auto;
+          max-width: 1040px;
+          padding: 28px 20px 0;
         }
       `,
     ];

@@ -2,6 +2,7 @@ import "@material/mwc-button/mwc-button";
 import { mdiAlertOutline } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
@@ -73,6 +74,7 @@ class DialogBox extends LitElement {
                 <ha-textfield
                   dialogInitialFocus
                   value=${ifDefined(this._params.defaultValue)}
+                  .placeholder=${ifDefined(this._params.placeholder)}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
@@ -95,6 +97,9 @@ class DialogBox extends LitElement {
           @click=${this._confirm}
           ?dialogInitialFocus=${!this._params.prompt}
           slot="primaryAction"
+          class=${classMap({
+            destructive: this._params.destructive || false,
+          })}
         >
           ${this._params.confirmText
             ? this._params.confirmText
@@ -152,11 +157,22 @@ class DialogBox extends LitElement {
       .secondary {
         color: var(--secondary-text-color);
       }
+      .destructive {
+        --mdc-theme-primary: var(--error-color);
+      }
       ha-dialog {
         --mdc-dialog-heading-ink-color: var(--primary-text-color);
         --mdc-dialog-content-ink-color: var(--primary-text-color);
         /* Place above other dialogs */
         --dialog-z-index: 104;
+      }
+      @media all and (min-width: 600px) {
+        ha-dialog {
+          --mdc-dialog-min-width: 400px;
+        }
+      }
+      ha-textfield {
+        width: 100%;
       }
     `;
   }

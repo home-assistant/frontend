@@ -6,6 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 // @ts-ignore
 import timegridStyle from "@fullcalendar/timegrid/main.css";
+import { isSameDay } from "date-fns";
 import {
   css,
   CSSResultGroup,
@@ -39,7 +40,6 @@ const defaultFullCalendarConfig: CalendarOptions = {
   locales: allLocales,
   firstDay: 1,
   dayHeaderFormat: { weekday: "short", month: undefined, day: undefined },
-  slotLabelFormat: { hour: "numeric", minute: undefined, meridiem: "narrow" },
 };
 
 @customElement("ha-schedule-form")
@@ -125,6 +125,7 @@ class HaScheduleForm extends LitElement {
           dialogInitialFocus
         ></ha-textfield>
         <ha-icon-picker
+          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
@@ -168,10 +169,17 @@ class HaScheduleForm extends LitElement {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
+      slotLabelFormat: {
+        hour: "numeric",
+        minute: undefined,
+        hour12: useAmPm(this.hass.locale),
+        meridiem: useAmPm(this.hass.locale) ? "narrow" : false,
+      },
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
         minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
         hour12: useAmPm(this.hass.locale),
+        meridiem: useAmPm(this.hass.locale) ? "narrow" : false,
       },
     };
 
@@ -198,6 +206,7 @@ class HaScheduleForm extends LitElement {
   private get _events() {
     const events: any[] = [];
     const currentDay = new Date().getDay();
+    const baseDay = currentDay === 0 ? 7 : currentDay;
 
     for (const [i, day] of weekdays.entries()) {
       if (!this[`_${day}`].length) {
@@ -205,21 +214,23 @@ class HaScheduleForm extends LitElement {
       }
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
-        const distance = i - currentDay;
+        // Add 7 to 0 because we start the calendar on Monday
+        const distance = i - baseDay + (i === 0 ? 7 : 0);
 
         const start = new Date();
         start.setDate(start.getDate() + distance);
+        const start_tokens = item.from.split(":");
         start.setHours(
-          parseInt(item.from.slice(0, 2)),
-          parseInt(item.from.slice(-2))
+          parseInt(start_tokens[0]),
+          parseInt(start_tokens[1]),
+          0,
+          0
         );
 
         const end = new Date();
         end.setDate(end.getDate() + distance);
-        end.setHours(
-          parseInt(item.to.slice(0, 2)),
-          parseInt(item.to.slice(-2))
-        );
+        const end_tokens = item.to.split(":");
+        end.setHours(parseInt(end_tokens[0]), parseInt(end_tokens[1]), 0, 0);
 
         events.push({
           id: `${day}-${index}`,
@@ -235,18 +246,17 @@ class HaScheduleForm extends LitElement {
   private _handleSelect(info: { start: Date; end: Date }) {
     const { start, end } = info;
 
-    if (start.getDay() !== end.getDay()) {
-      this.calendar!.unselect();
-      return;
-    }
-
     const day = weekdays[start.getDay()];
     const value = [...this[`_${day}`]];
     const newValue = { ...this._item };
 
+    const endFormatted = formatTime24h(end);
     value.push({
       from: formatTime24h(start),
-      to: formatTime24h(end),
+      to:
+        !isSameDay(start, end) || endFormatted === "0:00"
+          ? "24:00"
+          : endFormatted,
     });
 
     newValue[day] = value;
@@ -254,45 +264,51 @@ class HaScheduleForm extends LitElement {
     fireEvent(this, "value-changed", {
       value: newValue,
     });
+
+    if (!isSameDay(start, end)) {
+      this.calendar!.unselect();
+    }
   }
 
   private _handleEventResize(info: any) {
     const { id, start, end } = info.event;
 
-    if (start.getDay() !== end.getDay()) {
-      info.revert();
-      return;
-    }
-
     const [day, index] = id.split("-");
     const value = this[`_${day}`][parseInt(index)];
     const newValue = { ...this._item };
 
+    const endFormatted = formatTime24h(end);
     newValue[day][index] = {
       from: value.from,
-      to: formatTime24h(end),
+      to:
+        !isSameDay(start, end) || endFormatted === "0:00"
+          ? "24:00"
+          : endFormatted,
     };
 
     fireEvent(this, "value-changed", {
       value: newValue,
     });
+
+    if (!isSameDay(start, end)) {
+      info.revert();
+    }
   }
 
   private _handleEventDrop(info: any) {
     const { id, start, end } = info.event;
 
-    if (start.getDay() !== end.getDay()) {
-      info.revert();
-      return;
-    }
-
     const [day, index] = id.split("-");
     const newDay = weekdays[start.getDay()];
     const newValue = { ...this._item };
 
+    const endFormatted = formatTime24h(end);
     const event = {
       from: formatTime24h(start),
-      to: formatTime24h(end),
+      to:
+        !isSameDay(start, end) || endFormatted === "0:00"
+          ? "24:00"
+          : endFormatted,
     };
 
     if (newDay === day) {
@@ -307,6 +323,10 @@ class HaScheduleForm extends LitElement {
     fireEvent(this, "value-changed", {
       value: newValue,
     });
+
+    if (!isSameDay(start, end)) {
+      info.revert();
+    }
   }
 
   private _handleEventClick(info: any) {
@@ -363,9 +383,15 @@ class HaScheduleForm extends LitElement {
           margin: 8px 0;
           height: 450px;
           width: 100%;
+          -webkit-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
         }
         .fc-scroller {
           overflow-x: visible !important;
+        }
+        .fc-v-event .fc-event-time {
+          white-space: inherit;
         }
       `,
     ];

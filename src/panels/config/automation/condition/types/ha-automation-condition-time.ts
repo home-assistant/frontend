@@ -21,6 +21,8 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
   @state() private _inputModeAfter?: boolean;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return {};
   }
@@ -123,6 +125,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}
+        .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>

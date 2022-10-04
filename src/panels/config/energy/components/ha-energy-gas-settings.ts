@@ -3,7 +3,6 @@ import { mdiDelete, mdiFire, mdiPencil } from "@mdi/js";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import {
@@ -11,9 +10,13 @@ import {
   EnergyPreferencesValidation,
   EnergyValidationIssue,
   GasSourceTypeEnergyPreference,
-  getEnergyGasUnitCategory,
+  getEnergyGasUnitClass,
   saveEnergyPreferences,
 } from "../../../../data/energy";
+import {
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/recorder";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -31,6 +34,9 @@ export class EnergyGasSettings extends LitElement {
 
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
+
+  @property({ attribute: false })
+  public statsMetadata?: Record<string, StatisticsMetaData>;
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
@@ -89,9 +95,11 @@ export class EnergyGasSettings extends LitElement {
                     ></ha-icon>`
                   : html`<ha-svg-icon .path=${mdiFire}></ha-svg-icon>`}
                 <span class="content"
-                  >${entityState
-                    ? computeStateName(entityState)
-                    : source.stat_energy_from}</span
+                  >${getStatisticLabel(
+                    this.hass,
+                    source.stat_energy_from,
+                    this.statsMetadata?.[source.stat_energy_from]
+                  )}</span
                 >
                 <ha-icon-button
                   .label=${this.hass.localize(
@@ -125,7 +133,10 @@ export class EnergyGasSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsGasDialog(this, {
-      unit: getEnergyGasUnitCategory(this.hass, this.preferences),
+      allowedGasUnitClass: getEnergyGasUnitClass(
+        this.preferences,
+        this.statsMetadata
+      ),
       saveCallback: async (source) => {
         delete source.unit_of_measurement;
         await this._savePreferences({
@@ -141,7 +152,12 @@ export class EnergyGasSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGasDialog(this, {
       source: { ...origSource },
-      unit: getEnergyGasUnitCategory(this.hass, this.preferences),
+      allowedGasUnitClass: getEnergyGasUnitClass(
+        this.preferences,
+        this.statsMetadata,
+        origSource.stat_energy_from
+      ),
+      metadata: this.statsMetadata?.[origSource.stat_energy_from],
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,

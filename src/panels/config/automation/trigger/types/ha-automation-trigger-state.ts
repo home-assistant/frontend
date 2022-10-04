@@ -25,6 +25,7 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
+    alias: optional(string()),
     platform: literal("state"),
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
@@ -39,6 +40,8 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: StateTrigger;
+
+  @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig() {
     return { entity_id: [] };
@@ -57,7 +60,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           selector: {
             attribute: {
               entity_id: entityId ? entityId[0] : undefined,
-              exclude_attributes: [
+              hide_attributes: [
                 "access_token",
                 "available_modes",
                 "color_modes",
@@ -154,6 +157,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         .schema=${schema}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
+        .disabled=${this.disabled}
       ></ha-form>
     `;
   }

@@ -1,5 +1,7 @@
 import {
+  mdiDotsVertical,
   mdiDownload,
+  mdiInformationOutline,
   mdiPencil,
   mdiRayEndArrow,
   mdiRayStartArrow,
@@ -11,6 +13,8 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/trace/ha-trace-blueprint-config";
 import "../../../components/trace/ha-trace-config";
@@ -32,9 +36,9 @@ import {
   loadTraces,
 } from "../../../data/trace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -90,89 +94,116 @@ export class HaAutomationTrace extends LitElement {
       </div>`;
     }
 
-    const actionButtons = html`
-      <ha-icon-button
-        .label=${this.hass.localize("ui.panel.config.automation.trace.refresh")}
-        .path=${mdiRefresh}
-        @click=${this._refreshTraces}
-      ></ha-icon-button>
-      <ha-icon-button
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.trace.download_trace"
-        )}
-        .path=${mdiDownload}
-        .disabled=${!this._trace}
-        @click=${this._downloadTrace}
-      ></ha-icon-button>
-    `;
-
     return html`
       ${devButtons}
-      <hass-tabs-subpage
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configSections.automations}
-      >
-        ${this.narrow
-          ? html`<span slot="header">${title}</span>
-              <div slot="toolbar-icon">${actionButtons}</div>`
+      <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
+        ${!this.narrow && stateObj?.attributes.id
+          ? html`
+              <a
+                class="trace-link"
+                href="/config/automation/edit/${stateObj.attributes.id}"
+                slot="toolbar-icon"
+              >
+                <mwc-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.trace.edit_automation"
+                  )}
+                </mwc-button>
+              </a>
+            `
           : ""}
-        <div class="toolbar">
-          ${!this.narrow
-            ? html`<div>
-                ${title}
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._showInfo}
+          >
+            ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiInformationOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          ${stateObj?.attributes.id && this.narrow
+            ? html`
                 <a
-                  class="linkButton"
-                  href="/config/automation/edit/${this.automationId}"
+                  class="trace-link"
+                  href="/config/automation/edit/${stateObj.attributes.id}"
                 >
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
+                  <mwc-list-item graphic="icon">
+                    ${this.hass.localize(
                       "ui.panel.config.automation.trace.edit_automation"
                     )}
-                    .path=${mdiPencil}
-                    tabindex="-1"
-                  ></ha-icon-button>
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiPencil}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
                 </a>
-              </div>`
-            : ""}
-          ${this._traces && this._traces.length > 0
-            ? html`
-                <div>
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.automation.trace.older_trace"
-                    )}
-                    .path=${mdiRayEndArrow}
-                    .disabled=${this._traces[this._traces.length - 1].run_id ===
-                    this._runId}
-                    @click=${this._pickOlderTrace}
-                  ></ha-icon-button>
-                  <select .value=${this._runId} @change=${this._pickTrace}>
-                    ${repeat(
-                      this._traces,
-                      (trace) => trace.run_id,
-                      (trace) =>
-                        html`<option value=${trace.run_id}>
-                          ${formatDateTimeWithSeconds(
-                            new Date(trace.timestamp.start),
-                            this.hass.locale
-                          )}
-                        </option>`
-                    )}
-                  </select>
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.automation.trace.newer_trace"
-                    )}
-                    .path=${mdiRayStartArrow}
-                    .disabled=${this._traces[0].run_id === this._runId}
-                    @click=${this._pickNewerTrace}
-                  ></ha-icon-button>
-                </div>
               `
             : ""}
-          ${!this.narrow ? html`<div>${actionButtons}</div>` : ""}
+
+          <li divider role="separator"></li>
+
+          <mwc-list-item graphic="icon" @click=${this._refreshTraces}>
+            ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
+            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!this._trace}
+            @click=${this._downloadTrace}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.trace.download_trace"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
+
+        <div class="toolbar">
+          ${this._traces && this._traces.length > 0
+            ? html`
+                <ha-icon-button
+                  .label=${this.hass!.localize(
+                    "ui.panel.config.automation.trace.older_trace"
+                  )}
+                  .path=${mdiRayEndArrow}
+                  .disabled=${this._traces[this._traces.length - 1].run_id ===
+                  this._runId}
+                  @click=${this._pickOlderTrace}
+                ></ha-icon-button>
+                <select .value=${this._runId} @change=${this._pickTrace}>
+                  ${repeat(
+                    this._traces,
+                    (trace) => trace.run_id,
+                    (trace) =>
+                      html`<option value=${trace.run_id}>
+                        ${formatDateTimeWithSeconds(
+                          new Date(trace.timestamp.start),
+                          this.hass.locale
+                        )}
+                      </option>`
+                  )}
+                </select>
+                <ha-icon-button
+                  .label=${this.hass!.localize(
+                    "ui.panel.config.automation.trace.newer_trace"
+                  )}
+                  .path=${mdiRayStartArrow}
+                  .disabled=${this._traces[0].run_id === this._runId}
+                  @click=${this._pickNewerTrace}
+                ></ha-icon-button>
+              `
+            : ""}
         </div>
 
         ${this._traces === undefined
@@ -276,7 +307,7 @@ export class HaAutomationTrace extends LitElement {
                 </div>
               </div>
             `}
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -457,6 +488,13 @@ export class HaAutomationTrace extends LitElement {
     }
   }
 
+  private _showInfo() {
+    if (!this.hass || !this._entityId) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId: this._entityId });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -465,7 +503,7 @@ export class HaAutomationTrace extends LitElement {
         .toolbar {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
           font-size: 20px;
           height: var(--header-height);
           padding: 0 16px;
@@ -474,15 +512,6 @@ export class HaAutomationTrace extends LitElement {
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
-        }
-
-        .toolbar > * {
-          display: flex;
-          align-items: center;
-        }
-
-        :host([narrow]) .toolbar > * {
-          display: contents;
         }
 
         .main {
@@ -519,6 +548,9 @@ export class HaAutomationTrace extends LitElement {
 
         .linkButton {
           color: var(--primary-text-color);
+        }
+        .trace-link {
+          text-decoration: none;
         }
       `,
     ];

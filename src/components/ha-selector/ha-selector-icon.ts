@@ -24,6 +24,7 @@ export class HaIconSelector extends LitElement {
   protected render() {
     return html`
       <ha-icon-picker
+        .hass=${this.hass}
         .label=${this.label}
         .value=${this.value}
         .required=${this.required}

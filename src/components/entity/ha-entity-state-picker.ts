@@ -7,6 +7,8 @@ import { getStates } from "../../common/entity/get_states";
 import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
+import { formatAttributeValue } from "../../data/entity_attributes";
+import { fireEvent } from "../../common/dom/fire_event";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -55,7 +57,7 @@ class HaEntityStatePicker extends LitElement {
                     this.hass.locale,
                     key
                   )
-                : key,
+                : formatAttributeValue(this.hass, key),
             }))
           : [];
     }
@@ -69,16 +71,7 @@ class HaEntityStatePicker extends LitElement {
     return html`
       <ha-combo-box
         .hass=${this.hass}
-        .value=${this.value
-          ? this.entityId && this.hass.states[this.entityId]
-            ? computeStateDisplay(
-                this.hass.localize,
-                this.hass.states[this.entityId],
-                this.hass.locale,
-                this.value
-              )
-            : this.value
-          : ""}
+        .value=${this._value}
         .autofocus=${this.autofocus}
         .label=${this.label ??
         this.hass.localize("ui.components.entity.entity-state-picker.state")}
@@ -95,12 +88,28 @@ class HaEntityStatePicker extends LitElement {
     `;
   }
 
+  private get _value() {
+    return this.value || "";
+  }
+
   private _openedChanged(ev: PolymerChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {
-    this.value = ev.detail.value;
+    ev.stopPropagation();
+    const newValue = ev.detail.value;
+    if (newValue !== this._value) {
+      this._setValue(newValue);
+    }
+  }
+
+  private _setValue(value: string) {
+    this.value = value;
+    setTimeout(() => {
+      fireEvent(this, "value-changed", { value });
+      fireEvent(this, "change");
+    }, 0);
   }
 }
 

@@ -2,7 +2,6 @@ import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { Action, ParallelAction } from "../../../../../data/script";
-import { HaDeviceAction } from "./ha-automation-action-device_id";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-action";
@@ -13,11 +12,15 @@ import type { ActionElement } from "../ha-automation-action-row";
 export class HaParallelAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false }) public action!: ParallelAction;
+
+  @property({ type: Boolean }) public reOrderMode = false;
 
   public static get defaultConfig() {
     return {
-      parallel: [HaDeviceAction.defaultConfig],
+      parallel: [],
     };
   }
 
@@ -27,6 +30,8 @@ export class HaParallelAction extends LitElement implements ActionElement {
     return html`
       <ha-automation-action
         .actions=${action.parallel}
+        .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
       ></ha-automation-action>

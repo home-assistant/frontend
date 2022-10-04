@@ -1,11 +1,13 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
 import { Store } from "home-assistant-js-websocket/dist/store";
+import memoizeOne from "memoize-one";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 
 export interface EntityRegistryEntry {
+  id: string;
   entity_id: string;
   name: string | null;
   icon: string | null;
@@ -18,10 +20,10 @@ export interface EntityRegistryEntry {
   entity_category: "config" | "diagnostic" | null;
   has_entity_name: boolean;
   original_name?: string;
+  unique_id: string;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
-  unique_id: string;
   capabilities: Record<string, unknown>;
   original_icon?: string;
   device_class?: string;
@@ -59,7 +61,7 @@ export interface EntityRegistryEntryUpdateParams {
   hidden_by: string | null;
   new_entity_id?: string;
   options_domain?: string;
-  options?: SensorEntityOptions | WeatherEntityOptions;
+  options?: SensorEntityOptions | NumberEntityOptions | WeatherEntityOptions;
 }
 
 export const findBatteryEntity = (
@@ -91,7 +93,10 @@ export const computeEntityRegistryName = (
     return entry.name;
   }
   const state = hass.states[entry.entity_id];
-  return state ? computeStateName(state) : entry.entity_id;
+  if (state) {
+    return computeStateName(state);
+  }
+  return entry.original_name ? entry.original_name : entry.entity_id;
 };
 
 export const getExtendedEntityRegistryEntry = (
@@ -160,6 +165,16 @@ export const sortEntityRegistryByName = (entries: EntityRegistryEntry[]) =>
   entries.sort((entry1, entry2) =>
     caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
   );
+
+export const entityRegistryById = memoizeOne(
+  (entries: HomeAssistant["entities"]) => {
+    const entities: HomeAssistant["entities"] = {};
+    for (const entity of Object.values(entries)) {
+      entities[entity.id] = entity;
+    }
+    return entities;
+  }
+);
 
 export const getEntityPlatformLookup = (
   entities: EntityRegistryEntry[]

@@ -1,5 +1,7 @@
 import {
+  mdiDotsVertical,
   mdiDownload,
+  mdiInformationOutline,
   mdiPencil,
   mdiRayEndArrow,
   mdiRayStartArrow,
@@ -34,13 +36,15 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
+import "../../../layouts/hass-subpage";
+import "../../../components/ha-button-menu";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scriptEntityId!: string;
+  @property() public scriptId!: string;
 
   @property({ attribute: false }) public scripts!: ScriptEntity[];
 
@@ -49,6 +53,8 @@ export class HaScriptTrace extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
+
+  @state() private _entityId?: string;
 
   @state() private _traces?: ScriptTrace[];
 
@@ -70,15 +76,15 @@ export class HaScriptTrace extends LitElement {
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
   protected render(): TemplateResult {
-    const stateObj = this.scriptEntityId
-      ? this.hass.states[this.scriptEntityId]
+    const stateObj = this._entityId
+      ? this.hass.states[this._entityId]
       : undefined;
 
     const graph = this._graph;
     const trackedNodes = graph?.trackedNodes;
     const renderedNodes = graph?.renderedNodes;
 
-    const title = stateObj?.attributes.friendly_name || this.scriptEntityId;
+    const title = stateObj?.attributes.friendly_name || this._entityId;
 
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
@@ -88,81 +94,113 @@ export class HaScriptTrace extends LitElement {
       </div>`;
     }
 
-    const actionButtons = html`
-      <ha-icon-button
-        label="Refresh"
-        @click=${this._refreshTraces}
-        .path=${mdiRefresh}
-      ></ha-icon-button>
-      <ha-icon-button
-        .disabled=${!this._trace}
-        label="Download Trace"
-        @click=${this._downloadTrace}
-        .path=${mdiDownload}
-      ></ha-icon-button>
-    `;
-
     return html`
       ${devButtons}
-      <hass-tabs-subpage
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configSections.automations}
-      >
-        ${this.narrow
-          ? html`<span slot="header"> ${title} </span>
-              <div slot="toolbar-icon">${actionButtons}</div>`
+      <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
+        ${!this.narrow && this.scriptId
+          ? html`
+              <a
+                class="trace-link"
+                href="/config/script/edit/${this.scriptId}"
+                slot="toolbar-icon"
+              >
+                <mwc-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.script.trace.edit_script"
+                  )}
+                </mwc-button>
+              </a>
+            `
           : ""}
-        <div class="toolbar">
-          ${!this.narrow
-            ? html`<div>
-                ${title}
-                <a
-                  class="linkButton"
-                  href="/config/script/edit/${this.scriptEntityId}"
-                >
-                  <ha-icon-button
-                    label="Edit Script"
-                    tabindex="-1"
-                    .path=${mdiPencil}
-                  ></ha-icon-button>
-                </a>
-              </div>`
-            : ""}
-          ${this._traces && this._traces.length > 0
+
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!stateObj}
+            @click=${this._showInfo}
+          >
+            ${this.hass.localize("ui.panel.config.script.editor.show_info")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiInformationOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          ${this.narrow && this.scriptId
             ? html`
-                <div>
-                  <ha-icon-button
-                    .disabled=${this._traces[this._traces.length - 1].run_id ===
-                    this._runId}
-                    label="Older trace"
-                    @click=${this._pickOlderTrace}
-                    .path=${mdiRayEndArrow}
-                  ></ha-icon-button>
-                  <select .value=${this._runId} @change=${this._pickTrace}>
-                    ${repeat(
-                      this._traces,
-                      (trace) => trace.run_id,
-                      (trace) =>
-                        html`<option value=${trace.run_id}>
-                          ${formatDateTimeWithSeconds(
-                            new Date(trace.timestamp.start),
-                            this.hass.locale
-                          )}
-                        </option>`
+                <a
+                  class="trace-link"
+                  href="/config/script/edit/${this.scriptId}"
+                >
+                  <mwc-list-item graphic="icon">
+                    ${this.hass.localize(
+                      "ui.panel.config.script.trace.edit_script"
                     )}
-                  </select>
-                  <ha-icon-button
-                    .disabled=${this._traces[0].run_id === this._runId}
-                    label="Newer trace"
-                    @click=${this._pickNewerTrace}
-                    .path=${mdiRayStartArrow}
-                  ></ha-icon-button>
-                </div>
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiPencil}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                </a>
               `
             : ""}
-          ${!this.narrow ? html`<div>${actionButtons}</div>` : ""}
+
+          <li divider role="separator"></li>
+
+          <mwc-list-item graphic="icon" @click=${this._refreshTraces}>
+            ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
+            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!this._trace}
+            @click=${this._downloadTrace}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.automation.trace.download_trace"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
+
+        <div class="toolbar">
+          ${this._traces && this._traces.length > 0
+            ? html`
+                <ha-icon-button
+                  .disabled=${this._traces[this._traces.length - 1].run_id ===
+                  this._runId}
+                  label="Older trace"
+                  @click=${this._pickOlderTrace}
+                  .path=${mdiRayEndArrow}
+                ></ha-icon-button>
+                <select .value=${this._runId} @change=${this._pickTrace}>
+                  ${repeat(
+                    this._traces,
+                    (trace) => trace.run_id,
+                    (trace) =>
+                      html`<option value=${trace.run_id}>
+                        ${formatDateTimeWithSeconds(
+                          new Date(trace.timestamp.start),
+                          this.hass.locale
+                        )}
+                      </option>`
+                  )}
+                </select>
+                <ha-icon-button
+                  .disabled=${this._traces[0].run_id === this._runId}
+                  label="Newer trace"
+                  @click=${this._pickNewerTrace}
+                  .path=${mdiRayStartArrow}
+                ></ha-icon-button>
+              `
+            : ""}
         </div>
 
         ${this._traces === undefined
@@ -266,32 +304,40 @@ export class HaScriptTrace extends LitElement {
                 </div>
               </div>
             `}
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
-    if (!this.scriptEntityId) {
+    if (!this.scriptId) {
       return;
     }
 
     const params = new URLSearchParams(location.search);
     this._loadTraces(params.get("run_id") || undefined);
+
+    this._entityId = Object.values(this.hass.entities).find(
+      (entry) => entry.unique_id === this.scriptId
+    )?.entity_id;
   }
 
   public willUpdate(changedProps) {
     super.willUpdate(changedProps);
 
-    // Only reset if scriptEntityId has changed and we had one before.
-    if (changedProps.get("scriptEntityId")) {
+    // Only reset if scriptId has changed and we had one before.
+    if (changedProps.get("scriptId")) {
       this._traces = undefined;
       this._runId = undefined;
       this._trace = undefined;
       this._logbookEntries = undefined;
-      if (this.scriptEntityId) {
+      if (this.scriptId) {
         this._loadTraces();
+
+        this._entityId = Object.values(this.hass.entities).find(
+          (entry) => entry.unique_id === this.scriptId
+        )?.entity_id;
       }
     }
 
@@ -328,11 +374,7 @@ export class HaScriptTrace extends LitElement {
   }
 
   private async _loadTraces(runId?: string) {
-    this._traces = await loadTraces(
-      this.hass,
-      "script",
-      this.scriptEntityId.split(".")[1]
-    );
+    this._traces = await loadTraces(this.hass, "script", this.scriptId);
     // Newest will be on top.
     this._traces.reverse();
 
@@ -374,7 +416,7 @@ export class HaScriptTrace extends LitElement {
     const trace = await loadTrace(
       this.hass,
       "script",
-      this.scriptEntityId.split(".")[1],
+      this.scriptId,
       this._runId!
     );
     this._logbookEntries = isComponentLoaded(this.hass, "logbook")
@@ -390,7 +432,7 @@ export class HaScriptTrace extends LitElement {
 
   private _downloadTrace() {
     const aEl = document.createElement("a");
-    aEl.download = `trace ${this.scriptEntityId} ${
+    aEl.download = `trace ${this._entityId} ${
       this._trace!.timestamp.start
     }.json`;
     aEl.href = `data:application/json;charset=utf-8,${encodeURI(
@@ -439,6 +481,13 @@ export class HaScriptTrace extends LitElement {
     }
   }
 
+  private async _showInfo() {
+    if (!this._entityId) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId: this._entityId });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -447,24 +496,12 @@ export class HaScriptTrace extends LitElement {
         .toolbar {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          font-size: 20px;
+          justify-content: center;
           height: var(--header-height);
-          padding: 0 16px;
           background-color: var(--primary-background-color);
-          font-weight: 400;
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
-        }
-
-        .toolbar > * {
-          display: flex;
-          align-items: center;
-        }
-
-        :host([narrow]) .toolbar > * {
-          display: contents;
         }
 
         .main {
@@ -498,6 +535,9 @@ export class HaScriptTrace extends LitElement {
 
         .linkButton {
           color: var(--primary-text-color);
+        }
+        .trace-link {
+          text-decoration: none;
         }
       `,
     ];

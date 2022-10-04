@@ -5,6 +5,9 @@ import {
   mdiCheckboxMultipleMarked,
   mdiCloseBox,
   mdiCloseBoxMultiple,
+  mdiDotsVertical,
+  mdiFormatListChecks,
+  mdiSync,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -26,7 +29,11 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-switch";
-import { AlexaEntity, fetchCloudAlexaEntities } from "../../../../data/alexa";
+import {
+  AlexaEntity,
+  fetchCloudAlexaEntities,
+  syncCloudAlexaEntities,
+} from "../../../../data/alexa";
 import {
   AlexaEntityConfig,
   CloudPreferences,
@@ -58,6 +65,8 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @state() private _entities?: AlexaEntity[];
+
+  @state() private _syncing = false;
 
   @state()
   private _entityConfigs: CloudPreferences["alexa_entity_configs"] = {};
@@ -222,74 +231,84 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <hass-subpage .hass=${this.hass} .narrow=${
-      this.narrow
-    } .header=${this.hass!.localize("ui.panel.config.cloud.alexa.title")}>
-        ${
-          emptyFilter
-            ? html`
-                <mwc-button
-                  slot="toolbar-icon"
-                  @click=${this._openDomainToggler}
-                  >${this.hass!.localize(
-                    "ui.panel.config.cloud.alexa.manage_defaults"
-                  )}</mwc-button
-                >
-              `
-            : ""
-        }
-        ${
-          !emptyFilter
-            ? html`
-                <div class="banner">
-                  ${this.hass!.localize("ui.panel.config.cloud.alexa.banner")}
-                </div>
-              `
-            : ""
-        }
-          ${
-            exposedCards.length > 0
-              ? html`
-                  <div class="header">
-                    <h3>
-                      ${this.hass!.localize(
-                        "ui.panel.config.cloud.alexa.exposed_entities"
-                      )}
-                    </h3>
-                    ${!this.narrow
-                      ? this.hass!.localize(
-                          "ui.panel.config.cloud.alexa.exposed",
-                          "selected",
-                          selected
-                        )
-                      : selected}
-                  </div>
-                  <div class="content">${exposedCards}</div>
-                `
-              : ""
-          }
-          ${
-            notExposedCards.length > 0
-              ? html`
-                  <div class="header second">
-                    <h3>
-                      ${this.hass!.localize(
-                        "ui.panel.config.cloud.alexa.not_exposed_entities"
-                      )}
-                    </h3>
-                    ${!this.narrow
-                      ? this.hass!.localize(
-                          "ui.panel.config.cloud.alexa.not_exposed",
-                          "selected",
-                          this._entities.length - selected
-                        )
-                      : this._entities.length - selected}
-                  </div>
-                  <div class="content">${notExposedCards}</div>
-                `
-              : ""
-          }
-        </div>
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .header=${this.hass!.localize("ui.panel.config.cloud.alexa.title")}
+      >
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!emptyFilter}
+            @click=${this._openDomainToggler}
+          >
+            ${this.hass.localize("ui.panel.config.cloud.alexa.manage_defaults")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiFormatListChecks}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${this._syncing}
+            @click=${this._handleSync}
+          >
+            ${this.hass.localize("ui.panel.config.cloud.alexa.sync_entities")}
+            <ha-svg-icon slot="graphic" .path=${mdiSync}></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
+        ${!emptyFilter
+          ? html`
+              <div class="banner">
+                ${this.hass!.localize("ui.panel.config.cloud.alexa.banner")}
+              </div>
+            `
+          : ""}
+        ${exposedCards.length > 0
+          ? html`
+              <div class="header">
+                <h3>
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.alexa.exposed_entities"
+                  )}
+                </h3>
+                ${!this.narrow
+                  ? this.hass!.localize(
+                      "ui.panel.config.cloud.alexa.exposed",
+                      "selected",
+                      selected
+                    )
+                  : selected}
+              </div>
+              <div class="content">${exposedCards}</div>
+            `
+          : ""}
+        ${notExposedCards.length > 0
+          ? html`
+              <div class="header second">
+                <h3>
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.alexa.not_exposed_entities"
+                  )}
+                </h3>
+                ${!this.narrow
+                  ? this.hass!.localize(
+                      "ui.panel.config.cloud.alexa.not_exposed",
+                      "selected",
+                      this._entities.length - selected
+                    )
+                  : this._entities.length - selected}
+              </div>
+              <div class="content">${notExposedCards}</div>
+            `
+          : ""}
       </hass-subpage>
     `;
   }
@@ -421,6 +440,21 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
         });
       },
     });
+  }
+
+  private async _handleSync() {
+    this._syncing = true;
+    try {
+      await syncCloudAlexaEntities(this.hass!);
+    } catch (err: any) {
+      alert(
+        `${this.hass!.localize(
+          "ui.panel.config.cloud.alexa.sync_entities_error"
+        )} ${err.body.message}`
+      );
+    } finally {
+      this._syncing = false;
+    }
   }
 
   private async _updateDomainExposed(domain: string, expose: boolean) {

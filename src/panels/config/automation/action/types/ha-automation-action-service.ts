@@ -10,6 +10,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 
 const actionStruct = object({
+  alias: optional(string()),
   service: optional(string()),
   entity_id: optional(entityIdOrAll()),
   target: optional(any()),
@@ -21,6 +22,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public action!: ServiceAction;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -65,6 +68,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .narrow=${this.narrow}
         .hass=${this.hass}
         .value=${this._action}
+        .disabled=${this.disabled}
         .showAdvanced=${this.hass.userData?.showAdvanced}
         @value-changed=${this._actionChanged}
       ></ha-service-control>

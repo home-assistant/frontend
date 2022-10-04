@@ -1024,10 +1024,13 @@ class HassioAddonInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: this.addon.name,
-      text: "Are you sure you want to uninstall this add-on?",
-      confirmText: "uninstall add-on",
-      dismissText: "no",
+      title: this.supervisor.localize("dialog.uninstall_addon.title", {
+        name: this.addon.name,
+      }),
+      text: this.supervisor.localize("dialog.uninstall_addon.text"),
+      confirmText: this.supervisor.localize("dialog.uninstall_addon.uninstall"),
+      dismissText: this.supervisor.localize("common.cancel"),
+      destructive: true,
     });
 
     if (!confirmed) {

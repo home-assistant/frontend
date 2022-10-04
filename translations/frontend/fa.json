@@ -112,8 +112,7 @@
                 },
                 "network": {
                     "disabled": "غیر فعال",
-                    "header": "شبکه",
-                    "host": "میزبان"
+                    "header": "شبکه"
                 },
                 "options": {
                     "edit_in_ui": "ویرایش در رابط کاربری",
@@ -134,11 +133,6 @@
         }
     },
     "ui": {
-        "auth_store": {
-            "ask": "ميخواي وارد سیستم بموني؟",
-            "confirm": "ذخیره ورود به سیستم",
-            "decline": "نه"
-        },
         "card": {
             "alarm_control_panel": {
                 "arm_away": "حفاظت بیرون",
@@ -365,13 +359,6 @@
                 "integration": "Integrare"
             },
             "relative_time": {
-                "duration": {
-                    "day": "{count} {count, plural,\n  one {روز}\n  other {روزها}\n}",
-                    "hour": "{count} {count, plural,\n  one {ساعت}\n  other {ساعت ها}\n}",
-                    "minute": "{count} {count, plural,\n  one {دقیقه}\n  other {دقیقه ها}\n}",
-                    "second": "{count} {count, plural,\n  one {ثانیه}\n  other {ثانیه ها}\n}",
-                    "week": "{count} {count, plural,\n  one {هفته}\n  other {هفته ها}\n}"
-                },
                 "never": "هرگز"
             },
             "service-picker": {
@@ -397,6 +384,7 @@
                 "editor": {
                     "delete": "حذف",
                     "device_disabled": "دستگاه این نهاد غیر فعال است.",
+                    "name": "نام",
                     "open_device_settings": "باز کردن تنظیمات دستگاه",
                     "update": "به روز رسانی"
                 },
@@ -406,6 +394,9 @@
                 "close": "بستن"
             },
             "helper_settings": {
+                "generic": {
+                    "name": "نام"
+                },
                 "input_datetime": {
                     "date": "تاریخ",
                     "datetime": "تاریخ و زمان",
@@ -490,16 +481,25 @@
                         "areas": "ناحیه ها",
                         "automation": "اتوماسیون",
                         "blueprint": "Blueprint ",
-                        "core": "عمومی",
-                        "customize": "سفارشی سازی ها",
                         "devices": "دستگاه ها",
                         "entities": "نهادها",
                         "info": "اطلاعات",
                         "person": "افراد",
                         "script": "اسکریپت ها",
-                        "server_control": "کنترل های سرور",
+                        "server_control": "Controale Server",
                         "users": "کاربران",
                         "zone": "مناطق"
+                    },
+                    "reload": {
+                        "automation": "بارگیری مجدد اتوماسیون",
+                        "core": "بارگذاری مجدد هسته",
+                        "group": "بارگیری مجدد گروه‌ها",
+                        "scene": "بارگذاری سناریوها",
+                        "script": "بارگزاری مجدد اسکریپت"
+                    },
+                    "server_control": {
+                        "restart": "راه‌اندازی مجدد",
+                        "stop": "بایست"
                     },
                     "types": {
                         "server_control": "سرور"
@@ -553,6 +553,16 @@
         },
         "panel": {
             "config": {
+                "application_credentials": {
+                    "editor": {
+                        "name": "نام"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "نام"
+                        }
+                    }
+                },
                 "areas": {
                     "caption": "ناحیه ها",
                     "data_table": {
@@ -568,6 +578,7 @@
                         "create": "ايجاد كردن",
                         "default_name": "ناحیه جدید",
                         "delete": "حذف",
+                        "name": "نام",
                         "update": "به روز رسانی"
                     },
                     "picker": {
@@ -618,11 +629,7 @@
                                 },
                                 "event": {
                                     "event": "اتفاق",
-                                    "label": "اجرا رویداد",
-                                    "service_data": "اطلاعات خدمات"
-                                },
-                                "scene": {
-                                    "label": "Activeaza scena"
+                                    "label": "اجرا رویداد"
                                 },
                                 "service": {
                                     "label": "خدمات فراخوانی"
@@ -842,11 +849,9 @@
                         "delete_blueprint": "حذف Blueprint",
                         "discover_more": "blueprint های بیشتری را پیدا کنید",
                         "headers": {
-                            "domain": "دامنه",
                             "file_name": "نام فایل",
                             "name": "نام"
-                        },
-                        "use_blueprint": "ایجاد اتوماسیون"
+                        }
                     }
                 },
                 "cloud": {
@@ -882,7 +887,6 @@
                         "title": "Alexa"
                     },
                     "description_features": "کنترل کردن از خانه، یکپارچه با الکسا و Google Assistant.",
-                    "description_login": "وارد شده به عنوان {email}",
                     "description_not_login": "وارد نشده اید",
                     "dialog_certificate": {
                         "certificate_expiration_date": "Data expirare certificat",
@@ -958,10 +962,8 @@
                                 "edit_requires_storage": "ویرایشگر غیرفعال شده است چون پیکربندی ذخیره شده در configuration.yaml.",
                                 "elevation": "ارتفاع",
                                 "elevation_meters": "متر",
-                                "external_url": "URL خارجی",
                                 "find_currency_value": "ارزش خود را بیابید",
                                 "imperial_example": "فارنهایت، پوند",
-                                "internal_url": "URL داخلی",
                                 "latitude": "طول و عرض جغرافیایی",
                                 "location_name": "نام برای نصب صفحه اصلی دستیار شما",
                                 "longitude": "جغرافیایی",
@@ -975,19 +977,6 @@
                             "header": "پیکربندی و کنترل سرور",
                             "introduction": "تغییر پیکربندی شما می تواند یک روند خسته کننده باشد. ما میدانیم. این بخش سعی خواهد کرد زندگی شما را کمی ساده تر کند."
                         }
-                    }
-                },
-                "customize": {
-                    "attributes_not_set": "Urmatoarele atribute nu au fost fixate. Fixeaza-le daca vrei",
-                    "caption": "سفارشی سازی ها",
-                    "description": "نهادهای خود را سفارشی کنید",
-                    "pick_attribute": "Alege un atribut pentru a trece peste acesta",
-                    "picker": {
-                        "header": "سفارشی سازی ها",
-                        "introduction": "نویسه ویژگی های هر سازمانی. سفارشی سازی اضافه شده / ویرایش شده فورا اثر می کند. سفارشی های حذف شده هنگامی که موجودیت به روز می شود اثر می کند."
-                    },
-                    "warning": {
-                        "include_link": "Include customize.yaml"
                     }
                 },
                 "devices": {
@@ -1004,7 +993,7 @@
                         "no_automations": "Nu exista automatizari",
                         "no_device_automations": "Nu exista automatizari disponibile pentru acest dispozitiv",
                         "triggers": {
-                            "caption": "يه کاري بکن وقتي..."
+                            "caption": "يه کاري بکن وقتي…"
                         }
                     },
                     "cant_edit": "Puteti edita doar elemente create in Interfata Utilizator",
@@ -1055,14 +1044,12 @@
                         "no_scenes": "Nu exista scene",
                         "scenes": "Scene"
                     },
-                    "scenes": "Scene",
                     "script": {
                         "create": "Creaza script cu acest dispozitiv",
                         "create_disable": "نمی توان اسکریپت را با دستگاه غیر فعال ایجاد کرد",
                         "no_scripts": "Nu exista scripturi",
                         "scripts": "Scripturi"
                     },
-                    "scripts": "Scripturi",
                     "unknown_error": "Eroare necunoscuta",
                     "unnamed_device": "Dispozitiv nedenumit",
                     "update": "Actualizeaza"
@@ -1129,12 +1116,9 @@
                     "caption": "Ajutoare",
                     "description": "Elemente ce pot ajuta la construirea de automatizari",
                     "dialog": {
-                        "add_helper": "اضافه کردن کمکی",
-                        "add_platform": "افزودن {platform}",
                         "create": "ایجاد کردن"
                     },
                     "picker": {
-                        "add_helper": "اضافه کردن کمکی",
                         "headers": {
                             "editable": "قابل ویرایش",
                             "entity_id": "شناسه نهاد",
@@ -1154,7 +1138,6 @@
                     "documentation": "مستندات",
                     "home_assistant_logo": "Logo Home Assistant",
                     "icons_by": "آیکون توسط",
-                    "integrations": "یکپارچگی",
                     "issues": "موضوعات",
                     "server": "سرور",
                     "source": "Sursa:"
@@ -1165,10 +1148,7 @@
                     "config_entry": {
                         "delete": "حذف",
                         "delete_confirm": "آیا مطمئن هستید که می خواهید این یکپارچگی را حذف کنید؟",
-                        "device_unavailable": "دستگاه در دسترس نیست",
-                        "entity_unavailable": "نهاد در دسترس نیست",
                         "firmware": "سیستم عامل: {version}",
-                        "hub": "اتصال از طریق",
                         "manuf": "توسط {manufacturer}",
                         "no_area": "بدون منطقه",
                         "rename": "تغییر نام",
@@ -1208,7 +1188,6 @@
                     "rename_dialog": "ویرایش نام این پیکربندی ورود",
                     "rename_input_label": "ورود نام"
                 },
-                "introduction": "در اینجا می توانید اجزای خود و صفحه اصلی دستیار را پیکربندی کنید.فعلا ویرایش همه چیز از طریق ویرایش بصری امکان پذیر نیست ، اما ما داریم روی اون کار می کنیم.",
                 "logs": {
                     "level": {
                         "critical": "بحرانی",
@@ -1288,17 +1267,6 @@
                     "subscribe_to": "Subiect pentru abonare",
                     "title": "MQTT"
                 },
-                "ozw": {
-                    "common": {
-                        "controller": "کنترل کننده",
-                        "network": "شبکه"
-                    },
-                    "network_status": {
-                        "offline": "آفلاین",
-                        "online": "آنلاین",
-                        "unknown": "نامشخص"
-                    }
-                },
                 "person": {
                     "add_person": "Adauga Persoana",
                     "caption": "افراد",
@@ -1331,7 +1299,8 @@
                             "add": "Adauga entitate",
                             "delete": "Elimina entitatea",
                             "device_entities": "Daca adaugi o entitate care apartine unui dispozitiv, acel dispozitiv va fi adaugat"
-                        }
+                        },
+                        "name": "نام"
                     },
                     "picker": {
                         "header": "Editor de scene",
@@ -1347,6 +1316,7 @@
                     "caption": "اسکریپت ها",
                     "description": "دنباله ای از اقدامات را اجرا کنید",
                     "editor": {
+                        "alias": "نام",
                         "default_name": "Script nou",
                         "delete_confirm": "Esti sigur ca vrei sa elimini acest script?",
                         "delete_script": "Elimina script",
@@ -1367,33 +1337,6 @@
                         "learn_more": "Afla mai multe despre scripturi",
                         "no_scripts": "Nu s-au gasit scripturi editabile",
                         "show_info": "نمایش اطلاعات در مورد اسکریپت"
-                    }
-                },
-                "server_control": {
-                    "caption": "Controale Server",
-                    "description": "سرور Home Assistant را مجدداً راه اندازی کرده و متوقف کنید",
-                    "section": {
-                        "reloading": {
-                            "automation": "بارگیری مجدد اتوماسیون",
-                            "core": "بارگذاری مجدد هسته",
-                            "group": "بارگیری مجدد گروه‌ها",
-                            "heading": "بارگیری مجدد پیکربندی YAML",
-                            "introduction": "برخی از قسمت‌های Home Assistant بدون نیاز به راه‌اندازی مجدد می‌توانند بارگیری شوند.  با بارگیری مجدد، تنظیمات فعلی آنها حذف می‌شوند و نسخه جدید را بارگیری خواهد شد.",
-                            "scene": "بارگذاری سناریوها",
-                            "script": "بارگزاری مجدد اسکریپت"
-                        },
-                        "server_management": {
-                            "heading": "مدیریت سرور",
-                            "introduction": "سرور Home Assistant خود را کنترل کنید ... از Home Assistant.",
-                            "restart": "راه‌اندازی مجدد",
-                            "stop": "بایست"
-                        },
-                        "validation": {
-                            "check_config": "بررسی پیکربندی",
-                            "heading": "تایید  پیکربندی",
-                            "invalid": "پیکربندی نامعتبر است",
-                            "valid": "پیکربندی معتبر است!"
-                        }
                     }
                 },
                 "tag": {
@@ -1436,7 +1379,6 @@
                         "headers": {
                             "group": "گروه",
                             "is_active": "فعال",
-                            "is_owner": "مالک",
                             "name": "نام",
                             "system": "سیستم",
                             "username": "نام کاربری"
@@ -1496,61 +1438,7 @@
                     "edit_home_zone": "شعاع منطقه خانه را هنوزنمی توان از پیش زمینه ویرایش کرد.  نشانگر را بر روی نقشه  حرکت دهید",
                     "no_zones_created_yet": "Se pare ca inca nu ai creat nicio zona"
                 },
-                "zwave": {
-                    "common": {
-                        "index": "Index",
-                        "instance": "نمونه، مثال",
-                        "unknown": "نامشخص",
-                        "value": "Valoare",
-                        "wakeup_interval": "فاصله Wakeup"
-                    },
-                    "description": "شبکه Z-Wave خود را مدیریت کنید",
-                    "network_management": {
-                        "header": "مدیریت شبکه Z-Wave"
-                    },
-                    "network_status": {
-                        "network_started": "شبکه Z-Wave شروع شد",
-                        "network_starting": "شروع شبکه Z-Wave …",
-                        "network_starting_note": "این کار بسته به اندازه شبکه شما ممکن است مدتی طول بکشد.",
-                        "network_stopped": "شبکه Z-Wave متوقف شد"
-                    },
-                    "node_config": {
-                        "config_parameter": "پارامتر پیکربندی",
-                        "config_value": "مقدار پیکربندی",
-                        "false": "نادرست",
-                        "header": "گزینه‌های پیکربندی گره",
-                        "seconds": "ثانیه‌ها",
-                        "set_config_parameter": "تنظیم پارامتر پیکربندی",
-                        "set_wakeup": "تنظیم فاصله Wakeup",
-                        "true": "صحیح"
-                    },
-                    "node_management": {
-                        "group": "گروه",
-                        "nodes": "گره ها"
-                    },
-                    "services": {
-                        "add_node": "Adauga Nod",
-                        "cancel_command": "Anuleaza Comanda",
-                        "heal_network": "ترمیم شبکه",
-                        "remove_node": "Elimina Nodul",
-                        "save_config": "Salveaza Configuratie",
-                        "soft_reset": "تنظیم مجدد نرم",
-                        "start_network": "شروع شبکه",
-                        "stop_network": "توقف شبکه",
-                        "test_network": "Testare Retea"
-                    }
-                },
                 "zwave_js": {
-                    "add_node": {
-                        "security_classes": {
-                            "S2_AccessControl": {
-                                "description": "مثال: قفل درها و درهای گاراژ"
-                            },
-                            "S2_Unauthenticated": {
-                                "title": "S2 غیر مجاز"
-                            }
-                        }
-                    },
                     "heal_node": {
                         "start_heal": "تعمیر دستگاه",
                         "title": " یک دستگاه  Z-Wave را تعمیر کنید"
@@ -1606,6 +1494,33 @@
                     },
                     "templates": {
                         "title": "قالب"
+                    },
+                    "yaml": {
+                        "caption": "Controale Server",
+                        "description": "سرور Home Assistant را مجدداً راه اندازی کرده و متوقف کنید",
+                        "section": {
+                            "reloading": {
+                                "automation": "بارگیری مجدد اتوماسیون",
+                                "core": "بارگذاری مجدد هسته",
+                                "group": "بارگیری مجدد گروه‌ها",
+                                "heading": "بارگیری مجدد پیکربندی YAML",
+                                "introduction": "برخی از قسمت‌های Home Assistant بدون نیاز به راه‌اندازی مجدد می‌توانند بارگیری شوند.  با بارگیری مجدد، تنظیمات فعلی آنها حذف می‌شوند و نسخه جدید را بارگیری خواهد شد.",
+                                "scene": "بارگذاری سناریوها",
+                                "script": "بارگزاری مجدد اسکریپت"
+                            },
+                            "server_management": {
+                                "heading": "مدیریت سرور",
+                                "introduction": "سرور Home Assistant خود را کنترل کنید … از Home Assistant.",
+                                "restart": "راه‌اندازی مجدد",
+                                "stop": "بایست"
+                            },
+                            "validation": {
+                                "check_config": "بررسی پیکربندی",
+                                "heading": "تایید  پیکربندی",
+                                "invalid": "پیکربندی نامعتبر است",
+                                "valid": "پیکربندی معتبر است!"
+                            }
+                        }
                     }
                 }
             },
@@ -1700,7 +1615,6 @@
                             "maximum": "بیشترین",
                             "minimum": "کمترین",
                             "name": "نام",
-                            "no_theme": "بدون موضوع",
                             "refresh_interval": "فاصله رفرش",
                             "search": "جستجو",
                             "secondary_info_attribute": "ویژگی اطلاعات ثانویه",
@@ -1764,8 +1678,7 @@
                         },
                         "weather-forecast": {
                             "description": "کارت پیش بینی آب و هوا را نشان می دهد. اضافه کردن آن به  سایر رابط ها بسیار مفید است .",
-                            "name": "پیش بینی آب و هوا",
-                            "show_forecast": "نمایش پیش بینی"
+                            "name": "پیش بینی آب و هوا"
                         }
                     },
                     "cardpicker": {
@@ -2052,8 +1965,7 @@
                         "username": "نام کاربری"
                     },
                     "error": {
-                        "password_not_match": "رمزهای عبور مطابقت ندارند",
-                        "required_fields": "تمام فیلدهای لازم را پر کنید"
+                        "password_not_match": "رمزهای عبور مطابقت ندارند"
                     },
                     "intro": "بیایید با ایجاد یک حساب کاربری شروع کنیم.",
                     "required_field": "ضروری"

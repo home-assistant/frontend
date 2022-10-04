@@ -109,6 +109,7 @@ class HaBlueprintOverview extends LitElement {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.headers.name"
         ),
+        main: true,
         sortable: true,
         filterable: true,
         direction: "asc",
@@ -329,11 +330,15 @@ class HaBlueprintOverview extends LitElement {
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.blueprint.overview.confirm_delete_header"
+          "ui.panel.config.blueprint.overview.confirm_delete_title"
         ),
         text: this.hass.localize(
-          "ui.panel.config.blueprint.overview.confirm_delete_text"
+          "ui.panel.config.blueprint.overview.confirm_delete_text",
+          { name: blueprint.name }
         ),
+        confirmText: this.hass!.localize("ui.common.delete"),
+        dismissText: this.hass!.localize("ui.common.cancel"),
+        destructive: true,
       }))
     ) {
       return;

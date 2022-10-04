@@ -1,4 +1,11 @@
 {
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "on": "On"
+            }
+        }
+    },
     "ui": {
         "card": {
             "climate": {
@@ -57,10 +64,6 @@
         },
         "panel": {
             "config": {
-                "advanced_mode": {
-                    "hint_enable": "Mankas agordaj opcioj? Ebligu altnivelan reĝimon",
-                    "link_profile_page": "via profilpaĝo"
-                },
                 "automation": {
                     "editor": {
                         "actions": {
@@ -95,20 +98,6 @@
                         "edit_automation": "Redakti aŭtomatigon",
                         "only_editable": "Nur aŭtomatoj difinitaj en automations.yaml estas redakteblaj.",
                         "show_info_automation": "Montri informojn pri aŭtomatigon"
-                    }
-                },
-                "customize": {
-                    "attributes_customize": "La sekvaj atributoj estas jam agorditaj en customize.yaml",
-                    "attributes_not_set": "La sekvaj atributoj ne estis agorditaj. Agordu ilin, se vi volas",
-                    "attributes_outside": "La sekvaj atributoj estas agorditaj de ekstere de customize.yaml",
-                    "attributes_override": "Vi povas superregi ilin, se vi volas.",
-                    "attributes_set": "La sekvaj atributoj de la ento estas agorditaj laŭprogramaj.",
-                    "different_include": "Eble per domajno, globo aŭ malsama inkluzivo.",
-                    "pick_attribute": "Elektu atributon por superregi",
-                    "warning": {
-                        "include_link": "inkluzivi customize.yaml",
-                        "include_sentence": "Ŝajnas, ke via configuration.yaml ne taŭgas",
-                        "not_applied": "Ŝanĝoj faritaj ĉi tie estas skribita en ĝi, sed ne estos aplikita post agordo reŝarĝo krom se la inkluzivo estas en loko."
                     }
                 },
                 "devices": {
@@ -168,8 +157,7 @@
                 "logs": {
                     "clear": "Klarigi",
                     "details": "Logaj Detaloj ({level})",
-                    "load_full_log": "Ŝargi Plena Home Assistant Protokolo",
-                    "loading_log": "Ŝarĝante eraran protokolon ...",
+                    "loading_log": "Ŝarĝante eraran protokolon …",
                     "multiple_messages": "mesaĝo unuafoje okazis je {time} kaj aperas {counter} fojojn",
                     "no_errors": "Neniuj eraroj estis raportitaj.",
                     "no_issues": "Ne estas novaj aferoj!",
@@ -186,11 +174,6 @@
                     "stop_listening": "Halti aŭskulti",
                     "subscribe_to": "Temo por aboni",
                     "topic": "temo"
-                },
-                "ozw": {
-                    "network_status": {
-                        "unknown": "Nekonata"
-                    }
                 },
                 "scene": {
                     "activated": "Aktivigita sceno {name}.",
@@ -287,13 +270,6 @@
                         "manufacturer_code_override": "Fabrikkodo Nuligo",
                         "value": "Valoro"
                     }
-                },
-                "zwave": {
-                    "learn_more": "Lerni pli pri Z-Wave",
-                    "ozw_log": {
-                        "header": "OZW Protokolo",
-                        "introduction": "Rigardu la protokolon. 0 estas la minimumo (ŝarĝas tutan protokolo) kaj 1000 estas la maksimumo. Ŝarĝo montros statikan protokolon kaj vosto aŭtomate ĝisdatigos kun la lasta specifita nombro da linioj de la protokolo."
-                    }
                 }
             },
             "custom": {
@@ -307,7 +283,6 @@
                 "tabs": {
                     "events": {
                         "alert_event_type": "Eventa tipo estas deviga kampo",
-                        "available_events": "Haveblaj Eventoj",
                         "count_listeners": " ({count} aŭskultantoj)",
                         "data": "Eventaj datumoj (YAML, nedeviga)",
                         "description": "Ekbruligu eventon sur la eventa buso.",

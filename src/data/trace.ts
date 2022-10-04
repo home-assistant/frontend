@@ -16,6 +16,7 @@ interface BaseTraceStep {
 export interface TriggerTraceStep extends BaseTraceStep {
   changed_variables: {
     trigger: {
+      alias?: string;
       description: string;
       [key: string]: unknown;
     };

@@ -8,7 +8,12 @@ import {
   EnergyPreferences,
   getEnergyInfo,
   getEnergyPreferences,
+  getReferencedStatisticIds,
 } from "../../../data/energy";
+import {
+  getStatisticMetadata,
+  StatisticsMetaData,
+} from "../../../data/recorder";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -47,6 +52,8 @@ class HaConfigEnergy extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _statsMetadata?: Record<string, StatisticsMetaData>;
+
   protected firstUpdated() {
     this._fetchConfig();
   }
@@ -83,32 +90,37 @@ class HaConfigEnergy extends LitElement {
           <ha-energy-grid-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
-            .validationResult=${this._validationResult!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-grid-settings>
           <ha-energy-solar-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
-            .validationResult=${this._validationResult!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
             .info=${this._info}
             @value-changed=${this._prefsChanged}
           ></ha-energy-solar-settings>
           <ha-energy-battery-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
-            .validationResult=${this._validationResult!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-battery-settings>
           <ha-energy-gas-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
-            .validationResult=${this._validationResult!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-gas-settings>
           <ha-energy-device-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
-            .validationResult=${this._validationResult!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-device-settings>
         </div>
@@ -136,6 +148,7 @@ class HaConfigEnergy extends LitElement {
       this._error = err.message;
     }
     this._info = await energyInfoPromise;
+    await this._fetchMetaData();
   }
 
   private async _prefsChanged(ev: CustomEvent) {
@@ -147,6 +160,20 @@ class HaConfigEnergy extends LitElement {
       this._error = err.message;
     }
     this._info = await getEnergyInfo(this.hass);
+    await this._fetchMetaData();
+  }
+
+  private async _fetchMetaData() {
+    if (!this._preferences || !this._info) {
+      return;
+    }
+    const statIDs = getReferencedStatisticIds(this._preferences, this._info);
+    const statsMetadataArray = await getStatisticMetadata(this.hass, statIDs);
+    const statsMetadata: Record<string, StatisticsMetaData> = {};
+    statsMetadataArray.forEach((x) => {
+      statsMetadata[x.statistic_id] = x;
+    });
+    this._statsMetadata = statsMetadata;
   }
 
   static get styles(): CSSResultGroup {

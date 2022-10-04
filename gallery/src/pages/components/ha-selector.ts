@@ -3,6 +3,7 @@ import "@material/mwc-button";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
@@ -124,6 +125,10 @@ const SCHEMAS: {
         selector: { attribute: { entity_id: "" } },
       },
       device: { name: "Device", selector: { device: {} } },
+      config_entry: {
+        name: "Integration",
+        selector: { config_entry: {} },
+      },
       duration: { name: "Duration", selector: { duration: {} } },
       addon: { name: "Addon", selector: { addon: {} } },
       area: { name: "Area", selector: { area: {} } },
@@ -186,6 +191,48 @@ const SCHEMAS: {
               "Option 4",
               "Option 5",
               "Option 6",
+            ],
+          },
+        },
+      },
+      select_disabled_list: {
+        name: "Select disabled option",
+        selector: {
+          select: {
+            options: [
+              { label: "Option 1", value: "Option 1" },
+              { label: "Option 2", value: "Option 2" },
+              { label: "Option 3", value: "Option 3", disabled: true },
+            ],
+            mode: "list",
+          },
+        },
+      },
+      select_disabled_multiple: {
+        name: "Select disabled option",
+        selector: {
+          select: {
+            multiple: true,
+            options: [
+              { label: "Option 1", value: "Option 1" },
+              { label: "Option 2", value: "Option 2" },
+              { label: "Option 3", value: "Option 3", disabled: true },
+            ],
+            mode: "list",
+          },
+        },
+      },
+      select_disabled: {
+        name: "Select disabled option",
+        selector: {
+          select: {
+            options: [
+              { label: "Option 1", value: "Option 1" },
+              { label: "Option 2", value: "Option 2" },
+              { label: "Option 3", value: "Option 3", disabled: true },
+              { label: "Option 4", value: "Option 4", disabled: true },
+              { label: "Option 5", value: "Option 5", disabled: true },
+              { label: "Option 6", value: "Option 6" },
             ],
           },
         },
@@ -280,6 +327,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
     hass.addEntities(ENTITIES);
     mockEntityRegistry(hass);
     mockDeviceRegistry(hass, DEVICES);
+    mockConfigEntries(hass);
     mockAreaRegistry(hass, AREAS);
     mockHassioSupervisor(hass);
     hass.mockWS("auth/sign_path", (params) => params);

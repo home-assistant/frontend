@@ -15,7 +15,6 @@ import {
   Describe,
   boolean,
 } from "superstruct";
-import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
 import {
@@ -155,9 +154,17 @@ export interface WaitAction extends BaseAction {
   continue_on_timeout?: boolean;
 }
 
+export interface WaitForTriggerActionParts extends BaseAction {
+  milliseconds?: number;
+  seconds?: number;
+  minutes?: number;
+  hours?: number;
+  days?: number;
+}
+
 export interface WaitForTriggerAction extends BaseAction {
   wait_for_trigger: Trigger | Trigger[];
-  timeout?: number;
+  timeout?: number | Partial<WaitForTriggerActionParts> | string;
   continue_on_timeout?: boolean;
 }
 
@@ -270,9 +277,9 @@ export type ActionType = keyof ActionTypes;
 
 export const triggerScript = (
   hass: HomeAssistant,
-  entityId: string,
+  scriptId: string,
   variables?: Record<string, unknown>
-) => hass.callService("script", computeObjectId(entityId), variables);
+) => hass.callService("script", scriptId, variables);
 
 export const canRun = (state: ScriptEntity) => {
   if (state.state === "off") {
@@ -292,6 +299,15 @@ export const deleteScript = (hass: HomeAssistant, objectId: string) =>
   hass.callApi("DELETE", `config/script/config/${objectId}`);
 
 let inititialScriptEditorData: Partial<ScriptConfig> | undefined;
+
+export const fetchScriptFileConfig = (hass: HomeAssistant, objectId: string) =>
+  hass.callApi<ScriptConfig>("GET", `config/script/config/${objectId}`);
+
+export const getScriptStateConfig = (hass: HomeAssistant, entity_id: string) =>
+  hass.callWS<{ config: ScriptConfig }>({
+    type: "script/config",
+    entity_id,
+  });
 
 export const showScriptEditor = (data?: Partial<ScriptConfig>) => {
   inititialScriptEditorData = data;

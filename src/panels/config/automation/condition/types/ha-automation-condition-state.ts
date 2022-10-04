@@ -12,6 +12,7 @@ import { forDictStruct } from "../../structs";
 import type { ConditionElement } from "../ha-automation-condition-row";
 
 const stateConditionStruct = object({
+  alias: optional(string()),
   condition: literal("state"),
   entity_id: optional(string()),
   attribute: optional(string()),
@@ -24,6 +25,8 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public condition!: StateCondition;
+
+  @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig() {
     return { entity_id: "", state: "" };
@@ -38,7 +41,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
           selector: {
             attribute: {
               entity_id: entityId,
-              exclude_attributes: [
+              hide_attributes: [
                 "access_token",
                 "available_modes",
                 "color_modes",
@@ -65,7 +68,10 @@ export class HaStateCondition extends LitElement implements ConditionElement {
         },
         {
           name: "state",
-          selector: { state: { entity_id: entityId, attribute: attribute } },
+          required: true,
+          selector: {
+            state: { entity_id: entityId, attribute: attribute },
+          },
         },
         { name: "for", selector: { duration: {} } },
       ] as const
@@ -96,6 +102,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}
+        .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>
@@ -104,15 +111,21 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newTrigger = ev.detail.value;
+    const newCondition = ev.detail.value;
 
-    Object.keys(newTrigger).forEach((key) =>
-      newTrigger[key] === undefined || newTrigger[key] === ""
-        ? delete newTrigger[key]
+    Object.keys(newCondition).forEach((key) =>
+      newCondition[key] === undefined || newCondition[key] === ""
+        ? delete newCondition[key]
         : {}
     );
 
-    fireEvent(this, "value-changed", { value: newTrigger });
+    // We should not cleanup state in the above, as it is required.
+    // Set it to empty string if it is undefined.
+    if (!newCondition.state) {
+      newCondition.state = "";
+    }
+
+    fireEvent(this, "value-changed", { value: newCondition });
   }
 
   private _computeLabelCallback = (

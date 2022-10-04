@@ -1,11 +1,12 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
+import { ActionDetail } from "@material/mwc-list/mwc-list";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { navigate } from "../common/navigate";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../types";
-import "./ha-clickable-list-item";
 import "./ha-icon-next";
+import "./ha-list-item";
 import "./ha-svg-icon";
 
 @customElement("ha-navigation-list")
@@ -18,17 +19,22 @@ class HaNavigationList extends LitElement {
 
   @property({ type: Boolean }) public hasSecondary = false;
 
+  @property() public label?: string;
+
   public render(): TemplateResult {
     return html`
-      <mwc-list>
+      <mwc-list
+        innerRole="menu"
+        itemRoles="menuitem"
+        innerAriaLabel=${ifDefined(this.label)}
+        @action=${this._handleListAction}
+      >
         ${this.pages.map(
           (page) => html`
-            <ha-clickable-list-item
+            <ha-list-item
               graphic="avatar"
               .twoline=${this.hasSecondary}
               .hasMeta=${!this.narrow}
-              @click=${this._entryClicked}
-              href=${page.path}
             >
               <div
                 slot="graphic"
@@ -44,15 +50,20 @@ class HaNavigationList extends LitElement {
               ${!this.narrow
                 ? html`<ha-icon-next slot="meta"></ha-icon-next>`
                 : ""}
-            </ha-clickable-list-item>
+            </ha-list-item>
           `
         )}
       </mwc-list>
     `;
   }
 
-  private _entryClicked(ev) {
-    ev.currentTarget.blur();
+  private _handleListAction(ev: CustomEvent<ActionDetail>) {
+    const path = this.pages[ev.detail.index].path;
+    if (path.endsWith("#external-app-configuration")) {
+      this.hass.auth.external!.fireMessage({ type: "config_screen/show" });
+    } else {
+      navigate(path);
+    }
   }
 
   static styles: CSSResultGroup = css`
@@ -75,10 +86,9 @@ class HaNavigationList extends LitElement {
     .icon-background ha-svg-icon {
       color: #fff;
     }
-    ha-clickable-list-item {
+    ha-list-item {
       cursor: pointer;
       font-size: var(--navigation-list-item-title-font-size);
-      padding: var(--navigation-list-item-padding) 0;
     }
   `;
 }

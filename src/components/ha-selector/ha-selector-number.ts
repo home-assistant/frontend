@@ -51,8 +51,9 @@ export class HaNumberSelector extends LitElement {
             `
           : ""}
         <ha-textfield
-          inputMode="numeric"
-          pattern="[0-9]+([\\.][0-9]+)?"
+          .inputMode=${(this.selector.number.step || 1) % 1 !== 0
+            ? "decimal"
+            : "numeric"}
           .label=${this.selector.number.mode !== "box" ? undefined : this.label}
           .placeholder=${this.placeholder}
           class=${classMap({ single: this.selector.number.mode === "box" })}

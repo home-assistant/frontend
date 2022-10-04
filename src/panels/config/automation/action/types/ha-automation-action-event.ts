@@ -14,6 +14,8 @@ import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 export class HaEventAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property() public action!: EventAction;
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
@@ -45,6 +47,7 @@ export class HaEventAction extends LitElement implements ActionElement {
           "ui.panel.config.automation.editor.actions.type.event.event"
         )}
         .value=${event}
+        .disabled=${this.disabled}
         @change=${this._eventChanged}
       ></ha-textfield>
       <ha-yaml-editor
@@ -53,6 +56,7 @@ export class HaEventAction extends LitElement implements ActionElement {
           "ui.panel.config.automation.editor.actions.type.event.event_data"
         )}
         .name=${"event_data"}
+        .readOnly=${this.disabled}
         .defaultValue=${event_data}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>

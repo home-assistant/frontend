@@ -15,6 +15,8 @@ export class HaNumericStateTrigger extends LitElement {
 
   @property({ attribute: false }) public trigger!: NumericStateTrigger;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _schema = memoizeOne(
     (entityId) =>
       [
@@ -24,7 +26,7 @@ export class HaNumericStateTrigger extends LitElement {
           selector: {
             attribute: {
               entity_id: entityId,
-              exclude_attributes: [
+              hide_attributes: [
                 "access_token",
                 "auto_update",
                 "available_modes",
@@ -91,11 +93,31 @@ export class HaNumericStateTrigger extends LitElement {
             },
           },
         },
-        { name: "above", selector: { text: {} } },
-        { name: "below", selector: { text: {} } },
+        {
+          name: "above",
+          selector: {
+            number: {
+              mode: "box",
+              min: Number.MIN_SAFE_INTEGER,
+              max: Number.MAX_SAFE_INTEGER,
+              step: 0.1,
+            },
+          },
+        },
+        {
+          name: "below",
+          selector: {
+            number: {
+              mode: "box",
+              min: Number.MIN_SAFE_INTEGER,
+              max: Number.MAX_SAFE_INTEGER,
+              step: 0.1,
+            },
+          },
+        },
         {
           name: "value_template",
-          selector: { text: { multiline: true } },
+          selector: { template: {} },
         },
         { name: "for", selector: { duration: {} } },
       ] as const
@@ -106,7 +128,7 @@ export class HaNumericStateTrigger extends LitElement {
       return;
     }
     // Check for templates in trigger. If found, revert to YAML mode.
-    if (this.trigger && hasTemplate(this.trigger)) {
+    if (this.trigger && hasTemplate(this.trigger.for)) {
       fireEvent(
         this,
         "ui-mode-not-available",
@@ -132,6 +154,7 @@ export class HaNumericStateTrigger extends LitElement {
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}
+        .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>

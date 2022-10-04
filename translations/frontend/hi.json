@@ -7,7 +7,7 @@
         "mailbox": "मेलबॉक्स",
         "map": "नक्शा",
         "shopping_list": "खरीदारी की सूची",
-        "states": "स्थिति"
+        "states": "स्थअवलोकन"
     },
     "state": {
         "default": {
@@ -168,6 +168,7 @@
                         }
                     },
                     "picker": {
+                        "delete_confirm_text": "{name} स्थायी रूप से हटा दिया जाएगा",
                         "headers": {
                             "name": "नाम"
                         },
@@ -226,7 +227,6 @@
                     "rename_dialog": "इस कॉन्फ़िगरेशन प्रविष्टि का नाम संपादित करें",
                     "rename_input_label": "प्रवेश का नाम"
                 },
-                "introduction": "In questa schermata è possibile configurare Home Assistant e i suoi componenti. Non è ancora possibile configurare tutto tramite l'interfaccia, ma ci stiamo lavorando.",
                 "logs": {
                     "custom_integration": "िशेष एकीकरण",
                     "error_from_custom_integration": "ये दोश िशेष एकीकरण की वजह से है",
@@ -241,11 +241,6 @@
                 },
                 "mqtt": {
                     "title": "MQTT"
-                },
-                "ozw": {
-                    "network_status": {
-                        "unknown": "अनजान"
-                    }
                 },
                 "scene": {
                     "picker": {
@@ -278,11 +273,6 @@
                 "zha": {
                     "add_device_page": {
                         "spinner": "Ricerca di dispositivi ZHA Zigbee …"
-                    }
-                },
-                "zwave": {
-                    "node_config": {
-                        "set_config_parameter": "कॉन्फ़िगरेशन पैरामीटर सेट करें"
                     }
                 }
             },

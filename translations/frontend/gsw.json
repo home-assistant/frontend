@@ -51,6 +51,13 @@
             "home": "Dahei"
         }
     },
+    "supervisor": {
+        "addon": {
+            "panel": {
+                "documentation": "Beschribig"
+            }
+        }
+    },
     "ui": {
         "card": {
             "alarm_control_panel": {
@@ -134,7 +141,9 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
-                "forecast": "Vorhärsag"
+                "forecast": "Vorhärsag",
+                "high": "höch",
+                "low": "wenig"
             }
         },
         "common": {
@@ -144,6 +153,11 @@
             "refresh": "Neu laden"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "name": "Name"
+                }
+            },
             "date-range-picker": {
                 "ranges": {
                     "last_week": "Letschti Wuche",
@@ -174,6 +188,18 @@
                 "statistic": "Statistik"
             }
         },
+        "dialogs": {
+            "entity_registry": {
+                "editor": {
+                    "name": "Name"
+                }
+            },
+            "helper_settings": {
+                "generic": {
+                    "name": "Name"
+                }
+            }
+        },
         "login-form": {
             "password": "Passwort"
         },
@@ -182,6 +208,21 @@
         },
         "panel": {
             "config": {
+                "application_credentials": {
+                    "editor": {
+                        "name": "Name"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Name"
+                        }
+                    }
+                },
+                "areas": {
+                    "editor": {
+                        "name": "Name"
+                    }
+                },
                 "automation": {
                     "caption": "Automation",
                     "editor": {
@@ -270,33 +311,69 @@
                                 }
                             }
                         }
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Name"
+                        }
+                    }
+                },
+                "blueprint": {
+                    "overview": {
+                        "headers": {
+                            "name": "Name"
+                        }
+                    }
+                },
+                "cloud": {
+                    "account": {
+                        "tts": {
+                            "dialog": {
+                                "play": "Abspilä"
+                            }
+                        }
                     }
                 },
                 "core": {
                     "section": {
                         "core": {
                             "core_config": {
-                                "currency": "Währig"
+                                "currency": "Währig",
+                                "location_name": "Name"
                             }
                         }
                     }
                 },
                 "devices": {
                     "device_info": "Geräteinformationen",
-                    "scripts": "Scripts"
+                    "name": "Name"
                 },
                 "energy": {
                     "device_consumption": {
                         "title": "Einzelne Devices"
                     }
                 },
+                "entities": {
+                    "picker": {
+                        "headers": {
+                            "name": "Name"
+                        }
+                    }
+                },
+                "helpers": {
+                    "picker": {
+                        "headers": {
+                            "name": "Name"
+                        }
+                    }
+                },
                 "integrations": {
                     "caption": "Integratione",
                     "config_entry": {
-                        "device_unavailable": "Grät verfüägbar",
-                        "entity_unavailable": "Entitiy verfüägbar",
+                        "check_the_logs": "Lug Logs a",
                         "firmware": "Firmware: {version}",
-                        "manuf": "vo {manufacturer}"
+                        "manuf": "vo {manufacturer}",
+                        "rename": "Umschribä"
                     },
                     "configure": "Konfiguriärä",
                     "configured": "Konfiguriärt",
@@ -307,15 +384,74 @@
                 "mqtt": {
                     "title": "MQTT"
                 },
+                "person": {
+                    "detail": {
+                        "name": "Name"
+                    }
+                },
+                "scene": {
+                    "editor": {
+                        "name": "Name"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Name"
+                        }
+                    }
+                },
+                "script": {
+                    "editor": {
+                        "alias": "Name"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Name"
+                        }
+                    }
+                },
+                "tag": {
+                    "detail": {
+                        "name": "Name"
+                    },
+                    "headers": {
+                        "name": "Name"
+                    }
+                },
                 "users": {
                     "caption": "Benutzer",
                     "editor": {
                         "delete_user": "Benutzer lösche"
                     }
+                },
+                "zone": {
+                    "detail": {
+                        "name": "Name"
+                    }
+                }
+            },
+            "lovelace": {
+                "editor": {
+                    "card": {
+                        "generic": {
+                            "name": "Name"
+                        }
+                    }
                 }
             },
             "mailbox": {
                 "delete_button": "Lösche"
+            },
+            "page-authorize": {
+                "form": {
+                    "working": "Bitte Wartä"
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "data": {
+                        "name": "Name"
+                    }
+                }
             },
             "profile": {
                 "change_password": {
@@ -327,8 +463,12 @@
                     "submit": "Abschicke"
                 },
                 "is_owner": "Du bisch dr Bsitzer",
+                "language": {
+                    "header": "Sprach"
+                },
                 "long_lived_access_tokens": {
                     "create": "Token erzüge",
+                    "name": "Name",
                     "prompt_name": "Name?"
                 },
                 "mfa": {

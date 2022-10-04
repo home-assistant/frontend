@@ -26,9 +26,11 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-area-picker";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -63,13 +65,13 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
 
 interface DeviceEntities {
   id: string;
@@ -214,17 +216,16 @@ export class HaSceneEditor extends SubscribeMixin(
       this._deviceEntityLookup,
       this._deviceRegistryEntries
     );
-    const name = this._scene
-      ? computeStateName(this._scene)
-      : this.hass.localize("ui.panel.config.scene.editor.default_name");
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .tabs=${configSections.automations}
+        .header=${this._scene
+          ? computeStateName(this._scene)
+          : this.hass.localize("ui.panel.config.scene.editor.default_name")}
       >
         <ha-button-menu
           corner="BOTTOM_START"
@@ -272,7 +273,6 @@ export class HaSceneEditor extends SubscribeMixin(
           </mwc-list-item>
         </ha-button-menu>
         ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
-        ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
         <div
           id="root"
           class=${classMap({
@@ -281,15 +281,12 @@ export class HaSceneEditor extends SubscribeMixin(
         >
           ${this._config
             ? html`
-                <ha-config-section vertical .isWide=${this.isWide}>
-                  ${!this.narrow
-                    ? html` <span slot="header">${name}</span> `
-                    : ""}
-                  <div slot="introduction">
-                    ${this.hass.localize(
-                      "ui.panel.config.scene.editor.introduction"
-                    )}
-                  </div>
+                <div
+                  class=${classMap({
+                    container: true,
+                    narrow: !this.isWide,
+                  })}
+                >
                   <ha-card outlined>
                     <div class="card-content">
                       <ha-textfield
@@ -301,6 +298,7 @@ export class HaSceneEditor extends SubscribeMixin(
                         )}
                       ></ha-textfield>
                       <ha-icon-picker
+                        .hass=${this.hass}
                         .label=${this.hass.localize(
                           "ui.panel.config.scene.editor.icon"
                         )}
@@ -321,7 +319,7 @@ export class HaSceneEditor extends SubscribeMixin(
                       </ha-area-picker>
                     </div>
                   </ha-card>
-                </ha-config-section>
+                </div>
 
                 <ha-config-section vertical .isWide=${this.isWide}>
                   <div slot="header">
@@ -485,7 +483,7 @@ export class HaSceneEditor extends SubscribeMixin(
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -766,32 +764,31 @@ export class HaSceneEditor extends SubscribeMixin(
     }
   }
 
-  private _backTapped = (): void => {
-    if (this._dirty) {
-      showConfirmationDialog(this, {
-        text: this.hass!.localize(
-          "ui.panel.config.scene.editor.unsaved_confirm"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        confirm: () => this._goBack(),
-      });
-    } else {
+  private _backTapped = async (): Promise<void> => {
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
       this._goBack();
     }
   };
 
   private _goBack(): void {
     applyScene(this.hass, this._storedStates);
-    history.back();
+    afterNextRender(() => history.back());
   }
 
   private _deleteTapped(): void {
     showConfirmationDialog(this, {
-      text: this.hass!.localize("ui.panel.config.scene.picker.delete_confirm"),
+      title: this.hass!.localize(
+        "ui.panel.config.scene.picker.delete_confirm_title"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.scene.picker.delete_confirm_text",
+        { name: this._config?.name }
+      ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
+      destructive: true,
     });
   }
 
@@ -801,32 +798,37 @@ export class HaSceneEditor extends SubscribeMixin(
     history.back();
   }
 
-  private async _duplicate() {
+  private async confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
-      if (
-        !(await showConfirmationDialog(this, {
-          text: this.hass!.localize(
-            "ui.panel.config.scene.editor.unsaved_confirm"
-          ),
-          confirmText: this.hass!.localize("ui.common.leave"),
-          dismissText: this.hass!.localize("ui.common.stay"),
-        }))
-      ) {
-        return;
-      }
-      // Wait for dialog to complete closing
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      return showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.config.scene.editor.unsaved_confirm_title"
+        ),
+        text: this.hass!.localize(
+          "ui.panel.config.scene.editor.unsaved_confirm_text"
+        ),
+        confirmText: this.hass!.localize("ui.common.leave"),
+        dismissText: this.hass!.localize("ui.common.stay"),
+        destructive: true,
+      });
     }
-    showSceneEditor(
-      {
-        ...this._config,
-        id: undefined,
-        name: `${this._config?.name} (${this.hass.localize(
-          "ui.panel.config.scene.picker.duplicate"
-        )})`,
-      },
-      this._sceneAreaIdCurrent || undefined
-    );
+    return true;
+  }
+
+  private async _duplicate() {
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
+      showSceneEditor(
+        {
+          ...this._config,
+          id: undefined,
+          name: `${this._config?.name} (${this.hass.localize(
+            "ui.panel.config.scene.picker.duplicate"
+          )})`,
+        },
+        this._sceneAreaIdCurrent || undefined
+      );
+    }
   }
 
   private _calculateMetaData(): SceneMetaData {
@@ -961,6 +963,14 @@ export class HaSceneEditor extends SubscribeMixin(
       css`
         ha-card {
           overflow: hidden;
+        }
+        .container {
+          padding: 28px 20px 0;
+          max-width: 1040px;
+          margin: 0 auto;
+        }
+        .narrow.container {
+          max-width: 640px;
         }
         .errors {
           padding: 20px;

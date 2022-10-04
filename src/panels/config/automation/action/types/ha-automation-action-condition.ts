@@ -16,6 +16,8 @@ import type { ActionElement } from "../ha-automation-action-row";
 export class HaConditionAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property() public action!: Condition;
 
   public static get defaultConfig() {
@@ -29,18 +31,22 @@ export class HaConditionAction extends LitElement implements ActionElement {
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type_select"
         )}
+        .disabled=${this.disabled}
         .value=${this.action.condition}
         naturalMenuWidth
         @selected=${this._typeChanged}
       >
         ${this._processedTypes(this.hass.localize).map(
-          ([opt, label]) => html`
-            <mwc-list-item .value=${opt}>${label}</mwc-list-item>
+          ([opt, label, icon]) => html`
+            <mwc-list-item .value=${opt} aria-label=${label} graphic="icon">
+              ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
+            ></mwc-list-item>
           `
         )}
       </ha-select>
       <ha-automation-condition-editor
         .condition=${this.action}
+        .disabled=${this.disabled}
         .hass=${this.hass}
         @value-changed=${this._conditionChanged}
       ></ha-automation-condition-editor>
@@ -48,16 +54,19 @@ export class HaConditionAction extends LitElement implements ActionElement {
   }
 
   private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string][] =>
-      CONDITION_TYPES.map(
-        (condition) =>
-          [
-            condition,
-            localize(
-              `ui.panel.config.automation.editor.conditions.type.${condition}.label`
-            ),
-          ] as [string, string]
-      ).sort((a, b) => stringCompare(a[1], b[1]))
+    (localize: LocalizeFunc): [string, string, string][] =>
+      Object.entries(CONDITION_TYPES)
+        .map(
+          ([condition, icon]) =>
+            [
+              condition,
+              localize(
+                `ui.panel.config.automation.editor.conditions.type.${condition}.label`
+              ),
+              icon,
+            ] as [string, string, string]
+        )
+        .sort((a, b) => stringCompare(a[1], b[1]))
   );
 
   private _conditionChanged(ev: CustomEvent) {

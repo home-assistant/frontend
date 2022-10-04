@@ -43,7 +43,7 @@ export class HaTimeInput extends LitElement {
         .minutes=${Number(parts[1])}
         .seconds=${Number(parts[2])}
         .format=${useAMPM ? 12 : 24}
-        .amPm=${useAMPM && (numberHours >= 12 ? "PM" : "AM")}
+        .amPm=${useAMPM && numberHours >= 12 ? "PM" : "AM"}
         .disabled=${this.disabled}
         @value-changed=${this._timeChanged}
         .enableSecond=${this.enableSecond}

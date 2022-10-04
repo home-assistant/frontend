@@ -1,6 +1,15 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import { toggleAttribute } from "../common/dom/toggle_attribute";
+import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import { HomeAssistant } from "../types";
@@ -15,12 +24,25 @@ class HassSubpage extends LitElement {
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
+  @property() public backCallback?: () => void;
+
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean }) public supervisor = false;
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (!changedProps.has("hass")) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.locale !== this.hass.locale) {
+      toggleAttribute(this, "rtl", computeRTL(this.hass));
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -52,6 +74,9 @@ class HassSubpage extends LitElement {
         <slot name="toolbar-icon"></slot>
       </div>
       <div class="content" @scroll=${this._saveScrollPos}><slot></slot></div>
+      <div id="fab">
+        <slot name="fab"></slot>
+      </div>
     `;
   }
 
@@ -61,6 +86,10 @@ class HassSubpage extends LitElement {
   }
 
   private _backTapped(): void {
+    if (this.backCallback) {
+      this.backCallback();
+      return;
+    }
     history.back();
   }
 
@@ -115,6 +144,29 @@ class HassSubpage extends LitElement {
         overflow-y: auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+      }
+
+      #fab {
+        position: fixed;
+        right: calc(16px + env(safe-area-inset-right));
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        z-index: 1;
+      }
+      :host([narrow]) #fab.tabs {
+        bottom: calc(84px + env(safe-area-inset-bottom));
+      }
+      #fab[is-wide] {
+        bottom: 24px;
+        right: 24px;
+      }
+      :host([rtl]) #fab {
+        right: auto;
+        left: calc(16px + env(safe-area-inset-left));
+      }
+      :host([rtl][is-wide]) #fab {
+        bottom: 24px;
+        left: 24px;
+        right: auto;
       }
     `;
   }

@@ -1,5 +1,8 @@
 import {
+  mdiCog,
+  mdiDelete,
   mdiDotsVertical,
+  mdiDownload,
   mdiOpenInNew,
   mdiPencil,
   mdiPlusCircle,
@@ -57,12 +60,11 @@ import {
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
@@ -70,6 +72,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import "../../../layouts/hass-subpage";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -77,8 +80,10 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
 
 export interface DeviceAction {
   href?: string;
+  target?: string;
   action?: (ev: any) => void;
   label: string;
+  icon?: string;
   trailingIcon?: string;
   classes?: string;
 }
@@ -92,23 +97,21 @@ export interface DeviceAlert {
 export class HaConfigDevicePage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public devices!: DeviceRegistryEntry[];
+  @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
 
-  @property() public entries!: ConfigEntry[];
+  @property({ attribute: false }) public entries!: ConfigEntry[];
 
-  @property() public entities!: EntityRegistryEntry[];
+  @property({ attribute: false }) public entities!: EntityRegistryEntry[];
 
-  @property() public areas!: AreaRegistryEntry[];
+  @property({ attribute: false }) public areas!: AreaRegistryEntry[];
 
   @property() public deviceId!: string;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public showAdvanced!: boolean;
-
-  @property() public route!: Route;
+  @property({ type: Boolean }) public showAdvanced!: boolean;
 
   @state() private _related?: RelatedResult;
 
@@ -298,6 +301,17 @@ export class HaConfigDevicePage extends LitElement {
     if (this._deleteButtons) {
       actions.push(...this._deleteButtons);
     }
+
+    // Move all warning actions to the end
+    actions.sort((a, b) => {
+      if (a.classes === "warning" && b.classes !== "warning") {
+        return 1;
+      }
+      if (a.classes !== "warning" && b.classes === "warning") {
+        return -1;
+      }
+      return 0;
+    });
 
     const firstDeviceAction = actions.shift();
 
@@ -594,16 +608,12 @@ export class HaConfigDevicePage extends LitElement {
       : "";
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .tabs=${configSections.devices}
-        .route=${this.route}
+        .header=${deviceName}
       >
-        ${
-          this.narrow
-            ? html`
-                <span slot="header">${deviceName}</span>
+
                 <ha-icon-button
                   slot="toolbar-icon"
                   .path=${mdiPencil}
@@ -612,39 +622,20 @@ export class HaConfigDevicePage extends LitElement {
                     "ui.panel.config.devices.edit_settings"
                   )}
                 ></ha-icon-button>
-              `
-            : ""
-        }
         <div class="container">
           <div class="header fullwidth">
             ${
-              this.narrow
-                ? ""
-                : html`
-                    <div class="header-name">
-                      <div>
-                        <h1>${deviceName}</h1>
-                        ${area
-                          ? html`
-                              <a href="/config/areas/area/${area.area_id}"
-                                >${this.hass.localize(
-                                  "ui.panel.config.integrations.config_entry.area",
-                                  "area",
-                                  area.name || "Unnamed Area"
-                                )}</a
-                              >
-                            `
-                          : ""}
-                      </div>
-                      <ha-icon-button
-                        .path=${mdiPencil}
-                        @click=${this._showSettings}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.devices.edit_settings"
-                        )}
-                      ></ha-icon-button>
-                    </div>
-                  `
+              area
+                ? html`<div class="header-name">
+                    <a href="/config/areas/area/${area.area_id}"
+                      >${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.area",
+                        "area",
+                        area.name || "Unnamed Area"
+                      )}</a
+                    >
+                  </div>`
+                : ""
             }
                 <div class="header-right">
                   ${
@@ -709,13 +700,33 @@ export class HaConfigDevicePage extends LitElement {
                     ? html`
                         <div class="card-actions" slot="actions">
                           <div>
-                            <a href=${ifDefined(firstDeviceAction!.href)}>
+                            <a
+                              href=${ifDefined(firstDeviceAction!.href)}
+                              rel=${ifDefined(
+                                firstDeviceAction!.target
+                                  ? "noreferrer"
+                                  : undefined
+                              )}
+                              target=${ifDefined(firstDeviceAction!.target)}
+                            >
                               <mwc-button
                                 class=${ifDefined(firstDeviceAction!.classes)}
                                 .action=${firstDeviceAction!.action}
                                 @click=${this._deviceActionClicked}
+                                graphic="icon"
                               >
                                 ${firstDeviceAction!.label}
+                                ${firstDeviceAction!.icon
+                                  ? html`
+                                      <ha-svg-icon
+                                        class=${ifDefined(
+                                          firstDeviceAction!.classes
+                                        )}
+                                        .path=${firstDeviceAction!.icon}
+                                        slot="graphic"
+                                      ></ha-svg-icon>
+                                    `
+                                  : ""}
                                 ${firstDeviceAction!.trailingIcon
                                   ? html`
                                       <ha-svg-icon
@@ -740,18 +751,42 @@ export class HaConfigDevicePage extends LitElement {
                                   ></ha-icon-button>
                                   ${actions.map(
                                     (deviceAction) => html`
-                                      <a href=${ifDefined(deviceAction.href)}>
+                                      <a
+                                        href=${ifDefined(deviceAction.href)}
+                                        target=${ifDefined(deviceAction.target)}
+                                        rel=${ifDefined(
+                                          deviceAction.target
+                                            ? "noreferrer"
+                                            : undefined
+                                        )}
+                                      >
                                         <mwc-list-item
                                           class=${ifDefined(
                                             deviceAction.classes
                                           )}
                                           .action=${deviceAction.action}
                                           @click=${this._deviceActionClicked}
+                                          graphic="icon"
+                                          .hasMeta=${Boolean(
+                                            deviceAction.trailingIcon
+                                          )}
                                         >
                                           ${deviceAction.label}
+                                          ${deviceAction.icon
+                                            ? html`
+                                                <ha-svg-icon
+                                                  class=${ifDefined(
+                                                    deviceAction.classes
+                                                  )}
+                                                  .path=${deviceAction.icon}
+                                                  slot="graphic"
+                                                ></ha-svg-icon>
+                                              `
+                                            : ""}
                                           ${deviceAction.trailingIcon
                                             ? html`
                                                 <ha-svg-icon
+                                                  slot="meta"
                                                   .path=${deviceAction.trailingIcon}
                                                 ></ha-svg-icon>
                                               `
@@ -816,7 +851,7 @@ export class HaConfigDevicePage extends LitElement {
             </div>
           </div>
         </ha-config-section>
-      </hass-tabs-subpage>    `;
+      </hass-subpage>    `;
   }
 
   private async _getDiagnosticButtons(requestId: number): Promise<void> {
@@ -869,6 +904,7 @@ export class HaConfigDevicePage extends LitElement {
         links as { link: string; domain: string }[]
       ).map((link) => ({
         href: link.link,
+        icon: mdiDownload,
         action: (ev) => this._signUrl(ev),
         label:
           links.length > 1
@@ -900,7 +936,18 @@ export class HaConfigDevicePage extends LitElement {
       buttons.push({
         action: async () => {
           const confirmed = await showConfirmationDialog(this, {
-            text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
+            text:
+              this._integrations(device, this.entries).length > 1
+                ? this.hass.localize(
+                    `ui.panel.config.devices.confirm_delete_integration`,
+                    {
+                      integration: domainToName(
+                        this.hass.localize,
+                        entry.domain
+                      ),
+                    }
+                  )
+                : this.hass.localize(`ui.panel.config.devices.confirm_delete`),
           });
 
           if (!confirmed) {
@@ -914,8 +961,9 @@ export class HaConfigDevicePage extends LitElement {
           );
         },
         classes: "warning",
+        icon: mdiDelete,
         label:
-          buttons.length > 1
+          this._integrations(device, this.entries).length > 1
             ? this.hass.localize(
                 `ui.panel.config.devices.delete_device_integration`,
                 {
@@ -950,10 +998,10 @@ export class HaConfigDevicePage extends LitElement {
     if (configurationUrl) {
       deviceActions.push({
         href: configurationUrl,
+        target: configurationUrlIsHomeAssistant ? undefined : "_blank",
+        icon: mdiCog,
         label: this.hass.localize(
-          `ui.panel.config.devices.open_configuration_url_${
-            device.entry_type || "device"
-          }`
+          "ui.panel.config.devices.open_configuration_url"
         ),
         trailingIcon: mdiOpenInNew,
       });
@@ -1376,6 +1424,13 @@ export class HaConfigDevicePage extends LitElement {
 
         ha-svg-icon[slot="trailingIcon"] {
           display: block;
+          width: 18px;
+          height: 18px;
+        }
+
+        ha-svg-icon[slot="meta"] {
+          width: 18px;
+          height: 18px;
         }
 
         .items {

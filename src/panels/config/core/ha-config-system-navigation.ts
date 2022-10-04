@@ -116,6 +116,7 @@ class HaConfigSystemNavigation extends LitElement {
 
     return html`
       <hass-subpage
+        .hass=${this.hass}
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
       >
@@ -137,6 +138,9 @@ class HaConfigSystemNavigation extends LitElement {
               .narrow=${this.narrow}
               .pages=${pages}
               hasSecondary
+              .label=${this.hass.localize(
+                "ui.panel.config.dashboard.system.main"
+              )}
             ></ha-navigation-list>
           </ha-card>
         </ha-config-section>
@@ -177,6 +181,7 @@ class HaConfigSystemNavigation extends LitElement {
           });
         });
       },
+      destructive: true,
     });
   }
 
@@ -201,7 +206,7 @@ class HaConfigSystemNavigation extends LitElement {
       const hardwareInfo: HardwareInfo = await this.hass.callWS({
         type: "hardware/info",
       });
-      this._boardName = hardwareInfo?.hardware?.[0].name;
+      this._boardName = hardwareInfo?.hardware?.[0]?.name;
     } else if (isHassioLoaded) {
       const osData: HassioHassOSInfo = await fetchHassioHassOsInfo(this.hass);
       if (osData.board) {

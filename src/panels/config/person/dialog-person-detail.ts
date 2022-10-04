@@ -5,10 +5,9 @@ import memoizeOne from "memoize-one";
 import "../../../components/entity/ha-entities-picker";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
-import "../../../components/ha-textfield";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
-import { adminChangePassword } from "../../../data/auth";
+import "../../../components/ha-textfield";
 import { PersonMutableParams } from "../../../data/person";
 import {
   deleteUser,
@@ -20,7 +19,6 @@ import {
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -28,6 +26,7 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
+import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
 
 const includeDomains = ["device_tracker"];
@@ -350,40 +349,7 @@ class DialogPersonDetail extends LitElement {
       });
       return;
     }
-    const newPassword = await showPromptDialog(this, {
-      title: this.hass.localize("ui.panel.config.users.editor.change_password"),
-      inputType: "password",
-      inputLabel: this.hass.localize(
-        "ui.panel.config.users.editor.new_password"
-      ),
-    });
-    if (!newPassword) {
-      return;
-    }
-    const confirmPassword = await showPromptDialog(this, {
-      title: this.hass.localize("ui.panel.config.users.editor.change_password"),
-      inputType: "password",
-      inputLabel: this.hass.localize(
-        "ui.panel.config.users.add_user.password_confirm"
-      ),
-    });
-    if (!confirmPassword) {
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.users.add_user.password_not_match"
-        ),
-      });
-      return;
-    }
-    await adminChangePassword(this.hass, this._user.id, newPassword);
-    showAlertDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.users.editor.password_changed"
-      ),
-    });
+    showAdminChangePasswordDialog(this, { userId: this._user.id });
   }
 
   private async _updateEntry() {

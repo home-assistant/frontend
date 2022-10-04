@@ -42,7 +42,7 @@ import {
   Statistics,
   StatisticsMetaData,
   getStatisticLabel,
-} from "../../../../data/history";
+} from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -382,7 +382,7 @@ export class HuiEnergyGasGraphCard
         label: getStatisticLabel(
           this.hass,
           source.stat_energy_from,
-          statisticsMetaData
+          statisticsMetaData[source.stat_energy_from]
         ),
         borderColor: compare ? borderColor + "7F" : borderColor,
         backgroundColor: compare ? borderColor + "32" : borderColor + "7F",

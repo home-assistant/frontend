@@ -23,6 +23,8 @@ class HaHLSPlayer extends LitElement {
 
   @property() public url!: string;
 
+  @property() public posterUrl!: string;
+
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
 
@@ -78,6 +80,7 @@ class HaHLSPlayer extends LitElement {
         : ""}
       ${!this._errorIsFatal
         ? html`<video
+            .poster=${this.posterUrl}
             ?autoplay=${this.autoPlay}
             .muted=${this.muted}
             ?playsinline=${this.playsInline}
@@ -165,7 +168,7 @@ class HaHLSPlayer extends LitElement {
     window.addEventListener("resize", this._resizeExoPlayer);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
-    await this.hass!.auth.external!.sendMessage({
+    await this.hass!.auth.external!.fireMessage({
       type: "exoplayer/play_hls",
       payload: {
         url: new URL(url, window.location.href).toString(),

@@ -301,6 +301,7 @@
       "refresh": "Refresh",
       "cancel": "Cancel",
       "delete": "Delete",
+      "duplicate": "Duplicate",
       "remove": "Remove",
       "enable": "Enable",
       "disable": "Disable",
@@ -417,6 +418,9 @@
         "add_device_id": "Choose device",
         "add_entity_id": "Choose entity"
       },
+      "config-entry-picker": {
+        "config_entry": "Integration"
+      },
       "theme-picker": {
         "theme": "Theme",
         "no_theme": "No theme"
@@ -513,6 +517,7 @@
           "min": "min",
           "max": "max",
           "mean": "mean",
+          "state": "state",
           "sum": "sum"
         }
       },
@@ -773,11 +778,7 @@
           "activity": "Current activity"
         },
         "restored": {
-          "not_provided": "This entity is currently unavailable and is an orphan to a removed, changed or dysfunctional integration or device.",
-          "remove_intro": "If the entity is no longer in use, you can clean it up by removing it.",
-          "remove_action": "Remove entity",
-          "confirm_remove_title": "Remove entity?",
-          "confirm_remove_text": "Are you sure you want to remove this entity?"
+          "no_longer_provided": "This entity is no longer being provided by the {integration} integration. If the entity is no longer in use, delete it in settings."
         },
         "vacuum": {
           "status": "Status",
@@ -800,6 +801,9 @@
           "open_tilt_cover": "Open cover tilt",
           "close_tilt_cover": "Close cover tilt",
           "stop_cover": "Stop cover"
+        },
+        "zone": {
+          "graph_unit": "People home"
         }
       },
       "entity_registry": {
@@ -894,8 +898,20 @@
           "follow_device_area": "Follow device area",
           "change_device_area": "Change device area",
           "configure_state": "{integration} options",
-          "preload_stream": "Preload camera stream",
-          "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive."
+          "stream": {
+            "preload_stream": "Preload camera stream",
+            "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
+            "stream_orientation": "Camera stream orientation",
+            "stream_orientation_description": "The orientation transformation to use for the camera stream.",
+            "stream_orientation_1": "No orientation transform",
+            "stream_orientation_2": "Mirror",
+            "stream_orientation_3": "Rotate 180",
+            "stream_orientation_4": "Flip",
+            "stream_orientation_5": "Rotate left and flip",
+            "stream_orientation_6": "Rotate left",
+            "stream_orientation_7": "Rotate right and flip",
+            "stream_orientation_8": "Rotate right"
+          }
         }
       },
       "helper_settings": {
@@ -921,7 +937,6 @@
           "pattern": "Regex pattern for client-side validation"
         },
         "input_number": {
-          "initial": "Initial value",
           "min": "Minimum value",
           "max": "Maximum value",
           "mode": "Display mode",
@@ -1000,19 +1015,26 @@
         "attribute": "Attribute",
         "min_max_change": "min/max/change"
       },
+      "zha_manage_device": {
+        "heading": "Manage Zigbee Device",
+        "tabs": {
+          "clusters": "Clusters",
+          "bindings": "Bindings",
+          "signature": "Signature",
+          "children": "Children"
+        }
+      },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
         "device_signature": "Zigbee device signature",
         "device_children": "Zigbee device children",
         "buttons": {
-          "add": "Add Devices via this device",
-          "remove": "Remove Device",
-          "clusters": "Manage Clusters",
-          "reconfigure": "Reconfigure Device",
-          "zigbee_information": "Zigbee device signature",
-          "device_children": "View Children",
-          "view_in_visualization": "View in Visualization"
+          "add": "Add devices via this device",
+          "remove": "Remove",
+          "manage": "Manage zigbee device",
+          "reconfigure": "Reconfigure",
+          "view_network": "View network"
         },
         "services": {
           "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
@@ -1081,10 +1103,11 @@
       },
       "join_beta_channel": {
         "title": "Join the beta channel",
-        "warning": "[%key:supervisor::system::supervisor::beta_warning%]",
-        "backup": "[%key:supervisor::system::supervisor::beta_backup%]",
-        "release_items": "[%key:supervisor::system::supervisor::beta_release_items%]",
-        "confirm": "[%key:supervisor::system::supervisor::beta_join_confirm%]"
+        "backup": "Make sure you have backups of your data before you activate this feature.",
+        "warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
+        "release_items": "This includes beta releases for:",
+        "view_documentation": "View documentation",
+        "join": "Join"
       }
     },
     "duration": {
@@ -1225,7 +1248,6 @@
           "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
-          "version_available": "Version {version_available} is available",
           "more_updates": "Show all updates",
           "show": "show",
           "show_skipped": "Show skipped updates",
@@ -1291,8 +1313,8 @@
             "no_linked_entities": "There are no entities linked to this area."
           },
           "delete": {
-            "confirmation_title": "Are you sure you want to delete this area?",
-            "confirmation_text": "All devices in this area will become unassigned."
+            "confirmation_title": "Delete {name}?",
+            "confirmation_text": "This area will be permanently deleted and all devices belonging to this area will become unassigned."
           }
         },
         "backup": {
@@ -1619,14 +1641,20 @@
             "id": "ID",
             "attributes": "Attributes"
           },
-          "reboot_host": "Reboot host",
-          "rebooting_host": "Rebooting host",
-          "reboot_host_confirm": "Are you sure you want to reboot your host?",
-          "failed_to_reboot_host": "Failed to reboot host",
-          "shutdown_host": "Shutdown host",
-          "host_shutting_down": "Host shutting down",
-          "shutdown_host_confirm": "Are you sure you want to shutdown your host?",
-          "failed_to_shutdown_host": "Failed to shutdown host",
+          "processor": "Processor",
+          "memory": "Memory",
+          "rebooting_host": "Rebooting system",
+          "reboot": "Reboot",
+          "reboot_host": "Reboot system",
+          "reboot_host_title": "Reboot system?",
+          "reboot_host_text": "This will reboot the complete system which includes the Core and all Add-ons.",
+          "failed_to_reboot_host": "Failed to reboot system",
+          "host_shutting_down": "system shutting down",
+          "shutdown": "Shutdown",
+          "shutdown_host": "Shutdown system",
+          "shutdown_host_title": "Shutdown system?",
+          "shutdown_host_text": "This will shutdown the complete system which includes the Core and all Add-ons.",
+          "failed_to_shutdown_host": "Failed to shutdown system",
           "board": "Board",
           "documentation": "Documentation",
           "documentation_description": "Find extra information about your device"
@@ -1717,7 +1745,7 @@
               "add_dashboard": "Add dashboard"
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
-            "confirm_delete_text": "Your dashboard will be permanently deleted.",
+            "confirm_delete_text": "This dashboard will be permanently deleted.",
             "cant_edit_yaml": "Dashboards created in YAML cannot be edited from the UI. Change them in configuration.yaml.",
             "cant_edit_default": "The default dashboard, Overview, cannot be edited from the UI. You can hide it by setting another dashboard as default.",
             "detail": {
@@ -1754,7 +1782,8 @@
               "no_resources": "No resources",
               "add_resource": "Add resource"
             },
-            "confirm_delete": "Are you sure you want to delete this resource?",
+            "confirm_delete_title": "Delete resource?",
+            "confirm_delete_text": "{url} will be permanently deleted.",
             "refresh_header": "Do you want to refresh?",
             "refresh_body": "You have to refresh the page to complete the removal. Do you want to refresh now?",
             "cant_edit_yaml": "You are using your dashboard in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
@@ -1787,10 +1816,11 @@
             "edit_automation": "Edit automation",
             "dev_automation": "Debug automation",
             "show_info_automation": "Show info about automation",
-            "delete_automation": "Delete automation",
-            "delete_confirm": "Are you sure you want to delete this automation?",
-            "duplicate_automation": "Duplicate automation",
-            "duplicate": "Duplicate",
+            "delete": "[%key:ui::common::delete%]",
+            "delete_confirm_title": "Delete automation?",
+            "delete_confirm_text": "{name} will be permanently deleted.",
+            "duplicate": "[%key:ui::common::duplicate%]",
+            "disabled": "Disabled",
             "headers": {
               "toggle": "Enable/disable",
               "name": "Name",
@@ -1814,17 +1844,35 @@
             "start_empty_description": "Create a new automation from scratch"
           },
           "editor": {
-            "enable_disable": "Enable/Disable automation",
-            "show_trace": "Show trace",
-            "introduction": "Use automations to bring your home to life.",
+            "enable": "[%key:ui::common::enable%]",
+            "disable": "[%key:ui::common::disable%]",
+            "disabled": "Automation is disabled",
+            "read_only": "This automation can not be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
+            "migrate": "Migrate",
+            "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
+            "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+            "show_trace": "Traces",
+            "show_info": "Information",
             "default_name": "New Automation",
+            "missing_name": "Cannot save automation without a name",
+            "traces_not_available": "Automations need an ID for history to be tracked. Add an ID to your automation to make it available in traces.",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
+            "load_error_not_deletable": "Only automations in automations.yaml can be deleted.",
             "load_error_unknown": "Error loading automation ({err_no}).",
             "save": "Save",
-            "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
+            "unsaved_confirm_title": "Leave editor?",
+            "unsaved_confirm_text": "Unsaved changes will be lost.",
             "alias": "Name",
+            "automation_alias": "Automation name",
+            "automation_settings": "Automation settings",
             "move_up": "Move up",
             "move_down": "Move down",
+            "re_order": "Re-order",
+            "re_order_mode": {
+              "title": "Re-order mode",
+              "description": "You are in re-order mode, you can re-order your triggers, conditions and actions.",
+              "exit": "Exit"
+            },
             "description": {
               "label": "Description",
               "placeholder": "Optional description",
@@ -1836,6 +1884,7 @@
               "no_blueprints": "You don't have any blueprints",
               "no_inputs": "This blueprint doesn't have any inputs."
             },
+            "change_mode": "Change mode",
             "modes": {
               "label": "Mode",
               "learn_more": "Learn about modes",
@@ -1857,10 +1906,14 @@
               "triggered": "Triggered",
               "add": "Add trigger",
               "id": "Trigger ID",
-              "edit_id": "Edit trigger ID",
-              "duplicate": "Duplicate",
-              "delete": "[%key:ui::panel::mailbox::delete_button%]",
-              "delete_confirm": "Are you sure you want to delete this?",
+              "edit_id": "Edit ID",
+              "duplicate": "[%key:ui::common::duplicate%]",
+              "rename": "Rename",
+              "change_alias": "Rename trigger",
+              "alias": "Trigger name",
+              "delete": "[%key:ui::common::delete%]",
+              "delete_confirm_title": "Delete trigger?",
+              "delete_confirm_text": "It will be permanently deleted.",
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "type": {
@@ -1971,11 +2024,17 @@
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
               "test": "Test",
+              "testing_error": "Condition did not pass",
+              "testing_pass": "Condition passes",
               "invalid_condition": "Invalid condition configuration",
               "test_failed": "Error occurred while testing condition",
-              "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
-              "delete": "[%key:ui::panel::mailbox::delete_button%]",
-              "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
+              "duplicate": "[%key:ui::common::duplicate%]",
+              "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+              "change_alias": "Rename condition",
+              "alias": "Condition name",
+              "delete": "[%key:ui::common::delete%]",
+              "delete_confirm_title": "Delete condition?",
+              "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "type": {
@@ -2058,15 +2117,19 @@
               "learn_more": "Learn more about actions",
               "add": "Add action",
               "invalid_action": "Invalid action",
-              "run_action": "Run action",
+              "run": "Run",
               "run_action_error": "Error running action",
               "run_action_success": "Action run successfully",
-              "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
+              "duplicate": "[%key:ui::common::duplicate%]",
+              "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+              "change_alias": "Rename action",
+              "alias": "Action name",
               "enable": "Enable",
               "disable": "Disable",
               "disabled": "Disabled",
-              "delete": "[%key:ui::panel::mailbox::delete_button%]",
-              "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
+              "delete": "[%key:ui::common::delete%]",
+              "delete_confirm_title": "Delete action?",
+              "delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
               "unsupported_action": "No visual editor support for action: {action}",
               "type_select": "Action type",
               "type": {
@@ -2095,7 +2158,7 @@
                   "label": "Condition"
                 },
                 "event": {
-                  "label": "Fire event",
+                  "label": "Event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]"
                 },
@@ -2115,7 +2178,7 @@
                   }
                 },
                 "activate_scene": {
-                  "label": "Activate scene",
+                  "label": "Scene",
                   "scene": "Scene"
                 },
                 "repeat": {
@@ -2139,6 +2202,7 @@
                 "choose": {
                   "label": "Choose",
                   "default": "Default actions",
+                  "add_default": "Add default actions",
                   "option": "Option {number}",
                   "add_option": "Add option",
                   "remove_option": "Remove option",
@@ -2149,7 +2213,8 @@
                   "label": "If-then",
                   "if": "If",
                   "then": "Then",
-                  "else": "Else"
+                  "else": "Else",
+                  "add_else": "Add else"
                 },
                 "stop": {
                   "label": "Stop",
@@ -2202,8 +2267,8 @@
               "automation": "Automation",
               "script": "Script"
             },
-            "confirm_delete_header": "Delete this blueprint?",
-            "confirm_delete_text": "Are you sure you want to delete this blueprint?",
+            "confirm_delete_title": "Delete blueprint?",
+            "confirm_delete_text": "{name} will be permanently deleted.",
             "add_blueprint": "Import blueprint",
             "no_blueprints": "[%key:ui::panel::config::automation::editor::blueprint::no_blueprints%]",
             "create_automation": "Create automation",
@@ -2216,15 +2281,15 @@
           "add": {
             "header": "Import a blueprint",
             "import_header": "Blueprint ''{name}''",
-            "import_introduction_link": "You can import blueprints of other users from Github and the {community_link}. Enter the URL of the blueprint below.",
-            "community_forums": "community forums",
-            "url": "URL of the blueprint",
+            "import_introduction": "Import blueprints of other users from GitHub and the community forums by pasting the address below.",
+            "community_forums": "View blueprints on the community forums",
+            "url": "Blueprint address",
             "raw_blueprint": "Blueprint content",
             "importing": "Loading blueprint…",
-            "import_btn": "Preview blueprint",
+            "import_btn": "Preview",
             "saving": "Importing blueprint…",
             "save_btn": "Import blueprint",
-            "error_no_url": "Please enter the URL of the blueprint.",
+            "error_no_url": "Please enter the blueprint address.",
             "unsupported_blueprint": "This blueprint is not supported",
             "file_name": "Blueprint Path"
           }
@@ -2236,18 +2301,18 @@
             "header": "Script Editor",
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
-            "no_scripts": "We couldn’t find any scripts",
+            "no_scripts": "We couldn't find any scripts",
             "add_script": "Add script",
-            "show_info": "Show info about script",
             "run_script": "Run script",
-            "edit_script": "Edit script",
-            "dev_script": "Debug script",
+            "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
+            "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
+            "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "headers": {
               "name": "Name",
               "state": "State"
             },
-            "duplicate_script": "Duplicate script",
-            "duplicate": "[%key:ui::panel::config::automation::picker::duplicate%]"
+            "delete": "[%key:ui::common::delete%]",
+            "duplicate": "[%key:ui::common::duplicate%]"
           },
           "editor": {
             "alias": "Name",
@@ -2257,6 +2322,10 @@
             "id_already_exists": "This ID already exists",
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
+            "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
+            "read_only": "This script can not be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
+            "migrate": "Migrate",
+            "duplicate": "Duplicate",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
@@ -2272,14 +2341,16 @@
               "parallel": "Max number of parallel runs"
             },
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
+            "load_error_not_deletable": "Only scripts in scripts.yaml can be deleted.",
             "load_error_unknown": "Error loading script ({err_no}).",
-            "delete_confirm": "Are you sure you want to delete this script?",
-            "delete_script": "Delete script",
+            "delete_confirm_title": "Delete script?",
+            "delete_confirm_text": "{name} will be permanently deleted.",
             "save_script": "Save script",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
             "link_available_actions": "Learn more about available actions."
-          }
+          },
+          "trace": { "edit_script": "Edit script" }
         },
         "scene": {
           "caption": "Scenes",
@@ -2290,30 +2361,30 @@
             "introduction": "The scene editor allows you to create and edit scenes. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scenes",
             "pick_scene": "Pick scene to edit",
-            "no_scenes": "We couldn’t find any scenes",
+            "no_scenes": "We couldn't find any scenes",
             "add_scene": "Add scene",
             "only_editable": "Only scenes defined in scenes.yaml are editable.",
             "edit_scene": "Edit scene",
-            "show_info_scene": "Show info about scene",
+            "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
+            "activate": "Activate",
             "delete_scene": "Delete scene",
-            "delete_confirm": "Are you sure you want to delete this scene?",
+            "delete": "[%key:ui::common::delete%]",
+            "delete_confirm_title": "Delete scene?",
+            "delete_confirm_text": "{name} will be permanently deleted.",
             "duplicate_scene": "Duplicate scene",
-            "duplicate": "Duplicate",
+            "duplicate": "[%key:ui::common::duplicate%]",
             "headers": {
-              "activate": "Activate",
-              "state": "State",
               "name": "Name",
-              "show_info": "Show information",
-              "edit": "Edit"
+              "last_activated": "Last activated"
             }
           },
           "editor": {
-            "introduction": "Use scenes to bring your home to life.",
             "default_name": "New Scene",
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
             "load_error_unknown": "Error loading scene ({err_no}).",
             "save": "Save",
-            "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
+            "unsaved_confirm_title": "Leave editor?",
+            "unsaved_confirm_text": "Unsaved changes will be lost.",
             "name": "Name",
             "icon": "Icon",
             "area": "Area",
@@ -2439,14 +2510,13 @@
               "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
-              "sync_entities": "Sync Entities to Amazon",
-              "manage_entities": "Manage Entities",
-              "sync_entities_error": "Failed to sync entities:",
               "state_reporting_error": "Unable to {enable_disable} report state.",
+              "manage_entities": "Manage Entities",
               "enable": "enable",
               "disable": "disable",
               "not_configured_title": "Alexa is not activated",
-              "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app."
+              "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app.",
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
             },
             "google": {
               "title": "Google Assistant",
@@ -2461,13 +2531,11 @@
               "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say/enter this PIN when interacting with such devices via Google Assistant.",
               "devices_pin": "Security Devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
-              "sync_entities": "Sync Entities to Google",
               "manage_entities": "Manage Entities",
               "enter_pin_error": "Unable to store PIN:",
               "not_configured_title": "Google Assistant is not activated",
               "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
-              "sync_failed_title": "Syncing failed",
-              "sync_failed_text": "Syncing your entities failed, try again or check the logs."
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
             },
             "webhooks": {
               "title": "Webhooks",
@@ -2494,7 +2562,9 @@
             "follow_domain": "[%key:ui::panel::config::cloud::google::follow_domain%]",
             "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
             "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
-            "expose": "Expose to Alexa"
+            "expose": "Expose to Alexa",
+            "sync_entities": "Synchronize entities",
+            "sync_entities_error": "Failed to sync entities:"
           },
           "dialog_certificate": {
             "certificate_information": "Certificate Information",
@@ -2517,22 +2587,29 @@
             "follow_domain": "Follow domain",
             "exposed": "{selected} exposed",
             "not_exposed": "{selected} not exposed",
-            "sync_to_google": "Synchronizing changes to Google."
+            "sync_to_google": "Synchronizing changes to Google.",
+            "sync_entities": "Synchronize entities",
+            "sync_entities_error": "Failed to sync entities:",
+            "not_configured_title": "[%key:ui::panel::config::cloud::account::google::not_configured_title%]",
+            "not_configured_text": "[%key:ui::panel::config::cloud::account::google::not_configured_text%]",
+            "sync_failed_title": "Syncing failed",
+            "sync_failed_text": "Syncing your entities failed, try again or check the logs."
           },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
-            "available_at": "The webhook is available at the following URL:",
             "managed_by_integration": "This webhook is managed by an integration and cannot be disabled.",
             "info_disable_webhook": "If you no longer want to use this webhook, you can",
             "link_disable_webhook": "disable it",
+            "public_url": "Public address",
             "view_documentation": "View documentation",
             "close": "Close",
-            "confirm_disable": "Are you sure you want to disable this webhook?",
-            "copied_to_clipboard": "Copied to clipboard"
+            "confirm_disable_title": "Disable webhook",
+            "confirm_disable_text": "Webhook for {name} will be disabled."
           }
         },
         "devices": {
           "add_prompt": "No {name} have been added using this {type} yet. You can add one by clicking the + button above.",
+          "add_device": "Add Device",
           "caption": "Devices",
           "description": "Manage configured devices",
           "device_info": "{type} info",
@@ -2550,12 +2627,11 @@
             "config_entry": "Config entry"
           },
           "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
-          "open_configuration_url_device": "Visit device",
-          "open_configuration_url_service": "Visit service",
+          "open_configuration_url": "Visit",
           "download_diagnostics": "Download diagnostics",
           "download_diagnostics_integration": "Download {integration} diagnostics",
-          "delete_device": "Delete device",
-          "delete_device_integration": "Remove {integration} from device",
+          "delete_device": "Delete",
+          "delete_device_integration": "Remove device from {integration}",
           "type": {
             "device_heading": "Device",
             "device": "device",
@@ -2632,6 +2708,7 @@
           },
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?",
+          "confirm_delete_integration": "Are you sure you want to remove this device from {integration}?",
           "picker": {
             "search": "Search devices",
             "filter": {
@@ -2710,8 +2787,8 @@
           "no_persons_created_yet": "Looks like you have not added any people yet.",
           "create_person": "Create Person",
           "add_person": "Add Person",
-          "confirm_delete": "Are you sure you want to delete this person?",
-          "confirm_delete2": "All devices belonging to this person will become unassigned.",
+          "confirm_delete_title": "Delete {name}?",
+          "confirm_delete_text": "This person will be permanently deleted and all devices belonging to this person will become unassigned.",
           "person_not_found_title": "Person Not Found",
           "person_not_found": "We couldn't find the person you were trying to edit.",
           "detail": {
@@ -2773,9 +2850,11 @@
           "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
+          "available_integrations": "Available integrations",
+          "new_flow": "Setup another instance of {integration}",
           "attention": "Attention required",
           "configured": "Configured",
-          "new": "Set up a new integration",
+          "new": "Select brand",
           "confirm_new": "Do you want to set up {integration}?",
           "add_integration": "Add integration",
           "no_integrations": "Seems like you don't have any integrations configured yet. Click on the button below to add your first integration!",
@@ -2792,6 +2871,7 @@
           "rename_dialog": "Edit the name of this config entry",
           "rename_input_label": "Entry name",
           "search": "Search integrations",
+          "search_brand": "Search for a brand name",
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
           "disable": {
@@ -2810,6 +2890,14 @@
             "stop_ignore": "Stop ignoring"
           },
           "config_entry": {
+            "application_credentials": {
+              "delete_title": "Application Credentials",
+              "delete_prompt": "Would you like to also remove Application Credentials for this integration?",
+              "delete_detail": "If you remove them, you will need to enter credentials when setting up the integration again. If you keep them, they will be used automatically when setting up the integration again or may be acccessed from the Application Credentials menu.",
+              "delete_error_title": "Removing Application Credential failed",
+              "dismiss": "Keep",
+              "learn_more": "Learn more about Application Credentials"
+            },
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
@@ -2820,13 +2908,16 @@
             "download_diagnostics": "Download diagnostics",
             "known_issues": "Known issues",
             "delete": "Delete",
-            "delete_confirm": "Are you sure you want to delete the {title} integration?",
+            "delete_confirm_title": "Delete {title}?",
+            "delete_confirm_text": "Its devices and entities will be permantly deleted.",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
             "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
             "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
             "enable_restart_confirm": "Restart Home Assistant to finish enabling this integration",
+            "disable_confirm_title": "Disable {title}?",
+            "disable_confirm_text": "Its devices and entities will be disabled.",
             "disable_error": "Enabling or disabling of the integration failed",
             "manuf": "by {manufacturer}",
             "via": "Connected via",
@@ -2838,6 +2929,7 @@
             "area": "In {area}",
             "no_area": "No Area",
             "not_loaded": "Not loaded",
+            "setup_in_progress": "Initializing",
             "check_the_logs": "Check the logs",
             "disable": {
               "disabled": "Disabled",
@@ -2846,11 +2938,11 @@
                 "user": "user",
                 "integration": "integration",
                 "device": "device"
-              },
-              "disable_confirm": "Are you sure you want to disable this config entry? Its devices and entities will be disabled."
+              }
             },
             "provided_by_custom_integration": "Provided by a custom integration",
             "depends_on_cloud": "Depends on the cloud",
+            "yaml_only": "Needs manual configuration",
             "disabled_polling": "Automatic polling for updated data disabled",
             "state": {
               "loaded": "Loaded",
@@ -2858,7 +2950,8 @@
               "migration_error": "Migration error",
               "setup_retry": "Retrying setup",
               "not_loaded": "Not loaded",
-              "failed_unload": "Failed to unload"
+              "failed_unload": "Failed to unload",
+              "setup_in_progress": "Initializing"
             },
             "open_configuration_url": "Visit device"
           },
@@ -2871,6 +2964,9 @@
             "submit": "Submit",
             "next": "Next",
             "found_following_devices": "We found the following devices",
+            "yaml_only_title": "This device can not be added from the UI",
+            "yaml_only_text": "You can add this device by adding it to your `configuration.yaml`. See the {link} for more information.",
+            "documentation": "documentation",
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
@@ -2879,19 +2975,14 @@
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
             },
-            "pick_flow_step": {
-              "title": "We discovered these, want to set them up?",
-              "new_flow": "No, set up an other instance of {integration}"
-            },
             "loading": {
-              "loading_flow": "Please wait while {integration} is being setup",
+              "loading_flow": "Please wait, starting configuration wizard for {integration}",
               "loading_step": "Loading next step for {integration}",
               "fallback_title": "the integration"
             },
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
-            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?",
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
             "missing_zwave_zigbee": "To add a {integration} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
             "supported_hardware": "supported hardware",
@@ -2923,8 +3014,6 @@
             "name": "Display name",
             "username": "Username",
             "change_password": "Change password",
-            "new_password": "New Password",
-            "password_changed": "Password was changed successfully",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
@@ -2939,7 +3028,8 @@
             "system_generated_users_not_removable": "Unable to remove system users.",
             "system_generated_users_not_editable": "Unable to update system users.",
             "unnamed_user": "Unnamed User",
-            "confirm_user_deletion": "Are you sure you want to delete {name}?",
+            "confirm_user_deletion_title": "Delete {name}?",
+            "confirm_user_deletion_text": "This user will be permanently deleted.",
             "active_tooltip": "Controls if user can login"
           },
           "add_user": {
@@ -2949,18 +3039,32 @@
             "password_not_match": "Passwords don't match",
             "local_only": "Local only",
             "create": "Create"
+          },
+          "change_password": {
+            "caption": "Change password",
+            "new_password": "New Password",
+            "password_confirm": "Confirm Password",
+            "change": "Change",
+            "password_no_match": "Passwords don't match",
+            "password_changed": "The password has been changed successfully."
           }
         },
         "application_credentials": {
           "caption": "Application Credentials",
           "description": "Manage the OAuth Application Credentials used by Integrations",
           "editor": {
-            "caption": "Add Application Credential",
-            "create": "Create",
+            "caption": "Add Credential",
+            "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a passwords. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
+            "missing_credentials": "Setting up {integration} requires configuring application credentials.",
+            "missing_credentials_domain_link": "View {integration} documentation",
+            "view_documentation": "View application credentials documentation",
+            "add": "Add",
             "domain": "Integration",
             "name": "Name",
             "client_id": "OAuth Client ID",
-            "client_secret": "OAuth Client Secret"
+            "client_id_helper": "Public identifier of the OAuth application",
+            "client_secret": "OAuth Client Secret",
+            "client_secret_helper": "Secret of the OAuth application"
           },
           "picker": {
             "add_application_credential": "Add Application Credential",
@@ -2999,7 +3103,10 @@
           },
           "configuration_page": {
             "shortcuts_title": "Shortcuts",
-            "update_button": "Update Configuration"
+            "update_button": "Update Configuration",
+            "download_backup": "Download Backup",
+            "migrate_radio": "Migrate Radio",
+            "network_settings_title": "Network Settings"
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
@@ -3012,17 +3119,17 @@
           "clusters": {
             "header": "Clusters",
             "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
-            "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
+            "tabs": {
+              "attributes": "Attributes",
+              "commands": "Commands"
+            }
           },
           "cluster_attributes": {
             "header": "Cluster Attributes",
             "introduction": "View and edit cluster attributes.",
             "attributes_of_cluster": "Attributes of the selected cluster",
-            "get_zigbee_attribute": "Get Zigbee Attribute",
-            "set_zigbee_attribute": "Set Zigbee Attribute",
-            "help_attribute_dropdown": "Select an attribute to view or set its value.",
-            "help_get_zigbee_attribute": "Get the value for the selected attribute.",
-            "help_set_zigbee_attribute": "Set attribute value for the specified cluster on the specified entity."
+            "read_zigbee_attribute": "Read Attribute",
+            "write_zigbee_attribute": "Write Attribute"
           },
           "cluster_commands": {
             "header": "Cluster Commands",
@@ -3071,6 +3178,11 @@
             "auto_zoom": "Auto Zoom",
             "enable_physics": "Enable Physics",
             "refresh_topology": "Refresh Topology"
+          },
+          "device_binding": {
+            "bind": "Bind",
+            "unbind": "Unbind",
+            "picker_label": "Bindable Devices"
           },
           "group_binding": {
             "header": "Group Binding",
@@ -3154,18 +3266,19 @@
           },
           "device_info": {
             "zwave_info": "Z-Wave Info",
-            "node_status": "Device Status",
-            "node_ready": "Device Ready",
-            "device_config": "Configure Device",
-            "reinterview_device": "Re-interview Device",
-            "heal_node": "Heal Device",
-            "remove_failed": "Remove Failed Device",
-            "update_firmware": "Update Device Firmware",
-            "highest_security": "Highest Security",
+            "node_id": "ID",
+            "node_status": "Status",
+            "node_ready": "Ready",
+            "device_config": "Configure",
+            "reinterview_device": "Re-interview",
+            "heal_node": "Heal",
+            "remove_failed": "Remove failed",
+            "update_firmware": "Update",
+            "highest_security": "Highest security",
             "unknown": "Unknown",
             "zwave_plus": "Z-Wave Plus",
             "zwave_plus_version": "Version {version}",
-            "node_statistics": "Show Device Statistics"
+            "node_statistics": "Statistics"
           },
           "node_statistics": {
             "title": "Device Statistics",
@@ -3453,7 +3566,8 @@
             "title": "Move datadisk",
             "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
             "select_device": "Select new datadisk",
-            "no_devices": "No suitable attached devices found",
+            "no_devices_title": "No suitable storage found",
+            "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk",
             "moving_desc": "Rebooting and moving datadisk. Please have patience",
             "moving": "Moving datadisk",
             "loading_devices": "Loading devices",
@@ -3472,7 +3586,7 @@
           "integration_start_time": "Integration Startup Time"
         },
         "system_dashboard": {
-          "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
+          "confirm_restart_text": "This will stop all your active dashboards, automations and scripts.",
           "confirm_restart_title": "Restart Home Assistant?",
           "restart_homeassistant_short": "Restart",
           "restart_error": "Failed to restart Home Assistant"
@@ -3685,7 +3799,11 @@
               "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
               "panel": "Panel (1 card)"
-            }
+            },
+            "subview": "Subview",
+            "subview_helper": "Subviews don't appear in tabs and have a back button.",
+            "edit_ui": "Edit in visual editor",
+            "edit_yaml": "Edit in YAML"
           },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
@@ -3827,7 +3945,7 @@
             },
             "entity": {
               "name": "Entity",
-              "description": "The Entity card gives you a quick overview of your entity’s state."
+              "description": "The Entity card gives you a quick overview of your entity's state."
             },
             "button": {
               "name": "Button",
@@ -3876,13 +3994,22 @@
               "description": "The Statistics Graph card allows you to display a graph of the statistics for each of the entities listed.",
               "period": "Period",
               "stat_types": "Show stat types",
+              "stat_type_labels": {
+                "mean": "Mean",
+                "min": "Min",
+                "max": "Max",
+                "state": "State",
+                "sum": "Sum (change during period)"
+              },
               "chart_type": "Chart type",
               "periods": {
                 "hour": "Hour",
                 "day": "Day",
                 "month": "Month",
                 "5minute": "5 Minutes"
-              }
+              },
+              "pick_statistic": "Add a statistic",
+              "picked_statistic": "Statistic"
             },
             "horizontal-stack": {
               "name": "Horizontal Stack",
@@ -4446,6 +4573,7 @@
             "no_issue": "No issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
+              "units_changed_can_convert": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
               "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''.",
               "unsupported_unit_metadata": "The unit (''{metadata_unit}'') of the recorded statistics doesn't match the supported unit ''{supported_unit}'' of device class ''{device_class}''.",
               "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
@@ -4457,7 +4585,8 @@
               "fix": "Fix issue",
               "units_changed": {
                 "title": "The unit of this entity changed",
-                "update": "Update the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
+                "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
+                "change": "Convert all the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
                 "clear": "Delete all old statistic data for this entity"
               }
             },
@@ -4903,10 +5032,6 @@
         "reload_supervisor": "Reload Supervisor",
         "warning": "WARNING",
         "search": "Search",
-        "beta_warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
-        "beta_backup": "Make sure you have backups of your data before you activate this feature.",
-        "beta_release_items": "This includes beta releases for:",
-        "beta_join_confirm": "Do you want to join the beta channel?",
         "share_diagonstics_title": "Help Improve Home Assistant",
         "share_diagonstics_description": "Would you want to automatically share crash reports and diagnostic information when the Supervisor encounters unexpected errors? {line_break} This will allow us to fix the problems, the information is only accessible to the Home Assistant Core team and will not be shared with others.{line_break} The data does not include any private/sensitive information and you can disable this in settings at any time you want.",
         "unsupported_reason": {
@@ -5033,8 +5158,14 @@
         "used": "Repository is in use for installed add-ons and can't be removed."
       },
       "restart_addon": {
-        "confirm_text": "Restart add-on",
-        "text": "Do you want to restart the add-on with your changes?"
+        "title": "Restart {name}?",
+        "text": "To use the new saved configuration this add-on must be restarted.",
+        "restart": "Restart"
+      },
+      "uninstall_addon": {
+        "title": "Uninstall {name}?",
+        "text": "Its configuration will be permanently deleted.",
+        "uninstall": "Uninstall"
       },
       "hardware": {
         "title": "Hardware",

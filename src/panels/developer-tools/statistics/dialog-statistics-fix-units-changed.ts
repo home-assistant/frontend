@@ -6,9 +6,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import {
+  changeStatisticUnit,
   clearStatistics,
   updateStatisticsMetadata,
-} from "../../../data/history";
+} from "../../../data/recorder";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
 import type { DialogStatisticsUnitsChangedParams } from "./show-dialog-statistics-fix-units-changed";
@@ -19,7 +20,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
 
   @state() private _params?: DialogStatisticsUnitsChangedParams;
 
-  @state() private _action?: "update" | "clear";
+  @state() private _action?: "update" | "clear" | "change";
 
   public showDialog(params: DialogStatisticsUnitsChangedParams): void {
     this._params = params;
@@ -80,6 +81,20 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
             @change=${this._handleActionChanged}
           ></ha-radio>
         </ha-formfield>
+        ${this._params.issue.type === "units_changed_can_convert"
+          ? html`<ha-formfield
+              .label=${this.hass.localize(
+                `ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.change`
+              )}
+            >
+              <ha-radio
+                value="change"
+                name="action"
+                .checked=${this._action === "change"}
+                @change=${this._handleActionChanged}
+              ></ha-radio>
+            </ha-formfield>`
+          : ""}
 
         <mwc-button slot="primaryAction" @click=${this._fixIssue}>
           ${this.hass.localize(
@@ -100,10 +115,17 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
   private async _fixIssue(): Promise<void> {
     if (this._action === "clear") {
       await clearStatistics(this.hass, [this._params!.issue.data.statistic_id]);
-    } else {
+    } else if (this._action === "update") {
       await updateStatisticsMetadata(
         this.hass,
         this._params!.issue.data.statistic_id,
+        this._params!.issue.data.state_unit
+      );
+    } else if (this._action === "change") {
+      await changeStatisticUnit(
+        this.hass,
+        this._params!.issue.data.statistic_id,
+        this._params!.issue.data.metadata_unit,
         this._params!.issue.data.state_unit
       );
     }

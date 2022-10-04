@@ -191,10 +191,12 @@ const createEntityRegistryEntries = (
     hidden_by: null,
     entity_category: null,
     entity_id: "binary_sensor.updater",
+    id: "binary_sensor.updater",
     name: null,
     icon: null,
     platform: "updater",
     has_entity_name: false,
+    unique_id: "updater",
   },
 ];
 

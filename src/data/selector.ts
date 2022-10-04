@@ -11,6 +11,7 @@ export type Selector =
   | BooleanSelector
   | ColorRGBSelector
   | ColorTempSelector
+  | ConfigEntrySelector
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
@@ -20,6 +21,7 @@ export type Selector =
   | IconSelector
   | LocationSelector
   | MediaSelector
+  | NavigationSelector
   | NumberSelector
   | ObjectSelector
   | SelectSelector
@@ -65,7 +67,7 @@ export interface AreaSelector {
 export interface AttributeSelector {
   attribute: {
     entity_id?: string;
-    exclude_attributes?: readonly string[];
+    hide_attributes?: readonly string[];
   };
 }
 
@@ -83,6 +85,12 @@ export interface ColorTempSelector {
   color_temp: {
     min_mireds?: number;
     max_mireds?: number;
+  };
+}
+
+export interface ConfigEntrySelector {
+  config_entry: {
+    integration?: string;
   };
 }
 
@@ -164,6 +172,11 @@ export interface MediaSelectorValue {
   };
 }
 
+export interface NavigationSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  navigation: {};
+}
+
 export interface NumberSelector {
   number: {
     min?: number;
@@ -182,6 +195,7 @@ export interface ObjectSelector {
 export interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 export interface SelectSelector {

@@ -11,9 +11,9 @@ import type { HaTimeInput } from "../ha-time-input";
 
 @customElement("ha-selector-datetime")
 export class HaDateTimeSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: DateTimeSelector;
+  @property({ attribute: false }) public selector!: DateTimeSelector;
 
   @property() public value?: string;
 
