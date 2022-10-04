@@ -2978,7 +2978,7 @@
               "new_flow": "No, set up an other instance of {integration}"
             },
             "loading": {
-              "loading_flow": "Please wait while {integration} is being setup",
+              "loading_flow": "Please wait, starting configuration wizard for {integration}",
               "loading_step": "Loading next step for {integration}",
               "fallback_title": "the integration"
             },
