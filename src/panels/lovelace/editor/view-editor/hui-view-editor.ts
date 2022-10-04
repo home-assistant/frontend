@@ -10,6 +10,7 @@ import type { HomeAssistant } from "../../../../types";
 import {
   DEFAULT_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,
+  SECTIONS_VIEW_LAYOUT,
   SIDEBAR_VIEW_LAYOUT,
 } from "../../views/const";
 import { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -53,6 +54,7 @@ export class HuiViewEditor extends LitElement {
                   DEFAULT_VIEW_LAYOUT,
                   SIDEBAR_VIEW_LAYOUT,
                   PANEL_VIEW_LAYOUT,
+                  SECTIONS_VIEW_LAYOUT,
                 ] as const
               ).map((type) => ({
                 value: type,
