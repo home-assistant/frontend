@@ -11,6 +11,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { differenceInDays } from "date-fns/esm";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
@@ -42,7 +43,8 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 @customElement("ha-scene-dashboard")
@@ -109,11 +111,18 @@ class HaSceneDashboard extends LitElement {
           ),
           sortable: true,
           width: "30%",
-          template: (last_activated) => html`
-            ${last_activated && !UNAVAILABLE_STATES.includes(last_activated)
-              ? formatDateTime(new Date(last_activated), this.hass.locale)
-              : this.hass.localize("ui.components.relative_time.never")}
-          `,
+          template: (last_activated) => {
+            const date = new Date(last_activated);
+            const now = new Date();
+            const dayDifference = differenceInDays(now, date);
+            return html`
+              ${last_activated && !UNAVAILABLE_STATES.includes(last_activated)
+                ? dayDifference > 3
+                  ? formatShortDateTime(date, this.hass.locale)
+                  : relativeTime(date, this.hass.locale)
+                : this.hass.localize("ui.components.relative_time.never")}
+            `;
+          },
         };
       }
       columns.only_editable = {
