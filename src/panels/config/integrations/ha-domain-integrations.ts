@@ -36,7 +36,7 @@ class HaDomainIntegrations extends LitElement {
   protected render() {
     return html`<mwc-list>
       ${this.flowsInProgress?.length
-        ? html`<h3>We discovered the following:</h3>
+        ? html`<h3>Discovered</h3>
             ${this.flowsInProgress.map(
               (flow) => html`<mwc-list-item
                 graphic="medium"
@@ -63,7 +63,7 @@ class HaDomainIntegrations extends LitElement {
             )}
             <li divider role="separator"></li>
             ${this.integration?.integrations
-              ? html`<h3>Or setup another integration:</h3>`
+              ? html`<h3>Setup another integration</h3>`
               : ""}`
         : ""}
       ${this.integration?.iot_standards
