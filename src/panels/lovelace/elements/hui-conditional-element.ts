@@ -3,6 +3,7 @@ import { createStyledHuiElement } from "../cards/picture-elements/create-styled-
 import {
   checkConditionsMet,
   validateConditionalConfig,
+  validateLinkConditions,
 } from "../common/validate-condition";
 import {
   ConditionalElementConfig,
@@ -23,7 +24,8 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
       !Array.isArray(config.conditions) ||
       !config.elements ||
       !Array.isArray(config.elements) ||
-      !validateConditionalConfig(config.conditions)
+      !validateConditionalConfig(config.conditions) ||
+      !validateLinkConditions(config.link_conditions)
     ) {
       throw new Error("Invalid configuration");
     }
@@ -58,7 +60,11 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
       return;
     }
 
-    const visible = checkConditionsMet(this._config.conditions, this._hass);
+    const visible = checkConditionsMet(
+      this._config.link_conditions ?? "and",
+      this._config.conditions,
+      this._hass
+    );
 
     this._elements.forEach((el: LovelaceElement) => {
       if (visible) {

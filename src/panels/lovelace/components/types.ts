@@ -17,3 +17,7 @@ export const TIMESTAMP_RENDERING_FORMATS = [
 
 export type TimestampRenderingFormat =
   typeof TIMESTAMP_RENDERING_FORMATS[number];
+
+export const LINKS_CONDITIONS = ["and", "or"] as const;
+
+export type LinkConditions = typeof LINKS_CONDITIONS[number];

@@ -1,5 +1,6 @@
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
+import { LinkConditions } from "../components/types";
 
 export interface Condition {
   entity: string;
@@ -8,11 +9,11 @@ export interface Condition {
 }
 
 export function checkConditionsMet(
-  condition: string,
+  linkCondition: LinkConditions,
   conditions: Condition[],
   hass: HomeAssistant
 ): boolean {
-  return condition === "or"
+  return linkCondition === "or"
     ? conditions.some((c) => isCondStateApplyingHassState(hass, c))
     : conditions.every((c) => isCondStateApplyingHassState(hass, c));
 }
@@ -28,5 +29,14 @@ function isCondStateApplyingHassState(hass: HomeAssistant, c: Condition) {
 export function validateConditionalConfig(conditions: Condition[]): boolean {
   return conditions.every(
     (c) => (c.entity && (c.state || c.state_not)) as unknown as boolean
+  );
+}
+export function validateLinkConditions(
+  linkConditions: LinkConditions | undefined
+): boolean {
+  return (
+    linkConditions === undefined ||
+    linkConditions === "or" ||
+    linkConditions === "and"
   );
 }

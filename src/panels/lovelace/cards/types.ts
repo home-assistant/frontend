@@ -3,6 +3,7 @@ import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { FullCalendarView, TranslationDict } from "../../../types";
 import { Condition } from "../common/validate-condition";
 import { HuiImage } from "../components/hui-image";
+import { LinkConditions } from "../components/types";
 import { LovelaceElementConfig } from "../elements/types";
 import {
   EntityConfig,
@@ -28,7 +29,7 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
 export interface ConditionalCardConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig;
   conditions: Condition[];
-  condition?: string;
+  link_conditions?: LinkConditions;
 }
 
 export interface EmptyStateCardConfig extends LovelaceCardConfig {

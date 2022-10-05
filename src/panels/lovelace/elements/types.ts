@@ -1,6 +1,7 @@
 import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
+import { LinkConditions } from "../components/types";
 
 interface LovelaceElementConfigBase {
   type: string;
@@ -24,6 +25,7 @@ export interface LovelaceElement extends HTMLElement {
 export interface ConditionalElementConfig extends LovelaceElementConfigBase {
   conditions: Condition[];
   elements: LovelaceElementConfigBase[];
+  link_conditions: LinkConditions;
 }
 
 export interface IconElementConfig extends LovelaceElementConfigBase {

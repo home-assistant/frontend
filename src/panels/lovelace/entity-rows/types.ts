@@ -1,7 +1,7 @@
 import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
-import { TimestampRenderingFormat } from "../components/types";
+import { TimestampRenderingFormat, LinkConditions } from "../components/types";
 
 export interface EntityConfig {
   entity: string;
@@ -86,7 +86,7 @@ export interface LovelaceRow extends HTMLElement {
 export interface ConditionalRowConfig extends EntityConfig {
   row: EntityConfig;
   conditions: Condition[];
-  condition?: string;
+  link_conditions?: LinkConditions;
 }
 
 export interface AttributeRowConfig extends EntityConfig {

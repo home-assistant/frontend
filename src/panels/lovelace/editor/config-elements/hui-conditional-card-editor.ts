@@ -9,6 +9,7 @@ import {
   array,
   assert,
   assign,
+  enums,
   object,
   optional,
   string,
@@ -24,6 +25,7 @@ import type {
 } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import type { ConditionalCardConfig } from "../../cards/types";
+import { LINKS_CONDITIONS } from "../../components/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
@@ -44,7 +46,7 @@ const cardConfigStruct = assign(
   object({
     card: any(),
     conditions: optional(array(conditionStruct)),
-    condition: optional(string()),
+    link_conditions: optional(enums(LINKS_CONDITIONS)),
   })
 );
 
@@ -150,11 +152,11 @@ export class HuiConditionalCardEditor
                   )}
                 >
                   <ha-radio
-                    @change=${this._changeConditionLink}
+                    @change=${this._changeLinkConditions}
                     value="and"
                     name="conditionAnd"
-                    .checked=${!this._config.condition ||
-                    this._config.condition === "and"}
+                    .checked=${!this._config.link_conditions ||
+                    this._config.link_conditions === "and"}
                   >
                   </ha-radio>
                 </ha-formfield>
@@ -164,10 +166,10 @@ export class HuiConditionalCardEditor
                   )}
                 >
                   <ha-radio
-                    @change=${this._changeConditionLink}
+                    @change=${this._changeLinkConditions}
                     value="or"
                     name="conditionOr"
-                    .checked=${this._config.condition === "or"}
+                    .checked=${this._config.link_conditions === "or"}
                   >
                   </ha-radio>
                 </ha-formfield>
@@ -306,7 +308,7 @@ export class HuiConditionalCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _changeConditionLink(ev: Event): void {
+  private _changeLinkConditions(ev: Event): void {
     const target = ev.target as any;
     if (!this._config || !target) {
       return;
@@ -314,7 +316,7 @@ export class HuiConditionalCardEditor
 
     this._config = {
       ...this._config,
-      condition: target.value,
+      link_conditions: target.value,
     };
     fireEvent(this, "config-changed", { config: this._config });
   }

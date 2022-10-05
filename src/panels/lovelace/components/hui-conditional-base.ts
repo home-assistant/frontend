@@ -5,6 +5,7 @@ import { ConditionalCardConfig } from "../cards/types";
 import {
   checkConditionsMet,
   validateConditionalConfig,
+  validateLinkConditions,
 } from "../common/validate-condition";
 import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
@@ -32,11 +33,7 @@ export class HuiConditionalBase extends ReactiveElement {
       throw new Error("No conditions configured");
     }
 
-    if (
-      config.condition &&
-      config.condition.toLowerCase() !== "and" &&
-      config.condition.toLowerCase() !== "or"
-    ) {
+    if (!validateLinkConditions(config.link_conditions)) {
       throw new Error("Condition must be AND or OR");
     }
 
@@ -66,7 +63,7 @@ export class HuiConditionalBase extends ReactiveElement {
     const visible =
       this.editMode ||
       checkConditionsMet(
-        this._config.condition?.toLowerCase() ?? "and",
+        this._config.link_conditions ?? "and",
         this._config.conditions,
         this.hass
       );
