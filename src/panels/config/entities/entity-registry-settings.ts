@@ -121,10 +121,10 @@ const OVERRIDE_SENSOR_UNITS = {
   temperature: ["°C", "°F", "K"],
   volume: [
     "fl. oz.",
-    "fl. oz. (UK)",
+    "fl. oz. (Imperial)",
     "ft³",
     "gal",
-    "gal (UK)",
+    "gal (Imperial)",
     "L",
     "mL",
     "m³",
