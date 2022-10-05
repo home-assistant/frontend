@@ -32,7 +32,10 @@ import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardConfig } from "../../cards/types";
 import "../../../../components/ha-theme-picker";
-import { LINKS_CONDITIONS, TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
+import {
+  LINKS_CONDITIONS,
+  TIMESTAMP_RENDERING_FORMATS,
+} from "../../components/types";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceCardEditor } from "../../types";
