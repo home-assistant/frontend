@@ -5,7 +5,7 @@ import {
   FrontendLocaleData,
   NumberFormat,
   TimeFormat,
-  Weekday,
+  FirstWeekday,
 } from "../../../src/data/translation";
 
 describe("formatNumber", () => {
@@ -14,7 +14,7 @@ describe("formatNumber", () => {
     language: "en",
     number_format: NumberFormat.language,
     time_format: TimeFormat.language,
-    first_weekday: Weekday.monday,
+    first_weekday: FirstWeekday.monday,
   };
 
   // Node only ships with English support for `Intl`, so we can not test for other number formats here.

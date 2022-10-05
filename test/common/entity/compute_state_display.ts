@@ -5,7 +5,7 @@ import {
   FrontendLocaleData,
   NumberFormat,
   TimeFormat,
-  Weekday,
+  FirstWeekday,
 } from "../../../src/data/translation";
 
 let localeData: FrontendLocaleData;
@@ -20,7 +20,7 @@ describe("computeStateDisplay", () => {
       language: "en",
       number_format: NumberFormat.comma_decimal,
       time_format: TimeFormat.am_pm,
-      first_weekday: Weekday.monday,
+      first_weekday: FirstWeekday.monday,
     };
   });
 

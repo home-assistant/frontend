@@ -9155,6 +9155,7 @@ fsevents@^1.2.7:
     webpack-dev-server: ^4.3.0
     webpack-manifest-plugin: ^4.0.2
     webpackbar: ^5.0.0-3
+    weekstart: ^1.1.0
     workbox-build: ^6.4.2
     workbox-cacheable-response: ^6.4.2
     workbox-core: ^6.4.2
@@ -15788,6 +15789,13 @@ typescript@^4.4.3:
   version: 0.1.4
   resolution: "websocket-extensions@npm:0.1.4"
   checksum: 5976835e68a86afcd64c7a9762ed85f2f27d48c488c707e67ba85e717b90fa066b98ab33c744d64255c9622d349eedecf728e65a5f921da71b58d0e9591b9038
+  languageName: node
+  linkType: hard
+
+"weekstart@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "weekstart@npm:1.1.0"
+  checksum: afce96e0b95809a30f00fa02b13a0927324d9f76b9c10ce6b3de9bbd5926615156f8a0526c63e2bd1cabdc8ec3da68b8df8d6608b6364ded11b5da300a8cfcb4
   languageName: node
   linkType: hard
 

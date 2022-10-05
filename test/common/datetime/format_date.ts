@@ -4,7 +4,7 @@ import { formatDate } from "../../../src/common/datetime/format_date";
 import {
   NumberFormat,
   TimeFormat,
-  Weekday,
+  FirstWeekday,
 } from "../../../src/data/translation";
 
 describe("formatDate", () => {
@@ -16,7 +16,7 @@ describe("formatDate", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.language,
-        first_weekday: Weekday.monday,
+        first_weekday: FirstWeekday.monday,
       }),
       "November 18, 2017"
     );

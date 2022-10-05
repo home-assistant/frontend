@@ -6,7 +6,7 @@ import {
 } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import {
-  Weekday,
+  FirstWeekday,
   getHassTranslations,
   getHassTranslationsPre109,
   NumberFormat,
@@ -38,7 +38,7 @@ declare global {
       time_format: TimeFormat;
     };
     "hass-first-weekday-select": {
-      first_weekday: Weekday;
+      first_weekday: FirstWeekday;
     };
     "translations-updated": undefined;
   }
@@ -176,7 +176,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private _selectFirstWeekday(
-      first_weekday: Weekday,
+      first_weekday: FirstWeekday,
       saveToBackend: boolean
     ) {
       this._updateHass({

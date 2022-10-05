@@ -4,7 +4,7 @@ import { relativeTime } from "../../../src/common/datetime/relative_time";
 import {
   NumberFormat,
   TimeFormat,
-  Weekday,
+  FirstWeekday,
 } from "../../../src/data/translation";
 
 describe("relativeTime", () => {
@@ -12,7 +12,7 @@ describe("relativeTime", () => {
     language: "en",
     number_format: NumberFormat.language,
     time_format: TimeFormat.language,
-    first_weekday: Weekday.monday,
+    first_weekday: FirstWeekday.monday,
   };
 
   it("now", () => {
