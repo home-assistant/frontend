@@ -38,7 +38,7 @@ declare global {
       time_format: TimeFormat;
     };
     "hass-first-weekday-select": {
-      first_weekday: TimeFormat;
+      first_weekday: Weekday;
     };
     "translations-updated": undefined;
   }
