@@ -37,6 +37,7 @@ import type {
   HomeAssistant,
   ToggleButton,
 } from "../../types";
+import { useFirstWeekdayIndex } from "../../common/datetime/weekday";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -214,6 +215,7 @@ export class HAFullCalendar extends LitElement {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
+      firstDay: useFirstWeekdayIndex(this.hass.locale),
       initialView: this.initialView,
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",

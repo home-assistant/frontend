@@ -1,4 +1,4 @@
-import { Weekday } from "../../data/translation";
+import { FrontendLocaleData } from "../../data/translation";
 
 export const weekdays = [
   "sunday",
@@ -10,5 +10,5 @@ export const weekdays = [
   "saturday",
 ];
 
-export const weekdayIndex = (weekday: Weekday): number =>
-  weekdays.indexOf(weekday);
+export const useFirstWeekdayIndex = (locale: FrontendLocaleData): number =>
+  weekdays.indexOf(locale.first_weekday);
