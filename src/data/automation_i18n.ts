@@ -188,15 +188,13 @@ export const describeTrigger = (
 
   // Time Trigger
   if (trigger.platform === "time" && trigger.at) {
-    const at = trigger.at.includes(".")
-      ? `entity ${
-          hass.states[trigger.at]
-            ? computeStateName(hass.states[trigger.at])
-            : trigger.at
-        }`
-      : trigger.at;
+    const result = ensureArray(trigger.at).map((at) =>
+      at.toString().includes(".")
+        ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
+        : at
+    );
 
-    return `When the time is equal to ${at}`;
+    return `When the time is equal to ${result.join(" or ")}`;
   }
 
   // Time Patter Trigger
