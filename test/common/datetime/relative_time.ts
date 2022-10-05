@@ -12,7 +12,7 @@ describe("relativeTime", () => {
     language: "en",
     number_format: NumberFormat.language,
     time_format: TimeFormat.language,
-    first_weekday: FirstWeekday.monday,
+    first_weekday: FirstWeekday.language,
   };
 
   it("now", () => {

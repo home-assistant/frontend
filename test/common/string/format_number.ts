@@ -14,7 +14,7 @@ describe("formatNumber", () => {
     language: "en",
     number_format: NumberFormat.language,
     time_format: TimeFormat.language,
-    first_weekday: FirstWeekday.monday,
+    first_weekday: FirstWeekday.language,
   };
 
   // Node only ships with English support for `Intl`, so we can not test for other number formats here.
