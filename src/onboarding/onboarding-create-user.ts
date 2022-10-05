@@ -74,7 +74,7 @@ class OnboardingCreateUser extends LitElement {
         !this._newUser.username ||
         !this._newUser.password ||
         !this._newUser.password_confirm ||
-        this._newUser.password != this._newUser.password_confirm}
+        this._newUser.password !== this._newUser.password_confirm}
       >
         ${this.localize("ui.panel.page-onboarding.user.create_account")}
       </mwc-button>
