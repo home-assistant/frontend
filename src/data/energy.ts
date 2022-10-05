@@ -618,7 +618,7 @@ export const getEnergyGasUnitClass = (
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
     if (
       energyGasUnitClass.includes(
-        statisticIdWithMeta.unit_class as EnergyGasUnitClass
+        statisticIdWithMeta?.unit_class as EnergyGasUnitClass
       )
     ) {
       return statisticIdWithMeta.unit_class as EnergyGasUnitClass;
