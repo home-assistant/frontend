@@ -72,7 +72,9 @@ class OnboardingCreateUser extends LitElement {
         .disabled=${this._loading ||
         !this._newUser.name ||
         !this._newUser.username ||
-        !this._newUser.password}
+        !this._newUser.password ||
+        !this._newUser.password_confirm ||
+        this._newUser.password != this._newUser.password_confirm}
       >
         ${this.localize("ui.panel.page-onboarding.user.create_account")}
       </mwc-button>
@@ -88,7 +90,8 @@ class OnboardingCreateUser extends LitElement {
         this._newUser.name &&
         this._newUser.username &&
         this._newUser.password &&
-        this._newUser.password_confirm
+        this._newUser.password_confirm &&
+        this._newUser.password == this._newUser.password_confirm
       ) {
         this._submitForm(ev);
       }
