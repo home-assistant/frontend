@@ -36,10 +36,12 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
-import { AddIntegrationDialogParams } from "./show-add-integration-dialog";
+import {
+  AddIntegrationDialogParams,
+  showYamlIntegrationDialog,
+} from "./show-add-integration-dialog";
 
 export interface IntegrationListItem {
   name: string;
@@ -187,12 +189,7 @@ class AddIntegrationDialog extends LitElement {
 
       for (const [domain, domainBrands] of Object.entries(sb)) {
         const integration = this._findIntegration(domain);
-        if (
-          !integration ||
-          (!integration.config_flow &&
-            !integration.iot_standards &&
-            !integration.integrations)
-        ) {
+        if (!integration) {
           continue;
         }
         for (const [slug, name] of Object.entries(domainBrands)) {
@@ -550,35 +547,7 @@ class AddIntegrationDialog extends LitElement {
       this.hass,
       integration.domain
     );
-    showAlertDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.integrations.config_flow.yaml_only_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_flow.yaml_only_text",
-        {
-          link:
-            manifest?.is_built_in || manifest?.documentation
-              ? html`<a
-                  href=${manifest.is_built_in
-                    ? documentationUrl(
-                        this.hass,
-                        `/integrations/${manifest.domain}`
-                      )
-                    : manifest.documentation}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_flow.documentation"
-                  )}</a
-                >`
-              : this.hass.localize(
-                  "ui.panel.config.integrations.config_flow.documentation"
-                ),
-        }
-      ),
-    });
+    showYamlIntegrationDialog(this, { manifest });
   }
 
   private async _createFlow(integration: IntegrationListItem) {
