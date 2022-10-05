@@ -8,7 +8,7 @@ import type { ConditionElement } from "../ha-automation-condition-row";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import { useFirstWeekdayIndex } from "../../../../../common/datetime/weekday";
+import { useFirstWeekdayIndex } from "../../../../../common/datetime/use_first_weekday";
 
 const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 

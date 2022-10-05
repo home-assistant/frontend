@@ -37,7 +37,7 @@ import type {
   HomeAssistant,
   ToggleButton,
 } from "../../types";
-import { useFirstWeekdayIndex } from "../../common/datetime/weekday";
+import { useFirstWeekdayIndex } from "../../common/datetime/use_first_weekday";
 
 declare global {
   interface HTMLElementTagNameMap {

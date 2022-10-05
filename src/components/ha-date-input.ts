@@ -2,7 +2,7 @@ import { mdiCalendar } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateNumeric } from "../common/datetime/format_date";
-import { useFirstWeekdayIndex } from "../common/datetime/weekday";
+import { useFirstWeekdayIndex } from "../common/datetime/use_first_weekday";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
