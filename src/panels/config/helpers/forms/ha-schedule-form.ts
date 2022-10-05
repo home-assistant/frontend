@@ -19,7 +19,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { formatTime24h } from "../../../../common/datetime/format_time";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
-import { useFirstWeekdayIndex } from "../../../../common/datetime/use_first_weekday";
+import { firstWeekdayIndex } from "../../../../common/datetime/first_weekday";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
@@ -170,7 +170,7 @@ class HaScheduleForm extends LitElement {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
-      firstDay: useFirstWeekdayIndex(this.hass.locale),
+      firstDay: firstWeekdayIndex(this.hass.locale),
       slotLabelFormat: {
         hour: "numeric",
         minute: undefined,

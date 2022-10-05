@@ -11,7 +11,7 @@ export const weekdays = [
   "saturday",
 ] as const;
 
-export const useFirstWeekdayIndex = (locale: FrontendLocaleData): number => {
+export const firstWeekdayIndex = (locale: FrontendLocaleData): number => {
   if (locale.first_weekday === FirstWeekday.language) {
     if ("weekInfo" in Intl.Locale.prototype) {
       // @ts-ignore
@@ -22,7 +22,7 @@ export const useFirstWeekdayIndex = (locale: FrontendLocaleData): number => {
   return weekdays.indexOf(locale.first_weekday);
 };
 
-export const useFirstWeekday = (locale: FrontendLocaleData) => {
-  const index = useFirstWeekdayIndex(locale);
+export const firstWeekday = (locale: FrontendLocaleData) => {
+  const index = firstWeekdayIndex(locale);
   return weekdays[index];
 };

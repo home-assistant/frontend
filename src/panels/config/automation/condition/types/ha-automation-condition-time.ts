@@ -8,7 +8,7 @@ import type { ConditionElement } from "../ha-automation-condition-row";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import { useFirstWeekdayIndex } from "../../../../../common/datetime/use_first_weekday";
+import { firstWeekdayIndex } from "../../../../../common/datetime/first_weekday";
 
 const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
@@ -31,12 +31,12 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      firstWeekdayIndex: number,
+      firstWeekday: number,
       inputModeAfter?: boolean,
       inputModeBefore?: boolean
     ) => {
-      const sortedDays = DAYS.slice(firstWeekdayIndex, DAYS.length).concat(
-        DAYS.slice(0, firstWeekdayIndex)
+      const sortedDays = DAYS.slice(firstWeekday, DAYS.length).concat(
+        DAYS.slice(0, firstWeekday)
       );
       return [
         {
@@ -116,7 +116,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
     const schema = this._schema(
       this.hass.localize,
-      useFirstWeekdayIndex(this.hass.locale),
+      firstWeekdayIndex(this.hass.locale),
       inputModeAfter,
       inputModeBefore
     );

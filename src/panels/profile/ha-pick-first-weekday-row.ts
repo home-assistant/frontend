@@ -1,7 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { useFirstWeekday } from "../../common/datetime/use_first_weekday";
+import { firstWeekday } from "../../common/datetime/first_weekday";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
@@ -43,7 +43,7 @@ class FirstWeekdayRow extends LitElement {
                   ? html`
                       <span slot="secondary"
                         >${this.hass.localize(
-                          `ui.panel.profile.first_weekday.values.${useFirstWeekday(
+                          `ui.panel.profile.first_weekday.values.${firstWeekday(
                             this.hass.locale
                           )}`
                         )}</span
