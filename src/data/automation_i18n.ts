@@ -194,7 +194,10 @@ export const describeTrigger = (
         : at
     );
 
-    return `When the time is equal to ${result.join(" or ")}`;
+    const last = result.splice(-1, 1)[0];
+    return `When the time is equal to ${
+      result.length ? `${result.join(", ")} or ` : ""
+    }${last}`;
   }
 
   // Time Patter Trigger
