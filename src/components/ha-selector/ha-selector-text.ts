@@ -98,13 +98,13 @@ export class HaTextSelector extends LitElement {
       }
       ha-icon-button {
         position: absolute;
-        top: 16px;
-        right: 16px;
-        --mdc-icon-button-size: 24px;
+        top: 10px;
+        right: 10px;
+        --mdc-icon-button-size: 36px;
         --mdc-icon-size: 20px;
         color: var(--secondary-text-color);
         inset-inline-start: initial;
-        inset-inline-end: 16px;
+        inset-inline-end: 10px;
         direction: var(--direction);
       }
     `;
