@@ -88,3 +88,9 @@ export class DialogYamlIntegration extends LitElement {
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-yaml-integration": DialogYamlIntegration;
+  }
+}
