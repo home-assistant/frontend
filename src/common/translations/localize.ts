@@ -202,7 +202,6 @@ export const loadPolyfillLocales = async (language: string) => {
       Intl.NumberFormat.__addLocaleData(await result.json());
     }
     if (
-      // @ts-expect-error
       Intl.RelativeTimeFormat &&
       // @ts-ignore
       typeof Intl.RelativeTimeFormat.__addLocaleData === "function"

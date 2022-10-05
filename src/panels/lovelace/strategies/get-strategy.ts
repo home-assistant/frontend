@@ -49,9 +49,9 @@ const getLovelaceStrategy = async <
   if (
     (await Promise.race([
       customElements.whenDefined(tag),
-      new Promise((resolve) =>
-        setTimeout(() => resolve(true), MAX_WAIT_STRATEGY_LOAD)
-      ),
+      new Promise((resolve) => {
+        setTimeout(() => resolve(true), MAX_WAIT_STRATEGY_LOAD);
+      }),
     ])) === true
   ) {
     throw new Error(
@@ -74,6 +74,7 @@ const generateStrategy = async <T extends keyof GenerateMethods>(
   strategyType: string | undefined
 ): Promise<ReturnType<GenerateMethods[T]>> => {
   if (!strategyType) {
+    // @ts-ignore
     return renderError("No strategy type found");
   }
 
@@ -87,6 +88,7 @@ const generateStrategy = async <T extends keyof GenerateMethods>(
       console.error(err);
     }
 
+    // @ts-ignore
     return renderError(err);
   }
 };

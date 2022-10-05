@@ -66,7 +66,7 @@ const incrementalUnits = ["clients", "queries", "ads"];
 
 export const mockHistory = (mockHass: MockHomeAssistant) => {
   mockHass.mockAPI(
-    new RegExp("history/period/.+"),
+    /history\/period\/.+/,
     (hass, _method, path, _parameters) => {
       const params = parseQuery<HistoryQueryParams>(path.split("?")[1]);
       const entities = params.filter_entity_id.split(",");

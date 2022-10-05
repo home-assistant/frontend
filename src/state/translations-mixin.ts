@@ -347,7 +347,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // overwritten when we call _updateHass the second time!
 
       // Allow hass to be updated
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
 
       if (language !== (this.hass ?? this._pendingHass).language) {
         // the language was changed, abort

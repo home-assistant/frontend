@@ -64,6 +64,8 @@ const DATA_CACHE: {
   [cacheKey: string]: { [entityId: string]: Promise<LogbookEntry[]> };
 } = {};
 
+const ALL_ENTITIES = "*";
+
 export const getLogbookDataForContext = async (
   hass: HomeAssistant,
   startDate: string,
@@ -105,8 +107,6 @@ const getLogbookDataCache = async (
   endDate: string,
   entityId?: string[]
 ) => {
-  const ALL_ENTITIES = "*";
-
   const entityIdKey = entityId ? entityId.toString() : ALL_ENTITIES;
   const cacheKey = `${startDate}${endDate}`;
 
@@ -118,6 +118,7 @@ const getLogbookDataCache = async (
     return DATA_CACHE[cacheKey][entityIdKey];
   }
 
+  // @ts-ignore
   if (entityId && DATA_CACHE[cacheKey][ALL_ENTITIES]) {
     const entities = await DATA_CACHE[cacheKey][ALL_ENTITIES];
     return entities.filter(

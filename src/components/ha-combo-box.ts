@@ -255,7 +255,6 @@ export class HaComboBox extends LitElement {
           ) {
             this._overlayMutationObserver?.disconnect();
             this._overlayMutationObserver = undefined;
-            // @ts-expect-error
             overlay.inert = false;
           } else if (mutation.type === "childList") {
             mutation.removedNodes.forEach((node) => {

@@ -4,10 +4,7 @@ const env = require("./env.js");
 const paths = require("./paths.js");
 
 // Files from NPM Packages that should not be imported
-module.exports.ignorePackages = ({ latestBuild }) => [
-  // Part of yaml.js and only used for !!js functions that we don't use
-  require.resolve("esprima"),
-];
+module.exports.ignorePackages = ({ latestBuild }) => [];
 
 // Files from NPM packages that we should replace with empty file
 module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>

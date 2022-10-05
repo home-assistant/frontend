@@ -462,7 +462,9 @@ export class HaDataTable extends LitElement {
     const elapsed = curTime - startTime;
 
     if (elapsed < 100) {
-      await new Promise((resolve) => setTimeout(resolve, 100 - elapsed));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100 - elapsed);
+      });
     }
     if (this.curRequest !== curRequest) {
       return;

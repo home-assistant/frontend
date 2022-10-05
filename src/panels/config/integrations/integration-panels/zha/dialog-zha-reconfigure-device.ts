@@ -72,7 +72,9 @@ class DialogZHAReconfigureDevice extends LitElement {
           this.hass,
           this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`) +
             ": " +
-            (this._params?.device.user_given_name || this._params?.device.name)
+            (this._params?.device.user_given_name ||
+              this._params?.device.name ||
+              "")
         )}
       >
         ${!this._status

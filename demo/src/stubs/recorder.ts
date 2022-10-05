@@ -16,9 +16,9 @@ const generateMeanStatistics = (
   id: string,
   start: Date,
   end: Date,
-  period: "5minute" | "hour" | "day" | "month" = "hour",
   initValue: number,
-  maxDiff: number
+  maxDiff: number,
+  period: "5minute" | "hour" | "day" | "month" = "hour"
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
   let currentDate = new Date(start);
@@ -54,9 +54,9 @@ const generateSumStatistics = (
   id: string,
   start: Date,
   end: Date,
-  period: "5minute" | "hour" | "day" | "month" = "hour",
   initValue: number,
-  maxDiff: number
+  maxDiff: number,
+  period: "5minute" | "hour" | "day" | "month" = "hour"
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
   let currentDate = new Date(start);
@@ -91,10 +91,10 @@ const generateCurvedStatistics = (
   id: string,
   start: Date,
   end: Date,
-  _period: "5minute" | "hour" | "day" | "month" = "hour",
   initValue: number,
   maxDiff: number,
-  metered: boolean
+  metered: boolean,
+  _period: "5minute" | "hour" | "day" | "month" = "hour"
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
   let currentDate = new Date(start);
@@ -147,9 +147,9 @@ const statisticsFunctions: Record<
         id,
         start,
         end,
-        period,
         0,
-        period === "day" ? 17 : 504
+        period === "day" ? 17 : 504,
+        period
       );
     }
     const morningEnd = new Date(start.getTime() + 10 * 60 * 60 * 1000);
@@ -157,9 +157,9 @@ const statisticsFunctions: Record<
       id,
       start,
       morningEnd,
-      period,
       0,
-      0.7
+      0.7,
+      period
     );
     const eveningStart = new Date(start.getTime() + 20 * 60 * 60 * 1000);
     const morningFinalVal = morningLow.length
@@ -169,17 +169,17 @@ const statisticsFunctions: Record<
       id,
       morningEnd,
       eveningStart,
-      period,
       morningFinalVal,
-      0
+      0,
+      period
     );
     const eveningLow = generateSumStatistics(
       id,
       eveningStart,
       end,
-      period,
       morningFinalVal,
-      0.7
+      0.7,
+      period
     );
     return [...morningLow, ...empty, ...eveningLow];
   },
@@ -194,9 +194,9 @@ const statisticsFunctions: Record<
         id,
         start,
         end,
-        period,
         0,
-        period === "day" ? 17 : 504
+        period === "day" ? 17 : 504,
+        period
       );
     }
     const morningEnd = new Date(start.getTime() + 9 * 60 * 60 * 1000);
@@ -205,41 +205,41 @@ const statisticsFunctions: Record<
       id,
       morningEnd,
       eveningStart,
-      period,
       0,
-      0.3
+      0.3,
+      period
     );
     const highTarifFinalVal = highTarif.length
       ? highTarif[highTarif.length - 1].sum!
       : 0;
-    const morning = generateSumStatistics(id, start, morningEnd, period, 0, 0);
+    const morning = generateSumStatistics(id, start, morningEnd, 0, 0, period);
     const evening = generateSumStatistics(
       id,
       eveningStart,
       end,
-      period,
       highTarifFinalVal,
-      0
+      0,
+      period
     );
     return [...morning, ...highTarif, ...evening];
   },
   "sensor.energy_production_tarif_1": (id, start, end, period = "hour") =>
-    generateSumStatistics(id, start, end, period, 0, 0),
+    generateSumStatistics(id, start, end, 0, 0, period),
   "sensor.energy_production_tarif_1_compensation": (
     id,
     start,
     end,
     period = "hour"
-  ) => generateSumStatistics(id, start, end, period, 0, 0),
+  ) => generateSumStatistics(id, start, end, 0, 0, period),
   "sensor.energy_production_tarif_2": (id, start, end, period = "hour") => {
     if (period !== "hour") {
       return generateSumStatistics(
         id,
         start,
         end,
-        period,
         0,
-        period === "day" ? 17 : 504
+        period === "day" ? 17 : 504,
+        period
       );
     }
     const productionStart = new Date(start.getTime() + 9 * 60 * 60 * 1000);
@@ -249,10 +249,10 @@ const statisticsFunctions: Record<
       id,
       productionStart,
       productionEnd,
-      period,
       0,
       0.15,
-      true
+      true,
+      period
     );
     const productionFinalVal = production.length
       ? production[production.length - 1].sum!
@@ -261,25 +261,25 @@ const statisticsFunctions: Record<
       id,
       start,
       productionStart,
-      period,
       0,
-      0
+      0,
+      period
     );
     const evening = generateSumStatistics(
       id,
       productionEnd,
       dayEnd,
-      period,
       productionFinalVal,
-      0
+      0,
+      period
     );
     const rest = generateSumStatistics(
       id,
       dayEnd,
       end,
-      period,
       productionFinalVal,
-      1
+      1,
+      period
     );
     return [...morning, ...production, ...evening, ...rest];
   },
@@ -289,9 +289,9 @@ const statisticsFunctions: Record<
         id,
         start,
         end,
-        period,
         0,
-        period === "day" ? 17 : 504
+        period === "day" ? 17 : 504,
+        period
       );
     }
     const productionStart = new Date(start.getTime() + 7 * 60 * 60 * 1000);
@@ -301,10 +301,10 @@ const statisticsFunctions: Record<
       id,
       productionStart,
       productionEnd,
-      period,
       0,
       0.3,
-      true
+      true,
+      period
     );
     const productionFinalVal = production.length
       ? production[production.length - 1].sum!
@@ -313,25 +313,25 @@ const statisticsFunctions: Record<
       id,
       start,
       productionStart,
-      period,
       0,
-      0
+      0,
+      period
     );
     const evening = generateSumStatistics(
       id,
       productionEnd,
       dayEnd,
-      period,
       productionFinalVal,
-      0
+      0,
+      period
     );
     const rest = generateSumStatistics(
       id,
       dayEnd,
       end,
-      period,
       productionFinalVal,
-      2
+      2,
+      period
     );
     return [...morning, ...production, ...evening, ...rest];
   },
@@ -365,17 +365,17 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
                   id,
                   start,
                   end,
-                  period,
                   state,
-                  state * (state > 80 ? 0.01 : 0.05)
+                  state * (state > 80 ? 0.01 : 0.05),
+                  period
                 )
               : generateMeanStatistics(
                   id,
                   start,
                   end,
-                  period,
                   state,
-                  state * (state > 80 ? 0.05 : 0.1)
+                  state * (state > 80 ? 0.05 : 0.1),
+                  period
                 );
         }
       });

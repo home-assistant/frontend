@@ -165,7 +165,9 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         <div class="controls-progress">
           ${until(
             // Only show spinner after 500ms
-            new Promise((resolve) => setTimeout(resolve, 500)).then(
+            new Promise((resolve) => {
+              setTimeout(resolve, 500);
+            }).then(
               () => html`<ha-circular-progress active></ha-circular-progress>`
             )
           )}

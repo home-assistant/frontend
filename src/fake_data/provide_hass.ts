@@ -116,7 +116,7 @@ export const provideHass = (
   }
 
   mockAPI(
-    new RegExp("states/.+"),
+    /states\/.+/,
     (
       // @ts-ignore
       method,

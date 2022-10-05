@@ -69,6 +69,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         enableShortcuts: true,
         moreInfoEntityId: null,
         hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
+        // eslint-disable-next-line @typescript-eslint/default-param-last
         callService: async (domain, service, serviceData = {}, target) => {
           if (__DEV__) {
             // eslint-disable-next-line no-console
