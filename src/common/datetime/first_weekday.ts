@@ -13,10 +13,10 @@ export const weekdays = [
 
 export const firstWeekdayIndex = (locale: FrontendLocaleData): number => {
   if (locale.first_weekday === FirstWeekday.language) {
-    const intLocale = new Intl.Locale(locale.language);
-    if ("weekInfo" in intLocale) {
+    // @ts-ignore
+    if ("weekInfo" in Intl.Locale.prototype) {
       // @ts-ignore
-      return intLocale.weekInfo.firstDay % 7;
+      return new Intl.Locale(locale.language).weekInfo.firstDay % 7;
     }
     return getWeekStartByLocale(locale.language) % 7;
   }
