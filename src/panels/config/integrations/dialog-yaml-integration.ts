@@ -12,7 +12,7 @@ export class DialogYamlIntegration extends LitElement {
 
   @state() private _params?: YamlIntegrationDialogParams;
 
-  public async showDialog(params: YamlIntegrationDialogParams): Promise<void> {
+  public showDialog(params: YamlIntegrationDialogParams): void {
     this._params = params;
   }
 
