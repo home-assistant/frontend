@@ -91,7 +91,7 @@ class OnboardingCreateUser extends LitElement {
         this._newUser.username &&
         this._newUser.password &&
         this._newUser.password_confirm &&
-        this._newUser.password == this._newUser.password_confirm
+        this._newUser.password === this._newUser.password_confirm
       ) {
         this._submitForm(ev);
       }
