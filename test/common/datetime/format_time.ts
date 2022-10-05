@@ -5,7 +5,11 @@ import {
   formatTimeWithSeconds,
   formatTimeWeekday,
 } from "../../../src/common/datetime/format_time";
-import { NumberFormat, TimeFormat } from "../../../src/data/translation";
+import {
+  NumberFormat,
+  TimeFormat,
+  Weekday,
+} from "../../../src/data/translation";
 
 describe("formatTime", () => {
   const dateObj = new Date(2017, 10, 18, 23, 12, 13, 1400);
@@ -16,6 +20,7 @@ describe("formatTime", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.am_pm,
+        first_weekday: Weekday.monday,
       }),
       "11:12 PM"
     );
@@ -24,6 +29,7 @@ describe("formatTime", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.twenty_four,
+        first_weekday: Weekday.monday,
       }),
       "23:12"
     );
@@ -39,6 +45,7 @@ describe("formatTimeWithSeconds", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.am_pm,
+        first_weekday: Weekday.monday,
       }),
       "11:12:13 PM"
     );
@@ -47,6 +54,7 @@ describe("formatTimeWithSeconds", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.twenty_four,
+        first_weekday: Weekday.monday,
       }),
       "23:12:13"
     );
@@ -62,6 +70,7 @@ describe("formatTimeWeekday", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.am_pm,
+        first_weekday: Weekday.monday,
       }),
       "Wednesday 11:12 PM"
     );
@@ -70,6 +79,7 @@ describe("formatTimeWeekday", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.twenty_four,
+        first_weekday: Weekday.monday,
       }),
       "Wednesday 23:12"
     );

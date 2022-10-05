@@ -53,6 +53,7 @@ const Component = Vue.extend({
         // @ts-ignore
         ranges: this.ranges ? {} : false,
         "locale-data": {
+          // @ts-ignore
           firstDay: this.firstDay,
         },
       },
