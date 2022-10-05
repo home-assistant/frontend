@@ -62,7 +62,7 @@ const ALERT_DOMAINS = ["binary_sensor"];
 
 const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 
-const OTHER_DOMAINS = ["camera", "climate", "media_player"];
+const OTHER_DOMAINS = ["camera"];
 
 const DEVICE_CLASSES = {
   sensor: ["temperature", "humidity"],
@@ -115,6 +115,7 @@ export class HuiAreaCard
       areaId: string,
       devicesInArea: Set<string>,
       registryEntities: EntityRegistryEntry[],
+      extraDomains: Array<string> | undefined,
       states: HomeAssistant["states"]
     ) => {
       const entitiesInArea = registryEntities
@@ -136,7 +137,9 @@ export class HuiAreaCard
           !TOGGLE_DOMAINS.includes(domain) &&
           !SENSOR_DOMAINS.includes(domain) &&
           !ALERT_DOMAINS.includes(domain) &&
-          !OTHER_DOMAINS.includes(domain)
+          !OTHER_DOMAINS.includes(domain) &&
+          extraDomains &&
+          !extraDomains.includes(domain)
         ) {
           continue;
         }
@@ -170,6 +173,7 @@ export class HuiAreaCard
       this._config!.area,
       this._devicesInArea(this._config!.area, this._devices!),
       this._entities!,
+      this._config!.show_extra_domains,
       this.hass.states
     )[domain];
     if (!entities) {
@@ -193,6 +197,7 @@ export class HuiAreaCard
       this._config!.area,
       this._devicesInArea(this._config!.area, this._devices!),
       this._entities!,
+      this._config!.show_extra_domains,
       this.hass.states
     )[domain].filter((entity) =>
       deviceClass ? entity.attributes.device_class === deviceClass : true
@@ -307,6 +312,7 @@ export class HuiAreaCard
       this._config.area,
       this._devicesInArea(this._config.area, this._devices),
       this._entities,
+      this._config!.show_extra_domains,
       this.hass.states
     );
 
@@ -336,6 +342,7 @@ export class HuiAreaCard
       this._config.area,
       this._devicesInArea(this._config.area, this._devices),
       this._entities,
+      this._config!.show_extra_domains,
       this.hass.states
     );
     const area = this._area(this._config.area, this._areas);
@@ -438,31 +445,33 @@ export class HuiAreaCard
                     `
                   : "";
               })}
-              ${OTHER_DOMAINS.map((domain) => {
-                if (domain === "camera") {
-                  return "";
-                }
+              ${this._config!.show_extra_domains
+                ? this._config!.show_extra_domains.map((domain) => {
+                    if (domain === "camera") {
+                      return "";
+                    }
 
-                if (!(domain in entitiesByDomain)) {
-                  return "";
-                }
+                    if (!(domain in entitiesByDomain)) {
+                      return "";
+                    }
 
-                return entitiesByDomain[domain].map((entity) => {
-                  const on = !STATES_OFF.includes(entity.state);
-                  const icon = domainIcon(domain, entity);
+                    return entitiesByDomain[domain].map((entity) => {
+                      const on = !STATES_OFF.includes(entity.state);
+                      const icon = domainIcon(domain, entity);
 
-                  return html`
-                    <ha-icon-button
-                      class=${on ? "on" : "off"}
-                      .path=${icon}
-                      .domain=${domain}
-                      .entity=${entity.entity_id}
-                      @click=${this._handleAction}
-                    >
-                    </ha-icon-button>
-                  `;
-                });
-              })}
+                      return html`
+                        <ha-icon-button
+                          class=${on ? "on" : "off"}
+                          .path=${icon}
+                          .domain=${domain}
+                          .entity=${entity.entity_id}
+                          @click=${this._handleAction}
+                        >
+                        </ha-icon-button>
+                      `;
+                    });
+                  })
+                : ""}
             </div>
           </div>
         </div>

@@ -3883,7 +3883,8 @@
             "area": {
               "name": "Area",
               "description": "The Area card automatically displays entities of a specific area.",
-              "show_camera": "Show camera feed instead of area picture"
+              "show_camera": "Show camera feed instead of area picture",
+              "show_extra_domains": "Show entities of additional domains from this list"
             },
             "calendar": {
               "name": "Calendar",

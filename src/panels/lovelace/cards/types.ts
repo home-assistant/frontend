@@ -82,6 +82,7 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   area: string;
   navigation_path?: string;
   show_camera?: boolean;
+  show_extra_domains?: Array<string>;
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
