@@ -36,7 +36,9 @@ class HaDomainIntegrations extends LitElement {
   protected render() {
     return html`<mwc-list>
       ${this.flowsInProgress?.length
-        ? html`<h3>We discovered the following:</h3>
+        ? html`<h3>
+              ${this.hass.localize("ui.panel.config.integrations.discovered")}
+            </h3>
             ${this.flowsInProgress.map(
               (flow) => html`<mwc-list-item
                 graphic="medium"
@@ -60,36 +62,46 @@ class HaDomainIntegrations extends LitElement {
                 >
                 <ha-icon-next slot="meta"></ha-icon-next>
               </mwc-list-item>`
-            )}`
+            )}
+            <li divider role="separator"></li>
+            ${this.integration?.integrations
+              ? html`<h3>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.available_integrations"
+                  )}
+                </h3>`
+              : ""}`
         : ""}
       ${this.integration?.iot_standards
-        ? this.integration.iot_standards.map((standard) => {
-            const domain: string = standardToDomain[standard] || standard;
-            return html`<mwc-list-item
-              graphic="medium"
-              .domain=${domain}
-              @click=${this._standardPicked}
-              hasMeta
-            >
-              <img
-                slot="graphic"
-                loading="lazy"
-                src=${brandsUrl({
-                  domain,
-                  type: "icon",
-                  useFallback: true,
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-                referrerpolicy="no-referrer"
-              />
-              <span
-                >${this.hass.localize(
-                  `ui.panel.config.integrations.add_${domain}_device`
-                )}</span
+        ? this.integration.iot_standards
+            .filter((standard) => standard in standardToDomain)
+            .map((standard) => {
+              const domain: string = standardToDomain[standard];
+              return html`<mwc-list-item
+                graphic="medium"
+                .domain=${domain}
+                @click=${this._standardPicked}
+                hasMeta
               >
-              <ha-icon-next slot="meta"></ha-icon-next>
-            </mwc-list-item>`;
-          })
+                <img
+                  slot="graphic"
+                  loading="lazy"
+                  src=${brandsUrl({
+                    domain,
+                    type: "icon",
+                    useFallback: true,
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                  referrerpolicy="no-referrer"
+                />
+                <span
+                  >${this.hass.localize(
+                    `ui.panel.config.integrations.add_${domain}_device`
+                  )}</span
+                >
+                <ha-icon-next slot="meta"></ha-icon-next>
+              </mwc-list-item>`;
+            })
         : ""}
       ${this.integration?.integrations
         ? Object.entries(this.integration.integrations)
@@ -155,9 +167,11 @@ class HaDomainIntegrations extends LitElement {
                 @click=${this._integrationPicked}
                 hasMeta
               >
-                Setup another instance of
-                ${this.integration.name ||
-                domainToName(this.hass.localize, this.domain)}
+                ${this.hass.localize("ui.panel.config.integrations.new_flow", {
+                  integration:
+                    this.integration.name ||
+                    domainToName(this.hass.localize, this.domain),
+                })}
                 <ha-icon-next slot="meta"></ha-icon-next>
               </mwc-list-item>`
             : html`<ha-integration-list-item
@@ -192,8 +206,11 @@ class HaDomainIntegrations extends LitElement {
     }
 
     if (
-      (domain === this.domain && !this.integration!.config_flow) ||
-      !this.integration!.integrations?.[domain]?.config_flow
+      (domain === this.domain &&
+        (!this.integration!.integrations ||
+          !(domain in this.integration!.integrations)) &&
+        !this.integration!.config_flow) ||
+      this.integration!.integrations?.[domain]?.config_flow === false
     ) {
       const manifest = await fetchIntegrationManifest(this.hass, domain);
       showAlertDialog(this, {
@@ -269,15 +286,24 @@ class HaDomainIntegrations extends LitElement {
     css`
       :host {
         display: block;
+        --mdc-list-item-graphic-size: 40px;
+        --mdc-list-side-padding: 24px;
       }
       h3 {
-        margin: 0 24px;
-        color: var(--primary-text-color);
+        margin: 8px 24px 0;
+        color: var(--secondary-text-color);
         font-size: 14px;
+        font-weight: 500;
+      }
+      h3:first-of-type {
+        margin-top: 0;
       }
       img {
         width: 40px;
         height: 40px;
+      }
+      li[divider] {
+        margin-top: 8px;
       }
     `,
   ];

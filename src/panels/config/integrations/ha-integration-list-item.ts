@@ -104,8 +104,8 @@ export class HaIntegrationListItem extends ListItemBase {
       styles,
       css`
         :host {
-          padding-left: var(--mdc-list-side-padding, 20px);
-          padding-right: var(--mdc-list-side-padding, 20px);
+          --mdc-list-side-padding: 24px;
+          --mdc-list-item-graphic-size: 40px;
         }
         :host([graphic="avatar"]:not([twoLine])),
         :host([graphic="icon"]:not([twoLine])) {

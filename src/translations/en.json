@@ -1313,8 +1313,8 @@
             "no_linked_entities": "There are no entities linked to this area."
           },
           "delete": {
-            "confirmation_title": "Are you sure you want to delete this area?",
-            "confirmation_text": "This user will be permanently deleted."
+            "confirmation_title": "Delete {name}?",
+            "confirmation_text": "This area will be permanently deleted and all devices belonging to this area will become unassigned."
           }
         },
         "backup": {
@@ -1855,8 +1855,8 @@
             "show_info": "Information",
             "default_name": "New Automation",
             "missing_name": "Cannot save automation without a name",
+            "traces_not_available": "Automations need an ID for history to be tracked. Add an ID to your automation to make it available in traces.",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
-            "load_error_not_duplicable": "Only automations in automations.yaml can be duplicated.",
             "load_error_not_deletable": "Only automations in automations.yaml can be deleted.",
             "load_error_unknown": "Error loading automation ({err_no}).",
             "save": "Save",
@@ -2341,7 +2341,6 @@
               "parallel": "Max number of parallel runs"
             },
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
-            "load_error_not_duplicable": "Only scripts in scripts.yaml can be duplicated.",
             "load_error_not_deletable": "Only scripts in scripts.yaml can be deleted.",
             "load_error_unknown": "Error loading script ({err_no}).",
             "delete_confirm_title": "Delete script?",
@@ -2851,6 +2850,8 @@
           "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
+          "available_integrations": "Available integrations",
+          "new_flow": "Setup another instance of {integration}",
           "attention": "Attention required",
           "configured": "Configured",
           "new": "Select brand",
@@ -2974,20 +2975,14 @@
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
             },
-            "pick_flow_step": {
-              "title": "We discovered these, want to set them up?",
-              "new_flow": "No, set up an other instance of {integration}"
-            },
             "loading": {
-              "loading_flow": "Please wait while {integration} is being setup",
+              "loading_flow": "Please wait, starting configuration wizard for {integration}",
               "loading_step": "Loading next step for {integration}",
               "fallback_title": "the integration"
             },
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
-            "missing_credentials_title": "Add application credentials?",
-            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?",
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
             "missing_zwave_zigbee": "To add a {integration} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
             "supported_hardware": "supported hardware",
@@ -3060,7 +3055,9 @@
           "editor": {
             "caption": "Add Credential",
             "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a passwords. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
-            "view_documentation": "View documentation",
+            "missing_credentials": "Setting up {integration} requires configuring application credentials.",
+            "missing_credentials_domain_link": "View {integration} documentation",
+            "view_documentation": "View application credentials documentation",
             "add": "Add",
             "domain": "Integration",
             "name": "Name",
@@ -4597,10 +4594,10 @@
             "title": "YAML",
             "section": {
               "validation": {
-                "heading": "Configuration validation",
-                "introduction": "Validate your configuration if you recently made some changes to it and want to make sure that it is all valid.",
+                "heading": "Check and Restart",
+                "introduction": "A basic validation of the configuration is automatically done before restarting. The basic validation ensures the YAML configuration doesn't have errors which will prevent Home Assistant or any integration from starting. It's also possible to only do the basic validation check without restarting.",
                 "check_config": "Check configuration",
-                "valid": "Configuration valid!",
+                "valid": "Configuration will not prevent Home Assistant from starting!",
                 "invalid": "Configuration invalid!"
               },
               "reloading": {

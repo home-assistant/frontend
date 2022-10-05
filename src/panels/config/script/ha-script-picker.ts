@@ -11,7 +11,9 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { differenceInDays } from "date-fns/esm";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
@@ -28,6 +30,7 @@ import "../../../components/ha-svg-icon";
 import {
   deleteScript,
   fetchScriptFileConfig,
+  getScriptStateConfig,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -92,23 +95,28 @@ class HaScriptPicker extends LitElement {
       },
       name: {
         title: this.hass.localize("ui.panel.config.script.picker.headers.name"),
+        main: true,
         sortable: true,
         filterable: true,
         direction: "asc",
         grows: true,
         template: narrow
-          ? (name, script: any) => html`
-              ${name}
-              <div class="secondary">
-                ${this.hass.localize("ui.card.automation.last_triggered")}:
-                ${script.attributes.last_triggered
-                  ? formatDateTime(
-                      new Date(script.attributes.last_triggered),
-                      this.hass.locale
-                    )
-                  : this.hass.localize("ui.components.relative_time.never")}
-              </div>
-            `
+          ? (name, script: any) => {
+              const date = new Date(script.attributes.last_triggered);
+              const now = new Date();
+              const dayDifference = differenceInDays(now, date);
+              return html`
+                ${name}
+                <div class="secondary">
+                  ${this.hass.localize("ui.card.automation.last_triggered")}:
+                  ${script.attributes.last_triggered
+                    ? dayDifference > 3
+                      ? formatShortDateTime(date, this.hass.locale)
+                      : relativeTime(date, this.hass.locale)
+                    : this.hass.localize("ui.components.relative_time.never")}
+                </div>
+              `;
+            }
           : undefined,
       },
     };
@@ -117,11 +125,18 @@ class HaScriptPicker extends LitElement {
         sortable: true,
         width: "40%",
         title: this.hass.localize("ui.card.automation.last_triggered"),
-        template: (last_triggered) => html`
-          ${last_triggered
-            ? formatDateTime(new Date(last_triggered), this.hass.locale)
-            : this.hass.localize("ui.components.relative_time.never")}
-        `,
+        template: (last_triggered) => {
+          const date = new Date(last_triggered);
+          const now = new Date();
+          const dayDifference = differenceInDays(now, date);
+          return html`
+            ${last_triggered
+              ? dayDifference > 3
+                ? formatShortDateTime(date, this.hass.locale)
+                : relativeTime(date, this.hass.locale)
+              : this.hass.localize("ui.components.relative_time.never")}
+          `;
+        },
       };
     }
 
@@ -311,17 +326,20 @@ class HaScriptPicker extends LitElement {
         )})`,
       });
     } catch (err: any) {
+      if (err.status_code === 404) {
+        const response = await getScriptStateConfig(
+          this.hass,
+          script.entity_id
+        );
+        showScriptEditor(response.config);
+        return;
+      }
       await showAlertDialog(this, {
-        text:
-          err.status_code === 404
-            ? this.hass.localize(
-                "ui.panel.config.script.editor.load_error_not_duplicable"
-              )
-            : this.hass.localize(
-                "ui.panel.config.script.editor.load_error_unknown",
-                "err_no",
-                err.status_code
-              ),
+        text: this.hass.localize(
+          "ui.panel.config.script.editor.load_error_unknown",
+          "err_no",
+          err.status_code
+        ),
       });
     }
   }

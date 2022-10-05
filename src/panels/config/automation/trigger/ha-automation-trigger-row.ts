@@ -291,6 +291,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                             "ui.panel.config.automation.editor.triggers.id"
                           )}
                           .value=${this.trigger.id || ""}
+                          .disabled=${this.disabled}
                           @change=${this._idChanged}
                         >
                         </ha-textfield>

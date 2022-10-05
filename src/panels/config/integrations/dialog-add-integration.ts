@@ -187,12 +187,7 @@ class AddIntegrationDialog extends LitElement {
 
       for (const [domain, domainBrands] of Object.entries(sb)) {
         const integration = this._findIntegration(domain);
-        if (
-          !integration ||
-          (!integration.config_flow &&
-            !integration.iot_standards &&
-            !integration.integrations)
-        ) {
+        if (!integration) {
           continue;
         }
         for (const [slug, name] of Object.entries(domainBrands)) {
@@ -509,7 +504,12 @@ class AddIntegrationDialog extends LitElement {
     if (integration.integrations) {
       const integrations =
         this._integrations![integration.domain].integrations!;
-      this._fetchFlowsInProgress(Object.keys(integrations));
+      let domains = Object.keys(integrations);
+      if (integration.domain === "apple") {
+        // we show discoverd homekit devices in their own brand section, dont show them at apple
+        domains = domains.filter((domain) => domain !== "homekit_controller");
+      }
+      this._fetchFlowsInProgress(domains);
       this._pickedBrand = integration.domain;
       return;
     }
@@ -603,7 +603,14 @@ class AddIntegrationDialog extends LitElement {
   private async _fetchFlowsInProgress(domains: string[]) {
     const flowsInProgress = (
       await fetchConfigFlowInProgress(this.hass.connection)
-    ).filter((flow) => domains.includes(flow.handler));
+    ).filter(
+      (flow) =>
+        // filter config flows that are not for the integration we are looking for
+        domains.includes(flow.handler) ||
+        // filter config flows of other domains (like homekit) that are for the domains we are looking for
+        ("alternative_domain" in flow.context &&
+          domains.includes(flow.context.alternative_domain))
+    );
 
     if (flowsInProgress.length) {
       this._flowsInProgress = flowsInProgress;

@@ -610,13 +610,15 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         if (
           !(await showConfirmationDialog(this, {
             title: this.hass.localize(
-              "ui.panel.config.areas.delete.confirmation_title"
+              "ui.panel.config.areas.delete.confirmation_title",
+              { name: entry!.name }
             ),
             text: this.hass.localize(
               "ui.panel.config.areas.delete.confirmation_text"
             ),
             dismissText: this.hass.localize("ui.common.cancel"),
             confirmText: this.hass.localize("ui.common.delete"),
+            destructive: true,
           }))
         ) {
           return false;
@@ -637,21 +639,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        h1 {
-          margin: 0;
-          font-family: var(--paper-font-headline_-_font-family);
-          -webkit-font-smoothing: var(
-            --paper-font-headline_-_-webkit-font-smoothing
-          );
-          font-size: var(--paper-font-headline_-_font-size);
-          font-weight: var(--paper-font-headline_-_font-weight);
-          letter-spacing: var(--paper-font-headline_-_letter-spacing);
-          line-height: var(--paper-font-headline_-_line-height);
-          opacity: var(--dark-primary-opacity);
-          display: flex;
-          align-items: center;
-        }
-
         h3 {
           margin: 0;
           padding: 0 16px;

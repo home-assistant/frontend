@@ -14,6 +14,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { differenceInDays } from "date-fns/esm";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -35,6 +36,8 @@ import {
   deleteAutomation,
   duplicateAutomation,
   fetchAutomationFileConfig,
+  getAutomationStateConfig,
+  showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
 import {
@@ -47,8 +50,6 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-
-const DAY_IN_MILLISECONDS = 86400000;
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -98,6 +99,7 @@ class HaAutomationPicker extends LitElement {
           title: this.hass.localize(
             "ui.panel.config.automation.picker.headers.name"
           ),
+          main: true,
           sortable: true,
           filterable: true,
           direction: "asc",
@@ -106,16 +108,13 @@ class HaAutomationPicker extends LitElement {
             ? (name, automation: any) => {
                 const date = new Date(automation.attributes.last_triggered);
                 const now = new Date();
-
-                const diff = now.getTime() - date.getTime();
-                const dayDiff = diff / DAY_IN_MILLISECONDS;
-
+                const dayDifference = differenceInDays(now, date);
                 return html`
                   ${name}
                   <div class="secondary">
                     ${this.hass.localize("ui.card.automation.last_triggered")}:
                     ${automation.attributes.last_triggered
-                      ? dayDiff > 3
+                      ? dayDifference > 3
                         ? formatShortDateTime(date, this.hass.locale)
                         : relativeTime(date, this.hass.locale)
                       : this.hass.localize("ui.components.relative_time.never")}
@@ -133,13 +132,10 @@ class HaAutomationPicker extends LitElement {
           template: (last_triggered) => {
             const date = new Date(last_triggered);
             const now = new Date();
-
-            const diff = now.getTime() - date.getTime();
-            const dayDiff = diff / DAY_IN_MILLISECONDS;
-
+            const dayDifference = differenceInDays(now, date);
             return html`
               ${last_triggered
-                ? dayDiff > 3
+                ? dayDifference > 3
                   ? formatShortDateTime(date, this.hass.locale)
                   : relativeTime(date, this.hass.locale)
                 : this.hass.localize("ui.components.relative_time.never")}
@@ -329,6 +325,14 @@ class HaAutomationPicker extends LitElement {
   }
 
   private _showTrace(automation: any) {
+    if (!automation.attributes.id) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.automation.picker.traces_not_available"
+        ),
+      });
+      return;
+    }
     navigate(`/config/automation/trace/${automation.attributes.id}`);
   }
 
@@ -382,17 +386,20 @@ class HaAutomationPicker extends LitElement {
       );
       duplicateAutomation(config);
     } catch (err: any) {
+      if (err.status_code === 404) {
+        const response = await getAutomationStateConfig(
+          this.hass,
+          automation.entity_id
+        );
+        showAutomationEditor({ ...response.config, id: undefined });
+        return;
+      }
       await showAlertDialog(this, {
-        text:
-          err.status_code === 404
-            ? this.hass.localize(
-                "ui.panel.config.automation.editor.load_error_not_duplicable"
-              )
-            : this.hass.localize(
-                "ui.panel.config.automation.editor.load_error_unknown",
-                "err_no",
-                err.status_code
-              ),
+        text: this.hass.localize(
+          "ui.panel.config.automation.editor.load_error_unknown",
+          "err_no",
+          err.status_code
+        ),
       });
     }
   }

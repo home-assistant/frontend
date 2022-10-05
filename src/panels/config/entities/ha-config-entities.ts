@@ -182,6 +182,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         `,
       },
       name: {
+        main: true,
         title: this.hass.localize(
           "ui.panel.config.entities.picker.headers.name"
         ),
