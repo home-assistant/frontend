@@ -2350,7 +2350,9 @@
             "sequence_sentence": "The sequence of actions of this script.",
             "link_available_actions": "Learn more about available actions."
           },
-          "trace": { "edit_script": "Edit script" }
+          "trace": {
+            "edit_script": "Edit script"
+          }
         },
         "scene": {
           "caption": "Scenes",
@@ -4533,6 +4535,7 @@
             "description1": "Set the current state representation of an entity within Home Assistant.",
             "description2": "If the entity belongs to a device, there will be no actual communication with that device.",
             "entity": "Entity",
+            "entity_id": "Entity ID",
             "state": "State",
             "attributes": "Attributes",
             "state_attributes": "State attributes (YAML, optional)",

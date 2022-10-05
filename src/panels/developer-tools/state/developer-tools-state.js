@@ -13,7 +13,6 @@ import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -47,7 +46,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           display: block;
         }
 
-        .state-input {
+        .text-input {
           margin-top: 16px;
         }
 
@@ -179,13 +178,17 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         </p>
         <div class="state-wrapper flex layout horizontal">
           <div class="inputs">
-            <ha-entity-picker
-              autofocus
-              hass="[[hass]]"
-              value="{{_entityId}}"
+            <ha-textfield
+              label="[[localize('ui.panel.developer-tools.tabs.states.entity_id')]]"
+              required
+              autocapitalize="none"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
+              value="[[_entityId]]"
               on-change="entityIdChanged"
-              allow-custom-entity
-            ></ha-entity-picker>
+              class="text-input"
+            ></ha-textfield>
             <ha-tip>[[localize('ui.tips.key_e_hint')]]</ha-tip>
             <ha-textfield
               label="[[localize('ui.panel.developer-tools.tabs.states.state')]]"
@@ -196,7 +199,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               spellcheck="false"
               value="[[_state]]"
               on-change="stateChanged"
-              class="state-input"
+              class="text-input"
             ></ha-textfield>
             <p>
               [[localize('ui.panel.developer-tools.tabs.states.state_attributes')]]
