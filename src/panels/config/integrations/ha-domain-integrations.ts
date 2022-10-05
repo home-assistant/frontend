@@ -207,10 +207,10 @@ class HaDomainIntegrations extends LitElement {
 
     if (
       (domain === this.domain &&
-        !this.integration!.config_flow &&
-        (!this.integration!.integrations?.[domain] ||
-          !this.integration!.integrations[domain].config_flow)) ||
-      !this.integration!.integrations?.[domain]?.config_flow
+        (!this.integration!.integrations ||
+          !(domain in this.integration!.integrations)) &&
+        !this.integration!.config_flow) ||
+      this.integration!.integrations?.[domain]?.config_flow === false
     ) {
       const manifest = await fetchIntegrationManifest(this.hass, domain);
       showAlertDialog(this, {
