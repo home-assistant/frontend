@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
@@ -13,6 +12,7 @@ import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
+import "../ha-list-item";
 import "../ha-svg-icon";
 import "./state-badge";
 
@@ -24,13 +24,13 @@ export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (item) =>
-  html`<mwc-list-item graphic="avatar" .twoline=${!!item.entity_id}>
+  html`<ha-list-item graphic="avatar" .twoline=${!!item.entity_id}>
     ${item.state
       ? html`<state-badge slot="graphic" .stateObj=${item}></state-badge>`
       : ""}
     <span>${item.friendly_name}</span>
     <span slot="secondary">${item.entity_id}</span>
-  </mwc-list-item>`;
+  </ha-list-item>`;
 
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {

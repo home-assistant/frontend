@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
 import type {
@@ -23,6 +22,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-textfield";
+import "./ha-list-item";
 
 registerStyles(
   "vaadin-combo-box-item",
@@ -205,9 +205,9 @@ export class HaComboBox extends LitElement {
   private _defaultRowRenderer: ComboBoxLitRenderer<
     string | Record<string, any>
   > = (item) =>
-    html`<mwc-list-item>
+    html`<ha-list-item>
       ${this.itemLabelPath ? item[this.itemLabelPath] : item}
-    </mwc-list-item>`;
+    </ha-list-item>`;
 
   private _clearValue(ev: Event) {
     ev.stopPropagation();
