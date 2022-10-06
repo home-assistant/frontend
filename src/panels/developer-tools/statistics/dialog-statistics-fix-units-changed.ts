@@ -36,7 +36,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
     if (!this._params) {
       return html``;
     }
-
+    /* eslint-disable lit/quoted-expressions */
     return html`
       <ha-dialog
         open
@@ -47,8 +47,9 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
       >
         <p>
           The unit of this entity changed to
-          ${this._params.issue.data.state_unit} which can't be converted to the
-          previously stored unit, ${this._params.issue.data.metadata_unit}.
+          '${this._params.issue.data.state_unit}' which can't be converted to
+          the previously stored unit,
+          '${this._params.issue.data.metadata_unit}'.
           <br />If the historic statistic values have a wrong unit, you can
           update the units of the old values. The values will not be updated.<br />Otherwise
           you can choose to delete all historic statistic values, and start
@@ -93,6 +94,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         </mwc-button>
       </ha-dialog>
     `;
+    /* eslint-enable lit/quoted-expressions */
   }
 
   private _handleActionChanged(ev): void {
