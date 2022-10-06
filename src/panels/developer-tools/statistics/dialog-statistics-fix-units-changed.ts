@@ -6,7 +6,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import {
-  changeStatisticUnit,
   clearStatistics,
   updateStatisticsMetadata,
 } from "../../../data/recorder";
@@ -47,11 +46,13 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         )}
       >
         <p>
-          The unit of this entity changed, we can't store values in multiple
-          units. <br />If the historic statistic values have a wrong unit, you
-          can update the units of the old values. The values will not be
-          updated.<br />Otherwise you can choose to delete all historic
-          statistic values, and start over.
+          The unit of this entity changed to
+          ${this._params.issue.data.state_unit} which can't be converted to the
+          previously stored unit, ${this._params.issue.data.metadata_unit}.
+          <br />If the historic statistic values have a wrong unit, you can
+          update the units of the old values. The values will not be updated.<br />Otherwise
+          you can choose to delete all historic statistic values, and start
+          over.
         </p>
 
         <h3>How do you want to fix this issue?</h3>
@@ -81,20 +82,6 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
             @change=${this._handleActionChanged}
           ></ha-radio>
         </ha-formfield>
-        ${this._params.issue.type === "units_changed_can_convert"
-          ? html`<ha-formfield
-              .label=${this.hass.localize(
-                `ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.change`
-              )}
-            >
-              <ha-radio
-                value="change"
-                name="action"
-                .checked=${this._action === "change"}
-                @change=${this._handleActionChanged}
-              ></ha-radio>
-            </ha-formfield>`
-          : ""}
 
         <mwc-button slot="primaryAction" @click=${this._fixIssue}>
           ${this.hass.localize(
@@ -119,13 +106,6 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
       await updateStatisticsMetadata(
         this.hass,
         this._params!.issue.data.statistic_id,
-        this._params!.issue.data.state_unit
-      );
-    } else if (this._action === "change") {
-      await changeStatisticUnit(
-        this.hass,
-        this._params!.issue.data.statistic_id,
-        this._params!.issue.data.metadata_unit,
         this._params!.issue.data.state_unit
       );
     }
