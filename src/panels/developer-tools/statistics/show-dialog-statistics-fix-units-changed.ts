@@ -1,16 +1,11 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import {
-  StatisticsValidationResultUnitsChanged,
-  StatisticsValidationResultUnitsChangedCanConvert,
-} from "../../../data/recorder";
+import { StatisticsValidationResultUnitsChanged } from "../../../data/recorder";
 
 export const loadFixUnitsDialog = () =>
   import("./dialog-statistics-fix-units-changed");
 
 export interface DialogStatisticsUnitsChangedParams {
-  issue:
-    | StatisticsValidationResultUnitsChanged
-    | StatisticsValidationResultUnitsChangedCanConvert;
+  issue: StatisticsValidationResultUnitsChanged;
   fixedCallback: () => void;
 }
 
