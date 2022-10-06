@@ -3691,7 +3691,7 @@
               "grid": "Grid",
               "gas": "Gas",
               "solar": "Solar",
-              "non_fossil": "Non-fossil",
+              "low_carbon": "Low-carbon",
               "home": "Home",
               "battery": "Battery",
               "go_to_energy_dashboard": "Go to the energy dashboard"
@@ -3702,8 +3702,8 @@
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind and nuclear. The higher, the better!",
-              "non_fossil_energy_consumed": "Non-fossil energy consumed",
-              "non_fossil_energy_not_calculated": "Consumed non-fossil energy couldn't be calculated"
+              "low_carbon_energy_consumed": "Low-carbon energy consumed",
+              "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
             }
           }
         },
