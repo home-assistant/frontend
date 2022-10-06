@@ -254,9 +254,6 @@
             "repositories": {
                 "add": "Pievienot",
                 "remove": "Noņemt"
-            },
-            "restart_addon": {
-                "confirm_text": "Restartēt paplašinājumu"
             }
         },
         "my": {
@@ -520,10 +517,6 @@
             "attributes": {
                 "expansion_header": "Atribūti"
             },
-            "blueprint-picker": {
-                "add_user": "Pievienot lietotāju",
-                "remove_user": "Noņemt lietotāju"
-            },
             "calendar": {
                 "my_calendars": "Mani kalendāri",
                 "today": "Šodien"
@@ -571,12 +564,6 @@
                 "no_history_found": "Vēsturiskie ieraksti par stāvokli netika atrasti."
             },
             "logbook": {
-                "event": "notikums",
-                "for": "priekš",
-                "from": "no",
-                "from_automation": "no automatizācijas",
-                "from_script": "no skripta",
-                "from_service": "no servisa",
                 "messages": {
                     "became_unavailable": "kļuva nepieejams",
                     "changed_to_state": "nomainījās uz {state}",
@@ -828,11 +815,6 @@
                 "remote": {
                     "activity": "Pašreizējā darbība"
                 },
-                "restored": {
-                    "confirm_remove_text": "Vai tiešām vēlaties noņemt šo vienību?",
-                    "confirm_remove_title": "Noņemt vienību?",
-                    "remove_action": "Noņemt vienību"
-                },
                 "script": {
                     "last_action": "Pēdējā darbība"
                 },
@@ -844,7 +826,6 @@
                 },
                 "update": {
                     "create_backup": "Izveidot rezerves kopiju pirms atjaunināšanas",
-                    "current_version": "Pašreizējā versija",
                     "install": "Uzstādīt",
                     "installed_version": "Uzstādītā versija",
                     "latest_version": "Jaunākā versija",
@@ -884,7 +865,6 @@
                         "areas": "Apgabali",
                         "energy": "Enerģijas konfigurācija",
                         "network": "Tīkls",
-                        "server_control": "Servera vadība",
                         "system": "Sistēma",
                         "updates": "Atjauninājumi"
                     },
@@ -990,7 +970,6 @@
                     "editor": {
                         "client_id": "OAuth klienta ID",
                         "client_secret": "OAuth klienta noslēpums",
-                        "create": "Izveidot",
                         "domain": "Integrācija",
                         "name": "Nosaukums"
                     },
@@ -1054,17 +1033,13 @@
                         "actions": {
                             "add": "Pievienot darbību",
                             "delete": "Dzēst",
-                            "delete_confirm": "Vai tiešām vēlaties dzēst?",
                             "disable": "Atspējot",
                             "disabled": "Atspējots",
                             "duplicate": "Dublicēt",
                             "enable": "Iespējot",
                             "header": "Darbības",
-                            "introduction": "Darbības nosaka, ko Home Assistant darīs, kad tiks aktivizēta automatizācija.",
                             "learn_more": "Uzziniet vairāk par darbībām",
-                            "name": "Darbība",
                             "rename": "Pārsaukt",
-                            "run_action": "Izpildīt darbību",
                             "type": {
                                 "activate_scene": {
                                     "label": "Aktivizēt ainu"
@@ -1126,12 +1101,9 @@
                         "conditions": {
                             "add": "Pievienot nosacījumu",
                             "delete": "Dzēst",
-                            "delete_confirm": "Vai tiešām vēlaties dzēst?",
                             "duplicate": "Duplicēt",
                             "header": "Nosacījumi",
-                            "introduction": "Nosacījumi nav obligāti, tos var izmantot, lai novērstu automatizācijas tālāku izpildi, ja vien nav izpildījušies visi priekšnosacījumi.",
                             "learn_more": "Uzziniet vairāk par nosacījumiem",
-                            "name": "Nosacījums",
                             "test": "Tests",
                             "type": {
                                 "and": {
@@ -1202,8 +1174,6 @@
                         },
                         "edit_ui": "Rediģēt, izmantojot UI",
                         "edit_yaml": "Rediģēt kā YAML",
-                        "enable_disable": "Iespējot/atspējot automatizāciju",
-                        "introduction": "Lietojiet automatizācijas, lai iedzīvinātu Jūsu mājās",
                         "load_error_not_editable": "Tikai \"automations.yaml\" failā esošās automatizācijas ir rediģējamas.",
                         "load_error_unknown": "Kļūda ielādējot automatizāciju ({err_no})",
                         "rename": "Pārsaukt",
@@ -1211,12 +1181,9 @@
                         "triggers": {
                             "add": "Pievienot trigeri",
                             "delete": "Dzēst",
-                            "delete_confirm": "Vai tiešām vēlaties dzēst?",
                             "duplicate": "Dublicēt",
                             "header": "Trigeri",
-                            "introduction": "Trigeri ir tas, kas sāk automatizācijas noteikuma apstrādi. Vienam noteikumam ir iespējams norādīt vairākus trigerus. Kad trigeris sāk, Home Assistant apstiprina nosacījumus, ja tādi ir, un izsauc darbību.",
                             "learn_more": "Uzziniet vairāk par trigeriem",
-                            "name": "Izsaukt",
                             "type": {
                                 "calendar": {
                                     "after": "Pēc",
@@ -1308,15 +1275,11 @@
                             },
                             "type_select": "Trigera veids",
                             "unsupported_platform": "Neatbalstīta platforma: {platform}"
-                        },
-                        "unsaved_confirm": "Jums ir nesaglabātas izmaiņas. Vai tiešām vēlaties pamest?"
+                        }
                     },
                     "picker": {
                         "add_automation": "Pievienot automatizāciju",
-                        "delete_automation": "Dzēst automatizāciju",
-                        "delete_confirm": "Vai tiešām vēlaties dzēst šo automatizāciju?",
                         "dev_automation": "Atkļūdot automatizāciju",
-                        "duplicate_automation": "Dublēta automatizāciju",
                         "edit_automation": "Rediģēt automatizāciju",
                         "header": "Automatizāciju redaktors",
                         "headers": {
@@ -1379,8 +1342,6 @@
                         "connecting": "Savienojas...",
                         "google": {
                             "manage_entities": "Pārvaldīt vienības",
-                            "sync_entities": "Sinhronizēt vienības ar Google",
-                            "sync_failed_title": "Sinhronizēšana neizdevās",
                             "title": "Google asistents"
                         },
                         "integrations": "Integrācijas",
@@ -1427,7 +1388,6 @@
                     "google": {
                         "disable_2FA": "Atspējot divu faktoru autentifikāciju",
                         "manage_defaults": "Rediģēt noklusējamos iestatījumus",
-                        "manage_domains": "Pārvaldīt domēnus",
                         "title": "Google asistents"
                     },
                     "login": {
@@ -1485,9 +1445,6 @@
                         "main": "Par",
                         "secondary": "Versijas informācija, kredīti un daudz kas cits"
                     },
-                    "backup": {
-                        "title": "Rezerves kopija"
-                    },
                     "dashboards": {
                         "main": "Paneļi"
                     },
@@ -1502,8 +1459,7 @@
                     },
                     "system": {
                         "main": "Sistēma",
-                        "secondary": "Izveidot rezerves kopijas, pārbaudīt žurnālus vai restartēt sistēmu",
-                        "title": "Sistēma"
+                        "secondary": "Izveidot rezerves kopijas, pārbaudīt žurnālus vai restartēt sistēmu"
                     },
                     "tags": {
                         "secondary": "Uzstādīt NFC birkas un QR kodus"
@@ -1827,7 +1783,6 @@
                         "thanks": "Pateicības"
                     },
                     "license": "Publicēts saskaņā ar Apache 2.0 licenci",
-                    "path_configuration": "Ceļš uz configuration.yaml: {path}",
                     "server": "serveris",
                     "setup_time": "Laika iestatīšana",
                     "source": "Pirmkods:",
@@ -1847,7 +1802,6 @@
                         "area": "Apgabalā {area}",
                         "configure": "Konfigurēt",
                         "delete": "Dzēst",
-                        "delete_confirm": "Vai tiešām vēlaties dzēst {title} integrāciju?",
                         "depends_on_cloud": "Atkarīgs no mākoņa",
                         "devices": "{count} {count, plural,\n  one {ierīce}\n  other {ierīces}\n}",
                         "disable": {
@@ -2038,8 +1992,6 @@
                 "person": {
                     "add_person": "Pievienot personu",
                     "caption": "Personas",
-                    "confirm_delete": "Vai tiešām vēlaties dzēst šo personu?",
-                    "confirm_delete2": "Visas šai personai piederošās ierīces kļus par nepiesaistītām.",
                     "create_person": "Izveidot personu",
                     "description": "Pārvaldīt personas, kuras izseko Home Assistant.",
                     "detail": {
@@ -2091,39 +2043,30 @@
                         "entities": {
                             "add": "Pievienot vienību",
                             "delete": "Dzēst vienību",
-                            "device_entities": "Ja pievienosiet vienību, kas pieder ierīcei, tad tā tiks pievienota.",
                             "header": "Vienības",
                             "introduction": "Šeit var iestatīt vienības, kas nepieder nevienai ierīcei.",
                             "without_device": "Vienības bez ierīcēm"
                         },
-                        "introduction": "Izmantojiet ainas, lai Jūsu mājas padarītu dzīvas.",
                         "load_error_not_editable": "Tikai ainas ir rediģējamas scenes.yaml.",
                         "load_error_unknown": "Kļūda ielādējot ainu ({err_no}).",
                         "name": "Nosaukums",
-                        "save": "Saglabāt",
-                        "unsaved_confirm": "Jums ir nesaglabātas izmaiņas. Vai tiešām vēlaties pamest?"
+                        "save": "Saglabāt"
                     },
                     "picker": {
                         "add_scene": "Pievienot ainu",
-                        "delete_confirm": "Vai tiešām vēlaties izdzēst šo ainu?",
                         "delete_scene": "Dzēst ainu",
                         "duplicate": "Dublicēt",
                         "duplicate_scene": "Dublēt ainu",
                         "edit_scene": "Rediģēt ainu",
                         "header": "Ainu redaktors",
                         "headers": {
-                            "activate": "Aktivizēt",
-                            "edit": "Labot",
-                            "name": "Nosaukums",
-                            "show_info": "Rādīt informāciju",
-                            "state": "Stāvoklis"
+                            "name": "Nosaukums"
                         },
                         "introduction": "Ainu redaktors ļauj Jums izveidot un rediģēt ainas. Lūdzu, sekojiet saitei zemāk, lai izlasītu instrukciju, ka Jūs esat pareizi konfigurējis Home Assistant.",
                         "learn_more": "Uzzināt vairāk par ainām",
                         "no_scenes": "Mēs nevarējām atrast nevienu rediģējamu ainu",
                         "only_editable": "Rediģēt var tikai ainas, kas definētas scenes.yaml.",
-                        "pick_scene": "Izvēlaties ainu rediģēšanai",
-                        "show_info_scene": "Rādīt informāciju par ainu"
+                        "pick_scene": "Izvēlaties ainu rediģēšanai"
                     }
                 },
                 "script": {
@@ -2132,8 +2075,6 @@
                     "editor": {
                         "alias": "Nosaukums",
                         "default_name": "Jauns skripts",
-                        "delete_confirm": "Vai tiešām vēlaties dzēst šo skriptu?",
-                        "delete_script": "Dzēst skriptu",
                         "header": "Skripts: {name}",
                         "icon": "Ikona",
                         "id": "Vienības ID",
@@ -2149,8 +2090,6 @@
                     },
                     "picker": {
                         "add_script": "Pievienot jaunu skriptu",
-                        "dev_script": "Atkļūdošanas skripts",
-                        "edit_script": "Rediģēt skriptu",
                         "header": "Skriptu redaktors",
                         "headers": {
                             "name": "Nosaukums",
@@ -2171,7 +2110,6 @@
                     "description": "{percent_used} izmantots - {free_space} brīvs"
                 },
                 "system_dashboard": {
-                    "restart_homeassistant": "Restartēt Home Assistant",
                     "restart_homeassistant_short": "Restartēt"
                 },
                 "system_health": {
@@ -2214,7 +2152,6 @@
                 "updates": {
                     "caption": "Atjauninājumi",
                     "check_updates": "Pārbaudīt atjauninājumus",
-                    "hide_skipped": "Slēpt izlaistos",
                     "join_beta": "Pievienoties beta kanālam",
                     "leave_beta": "Pamest beta kanālu",
                     "more_updates": "+{count} atjauninājumi",
@@ -2228,8 +2165,7 @@
                     "skipped": "Izlaists",
                     "title": "{count} {count, plural,\n  one {atjauninājums}\n  other {atjauninājumi}\n}",
                     "unable_to_fetch": "Nevar ielādēt atjauninājumus",
-                    "updates_refreshed": "{count} {count, plural,\n  one {atjauninājums atsvaidzināts}\n  other {atjauninājumi atsvaidzināti}\n}",
-                    "version_available": "Versija {version_available} ir pieejama"
+                    "updates_refreshed": "{count} {count, plural,\n  one {atjauninājums atsvaidzināts}\n  other {atjauninājumi atsvaidzināti}\n}"
                 },
                 "url": {
                     "internal_url_label": "Lokālais tīkls",
@@ -2253,16 +2189,13 @@
                         "admin": "Administrators",
                         "caption": "Skatīt lietotāju",
                         "change_password": "Mainīt paroli",
-                        "confirm_user_deletion": "Vai tiešām vēlaties dzēst {name}?",
                         "deactivate_user": "Deaktivizēt lietotāju",
                         "delete_user": "Dzēst lietotāju",
                         "group": "Grupa",
                         "id": "ID",
                         "local_only": "Var pieteikties tikai lokālā tīklā",
                         "name": "Vārds",
-                        "new_password": "Jauna parole",
                         "owner": "Īpašnieks",
-                        "password_changed": "Parole tika veiksmīgi nomainīta",
                         "system_generated": "Sistēmas ģenerēts",
                         "system_generated_users_not_editable": "Sistēmas ģenerētos lietotājus nevar atjaunināt.",
                         "system_generated_users_not_removable": "Sistēmas ģenerētos lietotājus nevar dzēst.",
@@ -2293,9 +2226,6 @@
                     "add_device_page": {
                         "search_again": "Atkārtot meklēšanu",
                         "spinner": "Meklē ZHA Zigbee ierīces…"
-                    },
-                    "cluster_attributes": {
-                        "get_zigbee_attribute": "Iegūt Zigbee atribūtu"
                     },
                     "clusters": {
                         "header": "Kopas"
@@ -2515,8 +2445,6 @@
                         "title": "Statistika"
                     },
                     "yaml": {
-                        "caption": "Servera vadība",
-                        "description": "Home Assistant servera restartēšana un apturēšana",
                         "section": {
                             "reloading": {
                                 "automation": "Pārlādēt automatizācijas",
@@ -2542,13 +2470,10 @@
                                 "zone": "Pārlādēt zonas"
                             },
                             "server_management": {
-                                "confirm_restart": "Vai tiešām vēlaties restartēt Home Assistant?",
                                 "confirm_restart_title": "Restartēt Home Assistant?",
                                 "confirm_stop": "Vai tiešām vēlaties apturēt Home Assistant?",
                                 "heading": "Servera pārvaldība",
-                                "introduction": "Kontrolējiet savu Home Assistant serveri… no Home Assistant.",
                                 "restart": "Restartēt",
-                                "restart_home_assistant": "Restartēt Home Assistant",
                                 "stop": "Apturēt"
                             },
                             "validation": {
@@ -2773,7 +2698,6 @@
                             "default_zoom": "Noklusējuma mērogs",
                             "description": "Kartes kartīte ļauj attēlot vienības kartē.",
                             "geo_location_sources": "Ģeogrāfiskās atrašanās vietas avoti",
-                            "hours_to_show": "Parādāmās stundas",
                             "name": "Karte",
                             "source": "Avots"
                         },
@@ -2944,16 +2868,6 @@
             },
             "map": {
                 "edit_zones": "Rediģēt zonas"
-            },
-            "media-browser": {
-                "tts": {
-                    "action_pick": "Izvēlēties",
-                    "gender": "Dzimums",
-                    "gender_female": "Sieviete",
-                    "gender_male": "Vīrietis",
-                    "language": "Valoda",
-                    "message": "Ziņa"
-                }
             },
             "my": {
                 "error": "Radusies nezināma kļūda"

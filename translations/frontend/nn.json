@@ -419,7 +419,6 @@
                 "used": "Kodelageret er i bruk av eit installert tillegg og kan ikkje fjernast."
             },
             "restart_addon": {
-                "confirm_text": "Start tillegget på nytt",
                 "text": "Vil du restarte tillegget med endringane dine?"
             }
         },
@@ -484,10 +483,6 @@
                 "log_provider": "Loggivar"
             },
             "supervisor": {
-                "beta_backup": "Ver sikker på at du har aktivert sikkerheitskopiar av dataen din før du aktiverer denne funksjonen.",
-                "beta_join_confirm": "Vil du verte med i beta-kanalen?",
-                "beta_release_items": "Dette inkluderer betaversjonar for:",
-                "beta_warning": "Betaversjonar er for testarar og tidlege brukarar og kan innehalde ustabile kodeendringar",
                 "channel": "Kanal",
                 "cpu_usage": "Supervisor-CPU-forbruk",
                 "failed_to_reload": "Kunne ikkje laste inn Supervisor på nytt",
@@ -801,8 +796,6 @@
                 "expansion_header": "Eigenskapar"
             },
             "blueprint-picker": {
-                "add_user": "Legg til brukar ",
-                "remove_user": "Fjern brukar",
                 "select_blueprint": "Vel ei teikning "
             },
             "calendar": {
@@ -863,15 +856,7 @@
                 "no_history_found": "Inga tilstandshistorie funne"
             },
             "logbook": {
-                "by": "av",
-                "by_user": "av brukar ",
                 "entries_not_found": "Ingen loggbokhendingar funne.",
-                "event": "hending ",
-                "for": "for",
-                "from": "frå",
-                "from_automation": "frå automasjon ",
-                "from_script": "frå skrip ",
-                "from_service": "frå teneste ",
                 "messages": {
                     "became_unavailable": "vart utilgjengeleg",
                     "changed_to_state": "endra til {state}",
@@ -1034,7 +1019,6 @@
                 "data": "Tenestedata",
                 "integration_doc": "Integrasjonsdokumentasjon",
                 "required": "Dette feltet obligatorisk",
-                "service_data": "Tenestedata",
                 "target": "Mål",
                 "target_description": "Kva skal denne tenesta bruke som målretta område, einingar og oppføringar."
             },
@@ -1173,8 +1157,6 @@
                     "name": "Namn",
                     "note": "Merk: Dette fungerer kanskje ikkje med alle integrasjonane.",
                     "open_device_settings": "Opne einingsinnstillingar",
-                    "preload_stream": "Last inn kamerastraumen på førehand",
-                    "preload_stream_description": "Dette let kamerastraumen vere open i bakgrunnen så den kan visast kjappare. Åtvaring! Dette valet er avhengig av eininga.",
                     "pressure_unit": "Barometer",
                     "switch_as_x_confirm": "Brytaren vil vere gøymt og eit nytt {domain} vil bli lagt til. Den eksisterande konfigurasjonen din for brytaren vil framleis fungere.",
                     "unavailable": "Denne eininga er ikkje tilgjengeleg.",
@@ -1247,10 +1229,7 @@
             },
             "join_beta_channel": {
                 "backup": "Ver sikker på at du har ein sikkerheitskopi av dataen din før du aktiverer denne funksjonen.",
-                "confirm": "Vil du verte med i betakanalen?",
-                "release_items": "Dette inkluderer betaversjonar for:",
-                "title": "Bli med i betakanalen",
-                "warning": "Betaversjonar er for testarar og tidlege brukarar og kan innehalde ustabile kodeendringar"
+                "title": "Bli med i betakanalen"
             },
             "more_info_control": {
                 "cover": {
@@ -1274,13 +1253,7 @@
                     "activity": "Gjeldande aktivitet"
                 },
                 "restored": {
-                    "confirm_remove_text": "Er du sikker på at du vil fjerne denne entiteten?",
-                    "confirm_remove_title": "Vil du fjerne entiteten?",
-                    "no_longer_provided": "Denne oppføringa er ikkje lenger gitt frå {integration}-integrasjonen. Dersom oppføringa ikkje er i bruk lenger, slett den i innstillingane.",
-                    "not_provided": "Denne oppføringa er foreløpig utilgjengeleg og er eit barn av ein fjerna, endra eller ikkje fungerande integrasjon eller eining.",
-                    "remove_action": "Fjern entitet",
-                    "remove_intro": "Dersom oppføringa ikkje lenger er i bruk, kan du rydde ved å fjerne den.",
-                    "title": "Oppføring utilgjengeleg"
+                    "no_longer_provided": "Denne oppføringa er ikkje lenger gitt frå {integration}-integrasjonen. Dersom oppføringa ikkje er i bruk lenger, slett den i innstillingane."
                 },
                 "script": {
                     "last_action": "Siste handling",
@@ -1296,7 +1269,6 @@
                 "update": {
                     "clear_skipped": "Klarer overhoppa",
                     "create_backup": "Lag sikkerheitskopi før oppdatering",
-                    "current_version": "Noverande ",
                     "install": "Installere",
                     "installed_version": "Installert versjon",
                     "latest_version": "Nyaste versjon",
@@ -1474,13 +1446,9 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Legg til einingar via denne eininga",
-                    "clusters": "Behandle Clusters",
-                    "device_children": "Vis barn",
                     "reconfigure": "Konfigurer eining på nytt",
                     "remove": "Fjern eining",
-                    "view_in_visualization": "Visning i visualisering",
-                    "view_network": "Sjå nettverk",
-                    "zigbee_information": "ZigBee-einingssignatur"
+                    "view_network": "Sjå nettverk"
                 },
                 "confirmations": {
                     "remove": "Er du sikker på at du vil fjerne eininga?"
@@ -1586,7 +1554,6 @@
                         "caption": "Legg til applikasjonslegitimasjon",
                         "client_id": "OAuth klient-ID",
                         "client_secret": "OAuth klienthemmelegheit",
-                        "create": "Lag",
                         "domain": "Integrasjon",
                         "name": "Namn"
                     },
@@ -1667,19 +1634,15 @@
                             "alias": "Handlingsnamn",
                             "change_alias": "Gi nytt namn til handling",
                             "delete": "Slett",
-                            "delete_confirm": "Er du sikker på at du vil slette?",
                             "disable": "Deaktiver",
                             "disabled": "Deaktivert",
                             "duplicate": "Dupliser",
                             "enable": "Aktiver",
                             "header": "Handlingar",
-                            "introduction": "Handlinga Home Assistant vil gjennomføre når automasjonen vert utløyst.",
                             "invalid_action": "Ugyldig handling",
                             "learn_more": "Lær meir om handlingar",
-                            "name": "Handling",
                             "rename": "Gi nytt namn",
                             "run": "Køyr",
-                            "run_action": "Køyr handlinga",
                             "run_action_error": "Feil under kjøring av handling",
                             "run_action_success": "Køyring av handlinga lykkast",
                             "type": {
@@ -1792,13 +1755,10 @@
                             "alias": "Føresetnadsnamn",
                             "change_alias": "Gi nytt namn til føresetnad",
                             "delete": "Slett",
-                            "delete_confirm": "Er du sikker på at du vil slette?",
                             "duplicate": "Dupliser",
                             "header": "Føresetnadar",
-                            "introduction": "Føresetnadar er valfrie og vil hindre vidare framgang i automasjonen med mindre alle føresetnader er møtt.",
                             "invalid_condition": "Ugyldig føresetnads-konfigurasjon",
                             "learn_more": "Lær meir om føresetnader",
-                            "name": "Betingelse",
                             "rename": "Gi nytt namn",
                             "test": "Test ",
                             "test_failed": "Det skjedde ein feil når føresetnaden vart testa.",
@@ -1892,8 +1852,6 @@
                         "edit_ui": "Rediger i visuell editor",
                         "edit_yaml": "Rediger i YAML",
                         "enable": "Aktiver",
-                        "enable_disable": "Aktiver/Deaktiver automasjon",
-                        "introduction": "Bruk automasjonar til å gi liv til heimen din",
                         "load_error_not_editable": "Berre automasjonar i automations.yaml kan redigerast.",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
                         "max": {
@@ -1902,8 +1860,6 @@
                         },
                         "missing_name": "Kan ikkje lagre automasjon utan namn",
                         "modes": {
-                            "description": "Modusen kontrollerer kva som skjer når automasjonen vert utløyst medan handlingane framleis køyrer på grunn av ei tidlegare utløysing, Sjekk{documentation_link} for meir info.",
-                            "documentation": "automasjonsdokumentasjon",
                             "label": "Modus",
                             "parallel": "Parallell",
                             "queued": "I kø",
@@ -1928,14 +1884,11 @@
                             "alias": "Utløysarnamn",
                             "change_alias": "Gi nytt namn til utløysar",
                             "delete": "Slett",
-                            "delete_confirm": "Er du sikker på at du vil slette denne?",
                             "duplicate": "Dupliser",
                             "edit_id": "Rediger utløysar-ID",
                             "header": "Utløysarar",
                             "id": "Utløysar-ID",
-                            "introduction": "Utløysarar er det som startar ein prosess i ein automasjonsregel. Det er mogleg å spesifisere fleire utløysarar for same regel. Når ein utløysar startar, vil Home Assistant validere føresetnadane, dersom der er nokon, og så setje i gang handlinga.",
                             "learn_more": "Lær meir om utløysarar",
-                            "name": "Utløysar",
                             "triggered": "Utløyst",
                             "type": {
                                 "calendar": {
@@ -2041,19 +1994,15 @@
                             },
                             "type_select": "Utløysartype",
                             "unsupported_platform": "Ingen visuellredigerar støtta for plattform: {platform}"
-                        },
-                        "unsaved_confirm": "Du har endringar som ikkje er lagra. Er du sikker på at du vil forlate?"
+                        }
                     },
                     "picker": {
                         "add_automation": "Lag automasjon",
                         "delete": "Slett",
-                        "delete_automation": "Slett automasjon",
-                        "delete_confirm": "Er du sikker på at du vil slette denne automasjonen?",
                         "dev_automation": "Feilsøk automasjon",
                         "dev_only_editable": "Det er berre automasjonar med ein unik ID som kan feilsøkast.",
                         "disabled": "Deaktivere",
                         "duplicate": "Duplikat",
-                        "duplicate_automation": "Duplisert automasjon",
                         "edit_automation": "Rediger automasjon ",
                         "header": "Automasjonsredigerar",
                         "headers": {
@@ -2127,7 +2076,6 @@
                         "header": "Importer teikning",
                         "import_btn": "Førehandsvis teikning ",
                         "import_header": "Teikning «{name}»",
-                        "import_introduction_link": "Du kan importere teikningar frå andre brukarar frå GitHub og {community_link}. Skriv inn URLen til teikninga under.",
                         "importing": "Lastar teikning...",
                         "raw_blueprint": "Teikningsinnhald",
                         "save_btn": "Importer teikning ",
@@ -2139,7 +2087,6 @@
                     "description": "Administrer teikningar",
                     "overview": {
                         "add_blueprint": "Importer teikning ",
-                        "confirm_delete_header": "Slette denne teikninga?",
                         "confirm_delete_text": "Er du sikker på at du vil slette denne teikninga?",
                         "create_automation": "Lag automasjon",
                         "create_script": "Lag skript ",
@@ -2175,8 +2122,6 @@
                             "not_configured_text": "Før du kan ta i bruk Alexa, må du aktivere Home Assistant-ferdigheita for Alexa i Alexa-appen.",
                             "not_configured_title": "Alexa er ikkje aktivert",
                             "state_reporting_error": "Kunne ikkje {enable-disable} report state.",
-                            "sync_entities": "Synkroniser einingar til Amazon",
-                            "sync_entities_error": "Kunne ikkje synkronisere oppføringar:",
                             "title": ""
                         },
                         "connected": "Tilkopla",
@@ -2199,9 +2144,6 @@
                             "not_configured_text": "Før du kan bruke Google Assistant, må du aktivere Home Assistant Cloud for Google Assistant i Google Home-appen.",
                             "not_configured_title": "Google Assistant er ikkje aktivert",
                             "security_devices": "Sikkerhetseiningar",
-                            "sync_entities": "Synkroniser oppføringar til Google",
-                            "sync_failed_text": "Synkroniseringa av oppføringa vart mislukka. Prøv igjen eller sjekk loggane.",
-                            "sync_failed_title": "Synkronsering mislukka",
                             "title": ""
                         },
                         "integrations": "Integrasjonar",
@@ -2266,7 +2208,6 @@
                         "exposed_entities": "Eksponer oppføringar",
                         "follow_domain": "Følg domene",
                         "manage_defaults": "Administrer standardinnstillingar",
-                        "manage_domains": "Administrer domene",
                         "not_exposed": "{selected} ikkje eksponert",
                         "not_exposed_entities": "entitetar",
                         "title": "Alexa"
@@ -2282,10 +2223,7 @@
                         "will_be_auto_renewed": "vil automatisk bli fornya"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "Webhooken er tilgjengeleg på følgjande URL:",
                         "close": "Lukk",
-                        "confirm_disable": "Er du sikker på at du vil deaktivere denne webhook'en?",
-                        "copied_to_clipboard": "Kopiert til utklippstavle",
                         "info_disable_webhook": "Dersom du ikkje har lyst å bruke webhook lenger, kan du",
                         "link_disable_webhook": "deaktiver den",
                         "managed_by_integration": "Denne webhooken er adminstert av ein integrasjon og kan ikkje deaktiverast",
@@ -2311,7 +2249,6 @@
                         "exposed_entities": "Eksponerte entiteter",
                         "follow_domain": "Følg domene",
                         "manage_defaults": "Administrer standardinnstillingar",
-                        "manage_domains": "Administrer domene",
                         "not_exposed": "{selected} ikkje eksponert",
                         "not_exposed_entities": "Ikke eksponerte entiteter",
                         "sync_to_google": "Synkroniserer endringar til Google.",
@@ -2397,26 +2334,20 @@
                 },
                 "dashboard": {
                     "about": {
-                        "description": "Versjon, systemhelse og linkar til dokumentasjon",
                         "main": "Om",
-                        "secondary": "Versjonsinformasjon, kreditering og meir",
-                        "title": "Om"
+                        "secondary": "Versjonsinformasjon, kreditering og meir"
                     },
                     "areas": {
-                        "description": "Administrer område og soner som Home Assistant sporer",
                         "main": "Område og soner",
-                        "secondary": "Administrer lokasjon i og rundt huset ditt",
-                        "title": "Område og soner"
+                        "secondary": "Administrer lokasjon i og rundt huset ditt"
                     },
                     "automations": {
                         "main": "Automatisering og scener",
                         "secondary": "Automatiseringar, scener, skript og blueprints"
                     },
                     "backup": {
-                        "description": "Generer sikkerheitskopi av Home Assistant-konfigurasjonen",
                         "main": "Sikkerhetskopi",
-                        "secondary": "Generer sikkerhetskopiar av Home Assistant-konfigurasjonen",
-                        "title": "Sikkerheitskopi"
+                        "secondary": "Generer sikkerhetskopiar av Home Assistant-konfigurasjonen"
                     },
                     "companion": {
                         "main": "Tilhøyrande app ",
@@ -2443,10 +2374,8 @@
                         "secondary": "Køyr ekstra applikasjonar ved sidan av Home Assistant"
                     },
                     "system": {
-                        "description": "Lag sikkerheitskopiar, sjekk loggar og start systemet om att",
                         "main": "System ",
-                        "secondary": "Lag sikkerheitskopiar, sjekk loggar og restart systemet",
-                        "title": "System "
+                        "secondary": "Lag sikkerheitskopiar, sjekk loggar og restart systemet"
                     },
                     "tags": {
                         "main": "Merke",
@@ -2530,8 +2459,6 @@
                     "name": "Namn",
                     "no_devices": "Ingen einingar",
                     "open_configuration_url": "Besøk",
-                    "open_configuration_url_device": "Besøk eining",
-                    "open_configuration_url_service": "Besøk teneste ",
                     "picker": {
                         "filter": {
                             "filter": "Filtrer",
@@ -2823,10 +2750,8 @@
                     "memory": "Minne",
                     "processor": "Prosessor",
                     "reboot_host": "Start verten på nytt",
-                    "reboot_host_confirm": "Er du sikker på at du vil starte verten på nytt?",
                     "rebooting_host": "Startar vert på nytt",
-                    "shutdown_host": "Slå av vert",
-                    "shutdown_host_confirm": "Er du sikker på at du vil avslutte verten?"
+                    "shutdown_host": "Slå av vert"
                 },
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
@@ -2875,7 +2800,6 @@
                     "icons_by": "Ikoner fra",
                     "issues": "Problem ",
                     "license": "Publisert under Apache 2.0-lisensen",
-                    "path_configuration": "Bane til configuration.yaml: {path}",
                     "server": "core",
                     "setup_time": "Oppsettstid",
                     "source": "Kjelder:",
@@ -2896,11 +2820,9 @@
                         "check_the_logs": "Sjekk loggane",
                         "configure": "Konfigurer",
                         "delete": "Slett",
-                        "delete_confirm": "Er du sikker på at du vil slette {title}-integrasjonen?",
                         "depends_on_cloud": "Avhengig av skya",
                         "devices": "{count} {count, plural,\n  one {eining}\n  other {einingar}\n}",
                         "disable": {
-                            "disable_confirm": "Er du sikker på at du vil deaktivere denne konfigurasjonsoppføringa? Tilhøyrande einingar og oppføringar vil verte deaktivert.",
                             "disabled": "Deaktivert ",
                             "disabled_by": {
                                 "device": "eining ",
@@ -2965,15 +2887,10 @@
                             "loading_flow": "Vent medan {integration} vert sett opp",
                             "loading_step": "Lastar neste steg for {integration}"
                         },
-                        "missing_credentials": "{integration}-oppsettet krev konfigurering av applikasjonslegitimasjon. Vil du gjere dette no?",
                         "next": "Neste",
                         "no_config_flow": "Denne integrasjonen støttar ikkje konfigurasjon via brukargrensesnittet. Dersom du følger denne linken frå Home Assistant-nettstaden, må du forsikre deg om at du køyrer siste versjon av Home Assistan.",
                         "not_all_required_fields": "Ikkje alle obligatoriske felt er fylt ut.",
                         "not_loaded": "Integrasjonen kunne ikkje lastast. Prøv å restarte Home Assistant.",
-                        "pick_flow_step": {
-                            "new_flow": "Nei, sett opp ein anna førekomst av {integration}",
-                            "title": "Vi oppdaga desse. Vil du sette dei opp?"
-                        },
                         "submit": "Send inn",
                         "success": "Suksess"
                     },
@@ -3089,7 +3006,6 @@
                     "resources": {
                         "cant_edit_yaml": "Du bruker eit skrivebord i YAML-modus, og kan dermed ikkje administere ressursane dine gjennom brukargrensesnittet. Administrer dei i «configuration.yaml».",
                         "caption": "Ressursar",
-                        "confirm_delete": "Er du sikker på at du vil slette denne ressursen?",
                         "detail": {
                             "create": "Lag",
                             "delete": "Slett",
@@ -3159,8 +3075,6 @@
                 "person": {
                     "add_person": "Legg til person",
                     "caption": "Personar",
-                    "confirm_delete": "Er du sikker på at du vil slette denne personen?",
-                    "confirm_delete2": "Alle einingane tilhøyrande denne personen kjem til å ikkje vere knytta til noko lenger.",
                     "create_person": "Lag person",
                     "description": "Administrer personane Home Assistant sporer.",
                     "detail": {
@@ -3205,43 +3119,34 @@
                         "entities": {
                             "add": "Legg til ei oppføring",
                             "delete": "Slett oppføring",
-                            "device_entities": "Dersom du legg til ei oppføring som høyrer til ei eining, vil eininga bli lagt til",
                             "header": "Oppføringar",
                             "introduction": "Individuelle oppføringar kan leggast til her.",
                             "without_device": "Oppføringar"
                         },
                         "icon": "Ikon",
-                        "introduction": "Bruk scener for å bringe heimen din til live.",
                         "load_error_not_editable": "Berre scener i scenes.yaml kan redigerast.",
                         "load_error_unknown": "Feil ved lasting av scene ({err_no}).",
                         "name": "Namn",
-                        "save": "Lagre",
-                        "unsaved_confirm": "Du har gjort endringar som ikkje er lagra. Er du sikker på at du vil lukke?"
+                        "save": "Lagre"
                     },
                     "picker": {
                         "activate": "Aktiver",
                         "add_scene": "Legg til scene",
-                        "delete_confirm": "Er du sikker på at du vil slette denne scena?",
                         "delete_scene": "Slett scene",
                         "duplicate": "Dupliser ",
                         "duplicate_scene": "Dupliser scene ",
                         "edit_scene": "Rediger scene",
                         "header": "Sceneredigerar",
                         "headers": {
-                            "activate": "Aktiver",
-                            "edit": "Redigere",
                             "last_activated": "Sist aktivert",
-                            "name": "Namn",
-                            "show_info": "Vis informasjon ",
-                            "state": "Tilstand"
+                            "name": "Namn"
                         },
                         "introduction": "Sceneredigeraren let deg lage og redigere scener. Følg linken under for å lese instruksjonane for å vere sikker på at du har konfigurert Home Assistant korrekt.",
                         "learn_more": "Lær meir om scener",
                         "no_scenes": "Vi fant ingen scener",
                         "only_editable": "Berre scener som er definert i scenes.yaml kan redigerast.",
                         "pick_scene": "Vel scene du vil redigere",
-                        "show_info": "Informasjon",
-                        "show_info_scene": "Vis informasjon om scene"
+                        "show_info": "Informasjon"
                     }
                 },
                 "script": {
@@ -3250,8 +3155,6 @@
                     "editor": {
                         "alias": "Namn",
                         "default_name": "Nytt skript",
-                        "delete_confirm": "Er du sikker på at du vil slette dette skriptet?",
-                        "delete_script": "Slett skript ",
                         "header": "Skript: {name}",
                         "icon": "Ikon",
                         "id": "Oppførings-ID",
@@ -3265,8 +3168,6 @@
                             "queued": "Kølengde"
                         },
                         "modes": {
-                            "description": "Modusen kontrollerer kva som skjer når skript vert utløyste medan det framleis køyrer grunna ei tidlegare utløysing. Sjekk {documentation_link} for meir info.",
-                            "documentation": "skript dokumentasjon",
                             "label": "Modus",
                             "parallel": "Parallell",
                             "queued": "I kø",
@@ -3281,10 +3182,7 @@
                     "picker": {
                         "add_script": "Legg til skript",
                         "delete": "Slett",
-                        "dev_script": "Feilsøk skriptet",
                         "duplicate": "Dupliser",
-                        "duplicate_script": "Dupliser skript ",
-                        "edit_script": "Rediger skript",
                         "header": "Skriptredigering",
                         "headers": {
                             "name": "Namn",
@@ -3307,7 +3205,6 @@
                         "move": "Flytt",
                         "moving": "Flyttar datadisk",
                         "moving_desc": "Start om og flytt datadisk. Ver tolmodig.",
-                        "no_devices": "Ingen passande tilknytta einigar funne",
                         "select_device": "Vel ny datadisk",
                         "title": "Flytt datadisk"
                     },
@@ -3316,11 +3213,9 @@
                     "used_space": "Brukt lagring"
                 },
                 "system_dashboard": {
-                    "confirm_restart": "Er du sikker på at du vil starte Home Assistant på nytt?",
                     "confirm_restart_text": "Om du startar Home Assistant på nytt, stoppar du alle dine aktive instrumentbord, automatiseringar og skript.",
                     "confirm_restart_title": "Starte Home Assistant på nytt?",
                     "restart_error": "Kunne ikkje starte Home Assistant på nytt",
-                    "restart_homeassistant": "Start Home assistant på nytt",
                     "restart_homeassistant_short": "Start på nytt"
                 },
                 "system_health": {
@@ -3329,7 +3224,6 @@
                     "cpu_usage": "Prosessorbruk",
                     "description": "Status, berekningar og oppstartstid for integrasjonar",
                     "integration_start_time": "Oppstartstid integrasjonar",
-                    "long_loading_integrations": "Lang lasting integrasjonar",
                     "ram_usage": "Minnebruk",
                     "supervisor_stats": "Supervisorstatistikk"
                 },
@@ -3374,7 +3268,6 @@
                     "caption": "Oppdateringar",
                     "check_updates": "Sjå etter oppdateringar",
                     "description": "Administrer oppdateringar av Home Assistant, tillegg og einingar",
-                    "hide_skipped": "Skjul hoppa over",
                     "join_beta": "Bli med i betakanal",
                     "leave_beta": "Forlat betakanal",
                     "more_updates": "+{count} oppdateringar",
@@ -3389,8 +3282,7 @@
                     "skipped": "Hoppa over ",
                     "title": "{count} {count, plural,\none {oppdatering}\nother {oppdateringar}\n}",
                     "unable_to_fetch": "Kan ikkje laste inn oppdateringar",
-                    "updates_refreshed": "{count} {count, plural,\n  ei {update}\n  fleire {updates}\n} oppfriska",
-                    "version_available": "Versjon {version_available} er tilgjengeleg"
+                    "updates_refreshed": "{count} {count, plural,\n  ei {update}\n  fleire {updates}\n} oppfriska"
                 },
                 "url": {
                     "caption": "Home Assistant-URL",
@@ -3424,16 +3316,13 @@
                         "admin": "Administrator",
                         "caption": "Sjå brukaren",
                         "change_password": "Byt passord",
-                        "confirm_user_deletion": "Er du sikker på at du vil slette {name} ?",
                         "deactivate_user": "Deaktiver brukaren",
                         "delete_user": "Slett brukar",
                         "group": "Gruppe",
                         "id": "Id",
                         "local_only": "Kan berre logge inn frå det lokale nettverket",
                         "name": "Visningsnamn",
-                        "new_password": "Nytt passord",
                         "owner": "Eigar",
-                        "password_changed": "Passordet vart endra",
                         "system_generated": "Systembrukar",
                         "system_generated_users_not_editable": "Kan ikkje oppdatere dei systemgenererte brukarane",
                         "system_generated_users_not_removable": "Kan ikke fjerne systembrukare.",
@@ -3470,13 +3359,8 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributtane til den valde klynga",
-                        "get_zigbee_attribute": "Hent ZigBee-attributt",
                         "header": "Klyngeattributtar",
-                        "help_attribute_dropdown": "Vel ein attributt for å sjå eller angje verdien.",
-                        "help_get_zigbee_attribute": "Få verdiane frå dei valte attributtane.",
-                        "help_set_zigbee_attribute": "Angje attributtverdi for den spesifiserte klyngen på entiteten.",
-                        "introduction": "Sjå og rediger klyngeattributtar.",
-                        "set_zigbee_attribute": "Angje ZigBee-attributt"
+                        "introduction": "Sjå og rediger klyngeattributtar."
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Kommandoar for den valde klynga",
@@ -3487,8 +3371,7 @@
                     },
                     "clusters": {
                         "header": "Klynger",
-                        "help_cluster_dropdown": "Vel ei klyngje for å vise attributtar og kommandoar.",
-                        "introduction": "Klynger er byggesteinane for Zigbee-funksjonaliteten. Dei sepererar funksjonaliteten i logiske einingar. Det er klient- og servertyper som består av attributtar og kommandoar."
+                        "help_cluster_dropdown": "Vel ei klyngje for å vise attributtar og kommandoar."
                     },
                     "common": {
                         "clusters": "Klynge ",
@@ -3994,8 +3877,6 @@
                         "unknown_error_template": "Ukjent feil ved framsyning av mal"
                     },
                     "yaml": {
-                        "caption": "Serverkontroll",
-                        "description": "Valider og start Home Assistant-serveren om att",
                         "section": {
                             "reloading": {
                                 "automation": "Automasjonar",
@@ -4036,15 +3917,12 @@
                                 "zone": "Soner"
                             },
                             "server_management": {
-                                "confirm_restart": "Er du sikker på at du ønsker å starte Home Assistant omatt?",
                                 "confirm_restart_text": "Om du startar Home Assistant på nytt, stoppar du alle dine aktive instrumentbord, automatiseringar og skript.",
                                 "confirm_restart_title": "Vil du starte Home Assistant på nytt?",
                                 "confirm_stop": "Er du sikker på at du ønsker å stoppe Home Assistant?",
                                 "heading": "Home Assistant",
-                                "introduction": "Ved å starte Home Assistant på nytt kjem skrivebordet og automasjonane dine til å bli stoppa. Etter oppstarten, vil kvar konfigurasjon bli lasta inn på nytt",
                                 "restart": "Omstart",
                                 "restart_error": "Kunne ikkje starte Home Assistant på nytt",
-                                "restart_home_assistant": "Start Home Assistant på nytt",
                                 "stop": "Stopp"
                             },
                             "validation": {
@@ -4394,7 +4272,6 @@
                             "default_zoom": "Standard zoom",
                             "description": "Kartkortet som let deg vise oppføringar på eit kart.",
                             "geo_location_sources": "Kjelder for geolokasjon",
-                            "hours_to_show": "Timar som visast",
                             "name": "Kart",
                             "source": "Kjelde"
                         },
@@ -4675,18 +4552,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "Mediespelar {name} eksisterer ikkje"
-                },
-                "tts": {
-                    "action_pick": "Vel",
-                    "action_play": "Sei",
-                    "example_message": "Hei {name}. Du kan spele kva som helst tekst på alle støtta mediaspelarar!",
-                    "faild_to_store_defaults": "Kunne ikkje lagre standard: {error}",
-                    "gender": "Kjønn",
-                    "gender_female": "Kvinne",
-                    "gender_male": "Mann",
-                    "language": "Språk",
-                    "message": "Melding",
-                    "set_as_default": "Sett som standardalternativ"
                 }
             },
             "my": {

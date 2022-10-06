@@ -420,8 +420,14 @@
                 "used": "リポジトリはインストール済みのアドオンで使用されているので、削除できません。"
             },
             "restart_addon": {
-                "confirm_text": "アドオンを再起動",
-                "text": "変更を保存してアドオンを再起動しますか？"
+                "restart": "再起動",
+                "text": "変更を保存してアドオンを再起動しますか？",
+                "title": "{name} を再起動しますか？"
+            },
+            "uninstall_addon": {
+                "text": "その構成は完全に削除されます。",
+                "title": "{name} をアンインストールしますか？",
+                "uninstall": "アンインストール"
             }
         },
         "my": {
@@ -485,10 +491,6 @@
                 "log_provider": "ログプロバイダー"
             },
             "supervisor": {
-                "beta_backup": "この機能をアクティブ化する前に、データのバックアップを作成してください。",
-                "beta_join_confirm": "ベータチャネルに参加しますか？",
-                "beta_release_items": "これには、次のベータリリースが含まれます:",
-                "beta_warning": "ベータ版はテスターと早期導入者向けであり、不安定なコード変更を含むことができます",
                 "channel": "チャネル",
                 "cpu_usage": "SupervisorのCPU使用率",
                 "failed_to_reload": "Supervisorのリロードに失敗しました",
@@ -802,8 +804,6 @@
                 "expansion_header": "属性"
             },
             "blueprint-picker": {
-                "add_user": "ユーザーの追加",
-                "remove_user": "ユーザーの削除",
                 "select_blueprint": "ブループリントの選択"
             },
             "calendar": {
@@ -867,15 +867,7 @@
                 "no_history_found": "状態履歴がありません。"
             },
             "logbook": {
-                "by": "by",
-                "by_user": "by ユーザー",
                 "entries_not_found": "ログブックにイベントが見つかりません。",
-                "event": "イベント",
-                "for": "に対して(for)",
-                "from": "から(from)",
-                "from_automation": "オートメーションから",
-                "from_script": "スクリプトから",
-                "from_service": "サービスから",
                 "messages": {
                     "became_unavailable": "利用できなくなりました",
                     "changed_to_state": "{state}に変更されました",
@@ -1039,7 +1031,6 @@
                 "data": "サービスデータ",
                 "integration_doc": "統合 ドキュメント",
                 "required": "この項目は必須です",
-                "service_data": "サービスデータ",
                 "target": "ターゲット",
                 "target_description": "このサービスは、対象となるエリア、デバイス、またはエンティティとして使用する必要があります。"
             },
@@ -1060,6 +1051,7 @@
                     "max": "最大",
                     "mean": "平均",
                     "min": "最小",
+                    "state": "状態",
                     "sum": "合計"
                 }
             },
@@ -1179,9 +1171,21 @@
                     "note": "注: これは、まだすべての統合において機能しないことがあります。",
                     "open_device_settings": "デバイス設定を開く",
                     "precipitation_unit": "降水量の単位",
-                    "preload_stream": "カメラストリームのプリロード",
-                    "preload_stream_description": "これにより、カメラのストリームがバックグラウンドで開かれたままになるため、より速く表示されるようになります。警告！これはデバイスに負荷がかかります。",
                     "pressure_unit": "大気圧の単位",
+                    "stream": {
+                        "preload_stream": "カメラストリームのプリロード",
+                        "preload_stream_description": "これにより、カメラのストリームがバックグラウンドで開かれたままになるため、より速く表示されるようになります。警告！これはデバイスに負荷がかかります。",
+                        "stream_orientation": "カメラストリームの向き",
+                        "stream_orientation_1": "方向変換なし",
+                        "stream_orientation_2": "ミラー",
+                        "stream_orientation_3": "180度回転",
+                        "stream_orientation_4": "フリップ",
+                        "stream_orientation_5": "左に回転して反転(フリップ)",
+                        "stream_orientation_6": "左に回転",
+                        "stream_orientation_7": "右に回転して反転(フリップ)",
+                        "stream_orientation_8": "右に回転",
+                        "stream_orientation_description": "カメラストリームに使用する方向の変換。"
+                    },
                     "switch_as_x_confirm": "このスイッチは非表示になり、新しい {domain} が追加されます。このスイッチを使用した既存の設定は、引き続き機能します。",
                     "temperature_unit": "温度の単位",
                     "unavailable": "このエンティティは利用できません。",
@@ -1221,7 +1225,6 @@
                 },
                 "input_number": {
                     "box": "入力フィールド",
-                    "initial": "初期値",
                     "max": "最大値",
                     "min": "最小値",
                     "mode": "表示モード",
@@ -1256,11 +1259,9 @@
                 "crop": "収納"
             },
             "join_beta_channel": {
-                "backup": "この機能をアクティブ化する前に、データのバックアップを作成してください。",
-                "confirm": "ベータチャネルに参加しますか？",
-                "release_items": "これには、次のベータリリースが含まれます:",
+                "join": "参加",
                 "title": "ベータチャネルに参加",
-                "warning": "ベータ版はテスターと早期導入者向けであり、不安定なコード変更を含むことができます"
+                "view_documentation": "ドキュメントを見る"
             },
             "more_info_control": {
                 "cover": {
@@ -1286,13 +1287,7 @@
                     "activity": "現在のアクティビティ"
                 },
                 "restored": {
-                    "confirm_remove_text": "このエンティティを削除しますか？",
-                    "confirm_remove_title": "エンティティを削除しますか？",
-                    "no_longer_provided": "このエンティティは、{integration} の統合によって提供されなくなりました。このエンティティが不要な場合は、設定で削除してください。",
-                    "not_provided": "このエンティティは、{integration} 統合によって提供されなくなりました。 エンティティを使用しない場合は、設定で削除してください。",
-                    "remove_action": "エンティティの削除",
-                    "remove_intro": "エンティティが使用されなくなった場合は、削除することでクリーンアップできます。",
-                    "title": "エンティティが使用できません"
+                    "no_longer_provided": "このエンティティは、{integration} の統合によって提供されなくなりました。このエンティティが不要な場合は、設定で削除してください。"
                 },
                 "script": {
                     "last_action": "最後のアクション",
@@ -1308,7 +1303,6 @@
                 "update": {
                     "clear_skipped": "スキップしたものを戻す",
                     "create_backup": "アップデートする前にバックアップを作成",
-                    "current_version": "現在のバージョン",
                     "install": "インストール",
                     "installed_version": "インストール済みのバージョン",
                     "latest_version": "最新バージョン",
@@ -1498,13 +1492,10 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "このデバイス経由でデバイスを追加",
-                    "clusters": "クラスタの管理",
-                    "device_children": "子機を表示",
+                    "manage": "zigbeeデバイスの管理",
                     "reconfigure": "再設定",
                     "remove": "削除",
-                    "view_in_visualization": "視覚的に表示",
-                    "view_network": "ネットワークを表示",
-                    "zigbee_information": "Zigbee 署名"
+                    "view_network": "ネットワークを表示"
                 },
                 "confirmations": {
                     "remove": "デバイスを削除してもよろしいですか？"
@@ -1525,6 +1516,15 @@
                 "unknown": "不明",
                 "zha_device_card": {
                     "device_name_placeholder": "デバイス名の変更"
+                }
+            },
+            "zha_manage_device": {
+                "heading": "Zigbeeデバイスの管理",
+                "tabs": {
+                    "bindings": "バインディング",
+                    "children": "子機",
+                    "clusters": "クラスター",
+                    "signature": "署名"
                 }
             },
             "zha_reconfigure_device": {
@@ -1607,12 +1607,18 @@
                     "caption": "アプリケーション認証",
                     "description": "統合で使用されるOAuthアプリケーション認証情報の管理",
                     "editor": {
+                        "add": "追加",
                         "caption": "アプリケーションの認証情報を追加する",
                         "client_id": "OAuthクライアントID",
+                        "client_id_helper": "OAuthアプリケーションの公開識別子",
                         "client_secret": "OAuthクライアントシークレット",
-                        "create": "作成",
+                        "client_secret_helper": "OAuthアプリケーションのシークレット",
+                        "description": "OAuthは、Home Assistantがパスワードを入力せずに他のWebサイトの情報にアクセスできるようにするために使用されます。この仕組みは、Spotify、Google、Withings、Microsoft、Twitterなどの企業で利用されています。",
                         "domain": "統合",
-                        "name": "名称"
+                        "missing_credentials": "{integration} をセットアップするには、アプリケーションの認証情報を構成する必要があります。",
+                        "missing_credentials_domain_link": "{integration} のドキュメントを表示",
+                        "name": "名称",
+                        "view_documentation": "ドキュメントを見る"
                     },
                     "picker": {
                         "add_application_credential": "アプリケーションの認証情報を追加する",
@@ -1692,7 +1698,6 @@
                             "alias": "アクション名",
                             "change_alias": "アクション名を変更",
                             "delete": "削除",
-                            "delete_confirm": "削除してもよろしいですか？",
                             "delete_confirm_text": "完全に削除されます。",
                             "delete_confirm_title": "アクションを削除？",
                             "disable": "無効化",
@@ -1700,13 +1705,10 @@
                             "duplicate": "複製",
                             "enable": "有効化",
                             "header": "アクション",
-                            "introduction": "アクションは、オートメーションがトリガーされたときに、Home Assistantが実行するものです。",
                             "invalid_action": "無効なアクション",
                             "learn_more": "アクションの詳細",
-                            "name": "アクション",
                             "rename": "リネーム",
                             "run": "実行",
-                            "run_action": "アクションを実行",
                             "run_action_error": "アクションの実行中にエラーが発生しました",
                             "run_action_success": "アクションは正常に実行されました",
                             "type": {
@@ -1820,15 +1822,12 @@
                             "alias": "条件名",
                             "change_alias": "条件名を変更",
                             "delete": "削除",
-                            "delete_confirm": "削除してもよろしいですか？",
                             "delete_confirm_text": "完全に削除されます。",
                             "delete_confirm_title": "条件を削除？",
                             "duplicate": "複製",
                             "header": "条件",
-                            "introduction": "条件はオプションであり、すべての条件が満たされない限り、オートメーション(自動化)は実行されません。",
                             "invalid_condition": "無効な条件設定",
                             "learn_more": "条件の詳細",
-                            "name": "条件",
                             "rename": "リネーム",
                             "test": "テスト",
                             "test_failed": "テスト中にエラーが発生しました",
@@ -1923,20 +1922,16 @@
                         "edit_ui": "UI で編集",
                         "edit_yaml": "YAML で編集",
                         "enable": "有効",
-                        "enable_disable": "オートメーションの有効化/無効化",
-                        "introduction": "オートメーションを使用して、あなたの家に命を吹き込みましょう。",
                         "load_error_not_deletable": "automations.yaml のオートメーションのみ削除できます。",
-                        "load_error_not_duplicable": "automations.yaml のオートメーションのみ複製できます。",
                         "load_error_not_editable": "編集できるのは、automations.yamlのオートメーションのみです。",
                         "load_error_unknown": "オートメーションの読み込み中にエラーが発生しました ({err_no})。",
                         "max": {
                             "parallel": "並列実行の最大数",
                             "queued": "キューの長さ"
                         },
+                        "migrate": "移行",
                         "missing_name": "名前なしでオートメーションを保存することはできません",
                         "modes": {
-                            "description": "このモードは、アクションが以前のトリガーから実行されている間にオートメーションがトリガーされたときに何が起こるかを制御します。詳細については{documentation_link}を確認してください。",
-                            "documentation": "オートメーションのドキュメント",
                             "label": "モード",
                             "learn_more": "モードについて学ぶ",
                             "parallel": "並列",
@@ -1952,26 +1947,25 @@
                             "exit": "解除",
                             "title": "並べ替えモード"
                         },
+                        "read_only": "このオートメーションは、automations.yamlファイルに保存されていないか、IDがないため、UIから編集することはできません。",
                         "rename": "リネーム",
                         "run": "実行",
                         "save": "保存",
                         "show_info": "情報",
                         "show_trace": "トレース",
+                        "traces_not_available": "オートメーションは、履歴を追跡するためのIDが必要です。オートメーションにIDを追加して、追跡を利用できるようにします。",
                         "triggers": {
                             "add": "トリガーを追加",
                             "alias": "トリガー名",
                             "change_alias": "トリガー名を変更",
                             "delete": "削除",
-                            "delete_confirm": "削除してもよろしいですか？",
                             "delete_confirm_text": "完全に削除されます。",
                             "delete_confirm_title": "トリガーを削除？",
                             "duplicate": "複製",
                             "edit_id": "ID を編集",
                             "header": "トリガー",
                             "id": "トリガーID",
-                            "introduction": "トリガーはオートメーションルールの処理を開始するものです。同じルールに対して複数のトリガーを指定することもできます。トリガーが開始されると、Home Assistantは条件がある場合はそれを検証し、アクションを呼び出します。",
                             "learn_more": "トリガーの詳細",
-                            "name": "トリガー",
                             "rename": "リネーム",
                             "triggered": "トリガーしました",
                             "type": {
@@ -2079,22 +2073,18 @@
                             "type_select": "トリガーの種類",
                             "unsupported_platform": "プラットフォームに対するビジュアルエディタでのサポートなし: {platform}"
                         },
-                        "unsaved_confirm": "未保存の変更があります。このまま離れてしまってもよろしいですか？",
                         "unsaved_confirm_text": "保存されていない変更は失われます。",
                         "unsaved_confirm_title": "編集をやめますか？"
                     },
                     "picker": {
                         "add_automation": "オートメーションの作成",
                         "delete": "削除",
-                        "delete_automation": "オートメーションを削除",
-                        "delete_confirm": "このオートメーションを削除してもよろしいですか？",
                         "delete_confirm_text": "{name} は、完全に削除されます。",
                         "delete_confirm_title": "オートメーションを削除しますか？",
                         "dev_automation": "オートメーションのデバッグ",
                         "dev_only_editable": "ユニークID(一意)が定義されたオートメーションのみがデバッグ可能です。",
                         "disabled": "無効",
                         "duplicate": "複製",
-                        "duplicate_automation": "オートメーションを複製",
                         "edit_automation": "オートメーションを編集",
                         "header": "オートメーションエディタ",
                         "headers": {
@@ -2169,7 +2159,6 @@
                         "import_btn": "ブループリントのプレビュー",
                         "import_header": "ブループリント「{name}」",
                         "import_introduction": "以下にURLを貼り付けることで、GitHub およびコミュニティ フォーラムから他のユーザーのブループリントをインポートします。",
-                        "import_introduction_link": "他のユーザーのブループリントをGithubと{community_link}からインポートできます。以下にブループリントのURLを入力します。",
                         "importing": "ブループリントを読み込んでいます…",
                         "raw_blueprint": "ブループリントコンテンツ",
                         "save_btn": "ブループリントのインポート",
@@ -2181,7 +2170,6 @@
                     "description": "ブループリントの管理",
                     "overview": {
                         "add_blueprint": "ブループリントを追加する",
-                        "confirm_delete_header": "このブループリントを削除しますか？",
                         "confirm_delete_text": "このブループリントを削除してもよろしいですか？",
                         "confirm_delete_title": "ブループリントを削除しますか？",
                         "create_automation": "オートメーションを作成",
@@ -2215,12 +2203,11 @@
                             "enable_state_reporting": "状態レポートを有効にする",
                             "info": "Home Assistant Cloud向けのAlexa統合により、Alexa対応のデバイスを経由して、あなたの Home Assistant のデバイスをすべて制御できるようになります。",
                             "info_state_reporting": "状態レポートを有効にすると、Home Assistantは公開されたエンティティのすべての状態変化をAmazonに送信します。これにより、Alexaアプリで常に最新の状態を確認しつつ変化を利用してルーティンを作成できます。",
+                            "link_learn_how_it_works": "仕組みを学ぶ",
                             "manage_entities": "エンティティの管理",
                             "not_configured_text": "Alexaを使用する前に、AlexaアプリでAlexaのHome Assistantスキルをアクティブにする必要があります。",
                             "not_configured_title": "Alexaがアクティブ化されていません",
                             "state_reporting_error": "状態を{enable_disable}報告できません。",
-                            "sync_entities": "エンティティをAmazonと同期",
-                            "sync_entities_error": "エンティティの同期に失敗しました:",
                             "title": "Alexa"
                         },
                         "connected": "接続",
@@ -2239,13 +2226,11 @@
                             "http_use_ssl_warning_title": "ローカル通信は利用できません",
                             "info": "Home Assistant Cloud向けのGoogleアシスタント 統合により、Googleアシスタント対応のデバイスを経由して、あなたの Home Assistant のデバイスをすべて制御できるようになります。",
                             "info_state_reporting": "状態レポートを有効にすると、Home Assistantは公開されたエンティティのすべての状態変化をGoogleに送信します。これにより、ボイスコマンドの待ち時間が短縮され、Googleアプリで常に最新の状態を把握できます。",
+                            "link_learn_how_it_works": "仕組みを学ぶ",
                             "manage_entities": "エンティティの管理",
                             "not_configured_text": "Google アシスタントを使用する前に、「Google Home」アプリで「Google アシスタント」のHome Assistant Cloud skillを有効にする必要があります。",
                             "not_configured_title": "Googleアシスタントがアクティブ化されていません",
                             "security_devices": "セキュリティデバイス",
-                            "sync_entities": "エンティティをGoogleに同期",
-                            "sync_failed_text": "エンティティの同期に失敗しました。もう一度試すか、ログを確認してください。",
-                            "sync_failed_title": "同期に失敗しました",
                             "title": "Googleアシスタント"
                         },
                         "integrations": "統合",
@@ -2311,9 +2296,10 @@
                         "follow_domain": "ドメインをフォローする",
                         "manage_defaults": "デフォルトの管理",
                         "manage_defaults_dialog_description": "エンティティは、その種類に基づきデフォルトで公開できます。",
-                        "manage_domains": "ドメインの管理",
                         "not_exposed": "{selected} は公開されていません",
                         "not_exposed_entities": "公開されていないエンティティ",
+                        "sync_entities": "エンティティの同期",
+                        "sync_entities_error": "エンティティの同期に失敗しました:",
                         "title": "Alexa"
                     },
                     "description_features": "AlexaやGoogleアシスタントと連携させて、外出先から家をコントロール",
@@ -2327,12 +2313,9 @@
                         "will_be_auto_renewed": "自動的に更新されます"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "Webhookは次のURLで入手できます:",
                         "close": "閉じる",
-                        "confirm_disable": "このWebhookを無効化してもよろしいですか？",
                         "confirm_disable_text": "{name} のWebhookは、無効になります。",
                         "confirm_disable_title": "Webhookを無効にする",
-                        "copied_to_clipboard": "クリップボードにコピーしました",
                         "info_disable_webhook": "このWebhookを使用したくない場合は、次の手順を実行します。",
                         "link_disable_webhook": "無効にする",
                         "managed_by_integration": "この Webhook は、統合によって管理されているため、無効にすることはできません。",
@@ -2360,9 +2343,14 @@
                         "follow_domain": "ドメインをフォローする",
                         "manage_defaults": "デフォルトの管理",
                         "manage_defaults_dialog_description": "エンティティは、その種類に基づきデフォルトで公開できます。",
-                        "manage_domains": "ドメインの管理",
+                        "not_configured_text": "Google アシスタントを使用する前に、「Google Home」アプリで「Google アシスタント」のHome Assistant Cloud skillを有効にする必要があります。",
+                        "not_configured_title": "Googleアシスタントがアクティブ化されていません",
                         "not_exposed": "{selected} は公開されていません",
                         "not_exposed_entities": "公開されていないエンティティ",
+                        "sync_entities": "エンティティの同期",
+                        "sync_entities_error": "エンティティの同期に失敗しました:",
+                        "sync_failed_text": "エンティティの同期に失敗しました。もう一度試すか、ログを確認してください。",
+                        "sync_failed_title": "同期に失敗しました",
                         "sync_to_google": "変更をGoogleに同期しています。",
                         "title": "Google Assistant"
                     },
@@ -2446,26 +2434,20 @@
                 },
                 "dashboard": {
                     "about": {
-                        "description": "バージョン、システムの状態、およびドキュメントへのリンク",
                         "main": "概要",
-                        "secondary": "バージョン情報、クレジットなど",
-                        "title": "概要"
+                        "secondary": "バージョン情報、クレジットなど"
                     },
                     "areas": {
-                        "description": "Home Assistant が追跡するエリアとゾーンの管理",
                         "main": "エリアとゾーン",
-                        "secondary": "あなたの家の中のエリアや特定の場所(ゾーン)を管理",
-                        "title": "エリアとゾーン"
+                        "secondary": "あなたの家の中のエリアや特定の場所(ゾーン)を管理"
                     },
                     "automations": {
                         "main": "オートメーションとシーン",
                         "secondary": "オートメーション、シーン、スクリプトとブループリント"
                     },
                     "backup": {
-                        "description": "Home Assistant の設定のバックアップを生成する",
                         "main": "バックアップ",
-                        "secondary": "Home Assistant の設定のバックアップを生成する",
-                        "title": "バックアップ"
+                        "secondary": "Home Assistant の設定のバックアップを生成する"
                     },
                     "companion": {
                         "main": "コンパニオンアプリ",
@@ -2492,10 +2474,8 @@
                         "secondary": "Home Assistant と同時に実行する追加のアプリケーション"
                     },
                     "system": {
-                        "description": "バックアップの作成、ログの確認、システムの再起動",
                         "main": "システム",
-                        "secondary": "バックアップの作成、ログの確認、システムの再起動",
-                        "title": "システム"
+                        "secondary": "バックアップの作成、ログの確認、システムの再起動"
                     },
                     "tags": {
                         "main": "タグ",
@@ -2503,6 +2483,7 @@
                     }
                 },
                 "devices": {
+                    "add_device": "デバイスの追加",
                     "add_prompt": "この {type} を使用した {name} はまだ追加されていません。上の [+] ボタンをクリックして追加できます。",
                     "automation": {
                         "actions": {
@@ -2579,8 +2560,6 @@
                     "name": "名前",
                     "no_devices": "デバイスなし",
                     "open_configuration_url": "開く",
-                    "open_configuration_url_device": "デバイスにアクセス",
-                    "open_configuration_url_service": "サービスにアクセス",
                     "picker": {
                         "filter": {
                             "filter": "フィルター",
@@ -2874,13 +2853,11 @@
                     "processor": "プロセッサー",
                     "reboot": "再起動",
                     "reboot_host": "ホストを再起動",
-                    "reboot_host_confirm": "ホストを再起動してもよろしいですか？",
                     "reboot_host_text": "これにより、コアとすべてのアドオンを含んだシステム全体が再起動されます。",
                     "reboot_host_title": "システムを再起動しますか？",
                     "rebooting_host": "ホストを再起動中",
                     "shutdown": "シャットダウン",
                     "shutdown_host": "ホストをシャットダウン",
-                    "shutdown_host_confirm": "ホストをシャットダウンしてもよろしいですか？",
                     "shutdown_host_text": "これにより、コアとすべてのアドオンを含んだシステム全体がシャットダウンされます。",
                     "shutdown_host_title": "システムをシャットダウンしますか？"
                 },
@@ -2941,7 +2918,6 @@
                         "thanks": "謝辞"
                     },
                     "license": "Apache 2.0ライセンスに基づき公開",
-                    "path_configuration": "configuration.yamlのパス: {path}",
                     "server": "サーバー",
                     "setup_time": "準備時間",
                     "source": "ソース:",
@@ -2956,6 +2932,7 @@
                     "add_zha_device": "Zigbeeデバイスを追加",
                     "add_zwave_js_device": "Z-Waveデバイスを追加",
                     "attention": "注意が必要",
+                    "available_integrations": "利用可能な統合",
                     "caption": "統合",
                     "config_entry": {
                         "application_credentials": {
@@ -2970,13 +2947,11 @@
                         "check_the_logs": "ログの確認",
                         "configure": "設定",
                         "delete": "削除",
-                        "delete_confirm": "統合 {title} を削除してもよろしいですか？",
                         "delete_confirm_text": "そのデバイスとエンティティは、完全に削除されます。",
                         "delete_confirm_title": "{title} を削除しますか？",
                         "depends_on_cloud": "クラウドに依存",
                         "devices": "{count} {count, plural,\n  one {デバイス}\n  other {デバイス}\n}",
                         "disable": {
-                            "disable_confirm": "この設定項目を無効にしてよろしいですか？そのデバイスやエンティティは無効になります。",
                             "disabled": "無効",
                             "disabled_by": {
                                 "device": "デバイス",
@@ -3022,7 +2997,8 @@
                         "unknown_via_device": "未知のディバイス",
                         "unnamed_entry": "名前のないエントリ",
                         "version": "バージョン: {version}",
-                        "via": "接続元:"
+                        "via": "接続元:",
+                        "yaml_only": "手動での設定が必要"
                     },
                     "config_flow": {
                         "aborted": "中止",
@@ -3043,23 +3019,19 @@
                             "loading_flow": "{integration} のセットアップ中です。しばらくお待ちください",
                             "loading_step": "{integration}次のステップを読み込んでいます"
                         },
-                        "missing_credentials": "{integration} を設定するには、アプリケーションの認証情報を設定する必要があります。今すぐ行いますか？",
-                        "missing_zha": "Zigbeeデバイスを追加するには、最初にZigbeeホームオートメーション統合をセットアップする必要があります。セットアップしますか？",
-                        "missing_zwave_js": "Z-Waveデバイスを追加するには、最初にZ-Wave統合をセットアップする必要があります。セットアップしますか？",
                         "missing_zwave_zigbee": "{integration} デバイスを追加するには、最初に {supported_hardware_link} と {integration} の統合をセットアップする必要があります。すでにそのハードウェアを持っている場合は、{integration} のセットアップに進むことができます。",
                         "next": "次",
                         "no_config_flow": "この統合は、UI からの設定には対応していません。ただし、Home Assistant の Web サイト経由でこのリンクを辿ってきた場合は、最新バージョンのHome Assistant を実行していることを確認してください。",
                         "not_all_required_fields": "すべての必須項目が入力されていません。",
                         "not_loaded": "統合ファイルを読み込めませんでした。Home Assistant を再起動してください。",
-                        "pick_flow_step": {
-                            "new_flow": "いいえ、{integration} の他のインスタンスを設定します",
-                            "title": "これらを発見しました。設定しますか？"
-                        },
+                        "open_documentation": "ドキュメントを開く",
                         "proceed": "続行",
                         "submit": "送信(Submit)",
                         "success": "成功",
                         "supported_brand_flow": "{supported_brand} のデバイスのサポートは、{flow_domain_name} よって提供されます。このまま続けますか？",
-                        "supported_hardware": "サポートされているハードウェア"
+                        "supported_hardware": "サポートされているハードウェア",
+                        "yaml_only": "このデバイスを追加するには、''configuration.yaml' 'に追加してください。詳細については、ドキュメントを参照してください。",
+                        "yaml_only_title": "このデバイスはUIから追加することはできません"
                     },
                     "configure": "設定",
                     "configured": "設定済み",
@@ -3086,6 +3058,7 @@
                     "integration": "統合",
                     "integration_not_found": "統合が見つかりません。",
                     "new": "新しい統合の設定",
+                    "new_flow": "{integration} の別のインスタンスをセットアップする",
                     "no_integrations": "まだ設定されていないようです。あなたの最初の統合を追加するには、下のボタンをクリックしてください！",
                     "none": "まだ設定されていません",
                     "none_found": "統合が見つかりません。",
@@ -3095,7 +3068,8 @@
                     "reconfigure": "再設定",
                     "rename_dialog": "この構成エントリーの名前を編集",
                     "rename_input_label": "エントリー名",
-                    "search": "統合を検索"
+                    "search": "統合を検索",
+                    "search_brand": "ブランド名で検索"
                 },
                 "logs": {
                     "caption": "ログ",
@@ -3173,7 +3147,6 @@
                     "resources": {
                         "cant_edit_yaml": "ダッシュボードをYAMLモードで使用しているため、UIを使用してリソースを管理することはできません。configuration.yamlで管理してください。",
                         "caption": "リソース",
-                        "confirm_delete": "このリソースを削除してもよろしいですか？",
                         "confirm_delete_text": "{url} は、完全に削除されます。",
                         "confirm_delete_title": "リソースを削除しますか？",
                         "detail": {
@@ -3245,8 +3218,6 @@
                 "person": {
                     "add_person": "メンバーを追加",
                     "caption": "メンバー",
-                    "confirm_delete": "このユーザーを削除しますか？",
-                    "confirm_delete2": "このユーザーに属するすべてのデバイスは、割り当てが解除されます。",
                     "confirm_delete_text": "この人物は完全に削除され、この人物に属しているすべてのデバイスの割り当ては解除されます。",
                     "confirm_delete_title": "{name} を削除しますか？",
                     "create_person": "メンバーを作成",
@@ -3283,7 +3254,6 @@
                     "critical": "致命的",
                     "description": "Home Assistantインスタンスの問題を見つけて修正する",
                     "dialog": {
-                        "alert_not_fixable": "この問題を修復することはできません。",
                         "breaks_in_version": "これは、バージョン {version} 以降で利用できなくなります。 アップグレードする前に対処してください。",
                         "fix": "修復",
                         "ignore": "無視",
@@ -3294,7 +3264,6 @@
                         "unignore": "無視しない"
                     },
                     "error": "エラー",
-                    "hide_ignored": "無視を隠す",
                     "integration_startup_time": "統合の起動時間",
                     "more_repairs": "すべての修復を表示",
                     "no_repairs": "現在のところ利用可能な修復はありません",
@@ -3319,18 +3288,15 @@
                         "entities": {
                             "add": "エンティティを追加",
                             "delete": "エンティティを削除",
-                            "device_entities": "デバイスに属するエンティティを追加すると、デバイス自体も追加されます。",
                             "header": "エンティティ",
                             "introduction": "デバイスに属していないエンティティをここで設定できます。",
                             "without_device": "デバイスのないエンティティ"
                         },
                         "icon": "アイコン",
-                        "introduction": "シーンを使用して、あなたの家を活性化しましょう。",
                         "load_error_not_editable": "scenes.yaml で定義されたシーンのみが編集可能です。",
                         "load_error_unknown": "シーンの読み込みエラー ({err_no})。",
                         "name": "名前",
                         "save": "保存",
-                        "unsaved_confirm": "未保存の変更があります、終了してもよろしいですか？",
                         "unsaved_confirm_text": "保存されていない変更は失われます。",
                         "unsaved_confirm_title": "編集をやめますか？"
                     },
@@ -3338,7 +3304,6 @@
                         "activate": "有効化",
                         "add_scene": "シーンを追加",
                         "delete": "削除",
-                        "delete_confirm": "このシーンを削除してもよろしいですか？",
                         "delete_confirm_text": "{name} は、完全に削除されます。",
                         "delete_confirm_title": "シーンを削除しますか？",
                         "delete_scene": "シーンを削除",
@@ -3347,20 +3312,15 @@
                         "edit_scene": "シーンを編集",
                         "header": "シーンエディタ",
                         "headers": {
-                            "activate": "アクティベート",
-                            "edit": "編集",
                             "last_activated": "最終有効化",
-                            "name": "名前",
-                            "show_info": "情報を表示",
-                            "state": "状態"
+                            "name": "名前"
                         },
                         "introduction": "シーン エディタを使用すると、シーンを作成および編集できます。以下のリンクから説明を読み、Home Assistantの設定が正しく行われていることを確認してください。",
                         "learn_more": "シーンについてもっと知る",
                         "no_scenes": "シーンが見つかりませんでした",
                         "only_editable": "scenes.yaml で定義されたシーンのみが編集可能です。",
                         "pick_scene": "編集するシーンを選択",
-                        "show_info": "情報",
-                        "show_info_scene": "シーンに関する情報を表示"
+                        "show_info": "情報"
                     }
                 },
                 "script": {
@@ -3369,10 +3329,9 @@
                     "editor": {
                         "alias": "別名",
                         "default_name": "新しいスクリプト",
-                        "delete_confirm": "このスクリプトを削除しますか？",
                         "delete_confirm_text": "{name} は、完全に削除されます。",
                         "delete_confirm_title": "スクリプトを削除しますか？",
-                        "delete_script": "スクリプトを削除",
+                        "duplicate": "複製",
                         "header": "スクリプト: {name}",
                         "icon": "アイコン",
                         "id": "エンティティ ID",
@@ -3381,16 +3340,14 @@
                         "introduction": "スクリプトを使用して一連のアクションを実行する。",
                         "link_available_actions": "使用可能なアクションに関する情報をもっと見る。",
                         "load_error_not_deletable": "scripts.yaml のスクリプトのみ削除できます。",
-                        "load_error_not_duplicable": "scripts.yaml のスクリプトのみ複製できます。",
                         "load_error_not_editable": "scripts.yaml内のスクリプトのみが編集可能です。",
                         "load_error_unknown": "スクリプトのロード中にエラーが発生しました ({err_no})",
                         "max": {
                             "parallel": "並列実行の最大数",
                             "queued": "キューの長さ"
                         },
+                        "migrate": "移行",
                         "modes": {
-                            "description": "このモードは、アクションが以前のトリガーから実行されている間にオートメーションがトリガーされたときに何が起こるかを制御します。詳細については{documentation_link}を確認してください。",
-                            "documentation": "スクリプトのドキュメント",
                             "label": "モード",
                             "learn_more": "モードについて学ぶ",
                             "parallel": "並列",
@@ -3398,6 +3355,7 @@
                             "restart": "再起動",
                             "single": "シングル"
                         },
+                        "read_only": "このスクリプトは''scripts.yaml''ファイルに保存されていないため、UIから編集することはできません。",
                         "save_script": "スクリプトを保存",
                         "sequence": "シーケンス",
                         "sequence_sentence": "このスクリプトの一連の動作。",
@@ -3407,10 +3365,7 @@
                     "picker": {
                         "add_script": "スクリプトを追加",
                         "delete": "削除",
-                        "dev_script": "スクリプトをデバグ",
                         "duplicate": "複製",
-                        "duplicate_script": "スクリプトを複製",
-                        "edit_script": "スクリプトを編集",
                         "header": "スクリプト エディタ",
                         "headers": {
                             "name": "名前",
@@ -3438,7 +3393,6 @@
                         "move": "移動",
                         "moving": "データディスクの移動",
                         "moving_desc": "再起動してデータディスクを移動します。長時間かかることがあります。",
-                        "no_devices": "接続された適切なデバイスが見つかりません",
                         "no_devices_text": "適切な外部デバイスが見つかりません。 外部データ ディスクのストレージ容量は、既存のディスクのストレージ容量より大きくする必要があります",
                         "no_devices_title": "適切なストレージが見つかりません",
                         "select_device": "新しいデータディスクを選択",
@@ -3449,11 +3403,9 @@
                     "used_space": "使用済みスペース"
                 },
                 "system_dashboard": {
-                    "confirm_restart": "Home Assistant を再起動してもよいですか？",
                     "confirm_restart_text": "Home Assistantを再起動すると、アクティブなダッシュボード、オートメーションやスクリプトがすべて停止します。",
                     "confirm_restart_title": "Home Assistant を再起動しますか？",
                     "restart_error": "Home Assistant を再起動できませんでした",
-                    "restart_homeassistant": "Home Assistant を再起動",
                     "restart_homeassistant_short": "再起動"
                 },
                 "system_health": {
@@ -3462,7 +3414,6 @@
                     "cpu_usage": "CPUの使用率",
                     "description": "ステータス、指標率と統合の起動に要した時間",
                     "integration_start_time": "統合の起動時間",
-                    "long_loading_integrations": "読み込みが遅い統合",
                     "ram_usage": "メモリ使用量",
                     "supervisor_stats": "Supervisorの指標率"
                 },
@@ -3508,7 +3459,6 @@
                     "caption": "アップデート",
                     "check_updates": "アップデートを確認する",
                     "description": "Home Assistant、アドオン、デバイスの更新を管理",
-                    "hide_skipped": "スキップしたものを非表示",
                     "join_beta": "ベータチャネルに参加",
                     "leave_beta": "ベータチャネルを離れる",
                     "more_updates": "すべてのアップデートを表示",
@@ -3523,8 +3473,7 @@
                     "skipped": "スキップしたもの",
                     "title": "{count} {count, plural,\n  one {アップデート}\n  other {アップデート}\n}",
                     "unable_to_fetch": "アップデートを取得できません",
-                    "updates_refreshed": "{count} {count, plural,\n  one {件の更新}\n  other {件の更新}\n} が適用されました",
-                    "version_available": "バージョン {version_available} が利用可能です"
+                    "updates_refreshed": "{count} {count, plural,\n  one {件の更新}\n  other {件の更新}\n} が適用されました"
                 },
                 "url": {
                     "caption": "Home Assistant のURL",
@@ -3550,6 +3499,14 @@
                         "password_not_match": "パスワードが一致しません"
                     },
                     "caption": "ユーザー",
+                    "change_password": {
+                        "caption": "パスワードの変更",
+                        "change": "変更",
+                        "new_password": "新しいパスワード",
+                        "password_changed": "パスワードは正常に変更されました。",
+                        "password_confirm": "パスワードの確認",
+                        "password_no_match": "パスワードが一致しません"
+                    },
                     "description": "Home Assistant ユーザーアカウントの管理",
                     "editor": {
                         "activate_user": "ユーザーを有効化",
@@ -3558,7 +3515,6 @@
                         "admin": "管理者",
                         "caption": "ユーザーを表示",
                         "change_password": "パスワードの変更",
-                        "confirm_user_deletion": "{name}を削除してもよろしいですか？",
                         "confirm_user_deletion_text": "このユーザーは、完全に削除されます。",
                         "confirm_user_deletion_title": "{name} を削除しますか？",
                         "deactivate_user": "ユーザーを無効化",
@@ -3567,9 +3523,7 @@
                         "id": "ID",
                         "local_only": "ローカルネットワークからのみログイン可能にする",
                         "name": "表示名",
-                        "new_password": "新しいパスワード",
                         "owner": "所有者",
-                        "password_changed": "パスワードが変更されました！",
                         "system_generated": "システムユーザー",
                         "system_generated_users_not_editable": "システムユーザーは変更できません。",
                         "system_generated_users_not_removable": "システムユーザーは削除できません。",
@@ -3606,13 +3560,10 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "選択したクラスターの属性",
-                        "get_zigbee_attribute": "Zigbee属性を取得",
                         "header": "クラスター属性",
-                        "help_attribute_dropdown": "属性を選択して、その値を表示または設定します。",
-                        "help_get_zigbee_attribute": "選択した属性の値を取得します。",
-                        "help_set_zigbee_attribute": "指定したエンティティ上の指定したクラスターの属性値を設定します。",
                         "introduction": "クラスター属性の表示と編集",
-                        "set_zigbee_attribute": "Zigbee属性を設定"
+                        "read_zigbee_attribute": "読み取り属性",
+                        "write_zigbee_attribute": "書き込み属性"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "選択したクラスタのコマンド",
@@ -3624,7 +3575,10 @@
                     "clusters": {
                         "header": "クラスター",
                         "help_cluster_dropdown": "クラスターを選択して、属性とコマンドを表示します。",
-                        "introduction": "クラスタは、Zigbee機能の設定要素です。機能を論理単位に分割します。クライアントとサーバーの種類があり、属性とコマンドで設定されています。"
+                        "tabs": {
+                            "attributes": "属性",
+                            "commands": "コマンド"
+                        }
                     },
                     "common": {
                         "clusters": "クラスター",
@@ -3637,6 +3591,11 @@
                         "network_settings_title": "ネットワーク設定",
                         "shortcuts_title": "ショートカット",
                         "update_button": "構成の更新"
+                    },
+                    "device_binding": {
+                        "bind": "バインド",
+                        "picker_label": "バインド可能なデバイス",
+                        "unbind": "アンバインド"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "設定完了",
@@ -4124,6 +4083,7 @@
                         "fix_issue": {
                             "fix": "イシューを修正",
                             "units_changed": {
+                                "change": "すべての履歴統計値を、''{metadata_unit}'' から ''{state_unit}'' に変換します",
                                 "clear": "このエンティティの古い統計データをすべて削除します",
                                 "title": "このエンティティの単位が変更されました",
                                 "update": "履歴の統計値を ''{metadata_unit}'' から ''{state_unit}''に更新しました"
@@ -4135,6 +4095,7 @@
                             "entity_not_recorded": "このエンティティは記録から除外されます。",
                             "no_state": "このエンティティには、使用できる状態がありません。",
                             "units_changed": "このエンティティの単位が、 ''{metadata_unit}'' から ''{state_unit}'' に変更されました。",
+                            "units_changed_can_convert": "このエンティティの単位が、 ''{metadata_unit}'' から ''{state_unit}'' に変更されました。",
                             "unsupported_state_class": "このエンティティのステートクラス ''{state_class}'' はサポートされていません。",
                             "unsupported_unit_metadata": "記録された統計情報の単位 (''{metadata_unit}'') が、デバイスクラス ''{device_class}'' でサポートされている単位である ''{supported_unit}'' と一致しません。",
                             "unsupported_unit_state": "このエンティティの単位 (''{state_unit}'') は、デバイスクラス ''{device_class}'' の単位と一致しません。"
@@ -4159,8 +4120,6 @@
                         "unknown_error_template": "不明なテンプレートレンダリングエラー"
                     },
                     "yaml": {
-                        "caption": "サーバー コントロール",
-                        "description": "構成チェックと Home Assistant サーバーの再起動",
                         "section": {
                             "reloading": {
                                 "automation": "オートメーション",
@@ -4201,15 +4160,12 @@
                                 "zone": "ゾーン"
                             },
                             "server_management": {
-                                "confirm_restart": "Home Assistant を再起動してもよろしいですか？",
                                 "confirm_restart_text": "Home Assistant を再起動すると、アクティブなダッシュボード、オートメーションやスクリプトがすべて停止します。",
                                 "confirm_restart_title": "Home Assistant を再起動しますか？",
                                 "confirm_stop": "Home Assistant を停止してもよろしいですか？",
                                 "heading": "Home Assistant",
-                                "introduction": "Home Assistant を再起動すると、ダッシュボードとオートメーションが停止します。再起動後、各設定はリロードされます。",
                                 "restart": "再起動",
                                 "restart_error": "Home Assistant を再起動できませんでした",
-                                "restart_home_assistant": "Home Assistant を再起動",
                                 "stop": "停止"
                             },
                             "validation": {
@@ -4568,7 +4524,6 @@
                             "default_zoom": "デフォルト ズーム",
                             "description": "マップ上にエンティティを表示できるマップカード。",
                             "geo_location_sources": "ジオロケーションのソース",
-                            "hours_to_show": "時間表示",
                             "name": "地図",
                             "source": "ソース:"
                         },
@@ -4630,6 +4585,7 @@
                                 "max": "最大",
                                 "mean": "平均",
                                 "min": "最小",
+                                "state": "状態",
                                 "sum": "合計"
                             },
                             "stat_types": "統計タイプの表示"
@@ -4701,10 +4657,14 @@
                         "add": "ビューを追加",
                         "delete": "ビューを削除",
                         "edit": "ビューを編集",
+                        "edit_ui": "ビジュアルエディタで編集",
+                        "edit_yaml": "YAMLで編集",
                         "header": "設定を表示",
                         "header_name": "{name}設定の表示",
                         "move_left": "ビューを左に移動",
                         "move_right": "ビューを右に移動",
+                        "subview": "サブビュー",
+                        "subview_helper": "サブビューはタブに表示されず、戻る（back）ボタンがあります。",
                         "tab_badges": "バッジ",
                         "tab_settings": "設定",
                         "tab_visibility": "可視性",
@@ -4858,18 +4818,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "メディア プレーヤー {name} が存在しません"
-                },
-                "tts": {
-                    "action_pick": "選択",
-                    "action_play": "発言",
-                    "example_message": "こんにちは{name} 、サポートされているメディアプレーヤーで任意のテキストを再生できます！",
-                    "faild_to_store_defaults": "デフォルトの保存に失敗しました: {error}",
-                    "gender": "性別",
-                    "gender_female": "女性",
-                    "gender_male": "男性",
-                    "language": "言語",
-                    "message": "メッセージ",
-                    "set_as_default": "デフォルトのオプションとして設定"
                 }
             },
             "my": {

@@ -324,9 +324,6 @@
                             "double_tap_action": "डबल टैप एक्शन",
                             "show_state": "स्थिति दिखाएं?",
                             "state": "स्थिति"
-                        },
-                        "map": {
-                            "hours_to_show": "hours to show"
                         }
                     },
                     "cardpicker": {

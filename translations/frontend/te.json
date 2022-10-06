@@ -159,7 +159,6 @@
                         "conditions": {
                             "add": "అంశాన్ని జోడించు",
                             "delete": "తీసివేయి",
-                            "delete_confirm": "ఇది మీరు delete చేయాలని అనుకుంటున్నారా?",
                             "duplicate": "నకిలీ",
                             "type": {
                                 "numeric_state": {
@@ -186,12 +185,10 @@
                             "type_select": "కండిషన్ రకం"
                         },
                         "default_name": "కొత్త ఆటోమేషన్",
-                        "introduction": "ఆటోమేషన్ల ద్వారా మీ ఇంటికి ప్రాణం పోయండి",
                         "save": "సేవ్",
                         "triggers": {
                             "add": "క్రొత్తది జోడించు",
                             "delete": "తొలగించు",
-                            "delete_confirm": "ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?",
                             "duplicate": "నకిలీ",
                             "type": {
                                 "event": {

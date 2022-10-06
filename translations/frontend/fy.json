@@ -115,7 +115,6 @@
                 "add": "Tafoegje"
             },
             "restart_addon": {
-                "confirm_text": "Start add-on opnij op",
                 "text": "Wolle jo de add-on opnij starte mei jo feroaringen?"
             }
         },
@@ -210,9 +209,6 @@
                     "name": "Namme"
                 },
                 "add_new": "Nij gebiet tafoegje..."
-            },
-            "blueprint-picker": {
-                "add_user": "Brûker tafoegje"
             },
             "calendar": {
                 "today": "Hjoed"
@@ -505,10 +501,8 @@
                 },
                 "dashboard": {
                     "about": {
-                        "description": "Ferzje, systeemstatus en keppelings nei dokumintaasje",
                         "main": "Oer",
-                        "secondary": "Ferzje, laden yntegraasjes, credits en keppelings nei dokumintaasje",
-                        "title": "Oer"
+                        "secondary": "Ferzje, laden yntegraasjes, credits en keppelings nei dokumintaasje"
                     },
                     "energy": {
                         "main": "Enerzjy"
@@ -517,8 +511,7 @@
                         "main": "Add-ons"
                     },
                     "system": {
-                        "main": "Systeem",
-                        "title": "Systeem"
+                        "main": "Systeem"
                     }
                 },
                 "devices": {
@@ -695,9 +688,6 @@
                     },
                     "write": "Skriuwe"
                 },
-                "updates": {
-                    "version_available": "Ferzje {version_available} is beskikber"
-                },
                 "url": {
                     "caption": "Home Assistant URL",
                     "external_url_label": "Ynternet",
@@ -710,9 +700,7 @@
                     },
                     "caption": "Brûkers",
                     "editor": {
-                        "new_password": "Nij Wachtwurd",
                         "owner": "Eigner",
-                        "password_changed": "It wachtwurd is feroare!",
                         "system_generated": "Systeem brûker",
                         "username": "Brûkersnamme"
                     },
@@ -726,9 +714,6 @@
                     }
                 },
                 "zha": {
-                    "clusters": {
-                        "introduction": "Clusters binne de boustiennen foar Zigbee-funksjonaliteit. Se skiede funksjonaliteit yn logyske ienheden. D'r binne client- en serversoarten en disse besteane út attributen en kommando's."
-                    },
                     "groups": {
                         "create_group": "Meitsje groep"
                     }
@@ -865,11 +850,6 @@
             },
             "mailbox": {
                 "playback_title": "Berjocht ôfspylje"
-            },
-            "media-browser": {
-                "tts": {
-                    "message": "Berjocht"
-                }
             },
             "my": {
                 "documentation": "dokumintaasje"

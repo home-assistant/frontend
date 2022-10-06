@@ -420,7 +420,6 @@
                 "used": "Repository is in use for installed add-ons and can't be removed."
             },
             "restart_addon": {
-                "confirm_text": "Restart add-on",
                 "restart": "Restart",
                 "text": "To use the new saved configuration this add-on must be restarted.",
                 "title": "Restart {name}?"
@@ -492,10 +491,6 @@
                 "log_provider": "Log Provider"
             },
             "supervisor": {
-                "beta_backup": "Make sure you have backups of your data before you activate this feature.",
-                "beta_join_confirm": "Do you want to join the beta channel?",
-                "beta_release_items": "This includes beta releases for:",
-                "beta_warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
                 "channel": "Channel",
                 "cpu_usage": "Supervisor CPU Usage",
                 "failed_to_reload": "Failed to reload the Supervisor",
@@ -809,8 +804,6 @@
                 "expansion_header": "Attributes"
             },
             "blueprint-picker": {
-                "add_user": "Add user",
-                "remove_user": "Remove user",
                 "select_blueprint": "Select a Blueprint"
             },
             "calendar": {
@@ -874,15 +867,7 @@
                 "no_history_found": "No state history found."
             },
             "logbook": {
-                "by": "by",
-                "by_user": "by user",
                 "entries_not_found": "No logbook events found.",
-                "event": "event",
-                "for": "for",
-                "from": "from",
-                "from_automation": "from automation",
-                "from_script": "from script",
-                "from_service": "from service",
                 "messages": {
                     "became_unavailable": "became unavailable",
                     "changed_to_state": "changed to {state}",
@@ -1046,7 +1031,6 @@
                 "data": "Service data",
                 "integration_doc": "Integration documentation",
                 "required": "This field is required",
-                "service_data": "Service data",
                 "target": "Targets",
                 "target_description": "What should this service use as targeted areas, devices or entities."
             },
@@ -1187,8 +1171,6 @@
                     "note": "Note: This might not work yet with all integrations.",
                     "open_device_settings": "Open device settings",
                     "precipitation_unit": "Precipitation unit",
-                    "preload_stream": "Preload camera stream",
-                    "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
                     "pressure_unit": "Barometric pressure unit",
                     "stream": {
                         "preload_stream": "Preload camera stream",
@@ -1243,7 +1225,6 @@
                 },
                 "input_number": {
                     "box": "Input field",
-                    "initial": "Initial value",
                     "max": "Maximum value",
                     "min": "Minimum value",
                     "mode": "Display mode",
@@ -1279,7 +1260,6 @@
             },
             "join_beta_channel": {
                 "backup": "Make sure you have backups of your data before you activate this feature.",
-                "confirm": "Do you want to join the beta channel?",
                 "join": "Join",
                 "release_items": "This includes beta releases for:",
                 "title": "Join the beta channel",
@@ -1310,13 +1290,7 @@
                     "activity": "Current activity"
                 },
                 "restored": {
-                    "confirm_remove_text": "Are you sure you want to remove this entity?",
-                    "confirm_remove_title": "Remove entity?",
-                    "no_longer_provided": "This entity is no longer being provided by the {integration} integration. If the entity is no longer in use, delete it in settings.",
-                    "not_provided": "This entity is no longer being provided by the {integration} integration. If the entity is no longer in use, delete it in settings.",
-                    "remove_action": "Remove entity",
-                    "remove_intro": "If the entity is no longer in use, you can clean it up by removing it.",
-                    "title": "Entity unavailable"
+                    "no_longer_provided": "This entity is no longer being provided by the {integration} integration. If the entity is no longer in use, delete it in settings."
                 },
                 "script": {
                     "last_action": "Last action",
@@ -1332,7 +1306,6 @@
                 "update": {
                     "clear_skipped": "Clear skipped",
                     "create_backup": "Create backup before updating",
-                    "current_version": "Current version",
                     "install": "Install",
                     "installed_version": "Installed version",
                     "latest_version": "Latest version",
@@ -1522,14 +1495,10 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Add devices via this device",
-                    "clusters": "Manage clusters",
-                    "device_children": "View children",
                     "manage": "Manage zigbee device",
                     "reconfigure": "Reconfigure",
                     "remove": "Remove",
-                    "view_in_visualization": "View in Visualization",
-                    "view_network": "View network",
-                    "zigbee_information": "Zigbee signature"
+                    "view_network": "View network"
                 },
                 "confirmations": {
                     "remove": "Are you sure that you want to remove the device?"
@@ -1647,11 +1616,12 @@
                         "client_id_helper": "Public identifier of the OAuth application",
                         "client_secret": "OAuth Client Secret",
                         "client_secret_helper": "Secret of the OAuth application",
-                        "create": "Create",
                         "description": "OAuth is used to grant Home Assistant access to information on other websites without giving a passwords. This mechanism is used by companies such as Spotify, Google, Withings, Microsoft, and Twitter.",
                         "domain": "Integration",
+                        "missing_credentials": "Setting up {integration} requires configuring application credentials.",
+                        "missing_credentials_domain_link": "View {integration} documentation",
                         "name": "Name",
-                        "view_documentation": "View documentation"
+                        "view_documentation": "View application credentials documentation"
                     },
                     "picker": {
                         "add_application_credential": "Add Application Credential",
@@ -1680,8 +1650,8 @@
                         "entities": "Entities"
                     },
                     "delete": {
-                        "confirmation_text": "This user will be permanently deleted.",
-                        "confirmation_title": "Are you sure you want to delete this area?"
+                        "confirmation_text": "This area will be permanently deleted and all devices belonging to this area will become unassigned.",
+                        "confirmation_title": "Delete {name}?"
                     },
                     "description": "Group devices and entities into areas",
                     "edit_settings": "Area settings",
@@ -1731,7 +1701,6 @@
                             "alias": "Action name",
                             "change_alias": "Rename action",
                             "delete": "Delete",
-                            "delete_confirm": "Are you sure you want to delete this?",
                             "delete_confirm_text": "It will be permanently deleted.",
                             "delete_confirm_title": "Delete action?",
                             "disable": "Disable",
@@ -1739,13 +1708,10 @@
                             "duplicate": "Duplicate",
                             "enable": "Enable",
                             "header": "Actions",
-                            "introduction": "The actions are what Home Assistant will do when the automation is triggered.",
                             "invalid_action": "Invalid action",
                             "learn_more": "Learn more about actions",
-                            "name": "Action",
                             "rename": "Rename",
                             "run": "Run",
-                            "run_action": "Run action",
                             "run_action_error": "Error running action",
                             "run_action_success": "Action run successfully",
                             "type": {
@@ -1859,15 +1825,12 @@
                             "alias": "Condition name",
                             "change_alias": "Rename condition",
                             "delete": "Delete",
-                            "delete_confirm": "Are you sure you want to delete this?",
                             "delete_confirm_text": "It will be permanently deleted.",
                             "delete_confirm_title": "Delete condition?",
                             "duplicate": "Duplicate",
                             "header": "Conditions",
-                            "introduction": "Conditions are optional and will prevent the automation from running unless all conditions are satisfied.",
                             "invalid_condition": "Invalid condition configuration",
                             "learn_more": "Learn more about conditions",
-                            "name": "Condition",
                             "rename": "Rename",
                             "test": "Test",
                             "test_failed": "Error occurred while testing condition",
@@ -1962,20 +1925,16 @@
                         "edit_ui": "Edit in visual editor",
                         "edit_yaml": "Edit in YAML",
                         "enable": "Enable",
-                        "enable_disable": "Enable/Disable automation",
-                        "introduction": "Use automations to bring your home to life.",
                         "load_error_not_deletable": "Only automations in automations.yaml can be deleted.",
-                        "load_error_not_duplicable": "Only automations in automations.yaml can be duplicated.",
                         "load_error_not_editable": "Only automations in automations.yaml are editable.",
                         "load_error_unknown": "Error loading automation ({err_no}).",
                         "max": {
                             "parallel": "Max number of parallel runs",
                             "queued": "Queue length"
                         },
+                        "migrate": "Migrate",
                         "missing_name": "Cannot save automation without a name",
                         "modes": {
-                            "description": "The mode controls what happens when the automation is triggered while the actions are still running from a previous trigger. Check the {documentation_link} for more info.",
-                            "documentation": "automation documentation",
                             "label": "Mode",
                             "learn_more": "Learn about modes",
                             "parallel": "Parallel",
@@ -1991,26 +1950,25 @@
                             "exit": "Exit",
                             "title": "Re-order mode"
                         },
+                        "read_only": "This automation can not be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
                         "rename": "Rename",
                         "run": "Run",
                         "save": "Save",
                         "show_info": "Information",
                         "show_trace": "Traces",
+                        "traces_not_available": "Automations need an ID for history to be tracked. Add an ID to your automation to make it available in traces.",
                         "triggers": {
                             "add": "Add trigger",
                             "alias": "Trigger name",
                             "change_alias": "Rename trigger",
                             "delete": "Delete",
-                            "delete_confirm": "Are you sure you want to delete this?",
                             "delete_confirm_text": "It will be permanently deleted.",
                             "delete_confirm_title": "Delete trigger?",
                             "duplicate": "Duplicate",
                             "edit_id": "Edit ID",
                             "header": "Triggers",
                             "id": "Trigger ID",
-                            "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
                             "learn_more": "Learn more about triggers",
-                            "name": "Trigger",
                             "rename": "Rename",
                             "triggered": "Triggered",
                             "type": {
@@ -2118,22 +2076,18 @@
                             "type_select": "Trigger type",
                             "unsupported_platform": "No visual editor support for platform: {platform}"
                         },
-                        "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
                         "unsaved_confirm_text": "Unsaved changes will be lost.",
                         "unsaved_confirm_title": "Leave editor?"
                     },
                     "picker": {
                         "add_automation": "Create automation",
                         "delete": "Delete",
-                        "delete_automation": "Delete automation",
-                        "delete_confirm": "Are you sure you want to delete this automation?",
                         "delete_confirm_text": "{name} will be permanently deleted.",
                         "delete_confirm_title": "Delete automation?",
                         "dev_automation": "Debug automation",
                         "dev_only_editable": "Only automations that have a unique ID assigned are debuggable.",
                         "disabled": "Disabled",
                         "duplicate": "Duplicate",
-                        "duplicate_automation": "Duplicate automation",
                         "edit_automation": "Edit automation",
                         "header": "Automation Editor",
                         "headers": {
@@ -2208,7 +2162,6 @@
                         "import_btn": "Preview",
                         "import_header": "Blueprint ''{name}''",
                         "import_introduction": "Import blueprints of other users from GitHub and the community forums by pasting the address below.",
-                        "import_introduction_link": "You can import blueprints of other users from Github and the {community_link}. Enter the URL of the blueprint below.",
                         "importing": "Loading blueprint…",
                         "raw_blueprint": "Blueprint content",
                         "save_btn": "Import blueprint",
@@ -2220,7 +2173,6 @@
                     "description": "Manage blueprints",
                     "overview": {
                         "add_blueprint": "Import blueprint",
-                        "confirm_delete_header": "Delete this blueprint?",
                         "confirm_delete_text": "{name} will be permanently deleted.",
                         "confirm_delete_title": "Delete blueprint?",
                         "create_automation": "Create automation",
@@ -2259,8 +2211,6 @@
                             "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app.",
                             "not_configured_title": "Alexa is not activated",
                             "state_reporting_error": "Unable to {enable_disable} report state.",
-                            "sync_entities": "Sync Entities to Amazon",
-                            "sync_entities_error": "Failed to sync entities:",
                             "title": "Alexa"
                         },
                         "connected": "Connected",
@@ -2284,9 +2234,6 @@
                             "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
                             "not_configured_title": "Google Assistant is not activated",
                             "security_devices": "Security Devices",
-                            "sync_entities": "Sync Entities to Google",
-                            "sync_failed_text": "Syncing your entities failed, try again or check the logs.",
-                            "sync_failed_title": "Syncing failed",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integrations",
@@ -2352,7 +2299,6 @@
                         "follow_domain": "Follow domain",
                         "manage_defaults": "Manage defaults",
                         "manage_defaults_dialog_description": "Entities can be exposed by default based on their type.",
-                        "manage_domains": "Manage domains",
                         "not_exposed": "{selected} not exposed",
                         "not_exposed_entities": "Not exposed entities",
                         "sync_entities": "Synchronize entities",
@@ -2370,12 +2316,9 @@
                         "will_be_auto_renewed": "will be automatically renewed"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "The webhook is available at the following URL:",
                         "close": "Close",
-                        "confirm_disable": "Are you sure you want to disable this webhook?",
                         "confirm_disable_text": "Webhook for {name} will be disabled.",
                         "confirm_disable_title": "Disable webhook",
-                        "copied_to_clipboard": "Copied to clipboard",
                         "info_disable_webhook": "If you no longer want to use this webhook, you can",
                         "link_disable_webhook": "disable it",
                         "managed_by_integration": "This webhook is managed by an integration and cannot be disabled.",
@@ -2403,7 +2346,6 @@
                         "follow_domain": "Follow domain",
                         "manage_defaults": "Manage defaults",
                         "manage_defaults_dialog_description": "Entities can be exposed by default based on their type.",
-                        "manage_domains": "Manage domains",
                         "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
                         "not_configured_title": "Google Assistant is not activated",
                         "not_exposed": "{selected} not exposed",
@@ -2495,26 +2437,20 @@
                 },
                 "dashboard": {
                     "about": {
-                        "description": "Version, system health and links to documentation",
                         "main": "About",
-                        "secondary": "Version information, credits and more",
-                        "title": "About"
+                        "secondary": "Version information, credits and more"
                     },
                     "areas": {
-                        "description": "Manage areas & zones that Home Assistant tracks",
                         "main": "Areas & Zones",
-                        "secondary": "Manage locations in and around your house",
-                        "title": "Areas & Zones"
+                        "secondary": "Manage locations in and around your house"
                     },
                     "automations": {
                         "main": "Automations & Scenes",
                         "secondary": "Automations, scenes, scripts and blueprints"
                     },
                     "backup": {
-                        "description": "Generate backups of your Home Assistant configuration",
                         "main": "Backup",
-                        "secondary": "Generate backups of your Home Assistant configuration",
-                        "title": "Backup"
+                        "secondary": "Generate backups of your Home Assistant configuration"
                     },
                     "companion": {
                         "main": "Companion App",
@@ -2541,10 +2477,8 @@
                         "secondary": "Run extra applications next to Home Assistant"
                     },
                     "system": {
-                        "description": "Create backups, check logs or reboot your system",
                         "main": "System",
-                        "secondary": "Create backups, check logs or reboot your system",
-                        "title": "System"
+                        "secondary": "Create backups, check logs or reboot your system"
                     },
                     "tags": {
                         "main": "Tags",
@@ -2552,6 +2486,7 @@
                     }
                 },
                 "devices": {
+                    "add_device": "Add Device",
                     "add_prompt": "No {name} have been added using this {type} yet. You can add one by clicking the + button above.",
                     "automation": {
                         "actions": {
@@ -2628,8 +2563,6 @@
                     "name": "Name",
                     "no_devices": "No devices",
                     "open_configuration_url": "Visit",
-                    "open_configuration_url_device": "Visit device",
-                    "open_configuration_url_service": "Visit service",
                     "picker": {
                         "filter": {
                             "filter": "Filter",
@@ -2923,13 +2856,11 @@
                     "processor": "Processor",
                     "reboot": "Reboot",
                     "reboot_host": "Reboot system",
-                    "reboot_host_confirm": "Are you sure you want to reboot your host?",
                     "reboot_host_text": "This will reboot the complete system which includes the Core and all Add-ons.",
                     "reboot_host_title": "Reboot system?",
                     "rebooting_host": "Rebooting system",
                     "shutdown": "Shutdown",
                     "shutdown_host": "Shutdown system",
-                    "shutdown_host_confirm": "Are you sure you want to shutdown your host?",
                     "shutdown_host_text": "This will shutdown the complete system which includes the Core and all Add-ons.",
                     "shutdown_host_title": "Shutdown system?"
                 },
@@ -2990,7 +2921,6 @@
                         "thanks": "Thanks To"
                     },
                     "license": "Published under the Apache 2.0 license",
-                    "path_configuration": "Path to configuration.yaml: {path}",
                     "server": "server",
                     "setup_time": "Setup time",
                     "source": "Source:",
@@ -3005,6 +2935,7 @@
                     "add_zha_device": "Add Zigbee device",
                     "add_zwave_js_device": "Add Z-Wave device",
                     "attention": "Attention required",
+                    "available_integrations": "Available integrations",
                     "caption": "Integrations",
                     "config_entry": {
                         "application_credentials": {
@@ -3019,13 +2950,11 @@
                         "check_the_logs": "Check the logs",
                         "configure": "Configure",
                         "delete": "Delete",
-                        "delete_confirm": "Are you sure you want to delete the {title} integration?",
                         "delete_confirm_text": "Its devices and entities will be permantly deleted.",
                         "delete_confirm_title": "Delete {title}?",
                         "depends_on_cloud": "Depends on the cloud",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
                         "disable": {
-                            "disable_confirm": "Are you sure you want to disable this config entry? Its devices and entities will be disabled.",
                             "disabled": "Disabled",
                             "disabled_by": {
                                 "device": "device",
@@ -3072,7 +3001,7 @@
                         "unnamed_entry": "Unnamed entry",
                         "version": "Version: {version}",
                         "via": "Connected via",
-                        "yaml_only": "Can not be setup from the UI"
+                        "yaml_only": "Needs manual configuration"
                     },
                     "config_flow": {
                         "aborted": "Aborted",
@@ -3080,7 +3009,6 @@
                         "could_not_load": "Config flow could not be loaded",
                         "created_config": "Created configuration for {name}.",
                         "dismiss": "Dismiss dialog",
-                        "documentation": "documentation",
                         "error": "Error",
                         "error_saving_area": "Error saving area: {error}",
                         "external_step": {
@@ -3091,28 +3019,21 @@
                         "found_following_devices": "We found the following devices",
                         "loading": {
                             "fallback_title": "the integration",
-                            "loading_flow": "Please wait while {integration} is being setup",
+                            "loading_flow": "Please wait, starting configuration wizard for {integration}",
                             "loading_step": "Loading next step for {integration}"
                         },
-                        "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?",
-                        "missing_credentials_title": "Add application credentials?",
-                        "missing_zha": "To add a Zigbee device, you first need to set up the Zigbee Home Automation integration. Do you want to do that now?",
-                        "missing_zwave_js": "To add a Z-Wave device, you first need to set up the Z-Wave integration. Do you want to do that now?",
                         "missing_zwave_zigbee": "To add a {integration} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
                         "next": "Next",
                         "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
                         "not_all_required_fields": "Not all required fields are filled in.",
                         "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
-                        "pick_flow_step": {
-                            "new_flow": "No, set up an other instance of {integration}",
-                            "title": "We discovered these, want to set them up?"
-                        },
+                        "open_documentation": "Open documentation",
                         "proceed": "Proceed",
                         "submit": "Submit",
                         "success": "Success",
                         "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
                         "supported_hardware": "supported hardware",
-                        "yaml_only_text": "You can add this device by adding it to your `configuration.yaml`. See the {link} for more information.",
+                        "yaml_only": "You can add this device by adding it to your ''configuration.yaml''. See the documentation for more information.",
                         "yaml_only_title": "This device can not be added from the UI"
                     },
                     "configure": "Configure",
@@ -3140,6 +3061,7 @@
                     "integration": "integration",
                     "integration_not_found": "Integration not found.",
                     "new": "Select brand",
+                    "new_flow": "Setup another instance of {integration}",
                     "no_integrations": "Seems like you don't have any integrations configured yet. Click on the button below to add your first integration!",
                     "none": "Nothing configured yet",
                     "none_found": "No integrations found",
@@ -3228,7 +3150,6 @@
                     "resources": {
                         "cant_edit_yaml": "You are using your dashboard in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
                         "caption": "Resources",
-                        "confirm_delete": "Are you sure you want to delete this resource?",
                         "confirm_delete_text": "{url} will be permanently deleted.",
                         "confirm_delete_title": "Delete resource?",
                         "detail": {
@@ -3300,8 +3221,6 @@
                 "person": {
                     "add_person": "Add Person",
                     "caption": "People",
-                    "confirm_delete": "Are you sure you want to delete this person?",
-                    "confirm_delete2": "All devices belonging to this person will become unassigned.",
                     "confirm_delete_text": "This person will be permanently deleted and all devices belonging to this person will become unassigned.",
                     "confirm_delete_title": "Delete {name}?",
                     "create_person": "Create Person",
@@ -3338,7 +3257,6 @@
                     "critical": "Critical",
                     "description": "Find and fix issues with your Home Assistant instance",
                     "dialog": {
-                        "alert_not_fixable": "We cannot repair this issue for you.",
                         "breaks_in_version": "This stops working in version {version}. Please address before upgrading.",
                         "fix": "Repair",
                         "ignore": "Ignore",
@@ -3349,7 +3267,6 @@
                         "unignore": "Unignore"
                     },
                     "error": "Error",
-                    "hide_ignored": "Hide ignored",
                     "integration_startup_time": "Integration startup time",
                     "more_repairs": "Show all repairs",
                     "no_repairs": "There are currently no repairs available",
@@ -3374,18 +3291,15 @@
                         "entities": {
                             "add": "Add an entity",
                             "delete": "Delete entity",
-                            "device_entities": "If you add an entity that belongs to a device, the device will be added.",
                             "header": "Entities",
                             "introduction": "Individual entities can be added here.",
                             "without_device": "Entities"
                         },
                         "icon": "Icon",
-                        "introduction": "Use scenes to bring your home to life.",
                         "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
                         "load_error_unknown": "Error loading scene ({err_no}).",
                         "name": "Name",
                         "save": "Save",
-                        "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
                         "unsaved_confirm_text": "Unsaved changes will be lost.",
                         "unsaved_confirm_title": "Leave editor?"
                     },
@@ -3393,7 +3307,6 @@
                         "activate": "Activate",
                         "add_scene": "Add scene",
                         "delete": "Delete",
-                        "delete_confirm": "Are you sure you want to delete this scene?",
                         "delete_confirm_text": "{name} will be permanently deleted.",
                         "delete_confirm_title": "Delete scene?",
                         "delete_scene": "Delete scene",
@@ -3402,20 +3315,15 @@
                         "edit_scene": "Edit scene",
                         "header": "Scene Editor",
                         "headers": {
-                            "activate": "Activate",
-                            "edit": "Edit",
                             "last_activated": "Last activated",
-                            "name": "Name",
-                            "show_info": "Show information",
-                            "state": "State"
+                            "name": "Name"
                         },
                         "introduction": "The scene editor allows you to create and edit scenes. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about scenes",
                         "no_scenes": "We couldn't find any scenes",
                         "only_editable": "Only scenes defined in scenes.yaml are editable.",
                         "pick_scene": "Pick scene to edit",
-                        "show_info": "Information",
-                        "show_info_scene": "Show info about scene"
+                        "show_info": "Information"
                     }
                 },
                 "script": {
@@ -3424,10 +3332,9 @@
                     "editor": {
                         "alias": "Name",
                         "default_name": "New Script",
-                        "delete_confirm": "Are you sure you want to delete this script?",
                         "delete_confirm_text": "{name} will be permanently deleted.",
                         "delete_confirm_title": "Delete script?",
-                        "delete_script": "Delete script",
+                        "duplicate": "Duplicate",
                         "header": "Script: {name}",
                         "icon": "Icon",
                         "id": "Entity ID",
@@ -3436,16 +3343,14 @@
                         "introduction": "Use scripts to run a sequence of actions.",
                         "link_available_actions": "Learn more about available actions.",
                         "load_error_not_deletable": "Only scripts in scripts.yaml can be deleted.",
-                        "load_error_not_duplicable": "Only scripts in scripts.yaml can be duplicated.",
                         "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
                         "load_error_unknown": "Error loading script ({err_no}).",
                         "max": {
                             "parallel": "Max number of parallel runs",
                             "queued": "Queue length"
                         },
+                        "migrate": "Migrate",
                         "modes": {
-                            "description": "The mode controls what happens when script is invoked while it is still running from one or more previous invocations. Check the {documentation_link} for more info.",
-                            "documentation": "script documentation",
                             "label": "Mode",
                             "learn_more": "Learn about modes",
                             "parallel": "Parallel",
@@ -3453,6 +3358,7 @@
                             "restart": "Restart",
                             "single": "Single"
                         },
+                        "read_only": "This script can not be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
                         "save_script": "Save script",
                         "sequence": "Sequence",
                         "sequence_sentence": "The sequence of actions of this script.",
@@ -3462,10 +3368,7 @@
                     "picker": {
                         "add_script": "Add script",
                         "delete": "Delete",
-                        "dev_script": "Debug script",
                         "duplicate": "Duplicate",
-                        "duplicate_script": "Duplicate script",
-                        "edit_script": "Edit script",
                         "header": "Script Editor",
                         "headers": {
                             "name": "Name",
@@ -3493,7 +3396,6 @@
                         "move": "Move",
                         "moving": "Moving datadisk",
                         "moving_desc": "Rebooting and moving datadisk. Please have patience",
-                        "no_devices": "No suitable attached devices found",
                         "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk",
                         "no_devices_title": "No suitable storage found",
                         "select_device": "Select new datadisk",
@@ -3504,11 +3406,9 @@
                     "used_space": "Used Space"
                 },
                 "system_dashboard": {
-                    "confirm_restart": "Are you sure you want to restart Home Assistant?",
                     "confirm_restart_text": "This will stop all your active dashboards, automations and scripts.",
                     "confirm_restart_title": "Restart Home Assistant?",
                     "restart_error": "Failed to restart Home Assistant",
-                    "restart_homeassistant": "Restart Home Assistant",
                     "restart_homeassistant_short": "Restart"
                 },
                 "system_health": {
@@ -3517,7 +3417,6 @@
                     "cpu_usage": "Processor Usage",
                     "description": "Status, metrics and integration startup time",
                     "integration_start_time": "Integration Startup Time",
-                    "long_loading_integrations": "Long Loading Integrations",
                     "ram_usage": "Memory Usage",
                     "supervisor_stats": "Supervisor Metrics"
                 },
@@ -3563,7 +3462,6 @@
                     "caption": "Updates",
                     "check_updates": "Check for updates",
                     "description": "Manage updates of Home Assistant, add-ons and devices",
-                    "hide_skipped": "Hide skipped",
                     "join_beta": "Join beta channel",
                     "leave_beta": "Leave beta channel",
                     "more_updates": "Show all updates",
@@ -3578,8 +3476,7 @@
                     "skipped": "Skipped",
                     "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
                     "unable_to_fetch": "Unable to load updates",
-                    "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
-                    "version_available": "Version {version_available} is available"
+                    "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed"
                 },
                 "url": {
                     "caption": "Home Assistant URL",
@@ -3621,7 +3518,6 @@
                         "admin": "Administrator",
                         "caption": "View user",
                         "change_password": "Change password",
-                        "confirm_user_deletion": "Are you sure you want to delete {name}?",
                         "confirm_user_deletion_text": "This user will be permanently deleted.",
                         "confirm_user_deletion_title": "Delete {name}?",
                         "deactivate_user": "Deactivate user",
@@ -3630,9 +3526,7 @@
                         "id": "ID",
                         "local_only": "Can only log in from the local network",
                         "name": "Display name",
-                        "new_password": "New Password",
                         "owner": "Owner",
-                        "password_changed": "Password was changed successfully",
                         "system_generated": "System user",
                         "system_generated_users_not_editable": "Unable to update system users.",
                         "system_generated_users_not_removable": "Unable to remove system users.",
@@ -3669,14 +3563,9 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributes of the selected cluster",
-                        "get_zigbee_attribute": "Get Zigbee Attribute",
                         "header": "Cluster Attributes",
-                        "help_attribute_dropdown": "Select an attribute to view or set its value.",
-                        "help_get_zigbee_attribute": "Get the value for the selected attribute.",
-                        "help_set_zigbee_attribute": "Set attribute value for the specified cluster on the specified entity.",
                         "introduction": "View and edit cluster attributes.",
                         "read_zigbee_attribute": "Read Attribute",
-                        "set_zigbee_attribute": "Set Zigbee Attribute",
                         "write_zigbee_attribute": "Write Attribute"
                     },
                     "cluster_commands": {
@@ -3689,7 +3578,6 @@
                     "clusters": {
                         "header": "Clusters",
                         "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
-                        "introduction": "Clusters are the building blocks for Zigbee functionality. They separate functionality into logical units. There are client and server types and that are comprised of attributes and commands.",
                         "tabs": {
                             "attributes": "Attributes",
                             "commands": "Commands"
@@ -4198,9 +4086,10 @@
                         "fix_issue": {
                             "fix": "Fix issue",
                             "units_changed": {
+                                "change": "Convert all the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
                                 "clear": "Delete all old statistic data for this entity",
                                 "title": "The unit of this entity changed",
-                                "update": "Update the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''"
+                                "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting."
                             }
                         },
                         "issue": "Issue",
@@ -4209,6 +4098,7 @@
                             "entity_not_recorded": "This entity is excluded from being recorded.",
                             "no_state": "There is no state available for this entity.",
                             "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
+                            "units_changed_can_convert": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
                             "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
                             "unsupported_unit_metadata": "The unit (''{metadata_unit}'') of the recorded statistics doesn't match the supported unit ''{supported_unit}'' of device class ''{device_class}''.",
                             "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''."
@@ -4233,8 +4123,6 @@
                         "unknown_error_template": "Unknown error rendering template"
                     },
                     "yaml": {
-                        "caption": "Server Controls",
-                        "description": "Validate and restart the Home Assistant server",
                         "section": {
                             "reloading": {
                                 "automation": "Automations",
@@ -4275,23 +4163,20 @@
                                 "zone": "Zones"
                             },
                             "server_management": {
-                                "confirm_restart": "Are you sure you want to restart Home Assistant?",
                                 "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
                                 "confirm_restart_title": "Restart Home Assistant?",
                                 "confirm_stop": "Are you sure you want to stop Home Assistant?",
                                 "heading": "Home Assistant",
-                                "introduction": "Restarting Home Assistant will stop your dashboard and automations. After the reboot, each configuration will be reloaded.",
                                 "restart": "Restart",
                                 "restart_error": "Failed to restart Home Assistant",
-                                "restart_home_assistant": "Restart Home Assistant",
                                 "stop": "Stop"
                             },
                             "validation": {
                                 "check_config": "Check configuration",
-                                "heading": "Configuration validation",
-                                "introduction": "Validate your configuration if you recently made some changes to it and want to make sure that it is all valid.",
+                                "heading": "Check and Restart",
+                                "introduction": "A basic validation of the configuration is automatically done before restarting. The basic validation ensures the YAML configuration doesn't have errors which will prevent Home Assistant or any integration from starting. It's also possible to only do the basic validation check without restarting.",
                                 "invalid": "Configuration invalid!",
-                                "valid": "Configuration valid!"
+                                "valid": "Configuration will not prevent Home Assistant from starting!"
                             }
                         },
                         "title": "YAML"
@@ -4642,7 +4527,6 @@
                             "default_zoom": "Default Zoom",
                             "description": "The Map card that allows you to display entities on a map.",
                             "geo_location_sources": "Geolocation Sources",
-                            "hours_to_show": "Hours to Show",
                             "name": "Map",
                             "source": "Source"
                         },
@@ -4774,10 +4658,10 @@
                     },
                     "edit_view": {
                         "add": "Add view",
-                        "back_path": "Back path (optional)",
-                        "back_path_helper": "Only for subviews. If empty, clicking on back button will go to the previous page.",
                         "delete": "Delete view",
                         "edit": "Edit view",
+                        "edit_ui": "Edit in visual editor",
+                        "edit_yaml": "Edit in YAML",
                         "header": "View Configuration",
                         "header_name": "{name} View Configuration",
                         "move_left": "Move view left",
@@ -4937,18 +4821,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "Media player {name} does not exist"
-                },
-                "tts": {
-                    "action_pick": "Select",
-                    "action_play": "Say",
-                    "example_message": "Hello {name}, you can play any text on any supported media player!",
-                    "faild_to_store_defaults": "Failed to store defaults: {error}",
-                    "gender": "Gender",
-                    "gender_female": "Female",
-                    "gender_male": "Male",
-                    "language": "Language",
-                    "message": "Message",
-                    "set_as_default": "Set as default options"
                 }
             },
             "my": {

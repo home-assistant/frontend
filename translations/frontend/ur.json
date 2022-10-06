@@ -22,9 +22,6 @@
         "dialogs": {
             "quick-bar": {
                 "commands": {
-                    "navigation": {
-                        "server_control": "سرور کنٹرول۔"
-                    },
                     "server_control": {
                         "restart": "دوبارہ شروع کریں",
                         "stop": "رکو۔"
@@ -70,7 +67,6 @@
             "developer-tools": {
                 "tabs": {
                     "yaml": {
-                        "caption": "سرور کنٹرول۔",
                         "section": {
                             "server_management": {
                                 "restart": "دوبارہ شروع کریں",
