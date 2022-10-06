@@ -67,7 +67,6 @@
                 "automation": {
                     "editor": {
                         "actions": {
-                            "name": "Ago",
                             "type": {
                                 "device_id": {
                                     "extra_fields": {
@@ -77,7 +76,6 @@
                             }
                         },
                         "conditions": {
-                            "name": "Kondiĉo",
                             "type": {
                                 "time": {
                                     "weekdays": {
@@ -87,14 +85,9 @@
                             }
                         },
                         "edit_ui": "Redakti kun UI",
-                        "edit_yaml": "Redakti kiel YAML",
-                        "triggers": {
-                            "name": "Ellasilo"
-                        }
+                        "edit_yaml": "Redakti kiel YAML"
                     },
                     "picker": {
-                        "delete_automation": "Forigi aŭtomatigon",
-                        "delete_confirm": "Ĉu vi certas, ke vi volas forigi ĉi tiun aŭtomatigon?",
                         "edit_automation": "Redakti aŭtomatigon",
                         "only_editable": "Nur aŭtomatoj difinitaj en automations.yaml estas redakteblaj.",
                         "show_info_automation": "Montri informojn pri aŭtomatigon"
@@ -123,7 +116,6 @@
                     "home_assistant_logo": "Logo de Home Assistant",
                     "icons_by": "Ikonoj de",
                     "license": "Publikigita sub la permesilo Apache 2.0",
-                    "path_configuration": "Pado al configuration.yaml: {path}",
                     "server": "servilo",
                     "source": "Fonto:",
                     "system_health_error": "Komponento pri Sistema Sano ne estas ŝarĝita. Aldonu 'system_health:' al configuration.yaml"
@@ -190,21 +182,17 @@
                         "entities": {
                             "add": "Aldoni enton",
                             "delete": "Forigi enton",
-                            "device_entities": "Se vi aldonas enton, kiu apartenas al aparato, la aparato estos aldonita.",
                             "header": "Entoj",
                             "introduction": "Entoj ne apartenantaj al aparato povas esti starigitaj ĉi tie.",
                             "without_device": "Entoj sen aparato"
                         },
-                        "introduction": "Uzi scenojn alporti vian hejmon viva.",
                         "load_error_not_editable": "Nur scenoj en scenes.yaml estas redakteblaj.",
                         "load_error_unknown": "Eraro ŝarĝo sceno ({err_no}).",
                         "name": "Nomo",
-                        "save": "Konservi",
-                        "unsaved_confirm": "Vi havas nekonservitajn ŝanĝojn. Ĉu vi estas certa, ke vi volas foriri?"
+                        "save": "Konservi"
                     },
                     "picker": {
                         "add_scene": "Aldoni scenon",
-                        "delete_confirm": "Ĉu vi certas, ke vi volas forigi ĉi tiun scenon?",
                         "delete_scene": "Forigi scenon",
                         "edit_scene": "Redakti scenon",
                         "header": "Scenredaktilo",
@@ -212,27 +200,21 @@
                         "learn_more": "Lerni pli da pri scenoj",
                         "no_scenes": "Ni ne povis trovi iujn ajn redakteblajn scenojn",
                         "only_editable": "Nur scenoj difinitaj en scenes.yaml estas redakteblaj.",
-                        "pick_scene": "Elektu scenon por redakti",
-                        "show_info_scene": "Montri informojn pri sceno"
+                        "pick_scene": "Elektu scenon por redakti"
                     }
                 },
                 "script": {
                     "editor": {
                         "alias": "Nomo",
-                        "delete_script": "Forigi skripton",
                         "introduction": "Uzu skriptojn por ekzekuti sinsekvon de agoj.",
                         "link_available_actions": "Lernu pli pri disponeblaj agoj.",
                         "sequence": "Sekvenco",
                         "sequence_sentence": "La sekvenco de agoj de ĉi tiu skribo."
-                    },
-                    "picker": {
-                        "edit_script": "Redakti skripton"
                     }
                 },
                 "users": {
                     "editor": {
                         "active": "Aktiva",
-                        "confirm_user_deletion": "Ĉu vi certas, ke vi volas forigi {name} ?",
                         "group": "Grupo",
                         "id": "ID",
                         "owner": "Mastro",
@@ -247,13 +229,8 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributoj de la elektita areto",
-                        "get_zigbee_attribute": "Akiri Zigbee Atributo",
                         "header": "Grapoloj Atributoj",
-                        "help_attribute_dropdown": "Elekti atributon por vidi aŭ agordi ĝian valoron.",
-                        "help_get_zigbee_attribute": "Akiri la valoron por la elektita atributo.",
-                        "help_set_zigbee_attribute": "Agordi atributvaloron por la specifita grupo sur la specifita ento.",
-                        "introduction": "Vidi kaj redakti grapolo atributoj.",
-                        "set_zigbee_attribute": "Fiksi Zigbee-Atributo"
+                        "introduction": "Vidi kaj redakti grapolo atributoj."
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Komandoj de la elektita grapolo",

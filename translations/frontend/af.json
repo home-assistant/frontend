@@ -347,13 +347,6 @@
                 "person": {
                     "create_zone": "Skep sone vanaf die huidige ligging"
                 },
-                "restored": {
-                    "confirm_remove_text": "Is u seker dat u hierdie inskrywing wil verwyder?",
-                    "confirm_remove_title": "Verwyder entiteit?",
-                    "not_provided": "Hierdie entiteit is tans nie beskikbaar nie en is 'n weeskind vir 'n verwyderde, veranderde of disfunksionele integrasie of toestel.",
-                    "remove_action": "Verwyder entiteit",
-                    "remove_intro": "As die entiteit nie meer gebruik word nie, kan jy dit opruim deur dit te verwyder."
-                },
                 "script": {
                     "last_action": "Laaste Aksie",
                     "last_triggered": "Laaste geaktiveer"
@@ -383,7 +376,7 @@
             "quick-bar": {
                 "commands": {
                     "navigation": {
-                        "server_control": "Bedienerkontroles"
+                        "server_control": "YAML"
                     },
                     "reload": {
                         "person": "Herlaai persone",
@@ -462,12 +455,9 @@
                         "actions": {
                             "add": "Voeg aksie by",
                             "delete": "Skrap",
-                            "delete_confirm": "Is u seker u wil dit skrap?",
                             "duplicate": "Dupliseer",
                             "header": "Aksies",
-                            "introduction": "Die aksies is wat Home Assistant sal doen wanneer die outomatisering geaktiveer word.",
                             "learn_more": "Kom meer te wete oor aksies",
-                            "name": "Aksie",
                             "type": {
                                 "condition": {
                                     "label": "Voorwaarde"
@@ -496,12 +486,9 @@
                         "conditions": {
                             "add": "Voeg voorwaarde by",
                             "delete": "Skrap",
-                            "delete_confirm": "Is u seker u wil dit skrap?",
                             "duplicate": "Dupliseer",
                             "header": "Voorwaardes",
-                            "introduction": "Voorwaardes is 'n opsionele deel van 'n outomatiseringsreël en kan gebruik word om te verhoed dat 'n aksie plaasvind wanneer dit geaktiveer word. Voorwaardes lyk baie soos snellers maar is baie anders. 'n Sneller sal kyk na gebeure wat in die stelsel gebeur terwyl 'n voorwaarde net kyk hoe die stelsel lyk. Byvoorbeeld: 'n Sneller kan sien dat 'n skakelaar aangeskakel word. 'n Voorwaarde kan net sien of 'n skakelaar tans aan of af is.",
                             "learn_more": "Kom meer te wete oor voorwaardes",
-                            "name": "Voorwaarde",
                             "type": {
                                 "numeric_state": {
                                     "above": "Bo",
@@ -546,8 +533,6 @@
                         "default_name": "Nuwe outomatisering",
                         "edit_ui": "Redigeer met UI",
                         "edit_yaml": "Redigeer as YAML",
-                        "enable_disable": "Aktiveer / deaktiveer outomatisering",
-                        "introduction": "Gebruik outomatisasies om jou huis lewend te maak",
                         "load_error_not_editable": "Slegs outomatisasies in automations.yaml kan verander word.",
                         "load_error_unknown": "Kon nie outomatisering laai nie ({err_no}).",
                         "modes": {
@@ -557,12 +542,9 @@
                         "triggers": {
                             "add": "Voeg sneller by",
                             "delete": "Skrap",
-                            "delete_confirm": "Is u seker u wil dit skrap?",
                             "duplicate": "Dupliseer",
                             "header": "Snellers",
-                            "introduction": "Snellers is wat die prosessering van 'n outomatiseringsreël afskop. Dit is moontlik om verskeie snellers vir dieselfde reël te spesifiseer. Sodra 'n sneller begin, sal Home Assistant die voorwaardes, indien enige, bevestig en die aksie roep.",
                             "learn_more": "Kom meer te wete oor snellers",
-                            "name": "Sneller",
                             "type": {
                                 "event": {
                                     "context_user_pick": "Voeg gebruiker toe",
@@ -637,13 +619,10 @@
                             },
                             "type_select": "Sneller tipe",
                             "unsupported_platform": "Ongesteunde platform: {platform}"
-                        },
-                        "unsaved_confirm": "U het ongestoorde veranderinge. Is u seker u wil die blad verlaat?"
+                        }
                     },
                     "picker": {
                         "add_automation": "Voeg outomatisering by",
-                        "delete_automation": "Verwyder outomatisering",
-                        "delete_confirm": "Is u seker dat u hierdie outomatisering wil uitvee?",
                         "edit_automation": "Wysig outomatisering",
                         "header": "Outomatiseringsredakteur",
                         "headers": {
@@ -807,7 +786,6 @@
                     "caption": "Integrasies",
                     "config_entry": {
                         "delete": "Verwyder",
-                        "delete_confirm": "Is u seker u wil hierdie integrasie skrap?",
                         "documentation": "Dokumentasie",
                         "firmware": "Fermware: {version}",
                         "manuf": "deur {manufacturer}",
@@ -894,7 +872,6 @@
                     "resources": {
                         "cant_edit_yaml": "U gebruik Lovelace in die YAML-modus, daarom kan u nie u hulpbronne deur die UI bestuur nie. Bestuur dit in konfigurasie.yaml.",
                         "caption": "Hulpbronne",
-                        "confirm_delete": "Is u seker dat u hierdie bron wil uitvee?",
                         "detail": {
                             "create": "skep",
                             "delete": "verwyder",
@@ -951,21 +928,17 @@
                         "entities": {
                             "add": "Voeg 'n entiteit by",
                             "delete": "Verwyder entiteit",
-                            "device_entities": "As u 'n entiteit byvoeg wat aan 'n toestel behoort, word die toestel bygevoeg.",
                             "header": "Entiteite",
                             "introduction": "Entiteite wat nie aan 'n toestel behoort nie, kan hier ingestel word.",
                             "without_device": "Entiteite sonder toestelle"
                         },
-                        "introduction": "Gebruik tonele om u huis lewendig te maak.",
                         "load_error_not_editable": "Slegs tonele in tonele.yaml kan geredigeer word.",
                         "load_error_unknown": "Kon nie toneel laai nie ( {err_no} ).",
                         "name": "Naam",
-                        "save": "Stoor",
-                        "unsaved_confirm": "U het ongestoorde veranderinge. Is u seker u wil die blad verlaat?"
+                        "save": "Stoor"
                     },
                     "picker": {
                         "add_scene": "Voeg toneel by",
-                        "delete_confirm": "Is u seker dat u hierdie toneel wil uitvee?",
                         "delete_scene": "Verwyder toneel",
                         "duplicate": "Dupliseer",
                         "duplicate_scene": "Duplikaat toneel",
@@ -978,8 +951,7 @@
                         "learn_more": "Kom meer te wete oor tonele",
                         "no_scenes": "Ons kon geen bewerkbare tonele vind nie",
                         "only_editable": "Slegs tonele gedefinieër in tonele.yaml kan geredigeer word.",
-                        "pick_scene": "Kies toneel om te redigeer",
-                        "show_info_scene": "Wys inligting oor toneel"
+                        "pick_scene": "Kies toneel om te redigeer"
                     }
                 },
                 "script": {
@@ -987,7 +959,6 @@
                     "description": "Skep en wysig skripte",
                     "editor": {
                         "alias": "Naam",
-                        "delete_script": "Verwyder skrip",
                         "introduction": "Gebruik skripte om 'n reeks aksies uit te voer.",
                         "link_available_actions": "Kom meer te wete oor beskikbare aksies.",
                         "sequence": "Volgorde",
@@ -995,7 +966,6 @@
                     },
                     "picker": {
                         "duplicate": "Dupliseer",
-                        "edit_script": "Redigeer skrip",
                         "headers": {
                             "name": "Naam"
                         }
@@ -1036,8 +1006,7 @@
                         "spinner": "Opsoek na ZHA Zigbee-toestelle…"
                     },
                     "clusters": {
-                        "header": "clusters",
-                        "introduction": "Clusters is die boustene vir Zigbee-funksionaliteit. Dit skei funksionaliteit in logiese eenhede. Daar is kliënt- en bedienertipes wat bestaan uit eienskappe en opdragte."
+                        "header": "clusters"
                     },
                     "group_binding": {
                         "bind_button_help": "Bind die geselekteerde groep by die geselekteerde toestelgroeperings.",
@@ -1131,13 +1100,13 @@
                         "title": "Template"
                     },
                     "yaml": {
-                        "caption": "Bedienerkontroles",
                         "section": {
                             "reloading": {
                                 "person": "Herlaai persone",
                                 "zone": "Herlaai sones"
                             }
-                        }
+                        },
+                        "title": "YAML"
                     }
                 }
             },

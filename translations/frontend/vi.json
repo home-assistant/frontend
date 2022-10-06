@@ -303,7 +303,6 @@
                 "no_history_found": "Không tìm thấy lịch sử trạng thái."
             },
             "logbook": {
-                "by": "bởi",
                 "entries_not_found": "Không tìm thấy mục nhật ký nào.",
                 "messages": {
                     "became_unavailable": "đã trở nên không khả dụng",
@@ -481,13 +480,6 @@
                 "person": {
                     "create_zone": "Tạo vùng từ vị trí hiện tại"
                 },
-                "restored": {
-                    "confirm_remove_text": "Bạn có chắc bạn muốn loại bỏ thực thể này không?",
-                    "confirm_remove_title": "Loại bỏ thực thể?",
-                    "not_provided": "Thực thể này hiện không khả dụng và thuộc về một tích hợp hay thiết bị đã bị loại bỏ, thay đổi hoặc rối loạn chức năng.",
-                    "remove_action": "Loại bỏ thực thể",
-                    "remove_intro": "Nếu thực thể không còn được sử dụng, bạn có thể dọn dẹp bằng cách loại bỏ nó."
-                },
                 "script": {
                     "last_action": "Hành động cuối",
                     "last_triggered": "Lần kích hoạt cuối"
@@ -527,9 +519,6 @@
             },
             "quick-bar": {
                 "commands": {
-                    "navigation": {
-                        "server_control": "Điều khiển máy chủ"
-                    },
                     "reload": {
                         "automation": "Tải lại tự động hóa",
                         "command_line": "Tải lại các thực thể từ command line",
@@ -576,9 +565,7 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Thêm thiết bị",
-                    "clusters": "Quản lý các Cluster",
-                    "zigbee_information": "Chữ ký thiết bị ZigBee"
+                    "add": "Thêm thiết bị"
                 },
                 "confirmations": {
                     "remove": "Bạn có chắc muốn xoá bỏ thiết bị không?"
@@ -661,12 +648,9 @@
                         "actions": {
                             "add": "Thêm hành động",
                             "delete": "Xoá",
-                            "delete_confirm": "Bạn chắc chắn muốn xoá?",
                             "duplicate": "Nhân đôi",
                             "header": "Hành động",
-                            "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt.",
                             "learn_more": "Tìm hiểu thêm về Hành động",
-                            "name": "Hành động",
                             "type": {
                                 "choose": {
                                     "add_option": "Thêm tùy chọn",
@@ -734,12 +718,9 @@
                         "conditions": {
                             "add": "Thêm điều kiện",
                             "delete": "Xoá",
-                            "delete_confirm": "Bạn chắc chắn muốn xoá?",
                             "duplicate": "Nhân đôi",
                             "header": "Điều kiện",
-                            "introduction": "Điều kiện là tùy chọn và sẽ ngăn chặn việc thực hiện các hành động tiếp theo trừ phi tất cả các điều kiện đều được thoả mãn.",
                             "learn_more": "Tìm hiểu thêm về Điều kiện",
-                            "name": "Điều kiện",
                             "type": {
                                 "device": {
                                     "condition": "Điều kiện"
@@ -798,8 +779,6 @@
                         "default_name": "Thêm Tự động hóa",
                         "edit_ui": "Chỉnh sửa với UI",
                         "edit_yaml": "Chỉnh sửa dưới dạng YAML",
-                        "enable_disable": "Bật/Tắt tự động hóa",
-                        "introduction": "Sử dụng tự động hóa để mang sự sống cho nhà bạn",
                         "load_error_not_editable": "Chỉ tự động hóa trong automations.yaml là có thể chỉnh sửa.",
                         "load_error_unknown": "Lỗi tải tự động hóa ({err_no}).",
                         "max": {
@@ -807,8 +786,6 @@
                             "queued": "Độ dài hàng chờ"
                         },
                         "modes": {
-                            "description": "Chế Độ kiểm soát điều gì xảy ra khi một tự động hoá được kích hoạt trong khi nó vẫn đang chạy từ một hoặc nhiều lần kích hoạt trước. Xem thêm tại {documentation_link}.",
-                            "documentation": "tài liệu về tự động hoá",
                             "label": "Chế Độ",
                             "parallel": "Song song",
                             "queued": "Xếp hàng",
@@ -821,12 +798,9 @@
                         "triggers": {
                             "add": "Thêm Bộ khởi động",
                             "delete": "Xoá",
-                            "delete_confirm": "Có chắc bạn muốn xóa cái này?",
                             "duplicate": "Nhân bản",
                             "header": "Bộ khởi động",
-                            "introduction": "Bộ khởi động là bất cứ điều gì kích hoạt quá trình xử lý một quy tắc tự động hoá. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động.",
                             "learn_more": "Tìm hiểu thêm về Kích hoạt",
-                            "name": "Kích hoạt",
                             "type": {
                                 "device": {
                                     "trigger": "Kích hoạt"
@@ -909,15 +883,11 @@
                             },
                             "type_select": "Loại Bộ khởi động",
                             "unsupported_platform": "Nền tảng không được hỗ trợ bởi Giao diện đồ hoạ: {platform}"
-                        },
-                        "unsaved_confirm": "Bạn đang có thay đổi chưa được lưu. Bạn có chắc muốn huỷ bỏ?"
+                        }
                     },
                     "picker": {
                         "add_automation": "Thêm Tự động hóa",
-                        "delete_automation": "Xóa tự động hóa",
-                        "delete_confirm": "Bạn có chắc bạn muốn xoá tự động hoá này không?",
                         "duplicate": "Nhân bản",
-                        "duplicate_automation": "Nhân bản tự động hoá",
                         "edit_automation": "Chỉnh sửa tự động hóa",
                         "header": "Trình biên tập tự động hóa",
                         "headers": {
@@ -944,7 +914,6 @@
                         "expose_entity": "Hiển thị thực thể",
                         "exposed": "{selected} được hiển thị",
                         "follow_domain": "Theo tên miền",
-                        "manage_domains": "Quản lý các tên miền",
                         "not_exposed": "{selected} không hiển thị"
                     },
                     "description_not_login": "Chưa đăng nhập",
@@ -953,7 +922,6 @@
                         "expose_entity": "Hiển thị thực thể",
                         "exposed": "{selected} được hiển thị",
                         "follow_domain": "Theo tên miền",
-                        "manage_domains": "Quản lý các tên miền",
                         "not_exposed": "{selected} không hiển thị"
                     }
                 },
@@ -1109,7 +1077,6 @@
                     "home_assistant_logo": "Logo của Home Assistant",
                     "issues": "Các vấn đề",
                     "license": "Được xuất bản theo giấy phép Apache 2.0",
-                    "path_configuration": "Đường dẫn đến configuration.yaml: {path}",
                     "server": "máy chủ",
                     "source": "Nguồn:"
                 },
@@ -1119,7 +1086,6 @@
                     "caption": "Các bộ tích hợp",
                     "config_entry": {
                         "delete": "Xóa",
-                        "delete_confirm": "Bạn chắc chắn muốn xóa bộ tích hợp này?",
                         "devices": "{count} {count, plural,\n  one { thiết bị }\n  other { các thiết bị }\n}",
                         "documentation": "Tài liệu",
                         "entities": "{count} {count, plural,\n  one { thực thể }\n  other { các thực thể }\n}",
@@ -1229,7 +1195,6 @@
                     "resources": {
                         "cant_edit_yaml": "Bạn đang sử dụng Lovelace trong chế độ YAML, do đó bạn không thể quản lý tài nguyên của mình thông qua giao diện người dùng. Quản lý chúng trong configuration.yaml.",
                         "caption": "Tài nguyên",
-                        "confirm_delete": "Bạn có chắc chắn muốn xóa tài nguyên này?",
                         "detail": {
                             "create": "Tạo",
                             "delete": "Xóa",
@@ -1301,22 +1266,18 @@
                         "entities": {
                             "add": "Thêm một thực thể",
                             "delete": "Xóa thực thể",
-                            "device_entities": "Nếu bạn thêm một thực thể thuộc về một thiết bị, thiết bị cũng sẽ được thêm vào.",
                             "header": "Các thực thể",
                             "introduction": "Các thực thể không thuộc về một thiết bị có thể được đặt ở đây.",
                             "without_device": "Các thực thể không thuộc một thiết bị"
                         },
                         "icon": "Biểu tượng",
-                        "introduction": "Sử dụng các ngữ cảnh để mang lại sự sống cho nhà bạn.",
                         "load_error_not_editable": "Chỉ những ngữ cảnh nằm trong scenes.yaml là có thể chỉnh sửa.",
                         "load_error_unknown": "Lỗi khi tải ngữ cảnh ({err_no}).",
                         "name": "Tên",
-                        "save": "Lưu",
-                        "unsaved_confirm": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+                        "save": "Lưu"
                     },
                     "picker": {
                         "add_scene": "Thêm ngữ cảnh",
-                        "delete_confirm": "Bạn có chắc bạn muốn xóa bỏ ngữ cảnh này không?",
                         "delete_scene": "Xóa ngữ cảnh",
                         "edit_scene": "Chỉnh sửa ngữ cảnh",
                         "header": "Trình soạn thảo Ngữ cảnh",
@@ -1327,8 +1288,7 @@
                         "learn_more": "Tìm hiểu thêm về ngữ cảnh",
                         "no_scenes": "Chúng tôi không thể tìm thấy bất kỳ ngữ cảnh nào có thể chỉnh sửa",
                         "only_editable": "Chỉ những ngữ cảnh được định nghĩa trong scenes.yaml là có thể chỉnh sửa.",
-                        "pick_scene": "Chọn ngữ cảnh để chỉnh sửa",
-                        "show_info_scene": "Hiển thị thông tin về ngữ cảnh"
+                        "pick_scene": "Chọn ngữ cảnh để chỉnh sửa"
                     }
                 },
                 "script": {
@@ -1336,7 +1296,6 @@
                     "description": "Tạo và chỉnh sửa các tập lệnh",
                     "editor": {
                         "alias": "Tên",
-                        "delete_script": "Xóa kịch bản",
                         "icon": "Biểu tượng",
                         "id": "Mã định danh Thực thể",
                         "id_already_exists": "Định danh (ID) này đã tồn tại",
@@ -1347,8 +1306,6 @@
                             "queued": "Độ dài hàng chờ"
                         },
                         "modes": {
-                            "description": "Chế Độ kiểm soát điều gì xảy ra khi một kịch bản được gọi trong khi nó vẫn đang chạy từ một hoặc nhiều lần gọi trước. Xem thêm tại {documentation_link}.",
-                            "documentation": "tài liệu về kịch bản",
                             "label": "Chế Độ",
                             "parallel": "Song song",
                             "queued": "Xếp hàng",
@@ -1360,7 +1317,6 @@
                         "sequence_sentence": "Trình tự các hành động trong kịch bản này."
                     },
                     "picker": {
-                        "edit_script": "Chỉnh sửa kịch bản",
                         "headers": {
                             "name": "Tên"
                         },
@@ -1412,8 +1368,6 @@
                         "deactivate_user": "Hủy kích hoạt người dùng",
                         "delete_user": "Xóa người dùng",
                         "name": "Tên",
-                        "new_password": "Mật khẩu mới",
-                        "password_changed": "Mật khẩu đã được thay đổi thành công",
                         "system_generated_users_not_editable": "Không thể chỉnh sửa người dùng do hệ thống tạo ra.",
                         "update_user": "Cập nhật"
                     },
@@ -1558,8 +1512,6 @@
                         "unknown_error_template": "Lỗi không xác định khi kết xuất bản mẫu"
                     },
                     "yaml": {
-                        "caption": "Điều khiển máy chủ",
-                        "description": "Khởi động lại và dừng máy chủ Home Assistant",
                         "section": {
                             "reloading": {
                                 "automation": "Tải lại tự động hóa",
@@ -1598,7 +1550,6 @@
                             },
                             "server_management": {
                                 "heading": "Quản lý máy chủ",
-                                "introduction": "Kiểm soát máy chủ Home Assistant của bạn từ Home Assistant.",
                                 "restart": "Khởi động lại",
                                 "stop": "Dừng"
                             },
@@ -1775,7 +1726,6 @@
                         },
                         "map": {
                             "description": "Thẻ Bản đồ cho phép bạn hiển thị các thực thể trên bản đồ.",
-                            "hours_to_show": "Giờ hiển thị",
                             "name": "Bản đồ"
                         },
                         "markdown": {
