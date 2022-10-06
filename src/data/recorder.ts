@@ -34,8 +34,7 @@ export type StatisticsValidationResult =
   | StatisticsValidationResultEntityNotRecorded
   | StatisticsValidationResultEntityNoLongerRecorded
   | StatisticsValidationResultUnsupportedStateClass
-  | StatisticsValidationResultUnitsChanged
-  | StatisticsValidationResultUnsupportedUnitState;
+  | StatisticsValidationResultUnitsChanged;
 
 export interface StatisticsValidationResultNoState {
   type: "no_state";
