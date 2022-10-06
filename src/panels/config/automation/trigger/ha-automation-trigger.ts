@@ -280,6 +280,11 @@ export default class HaAutomationTrigger extends LitElement {
           margin-bottom: 16px;
           scroll-margin-top: 48px;
         }
+        ha-svg-icon[slot="icon"] {
+          margin-inline-start: 0px;
+          margin-inline-end: 8px;
+          direction: var(--direction);
+        }
         ha-svg-icon {
           height: 20px;
         }

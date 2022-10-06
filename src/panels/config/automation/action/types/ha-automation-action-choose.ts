@@ -193,7 +193,15 @@ export class HaChooseAction extends LitElement implements ActionElement {
         ha-icon-button {
           position: absolute;
           right: 0;
+          inset-inline-start: initial;
+          inset-inline-end: 0;
+          direction: var(--direction);
           padding: 4px;
+        }
+        ha-svg-icon[slot="icon"] {
+          margin-inline-start: 0px;
+          margin-inline-end: 8px;
+          direction: var(--direction);
         }
         ha-svg-icon {
           height: 20px;
