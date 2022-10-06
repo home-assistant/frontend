@@ -420,8 +420,14 @@
                 "used": "El repositori s'utilitza per a complements ja instal·lats i no es pot eliminar."
             },
             "restart_addon": {
-                "confirm_text": "Reinicia el complement",
-                "text": "Vols reiniciar el complement amb els teus canvis?"
+                "restart": "Reinicia",
+                "text": "Per utilitzar la nova configuració, aquest complement s'ha de reiniciar.",
+                "title": "Reinicia {name}?"
+            },
+            "uninstall_addon": {
+                "text": "La seva configuració s'eliminarà permanentment.",
+                "title": "Desinstal·lar {name}?",
+                "uninstall": "Desinstal·la"
             }
         },
         "my": {
@@ -485,10 +491,6 @@
                 "log_provider": "Proveïdor de registres"
             },
             "supervisor": {
-                "beta_backup": "Assegura't que tens còpies de seguretat de les teves dades abans d'activar aquesta funció.",
-                "beta_join_confirm": "Vols unir-te al canal beta?",
-                "beta_release_items": "Això inclou les versions beta de:",
-                "beta_warning": "Les versions beta són per a verificadors i els primers que vulguin provar-la, però poden tenir canvis de codi inestables",
                 "channel": "Canal",
                 "cpu_usage": "Ús de CPU del Supervisor",
                 "failed_to_reload": "No s'ha pogut tornar a carregar el Supervisor",
@@ -802,8 +804,6 @@
                 "expansion_header": "Atributs"
             },
             "blueprint-picker": {
-                "add_user": "Afegeix usuari",
-                "remove_user": "Elimina usuari",
                 "select_blueprint": "Selecciona un blueprint"
             },
             "calendar": {
@@ -867,15 +867,7 @@
                 "no_history_found": "No s'ha trobat cap històric d'estats."
             },
             "logbook": {
-                "by": "per",
-                "by_user": "per usuari",
                 "entries_not_found": "No s'han trobat esdeveniments registrats.",
-                "event": "esdeveniment",
-                "for": "durant",
-                "from": "des de",
-                "from_automation": "d'automatitzacions",
-                "from_script": "de scripts",
-                "from_service": "de serveis",
                 "messages": {
                     "became_unavailable": "no està disponible",
                     "changed_to_state": "ha canviat a {state}",
@@ -1039,7 +1031,6 @@
                 "data": "Dades de servei",
                 "integration_doc": "Documentació de la integració",
                 "required": "Aquest camp és obligatori",
-                "service_data": "Dades del servei",
                 "target": "Objectius",
                 "target_description": "Àrees, dispositius o entitats objectiu d'aquesta crida de servei"
             },
@@ -1060,6 +1051,7 @@
                     "max": "màxims",
                     "mean": "mitjana",
                     "min": "mínims",
+                    "state": "estat",
                     "sum": "suma"
                 }
             },
@@ -1179,9 +1171,21 @@
                     "note": "Nota: podria no funcionar amb alguna de les integracions.",
                     "open_device_settings": "Obre la configuració del dispositiu",
                     "precipitation_unit": "Unitat de precipitació",
-                    "preload_stream": "Precàrrega de flux de càmera",
-                    "preload_stream_description": "Això manté el flux de la càmera obert en segon pla perquè es mostri més ràpidament. Vigila ja que consumirà intensament recursos del dispositiu.",
                     "pressure_unit": "Unitat de pressió baromètrica",
+                    "stream": {
+                        "preload_stream": "Precàrrega de flux de càmera",
+                        "preload_stream_description": "Això manté el flux de la càmera obert en segon pla perquè es mostri més ràpidament. Vigila ja que consumirà intensament recursos del dispositiu.",
+                        "stream_orientation": "Orientació de la imatge de la càmera",
+                        "stream_orientation_1": "Sense transformació d'orientació",
+                        "stream_orientation_2": "Mirall",
+                        "stream_orientation_3": "Gira 180",
+                        "stream_orientation_4": "Capgira",
+                        "stream_orientation_5": "Gira a l'esquerra i capgira",
+                        "stream_orientation_6": "Gira cap a l'esquerra",
+                        "stream_orientation_7": "Gira a la dreta i capgira",
+                        "stream_orientation_8": "Gira cap a la dreta",
+                        "stream_orientation_description": "Transformació d'orientació a utilitzar per a la imatge de la càmera."
+                    },
                     "switch_as_x_confirm": "Aquest commutador s'amagarà i s'afegirà un {domain} nou. Les configuracions existents que utilitzen el commutador continuaran funcionant.",
                     "temperature_unit": "Unitat de temperatura",
                     "unavailable": "Entitat no està disponible.",
@@ -1191,7 +1195,7 @@
                     "wind_speed_unit": "Unitat de velocitat del vent"
                 },
                 "faq": "documentació",
-                "no_unique_id": "Aquesta entitat (''{entity_id}'') no té un ID únic, per tant, la seva configuració no pot ser gestionada des de la interfície d'usuari. Consulta {faq_link} per a més detalls.",
+                "no_unique_id": "Aquesta entitat (''{entity_id}'') no té un ID únic, per tant, la seva configuració no pot ser gestionada des de la interfície d'usuari. Consulta la {faq_link} per a més detalls.",
                 "related": "Relacionat",
                 "settings": "Configuració"
             },
@@ -1221,7 +1225,6 @@
                 },
                 "input_number": {
                     "box": "Camp d'entrada",
-                    "initial": "Valor inicial",
                     "max": "Valor màxim",
                     "min": "Valor mínim",
                     "mode": "Mode de visualització",
@@ -1257,9 +1260,10 @@
             },
             "join_beta_channel": {
                 "backup": "Assegura't que tens còpies de seguretat de les teves dades abans d'activar aquesta funció.",
-                "confirm": "Vols unir-te al canal beta?",
+                "join": "Unir-me",
                 "release_items": "Això inclou les versions beta de:",
                 "title": "Uneix-te al canal beta",
+                "view_documentation": "Veure documentació",
                 "warning": "Les versions beta són per a verificadors i els primers que vulguin provar-la, però poden tenir canvis de codi inestables"
             },
             "more_info_control": {
@@ -1286,13 +1290,7 @@
                     "activity": "Activitat actual"
                 },
                 "restored": {
-                    "confirm_remove_text": "Estàs segur que vols eliminar aquesta entitat?",
-                    "confirm_remove_title": "Eliminar l'entitat?",
-                    "no_longer_provided": "Aquesta entitat ja no està proporcionada per {integration}. Si l'entitat ja no s'utilitza, elimina-la a la configuració.",
-                    "not_provided": "Aquesta entitat ja no està proporcionada per {integration}. Si l'entitat ja no s'utilitza, elimina-la a la configuració.",
-                    "remove_action": "Elimina entitat",
-                    "remove_intro": "Si l'entitat ja no s'utilitza, pots borrar-la eliminant-la.",
-                    "title": "Entitat no disponible"
+                    "no_longer_provided": "Aquesta entitat ja no està proporcionada per {integration}. Si l'entitat ja no s'utilitza, elimina-la a la configuració."
                 },
                 "script": {
                     "last_action": "Última acció",
@@ -1308,7 +1306,6 @@
                 "update": {
                     "clear_skipped": "Esborra els omesos",
                     "create_backup": "Crea una còpia de seguretat abans d'actualitzar",
-                    "current_version": "Versió actual",
                     "install": "Instal·la",
                     "installed_version": "Versió instal·lada",
                     "latest_version": "Última versió",
@@ -1498,13 +1495,10 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Afegeix dispositius a través d'aquest dispositiu",
-                    "clusters": "Gestiona clústers",
-                    "device_children": "Mostra fills",
+                    "manage": "Gestiona dispositiu zigbee",
                     "reconfigure": "Reconfigura",
                     "remove": "Elimina",
-                    "view_in_visualization": "Mostra a la visualització",
-                    "view_network": "Veure xarxa",
-                    "zigbee_information": "Signatura Zigbee"
+                    "view_network": "Veure xarxa"
                 },
                 "confirmations": {
                     "remove": "Estàs segur que vols eliminar el dispositiu?"
@@ -1617,15 +1611,17 @@
                     "description": "Gestiona les credencials OAuth d'aplicació utilitzades a les integracions",
                     "editor": {
                         "add": "Afegeix",
-                        "caption": "Afegeix credencial d'aplicació",
+                        "caption": "Afegeix credencial",
                         "client_id": "ID de client OAuth",
                         "client_id_helper": "Identificador públic de l'aplicació OAuth",
                         "client_secret": "Secret de client OAuth",
                         "client_secret_helper": "Secret de l'aplicació OAuth",
-                        "create": "Crea",
+                        "description": "OAuth s'utilitza per donar accés a Home Assistant a informació d'altres llocs web sense l'ús de contrasenyes. Aquest mecanisme és utilitzat per empreses com Spotify, Google, Withings, Microsoft o Twitter.",
                         "domain": "Integració",
+                        "missing_credentials": "La configuració de {integration} necessita configurar credencials d'aplicació.",
+                        "missing_credentials_domain_link": "Consulta la documentació de {integration}",
                         "name": "Nom",
-                        "view_documentation": "Mostra la documentació"
+                        "view_documentation": "Consulta la documentació de les credencials d'aplicació"
                     },
                     "picker": {
                         "add_application_credential": "Afegeix credencial d'aplicació",
@@ -1654,8 +1650,8 @@
                         "entities": "Entitats"
                     },
                     "delete": {
-                        "confirmation_text": "L'usuari s'eliminarà permanentment.",
-                        "confirmation_title": "Estàs segur que vols eliminar aquesta àrea?"
+                        "confirmation_text": "Aquesta àrea s'eliminarà permanentment i tots els seus dispositius quedaran sense assignació.",
+                        "confirmation_title": "Eliminar {name}?"
                     },
                     "description": "Agrupa dispositius i entitats en àrees",
                     "edit_settings": "Configuració d'àrea",
@@ -1705,7 +1701,6 @@
                             "alias": "Nom de l'acció",
                             "change_alias": "Canvia el nom de l'acció",
                             "delete": "Elimina",
-                            "delete_confirm": "Segur que vols eliminar-ho?",
                             "delete_confirm_text": "S'eliminarà permanentment.",
                             "delete_confirm_title": "Eliminar acció?",
                             "disable": "Desactiva",
@@ -1713,13 +1708,10 @@
                             "duplicate": "Duplica",
                             "enable": "Activa",
                             "header": "Accions",
-                            "introduction": "Les accions són allò que farà Home Assistant quan es dispari l'automatització.",
                             "invalid_action": "Acció no vàlida",
                             "learn_more": "Més informació sobre les accions",
-                            "name": "Acció",
                             "rename": "Canvia el nom",
                             "run": "Executa",
-                            "run_action": "Executa acció",
                             "run_action_error": "Error en executar l'acció",
                             "run_action_success": "Acció executada amb èxit",
                             "type": {
@@ -1833,15 +1825,12 @@
                             "alias": "Nom de la condició",
                             "change_alias": "Canvia el nom de la condició",
                             "delete": "Elimina",
-                            "delete_confirm": "Segur que vols eliminar-ho?",
                             "delete_confirm_text": "S'eliminarà permanentment.",
                             "delete_confirm_title": "Eliminar condició?",
                             "duplicate": "Duplica",
                             "header": "Condicions",
-                            "introduction": "Les condicions són opcionals i impedeixen que s'executi l'automatització tret de que totes elles se satisfacin.",
                             "invalid_condition": "Configuració de condició invàlida",
                             "learn_more": "Més informació sobre les condicions",
-                            "name": "Condició",
                             "rename": "Canvia el nom",
                             "test": "Prova",
                             "test_failed": "S'ha produït un error en provar la condició",
@@ -1936,20 +1925,16 @@
                         "edit_ui": "Edita amb l'editor visual",
                         "edit_yaml": "Edita en YAML",
                         "enable": "Activa",
-                        "enable_disable": "Activa/desactiva automatització",
-                        "introduction": "Utilitza les automatitzacions per donar vida a casa teva.",
                         "load_error_not_deletable": "Només es poden eliminar les automatitzacions d'automations.yaml.",
-                        "load_error_not_duplicable": "Només es poden duplicar les automatitzacions d'automations.yaml.",
                         "load_error_not_editable": "Només les automatitzacions a automations.yaml són editables.",
                         "load_error_unknown": "Error en carregar l'automatització ({err_no}).",
                         "max": {
                             "parallel": "Nombre màxim d'execucions paral·leles",
                             "queued": "Longitud de la cua"
                         },
+                        "migrate": "Migra",
                         "missing_name": "No es pot desar l'automatització sense nom",
                         "modes": {
-                            "description": "El mode controla què passa quan es dispara l'automatització i encara hi ha accions d'un disparament anterior executant-se. Consulta la {documentation_link} per a més informació.",
-                            "documentation": "documentació d'automatització",
                             "label": "Mode",
                             "learn_more": "Més informació sobre els modes",
                             "parallel": "Paral·lel",
@@ -1965,26 +1950,25 @@
                             "exit": "Surt",
                             "title": "Mode reordenació"
                         },
+                        "read_only": "Aquesta automatització no es pot editar des de la interfície d'usuari ja que està desada al fitxer automations.yaml o no té un ID.",
                         "rename": "Canvia el nom",
                         "run": "Executa",
                         "save": "Desa",
                         "show_info": "Informació",
                         "show_trace": "Traces",
+                        "traces_not_available": "Les automatitzacions han de tenir un identificador per poder-ne fer un seguiment de l'històric. Afegeix-li un ID perquè tingui les traces disponibles.",
                         "triggers": {
                             "add": "Afegeix disparador",
                             "alias": "Nom del disparador",
                             "change_alias": "Canvia el nom del disparador",
                             "delete": "Elimina",
-                            "delete_confirm": "Segur que vols eliminar-ho?",
                             "delete_confirm_text": "S'eliminarà permanentment.",
                             "delete_confirm_title": "Eliminar disparador?",
                             "duplicate": "Duplica",
                             "edit_id": "Edita ID",
                             "header": "Disparadors",
                             "id": "ID de disparador",
-                            "introduction": "Els disparadors són les regles que fan que s'executi una automatització. Pots definir més d'un disparador per a cada automatització. Una vegada salti un disparador, Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
                             "learn_more": "Més informació sobre els disparadors",
-                            "name": "Disparador",
                             "rename": "Canvia el nom",
                             "triggered": "Disparada",
                             "type": {
@@ -2092,22 +2076,18 @@
                             "type_select": "Tipus de disparador",
                             "unsupported_platform": "Plataforma no compatible amb l'editor visual: {platform}"
                         },
-                        "unsaved_confirm": "Hi ha canvis no desats. Segur que vols sortir?",
                         "unsaved_confirm_text": "Els canvis no desats es perdran.",
                         "unsaved_confirm_title": "Marxar de l'editor?"
                     },
                     "picker": {
                         "add_automation": "Crea automatització",
                         "delete": "Elimina",
-                        "delete_automation": "Elimina l'automatització",
-                        "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
                         "delete_confirm_text": "{name} s'eliminarà permanentment.",
                         "delete_confirm_title": "Eliminar automatització?",
                         "dev_automation": "Depurar automatització",
                         "dev_only_editable": "Només es poden depurar les automatitzacions que tinguin un identificador únic.",
                         "disabled": "Desactivada",
                         "duplicate": "Duplica",
-                        "duplicate_automation": "Duplica l'automatització",
                         "edit_automation": "Edita automatització",
                         "header": "Editor d'automatitzacions",
                         "headers": {
@@ -2182,7 +2162,6 @@
                         "import_btn": "Vista prèvia",
                         "import_header": "Blueprint ''{name}''",
                         "import_introduction": "Importa blueprints d'altres usuaris des de Github i els fòrums de la comunitat introduint la seva adreça a sota.",
-                        "import_introduction_link": "Pots importar blueprints d'altres usuaris des de Github i des dels {community_link}. Introdueix, a sota,  l'URL del blueprint.",
                         "importing": "Carregant blueprint…",
                         "raw_blueprint": "Contingut del blueprint",
                         "save_btn": "Importa blueprint",
@@ -2194,7 +2173,6 @@
                     "description": "Gestiona els blueprints",
                     "overview": {
                         "add_blueprint": "Importa blueprint",
-                        "confirm_delete_header": "Eliminar aquest blueprint?",
                         "confirm_delete_text": "{name} s'eliminarà permanentment.",
                         "confirm_delete_title": "Eliminar 'blueprint'?",
                         "create_automation": "Crea automatització",
@@ -2228,12 +2206,11 @@
                             "enable_state_reporting": "Activa els informes d'estat",
                             "info": "Amb la integració d'Alexa per Home Assistant Cloud podràs controlar tots els dispositius de Home Assistant a través dels dispositius compatibles amb Alexa.",
                             "info_state_reporting": "Si actives els informes d'estat, Home Assistant enviarà a Amazon tots els canvis d'estat de les entitats exposades. Això et permetrà veure els últims estats a l'aplicació Alexa i utilitzar-los per crear rutines.",
+                            "link_learn_how_it_works": "Informació sobre com funciona",
                             "manage_entities": "Gestió d'entitats",
                             "not_configured_text": "Abans de poder fer servir l'Alexa, has d'activar el complement o Skill de Home Assistant a l'app de l'Alexa.",
                             "not_configured_title": "Alexa no està activada",
                             "state_reporting_error": "No s'ha pogut {enable_disable} l'informe d'estat.",
-                            "sync_entities": "Sincronitza entitats amb Amazon",
-                            "sync_entities_error": "No s'han pogut sincronitzar les entitats:",
                             "title": "Alexa"
                         },
                         "connected": "Connectat",
@@ -2252,13 +2229,11 @@
                             "http_use_ssl_warning_title": "Comunicació local no disponible",
                             "info": "Amb la integració de Google Assistant per Home Assistant Cloud podràs controlar tots els dispositius de Home Assistant a través dels dispositius compatibles amb Google Assistant.",
                             "info_state_reporting": "Si actives els informes d'estat, Home Assistant enviarà a Google tots els canvis d'estat de les entitats exposades. Això permet fer comandes de veu més ràpides i veure els últims estats actualitzats a l'aplicació de Google.",
+                            "link_learn_how_it_works": "Informació sobre com funciona",
                             "manage_entities": "Gestió d'entitats",
                             "not_configured_text": "Abans de poder fer servir Google Assistant, has d'activar Home Assistant Cloud per a Google Assistant a l'aplicació de Google Home.",
                             "not_configured_title": "Google Assistant no està activat",
                             "security_devices": "Dispositius de seguretat",
-                            "sync_entities": "Sincronitza les entitats amb Google",
-                            "sync_failed_text": "S'ha produït un error en sincronitzar les entitats, torna-ho a provar o comprova els registres.",
-                            "sync_failed_title": "Ha fallat la sincronització",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integracions",
@@ -2324,9 +2299,10 @@
                         "follow_domain": "Segueix domini",
                         "manage_defaults": "Gestiona els valors predeterminats",
                         "manage_defaults_dialog_description": "Les entitats es poden exposar per defecte en funció del seu tipus.",
-                        "manage_domains": "Gestiona dominis",
                         "not_exposed": "{selected} no exposat",
                         "not_exposed_entities": "Entitats no exposades",
+                        "sync_entities": "Sincronitza entitats",
+                        "sync_entities_error": "No s'han pogut sincronitzar les entitats:",
                         "title": "Alexa"
                     },
                     "description_features": "Controla la casa quan siguis fora i integra-hi Alexa i Google Assistant",
@@ -2340,12 +2316,9 @@
                         "will_be_auto_renewed": "es renovarà automàticament"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "El webhook està disponible a l'URL següent:",
                         "close": "Tanca",
-                        "confirm_disable": "Estàs segur que vols desactivar aquest webhook?",
                         "confirm_disable_text": "El 'webhook' de {name} serà desactivat.",
                         "confirm_disable_title": "Desactiva 'webhook'",
-                        "copied_to_clipboard": "Copiat al porta-retalls",
                         "info_disable_webhook": "Si ja no vols fer servir aquest webhook, pots",
                         "link_disable_webhook": "desactiva-lo",
                         "managed_by_integration": "Aquest webhook està gestionat per una integració i no es pot desactivar.",
@@ -2373,9 +2346,14 @@
                         "follow_domain": "Segueix domini",
                         "manage_defaults": "Gestiona els valors predeterminats",
                         "manage_defaults_dialog_description": "Les entitats es poden exposar per defecte en funció del seu tipus.",
-                        "manage_domains": "Gestiona dominis",
+                        "not_configured_text": "Abans de poder fer servir Google Assistant, has d'activar Home Assistant Cloud per a Google Assistant a l'aplicació de Google Home.",
+                        "not_configured_title": "Google Assistant no està activat",
                         "not_exposed": "{selected} no exposat",
                         "not_exposed_entities": "Entitats no exposades",
+                        "sync_entities": "Sincronitza entitats",
+                        "sync_entities_error": "No s'han pogut sincronitzar les entitats:",
+                        "sync_failed_text": "No s'han pogut sincronitzar les entitats, torna-ho a provar o comprova els registres.",
+                        "sync_failed_title": "Ha fallat la sincronització",
                         "sync_to_google": "Sincronitzant els canvis amb Google.",
                         "title": "Google Assistant"
                     },
@@ -2459,26 +2437,20 @@
                 },
                 "dashboard": {
                     "about": {
-                        "description": "Versió, estat del sistema i enllaços a la documentació",
                         "main": "Quant a",
-                        "secondary": "Informació de versió, crèdits i més",
-                        "title": "Quant a"
+                        "secondary": "Informació de versió, crèdits i més"
                     },
                     "areas": {
-                        "description": "Gestiona les àrees i zones a les quals Home Assistant fa seguiment",
                         "main": "Àrees i zones",
-                        "secondary": "Gestiona les ubicacions de casa teva i els voltants",
-                        "title": "Àrees i zones"
+                        "secondary": "Gestiona les ubicacions de casa teva i els voltants"
                     },
                     "automations": {
                         "main": "Automatitzacions i escenes",
                         "secondary": "Automatitzacions, escenes, scripts i 'blueprints'"
                     },
                     "backup": {
-                        "description": "Genera còpies de seguretat de la teva configuració de Home Assistant",
                         "main": "Còpia de seguretat",
-                        "secondary": "Genera còpies de seguretat de la teva configuració de Home Assistant",
-                        "title": "Còpia de seguretat"
+                        "secondary": "Genera còpies de seguretat de la teva configuració de Home Assistant"
                     },
                     "companion": {
                         "main": "App Companion",
@@ -2505,10 +2477,8 @@
                         "secondary": "Executa aplicacions addicionals amb Home Assistant"
                     },
                     "system": {
-                        "description": "Crea còpies de seguretat, comprova els registres o reinicia el sistema",
                         "main": "Sistema",
-                        "secondary": "Crea còpies de seguretat, comprova els registres o reinicia el sistema",
-                        "title": "Sistema"
+                        "secondary": "Crea còpies de seguretat, comprova els registres o reinicia el sistema"
                     },
                     "tags": {
                         "main": "Etiquetes",
@@ -2516,6 +2486,7 @@
                     }
                 },
                 "devices": {
+                    "add_device": "Afegeix dispositiu",
                     "add_prompt": "Encara no s'han afegit {name} mitjançant aquest {type}. Pots afegir-ne fent clic al botó + a sobre.",
                     "automation": {
                         "actions": {
@@ -2592,8 +2563,6 @@
                     "name": "Nom",
                     "no_devices": "No hi ha dispositius",
                     "open_configuration_url": "Visita",
-                    "open_configuration_url_device": "Visita el dispositiu",
-                    "open_configuration_url_service": "Visita el servei",
                     "picker": {
                         "filter": {
                             "filter": "Filtra",
@@ -2887,13 +2856,11 @@
                     "processor": "Processador",
                     "reboot": "Reinicia",
                     "reboot_host": "Reinicia sistema",
-                    "reboot_host_confirm": "Segur que vols reiniciar l'amfitrió?",
                     "reboot_host_text": "Això reiniciarà el sistema complet, inclou el nucli i tots els complements.",
                     "reboot_host_title": "Reiniciar sistema?",
                     "rebooting_host": "S'està reiniciant el sistema",
                     "shutdown": "Apaga",
                     "shutdown_host": "Apaga sistema",
-                    "shutdown_host_confirm": "Segur que vols apagar l'amfitrió?",
                     "shutdown_host_text": "Això apagarà el sistema complet, inclou el nucli i tots els complements.",
                     "shutdown_host_title": "Apagar sistema?"
                 },
@@ -2954,7 +2921,6 @@
                         "thanks": "Gràcies a"
                     },
                     "license": "Publicat amb la llicència Apache 2.0",
-                    "path_configuration": "Ruta al fitxer configuration.yaml: {path}",
                     "server": "servidor",
                     "setup_time": "Temps de configuració",
                     "source": "Font:",
@@ -2969,6 +2935,7 @@
                     "add_zha_device": "Afegeix dispositiu Zigbee",
                     "add_zwave_js_device": "Afegeix dispositiu Z-Wave",
                     "attention": "Cal atenció",
+                    "available_integrations": "Integracions disponibles",
                     "caption": "Integracions",
                     "config_entry": {
                         "application_credentials": {
@@ -2983,13 +2950,11 @@
                         "check_the_logs": "Comprova els registres",
                         "configure": "Configura",
                         "delete": "Elimina",
-                        "delete_confirm": "Estàs segur que vols eliminar la integració {title}?",
                         "delete_confirm_text": "Els seus dispositius i entitats s'eliminaran permanentment.",
                         "delete_confirm_title": "Eliminar {title}?",
                         "depends_on_cloud": "Depèn del núvol",
                         "devices": "{count} {count, plural,\n  one {dispositiu}\n  other {dispositius}\n}",
                         "disable": {
-                            "disable_confirm": "Estàs segur que vols desactivar aquesta entrada de configuració? Els seus dispositius i entitats es desactivaran.",
                             "disabled": "Desactivada",
                             "disabled_by": {
                                 "device": "dispositiu",
@@ -3035,7 +3000,8 @@
                         "unknown_via_device": "Dispositiu desconegut",
                         "unnamed_entry": "Entrada sense nom",
                         "version": "Versió: {version}",
-                        "via": "Connectat mitjançant"
+                        "via": "Connectat mitjançant",
+                        "yaml_only": "Necessita configuració manual"
                     },
                     "config_flow": {
                         "aborted": "Avortat",
@@ -3053,26 +3019,22 @@
                         "found_following_devices": "S'han trobat els següents dispositius",
                         "loading": {
                             "fallback_title": "la integració",
-                            "loading_flow": "Espera mentre es configura {integration}",
+                            "loading_flow": "Espera, s'està iniciant l'assistent de configuració de {integration}",
                             "loading_step": "Carregant el següent pas de {integration}"
                         },
-                        "missing_credentials": "La configuració de {integration} necessita configurar credencials d'aplicació. Vols fer-ho ara?",
-                        "missing_zha": "Per afegir un dispositiu Zigbee, primer has de configurar la integració Zigbee Home Automation. Vols fer-ho ara?",
-                        "missing_zwave_js": "Per afegir un dispositiu Z-Wave, primer has de configurar la integració Z-Wave. Vols fer-ho ara?",
                         "missing_zwave_zigbee": "Per afegir un dispositiu {integration}, primer necessites tenir {supported_hardware_link} i la integració {integration} configurada. Si ja tens el maquinari necessari, pots començar la configuració de {integration}.",
                         "next": "Següent",
                         "no_config_flow": "Aquesta integració no admet la configuració a través de la interfície d'usuari. Si véns de l'enllaç del lloc web de Home Assistant, assegura't de tenir actualitzat Home Assistant a la versió més recent.",
                         "not_all_required_fields": "No s'han omplert tots els camps obligatoris.",
                         "not_loaded": "No s'ha pogut carregar la integració, prova de reiniciar Home Assistant.",
-                        "pick_flow_step": {
-                            "new_flow": "No, configura una altra instància de {integration}",
-                            "title": "N'hem descobert aquests, vols configurar-los?"
-                        },
+                        "open_documentation": "Obre la documentació",
                         "proceed": "Continua",
                         "submit": "Envia",
                         "success": "Èxit",
                         "supported_brand_flow": "{flow_domain_name} proporciona l'assistència a dispositius {supported_brand}. Vols continuar?",
-                        "supported_hardware": "maquinari compatible"
+                        "supported_hardware": "maquinari compatible",
+                        "yaml_only": "Pots afegir aquest dispositiu afegint-lo al fitxer ''configuration.yaml''. Consulta la documentació per a més informació.",
+                        "yaml_only_title": "Aquest dispositiu no es pot afegir des de la interfície d'usuari"
                     },
                     "configure": "Configurar",
                     "configured": "Configurades",
@@ -3098,7 +3060,8 @@
                     },
                     "integration": "integració",
                     "integration_not_found": "No s'ha trobat la integració.",
-                    "new": "Configura una nova integració",
+                    "new": "Selecciona marca",
+                    "new_flow": "Configura una altra instància de {integration}",
                     "no_integrations": "Sembla que encara no tens cap integració configurada. Prem al botó de sota per afegir la teva primera integració!",
                     "none": "Encara no hi ha res configurat",
                     "none_found": "No s'han trobat integracions",
@@ -3108,7 +3071,8 @@
                     "reconfigure": "Reconfigura",
                     "rename_dialog": "Edita el nom de l'entrada de configuració",
                     "rename_input_label": "Nom de l'entrada",
-                    "search": "Cerca integracions"
+                    "search": "Cerca integracions",
+                    "search_brand": "Cerca el nom d'una marca"
                 },
                 "logs": {
                     "caption": "Registres",
@@ -3186,7 +3150,6 @@
                     "resources": {
                         "cant_edit_yaml": "El teu panell està utilitzant el mode YAML per tant no pots gestionar els recursos des de la interfície d'usuari. Els pots gestionar des del fitxer 'configuration.yaml'.",
                         "caption": "Recursos",
-                        "confirm_delete": "Estàs segur que vols eliminar aquest recurs?",
                         "confirm_delete_text": "{url} s'eliminarà permanentment.",
                         "confirm_delete_title": "Eliminar recurs?",
                         "detail": {
@@ -3258,8 +3221,6 @@
                 "person": {
                     "add_person": "Afegeix persona",
                     "caption": "Persones",
-                    "confirm_delete": "Estàs segur que vols eliminar aquesta persona?",
-                    "confirm_delete2": "Tots els dispositius vinculats a aquesta persona quedaran sense assignar.",
                     "confirm_delete_text": "Aquesta persona s'eliminarà permanentment i tots els seus dispositius quedaran sense assignació.",
                     "confirm_delete_title": "Eliminar {name}?",
                     "create_person": "Crea persona",
@@ -3296,7 +3257,6 @@
                     "critical": "Crític",
                     "description": "Cerca i soluciona problemes de la teva instància de Home Assistant",
                     "dialog": {
-                        "alert_not_fixable": "No podem reparar aquest problema per tu.",
                         "breaks_in_version": "Això deixarà de funcionar a la versió {version}. Soluciona-ho abans d'actualitzar.",
                         "fix": "Reparar",
                         "ignore": "Ignora",
@@ -3307,7 +3267,6 @@
                         "unignore": "Deixa d'ignorar"
                     },
                     "error": "Error",
-                    "hide_ignored": "Amaga ignorats",
                     "integration_startup_time": "Temps d'inicialització d'integracions",
                     "more_repairs": "Mostra totes les reparacions",
                     "no_repairs": "Actualment no hi ha reparacions disponibles",
@@ -3332,18 +3291,15 @@
                         "entities": {
                             "add": "Afegeix una entitat",
                             "delete": "Elimina l'entitat",
-                            "device_entities": "Si afegeixes una entitat que pertany a un dispositiu, s'afegirà el dispositiu.",
                             "header": "Entitats",
                             "introduction": "Aquí es poden afegir entitats individuals.",
                             "without_device": "Entitats"
                         },
                         "icon": "Icona",
-                        "introduction": "Utilitza les escenes per donar més vida a casa teva.",
                         "load_error_not_editable": "Només es poden editar les escenes del fitxer scenes.yaml.",
                         "load_error_unknown": "Error en carregar l'escena ({err_no}).",
                         "name": "Nom",
                         "save": "Desa",
-                        "unsaved_confirm": "Hi han canvis no desats. Segur que vols sortir?",
                         "unsaved_confirm_text": "Els canvis no desats es perdran.",
                         "unsaved_confirm_title": "Marxar de l'editor?"
                     },
@@ -3351,7 +3307,6 @@
                         "activate": "Activa",
                         "add_scene": "Afegeix escena",
                         "delete": "Elimina",
-                        "delete_confirm": "Estàs segur que vols eliminar aquesta escena?",
                         "delete_confirm_text": "{name} s'eliminarà permanentment.",
                         "delete_confirm_title": "Eliminar escena?",
                         "delete_scene": "Elimina l'escena",
@@ -3360,20 +3315,15 @@
                         "edit_scene": "Edita escena",
                         "header": "Editor d'escenes",
                         "headers": {
-                            "activate": "Activa",
-                            "edit": "Editar",
                             "last_activated": "Última activació",
-                            "name": "Nom",
-                            "show_info": "Mostra més informació",
-                            "state": "Estat"
+                            "name": "Nom"
                         },
                         "introduction": "L'editor d'escenes et permet crear i editar escenes. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat Home Assistant correctament.",
                         "learn_more": "Més informació sobre les escenes",
                         "no_scenes": "No s'ha pogut trobar cap escena",
                         "only_editable": "Només es poden editar les escenes definides al fitxer scenes.yaml.",
                         "pick_scene": "Selecciona l'escena a editar",
-                        "show_info": "Informació",
-                        "show_info_scene": "Mostra informació sobre l'escena"
+                        "show_info": "Informació"
                     }
                 },
                 "script": {
@@ -3382,10 +3332,9 @@
                     "editor": {
                         "alias": "Nom",
                         "default_name": "Nou script",
-                        "delete_confirm": "Estàs segur que vols eliminar aquest script?",
                         "delete_confirm_text": "{name} s'eliminarà permanentment.",
                         "delete_confirm_title": "Eliminar script?",
-                        "delete_script": "Elimina l'script",
+                        "duplicate": "Duplica",
                         "header": "Script: {name}",
                         "icon": "Icona",
                         "id": "ID de l'entitat",
@@ -3394,16 +3343,14 @@
                         "introduction": "Utilitza els scripts per executar una seqüència d'accions.",
                         "link_available_actions": "Més informació sobre les accions disponibles.",
                         "load_error_not_deletable": "Només es poden eliminar els scripts de scripts.yaml.",
-                        "load_error_not_duplicable": "Només es poden duplicar els scripts de scripts.yaml.",
                         "load_error_not_editable": "Només es poden editar els scripts del fitxer scripts.yaml.",
                         "load_error_unknown": "Error en carregar 'script' ({err_no}).",
                         "max": {
                             "parallel": "Nombre màxim d'execucions paral·leles",
                             "queued": "Longitud de la cua"
                         },
+                        "migrate": "Migra",
                         "modes": {
-                            "description": "El mode controla què passa quan s'invoca l'script mentre encara s'està executant a causa d'invocacions anteriors. Consulta {documentation_link} per a més informació.",
-                            "documentation": "documentació de scripts",
                             "label": "Mode",
                             "learn_more": "Més informació sobre els modes",
                             "parallel": "Paral·lel",
@@ -3411,6 +3358,7 @@
                             "restart": "Reinici",
                             "single": "Individual"
                         },
+                        "read_only": "Aquest script no es pot editar des de la interfície d'usuari ja que està desat al fitxer ''scripts.yaml''.",
                         "save_script": "Desa l'script",
                         "sequence": "Seqüència",
                         "sequence_sentence": "Seqüència d'accions de l'script.",
@@ -3420,10 +3368,7 @@
                     "picker": {
                         "add_script": "Afegeix script",
                         "delete": "Elimina",
-                        "dev_script": "Depura script",
                         "duplicate": "Duplica",
-                        "duplicate_script": "Duplica l'script",
-                        "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
                         "headers": {
                             "name": "Nom",
@@ -3451,7 +3396,6 @@
                         "move": "Mou",
                         "moving": "Desplaçant datadisk",
                         "moving_desc": "Reiniciant i desplaçant datadisk. Tingues paciència",
-                        "no_devices": "No s'han trobat dispositius compatibles connectats",
                         "no_devices_text": "No s'ha trobat cap dispositiu extern compatible. La capacitat d'emmagatzematge del disc de dades extern ha de ser més gran que la del disc existent.",
                         "no_devices_title": "No s'ha trobat cap emmagatzematge compatible",
                         "select_device": "Selecciona un nou datadisk",
@@ -3462,11 +3406,9 @@
                     "used_space": "Espai utilitzat"
                 },
                 "system_dashboard": {
-                    "confirm_restart": "Segur que vols reiniciar Home Assistant?",
                     "confirm_restart_text": "Això aturarà els panells actius, les automatitzacions i els 'scripts'.",
                     "confirm_restart_title": "Reiniciar Home Assistant?",
                     "restart_error": "No s'ha pogut reiniciar Home Assistant",
-                    "restart_homeassistant": "Reinicia Home Assistant",
                     "restart_homeassistant_short": "Reinicia"
                 },
                 "system_health": {
@@ -3475,7 +3417,6 @@
                     "cpu_usage": "Ús del processador",
                     "description": "Estat, mètriques i temps d'inicialització d'integracions",
                     "integration_start_time": "Temps d'inicialització d'integracions",
-                    "long_loading_integrations": "Integracions de càrrega llarga",
                     "ram_usage": "Ús de memòria",
                     "supervisor_stats": "Mètriques del Supervisor"
                 },
@@ -3521,7 +3462,6 @@
                     "caption": "Actualitzacions",
                     "check_updates": "Comprova si hi ha actualitzacions",
                     "description": "Gestiona les actualitzacions de Home Assistant, complements i dispositius",
-                    "hide_skipped": "Amaga omesos",
                     "join_beta": "Uneix-te al canal beta",
                     "leave_beta": "Marxa del canal beta",
                     "more_updates": "Mostra totes les actualitzacions",
@@ -3536,8 +3476,7 @@
                     "skipped": "Omesos",
                     "title": "{count} {count, plural,\n  one {actualització}\n  other {actualitzacions}\n}",
                     "unable_to_fetch": "No s'han pogut obtenir les actualitzacions",
-                    "updates_refreshed": "{count} {count, plural,\n  one {actualització refrescada}\n  other {actualitzacions refrescades}\n}",
-                    "version_available": "Versió {version_available} disponible"
+                    "updates_refreshed": "{count} {count, plural,\n  one {actualització refrescada}\n  other {actualitzacions refrescades}\n}"
                 },
                 "url": {
                     "caption": "URL de Home Assistant",
@@ -3563,6 +3502,14 @@
                         "password_not_match": "Les contrasenyes no coincideixen"
                     },
                     "caption": "Usuaris",
+                    "change_password": {
+                        "caption": "Canvia la contrasenya",
+                        "change": "Canvia",
+                        "new_password": "Nova contrasenya",
+                        "password_changed": "La contrasenya s'ha canviat correctament.",
+                        "password_confirm": "Confirma contrasenya",
+                        "password_no_match": "Les contrasenyes no coincideixen"
+                    },
                     "description": "Gestiona els comptes d'usuari de Home Assistant",
                     "editor": {
                         "activate_user": "Activar usuari",
@@ -3571,7 +3518,6 @@
                         "admin": "Administrador",
                         "caption": "Mostra usuari",
                         "change_password": "Canviar contrasenya",
-                        "confirm_user_deletion": "Estàs segur que vols eliminar {name}?",
                         "confirm_user_deletion_text": "L'usuari s'eliminarà permanentment.",
                         "confirm_user_deletion_title": "Eliminar {name}?",
                         "deactivate_user": "Desactiva l'usuari",
@@ -3580,9 +3526,7 @@
                         "id": "ID",
                         "local_only": "Només es pot iniciar sessió des de la xarxa local",
                         "name": "Nom de visualització",
-                        "new_password": "Nova contrasenya",
                         "owner": "Propietari",
-                        "password_changed": "La contrasenya s'ha canviat correctament",
                         "system_generated": "Usuari del sistema",
                         "system_generated_users_not_editable": "No es poden actualitzar usuaris del sistema.",
                         "system_generated_users_not_removable": "No es poden eliminar usuaris del sistema.",
@@ -3619,13 +3563,8 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributs del clúster seleccionat",
-                        "get_zigbee_attribute": "Obtenir l'atribut Zigbee",
                         "header": "Atributs clúster",
-                        "help_attribute_dropdown": "Selecciona un atribut per visualitzar-ne o definiu-ne el valor.",
-                        "help_get_zigbee_attribute": "Obté el valor de l'atribut seleccionat.",
-                        "help_set_zigbee_attribute": "Estableix el valor d'atribut pel clúster especificat a l'entitat especificada.",
-                        "introduction": "Consulta i edita els atributs del clúster.",
-                        "set_zigbee_attribute": "Estableix l'atribut Zigbee"
+                        "introduction": "Consulta i edita els atributs del clúster."
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Comandes del clúster seleccionat",
@@ -3637,7 +3576,6 @@
                     "clusters": {
                         "header": "Clústers",
                         "help_cluster_dropdown": "Selecciona un clúster per visualitzar-ne els atributs i comandes.",
-                        "introduction": "Els clústers són els blocs de construcció per dotar Zigbee de funcionalitat. Separen la funcionalitat en unitats lògiques. N'hi ha de tipus client i servidor; estan formats per atributs i comandes (ordres).",
                         "tabs": {
                             "attributes": "Atributs",
                             "commands": "Comandes"
@@ -3657,6 +3595,7 @@
                     },
                     "device_binding": {
                         "bind": "Vincula",
+                        "picker_label": "Dispositius vinculables",
                         "unbind": "Desvincula"
                     },
                     "device_pairing_card": {
@@ -4145,9 +4084,10 @@
                         "fix_issue": {
                             "fix": "Arregla la incidència",
                             "units_changed": {
+                                "change": "Converteix els valors de totes les estadístiques històriques de ''{metadata_unit}'' a ''{state_unit}''",
                                 "clear": "Elimina d'aquesta entitat totes les dades estadístiques antigues",
                                 "title": "La unitat d'aquesta entitat ha canviat",
-                                "update": "Actualitza els valors històrics de ''{metadata_unit}'' a ''{state_unit}''"
+                                "update": "Actualitza els valors històrics de ''{metadata_unit}'' a ''{state_unit}'', sense convertir-los."
                             }
                         },
                         "issue": "Incidència",
@@ -4156,6 +4096,7 @@
                             "entity_not_recorded": "Aquesta entitat està exclosa de ser registrada.",
                             "no_state": "No hi ha cap estat disponible per a aquesta entitat.",
                             "units_changed": "La unitat d'aquesta entitat ha canviat de ''{metadata_unit}'' a ''{state_unit}''.",
+                            "units_changed_can_convert": "La unitat d'aquesta entitat ha canviat de ''{metadata_unit}'' a ''{state_unit}''.",
                             "unsupported_state_class": "La classe d'estat ''{state_class}'' d'aquesta entitat no és compatible.",
                             "unsupported_unit_metadata": "La unitat (''{metadata_unit}'') de les estadístiques registrades no coincideix amb la compatible ''{supported_unit}'' de la classe de dispositiu ''{device_class}''.",
                             "unsupported_unit_state": "La unitat (''{state_unit}'') d'aquesta entitat no coincideix amb la de la classe de dispositiu ''{device_class}''."
@@ -4180,8 +4121,6 @@
                         "unknown_error_template": "Error desconegut renderitzant plantilla"
                     },
                     "yaml": {
-                        "caption": "Controls del servidor",
-                        "description": "Valida i reinicia el servidor Home Assistant",
                         "section": {
                             "reloading": {
                                 "automation": "Automatitzacions",
@@ -4222,23 +4161,20 @@
                                 "zone": "Zones"
                             },
                             "server_management": {
-                                "confirm_restart": "Segur que vols reiniciar Home Assistant?",
                                 "confirm_restart_text": "Si reinicies Home Assistant, s'aturaran els panells actius, les automatitzacions i els 'scripts'.",
                                 "confirm_restart_title": "Reiniciar Home Assistant?",
                                 "confirm_stop": "Segur que vols aturar Home Assistant?",
                                 "heading": "Home Assistant",
-                                "introduction": "Si reinicies Home Assistant, s'aturarà el panell i les automatitzacions. Després del reinici, les diferents configuracions es tornaran a carregar.",
                                 "restart": "Reinicia",
                                 "restart_error": "No s'ha pogut reiniciar Home Assistant",
-                                "restart_home_assistant": "Reinicia Home Assistant",
                                 "stop": "Atura"
                             },
                             "validation": {
                                 "check_config": "Comprova la configuració",
-                                "heading": "Validació de la configuració",
-                                "introduction": "Valida la configuració si recentment n'has fet algun canvi i vols assegurar-te de que sigui totalment vàlida.",
+                                "heading": "Comprova i reinicia",
+                                "introduction": "La validació bàsica de la configuració es fa automàticament abans de reiniciar. Aquesta validació garanteix que la configuració YAML no contingui errors que impedeixin que Home Assistant o qualsevol integració s'iniciï. També pots fer aquesta validació bàsica sense haver de reiniciar.",
                                 "invalid": "Configuració invàlida!",
-                                "valid": "Configuració vàlida!"
+                                "valid": "Aquesta configuració permet que Home Assistant s'iniciï!"
                             }
                         },
                         "title": "YAML"
@@ -4589,7 +4525,6 @@
                             "default_zoom": "Zoom predeterminat",
                             "description": "La targeta mapa et permet mostrar diferents entitats sobre un mapa.",
                             "geo_location_sources": "Fonts de geolocalització",
-                            "hours_to_show": "Hores a mostrar",
                             "name": "Mapa",
                             "source": "Font"
                         },
@@ -4651,7 +4586,8 @@
                                 "max": "Màx",
                                 "mean": "Mitjana",
                                 "min": "Mín",
-                                "sum": "Suma"
+                                "state": "Estat",
+                                "sum": "Suma (canvi durant període)"
                             },
                             "stat_types": "Mostra tipus d'estadístiques"
                         },
@@ -4722,10 +4658,14 @@
                         "add": "Afegeix visualització",
                         "delete": "Eliminar visualització",
                         "edit": "Editar visualització",
+                        "edit_ui": "Edita amb l'editor visual",
+                        "edit_yaml": "Edita en YAML",
                         "header": "Configuració de la visualització",
                         "header_name": "Configuració de la visualització {name}",
                         "move_left": "Desplaça la visualització cap a l'esquerra",
                         "move_right": "Desplaça la visualització cap a la dreta",
+                        "subview": "Sub-visualització",
+                        "subview_helper": "Les sub-visualitzacions no apareixen a les pestanyes i tenen un botó enrere.",
                         "tab_badges": "Insígnies",
                         "tab_settings": "Configuració",
                         "tab_visibility": "Visibilitat",
@@ -4879,18 +4819,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "El reproductor multimèdia {name} no existeix"
-                },
-                "tts": {
-                    "action_pick": "Selecciona",
-                    "action_play": "Dir-ho",
-                    "example_message": "Hola {name}, pots reproduir qualsevol text en tots els reproductors multimèdia compatibles!",
-                    "faild_to_store_defaults": "No s'han pogut desar els valors predeterminats: {error}",
-                    "gender": "Gènere",
-                    "gender_female": "Dona",
-                    "gender_male": "Home",
-                    "language": "Idioma",
-                    "message": "Missatge",
-                    "set_as_default": "Defineix-ho com a opcions predeterminades"
                 }
             },
             "my": {

@@ -233,9 +233,6 @@
             },
             "quick-bar": {
                 "commands": {
-                    "navigation": {
-                        "server_control": "Rheoli gweinydd"
-                    },
                     "reload": {
                         "automation": "Ail-lwytho awtomeiddiadau",
                         "command_line": "Ail-lwytho endidau llinell orchymyn",
@@ -320,12 +317,9 @@
                         "actions": {
                             "add": "Ychwanegu camau",
                             "delete": "Dileu",
-                            "delete_confirm": "Ydych yn siŵr bod chi eisiau dileu?",
                             "duplicate": "Dyblygu",
                             "header": "Camau gweithredu",
-                            "introduction": "Y camau gweithredu yw'r hyn mae Home Assistant yn gwneud pan mae'r awtomeiddio yn cael ei sbarduno\n\n[Dysgwch mwy am weithred.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Dysgu mwy am gamau gweithredu",
-                            "name": "Gweithredu",
                             "type": {
                                 "condition": {
                                     "label": "Cyflwr"
@@ -354,12 +348,9 @@
                         "conditions": {
                             "add": "Ychwanegu amodau",
                             "delete": "Dileu",
-                            "delete_confirm": "Siwr bod chi eisiau dileu?",
                             "duplicate": "Dyblygu",
                             "header": "Amodau",
-                            "introduction": "Mae'r amodau'n rhan ddewisol o reol awtomeiddio, a gellir eu defnyddio i atal camau rhag digwydd pan fyddant yn cael eu sbarduno. Mae'r amodau'n edrych yn debyg iawn i sbardunau ond maent yn wahanol iawn. Bydd sbardun yn edrych ar ddigwyddiadau sy'n digwydd yn y system tra bod amod yn edrych ar sut mae'r system yn edrych ar hyn o bryd. Gall sbarduno arsylwi bod switsh yn cael ei droi ymlaen. Dim ond os yw switsh ar neu i ffwrdd ar hyn o bryd y gall cyflwr weld. \n\n [Dysgwch fwy am amodau.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Dysgu mwy am amodau",
-                            "name": "Cyflwr",
                             "type": {
                                 "numeric_state": {
                                     "above": "Uwch",
@@ -405,19 +396,15 @@
                         "default_name": "Awtomeiddiad Newydd",
                         "edit_ui": "Golygu gyda UI",
                         "edit_yaml": "Golygu fel YAML",
-                        "introduction": "Defnyddiwch awtomeiddio i ddod â'ch cartref yn fyw",
                         "load_error_not_editable": "Dim ond awtomiadau yn 'automations. yaml' y gellir golygu.",
                         "load_error_unknown": "Gwall wrth lwytho awtomeiddad ( {err_no} ).",
                         "save": "Arbed",
                         "triggers": {
                             "add": "Ychwanegu sbardun",
                             "delete": "Dileu",
-                            "delete_confirm": "Ydych chi'n siŵr bod chi eisiau dileu hwn?",
                             "duplicate": "Dyblyg",
                             "header": "Sbardunau",
-                            "introduction": "Sbarduno yw'r hyn sy'n dechrau proses rheol awtomeiddio.  Mae'n bosib dewis nifer o sbardunau i'run rheol. Unwaith mae sbardun yn cychwyn, bydd Home Assistant yn dilysu'r amodau, os o gwbl, a galw'r gweithred. \n\n[dysgwch mwy am sbardunau.] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Dysgu mwy am sbardunau",
-                            "name": "Sbardun",
                             "type": {
                                 "event": {
                                     "context_user_pick": "Ychwanegu defnyddiwr",
@@ -493,8 +480,7 @@
                             },
                             "type_select": "Math sbardun",
                             "unsupported_platform": "Llwyfan heb gymorth: {platform}"
-                        },
-                        "unsaved_confirm": "Mae gennych newidiadau heb eu cadw. Ydych chi'n siŵr bod chi eisiau gadael?"
+                        }
                     },
                     "picker": {
                         "add_automation": "Ychwanegu awtomeiddiad",
@@ -610,7 +596,6 @@
                 "integrations": {
                     "caption": "Integreiddiadau",
                     "config_entry": {
-                        "delete_confirm": "A ydych yn siŵr bod chi eisiau dileu'r integreiddiad yma?",
                         "firmware": "Cadarnwedd: {version}",
                         "manuf": "gan {manufacturer}",
                         "no_area": "Dim Ardal",
@@ -691,17 +676,14 @@
                         "entities": {
                             "add": "Ychwanegu endid",
                             "delete": "Dileu endid",
-                            "device_entities": "Os ydych chi'n ychwanegu endid sy'n perthyn i ddyfais, bydd y ddyfais yn cael ei hychwanegu.",
                             "header": "Endidau",
                             "introduction": "Gellir gosod endidau sydd ddim yn berthyn i ddyfeisiau yma.",
                             "without_device": "Endidau heb ddyfais"
                         },
-                        "introduction": "Defnyddiwch olygfeydd i ddod â'ch cartref yn fyw.",
                         "load_error_not_editable": "Dim ond golygfeydd yn scenes.yaml y gellir eu golygu.",
                         "load_error_unknown": "Gwall wrth lwytho'r olygfa ({err_no}).",
                         "name": "Enw",
-                        "save": "Arbed",
-                        "unsaved_confirm": "Mae gennych newidiadau heb eu cadw. Ydych chi'n siŵr bod chi eisiau gadael?"
+                        "save": "Arbed"
                     },
                     "picker": {
                         "headers": {
@@ -763,13 +745,8 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Priodoleddau'r clwstwr a ddewiswyd",
-                        "get_zigbee_attribute": "Cael Priodoledd Zigbee",
                         "header": "Priodoleddau clwstwr",
-                        "help_attribute_dropdown": "Dewisiwch y priodoledd i weld neu osod ei werth",
-                        "help_get_zigbee_attribute": "Cael y gwerth ar gyfer y priodoledd a ddewiswyd.",
-                        "help_set_zigbee_attribute": "Gosod gwerth priodwedd ar gyfer y clwstwr penodedig ar yr endid penodedig.",
-                        "introduction": "Gweld a golygu priodoleddau clwstwr.",
-                        "set_zigbee_attribute": "Gosod priodoledd Zigbee"
+                        "introduction": "Gweld a golygu priodoleddau clwstwr."
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Gorchmynion y clwstwr a ddewiswyd",
@@ -814,7 +791,6 @@
                         "title": "Templedi"
                     },
                     "yaml": {
-                        "caption": "Rheoli gweinydd",
                         "section": {
                             "reloading": {
                                 "automation": "Ail-lwytho awtomeiddiadau",
@@ -832,7 +808,6 @@
                             },
                             "server_management": {
                                 "heading": "Rheoli gweinydd",
-                                "introduction": "Rheoli eich gweinydd Home Assistant.. o Home Assistant.",
                                 "restart": "Ailgychwyn",
                                 "stop": "Stopio"
                             },
@@ -954,7 +929,6 @@
                         },
                         "map": {
                             "description": "Y cerdyn Map sy'n caniatáu ichi arddangos endidau ar fap.",
-                            "hours_to_show": "Oriau i'w Dangos",
                             "name": "Map"
                         },
                         "markdown": {

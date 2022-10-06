@@ -208,7 +208,6 @@
             },
             "join_beta_channel": {
                 "backup": "Ezaugarri hau aktibatu aurretik, ziurtatu zure datuen babeskopiak dituzula.",
-                "confirm": "Beta kanalean sartu nahi duzu?",
                 "title": "Beta kanalean sartu",
                 "warning": "Beta bertsioak probatzaileentzat eta lehen erabiltzaileentzat dira eta kode aldaketa ezegonkorrak izan ditzakete"
             },
@@ -227,6 +226,13 @@
             "mqtt_device_debug_info": {
                 "entities": "Entitateak",
                 "no_entities": "Entitaterik ez"
+            },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "server_control": "YAML Konfigurazioa"
+                    }
+                }
             },
             "unhealthy": {
                 "description": "Osasuntsua ez den instalazio bat exekutatzeak arazoak sortuko ditu. Jarraian, zure instalazioarekin aurkitutako arazoen zerrenda dago, egin klik esteketan arazoak nola konpon ditzakezun jakiteko.",
@@ -251,9 +257,6 @@
                 "how_can_i_help": "Nola lagundu dezaket?"
             },
             "zha_device_info": {
-                "buttons": {
-                    "zigbee_information": "Zigbee gailuaren sinadura"
-                },
                 "device_signature": "Zigbee gailuaren sinadura",
                 "services": {
                     "updateDeviceName": "Gailu honentzako izen pertsonalizatua ezarri gailuen erregistroan."
@@ -675,11 +678,9 @@
                     }
                 },
                 "system_dashboard": {
-                    "confirm_restart": "Ziur al zaude Home Assistant berrabiarazi nahi duzula?",
                     "confirm_restart_text": "Home Assistant berrabiarazten baduzu, zure aginte-panel, automatizazio eta script aktibo guztiak geldituko dira.",
                     "confirm_restart_title": "Home Assistant berrabiarazi?",
                     "restart_error": "Ezin izan da Home Assistant berrabiarazi",
-                    "restart_homeassistant": "Home Assistant berrabiarazi",
                     "restart_homeassistant_short": "Berrabiarazi"
                 },
                 "tag": {
@@ -764,8 +765,7 @@
                             "server_management": {
                                 "confirm_restart_text": "Home Assistant berrabiarazten baduzu, zure aginte-panel, automatizazio eta script aktibo guztiak geldituko dira.",
                                 "confirm_restart_title": "Home Assistant berrabiarazi?",
-                                "restart_error": "Ezin izan da Home Assistant berrabiarazi",
-                                "restart_home_assistant": "Home Assistant berrabiarazi"
+                                "restart_error": "Ezin izan da Home Assistant berrabiarazi"
                             }
                         },
                         "title": "YAML Konfigurazioa"

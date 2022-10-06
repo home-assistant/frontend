@@ -420,7 +420,6 @@
                 "used": "Repository wordt gebruikt voor geïnstalleerde add-ons en kan niet worden verwijderd."
             },
             "restart_addon": {
-                "confirm_text": "Herstart de add-on",
                 "restart": "Herstart",
                 "text": "Wilt je de add-on opnieuw starten om de wijzigingen te activeren?",
                 "title": "Herstart {name}?"
@@ -492,10 +491,6 @@
                 "log_provider": "Logboekprovider"
             },
             "supervisor": {
-                "beta_backup": "Zorg ervoor dat je back-ups van je gegevens hebt voordat je deze functie activeert.",
-                "beta_join_confirm": "Wilt u meedoen met het bèta-kanaal?",
-                "beta_release_items": "Dit omvat bèta releases voor:",
-                "beta_warning": "Bèta releases zijn voor testers en early adopters en kunnen instabiele codewijzigingen bevatten",
                 "channel": "Kanaal",
                 "cpu_usage": "Supervisor-CPU-gebruik",
                 "failed_to_reload": "Herladen van de Supervisor is mislukt",
@@ -809,8 +804,6 @@
                 "expansion_header": "Attributen"
             },
             "blueprint-picker": {
-                "add_user": "Gebruiker toevoegen",
-                "remove_user": "Gebruiker verwijderen",
                 "select_blueprint": "Selecteer een Blueprint"
             },
             "calendar": {
@@ -874,15 +867,7 @@
                 "no_history_found": "Geen geschiedenis gevonden"
             },
             "logbook": {
-                "by": "door",
-                "by_user": "door gebruiker",
                 "entries_not_found": "Geen logboekvermeldingen gevonden.",
-                "event": "gebeurtenis",
-                "for": "voor",
-                "from": "van",
-                "from_automation": "van automatisering",
-                "from_script": "van script",
-                "from_service": "van service",
                 "messages": {
                     "became_unavailable": "is niet meer beschikbaar",
                     "changed_to_state": "gewijzigd in {state}",
@@ -1046,7 +1031,6 @@
                 "data": "Servicegegevens",
                 "integration_doc": "Integratiedocumentatie",
                 "required": "Dit veld is verplicht",
-                "service_data": "Servicedata",
                 "target": "Doelen",
                 "target_description": "Welke ruimtes, apparaten of entiteiten  deze service zich op moet richten."
             },
@@ -1067,6 +1051,7 @@
                     "max": "max",
                     "mean": "gemiddeld",
                     "min": "min",
+                    "state": "status",
                     "sum": "som"
                 }
             },
@@ -1186,9 +1171,21 @@
                     "note": "Opmerking: dit werkt mogelijk nog niet met alle integraties.",
                     "open_device_settings": "Open de apparaatinstellingen",
                     "precipitation_unit": "Neerslageenheid",
-                    "preload_stream": "Camerastream vooraf laden",
-                    "preload_stream_description": "Dit houdt de camerastream op de achtergrond open zodat deze sneller wordt weergegeven. Waarschuwing! Dit is intensief voor het apparaat.",
                     "pressure_unit": "Barometrische drukeenheid",
+                    "stream": {
+                        "preload_stream": "Camerastream vooraf laden",
+                        "preload_stream_description": "Hierdoor blijft de camerastream op de achtergrond open, zodat deze sneller wordt weergegeven. Waarschuwing! Dit is apparaatintensief.",
+                        "stream_orientation": "Oriëntatie van camerastream",
+                        "stream_orientation_1": "Geen transformatie van oriëntatie",
+                        "stream_orientation_2": "Spiegelen",
+                        "stream_orientation_3": "180 graden draaien",
+                        "stream_orientation_4": "Omdraaien",
+                        "stream_orientation_5": "Naar links draaien en omdraaien",
+                        "stream_orientation_6": "Naar links draaien",
+                        "stream_orientation_7": "Naar rechts draaien en omdraaien",
+                        "stream_orientation_8": "Naar rechts draaien",
+                        "stream_orientation_description": "De transformatie van oriëntatie die moet worden gebruikt voor de camerastream."
+                    },
                     "switch_as_x_confirm": "Deze schakelaar zal verborgen worden en een nieuw {domain} zal toegevoegd worden. Uw bestaande configuraties die de schakelaar gebruiken zullen blijven werken.",
                     "temperature_unit": "Temperatuureenheid",
                     "unavailable": "Deze entiteit is niet beschikbaar.",
@@ -1262,12 +1259,9 @@
                 "crop": "Snijdt bij"
             },
             "join_beta_channel": {
-                "backup": "Zorg ervoor dat je back-ups van je gegevens hebt voordat je deze functie activeert.",
-                "confirm": "Wilt u meedoen met het bèta-kanaal?",
-                "release_items": "Dit omvat bèta releases voor:",
+                "join": "Word lid van",
                 "title": "Word lid van het bètakanaal",
-                "view_documentation": "Bekijk documentatie",
-                "warning": "Bèta releases zijn voor testers en early adopters en kunnen instabiele codewijzigingen bevatten"
+                "view_documentation": "Bekijk documentatie"
             },
             "more_info_control": {
                 "cover": {
@@ -1293,13 +1287,7 @@
                     "activity": "Huidige activiteit"
                 },
                 "restored": {
-                    "confirm_remove_text": "Weet je zeker dat je deze entiteit wilt verwijderen?",
-                    "confirm_remove_title": "Entiteit verwijderen?",
-                    "no_longer_provided": "Deze entiteit is niet meer beschikbaar vanuit de {integration} integratie. Wanneer de entiteit niet meer in gebruik is, kan deze vanuit de instellingen verwijderd worden.",
-                    "not_provided": "Deze entiteit is niet meer beschikbaar vanuit de {integration} integratie. Wanneer de entiteit niet meer in gebruik is, kan deze vanuit de instellingen verwijderd worden.",
-                    "remove_action": "Entiteit verwijderen",
-                    "remove_intro": "Als de entiteit niet meer in gebruik is, kunt u deze opruimen door deze te verwijderen.",
-                    "title": "Entiteit niet beschikbaar"
+                    "no_longer_provided": "Deze entiteit is niet meer beschikbaar vanuit de {integration} integratie. Wanneer de entiteit niet meer in gebruik is, kan deze vanuit de instellingen verwijderd worden."
                 },
                 "script": {
                     "last_action": "Laatste actie",
@@ -1315,7 +1303,6 @@
                 "update": {
                     "clear_skipped": "Overgeslagen wissen",
                     "create_backup": "Voor het updaten een back-up maken",
-                    "current_version": "Huidige versie",
                     "install": "Installeer",
                     "installed_version": "Geïnstalleerde versie",
                     "latest_version": "Laatste versie",
@@ -1505,14 +1492,10 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Voeg apparaten toe via dit apparaat",
-                    "clusters": "Beheer clusters",
-                    "device_children": "Bekijk onderliggende apparaten",
                     "manage": "Zigbee-apparaat beheren",
                     "reconfigure": "Apparaat opnieuw configureren",
                     "remove": "Apparaat verwijderen",
-                    "view_in_visualization": "Bekijk in Visualisatie",
-                    "view_network": "Bekijk netwerk",
-                    "zigbee_information": "Zigbee-apparaathandtekening"
+                    "view_network": "Bekijk netwerk"
                 },
                 "confirmations": {
                     "remove": "Weet je zeker dat je het apparaat wil verwijderen?"
@@ -1630,8 +1613,10 @@
                         "client_id_helper": "Openbare identificatiecode van de OAuth-toepassing",
                         "client_secret": "OAuth-clientgeheim",
                         "client_secret_helper": "Geheim van de OAuth-toepassing",
-                        "create": "Aanmaken",
+                        "description": "OAuth wordt gebruikt om Home Assistant toegang te geven tot informatie op andere websites zonder wachtwoord op te geven. Dit mechanisme wordt gebruikt door bedrijven als Spotify, Google, Withings, Microsoft en Twitter.",
                         "domain": "Integratie",
+                        "missing_credentials": "Voor het instellen van {integration} moeten applicatiereferenties worden geconfigureerd.",
+                        "missing_credentials_domain_link": "Bekijk documentatie van {integration}",
                         "name": "Naam",
                         "view_documentation": "Bekijk documentatie"
                     },
@@ -1713,7 +1698,6 @@
                             "alias": "Naam actie",
                             "change_alias": "Hernoem actie",
                             "delete": "Verwijderen",
-                            "delete_confirm": "Wil je dit echt verwijderen?",
                             "delete_confirm_text": "Het wordt permanent verwijderd.",
                             "delete_confirm_title": "Actie verwijderen?",
                             "disable": "Uitschakelen",
@@ -1721,13 +1705,10 @@
                             "duplicate": "Dupliceren",
                             "enable": "Inschakelen",
                             "header": "Acties",
-                            "introduction": "De acties zijn wat Home Assistant zal doen wanneer de automatisering wordt geactiveerd.",
                             "invalid_action": "Ongeldige actie",
                             "learn_more": "Meer informatie over acties",
-                            "name": "Actie",
                             "rename": "Hernoemen",
                             "run": "Uitvoeren",
-                            "run_action": "Actie uitvoeren",
                             "run_action_error": "Fout bij uitvoeren actie",
                             "run_action_success": "Actie succesvol uitgevoerd",
                             "type": {
@@ -1828,6 +1809,7 @@
                         },
                         "alias": "Naam",
                         "automation_alias": "Naam van automatisering",
+                        "automation_settings": "Instellingen voor automatiseringen",
                         "blueprint": {
                             "blueprint_to_use": "Blueprint om te gebruiken",
                             "header": "Blueprint",
@@ -1840,15 +1822,12 @@
                             "alias": "Naam voorwaarde",
                             "change_alias": "Hernoem voorwaarde",
                             "delete": "Verwijderen",
-                            "delete_confirm": "Zeker weten dat je wilt verwijderen?",
                             "delete_confirm_text": "Het wordt permanent verwijderd.",
                             "delete_confirm_title": "Voorwaarde verwijderen?",
                             "duplicate": "Dupliceren",
                             "header": "Voorwaarden",
-                            "introduction": "Voorwaarden zijn optioneel en verhinderen verdere uitvoering tenzij aan alle voorwaarden is voldaan.",
                             "invalid_condition": "Ongeldige conditieconfiguratie",
                             "learn_more": "Meer informatie over condities",
-                            "name": "Voorwaarde",
                             "rename": "Hernoemen",
                             "test": "Test",
                             "test_failed": "Er is een fout opgetreden tijdens het testen van de voorwaarde",
@@ -1943,21 +1922,18 @@
                         "edit_ui": "Bewerken in visuele editor",
                         "edit_yaml": "Bewerken als YAML",
                         "enable": "Inschakelen",
-                        "enable_disable": "Schakel automatisering in/uit",
-                        "introduction": "Gebruik automatiseringen om je huis tot leven te brengen.",
                         "load_error_not_deletable": "Enkel automatiseringen in automations.yaml kunnen verwijderd worden",
-                        "load_error_not_duplicable": "Enkel automatiseringen in automations.yaml kunnen gedupliceerd worden",
                         "load_error_not_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
                         "load_error_unknown": "Fout bij laden van automatisering ({err_no}).",
                         "max": {
                             "parallel": "Maximumaantal parallelle runs",
                             "queued": "Lengte van de wachtrij"
                         },
+                        "migrate": "Migreren",
                         "missing_name": "Kan automatisering zonder naam niet opslaan",
                         "modes": {
-                            "description": "De modus bepaalt wat er gebeurt wanneer de automatisering wordt geactiveerd terwijl de acties nog steeds worden uitgevoerd door een vorige trigger. Controleer de {documentation_link} voor meer informatie.",
-                            "documentation": "automatiseringsdocumentatie",
                             "label": "Modus",
+                            "learn_more": "Meer informatie over modi",
                             "parallel": "Parallel",
                             "queued": "In de wachtrij geplaatst",
                             "restart": "Herstarten",
@@ -1971,26 +1947,25 @@
                             "exit": "Sluiten",
                             "title": "Herschikken weergave"
                         },
+                        "read_only": "Deze automatisering kan niet worden bewerkt vanuit de gebruikersinterface, omdat deze niet is opgeslagen in het bestand automations.yaml of geen ID heeft.",
                         "rename": "Hernoemen",
                         "run": "Uitvoeren",
                         "save": "Opslaan",
                         "show_info": "Informatie",
                         "show_trace": "Tracering weergeven",
+                        "traces_not_available": "Automatiseringen hebben een ID nodig om de geschiedenis bij te houden. Voeg een ID toe aan jouw automatisering om deze beschikbaar te maken in traceringen.",
                         "triggers": {
                             "add": "Trigger toevoegen",
                             "alias": "Naam trigger",
                             "change_alias": "Hernoem trigger",
                             "delete": "Verwijderen",
-                            "delete_confirm": "Weet je zeker dat je dit wilt verwijderen?",
                             "delete_confirm_text": "Het wordt permanent verwijderd.",
                             "delete_confirm_title": "Trigger verwijderen?",
                             "duplicate": "Dupliceren",
                             "edit_id": "Bewerk trigger-ID",
                             "header": "",
                             "id": "Trigger-ID",
-                            "introduction": "Triggers starten de verwerking van een automatiseringsregel. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert Home Assistant de eventuele voorwaarden en roept hij de acties aan.",
                             "learn_more": "Meer informatie over triggers",
-                            "name": "Trigger",
                             "rename": "Hernoemen",
                             "triggered": "Getriggerd",
                             "type": {
@@ -2098,22 +2073,18 @@
                             "type_select": "Trigger-type",
                             "unsupported_platform": "Geen UI-ondersteuning voor platform: {platform}"
                         },
-                        "unsaved_confirm": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt afsluiten?",
                         "unsaved_confirm_text": "Niet-opgeslagen wijzigingen gaan verloren.",
                         "unsaved_confirm_title": "Editor verlaten?"
                     },
                     "picker": {
                         "add_automation": "Automatisering toevoegen",
                         "delete": "Verwijderen",
-                        "delete_automation": "Verwijder automatisering",
-                        "delete_confirm": "Weet je zeker dat je deze automatisering wilt verwijderen?",
                         "delete_confirm_text": "{name} wordt permanent verwijderd.",
                         "delete_confirm_title": "Automatisering verwijderen?",
                         "dev_automation": "Debug automatisering",
                         "dev_only_editable": "Alleen automatiseringen waaraan een uniek ID is toegewezen, kunnen worden gedebugd",
                         "disabled": "Uitgeschakeld",
                         "duplicate": "Dupliceren",
-                        "duplicate_automation": "Dupliceer automatisering",
                         "edit_automation": "Bewerk automatisering",
                         "header": "Automatiseringsbewerker",
                         "headers": {
@@ -2154,7 +2125,6 @@
                     }
                 },
                 "backup": {
-                    "caption": "Back-up",
                     "create": {
                         "confirm": "maak",
                         "description": "Maak een back-up van je huidige configuratie, dit kan enige tijd duren.",
@@ -2187,7 +2157,7 @@
                         "header": "Voeg een nieuwe Blueprint toe",
                         "import_btn": "Bekijk deze Blueprint",
                         "import_header": "Blueprint \"{name}\"",
-                        "import_introduction_link": "U kunt Blueprints van andere gebruikers importeren vanuit Github en de {community_link}. Voer de URL van de Blueprint hieronder in.",
+                        "import_introduction": "Importeer blueprints van andere gebruikers uit GitHub en de communityforums door het onderstaande adres te plakken.",
                         "importing": "Blueprint importeren…",
                         "raw_blueprint": "Blueprintinhoud",
                         "save_btn": "Blueprint importeren",
@@ -2199,7 +2169,6 @@
                     "description": "Blueprints beheren",
                     "overview": {
                         "add_blueprint": "Blueprint importeren",
-                        "confirm_delete_header": "Deze Blueprint verwijderen?",
                         "confirm_delete_text": "Weet je zeker dat je deze Blueprint wil verwijderen?",
                         "confirm_delete_title": "Blueprint verwijderen?",
                         "create_automation": "Automatisering maken",
@@ -2233,12 +2202,11 @@
                             "enable_state_reporting": "Statusrapportage inschakelen",
                             "info": "Met de Alexa-integratie voor Home Assistant Cloud kunt u al uw Home Assistant-apparaten bedienen via elk apparaat met Alexa-ondersteuning.",
                             "info_state_reporting": "Als je statusrapportage inschakelt, stuurt Home Assistant alle status-wijzigingen van opengestelde entiteiten naar Amazon. Hiermee kun je altijd de laatste status zien in de Alexa app en kun je de status wijzigingen gebruiken om routines te maken.",
+                            "link_learn_how_it_works": "Ontdek hoe het werkt",
                             "manage_entities": "Entiteiten beheren",
                             "not_configured_text": "Voordat u Alexa kunt gebruiken, moet u de Home Assistant-skill voor Alexa activeren in de Alexa-app.",
                             "not_configured_title": "Alexa is niet geactiveerd",
                             "state_reporting_error": "Kan status rapportage niet {enable_disable}.",
-                            "sync_entities": "Entiteiten synchroniseren naar Amazon",
-                            "sync_entities_error": "Kan entiteiten niet synchroniseren:",
                             "title": "Alexa"
                         },
                         "connected": "Verbonden",
@@ -2257,13 +2225,11 @@
                             "http_use_ssl_warning_title": "Lokale communicatie niet beschikbaar",
                             "info": "Met de Google Assistant-integratie voor Home Assistant Cloud kunt je al jouw Home Assistant apparaten bedienen via elk apparaat waarop Google Assistant is ingeschakeld.",
                             "info_state_reporting": "Als je statusrapportage inschakelt, stuurt Home Assistant alle statuswijzigingen van blootgestelde entiteiten naar Google. Hierdoor werken spraakopdrachten sneller en kun je altijd de meest actuele statussen in de Google-app zien.",
+                            "link_learn_how_it_works": "Ontdek hoe het werkt",
                             "manage_entities": "Entiteiten beheren",
                             "not_configured_text": "Voordat u Google Assistant kunt gebruiken, moet je de Home Assistant Cloud-skill voor Google Assistant activeren in de Google Home-app.",
                             "not_configured_title": "Google Assistant is niet geactiveerd",
                             "security_devices": "Beveiligingsapparaten",
-                            "sync_entities": "Synchroniseer entiteiten naar Google",
-                            "sync_failed_text": "Het synchroniseren van je entiteiten is mislukt, probeer het opnieuw of controleer de logboeken.",
-                            "sync_failed_title": "Synchronisatie mislukt",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integraties",
@@ -2329,7 +2295,6 @@
                         "follow_domain": "Volg domein",
                         "manage_defaults": "Standaardinstellingen beheren",
                         "manage_defaults_dialog_description": "Entiteiten kunnen standaard worden weergegeven op basis van hun type.",
-                        "manage_domains": "Beheer domeinen",
                         "not_exposed": "{selected} niet blootgesteld",
                         "not_exposed_entities": "Niet-blootgestelde entiteiten",
                         "sync_entities": "Synchroniseer entiteiten",
@@ -2347,15 +2312,13 @@
                         "will_be_auto_renewed": "wordt automatisch vernieuwd"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "De webhook is beschikbaar op de volgende URL:",
                         "close": "Sluit",
-                        "confirm_disable": "Weet je zeker dat je deze webhook wil uitschakelen?",
                         "confirm_disable_text": "Webhook voor {name} wordt uitgeschakeld.",
                         "confirm_disable_title": "Webhook uitschakelen",
-                        "copied_to_clipboard": "Gekopieerd naar het klembord",
                         "info_disable_webhook": "Als je deze webhook niet langer wilt gebruiken, kun je het",
                         "link_disable_webhook": "schakel het uit",
                         "managed_by_integration": "Deze webhook wordt beheerd door een integratie en kan niet worden uitgeschakeld.",
+                        "public_url": "Publiek adres",
                         "view_documentation": "Bekijk documentatie",
                         "webhook_for": "Webhook voor {name}"
                     },
@@ -2379,7 +2342,6 @@
                         "follow_domain": "Domein volgen",
                         "manage_defaults": "Standaardinstellingen beheren",
                         "manage_defaults_dialog_description": "Entiteiten kunnen standaard worden weergegeven op basis van hun type.",
-                        "manage_domains": "Beheer domeinen",
                         "not_configured_text": "Voordat je de Google Assistent kan gebruiken, moet je de Home Assistant Cloud skill voor Google Assistent activeren in de Google Home app.",
                         "not_configured_title": "Google Assistent is niet geactiveerd",
                         "not_exposed": "{selected} niet blootgesteld",
@@ -2471,26 +2433,20 @@
                 },
                 "dashboard": {
                     "about": {
-                        "description": "Versie, systeemstatus en links naar documentatie",
                         "main": "Over",
-                        "secondary": "Versie-informatie, credits en meer",
-                        "title": "Over"
+                        "secondary": "Versie-informatie, credits en meer"
                     },
                     "areas": {
-                        "description": "Beheer ruimtes & zones die Home Assistant volgt",
                         "main": "Ruimtes & Zones",
-                        "secondary": "Beheer locaties in en rondom je huis",
-                        "title": "Ruimtes & Zones"
+                        "secondary": "Beheer locaties in en rondom je huis"
                     },
                     "automations": {
                         "main": "Automatiseringen & Scènes",
                         "secondary": "Automatiseringen, scènes, scripts en blueprints"
                     },
                     "backup": {
-                        "description": "Back-ups van uw Home Assistant-configuratie maken",
                         "main": "Back-up",
-                        "secondary": "Back-ups van je Home Assistant-configuratie maken",
-                        "title": "Back-up"
+                        "secondary": "Back-ups van je Home Assistant-configuratie maken"
                     },
                     "companion": {
                         "main": "Companion App",
@@ -2517,10 +2473,8 @@
                         "secondary": "Extra applicaties uitvoeren naast Home Assistant"
                     },
                     "system": {
-                        "description": "Maak back-ups, controleer logboeken of herstart je systeem",
                         "main": "Systeem",
-                        "secondary": "Maak back-ups, bekijk logboeken of herstart uw systeem",
-                        "title": "Systeem"
+                        "secondary": "Maak back-ups, bekijk logboeken of herstart uw systeem"
                     },
                     "tags": {
                         "main": "Tags",
@@ -2528,6 +2482,7 @@
                     }
                 },
                 "devices": {
+                    "add_device": "Toevoegen apparaat",
                     "add_prompt": "Er zijn nog geen {name} toegevoegd voor dit {type}. Je kunt er een toevoegen door op de plusknop hierboven te klikken.",
                     "automation": {
                         "actions": {
@@ -2604,8 +2559,6 @@
                     "name": "Naam",
                     "no_devices": "Geen apparaten",
                     "open_configuration_url": "Bezoeken",
-                    "open_configuration_url_device": "Naar apparaat",
-                    "open_configuration_url_service": "Dienst bezoeken",
                     "picker": {
                         "filter": {
                             "filter": "Filter",
@@ -2899,12 +2852,12 @@
                     "processor": "Processorgebruik",
                     "reboot": "Herstarten",
                     "reboot_host": "Host herstarten",
-                    "reboot_host_confirm": "Weet u zeker dat u de host wilt herstarten?",
+                    "reboot_host_text": "Hiermee wordt het volledige systeem opnieuw opgestart, inclusief de Core en alle add-ons.",
                     "reboot_host_title": "Systeem herstarten?",
                     "rebooting_host": "Host wordt opnieuw opgestart",
                     "shutdown": "Afsluiten",
                     "shutdown_host": "Host afsluiten",
-                    "shutdown_host_confirm": "Weet je zeker dat je je machine wilt uitschakelen?",
+                    "shutdown_host_text": "Hiermee wordt het volledige systeem afgesloten, inclusief de kern en alle add-ons.",
                     "shutdown_host_title": "Systeem afsluiten?"
                 },
                 "header": "Configureer Home Assistant",
@@ -2964,7 +2917,6 @@
                         "thanks": "Dank aan"
                     },
                     "license": "Gepubliceerd onder de Apache 2.0-licentie",
-                    "path_configuration": "Pad naar configuration.yaml: {path}",
                     "server": "Server",
                     "setup_time": "Insteltijd",
                     "source": "Bron:",
@@ -2979,21 +2931,26 @@
                     "add_zha_device": "Zigbee-apparaat toevoegen",
                     "add_zwave_js_device": "Z-Wave apparaat toevoegen",
                     "attention": "Aandacht vereist",
+                    "available_integrations": "Beschikbare integraties",
                     "caption": "Integraties",
                     "config_entry": {
                         "application_credentials": {
-                            "dismiss": "Behouden"
+                            "delete_detail": "Als je deze verwijdert, moet je inloggegevens invoeren wanneer je de integratie opnieuw instelt. Als je ze bewaart, worden ze automatisch gebruikt bij het opnieuw instellen van de integratie of kunnen ze worden geopend vanuit het menu Toepassingsreferenties.",
+                            "delete_error_title": "Het verwijderen van toepassingsreferenties is mislukt",
+                            "delete_prompt": "Wilt je ook toepassingsreferenties voor deze integratie verwijderen?",
+                            "delete_title": "Toepassingsgegevens",
+                            "dismiss": "Behouden",
+                            "learn_more": "Meer informatie over toepassingsreferenties"
                         },
                         "area": "In {area}",
                         "check_the_logs": "Controleer de logboeken",
                         "configure": "Configureer",
                         "delete": "Verwijderen",
-                        "delete_confirm": "Weet je zeker dat de integratie {title} wilt verwijderen?",
+                        "delete_confirm_text": "De apparaten en entiteiten worden permanent verwijderd.",
                         "delete_confirm_title": "{title} verwijderen?",
                         "depends_on_cloud": "Cloudafhankelijk",
                         "devices": "{count} {count, plural,\n  one {apparaat}\n  other {apparaten}\n}",
                         "disable": {
-                            "disable_confirm": "Weet je zeker dat je deze configuratie wilt uitschakelen? Al diens apparaten en entiteiten zullen worden uitgeschakeld.",
                             "disabled": "Uitgeschakeld",
                             "disabled_by": {
                                 "device": "apparaat",
@@ -3002,6 +2959,7 @@
                             },
                             "disabled_cause": "Uitgeschakeld door {cause}"
                         },
+                        "disable_confirm_text": "De apparaten en entiteiten worden uitgeschakeld.",
                         "disable_confirm_title": "{title} uitschakelen?",
                         "disable_error": "In- of uitschakelen van de integratie mislukt",
                         "disable_restart_confirm": "Start Home Assistant opnieuw op om het uitschakelen van deze integratie te voltooien",
@@ -3038,7 +2996,8 @@
                         "unknown_via_device": "Onbekend apparaat",
                         "unnamed_entry": "Naamloze invoer",
                         "version": "Versie: {version}",
-                        "via": "Verbonden via"
+                        "via": "Verbonden via",
+                        "yaml_only": "Handmatige configuratie nodig"
                     },
                     "config_flow": {
                         "aborted": "Afgebroken",
@@ -3059,22 +3018,18 @@
                             "loading_flow": "Een ogenblik geduld terwijl {integration} wordt ingesteld",
                             "loading_step": "Bezig met laden van de volgende stap voor {integration}"
                         },
-                        "missing_credentials": "Het instellen van {integration} vereist het configureren van toepassingsreferenties. Wil je dat nu doen?",
-                        "missing_zha": "Om een Zigbee apparaat toe te voegen, dien je eerst de Zigbee Home Automation integratie in te stellen. Wil je dat nu doen?",
                         "missing_zwave_zigbee": "Om een {integration} apparaat toe te voegen, dien je eerst {supported_hardware_link} en de {integration} integratie in te stellen. Als je al over de benodigde hardware beschikt, kun je verder met het instellen van {integration}.",
                         "next": "Volgende",
                         "no_config_flow": "Deze integratie ondersteunt geen configuratie via de UI. Als u deze link van de Home Assistant-website hebt gevolgd, zorg er dan voor dat u de nieuwste versie van Home Assistant heeft draaien.",
                         "not_all_required_fields": "Niet alle verplichte velden zijn ingevuld.",
                         "not_loaded": "De integratie kan niet worden geladen, probeer Home Assistant opnieuw te starten.",
-                        "pick_flow_step": {
-                            "new_flow": "Nee, zet een andere instantie van {integration} op",
-                            "title": "We hebben deze ontdekt. Wil je ze instellen?"
-                        },
+                        "open_documentation": "Bekijk documentatie",
                         "proceed": "Doorgaan",
                         "submit": "Opslaan",
                         "success": "Gelukt",
                         "supported_brand_flow": "Ondersteuning voor {supported_brand} apparaten wordt geleverd via {flow_domain_name}. Wil je verder gaan?",
-                        "supported_hardware": "ondersteunde hardware"
+                        "supported_hardware": "ondersteunde hardware",
+                        "yaml_only_title": "Dit apparaat kan niet worden toegevoegd vanuit de gebruikersinterface."
                     },
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
@@ -3110,7 +3065,8 @@
                     "reconfigure": "Herconfigureer",
                     "rename_dialog": "Bewerk de naam van dit configuratie-item",
                     "rename_input_label": "Invoernaam",
-                    "search": "Zoek integraties"
+                    "search": "Zoek integraties",
+                    "search_brand": "Zoek naar een merknaam"
                 },
                 "logs": {
                     "caption": "Logboek",
@@ -3188,7 +3144,6 @@
                     "resources": {
                         "cant_edit_yaml": "Je gebruikt jouw dashboard in de YAML-modus, daarom kun je de bronnen niet beheren via de gebruikersinterface. Beheer ze in configuration.yaml.",
                         "caption": "Bronnen",
-                        "confirm_delete": "Weet u zeker dat u deze bron wilt verwijderen?",
                         "confirm_delete_text": "{url} wordt permanent verwijderd.",
                         "confirm_delete_title": "Bron verwijderen?",
                         "detail": {
@@ -3260,8 +3215,7 @@
                 "person": {
                     "add_person": "Persoon toevoegen",
                     "caption": "Personen",
-                    "confirm_delete": "Weet je zeker dat je deze persoon wilt verwijderen?",
-                    "confirm_delete2": "Alle apparaten die behoren tot deze persoon zullen worden ontkoppeld.",
+                    "confirm_delete_text": "Deze persoon wordt permanent verwijderd en alle apparaten van deze persoon worden niet meer toegewezen.",
                     "confirm_delete_title": "{naam} verwijderen?",
                     "create_person": "Maak persoon",
                     "description": "Beheer de personen die Home Assistant volgt",
@@ -3297,17 +3251,20 @@
                     "critical": "Kritiek",
                     "description": "Bekijk en verhelp problemen met je Home Assistant instantie",
                     "dialog": {
-                        "alert_not_fixable": "We kunnen dit probleem niet oplossen.",
+                        "breaks_in_version": "Dit werkt niet meer in versie {version}. Gelieve aanpassen voordat je een upgrade uitvoert.",
                         "fix": "Oplossen",
                         "ignore": "Negeer",
                         "ignored_in_version": "Dit probleem werd genegeerd in versie {version}.",
                         "ignored_in_version_short": "Genegeerd in versie {version}",
                         "learn": "Meer informatie",
-                        "title": "Herstel"
+                        "title": "Herstel",
+                        "unignore": "Negeren ongedaan maken"
                     },
                     "error": "Fout",
                     "integration_startup_time": "Opstarttijd integratie",
+                    "more_repairs": "Toon alle reparaties",
                     "no_repairs": "Er zijn momenteel geen herstelwerkzaamheden beschikbaar",
+                    "show_ignored": "Toon genegeerde reparaties",
                     "system_information": "Systeeminformatie",
                     "warning": "Waarschuwing"
                 },
@@ -3327,18 +3284,15 @@
                         "entities": {
                             "add": "Een entiteit toevoegen",
                             "delete": "Entiteit verwijderen",
-                            "device_entities": "Als u een entiteit toevoegt die tot een apparaat hoort, wordt het apparaat ook toegevoegd.",
                             "header": "Entiteiten",
                             "introduction": "Entiteiten die niet bij apparaten horen kunnen hier toegevoegd worden.",
                             "without_device": "Entiteiten"
                         },
                         "icon": "Icoon",
-                        "introduction": "Gebruik scènes om je huis tot leven te brengen.",
                         "load_error_not_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
                         "load_error_unknown": "Fout bij het laden van de scène ({err_no}).",
                         "name": "Naam",
                         "save": "Opslaan",
-                        "unsaved_confirm": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wil afsluiten?",
                         "unsaved_confirm_text": "Niet-opgeslagen wijzigingen gaan verloren.",
                         "unsaved_confirm_title": "Editor verlaten?"
                     },
@@ -3346,7 +3300,6 @@
                         "activate": "Activeren",
                         "add_scene": "Scène toevoegen",
                         "delete": "Verwijderen",
-                        "delete_confirm": "Weet u zeker dat u deze scène wilt verwijderen?",
                         "delete_confirm_text": "{name} wordt permanent verwijderd.",
                         "delete_confirm_title": "Scène verwijderen?",
                         "delete_scene": "Scène verwijderen",
@@ -3355,20 +3308,15 @@
                         "edit_scene": "Scène bewerken",
                         "header": "Scène-editor",
                         "headers": {
-                            "activate": "Activeer",
-                            "edit": "Bewerk",
                             "last_activated": "Laatst geactiveerd",
-                            "name": "Naam",
-                            "show_info": "Laat informatie zien",
-                            "state": "Status"
+                            "name": "Naam"
                         },
                         "introduction": "Met de scène-editor kunt u scènes maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct heeft geconfigureerd.",
                         "learn_more": "Meer informatie over scènes",
                         "no_scenes": "We kunnen geen scènes vinden",
                         "only_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
                         "pick_scene": "Kies een scène om te bewerken",
-                        "show_info": "Informatie",
-                        "show_info_scene": "Informatie weergeven over scène"
+                        "show_info": "Informatie"
                     }
                 },
                 "script": {
@@ -3377,10 +3325,9 @@
                     "editor": {
                         "alias": "Naam",
                         "default_name": "Nieuw script",
-                        "delete_confirm": "Weet je zeker dat je dit script wilt verwijderen?",
                         "delete_confirm_text": "{name} wordt permanent verwijderd.",
                         "delete_confirm_title": "Script verwijderen?",
-                        "delete_script": "Script verwijderen",
+                        "duplicate": "Duplicaat",
                         "header": "Script: {name}",
                         "icon": "Icoon",
                         "id": "Entiteits-ID",
@@ -3389,22 +3336,22 @@
                         "introduction": "Gebruik scripts om een reeks acties uit te voeren.",
                         "link_available_actions": "Meer informatie over beschikbare acties.",
                         "load_error_not_deletable": "Enkel scripts in scripts.yaml kunnen verwijderd worden",
-                        "load_error_not_duplicable": "Enkel scripts in scripts.yaml kunnen gedupliceerd worden.",
                         "load_error_not_editable": "Alleen scripts in scripts.yaml kunnen worden bewerkt.",
                         "load_error_unknown": "Fout bij laden van script ({err_no})",
                         "max": {
                             "parallel": "Maximum aantal parallelle runs",
                             "queued": "Lengte van de wachtrij"
                         },
+                        "migrate": "Migreren",
                         "modes": {
-                            "description": "De modus bepaalt wat er gebeurt wanneer het script wordt aangeroepen terwijl het nog steeds wordt uitgevoerd vanuit een of meer eerdere aanroepen. Controleer de {documentation_link} voor meer informatie.",
-                            "documentation": "Scriptdocumentatie",
                             "label": "Modus",
+                            "learn_more": "Meer informatie over modi",
                             "parallel": "Parallel",
                             "queued": "Wachtrij",
                             "restart": "Herstarten",
                             "single": "Enkelvoudig (standaard)"
                         },
+                        "read_only": "Dit script kan niet worden bewerkt vanuit de gebruikersinterface, omdat het niet is opgeslagen in het bestand ''scripts.yaml''.",
                         "save_script": "Script opslaan",
                         "sequence": "Acties",
                         "sequence_sentence": "De reeks van acties in dit script.",
@@ -3414,10 +3361,7 @@
                     "picker": {
                         "add_script": "Voeg script toe",
                         "delete": "Verwijderen",
-                        "dev_script": "Debug script",
                         "duplicate": "Dupliceer",
-                        "duplicate_script": "Script dupliceren",
-                        "edit_script": "Script bewerken",
                         "header": "Scripteditor",
                         "headers": {
                             "name": "Naam",
@@ -3445,7 +3389,8 @@
                         "move": "Verplaats",
                         "moving": "Dataschijf verplaatsen",
                         "moving_desc": "Herstarten en dataschijf verplaatsen. Een ogenblik geduld.",
-                        "no_devices": "Geen geschikte aangesloten apparaten gevonden",
+                        "no_devices_text": "Er is geen geschikt extern apparaat gevonden. De opslagcapaciteit van de externe dataschijf moet groter zijn dan de opslagcapaciteit van de bestaande schijf.",
+                        "no_devices_title": "Geen geschikte opslag gevonden",
                         "select_device": "Selecteer een nieuwe dataschijf",
                         "title": "Dataschijf verplaatsen"
                     },
@@ -3454,11 +3399,9 @@
                     "used_space": "Gebruikte schijfruimte"
                 },
                 "system_dashboard": {
-                    "confirm_restart": "Weet je zeker dat je Home Assistant wil herstarten?",
                     "confirm_restart_text": "Als je Home Assistant opnieuw start, worden al je actieve dashboards, automatiseringen en scripts gestopt.",
                     "confirm_restart_title": "Home Assistant opnieuw starten?",
                     "restart_error": "Probleem tijdens het herstarten van Home Assistant",
-                    "restart_homeassistant": "Home Assistant herstarten",
                     "restart_homeassistant_short": "Herstarten"
                 },
                 "system_health": {
@@ -3467,7 +3410,6 @@
                     "cpu_usage": "Processorgebruik",
                     "description": "Status, statistieken en opstarttijd van integraties",
                     "integration_start_time": "Opstarttijd van integratie",
-                    "long_loading_integrations": "Lang ladende integraties",
                     "ram_usage": "Geheugengebruik",
                     "supervisor_stats": "Supervisor-statistieken"
                 },
@@ -3513,7 +3455,6 @@
                     "caption": "Updates",
                     "check_updates": "Controleer op updates",
                     "description": "Updates voor Home Assistant, add-ons en apparaten beheren",
-                    "hide_skipped": "Verberg overgeslagen",
                     "join_beta": "Word lid van het bèta-kanaal",
                     "leave_beta": "Bèta-kanaal verlaten",
                     "more_updates": "Toon alle updates",
@@ -3528,8 +3469,7 @@
                     "skipped": "Overgeslagen",
                     "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
                     "unable_to_fetch": "Kan updates niet laden",
-                    "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} vernieuwd",
-                    "version_available": "Versie {version_available} is beschikbaar"
+                    "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} vernieuwd"
                 },
                 "url": {
                     "caption": "Home Assistant URL",
@@ -3571,7 +3511,7 @@
                         "admin": "Beheerder",
                         "caption": "Bekijk gebruiker",
                         "change_password": "Wijzig wachtwoord",
-                        "confirm_user_deletion": "Weet je zeker dat je {name} wil verwijderen?",
+                        "confirm_user_deletion_text": "Deze gebruiker wordt permanent verwijderd.",
                         "confirm_user_deletion_title": "{name} verwijderen?",
                         "deactivate_user": "Deactiveer gebruiker",
                         "delete_user": "Verwijder gebruiker",
@@ -3579,9 +3519,7 @@
                         "id": "ID",
                         "local_only": "Kan alleen inloggen vanaf het lokale netwerk",
                         "name": "Weergavenaam",
-                        "new_password": "Nieuw wachtwoord",
                         "owner": "Eigenaar",
-                        "password_changed": "Het wachtwoord is gewijzigd!",
                         "system_generated": "systeemgebruiker",
                         "system_generated_users_not_editable": "Kan systeemgebruikers niet bijwerken.",
                         "system_generated_users_not_removable": "Kan systeemgebruikers niet verwijderen.",
@@ -3618,14 +3556,9 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributen van het geselecteerde cluster",
-                        "get_zigbee_attribute": "Haal het Zigbee-attribuut op",
                         "header": "Clusterattributen",
-                        "help_attribute_dropdown": "Selecteer een attribuut om deze te bekijken of de waarde in te stellen",
-                        "help_get_zigbee_attribute": "Haal de waarde voor het geselecteerde attribuut op",
-                        "help_set_zigbee_attribute": "Stel attribuutwaarde in voor het gespecificeerde cluster op de gespecificeerde entiteit.",
                         "introduction": "Geef clusterattributen weer en bewerk deze.",
                         "read_zigbee_attribute": "Lees attribuut",
-                        "set_zigbee_attribute": "Stel Zigbee-attribuut in",
                         "write_zigbee_attribute": "Schrijf attribuut"
                     },
                     "cluster_commands": {
@@ -3638,7 +3571,6 @@
                     "clusters": {
                         "header": "Clusters",
                         "help_cluster_dropdown": "Selecteer een cluster om attributen en commando's te bekijken.",
-                        "introduction": "Clusters zijn de bouwstenen voor Zigbee-functionaliteit. Ze scheiden functionaliteit in logische eenheden. Er zijn client- en servertypen en deze bestaan uit attributen en opdrachten.",
                         "tabs": {
                             "attributes": "Attributen",
                             "commands": "Commando's"
@@ -3651,9 +3583,15 @@
                     },
                     "configuration_page": {
                         "download_backup": "Back-up downloaden",
+                        "migrate_radio": "Radio migreren",
                         "network_settings_title": "Netwerkinstellingen",
                         "shortcuts_title": "Snelkoppelingen",
                         "update_button": "Update configuratie"
+                    },
+                    "device_binding": {
+                        "bind": "Koppelen",
+                        "picker_label": "Bindbare apparaten",
+                        "unbind": "Ontkoppelen"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuratie voltooid",
@@ -4141,6 +4079,7 @@
                         "fix_issue": {
                             "fix": "Probleem oplossen",
                             "units_changed": {
+                                "change": "Converteer alle historische statistische waarden van ''{metadata_unit}'' naar ''{state_unit}''",
                                 "clear": "Verwijder alle oude statistische data voor deze entiteit",
                                 "title": "De eenheid van deze entiteit is gewijzigd",
                                 "update": "Wijzig de historische statistische waarden van ''{metadata_unit}'' naar ''{state_unit}''"
@@ -4152,6 +4091,7 @@
                             "entity_not_recorded": "Deze entiteit is uitgesloten van opname.",
                             "no_state": "De status voor deze entiteit is niet beschikbaar.",
                             "units_changed": "De eenheid van deze entiteit is gewijzigd van \"{metadata_unit}\" naar \"{state_unit}\".",
+                            "units_changed_can_convert": "De eenheid van deze entiteit is gewijzigd van ''{metadata_unit}'' naat ''{state_unit}''.",
                             "unsupported_state_class": "De statusklasse \"{state_class}\" van deze entiteit wordt niet ondersteund.",
                             "unsupported_unit_metadata": "De eenheid (''{metadata_unit}'') van de opgenomen statistieken komt niet overeen met de ondersteunde eenheid''{supported_unit}'' van apparaatklasse ''{device_class}''.",
                             "unsupported_unit_state": "De eenheid (''{state_unit}'') van deze entiteit komt niet overeen met ondersteunde eenheden van apparaatklasse ''{device_class}''."
@@ -4176,8 +4116,6 @@
                         "unknown_error_template": "Onbekende fout bij weergave van het sjabloon"
                     },
                     "yaml": {
-                        "caption": "Serverbeheer",
-                        "description": "Valideer en herstart de Home Assistant-server",
                         "section": {
                             "reloading": {
                                 "automation": "Automatiseringen",
@@ -4218,15 +4156,12 @@
                                 "zone": "Zones"
                             },
                             "server_management": {
-                                "confirm_restart": "Weet je zeker dat je Home Assistant opnieuw wilt starten?",
                                 "confirm_restart_text": "Als je Home Assistant opnieuw start, worden al je actieve dashboards, automatiseringen en scripts gestopt.",
                                 "confirm_restart_title": "Home Assistant opnieuw starten?",
                                 "confirm_stop": "Weet je zeker dat je Home Assistant wilt afsluiten?",
                                 "heading": "Home Assistant",
-                                "introduction": "Het herstarten van Home Assistant stopt je dashboard en automatiseringen. Na de herstart wordt elke configuratie opnieuw geladen.",
                                 "restart": "Herstarten",
                                 "restart_error": "Probleem tijdens het herstarten van Home Assistant",
-                                "restart_home_assistant": "Home Assistant herstarten",
                                 "stop": "Stop"
                             },
                             "validation": {
@@ -4585,7 +4520,6 @@
                             "default_zoom": "Standaardzoom",
                             "description": "Met de Map-kaart kun je entiteiten op een kaart weergeven.",
                             "geo_location_sources": "Geolocatiebronnen",
-                            "hours_to_show": "Uren om weer te geven",
                             "name": "Kaart",
                             "source": "Bron"
                         },
@@ -4641,9 +4575,13 @@
                                 "hour": "Uur",
                                 "month": "Maand"
                             },
+                            "pick_statistic": "Voeg een statistiek toe",
+                            "picked_statistic": "Statistiek",
                             "stat_type_labels": {
                                 "max": "Max",
+                                "mean": "Gemiddelde",
                                 "min": "Min",
+                                "state": "status",
                                 "sum": "Som"
                             },
                             "stat_types": "Statistiektypen weergeven"
@@ -4661,7 +4599,8 @@
                             "name": "Weersverwachting",
                             "show_both": "Toon het huidige weer en weersvoorspelling",
                             "show_only_current": "Toon alleen het huidige weer",
-                            "show_only_forecast": "Toon alleen weersvoorspelling"
+                            "show_only_forecast": "Toon alleen weersvoorspelling",
+                            "weather_to_show": "Weer om te tonen"
                         }
                     },
                     "cardpicker": {
@@ -4714,10 +4653,14 @@
                         "add": "Weergave  toevoegen",
                         "delete": "Weergave verwijderen",
                         "edit": "Bewerk weergave",
+                        "edit_ui": "Bewerken in visuele editor",
+                        "edit_yaml": "Bewerken in YAML",
                         "header": "Bekijk de configuratie",
                         "header_name": "{name} Bekijk de configuratie",
                         "move_left": "Verplaats weergave naar links",
                         "move_right": "Verplaats weergave naar rechts",
+                        "subview": "Subweergave",
+                        "subview_helper": "Subweergaven verschijnen niet in tabbladen en hebben een terugknop.",
                         "tab_badges": "Badges",
                         "tab_settings": "Instellingen",
                         "tab_visibility": "Zichtbaarheid",
@@ -4871,18 +4814,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "Mediaspeler {name} bestaat niet"
-                },
-                "tts": {
-                    "action_pick": "Selecteer",
-                    "action_play": "Zeg",
-                    "example_message": "Hallo {name}, Je kan elke tekst afspelen op elke ondersteunde mediaspeler!",
-                    "faild_to_store_defaults": "Mislukt om standaardwaarden op te slaan: {error}",
-                    "gender": "Geslacht",
-                    "gender_female": "Vrouw",
-                    "gender_male": "Man",
-                    "language": "Taal",
-                    "message": "Bericht",
-                    "set_as_default": "Als standaardopties instellen"
                 }
             },
             "my": {

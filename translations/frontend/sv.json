@@ -420,8 +420,14 @@
                 "used": "Förrådet används för installerade tillägg och kan inte tas bort."
             },
             "restart_addon": {
-                "confirm_text": "Starta om tillägget",
-                "text": "Vill du starta om tillägget med dina ändringar?"
+                "restart": "Starta om",
+                "text": "Vill du starta om tillägget med dina ändringar?",
+                "title": "Starta om {name}?"
+            },
+            "uninstall_addon": {
+                "text": "Dess konfiguration kommer att raderas permanent.",
+                "title": "Avinstallera {name}?",
+                "uninstall": "Avinstallera"
             }
         },
         "my": {
@@ -485,10 +491,6 @@
                 "log_provider": "Loggleverantör"
             },
             "supervisor": {
-                "beta_backup": "Se till att du har säkerhetskopior av dina data innan du aktiverar den här funktionen.",
-                "beta_join_confirm": "Vill du gå med i betakanalen?",
-                "beta_release_items": "Detta inkluderar betaversioner för:",
-                "beta_warning": "Betaversioner är för testare och de som vill vara först med nya funktioner men kan innehålla instabila kodändringar",
                 "channel": "Kanal",
                 "cpu_usage": "Supervisor CPU-användning",
                 "failed_to_reload": "Kunde inte ladda om Supervisor",
@@ -802,8 +804,6 @@
                 "expansion_header": "Attribut"
             },
             "blueprint-picker": {
-                "add_user": "Lägg till användare",
-                "remove_user": "Ta bort användare",
                 "select_blueprint": "Välj blueprint"
             },
             "calendar": {
@@ -867,15 +867,7 @@
                 "no_history_found": "Ingen historik hittad."
             },
             "logbook": {
-                "by": "av",
-                "by_user": "av användare",
                 "entries_not_found": "Inga event hittades i loggboken.",
-                "event": "händelse",
-                "for": "för",
-                "from": "Från",
-                "from_automation": "från automation",
-                "from_script": "från skript",
-                "from_service": "från tjänst",
                 "messages": {
                     "became_unavailable": "blev otillgänglig",
                     "changed_to_state": "ändrades till {state}",
@@ -1039,7 +1031,6 @@
                 "data": "Tjänstdata",
                 "integration_doc": "Dokumentation av integration",
                 "required": "Det här fältet krävs",
-                "service_data": "Servicedata",
                 "target": "Mål",
                 "target_description": "Vad ska denna tjänst använda som målområden, enheter eller entiteter?"
             },
@@ -1060,6 +1051,7 @@
                     "max": "max",
                     "mean": "medel",
                     "min": "min",
+                    "state": "tillstånd",
                     "sum": "summa"
                 }
             },
@@ -1179,9 +1171,21 @@
                     "note": "Obs: detta kanske inte fungerar ännu med alla integrationer.",
                     "open_device_settings": "Öppna enhetsinställningar",
                     "precipitation_unit": "Nederbördsenhet",
-                    "preload_stream": "Ladda kameraströmmen i förväg",
-                    "preload_stream_description": "Detta håller kameraströmmen öppen i bakgrunden, så att den visas snabbare. Varning! Detta är enhetsintensivt.",
                     "pressure_unit": "Enhet för barometertryck",
+                    "stream": {
+                        "preload_stream": "Ladda kameraströmmen i förväg",
+                        "preload_stream_description": "Detta håller kameraströmmen öppen i bakgrunden, så att den visas snabbare. Varning! Detta är enhetsintensivt.",
+                        "stream_orientation": "Orientering av kameraströmmen",
+                        "stream_orientation_1": "Ingen orienteringsförvandling",
+                        "stream_orientation_2": "Spegla",
+                        "stream_orientation_3": "Rotera 180 grader",
+                        "stream_orientation_4": "Vänd",
+                        "stream_orientation_5": "Rotera vänster och vänd",
+                        "stream_orientation_6": "Rotera vänster",
+                        "stream_orientation_7": "Rotera höger och vänd",
+                        "stream_orientation_8": "Rotera höger",
+                        "stream_orientation_description": "Orienteringstransformationen som ska användas för kameraströmmen."
+                    },
                     "switch_as_x_confirm": "Denna kontakt kommer att döljas och en ny {domain} kommer att läggas till. Dina befintliga konfigurationer som använder kontakten kommer att fortsätta att fungera.",
                     "temperature_unit": "Temperaturenhet",
                     "unavailable": "Den här entiteten är otillgänglig.",
@@ -1221,7 +1225,6 @@
                 },
                 "input_number": {
                     "box": "Inmatningsfält",
-                    "initial": "Initialt värde",
                     "max": "Maximalt värde",
                     "min": "Minsta värde",
                     "mode": "Visningsläge",
@@ -1256,11 +1259,9 @@
                 "crop": "Beskär"
             },
             "join_beta_channel": {
-                "backup": "Se till att du har säkerhetskopior av dina data innan du aktiverar den här funktionen.",
-                "confirm": "Vill du gå med i betakanalen?",
-                "release_items": "Detta inkluderar betaversioner för:",
+                "join": "Gå med",
                 "title": "Gå med i betakanalen",
-                "warning": "Betaversioner är för testare och de som vill vara först med nya funktioner men kan innehålla instabila kodändringar"
+                "view_documentation": "Visa dokumentation"
             },
             "more_info_control": {
                 "cover": {
@@ -1286,13 +1287,7 @@
                     "activity": "Nuvarande aktivitet"
                 },
                 "restored": {
-                    "confirm_remove_text": "Är du säker på att du vill ta bort den här entiteten?",
-                    "confirm_remove_title": "Ta bort entitet?",
-                    "no_longer_provided": "Denna enhet tillhandahålls inte längre av {integration} -integrationen. Om enheten inte längre används, radera den i inställningarna.",
-                    "not_provided": "Den här entiteten är för närvarande inte tillgänglig och är överbliven från en borttagen, ändrad eller dysfunktionell integration eller enhet.",
-                    "remove_action": "Ta bort entitet",
-                    "remove_intro": "Om entiteten inte längre används kan du rensa upp den genom att ta bort den.",
-                    "title": "Entiteten är inte tillgänglig"
+                    "no_longer_provided": "Denna enhet tillhandahålls inte längre av {integration} -integrationen. Om enheten inte längre används, radera den i inställningarna."
                 },
                 "script": {
                     "last_action": "Senaste åtgärd",
@@ -1308,7 +1303,6 @@
                 "update": {
                     "clear_skipped": "Rensa överhoppade",
                     "create_backup": "Skapa säkerhetskopia innan du uppdaterar",
-                    "current_version": "Aktuell version",
                     "install": "Installera",
                     "installed_version": "Installerad version",
                     "latest_version": "Senaste version",
@@ -1498,13 +1492,10 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Lägg till enheter via den här enheten",
-                    "clusters": "Hantera kluster",
-                    "device_children": "Visa underordnade",
+                    "manage": "Hantera zigbee-enhet",
                     "reconfigure": "Konfigurera om enheten",
                     "remove": "Ta bort enhet",
-                    "view_in_visualization": "Visa i visualisering",
-                    "view_network": "Visa nätverk",
-                    "zigbee_information": "Zigbee-enhetens signatur"
+                    "view_network": "Visa nätverk"
                 },
                 "confirmations": {
                     "remove": "Är du säker på att du vill ta bort enheten?"
@@ -1525,6 +1516,15 @@
                 "unknown": "Okänd",
                 "zha_device_card": {
                     "device_name_placeholder": "Ändra enhetsnamn"
+                }
+            },
+            "zha_manage_device": {
+                "heading": "Hantera Zigbee-enhet",
+                "tabs": {
+                    "bindings": "Bindningar",
+                    "children": "Barn",
+                    "clusters": "Kluster",
+                    "signature": "Signatur"
                 }
             },
             "zha_reconfigure_device": {
@@ -1607,12 +1607,18 @@
                     "caption": "Autentiseringsuppgifter för applikation",
                     "description": "Hantera OAuth-applikationsuppgifterna som används av integrationer",
                     "editor": {
+                        "add": "Lägg till",
                         "caption": "Lägg till autentiseringsuppgifter för applikation",
                         "client_id": "OAuth-klient-ID",
+                        "client_id_helper": "Offentlig identifierare för OAuth-programmet",
                         "client_secret": "OAuth Client Secret",
-                        "create": "Skapa",
+                        "client_secret_helper": "Hemligheten för OAuth-programmet",
+                        "description": "OAuth används för att ge Home Assistant åtkomst till information på andra webbplatser utan att ange lösenord. Denna mekanism används av företag som Spotify, Google, Withings, Microsoft och Twitter.",
                         "domain": "Integration",
-                        "name": "Namn"
+                        "missing_credentials": "För att konfigurera {integration} måste du konfigurera autentiseringsuppgifter för programmet.",
+                        "missing_credentials_domain_link": "Se dokumentationen för {integration}",
+                        "name": "Namn",
+                        "view_documentation": "Visa dokumentation om programautentiseringsuppgifter"
                     },
                     "picker": {
                         "add_application_credential": "Lägg till autentiseringsuppgifter för applikation",
@@ -1692,7 +1698,6 @@
                             "alias": "Åtgärdsnamn",
                             "change_alias": "Byt namn på åtgärd",
                             "delete": "Ta bort",
-                            "delete_confirm": "Är du säker på att du vill radera detta?",
                             "delete_confirm_text": "Den kommer att raderas permanent.",
                             "delete_confirm_title": "Ta bort åtgärd?",
                             "disable": "Inaktivera",
@@ -1700,13 +1705,10 @@
                             "duplicate": "Duplicera",
                             "enable": "Aktivera",
                             "header": "Åtgärder",
-                            "introduction": "Åtgärderna är vad Home Assistant gör när automatiseringen triggas.",
                             "invalid_action": "Ogiltig åtgärd",
                             "learn_more": "Lär dig mer om händelser",
-                            "name": "Åtgärd",
                             "rename": "Döp om",
                             "run": "Kör",
-                            "run_action": "Kör åtgärd",
                             "run_action_error": "Fel vid körning av åtgärd",
                             "run_action_success": "Åtgärden kördes framgångsrikt",
                             "type": {
@@ -1820,15 +1822,12 @@
                             "alias": "Villkorets namn",
                             "change_alias": "Byt namn på villkoret",
                             "delete": "Ta bort",
-                            "delete_confirm": "Är du säker på att du vill radera detta?",
                             "delete_confirm_text": "Den kommer att raderas permanent.",
                             "delete_confirm_title": "Ta bort villkor?",
                             "duplicate": "Duplicera",
                             "header": "Villkor",
-                            "introduction": "Villkoren är valfria och kommer att förhindra att automatiseringen körs såvida inte alla villkor är uppfyllda.",
                             "invalid_condition": "Ogiltig konfiguration av villkor",
                             "learn_more": "Lär dig mer om villkor",
-                            "name": "Villkor",
                             "rename": "Döp om",
                             "test": "Testa",
                             "test_failed": "Fel inträffade under testning av villkoret",
@@ -1923,20 +1922,16 @@
                         "edit_ui": "Redigera i den visuella redigeraren",
                         "edit_yaml": "Redigera som YAML",
                         "enable": "Aktivera",
-                        "enable_disable": "Aktivera/inaktivera automatisering",
-                        "introduction": "Använd automatiseringar för väcka liv i ditt hem",
                         "load_error_not_deletable": "Endast automatiseringar i automations.yaml kan tas bort.",
-                        "load_error_not_duplicable": "Endast automatiseringar i automations.yaml kan dupliceras.",
                         "load_error_not_editable": "Endast automatiseringar i automations.yaml kan redigeras.",
                         "load_error_unknown": "Fel vid inläsning av automatisering ({err_no}).",
                         "max": {
                             "parallel": "Max antal parallella körningar",
                             "queued": "Kölängd"
                         },
+                        "migrate": "Migrera",
                         "missing_name": "Kan inte spara automatisering utan ett namn",
                         "modes": {
-                            "description": "Läget styr vad som händer när automatiseringen triggas att starta medan den fortfarande kör. Mer information finns i {documentation_link}.",
-                            "documentation": "Dokumentation av automatisering",
                             "label": "Läge",
                             "learn_more": "Lär dig mer om lägen",
                             "parallel": "Parallell",
@@ -1952,26 +1947,25 @@
                             "exit": "Avsluta",
                             "title": "Omordningsläge"
                         },
+                        "read_only": "Denna automatisering kan inte redigeras från användargränssnittet, eftersom den inte lagras i filen automations.yaml eller inte har ett ID.",
                         "rename": "Döp om",
                         "run": "Kör",
                         "save": "Spara",
                         "show_info": "Information",
                         "show_trace": "Visa spårning",
+                        "traces_not_available": "Automatiseringar behöver ett ID för att kunna spåras. Lägg till ett ID till din automatisering för att göra den tillgänglig i spårningar.",
                         "triggers": {
                             "add": "Lägg till händelse",
                             "alias": "Namn på utlösaren",
                             "change_alias": "Byt namn på utlösaren",
                             "delete": "Ta bort",
-                            "delete_confirm": "Är du säker på att du vill radera detta?",
                             "delete_confirm_text": "Den kommer att raderas permanent.",
                             "delete_confirm_title": "Ta bort utlösaren?",
                             "duplicate": "Duplicera",
                             "edit_id": "Redigera ID för utlösare",
                             "header": "Händelse",
                             "id": "Trigger-ID",
-                            "introduction": "Triggers är det som startar en automation. Det är möjligt att ange flera triggers för samma regel. När en trigger inträffar kommer Home Assistant att validera eventuella villkor och sedan köra åtgärden.",
                             "learn_more": "Lär dig mer om utlösare",
-                            "name": "Utlösare",
                             "rename": "Döp om",
                             "triggered": "Utlöst",
                             "type": {
@@ -2079,22 +2073,18 @@
                             "type_select": "Aktiveringstyp",
                             "unsupported_platform": "Användargränssnittet stödjer inte plattformen: {platform}"
                         },
-                        "unsaved_confirm": "Du har osparade ändringar. Är du säker på att du vill lämna?",
                         "unsaved_confirm_text": "Osparade ändringar kommer att gå förlorade.",
                         "unsaved_confirm_title": "Lämna redigeraren?"
                     },
                     "picker": {
                         "add_automation": "Lägg till automatisering",
                         "delete": "Radera",
-                        "delete_automation": "Radera automation",
-                        "delete_confirm": "Är du säker på att du vill radera denna automatisering?",
                         "delete_confirm_text": "{name} kommer att raderas permanent.",
                         "delete_confirm_title": "Ta bort automatisering?",
                         "dev_automation": "Felsök automatisering",
                         "dev_only_editable": "Endast automatiseringar som har tilldelats ett unikt ID kan felsökas.",
                         "disabled": "Inaktiverad",
                         "duplicate": "Dubblett",
-                        "duplicate_automation": "Dubblett av en automatisering",
                         "edit_automation": "Redigera automation",
                         "header": "Automatiseringseditor",
                         "headers": {
@@ -2169,7 +2159,6 @@
                         "import_btn": "Förhandsgranska blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "Importera ritningar av andra användare från GitHub och communityforumen genom att klistra in adressen nedan.",
-                        "import_introduction_link": "Du kan importera blueprints från andra användare och {community_link}. Ange URL för blueprint nedan.",
                         "importing": "Laddar blueprint…",
                         "raw_blueprint": "Innehåll i blueprint",
                         "save_btn": "Importera blueprint",
@@ -2181,7 +2170,6 @@
                     "description": "Hantera blueprints",
                     "overview": {
                         "add_blueprint": "Importera blueprint",
-                        "confirm_delete_header": "Ta bort detta blueprint?",
                         "confirm_delete_text": "Är du säker på att du vill ta bort det här blueprint:et",
                         "confirm_delete_title": "Ta bort blueprint?",
                         "create_automation": "Skapa automatisering",
@@ -2215,12 +2203,11 @@
                             "enable_state_reporting": "Aktivera tillståndsrapportering",
                             "info": "Med Alexa-integrationen för Home Assistant Cloud kan du styra alla dina Home Assistant-enheter via alla Alexa-aktiverade enheter.",
                             "info_state_reporting": "Om du aktiverar tillståndsrapportering skickar Home Assistant tillståndsändringar av exponerade entiteter till Amazon. På så sätt kan du alltid se de senaste tillstånden i Alexa-appen och använda tillståndsändringarna för att skapa rutiner.",
+                            "link_learn_how_it_works": "Lär dig hur det fungerar",
                             "manage_entities": "Hantera Entiteter",
                             "not_configured_text": "Innan du kan använda Alexa måste du aktivera Home Assistant-färdigheten för Alexa i Alexa-appen.",
                             "not_configured_title": "Alexa är inte aktiverad",
                             "state_reporting_error": "Det går inte att {enable_disable} rapportera tillståndet.",
-                            "sync_entities": "Synkronisera entiteter till Amazon",
-                            "sync_entities_error": "Det gick inte att synkronisera entiteter:",
                             "title": "Alexa"
                         },
                         "connected": "Ansluten",
@@ -2239,13 +2226,11 @@
                             "http_use_ssl_warning_title": "Lokal kommunikation inte tillgänglig",
                             "info": "Med Google Assistant-integreringen för Home Assistant Cloud kan du styra alla dina Home Assistant-enheter via alla Google Assistent-aktiverade enheter.",
                             "info_state_reporting": "Om du aktiverar tillståndsrapportering skickar Home Assistant alla tillståndsändringar av exponerade entiteter till Google. Detta gör röstkommandon snabbare och låter dig alltid se de senaste status värdena i Google-appen.",
+                            "link_learn_how_it_works": "Lär dig hur det fungerar",
                             "manage_entities": "Hantera Entiteter",
                             "not_configured_text": "Innan du kan använda Google Assistant måste du aktivera Home Assistant Cloud-funktionen för Google Assistant i Google Home-appen.",
                             "not_configured_title": "Google Assistenten är inte aktiverad",
                             "security_devices": "Säkerhetsenheter",
-                            "sync_entities": "Synkronisera Entiteter till Google",
-                            "sync_failed_text": "Synkroniseringen av dina entiteter misslyckades, försök igen eller kontrollera loggarna.",
-                            "sync_failed_title": "Synkroniseringen misslyckades",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integrationer",
@@ -2311,9 +2296,10 @@
                         "follow_domain": "Följ domän",
                         "manage_defaults": "Hantera standardinställningar",
                         "manage_defaults_dialog_description": "Entiteter kan exponeras som standard baserat på deras typ.",
-                        "manage_domains": "Hantera domäner",
                         "not_exposed": "{selected} är inte exponerad",
                         "not_exposed_entities": "Ej exponerade entiteter",
+                        "sync_entities": "Synkronisera entiteter",
+                        "sync_entities_error": "Det gick inte att synkronisera entiteter:",
                         "title": "Alexa"
                     },
                     "description_features": "Styr hemmet när du är borta och integrera med Alexa och Google Assistant.",
@@ -2327,12 +2313,9 @@
                         "will_be_auto_renewed": "kommer automatiskt att förnyas"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "Webbhooken är tillgänglig på följande url:",
                         "close": "Stäng",
-                        "confirm_disable": "Är du säker på att du vill avaktivera denna webhook?",
                         "confirm_disable_text": "Webhook för {name} kommer att inaktiveras.",
                         "confirm_disable_title": "Inaktivera webhook",
-                        "copied_to_clipboard": "Kopierat till urklipp",
                         "info_disable_webhook": "Om du inte längre vill använda denna webhook kan du",
                         "link_disable_webhook": "Inaktivera",
                         "managed_by_integration": "Denna webhook hanteras av en integration och kan inte inaktiveras.",
@@ -2360,9 +2343,14 @@
                         "follow_domain": "Följ domän",
                         "manage_defaults": "Hantera standardinställningar",
                         "manage_defaults_dialog_description": "Entiteter kan exponeras som standard baserat på deras typ.",
-                        "manage_domains": "Hantera domäner",
+                        "not_configured_text": "Innan du kan använda Google Assistant måste du aktivera Home Assistant Cloud-funktionen för Google Assistant i Google Home-appen.",
+                        "not_configured_title": "Google Assistenten är inte aktiverad",
                         "not_exposed": "{selected} är inte exponerad",
                         "not_exposed_entities": "Ej exponerade entiteter",
+                        "sync_entities": "Synkronisera entiteter",
+                        "sync_entities_error": "Det gick inte att synkronisera entiteter:",
+                        "sync_failed_text": "Synkroniseringen av dina entiteter misslyckades, försök igen eller kontrollera loggarna.",
+                        "sync_failed_title": "Synkroniseringen misslyckades",
                         "sync_to_google": "Synkroniserar ändringar till Google.",
                         "title": "Google Assistant"
                     },
@@ -2446,26 +2434,20 @@
                 },
                 "dashboard": {
                     "about": {
-                        "description": "Version, systemhälsa och länkar till dokumentation",
                         "main": "Om",
-                        "secondary": "Versionsinformation, medverkande och mer",
-                        "title": "Om"
+                        "secondary": "Versionsinformation, medverkande och mer"
                     },
                     "areas": {
-                        "description": "Hantera områden och zoner som Home Assistant spårar",
                         "main": "Områden & zoner",
-                        "secondary": "Hantera platser i och runt ditt hus",
-                        "title": "Områden & zoner"
+                        "secondary": "Hantera platser i och runt ditt hus"
                     },
                     "automations": {
                         "main": "Automatisering och scener",
                         "secondary": "Automatiseringar, scener, skript och blueprints"
                     },
                     "backup": {
-                        "description": "Skapa säkerhetskopior av din Home Assistant-konfiguration",
                         "main": "Säkerhetskopia",
-                        "secondary": "Skapa säkerhetskopior av din Home Assistant-konfiguration",
-                        "title": "Säkerhetskopia"
+                        "secondary": "Skapa säkerhetskopior av din Home Assistant-konfiguration"
                     },
                     "companion": {
                         "main": "Tillhörande app",
@@ -2492,10 +2474,8 @@
                         "secondary": "Kör extra applikationer bredvid Home Assistant"
                     },
                     "system": {
-                        "description": "Skapa säkerhetskopior, kontrollera loggar eller starta om ditt system",
                         "main": "System",
-                        "secondary": "Skapa säkerhetskopior, kontrollera loggar eller starta om ditt system",
-                        "title": "System"
+                        "secondary": "Skapa säkerhetskopior, kontrollera loggar eller starta om ditt system"
                     },
                     "tags": {
                         "main": "Taggar",
@@ -2503,6 +2483,7 @@
                     }
                 },
                 "devices": {
+                    "add_device": "Lägg till en enhet",
                     "add_prompt": "Inga {name} har lagts till med hjälp av den här enheten ännu. Klicka på + knappen ovan för att lägga till.",
                     "automation": {
                         "actions": {
@@ -2579,8 +2560,6 @@
                     "name": "Namn",
                     "no_devices": "Inga enheter",
                     "open_configuration_url": "Besök",
-                    "open_configuration_url_device": "Besök enheten",
-                    "open_configuration_url_service": "Besök tjänsten",
                     "picker": {
                         "filter": {
                             "filter": "Filtrera",
@@ -2874,13 +2853,11 @@
                     "processor": "Processor",
                     "reboot": "Starta om",
                     "reboot_host": "Starta om värddatorn",
-                    "reboot_host_confirm": "Är du säker på att du vill starta om värddatorn?",
                     "reboot_host_text": "Detta kommer att starta om hela systemet, inklusive Core och alla tillägg.",
                     "reboot_host_title": "Starta om systemet?",
                     "rebooting_host": "Startar om värddatorn",
                     "shutdown": "Stäng av",
                     "shutdown_host": "Stäng ner värddatorn",
-                    "shutdown_host_confirm": "Är du säker på att du vill stänga ner värddatorn?",
                     "shutdown_host_text": "Detta kommer att stänga av hela systemet, inklusive Core och alla tillägg.",
                     "shutdown_host_title": "Stäng av systemet?"
                 },
@@ -2941,7 +2918,6 @@
                         "thanks": "Tack till"
                     },
                     "license": "Publicerad under Apache 2.0-licensen",
-                    "path_configuration": "Sökväg till configuration.yaml: {path}",
                     "server": "server",
                     "setup_time": "Installationstid",
                     "source": "Källkod:",
@@ -2956,6 +2932,7 @@
                     "add_zha_device": "Lägg till Zigbee-enhet",
                     "add_zwave_js_device": "Lägg till Z-Wave enhet",
                     "attention": "Uppmärksamhet krävs",
+                    "available_integrations": "Tillgängliga integrationer",
                     "caption": "Integrationer",
                     "config_entry": {
                         "application_credentials": {
@@ -2970,13 +2947,11 @@
                         "check_the_logs": "Kontrollera loggarna",
                         "configure": "Konfigurera",
                         "delete": "Ta bort",
-                        "delete_confirm": "Är du säker på att du vill radera {title}-integrationen?",
                         "delete_confirm_text": "Dess enheter och entiteter kommer att raderas permanent.",
                         "delete_confirm_title": "Ta bort {titel}?",
                         "depends_on_cloud": "Förlitar sig på molnet",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
                         "disable": {
-                            "disable_confirm": "Vill du inaktivera den här konfigurationsposten? Dess enheter och entiteter kommer att inaktiveras.",
                             "disabled": "Inaktiverad",
                             "disabled_by": {
                                 "device": "enhet",
@@ -3022,7 +2997,8 @@
                         "unknown_via_device": "Okänd enhet",
                         "unnamed_entry": "Namnlös post",
                         "version": "Version: {version}",
-                        "via": "Ansluten via"
+                        "via": "Ansluten via",
+                        "yaml_only": "Behöver manuell konfiguration"
                     },
                     "config_flow": {
                         "aborted": "Avbruten",
@@ -3043,23 +3019,17 @@
                             "loading_flow": "Vänta medan {integration} konfigureras",
                             "loading_step": "Laddar nästa steg för {integration}"
                         },
-                        "missing_credentials": "För att konfigurera {integration} måste du ange applikationens autentiseringsuppgifter. Vill du göra det nu?",
-                        "missing_zha": "För att lägga till en Zigbee enhet behöver du först sätta upp Zigbee integrationen. Vill du göra det nu?",
-                        "missing_zwave_js": "För att lägga till en Z-wave enhet behöver du först sätta upp Z-wave integrationen. Vill du göra det nu?",
                         "missing_zwave_zigbee": "För att lägga till en {integration} enhet, behöver du först {supported_hardware_link} och integrationen {integration} uppsatt. Om du redan har hårdvaran kan du fortsätta sätta upp {integration}.",
                         "next": "Nästa",
                         "no_config_flow": "Denna integration stöder inte konfiguration via användargränssnittet. Om du följde den här länken från Home Assistant-webbplatsen, se till att du kör den senaste versionen av Home Assistant.",
                         "not_all_required_fields": "Alla obligatoriska fält har inte fyllts i.",
                         "not_loaded": "Integrationen kunde inte laddas, försök att starta om Home Assistant.",
-                        "pick_flow_step": {
-                            "new_flow": "Nej, skapa en annan instans av {integration}",
-                            "title": "Vi upptäckte dessa, vill du konfigurera dem?"
-                        },
                         "proceed": "Fortsätt",
                         "submit": "Spara",
                         "success": "Framgång",
                         "supported_brand_flow": "Support för {supported_brand} enheter är tillgänglig via {flow_domain_name}. Vill du fortsätta?",
-                        "supported_hardware": "Hårdvara som stöds"
+                        "supported_hardware": "Hårdvara som stöds",
+                        "yaml_only_title": "Den här enheten kan inte läggas till från användargränssnittet"
                     },
                     "configure": "Konfigurera",
                     "configured": "Konfigurerad",
@@ -3086,6 +3056,7 @@
                     "integration": "integration",
                     "integration_not_found": "Integration hittades inte.",
                     "new": "Skapa en ny integration",
+                    "new_flow": "Konfigurera en till instans av {integration}",
                     "no_integrations": "Verkar som att du inte har konfigurerat några integrationer. Klicka på knappen nedan för att lägga till din första integration!",
                     "none": "Ingenting konfigurerat än",
                     "none_found": "Inga integrationer hittades",
@@ -3095,7 +3066,8 @@
                     "reconfigure": "Konfigurera om",
                     "rename_dialog": "Redigera namnet på den här konfigurationsposten",
                     "rename_input_label": "Ange namn",
-                    "search": "Sök integrationer"
+                    "search": "Sök integrationer",
+                    "search_brand": "Sök efter ett varumärke"
                 },
                 "logs": {
                     "caption": "Loggar",
@@ -3173,7 +3145,6 @@
                     "resources": {
                         "cant_edit_yaml": "Du använder Lovelace i YAML-läge, därför kan du inte sköta dina resurser genom användargränssnittet. Du får göra det i configuration.yaml istället.",
                         "caption": "Resurser",
-                        "confirm_delete": "Är du säker på att du vill ta bort denna resurs?",
                         "confirm_delete_text": "{url} kommer att raderas permanent.",
                         "confirm_delete_title": "Radera resurs?",
                         "detail": {
@@ -3245,8 +3216,6 @@
                 "person": {
                     "add_person": "Lägg till person",
                     "caption": "Personer",
-                    "confirm_delete": "Är du säker på att du vill ta bort den här personen?",
-                    "confirm_delete2": "Alla enheter som tillhör denna person kommer att bli bortkopplade.",
                     "confirm_delete_text": "Den här personen kommer att raderas permanent och alla enheter som tillhör denna person kommer att tas bort.",
                     "confirm_delete_title": "Ta bort {namn}?",
                     "create_person": "Skapa person",
@@ -3283,7 +3252,6 @@
                     "critical": "Kritisk",
                     "description": "Hitta och fixa problem med din Home Assistant instans",
                     "dialog": {
-                        "alert_not_fixable": "Vi kan inte reparera detta problemet åt dig",
                         "breaks_in_version": "Det här slutar fungera i version {version}. Var vänlig åtgärda innan du uppgraderar.",
                         "fix": "Laga",
                         "ignore": "Ignorera",
@@ -3294,7 +3262,6 @@
                         "unignore": "Beakta"
                     },
                     "error": "Fel",
-                    "hide_ignored": "Göm ignorerade",
                     "integration_startup_time": "Integration uppstartstid",
                     "more_repairs": "Visa alla reparationer",
                     "no_repairs": "Det finns för närvarande inga lagningar tillgängliga",
@@ -3319,18 +3286,15 @@
                         "entities": {
                             "add": "Lägg till en entitet",
                             "delete": "Ta bort entitet",
-                            "device_entities": "Om du lägger till en entitet som tillhör en enhet kommer enheten att läggas till.",
                             "header": "Entiteter",
                             "introduction": "Enskilda entiteter kan läggas till här.",
                             "without_device": "Entiteter utan enhet"
                         },
                         "icon": "Ikon",
-                        "introduction": "Använd scenarier för väcka liv i ditt hem.",
                         "load_error_not_editable": "Endast scenarier i scenes.yaml kan redigeras.",
                         "load_error_unknown": "Fel vid inläsning av scenario ({err_no}).",
                         "name": "Namn",
                         "save": "Spara",
-                        "unsaved_confirm": "Du har osparade ändringar. Är du säker på att du vill lämna?",
                         "unsaved_confirm_text": "Osparade ändringar kommer att gå förlorade.",
                         "unsaved_confirm_title": "Lämna redigeraren?"
                     },
@@ -3338,7 +3302,6 @@
                         "activate": "Aktivera",
                         "add_scene": "Lägg till scenario",
                         "delete": "Radera",
-                        "delete_confirm": "Är du säker på att du vill radera detta scenario?",
                         "delete_confirm_text": "{name} kommer att raderas permanent.",
                         "delete_confirm_title": "Radera scenen?",
                         "delete_scene": "Ta bort scenario",
@@ -3347,20 +3310,15 @@
                         "edit_scene": "Redigera scenario",
                         "header": "Scenarieredigerare",
                         "headers": {
-                            "activate": "Aktivera",
-                            "edit": "Redigera",
                             "last_activated": "Senast aktiverad",
-                            "name": "Namn",
-                            "show_info": "Visa information",
-                            "state": "Tillstånd"
+                            "name": "Namn"
                         },
                         "introduction": "Scenarieredigeraren låter dig skapa och redigera scenario. Följ länken nedan för att läsa instruktionerna för att se till att du har konfigurerat Home Assistant korrekt.",
                         "learn_more": "Läs dig mer om scenarier",
                         "no_scenes": "Vi kunde inte hitta några scenarier",
                         "only_editable": "Endast scenarier definierade i scenes.yaml kan redigeras.",
                         "pick_scene": "Välj scenario att redigera",
-                        "show_info": "Information",
-                        "show_info_scene": "Visa info om scenario"
+                        "show_info": "Information"
                     }
                 },
                 "script": {
@@ -3369,10 +3327,9 @@
                     "editor": {
                         "alias": "Namn",
                         "default_name": "Nytt skript",
-                        "delete_confirm": "Är du säker på att du vill ta bort det här skriptet?",
                         "delete_confirm_text": "{name} kommer att raderas permanent.",
                         "delete_confirm_title": "Ta bort skript?",
-                        "delete_script": "Ta bort skript",
+                        "duplicate": "Duplicera",
                         "header": "Skript: {name}",
                         "icon": "Ikon",
                         "id": "Entitets-ID",
@@ -3381,16 +3338,14 @@
                         "introduction": "Använd skript för att utföra en sekvens.",
                         "link_available_actions": "Lär dig mer om tillgängliga händelser",
                         "load_error_not_deletable": "Endast skript i scripts.yaml kan tas bort.",
-                        "load_error_not_duplicable": "Endast skript i scripts.yaml kan dupliceras.",
                         "load_error_not_editable": "Endast skript i scripts.yaml kan redigeras.",
                         "load_error_unknown": "Det gick inte att läsa in skriptet ({err_no}).",
                         "max": {
                             "parallel": "Max antal parallella körningar",
                             "queued": "Kölängd"
                         },
+                        "migrate": "Migrera",
                         "modes": {
-                            "description": "Läget styr vad som händer när skriptet anropas medan det fortfarande kör. Mer information finns i {documentation_link}.",
-                            "documentation": "Skriptdokumentation",
                             "label": "Läge",
                             "learn_more": "Lär dig mer om lägen",
                             "parallel": "Parallell",
@@ -3398,6 +3353,7 @@
                             "restart": "Starta om",
                             "single": "Enkel (standard)"
                         },
+                        "read_only": "Det här skriptet kan inte redigeras från användargränssnittet, eftersom det inte lagras i filen ''scripts.yaml''.",
                         "save_script": "Spara skript",
                         "sequence": "Sekvens",
                         "sequence_sentence": "Handlingssekvensen för detta skript.",
@@ -3407,10 +3363,7 @@
                     "picker": {
                         "add_script": "Lägg till nytt skript",
                         "delete": "Radera",
-                        "dev_script": "Felsökningsskript",
                         "duplicate": "Dubblett",
-                        "duplicate_script": "Duplicera skript",
-                        "edit_script": "Redigera skript",
                         "header": "Skript-redigerare",
                         "headers": {
                             "name": "Namn",
@@ -3438,7 +3391,6 @@
                         "move": "Flytta",
                         "moving": "Flyttar datadisk",
                         "moving_desc": "Startar om och flyttar datadisk. Ha tålamod",
-                        "no_devices": "Inga lämpliga anslutna enheter hittades",
                         "no_devices_text": "Det finns ingen lämplig extern enhet. Lagringskapaciteten för den externa datadisken måste vara större än lagringskapaciteten för den befintliga disken",
                         "no_devices_title": "Ingen lämplig lagring har hittats",
                         "select_device": "Välj ny datadisk",
@@ -3449,11 +3401,9 @@
                     "used_space": "Använt utrymme"
                 },
                 "system_dashboard": {
-                    "confirm_restart": "Är du säker på att du vill starta om Home Assistant?",
                     "confirm_restart_text": "Om du startar om Home Assistant stoppar du alla dina aktiva instrumentpaneler, automatiseringar och skript.",
                     "confirm_restart_title": "Starta om Home Assistant?",
                     "restart_error": "Det gick inte att starta om Home Assistant",
-                    "restart_homeassistant": "Starta om Home Assistant",
                     "restart_homeassistant_short": "Starta om"
                 },
                 "system_health": {
@@ -3462,7 +3412,6 @@
                     "cpu_usage": "Processoranvändning",
                     "description": "Status, mätvärden och starttid för integration",
                     "integration_start_time": "Starttid för integration",
-                    "long_loading_integrations": "Integrationer med lång laddtid",
                     "ram_usage": "Minnesanvändning",
                     "supervisor_stats": "Supervisor-Statistik"
                 },
@@ -3508,7 +3457,6 @@
                     "caption": "Uppdateringar",
                     "check_updates": "Sök efter uppdateringar",
                     "description": "Hantera uppdateringar av Home Assistant, tillägg och enheter",
-                    "hide_skipped": "Dölj skippade",
                     "join_beta": "Gå med i betakanalen",
                     "leave_beta": "Lämna betakanalen",
                     "more_updates": "Visa alla uppdateringar",
@@ -3523,8 +3471,7 @@
                     "skipped": "Skippade",
                     "title": "{count} {count, plural,\n  one {uppdatering}\n  other {uppdateringar}\n}",
                     "unable_to_fetch": "Det gick inte att hämta tillgängliga uppdateringar",
-                    "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} uppdaterades",
-                    "version_available": "Version {version_available} är tillgänglig"
+                    "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} uppdaterades"
                 },
                 "url": {
                     "caption": "Home Assistant URL",
@@ -3550,6 +3497,14 @@
                         "password_not_match": "Lösenorden överensstämmer inte"
                     },
                     "caption": "Användare",
+                    "change_password": {
+                        "caption": "Ändra lösenord",
+                        "change": "Ändra",
+                        "new_password": "Nytt lösenord",
+                        "password_changed": "Lösenordet har ändrats framgångsrikt.",
+                        "password_confirm": "Bekräfta lösenord",
+                        "password_no_match": "Lösenorden överensstämmer inte"
+                    },
                     "description": "Hantera Home Assistant användarkonton",
                     "editor": {
                         "activate_user": "Aktivera användare",
@@ -3558,7 +3513,6 @@
                         "admin": "Administratör",
                         "caption": "Visa användare",
                         "change_password": "Ändra lösenord",
-                        "confirm_user_deletion": "Är du säker på att du vill ta bort {name} ?",
                         "confirm_user_deletion_text": "Denna användare kommer att raderas permanent.",
                         "confirm_user_deletion_title": "Radera {name}",
                         "deactivate_user": "Avaktivera användare",
@@ -3567,9 +3521,7 @@
                         "id": "ID",
                         "local_only": "Kan endast logga in från det lokala nätverket",
                         "name": "Namn",
-                        "new_password": "Nytt lösenord",
                         "owner": "Ägare",
-                        "password_changed": "Lösenordet har ändrats!",
                         "system_generated": "Systemanvändare",
                         "system_generated_users_not_editable": "Det gick inte att uppdatera systemanvändare.",
                         "system_generated_users_not_removable": "Det går inte att ta bort systemanvändare.",
@@ -3606,13 +3558,10 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attribut för det valda klustret",
-                        "get_zigbee_attribute": "Hämta Zigbee-attribut",
                         "header": "Klusterattribut",
-                        "help_attribute_dropdown": "Välj ett attribut för att visa eller ange dess värde.",
-                        "help_get_zigbee_attribute": "Få värdet för det valda attributet.",
-                        "help_set_zigbee_attribute": "Ange attributvärde för det angivna klustret på den angivna entiteten.",
                         "introduction": "Visa och redigera klusterattribut.",
-                        "set_zigbee_attribute": "Ange zigbee-attribut"
+                        "read_zigbee_attribute": "Läs attribut",
+                        "write_zigbee_attribute": "Skriv attribut"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Kommandon för det valda klustret",
@@ -3624,7 +3573,10 @@
                     "clusters": {
                         "header": "Kluster",
                         "help_cluster_dropdown": "Välj ett kluster om du vill visa attribut och kommandon.",
-                        "introduction": "Kluster är byggstenarna för Zigbee-funktionalitet. De separerar funktionalitet till logiska enheter. Det finns klient- och servertyper som består av attribut och kommandon."
+                        "tabs": {
+                            "attributes": "Attribut",
+                            "commands": "Kommandon"
+                        }
                     },
                     "common": {
                         "clusters": "Kluster",
@@ -3637,6 +3589,11 @@
                         "network_settings_title": "Nätverksinställningar",
                         "shortcuts_title": "Genvägar",
                         "update_button": "Uppdatera konfigurationen"
+                    },
+                    "device_binding": {
+                        "bind": "Bind",
+                        "picker_label": "Bindningsbara enheter",
+                        "unbind": "Unbind"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Konfigurationen är klar",
@@ -4124,6 +4081,7 @@
                         "fix_issue": {
                             "fix": "Åtgärda problem",
                             "units_changed": {
+                                "change": "Konvertera alla historiska statistikvärden från '' {metadata_unit} '' till '' {state_unit} ''",
                                 "clear": "Ta bort alla gamla statistikdata för den här entiteten",
                                 "title": "Måttenheten för denna entitet har ändrats",
                                 "update": "Uppdatera de historiska statistikvärdena från ''{metadata_unit}'' till ''{state_unit}''"
@@ -4135,6 +4093,7 @@
                             "entity_not_recorded": "Den här entiteten är utesluten från att registreras.",
                             "no_state": "Det finns inget tillstånd tillgängligt för den här entiteten.",
                             "units_changed": "Måttenheten för denna entitet har ändrats från ''{metadata_unit}'' till ''{state_unit}''.",
+                            "units_changed_can_convert": "Måttenheten för denna entitet har ändrats från ''{metadata_unit}'' till ''{state_unit}''.",
                             "unsupported_state_class": "Den här entitetens tillståndsklass ''{state_class}'' stöds inte.",
                             "unsupported_unit_metadata": "Enheten (''{metadata_unit}'') i den sparade statistiken matchar inte den enhet som stöds ''{supported_unit}'' för enhetsklassen ''{device_class}''.",
                             "unsupported_unit_state": "Enheten (''{state_unit}'') för entiteten matchar inte en enhet i enhetsklassen ''{device_class}''."
@@ -4159,8 +4118,6 @@
                         "unknown_error_template": "Okänt fel vid rendering av mall"
                     },
                     "yaml": {
-                        "caption": "Serverhantering",
-                        "description": "Validera och starta om Home Assistant-servern",
                         "section": {
                             "reloading": {
                                 "automation": "Automatisering",
@@ -4201,15 +4158,12 @@
                                 "zone": "Zoner"
                             },
                             "server_management": {
-                                "confirm_restart": "Är du säker på att du vill starta om Home Assistant?",
                                 "confirm_restart_text": "Om du startar om Home Assistant stoppar du alla dina aktiva instrumentpaneler, automatiseringar och skript.",
                                 "confirm_restart_title": "Starta om Home Assistant?",
                                 "confirm_stop": "Är du säker på att du vill stoppa Home Assistant?",
                                 "heading": "Home Assistant",
-                                "introduction": "Om du startar om Home Assistant stoppas instrumentpanelen och automatiseringarna. Efter omstart laddas varje konfiguration om.",
                                 "restart": "Starta om",
                                 "restart_error": "Det gick inte att starta om Home Assistant",
-                                "restart_home_assistant": "Starta om Home Assistant",
                                 "stop": "Stoppa"
                             },
                             "validation": {
@@ -4568,7 +4522,6 @@
                             "default_zoom": "Standardzoom",
                             "description": "Kartkortet som gör att du kan visa entiteter på en karta.",
                             "geo_location_sources": "Geografiska källor",
-                            "hours_to_show": "Timmar att Visa",
                             "name": "Karta",
                             "source": "Källa"
                         },
@@ -4630,6 +4583,7 @@
                                 "max": "Max",
                                 "mean": "Medelvärde",
                                 "min": "Min",
+                                "state": "Tillstånd",
                                 "sum": "Summa"
                             },
                             "stat_types": "Visa statistiktyper"
@@ -4701,10 +4655,14 @@
                         "add": "Lägg till vy",
                         "delete": "Radera vy",
                         "edit": "Redigera vy",
+                        "edit_ui": "Redigera i den visuella redigeraren",
+                        "edit_yaml": "Redigera i YAML",
                         "header": "Visa konfiguration",
                         "header_name": "{name} Visa konfiguration",
                         "move_left": "Flytta vyn åt vänster",
                         "move_right": "Flytta vyn åt höger",
+                        "subview": "Undervy",
+                        "subview_helper": "Undervyer visas inte på flikar och har en bakåtknapp.",
                         "tab_badges": "Märken",
                         "tab_settings": "Inställningar",
                         "tab_visibility": "Synlighet",
@@ -4858,18 +4816,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "Mediaspelare {name} finns inte"
-                },
-                "tts": {
-                    "action_pick": "Välj",
-                    "action_play": "Säg",
-                    "example_message": "Hej {name}, du kan spela vilken text som helst på alla mediaspelare som stöds!",
-                    "faild_to_store_defaults": "Det gick inte att lagra standardvärden: {error}",
-                    "gender": "Kön",
-                    "gender_female": "Kvinna",
-                    "gender_male": "Man",
-                    "language": "Språk",
-                    "message": "Meddelande",
-                    "set_as_default": "Ange som standardalternativ"
                 }
             },
             "my": {
