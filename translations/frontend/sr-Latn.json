@@ -218,7 +218,6 @@
                 },
                 "input_number": {
                     "box": "Polje za unos",
-                    "initial": "Početna vrednost",
                     "unit_of_measurement": "Jedinica mere"
                 },
                 "input_select": {
@@ -305,7 +304,6 @@
                         "actions": {
                             "add": "Dodaj radnju",
                             "header": "Radnje",
-                            "introduction": "Radnje su ono što će Home Assistant uraditi kada se automatizacija pokrene.",
                             "type": {
                                 "delay": {
                                     "delay": "Trajanje",
@@ -326,7 +324,6 @@
                         "conditions": {
                             "add": "Dodaj uslov",
                             "header": "Uslovi",
-                            "introduction": "Uslovi su opcionalni i sprečiće pokretanje automatizacije ukoliko svi uslovi ne budu zadovoljeni.",
                             "type": {
                                 "sun": {
                                     "after": "Posle:",
@@ -347,17 +344,13 @@
                             }
                         },
                         "default_name": "Nova automatizacija",
-                        "enable_disable": "Omogući/onemogući automatizaciju",
-                        "introduction": "Koristite automatizacije da biste oživeli svoj dom.",
                         "save": "Sačuvaj",
                         "triggers": {
                             "add": "Dodaj okidač",
                             "delete": "Obriši",
-                            "delete_confirm": "Da li ste sigurni da želite ovo da obrišete?",
                             "duplicate": "Duplikat",
                             "edit_id": "Uredi ID okidača",
                             "header": "Okidači",
-                            "introduction": "Okidači su ono što započinje obradu pravila o automatizaciji. Moguće je navesti više okidača za isto pravilo. Kada se pokrene okidač, Home Assistant će validirati uslove, ako postoje, i pozvati radnju.",
                             "type": {
                                 "event": {
                                     "event_data": "Podaci o događaju",
@@ -403,8 +396,7 @@
                             },
                             "type_select": "Tip okidača",
                             "unsupported_platform": "Nema podrške za vizuelni uređivač za platformu: {platform}"
-                        },
-                        "unsaved_confirm": "Imate nesačuvane promene. Jeste li sigurni da želite da odete?"
+                        }
                     },
                     "picker": {
                         "add_automation": "Dodaj automatizaciju",
@@ -460,9 +452,7 @@
                         },
                         "google": {
                             "http_use_ssl_warning_text": "Google uređaji neće moći da razgovaraju lokalno sa Home Assistant-om jer ste konfigurisali SSL sertifikat za vašu HTTP integraciju.",
-                            "http_use_ssl_warning_title": "Lokalna komunikacija nije dostupna",
-                            "sync_failed_text": "Sinhronizacija entiteta nije uspela, pokušajte ponovo ili proverite evidencije.",
-                            "sync_failed_title": "Sinhronizacija nije uspela"
+                            "http_use_ssl_warning_title": "Lokalna komunikacija nije dostupna"
                         },
                         "tts": {
                             "dialog": {
@@ -499,7 +489,6 @@
                         "sensor": "Senzori"
                     },
                     "name": "Ime",
-                    "open_configuration_url_device": "Posetite uređaj",
                     "scene": {
                         "scenes_heading": "Scene"
                     },
@@ -624,7 +613,6 @@
                 },
                 "person": {
                     "add_person": "Dodaj osobu",
-                    "confirm_delete": "Želite li zaista da izbrišete ovu osobu?",
                     "create_person": "Kreiraj osobu",
                     "detail": {
                         "create": "Kreiraj",
@@ -676,8 +664,7 @@
                     "show": "prikaži",
                     "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
                     "unable_to_fetch": "Nije moguće učitati ispravke",
-                    "updates_refreshed": "Ispravke osvežene",
-                    "version_available": "Dostupna je {version_available} verzija"
+                    "updates_refreshed": "Ispravke osvežene"
                 },
                 "users": {
                     "add_user": {

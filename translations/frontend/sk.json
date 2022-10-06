@@ -379,7 +379,6 @@
                 "title": "Spravovať repozitáre doplnkov"
             },
             "restart_addon": {
-                "confirm_text": "Reštartovať doplnok",
                 "text": "Skutočne chcete reštartovať doplnok so zmenami?"
             }
         },
@@ -437,10 +436,6 @@
                 "log_provider": "Protokol poskytovateľa"
             },
             "supervisor": {
-                "beta_backup": "Pred aktiváciou tejto funkcie si nezabudnite zálohovať svoje dáta.",
-                "beta_join_confirm": "Chcete sa pripojiť k beta programu?",
-                "beta_release_items": "Zahŕňa to verzie beta pre:",
-                "beta_warning": "Verzie Beta sú určené pre testerov a môžu obsahovať nestabilné zmeny kódu",
                 "channel": "Kanál",
                 "cpu_usage": "Využitie CPU supervízorom",
                 "failed_to_reload": "Nepodarilo sa znova načítať Supervízora",
@@ -715,8 +710,6 @@
                 "expansion_header": "Atribúty"
             },
             "blueprint-picker": {
-                "add_user": "Pridať používateľa",
-                "remove_user": "Odstrániť používateľa",
                 "select_blueprint": "Vyberte plán"
             },
             "calendar": {
@@ -887,7 +880,6 @@
             },
             "service-control": {
                 "required": "Toto pole je povinné",
-                "service_data": "Dáta služby",
                 "target": "Ciele",
                 "target_description": "Čo by mala táto služba používať ako cieľové oblasti, zariadenia alebo entity."
             },
@@ -1053,13 +1045,6 @@
                 "remote": {
                     "activity": "Aktuálne entity"
                 },
-                "restored": {
-                    "confirm_remove_text": "Naozaj chcete odstrániť túto entitu?",
-                    "confirm_remove_title": "Odstrániť entitu?",
-                    "not_provided": "Táto entita je momentálne nedostupná a je pozostatkom po odstránenej, zmenenej  alebo nefunkčnej integrácii alebo zariadení.",
-                    "remove_action": "Odstrániť entitu",
-                    "remove_intro": "Ak sa entita už nepoužíva, môžete ju odstrániť."
-                },
                 "script": {
                     "last_action": "Posledná akcia",
                     "last_triggered": "Naposledy spustené"
@@ -1072,7 +1057,6 @@
                     "setting": "Zapadajúce"
                 },
                 "update": {
-                    "current_version": "Súčasná verzia",
                     "latest_version": "Posledná verzia",
                     "skip": "Preskočiť"
                 },
@@ -1131,7 +1115,6 @@
                         "person": "Ľudia",
                         "scene": "Scény",
                         "script": "Skripty",
-                        "server_control": "Správa servera",
                         "users": "Používatelia",
                         "zone": "Zóny"
                     },
@@ -1188,11 +1171,8 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Pridanie zariadení cez toto zariadenie",
-                    "device_children": "Zobraziť deti",
                     "reconfigure": "Prekonfigurovať zariadenie",
-                    "remove": "Odstrániť zariadenie",
-                    "view_in_visualization": "Zobraziť vo vizualizácii",
-                    "zigbee_information": "Informácie o Zigbee"
+                    "remove": "Odstrániť zariadenie"
                 },
                 "confirmations": {
                     "remove": "Naozaj chcete odstrániť zariadenie?"
@@ -1326,13 +1306,10 @@
                         "actions": {
                             "add": "Pridať akciu",
                             "delete": "Odstrániť",
-                            "delete_confirm": "Ste si istý odstránením ? ",
                             "disable": "Zakázať",
                             "duplicate": "Duplikovať",
                             "header": "Akcie",
-                            "introduction": "Akcie predstavujú činnosti, ktoré Home Assistant vykoná po spustení automatizácie.",
                             "learn_more": "Získajte viac informácií o akciách",
-                            "name": "Akcia",
                             "type": {
                                 "activate_scene": {
                                     "label": "Aktivovať scénu"
@@ -1402,12 +1379,9 @@
                         "conditions": {
                             "add": "Pridať podmienku",
                             "delete": "Odstrániť",
-                            "delete_confirm": "Ste si istý odstránením ? ",
                             "duplicate": "Duplikovať",
                             "header": "Podmienky",
-                            "introduction": "Podmienky sú voliteľné a zabránia spusteniu automatizácie, pokiaľ nie sú splnené všetky podmienky.",
                             "learn_more": "Získajte viac informácií o podmienkach",
-                            "name": "Podmienka",
                             "type": {
                                 "and": {
                                     "label": "a"
@@ -1487,15 +1461,12 @@
                         },
                         "edit_ui": "Upraviť pomocou používateľského rozhrania",
                         "edit_yaml": "Upraviť pomocou YAML",
-                        "enable_disable": "Povoliť/zakázať automatizáciu",
-                        "introduction": "Použite automatizácie, aby váš domov ožil",
                         "load_error_not_editable": "Len automatizácie v automations.yaml je možné upravovať.",
                         "load_error_unknown": "Chyba pri načítaní automatizácie ({err_no}).",
                         "max": {
                             "queued": "Dĺžka fronty"
                         },
                         "modes": {
-                            "documentation": "dokumentácia automatizácie",
                             "label": "Režim",
                             "parallel": "Paralelne",
                             "queued": "Fronta",
@@ -1508,13 +1479,10 @@
                         "triggers": {
                             "add": "Pridať spúšťač",
                             "delete": "Odstrániť",
-                            "delete_confirm": "Naozaj to chcete odstrániť?",
                             "duplicate": "Duplikovať",
                             "header": "Spúšťače",
                             "id": "ID spúšťača (používa sa podmienkou spustenia)",
-                            "introduction": "Spúšťače spúšťajú spracovanie pravidla automatizácie. Pre rovnaké pravidlo je možné určiť viac spúšťačov. Po spustení spúšťača aplikácia Home Assistant overí prípadné podmienky a zavolá akciu. \n\n [Viac informácií o spúšťačov.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Získajte viac informácií o spúšťačoch",
-                            "name": "Spúšťač",
                             "type": {
                                 "calendar": {
                                     "label": "Kalendár"
@@ -1606,17 +1574,13 @@
                             },
                             "type_select": "Typ spúšťača",
                             "unsupported_platform": "Žiadna podpora používateľského rozhrania pre platformu: {platform}"
-                        },
-                        "unsaved_confirm": "Máte neuložené zmeny. Naozaj chcete odísť?"
+                        }
                     },
                     "picker": {
                         "add_automation": "Pridať automatizáciu",
-                        "delete_automation": "Odstrániť automatizáciu",
-                        "delete_confirm": "Naozaj chcete odstrániť túto automatizáciu?",
                         "dev_automation": "Automatizácia ladenia",
                         "dev_only_editable": "Sledovateľné sú iba automatizácie, ktoré majú priradené jedinečné ID.",
                         "duplicate": "Duplikovať",
-                        "duplicate_automation": "Duplikovať automatizáciu",
                         "edit_automation": "Upraviť automatizáciu",
                         "header": "Editor automatizácií",
                         "headers": {
@@ -1652,7 +1616,6 @@
                         "header": "Importovať plán",
                         "import_btn": "Ukážka plánu",
                         "import_header": "Plán \"{name}\"",
-                        "import_introduction_link": "Môžete importovať plány ďalších používateľov z Githubu a {community_link} . Nižšie zadajte adresu URL plánu.",
                         "importing": "Načítava sa plán…",
                         "raw_blueprint": "Obsah plánu",
                         "save_btn": "Importovať plán",
@@ -1664,7 +1627,6 @@
                     "description": "Spravovať plány",
                     "overview": {
                         "add_blueprint": "Importovať plán",
-                        "confirm_delete_header": "Odstrániť tento plán?",
                         "confirm_delete_text": "Naozaj chcete odstrániť tento plán?",
                         "create_automation": "Vytvoriť automatizáciu",
                         "create_script": "Vytvoriť skript",
@@ -1697,8 +1659,6 @@
                             "info": "Vďaka integrácii Alexa pre Home Assistant Cloud budete môcť ovládať všetky svoje zariadenia Home Assistant pomocou akéhokoľvek zariadenia s podporou Alexa.",
                             "info_state_reporting": "Ak povolíte hlásenie stavu, Home Assistant odošle všetky zmeny stavov vystavených entít do Amazonu. To vám umožní vždy vidieť najnovšie stavy v aplikácii Alexa a pomocou zmien stavov vytvárať rutiny.",
                             "manage_entities": "Spravovať entity",
-                            "sync_entities": "Synchronizovať entity s Amazonom",
-                            "sync_entities_error": "Zlyhala synchronizácia entít:",
                             "title": "Alexa"
                         },
                         "connected": "Pripojené",
@@ -1716,7 +1676,6 @@
                             "info_state_reporting": "Ak povolíte hlásenie stavu, Home Assistant odošle všetky zmeny stavov vystavených entít do služby Google. To vám umožní vždy vidieť najnovšie stavy v aplikácii Google Home a pomocou zmien stavov vytvárať rutiny.",
                             "manage_entities": "Spravovať entity",
                             "security_devices": "Zabezpečovacie zariadenia",
-                            "sync_entities": "Synchronizovať entity so službou Google",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integrácie",
@@ -1786,10 +1745,7 @@
                         "will_be_auto_renewed": "bude automaticky obnovený"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "Webhook je k dispozícii na tejto URL adrese:",
                         "close": "Zavrieť",
-                        "confirm_disable": "Naozaj chcete zakázať tento webhook?",
-                        "copied_to_clipboard": "Skopírované do schránky",
                         "info_disable_webhook": "Ak už nechcete používať tento webhook, môžete",
                         "link_disable_webhook": "zakázať to",
                         "managed_by_integration": "Tento webhook je riadený integráciou a nemožno ho zakázať.",
@@ -1815,7 +1771,6 @@
                         "exposed_entities": "Zverejnené entity",
                         "follow_domain": "Sledovanie domény",
                         "manage_defaults": "Spravovať predvolené",
-                        "manage_domains": "Správa domén",
                         "not_exposed": "{selected} nevystavená",
                         "not_exposed_entities": "Nezverejnené entity",
                         "sync_to_google": "Synchronizujú sa zmeny v službe Google.",
@@ -1971,8 +1926,6 @@
                     },
                     "name": "Názov",
                     "no_devices": "Žiadne zariadenia",
-                    "open_configuration_url_device": "Navštíviť zariadenie",
-                    "open_configuration_url_service": "Navštíviť službu",
                     "picker": {
                         "filter": {
                             "filter": "Filter",
@@ -2256,7 +2209,6 @@
                     "home_assistant_logo": "logo Home Assistant",
                     "icons_by": "Ikony od",
                     "license": "Publikované pod licenciou Apache 2.0",
-                    "path_configuration": "Cesta k configuration.yaml: {path}",
                     "server": "server",
                     "setup_time": "Nastaviť čas",
                     "source": "Zdroj:",
@@ -2275,9 +2227,7 @@
                     "config_entry": {
                         "area": "V {area}",
                         "delete": "Odstrániť",
-                        "delete_confirm": "Naozaj chcete odstrániť integráciu {title}?",
                         "disable": {
-                            "disable_confirm": "Naozaj chcete vypnúť túto položku konfigurácie? Jeho zariadenia a entity budú vypnuté.",
                             "disabled": "Vypnuté",
                             "disabled_by": {
                                 "device": "zariadenie",
@@ -2324,10 +2274,6 @@
                         },
                         "next": "Ďalej",
                         "not_all_required_fields": "Nie sú vyplnené všetky povinné polia.",
-                        "pick_flow_step": {
-                            "new_flow": "Nie, nastaviť inú inštanciu {integration}",
-                            "title": "Objavili sme ich, chcete ich nastaviť?"
-                        },
                         "submit": "Odoslať"
                     },
                     "configure": "Konfigurovať",
@@ -2436,7 +2382,6 @@
                     "resources": {
                         "cant_edit_yaml": "Používate Lovelace v režime YAML, preto nemôžete spravovať svoje prostriedky cez používateľské rozhranie. Spravujte ich v configuration.yaml.",
                         "caption": "Prostriedky",
-                        "confirm_delete": "Naozaj chcete odstrániť tento prostriedok?",
                         "detail": {
                             "create": "Vytvoriť",
                             "delete": "Vymazať",
@@ -2490,8 +2435,6 @@
                 "person": {
                     "add_person": "Pridať osobu",
                     "caption": "Ľudia",
-                    "confirm_delete": "Naozaj chcete túto osobu odstrániť?",
-                    "confirm_delete2": "Všetky zariadenia patriace k tejto osobe sa stanú nepriradené.",
                     "create_person": "Vytvoriť osobu",
                     "description": "Spravujte ľudí, ktorých Home Assistant sleduje",
                     "detail": {
@@ -2535,37 +2478,30 @@
                         "entities": {
                             "add": "Pridať entitu",
                             "delete": "Odstrániť entitu",
-                            "device_entities": "Ak pridáte entitu, ktorá patrí k zariadeniu, zariadenie sa pridá.",
                             "header": "Entity",
                             "introduction": "Entity, ktoré nepatria zariadeniu, môžete nastaviť tu.",
                             "without_device": "Entity bez zariadenia"
                         },
                         "icon": "Ikona",
-                        "introduction": "Využite scény na oživenie vášho domova.",
                         "load_error_not_editable": "Upraviť je možné iba scény zo scenes.yaml.",
                         "load_error_unknown": "Chyba pri načítaní scény ({err_no}).",
                         "name": "Názov",
-                        "save": "Uložiť",
-                        "unsaved_confirm": "Máte neuložené zmeny. Naozaj chcete odísť?"
+                        "save": "Uložiť"
                     },
                     "picker": {
                         "add_scene": "Pridať scénu",
-                        "delete_confirm": "Naozaj chcete odstrániť túto scénu?",
                         "delete_scene": "Odstrániť scénu",
                         "duplicate": "Duplikovať",
                         "edit_scene": "Upraviť scénu",
                         "header": "Editor scén",
                         "headers": {
-                            "activate": "Aktivovať",
-                            "name": "Názov",
-                            "show_info": "Zobraziť informácie"
+                            "name": "Názov"
                         },
                         "introduction": "Editor scén vám umožňuje vytvárať a upravovať scény. Postupujte podľa odkazu nižšie a prečítajte si pokyny, aby ste sa uistili, že ste Home Assistant nakonfigurovali správne.",
                         "learn_more": "Získajte viac informácií o scénach",
                         "no_scenes": "Nemohli sme nájsť žiadne editovateľné scény",
                         "only_editable": "Upraviť je možné iba scény zo scenes.yaml.",
-                        "pick_scene": "Vyberte scénu, ktorú chcete upraviť",
-                        "show_info_scene": "Zobraziť informácie o scéne"
+                        "pick_scene": "Vyberte scénu, ktorú chcete upraviť"
                     }
                 },
                 "script": {
@@ -2574,8 +2510,6 @@
                     "editor": {
                         "alias": "Názov",
                         "default_name": "Nový skript",
-                        "delete_confirm": "Naozaj chcete odstrániť tento skript?",
-                        "delete_script": "Odstrániť skript",
                         "header": "Skript: {name}",
                         "icon": "Ikona",
                         "id": "Entity ID",
@@ -2588,7 +2522,6 @@
                             "queued": "Dĺžka fronty"
                         },
                         "modes": {
-                            "documentation": "dokumentácia skriptu",
                             "label": "Režim",
                             "parallel": "Paralelne",
                             "queued": "Fronta",
@@ -2601,10 +2534,7 @@
                     },
                     "picker": {
                         "add_script": "Pridať skript",
-                        "dev_script": "Ladiť skript",
                         "duplicate": "Duplikovať",
-                        "duplicate_script": "Duplikovať skript",
-                        "edit_script": "Upraviť skript",
                         "header": "Editor skriptov",
                         "headers": {
                             "name": "Názov"
@@ -2648,8 +2578,7 @@
                 },
                 "updates": {
                     "more_updates": "Ďalších aktualizácií: {count}",
-                    "show": "zobraziť",
-                    "version_available": "Je dostupná verzia {version_available}"
+                    "show": "zobraziť"
                 },
                 "users": {
                     "add_user": {
@@ -2668,15 +2597,12 @@
                         "admin": "správca",
                         "caption": "Zobraziť používateľa",
                         "change_password": "Zmeniť heslo",
-                        "confirm_user_deletion": "Naozaj chcete odstrániť {name}?",
                         "deactivate_user": "Deaktivovať používateľa",
                         "delete_user": "Vymazať používateľa",
                         "group": "Skupina",
                         "id": "ID",
                         "name": "Zobraziť meno",
-                        "new_password": "Nové heslo",
                         "owner": "Vlastník",
-                        "password_changed": "Heslo bolo úspešne zmenené",
                         "system_generated": "Systémom vytvorený",
                         "system_generated_users_not_editable": "Nie je možné aktualizovať používateľov generovaných systémom.",
                         "system_generated_users_not_removable": "Nie je možné odstrániť používateľov generovaných systémom.",
@@ -2707,13 +2633,8 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atribúty vybraného klastra",
-                        "get_zigbee_attribute": "Získať atribút Zigbee",
                         "header": "Atribúty klastra",
-                        "help_attribute_dropdown": "Vyberte atribút, ktorý chcete zobraziť alebo nastaviť jeho hodnotu.",
-                        "help_get_zigbee_attribute": "Získajte hodnotu vybratého atribútu.",
-                        "help_set_zigbee_attribute": "Nastavte hodnotu atribútu pre určený klaster na určenej entite.",
-                        "introduction": "Zobraziť a upraviť atribúty klastra.",
-                        "set_zigbee_attribute": "Nastaviť atribút ZigBee"
+                        "introduction": "Zobraziť a upraviť atribúty klastra."
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Príkazy vybraného klastra",
@@ -2724,8 +2645,7 @@
                     },
                     "clusters": {
                         "header": "Zoskupenia",
-                        "help_cluster_dropdown": "Vyberte klaster na zobrazenie atribútov a príkazov.",
-                        "introduction": "Klastre sú stavebnými kameňmi pre funkčnosť Zigbee. Rozdeľujú funkčnosť na logické jednotky. Existujú typy klientov a serverov, ktoré pozostávajú z atribútov a príkazov."
+                        "help_cluster_dropdown": "Vyberte klaster na zobrazenie atribútov a príkazov."
                     },
                     "common": {
                         "clusters": "Zoskupenia",
@@ -2999,8 +2919,6 @@
                         "unknown_error_template": "Neznáma chyba pri vykresľovaní šablóny"
                     },
                     "yaml": {
-                        "caption": "Správa servera",
-                        "description": "Skontrolujte konfiguráciu a reštartujte Home Assistant server",
                         "section": {
                             "reloading": {
                                 "automation": "Znova načítať automatizácie",
@@ -3041,10 +2959,8 @@
                                 "zone": "Znova načítať zóny"
                             },
                             "server_management": {
-                                "confirm_restart": "Naozaj chcete reštartovať Home Assistanta?",
                                 "confirm_stop": "Naozaj chcete zastaviť Home Assistanta?",
                                 "heading": "Správa servera",
-                                "introduction": "Reštart Home Assistant zastaví vaše panely a automatizácie. Všetky konfigurácie budú po reštarte znovu načítané.",
                                 "restart": "Reštartovať",
                                 "stop": "Zastaviť"
                             },
@@ -3372,7 +3288,6 @@
                             "default_zoom": "Predvolený zoom",
                             "description": "Karta Mapa umožňuje zobraziť entity na mape.",
                             "geo_location_sources": "Zdroje geolokácie",
-                            "hours_to_show": "Koľko zobraziť hodín",
                             "name": "Mapa",
                             "source": "Zdroj"
                         },
@@ -3644,16 +3559,6 @@
             },
             "map": {
                 "edit_zones": "Upraviť zóny"
-            },
-            "media-browser": {
-                "tts": {
-                    "action_play": "Povedať",
-                    "gender": "Pohlavie",
-                    "gender_female": "Žena",
-                    "gender_male": "Muž",
-                    "language": "Jazyk",
-                    "message": "Správa"
-                }
             },
             "my": {
                 "component_not_loaded": "Inštancia Home Assistant toto presmerovanie nepodporuje. Na použitie tohto presmerovania potrebujete integráciu {integration}.",

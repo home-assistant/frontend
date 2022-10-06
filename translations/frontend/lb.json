@@ -296,7 +296,6 @@
                 "title": "Add-On Depoten verwalten"
             },
             "restart_addon": {
-                "confirm_text": "Add-On frësch starten",
                 "text": "Soll den Add-on mat dengem Ännerungen frësch gestart ginn?"
             }
         },
@@ -345,10 +344,6 @@
                 "log_provider": "Log Provider"
             },
             "supervisor": {
-                "beta_backup": "Stell sécher dass du ee Backup vun dengen Donnéeën hues iers du dëse Feature aktivéiers.",
-                "beta_join_confirm": "Wëlls du dem Beta Kanal beitrieden?",
-                "beta_release_items": "Dëst enthält Beta Versiounen fir:",
-                "beta_warning": "Beta Versiounen si fir Tester an Early Adopter an können onstabile Code enthalen.",
                 "channel": "Kanal",
                 "cpu_usage": "Supervisor CPU Verbrauch",
                 "failed_to_reload": "Feeler beim frësch lueden vum Supervisor",
@@ -601,8 +596,6 @@
                 "show_areas": "Beräicher uweisen"
             },
             "blueprint-picker": {
-                "add_user": "Benotzer erstellen",
-                "remove_user": "Benotzer läschen",
                 "select_blueprint": "Plang auswielen"
             },
             "data-table": {
@@ -640,7 +633,6 @@
                 "no_history_found": "Keen Status Verlaaf fonnt"
             },
             "logbook": {
-                "by": "vun",
                 "entries_not_found": "Keng Logbicher Entrée fonnt",
                 "messages": {
                     "became_unavailable": "ass onereechbar ginn.",
@@ -867,13 +859,6 @@
                 "remote": {
                     "activity": "Aktuel Aktivitéit"
                 },
-                "restored": {
-                    "confirm_remove_text": "Sécher fir dës Entitéit ze läsche?",
-                    "confirm_remove_title": "Entitéit läschen?",
-                    "not_provided": "Dës Entitéit ass fir de Momment net ereechbar an ass ee Weesekand  vun enger geläschter, geännerter oder futtisser Integratioun oder Apparat.",
-                    "remove_action": "Entitéit läschen",
-                    "remove_intro": "Falls d'Entitéit net méi benotzt gëtt kënnt dir sie botzen andeems dir sie läscht."
-                },
                 "script": {
                     "last_action": "Läscht Aktioun",
                     "last_triggered": "Läscht ausgeléist"
@@ -935,7 +920,6 @@
                         "person": "Persoune",
                         "scene": "Zeene",
                         "script": "Skripte",
-                        "server_control": "Kontroll vum Server",
                         "users": "Benotzer",
                         "zone": "Zone"
                     },
@@ -996,11 +980,8 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Apparater via dësen Apparat dobäisetzen",
-                    "clusters": "Cluster verwalten",
-                    "device_children": "Kanner uweisen",
                     "reconfigure": "Apparat frësch konfiguréieren",
-                    "remove": "Apparat läschen",
-                    "zigbee_information": "Zigbee Apparat Informatiounen"
+                    "remove": "Apparat läschen"
                 },
                 "confirmations": {
                     "remove": "Sécher fir den Apparat ze läsche?"
@@ -1133,12 +1114,9 @@
                         "actions": {
                             "add": "Aktioun dobäisetzen",
                             "delete": "Läschen",
-                            "delete_confirm": "Element sécher läschen?",
                             "duplicate": "Duplikéiere",
                             "header": "Aktiounen",
-                            "introduction": "Aktioune déi den Home Assistant ausféiert wann den Automatismus ausgeléist gouf.\n[Léier méi iwwert Aktiounen.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Méi iwwert Aktioune liesen",
-                            "name": "Aktioun",
                             "type": {
                                 "choose": {
                                     "add_option": "Optioun dobäisetzen",
@@ -1218,12 +1196,9 @@
                         "conditions": {
                             "add": "Konditioun dobäisetzen",
                             "delete": "Läschen",
-                            "delete_confirm": "Sëcher fir ze läschen?",
                             "duplicate": "Duplikéiere",
                             "header": "Konditiounen",
-                            "introduction": "Konditioune sinn een optionalen Deel a kënne benotzt gi fir ze bestëmme wann eng Aktioun ausgeféiert gëtt. ",
                             "learn_more": "Méi iwwert Konditioune liesen",
-                            "name": "Konditioun",
                             "type": {
                                 "and": {
                                     "label": "An"
@@ -1301,8 +1276,6 @@
                         },
                         "edit_ui": "Mam Benotzer Inteface änneren",
                         "edit_yaml": "Als YAML änneren",
-                        "enable_disable": "Automatismen aktivéieren/deaktivieren",
-                        "introduction": "Benotzt Automatismen fir däin Heem zum Liewen ze bréngen",
                         "load_error_not_editable": "Nëmmen Automatiounen am automations.yaml kënnen editéiert ginn.",
                         "load_error_unknown": "Feeler beim luede vun der Automatioun ({err_no}).",
                         "max": {
@@ -1310,8 +1283,6 @@
                             "queued": "Längt vun der Schlaang"
                         },
                         "modes": {
-                            "description": "Dëse Modus kontrolléiert wat passéiert wann den Automatisme ausgeléist gëtt während d'Aktiounen vun engem virechten Ausléiser nach laafen.Kuck {documentation_link} fir méi Informatiounen.",
-                            "documentation": "Dokumentatioun vum Automatisme",
                             "label": "Modus",
                             "parallel": "Parrallel",
                             "queued": "an der Schlaang",
@@ -1324,12 +1295,9 @@
                         "triggers": {
                             "add": "Ausléiser dobäisetzen",
                             "delete": "Läschen",
-                            "delete_confirm": "Sëcher fir dëst ze läschen?",
                             "duplicate": "Replikéieren",
                             "header": "Ausléiser",
-                            "introduction": "Een Ausléiser start de Prozess vun engem Automatismus. Et ass méiglech méi wéi een Ausléiser fir een Automatismus unzeginn. Wann een Ausléiser start validéiert Home Assistant d'Konditiounen a féiert - de Fall gesat - eng Aktioun aus.\n\n[Léier méi iwwert Ausléiser.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Méi iwwert Ausléiser liesen",
-                            "name": "Ausléiser",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1421,17 +1389,13 @@
                             },
                             "type_select": "Typ vun Ausléiser",
                             "unsupported_platform": "Keng UI ënnerstëtzung fir Plattform: {platform}"
-                        },
-                        "unsaved_confirm": "Net gespäichert Ännerungen. Trotzdeem verloossen?"
+                        }
                     },
                     "picker": {
                         "add_automation": "Automatismus dobäisetzen",
-                        "delete_automation": "Automatisme läschen",
-                        "delete_confirm": "Sécher fir dës Automatisme ze läschen?",
                         "dev_automation": "Automatisme debuggen",
                         "dev_only_editable": "Nëmmen Automatisme déi am automations.yaml définéiert sinn könne debugged ginn.",
                         "duplicate": "Duplizéieren",
-                        "duplicate_automation": "Automatisme duplizéieren",
                         "edit_automation": "Automatisme änneren",
                         "header": "Automatismen editéieren",
                         "headers": {
@@ -1469,7 +1433,6 @@
                         "header": "Plang importéieren",
                         "import_btn": "Virschau vum Plang",
                         "import_header": "Plang: \"{name}\"",
-                        "import_introduction_link": "Du kanns Pläng vun anere Github Benotzer an {community_link} importéieren. Gëff d'URL vum Plang ënnen un.",
                         "importing": "Plang gëtt gelueden…",
                         "raw_blueprint": "Plang Inhalt",
                         "save_btn": "Plang importéieren",
@@ -1481,7 +1444,6 @@
                     "description": "Pläng verwalten",
                     "overview": {
                         "add_blueprint": "Plang importéieren",
-                        "confirm_delete_header": "Dëse Plang läschen?",
                         "confirm_delete_text": "Sécher fir dëse Plang ze läsche?",
                         "delete_blueprint": "Plang läschen",
                         "discover_more": "Méi Pläng entdecken",
@@ -1508,8 +1470,6 @@
                             "info_state_reporting": "Wann dir de Rapport vun den Zoustänn aktivéiert schéckt Home Assistant all Ännerung vum Zoustand vun exposéierten Entitéiten op Amazon. Dës erlaabt iech ëmmer déi leschten Zoustänn an der Alexa App ze gesinn an d'Ännerunge vun den Zoustänn ze benotze fir Ofleef z'erstellen.",
                             "manage_entities": "Entitéite verwalten",
                             "state_reporting_error": "Kann net den Rapport vum Zoustand {enable_disable}",
-                            "sync_entities": "Entitéite synchroniséieren",
-                            "sync_entities_error": "Feeler beim synchroniséieren vun den Entitéite:",
                             "title": "Alexa"
                         },
                         "connected": "Verbonnen",
@@ -1527,7 +1487,6 @@
                             "info_state_reporting": "Wann dir de Rapport vun den Zoustänn aktivéiert schéckt Home Assistant all Ännerung vum Zoustand vun exposéierten Entitéiten op Google. Dës erlaabt iech ëmmer déi leschten Zoustänn an der Google App ze gesinn.",
                             "manage_entities": "Entitéiten verwalten",
                             "security_devices": "Sécherheets Apparater",
-                            "sync_entities": "Entitéiten mat Google synchroniséieren",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integratioune",
@@ -1579,7 +1538,6 @@
                         "exposed": "{selected} exposéiert",
                         "exposed_entities": "Exposéiert Entitéiten",
                         "follow_domain": "Domain suivéieren",
-                        "manage_domains": "Domaine verwalten",
                         "not_exposed": "{selected} net exposéiert",
                         "not_exposed_entities": "Net exposéiert Entitéiten",
                         "title": "Alexa"
@@ -1594,10 +1552,7 @@
                         "will_be_auto_renewed": "Gëtt automatesch verlängert"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "De Webhook ass disponibel op der folgender URL:",
                         "close": "Zoumaachen",
-                        "confirm_disable": "Sécher fir dëse Webhook ze desaktivéieren?",
-                        "copied_to_clipboard": "An de Tëschespäicher kopéiert",
                         "info_disable_webhook": "Wann dir dëse Webhook net wëllt länger benotzen, kënnt dir",
                         "link_disable_webhook": "Desaktivéieren",
                         "managed_by_integration": "Dëse Webhook gëtt vun enger Integratioun verwalt a kann net desaktivéiert ginn.",
@@ -1622,7 +1577,6 @@
                         "exposed": "{selected} exposéiert",
                         "exposed_entities": "Exposéiert Entitéiten",
                         "follow_domain": "Domain suivéieren",
-                        "manage_domains": "Domaine verwalten",
                         "not_exposed": "{selected} net exposéiert",
                         "not_exposed_entities": "Net exposéiert Entitéiten",
                         "sync_to_google": "Ännerungen ginn mat Google synchroniséiert",
@@ -1870,7 +1824,6 @@
                     "icons_by": "Ikonen vun",
                     "issues": "Problemer",
                     "license": "Verëffentlecht ënnert der Apache 2.0 Lizenz",
-                    "path_configuration": "Pad zur configuration.yaml: {path}",
                     "server": "server",
                     "source": "Quell:",
                     "system_health": {
@@ -1888,7 +1841,6 @@
                         "check_the_logs": "Logs iwwerpréifen",
                         "configure": "Astellen",
                         "delete": "Läschen",
-                        "delete_confirm": "Sécher fir dës Integratioun ze läsche?",
                         "depends_on_cloud": "Cloud ofhängeg",
                         "devices": "{count} {count, plural,\n  one {Apparat}\n  other {Apparaten}\n}",
                         "disable": {
@@ -2030,7 +1982,6 @@
                     "resources": {
                         "cant_edit_yaml": "Du benotz Lovelace am YAML Modus, dofir kanns du Dir deng Ressourcen net duerch de Benotzer Interface verwalten. Verwalt se an der Konfiguratioun.yaml.",
                         "caption": "Ressourcen",
-                        "confirm_delete": "Sécher fir dës Ressource ze läschen?",
                         "detail": {
                             "create": "Erstellen",
                             "delete": "Läschen",
@@ -2077,8 +2028,6 @@
                 "person": {
                     "add_person": "Persoun dobäisetzen",
                     "caption": "Persounen",
-                    "confirm_delete": "Sécher fir dës Persoun ze läsche?",
-                    "confirm_delete2": "All Apparater déi zu dëser Persoun gehéiere ginn néirens zougewisen",
                     "create_person": "Persoun erstellen",
                     "description": "Verwalt d'Persoune déi vum Home Assistant suivéiert ginn.",
                     "detail": {
@@ -2120,22 +2069,18 @@
                         "entities": {
                             "add": "Entitéit dobäisetzen",
                             "delete": "Entitéit läschen",
-                            "device_entities": "Wann Dir eng Entitéit dobäisetzt déi zu engem Apparat gehéiert, gëtt den Apparat dobäigesat.",
                             "header": "Entitéiten",
                             "introduction": "Entitéiten déi zu kengem Apparat gehéiere kënnen hei definéiert ginn.",
                             "without_device": "Entitéiten ouni Apparater"
                         },
                         "icon": "Ikon",
-                        "introduction": "Benotz Zeene fir däin Heem zum Liewen ze bréngen",
                         "load_error_not_editable": "Nëmme Zeene am scenes.yaml kënnen editéiert ginn.",
                         "load_error_unknown": "Feeler beim luede vun der Zeen ({err_no}).",
                         "name": "Numm",
-                        "save": "Späicheren",
-                        "unsaved_confirm": "Net gespäichert Ännerungen. Trotzdeem verloossen?"
+                        "save": "Späicheren"
                     },
                     "picker": {
                         "add_scene": "Zeen dobäisetzen",
-                        "delete_confirm": "Sécher fir dës Zeen ze läschen?",
                         "delete_scene": "Zeen läschen",
                         "edit_scene": "Zeen änneren",
                         "header": "Zeen Editeur",
@@ -2146,8 +2091,7 @@
                         "learn_more": "Méi iwwert Zeene léieren",
                         "no_scenes": "Keng Zeene fir ze ännere fonnt",
                         "only_editable": "Nëmme Zeene am scenes.yaml kënnen editéiert ginn.",
-                        "pick_scene": "Zeen fir ze änneren auswielen",
-                        "show_info_scene": "Informatiounen vun der Zeen uweisen"
+                        "pick_scene": "Zeen fir ze änneren auswielen"
                     }
                 },
                 "script": {
@@ -2156,8 +2100,6 @@
                     "editor": {
                         "alias": "Numm",
                         "default_name": "Neie Skript",
-                        "delete_confirm": "Sécher fir dësen Skript ze läsche?",
-                        "delete_script": "Skript läschen",
                         "header": "Skript: {name}",
                         "icon": "Ikon",
                         "id": "ID vun der Entitéit",
@@ -2171,8 +2113,6 @@
                             "queued": "Längt vun der Schlaang"
                         },
                         "modes": {
-                            "description": "Dëse Modus kontrolléiert wat passéieert wann de Skript opgeruff gëtt während e schon duerch virecht Opriff nach ëmmer leeft. Kuck {documentation_link} fir méi Informatiounen.",
-                            "documentation": "Dokumentatioun vum Skript",
                             "label": "Modus",
                             "parallel": "Parrallel",
                             "queued": "an der Schlaang",
@@ -2186,8 +2126,6 @@
                     "picker": {
                         "add_script": "Neie Skript erstellen",
                         "duplicate": "Duplizéieren",
-                        "duplicate_script": "Skript duplizéieren",
-                        "edit_script": "Skript änneren",
                         "header": "Skript Editeur",
                         "headers": {
                             "name": "Numm"
@@ -2247,15 +2185,12 @@
                         "admin": "Administrator",
                         "caption": "Benotzer kucken",
                         "change_password": "Passwuert änneren",
-                        "confirm_user_deletion": "Sécher fir {name} ze läsche?",
                         "deactivate_user": "Benotzer déaktivéieren",
                         "delete_user": "Benotzer läschen",
                         "group": "Gruppe",
                         "id": "ID",
                         "name": "Affichéierte Numm",
-                        "new_password": "Neit Passwuert",
                         "owner": "Proprietär",
-                        "password_changed": "Passwuert erfollegräich geännert",
                         "system_generated": "Vum System generéiert",
                         "system_generated_users_not_editable": "Net méiglech System generéiert Benotzer z'aktualiséieren.",
                         "system_generated_users_not_removable": "Ka keng System generéiert Benotzer läschen.",
@@ -2286,13 +2221,8 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributer vum ausgewielten Cluster",
-                        "get_zigbee_attribute": "Zigbee Attribut liesen",
                         "header": "Cluster Attributer",
-                        "help_attribute_dropdown": "Attribut auswielen fir säin Wärt ze kucken oder ze setzen.",
-                        "help_get_zigbee_attribute": "Wäert fir dat gewielten Attribut liesen",
-                        "help_set_zigbee_attribute": "Definéiert ee Wäert fir den Attribut fir de spezifizéierte Cluster op der spezifizéierter Entitéit.",
-                        "introduction": "Cluster Attributer kucken an änneren.",
-                        "set_zigbee_attribute": "Zigbee Attribut definéieren"
+                        "introduction": "Cluster Attributer kucken an änneren."
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Kommandoe vum ausgewielten Cluster",
@@ -2303,8 +2233,7 @@
                     },
                     "clusters": {
                         "header": "Clusters",
-                        "help_cluster_dropdown": "Wielt ee Cluster aus fir Attributer anKommandoe ze gesinn.",
-                        "introduction": "Clusters si Bausteng fir Zigbee Funktionalitéiten. Si trennen d'Funktionalitéit a logesch Eenheeten. Et gi Client a Server Typen an déi bestinn aus Attributer a Befeeler."
+                        "help_cluster_dropdown": "Wielt ee Cluster aus fir Attributer anKommandoe ze gesinn."
                     },
                     "common": {
                         "clusters": "Cluster",
@@ -2483,8 +2412,6 @@
                         "unknown_error_template": "Onbekannte Feeler beim duerstelle vum Modell"
                     },
                     "yaml": {
-                        "caption": "Kontroll vum Server",
-                        "description": "Start an Stop vum Home Assistant Server",
                         "section": {
                             "reloading": {
                                 "automation": "Automatisme nei lueden",
@@ -2522,10 +2449,8 @@
                                 "zone": "Zone frësch lueden"
                             },
                             "server_management": {
-                                "confirm_restart": "Sécher fir Home Assistant frësch ze starten?",
                                 "confirm_stop": "Sécher fir Home Assistant ze stoppen?",
                                 "heading": "Serververwaltung",
-                                "introduction": "Kontrolléiert ären Home Assistant Server … vun Home Assistant aus.",
                                 "restart": "Neistart",
                                 "stop": "Stop"
                             },
@@ -2757,7 +2682,6 @@
                             "default_zoom": "Standard Zoom",
                             "description": "Kaarte Kaart erméiglecht d'Visualisatioun vun Entitéiten op enger Kaart.",
                             "geo_location_sources": "Quell vun der Geolokalisatioun",
-                            "hours_to_show": "Stonnen uweisen",
                             "name": "Kaart",
                             "source": "Quell"
                         },

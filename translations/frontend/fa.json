@@ -315,10 +315,6 @@
                 "no_areas": "هیچ منطقه ای ندارید",
                 "no_match": "هیچ منطقه مطابقی یافت نشد"
             },
-            "blueprint-picker": {
-                "add_user": "اضافه کردن کاربر",
-                "remove_user": "حذف کاربر"
-            },
             "data-table": {
                 "search": "جستجو"
             },
@@ -427,12 +423,6 @@
                 "yaml_not_editable": "تنظیمات این نهاد نمی تواند از UI ویرایش شود. فقط موجودیت هایی که از UI تنظیم می شوند از UI قابل تنظیم هستند."
             },
             "more_info_control": {
-                "restored": {
-                    "confirm_remove_text": "Esti sigur ca vrei sa elimini aceasta entitate?",
-                    "confirm_remove_title": "Eliminati entitatea?",
-                    "not_provided": "Aceasta entitate este momentan indisponibila fiind un orfan al unei entitati sau unui dispozitiv eliminat, schimbat sau disfunctional",
-                    "remove_action": "Eliminati entitatea"
-                },
                 "script": {
                     "last_action": "آخرین اقدام"
                 },
@@ -486,7 +476,6 @@
                         "info": "اطلاعات",
                         "person": "افراد",
                         "script": "اسکریپت ها",
-                        "server_control": "Controale Server",
                         "users": "کاربران",
                         "zone": "مناطق"
                     },
@@ -510,8 +499,7 @@
                 "buttons": {
                     "add": "افزودن دستگاه ها از طریق این دستگاه",
                     "reconfigure": "پیکربندی مجدد دستگاه",
-                    "remove": "حذف دستگاه",
-                    "zigbee_information": "اطلاعات zigbee"
+                    "remove": "حذف دستگاه"
                 },
                 "device_signature": "امضای دستگاه Zigbee",
                 "manuf": "de catre {fabricant}",
@@ -605,10 +593,8 @@
                         "actions": {
                             "add": "افزودن اقدام",
                             "delete": "حذف",
-                            "delete_confirm": "مطمئنید که  میخواهید این را حذف کنید؟",
                             "duplicate": "تکثیر کردن",
                             "header": "اقدامات",
-                            "introduction": "این اقدامات همان چیزی است که Home Assistantانجام می دهد وقتی که اتوماسیون راه اندازی می شود.",
                             "learn_more": "درباره عملگردها بیشتر بدانید",
                             "type": {
                                 "choose": {
@@ -647,10 +633,8 @@
                         "conditions": {
                             "add": "اضافه کردن شرط",
                             "delete": "حذف",
-                            "delete_confirm": "مطمئنید میخواهید این را حذف کنید؟",
                             "duplicate": "تکثیر کردن",
                             "header": "شرایط",
-                            "introduction": "شرایط اختیاری است و از اجرای بیشتر جلوگیری می کند مگر اینکه همه شرایط برآورده شود.",
                             "learn_more": "درباره شرایط بیشتر بدانید",
                             "type": {
                                 "and": {
@@ -715,17 +699,14 @@
                             "label": "توضیحات",
                             "placeholder": "توضیحات اختیاری"
                         },
-                        "introduction": "برای روح بخشیدن به خانه از اتوماسیون استفاده کنید.",
                         "load_error_not_editable": "فقط اتوماسیون در automations.yaml قابل ویرایش هستند.",
                         "load_error_unknown": "خطا در بارگذاری اتوماسیون ({err_no}).",
                         "save": "ذخیره",
                         "triggers": {
                             "add": "اضافه کردن راه انداز",
                             "delete": "حذف",
-                            "delete_confirm": "آیا مطمئن هستید که می خواهید این را حذف کنید؟",
                             "duplicate": "کپی کنید",
                             "header": "راه اندازها",
-                            "introduction": "راه حلی است که پردازش یک قانون اتوماسیون را آغاز می کند. ممکن است چند عامل برای یک قاعده مشخص شود. هنگامی که یک ماشه شروع می شود، Home Assistant شرایط را تایید می کند، اگر وجود داشته باشد، و اقدام را فراخوانی می کند.",
                             "learn_more": "درباره راه اندازها بیشتر بیاموزید",
                             "type": {
                                 "device": {
@@ -811,13 +792,10 @@
                             },
                             "type_select": "نوع راه انداز",
                             "unsupported_platform": "بدون پشتیبانی رابط کاربری برای پلت فرم:  {platform}"
-                        },
-                        "unsaved_confirm": "شما تغییرات ذخیره نشده ای دارید. آیا مطمئنی که می خواهی خارج بشی؟"
+                        }
                     },
                     "picker": {
                         "add_automation": "اضافه کردن اتوماسیون",
-                        "delete_automation": "Elimina automatizare",
-                        "delete_confirm": "Esti sigur ca vrei sa elimini aceasta automatizare?",
                         "edit_automation": "Editeaza automatizare",
                         "header": "ویرایشگر اتوماسیون",
                         "headers": {
@@ -841,7 +819,6 @@
                         "community_forums": "انجمن ها",
                         "file_name": "مسیر Blueprint",
                         "import_header": "طرح '' {name} ''",
-                        "import_introduction_link": "شما می توانید طرح های دیگر کاربران را از Github و {community_link}وارد کنید. آدرس طرح blueprint را در پایین وارد کنید.",
                         "raw_blueprint": "محتوای Blueprint",
                         "unsupported_blueprint": "این طرح پشتیبانی نمی شود"
                     },
@@ -896,8 +873,6 @@
                     },
                     "dialog_cloudhook": {
                         "close": "Inchide",
-                        "confirm_disable": "Esti sigur ca vrei sa dezactivezi acest webhook?",
-                        "copied_to_clipboard": "Copiat in clipboard",
                         "info_disable_webhook": "Daca nu mai doresti sa folosesti acest webhook, poti sa",
                         "link_disable_webhook": "dezactiveaza",
                         "view_documentation": "Vizualizeaza documentatie"
@@ -1147,7 +1122,6 @@
                     "caption": "یکپارچگی",
                     "config_entry": {
                         "delete": "حذف",
-                        "delete_confirm": "آیا مطمئن هستید که می خواهید این یکپارچگی را حذف کنید؟",
                         "firmware": "سیستم عامل: {version}",
                         "manuf": "توسط {manufacturer}",
                         "no_area": "بدون منطقه",
@@ -1231,7 +1205,6 @@
                     "resources": {
                         "cant_edit_yaml": "شما در حالت YAML از Lovelace استفاده می کنید ، بنابراین نمی توانید منابع خود را از طریق UI مدیریت کنید. آنها را درconfiguration.yaml مدیریت کنید.",
                         "caption": "منابع",
-                        "confirm_delete": "آیا مطمئنید که می خواهید این منبع را حذف کنید ؟",
                         "detail": {
                             "create": "ایجاد کن",
                             "delete": "پاک کن",
@@ -1270,8 +1243,6 @@
                 "person": {
                     "add_person": "Adauga Persoana",
                     "caption": "افراد",
-                    "confirm_delete": "Esti sigur ca vrei sa elimini aceasta persoana?",
-                    "confirm_delete2": "Toate dispozitivele apartinand acestei persoane vor deveni neatribuite",
                     "create_person": "Creaza Persoana",
                     "description": "مدیریت افراد خانه هوشمند",
                     "detail": {
@@ -1297,8 +1268,7 @@
                     "editor": {
                         "entities": {
                             "add": "Adauga entitate",
-                            "delete": "Elimina entitatea",
-                            "device_entities": "Daca adaugi o entitate care apartine unui dispozitiv, acel dispozitiv va fi adaugat"
+                            "delete": "Elimina entitatea"
                         },
                         "name": "نام"
                     },
@@ -1318,8 +1288,6 @@
                     "editor": {
                         "alias": "نام",
                         "default_name": "Script nou",
-                        "delete_confirm": "Esti sigur ca vrei sa elimini acest script?",
-                        "delete_script": "Elimina script",
                         "header": "اسکریپت: {name}",
                         "introduction": "Foloseste script-uri pentru a executa mai multe actiuni succesive",
                         "link_available_actions": "Afla mai multe despre actiunile disponibile",
@@ -1329,7 +1297,6 @@
                     },
                     "picker": {
                         "add_script": "Adauga script",
-                        "edit_script": "Editeaza script",
                         "header": "Editor de scripturi",
                         "headers": {
                             "name": "نام"
@@ -1363,7 +1330,6 @@
                         "admin": "مدیر",
                         "caption": "مشاهده کاربر",
                         "change_password": "تغییر رمز عبور",
-                        "confirm_user_deletion": "آیا مطمئنید می خواهید {name} را حذف کنید ؟",
                         "deactivate_user": "غیر فعال کردن کاربر",
                         "delete_user": "حذف کاربر",
                         "group": "گروه",
@@ -1496,8 +1462,6 @@
                         "title": "قالب"
                     },
                     "yaml": {
-                        "caption": "Controale Server",
-                        "description": "سرور Home Assistant را مجدداً راه اندازی کرده و متوقف کنید",
                         "section": {
                             "reloading": {
                                 "automation": "بارگیری مجدد اتوماسیون",
@@ -1510,7 +1474,6 @@
                             },
                             "server_management": {
                                 "heading": "مدیریت سرور",
-                                "introduction": "سرور Home Assistant خود را کنترل کنید … از Home Assistant.",
                                 "restart": "راه‌اندازی مجدد",
                                 "stop": "بایست"
                             },
@@ -1641,7 +1604,6 @@
                             "dark_mode": "حالت تاریک",
                             "default_zoom": "بزرگنمایی پیش فرض",
                             "geo_location_sources": "منابع موقعیت یابی",
-                            "hours_to_show": "زمان های نمایش",
                             "name": "نقشه",
                             "source": "منبع"
                         },

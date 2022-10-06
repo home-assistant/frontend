@@ -324,9 +324,6 @@
                 }
             },
             "helper_settings": {
-                "input_number": {
-                    "initial": "Почетна вредност"
-                },
                 "timer": {
                     "restore": "Povratiti?"
                 }
@@ -339,7 +336,6 @@
                 "show_more": "Prikaži više",
                 "update": {
                     "create_backup": "Napravi rezervnu kopiju pre unapređenja",
-                    "current_version": "Trenutna verzija",
                     "install": "Instaliraj",
                     "installed_version": "Инсталирана верзија",
                     "latest_version": "Poslednja verzija",
@@ -377,7 +373,6 @@
                     "editor": {
                         "actions": {
                             "invalid_action": "Nevažeća radnja",
-                            "run_action": "Pokreni radnju",
                             "run_action_error": "Greška pri pokretanju radnje",
                             "run_action_success": "Uspešno pokretanje radnje",
                             "type": {
@@ -486,9 +481,7 @@
                         },
                         "google": {
                             "http_use_ssl_warning_text": "Google uređaji neće moći da razgovaraju lokalno sa Home Assistant-om jer ste konfigurisali SSL sertifikat za vašu HTTP integraciju.",
-                            "http_use_ssl_warning_title": "Lokalna komunikacija nije dostupna",
-                            "sync_failed_text": "Sinhronizacija entiteta nije uspela, pokušajte ponovo ili proverite evidencije.",
-                            "sync_failed_title": "Sinhronizacija nije uspela"
+                            "http_use_ssl_warning_title": "Lokalna komunikacija nije dostupna"
                         },
                         "sign_out_confirm": "Želite li zaista da se odjavite?",
                         "tts": {
@@ -501,12 +494,6 @@
                 },
                 "common": {
                     "learn_more": "Uči više"
-                },
-                "dashboard": {
-                    "backup": {
-                        "description": "Napravi rezervnu kopiju Home Assistant konfiguracije",
-                        "title": "Rezervna kopija"
-                    }
                 },
                 "devices": {
                     "automation": {
@@ -530,8 +517,6 @@
                         "sensor": "Senzori",
                         "show_less": "Prikaži manje"
                     },
-                    "open_configuration_url_device": "Posetite uređaj",
-                    "open_configuration_url_service": "Posetite servis",
                     "scene": {
                         "scenes_heading": "Scena"
                     },
@@ -746,14 +731,6 @@
                 "scene": {
                     "editor": {
                         "area": "Oblast"
-                    },
-                    "picker": {
-                        "headers": {
-                            "activate": "Aktiviraj",
-                            "edit": "Uređivanje",
-                            "show_info": "Prikaži informacije",
-                            "state": "Status"
-                        }
                     }
                 },
                 "script": {
@@ -787,8 +764,7 @@
                     "show": "Prikaži",
                     "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
                     "unable_to_fetch": "Nije moguće učitati ispravke",
-                    "updates_refreshed": "Ispravke osvežene",
-                    "version_available": "Dostupna je verzija {version_available}"
+                    "updates_refreshed": "Ispravke osvežene"
                 },
                 "url": {
                     "caption": "Home Assistant URL",
@@ -1092,18 +1068,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "Media player {name} ne postoji"
-                },
-                "tts": {
-                    "action_pick": "Izaberi",
-                    "action_play": "Izgovori",
-                    "example_message": "Zdravo {name}, možete da reprodukujete bilo koji tekst na bilo kom podržanom media plejeru!",
-                    "faild_to_store_defaults": "Skladištenje podrazumevanih vrednosti nije uspelo: {error}",
-                    "gender": "Pol",
-                    "gender_female": "Žensko",
-                    "gender_male": "Muško",
-                    "language": "Jezik",
-                    "message": "Poruka",
-                    "set_as_default": "Postavi kao podrazumevane opcije"
                 }
             },
             "page-authorize": {

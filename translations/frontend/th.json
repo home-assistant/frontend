@@ -100,14 +100,26 @@
             }
         },
         "backup": {
+            "delete_selected": "ลบข้อมูลสำรองที่เลือก",
+            "no_backups": "คุณยังไม่เคยสำรองข้อมูลมาก่อนเลย",
             "search": "ค้นหาข้อมูลสำรอง"
         },
         "common": {
             "menu": "เมนู",
             "show": "แสดง"
         },
+        "dialog": {
+            "restart_addon": {
+                "restart": "รีสตาร์ท",
+                "title": "รีสตาร์ท {name}?"
+            },
+            "uninstall_addon": {
+                "title": "ยกเลิกการติดตั้ง {name}?"
+            }
+        },
         "panel": {
-            "addons": "ส่วนเสริม"
+            "addons": "ส่วนเสริม",
+            "backups": "การสำรองข้อมูล"
         },
         "system": {
             "supervisor": {
@@ -314,15 +326,15 @@
             },
             "entity_registry": {
                 "editor": {
-                    "name": "ชื่อ"
+                    "name": "ชื่อ",
+                    "stream": {
+                        "stream_orientation_4": "พลิกด้าน"
+                    }
                 }
             },
             "helper_settings": {
                 "generic": {
                     "name": "ชื่อ"
-                },
-                "input_number": {
-                    "initial": "ค่าเริ่มต้น"
                 },
                 "input_select": {
                     "remove_option": "ลบตัวเลือก"
@@ -355,7 +367,7 @@
             "quick-bar": {
                 "commands": {
                     "navigation": {
-                        "server_control": "การควบคุมเซิร์ฟเวอร์"
+                        "backups": "การสำรองข้อมูล"
                     },
                     "reload": {
                         "automation": "ระบบอัตโนมัติ",
@@ -375,7 +387,8 @@
                     "header": "ปัญหาการซ่อม"
                 },
                 "loading": {
-                    "loading_flow": "โปรดรอสักครู่ในขณะที่การซ่อมแซม {integration} กำลังเริ่มต้นขึ้น"
+                    "loading_flow": "โปรดรอสักครู่ในขณะที่การซ่อมแซม {integration} กำลังเริ่มต้นขึ้น",
+                    "loading_step": "กำลังโหลดขั้นตอนต่อไปของ {integration}"
                 },
                 "success": {
                     "description": "ปัญหานี้ได้รับการซ่อมแซมแล้ว"
@@ -440,6 +453,7 @@
             "config": {
                 "application_credentials": {
                     "editor": {
+                        "add": "เพิ่ม",
                         "name": "ชื่อ"
                     },
                     "picker": {
@@ -450,7 +464,7 @@
                 },
                 "areas": {
                     "add_picture": "เพิ่มรูปภาพ",
-                    "area_not_found": "ไม่เจอพื้นที่นี้",
+                    "area_not_found": "ไม่พบพื้นที่นี้",
                     "caption": "ค่าของห้อง",
                     "description": "ภาพรวมของห้องทั้งหมดในบ้านของคุณ",
                     "edit_settings": "การตั้งค่าพื้นที่",
@@ -477,11 +491,10 @@
                         "actions": {
                             "add": "เพิ่มการกระทำ",
                             "delete": "ลบ",
-                            "delete_confirm": "คุณแน่ใจหรือไม่ว่าจะลบสิ่งนี้ทิ้ง?",
                             "duplicate": "แยกออกมาเป็นอันใหม่",
                             "header": "การกระทำ",
-                            "introduction": "ใช้สำหรับการกระทำที่ Home Assistant จะทำต่อเมื่อระบบอัตโนมัติมีการเรียกใช้งาน",
                             "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Action",
+                            "rename": "แก้ไขชื่อ",
                             "type": {
                                 "condition": {
                                     "label": "สถานะ"
@@ -516,10 +529,8 @@
                         "conditions": {
                             "add": "เพิ่มเงื่อนไข",
                             "delete": "ลบ",
-                            "delete_confirm": "คุณแน่ใจหรือไม่ว่าจะลบสิ่งนี้ทิ้ง?",
                             "duplicate": "แยกออกมาเป็นอันใหม่",
                             "header": "เงื่อนไข",
-                            "introduction": "เงื่อนไขเป็นส่วนที่ปล่อยว่างได้ของกฎอัตโนมัติและสามารถใช้เพื่อป้องกันไม่ให้เกิดการกระทำเมื่อถูกเรียกใช้งาน เงื่อนไขดูคล้ายกับการกระตุ้น แต่แตกต่างกันมาก การกระตุ้นจะพิจารณาเหตุการณ์ที่เกิดขึ้นในระบบในขณะที่เงื่อนไขจะดูเฉพาะที่ระบบจะดูในตอนนี้เท่านั้น การกระตุ้นสามารถสังเกตได้จากสวิตช์ที่กำลังเปิดอยู่ โดยเงื่อนไขสามารถเห็นได้เฉพาะเมื่อสวิตช์เปิดหรือปิดอยู่เท่านั้น",
                             "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับเงื่อนไข",
                             "type": {
                                 "and": {
@@ -580,18 +591,17 @@
                             "label": "รายละเอียด",
                             "placeholder": "คำอธิบายเพิ่มเติม"
                         },
-                        "introduction": "ใช้ระบบอัตโนมัติเพื่อทำให้บ้านของคุณมีชีวิตชีวา",
                         "load_error_not_editable": "ระบบอัตโนมัติที่อยู่ในไฟล์ Automations.yaml เท่านั้นที่สามารถแก้ไขได้",
                         "load_error_unknown": "เกิดข้อผิดพลาดในการโหลดระบบอัตโนมัติ ({err_no})",
+                        "rename": "แก้ไขชื่อ",
                         "save": "บันทึก",
                         "triggers": {
                             "add": "เพิ่มทริกเกอร์",
                             "delete": "ลบ",
-                            "delete_confirm": "แน่ใจหรือว่าต้องการจะลบ?",
                             "duplicate": "ซ้ำ",
                             "header": "ทริกเกอร์",
-                            "introduction": "ทริกเกอร์คือสิ่งที่เริ่มต้นในการประมวลผลกฎอัตโนมัติ คุณสามารถระบุทริกเกอร์หลายรายการสำหรับกฎเดียวกันได้ เมื่อตัวทริกเกอร์เริ่มทำงานผู้ช่วยแรกจะตรวจสอบเงื่อนไขหากมีและเรียกการดำเนินการ.\n\n[เรียนรู้เพิ่มเติมเกี่ยวกับทริกเกอร์] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Trigger",
+                            "rename": "แก้ไขชื่อ",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -673,8 +683,7 @@
                             },
                             "type_select": "ประเภททริกเกอร์",
                             "unsupported_platform": "แพลตฟอร์มที่ไม่สนับสนุน: {platform}"
-                        },
-                        "unsaved_confirm": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการออก?"
+                        }
                     },
                     "picker": {
                         "add_automation": "เพิ่มระบบอัตโนมัติ",
@@ -695,6 +704,13 @@
                         "refresh": "รีเฟรช"
                     }
                 },
+                "backup": {
+                    "caption": "การสำรองข้อมูล",
+                    "no_backups": "คุณยังไม่เคยสำรองข้อมูลมาก่อนเลย",
+                    "picker": {
+                        "search": "ค้นหาข้อมูลสำนอง"
+                    }
+                },
                 "blueprint": {
                     "overview": {
                         "create_automation": "สร้างการทำงานอัตโนมัติ",
@@ -703,7 +719,7 @@
                             "name": "ชื่อ",
                             "type": "ประเภท"
                         },
-                        "no_blueprints": "คุณไม่มีพิมพ์เขียวสักอัน",
+                        "no_blueprints": "คุณยังไม่มี Blueprints",
                         "types": {
                             "automation": "ระบบอัตโนมัติ",
                             "script": "สคริปต์"
@@ -814,8 +830,6 @@
                         "sensor": "เซนเซอร์"
                     },
                     "name": "ชื่อ",
-                    "open_configuration_url_device": "เยี่ยมชมอุปกรณ์",
-                    "open_configuration_url_service": "เยี่ยมชมบริการ",
                     "scene": {
                         "create": "สร้างฉากด้วยอุปกรณ์",
                         "no_scenes": "ไม่มีฉาก",
@@ -836,8 +850,11 @@
                 },
                 "hardware": {
                     "available_hardware": {
-                        "search": "ค้นหาฮาร์ดแวร์"
-                    }
+                        "search": "ค้นหา Hardware"
+                    },
+                    "memory": "หน่วยความจำ",
+                    "processor": "หน่วยประมวลผลกลาง",
+                    "reboot_host_title": "เริ่มต้นระบบใหม่?"
                 },
                 "header": "ตั้งค่า Home Assistant",
                 "helpers": {
@@ -853,20 +870,23 @@
                 "info": {
                     "copy_menu": "คัดลอกเมนู",
                     "items": {
-                        "bug": "รายงานบั๊ก",
+                        "bug": "รายงานข้อผิดพลาด",
                         "change_log": "บันทึกการเปลี่ยนแปลง",
-                        "feature": "ขอคุณสมบัติ",
-                        "help": "วิธีใช้",
+                        "feature": "เสนอ Feature ใหม่",
+                        "help": "วิธีการใช้งาน",
                         "license": "ใบอนุญาต",
                         "merch": "สินค้า",
-                        "thanks": "ขอขอบคุณที่"
+                        "thanks": "ขอขอบคุณ"
                     }
                 },
                 "integrations": {
                     "attention": "ต้องระบุ",
+                    "available_integrations": "Integrations ที่พร้อมใช้งาน",
                     "caption": "ตัวประสานงาน",
                     "config_entry": {
-                        "delete_confirm": "แน่ใจหรือว่าต้องการจะลบการบูรณาการนี้",
+                        "application_credentials": {
+                            "dismiss": "เก็บไว้"
+                        },
                         "firmware": "Firmware: {version}",
                         "manuf": "โดย {manufacturer}",
                         "no_area": "ไม่มีห้อง",
@@ -882,12 +902,10 @@
                         "loading": {
                             "fallback_title": "ตัวประสานงาน"
                         },
-                        "missing_zha": "ในการเพิ่มอุปกรณ์ Zigbee, คุณต้องตั้งค่าบูรณาการ Zigbee Home Automation. คุณต้องการที่จะทําตอนนี้เลยหรือไม่?",
-                        "missing_zwave_js": "ในการเพิ่มอุปกรณ์ Z-Wave, คุณต้องตั้งค่าบูรณาการ Z-Wave. คุณต้องการที่จะทําตอนนี้เลยหรือไม่?",
                         "missing_zwave_zigbee": "ในการเพิ่มอุปกรณ์ {integration}, คุณต้องมี {supported_hardware_link} และตั้งค่าการ {integration}. หากคุณมีฮาร์ดแวร์อยู่แล้วคุณสามารถดําเนินการตั้งค่า {integration} ได้เลย.",
                         "proceed": "ดำเนินการ",
                         "supported_brand_flow": "อุปกรณ์ {supported_brand} จัดทำโดย {flow_domain_name}. คุณต้องการดำเนินการต่อหรือไม่?",
-                        "supported_hardware": "ฮาร์ดแวร์ที่รองรับ"
+                        "supported_hardware": "Hardware ที่รองรับ"
                     },
                     "configure": "ปรับแต่ง",
                     "configured": "ตั้งค่าแล้ว",
@@ -905,6 +923,7 @@
                 },
                 "person": {
                     "caption": "บุคคล",
+                    "confirm_delete_title": "ลบ {name}?",
                     "description": "จัดการบุคคลที่ระบบจะทำการติดตาม",
                     "detail": {
                         "device_tracker_intro": "เลือกอุปกรณ์ที่จะให้บุคคลนี้เป็นเจ้าของ",
@@ -919,21 +938,19 @@
                     "critical": "วิกฤต",
                     "description": "ค้นหาและแก้ไขปัญหาเกี่ยวกับอินสแตนซ์ของคุณ",
                     "dialog": {
-                        "alert_not_fixable": "เราไม่สามารถแก้ไขปัญหานี้ให้คุณได้",
                         "breaks_in_version": "ไม่ทำงานในเวอร์ชั่น {version}. โปรดระบุที่อยู่หรือตรวจสอบก่อนการอัปเกรด",
                         "fix": "ซ่อมแซม",
-                        "ignore": "สนใจ",
+                        "ignore": "เพิกเฉย",
                         "ignored_in_version": "ปัญหานี้ถูกละเว้นในเวอร์ชัน {version}.",
                         "ignored_in_version_short": "ละเว้นในเวอร์ชัน {version}",
                         "learn": "เรียนรู้เพิ่มเติม",
                         "title": "ซ่อมแซม",
-                        "unignore": "ไม่สนใจ"
+                        "unignore": "ยกเลิกการเพิกเฉย"
                     },
                     "error": "เกิดข้อผิดพลาด",
-                    "hide_ignored": "ซ่อนการละเว้น",
-                    "integration_startup_time": "เวลาเริ่มต้นการบูรณาการ",
+                    "integration_startup_time": "เวลาที่ Integration เริ่มต้นทำงาน",
                     "more_repairs": "แสดงการซ่อมแซมทั้งหมด",
-                    "no_repairs": "ตอนนี้ไม่มีการซ่อมแซ่ม",
+                    "no_repairs": "ขณะนี้ยังไม่มีการซ่อมแซมใดๆ ที่พร้อมใช้งาน",
                     "show_ignored": "แสดงการซ่อมแซมที่ถูกละเว้น",
                     "system_information": "ข้อมูลระบบ",
                     "warning": "คำเตือน"
@@ -948,6 +965,7 @@
                     },
                     "picker": {
                         "headers": {
+                            "last_activated": "เปิดใช้งานล่าสุด",
                             "name": "ชื่อ"
                         }
                     }
@@ -968,16 +986,16 @@
                 "tag": {
                     "detail": {
                         "name": "ชื่อ",
-                        "required_error_msg": "ช่องนี้ต้องการกำหนดค่า"
+                        "required_error_msg": "จำเป็นต้องกรอกข้อมูลนี้"
                     },
                     "headers": {
                         "name": "ชื่อ"
                     }
                 },
                 "updates": {
+                    "more_updates": "แสดงการอัปเดตทั้งหมด",
                     "show": "แสดง",
-                    "unable_to_fetch": "ไม่สามารถดึงรายการอัพเดตที่มีอยู่",
-                    "version_available": "เวอร์ชัน {version_available} พร้อมใช้งานแล้ว"
+                    "unable_to_fetch": "ไม่สามารถดึงรายการอัพเดตที่มีอยู่"
                 },
                 "users": {
                     "add_user": {
@@ -986,11 +1004,17 @@
                         "password": "รหัสผ่าน"
                     },
                     "caption": "ผู้ใช้",
+                    "change_password": {
+                        "caption": "เปลี่ยนรหัสผ่าน",
+                        "new_password": "รหัสผ่านใหม่",
+                        "password_confirm": "ยืนยันรหัสผ่าน"
+                    },
                     "description": "จัดการผู้ใช้งานในระบบ",
                     "editor": {
                         "activate_user": "เปิดใช้งานผู้ใช้",
                         "caption": "ดูผู้ใช้",
                         "change_password": "เปลี่ยนรหัสผ่าน",
+                        "confirm_user_deletion_title": "ลบ {name}?",
                         "deactivate_user": "ปิดใช้งานผู้ใช้",
                         "delete_user": "ลบผู้ใช้"
                     }
@@ -998,6 +1022,11 @@
                 "zha": {
                     "add_device_page": {
                         "spinner": "กำลังค้นหาอุปกรณ์ ZHA Zigbee …"
+                    },
+                    "clusters": {
+                        "tabs": {
+                            "commands": "คำสั่ง"
+                        }
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "การกำหนดค่าเสร็จสมบูรณ์",
@@ -1025,6 +1054,20 @@
                     "node_config": {
                         "parameter": "พารามิเตอร์"
                     },
+                    "route_statistics": {
+                        "data_rate": {
+                            "protocol_data_rate": {
+                                "LongRange_100k": "100 kbps",
+                                "ZWave_100k": "100 kbps"
+                            }
+                        },
+                        "route_failed_between": {
+                            "not_applicable": "N/A"
+                        }
+                    },
+                    "rssi": {
+                        "unit": "dBm"
+                    },
                     "security_classes": {
                         "None": {
                             "title": "ไม่มี"
@@ -1049,7 +1092,7 @@
                     "update_firmware": {
                         "finished_status": {
                             "OK_NoRestart": "ไม่มีการรีสตาร์ท",
-                            "OK_RestartPending": "รีสตาร์ท กำลังดําเนินการ"
+                            "OK_RestartPending": "กำลังรอการรีสตาร์ท"
                         }
                     }
                 }
@@ -1078,8 +1121,6 @@
                         "title": "แม่แบบ"
                     },
                     "yaml": {
-                        "caption": "การควบคุมเซิร์ฟเวอร์",
-                        "description": "รีสตาร์ทและหยุดเซิร์ฟเวอร์ Home Assistant",
                         "section": {
                             "reloading": {
                                 "automation": "ระบบอัตโนมัติ",
@@ -1091,10 +1132,8 @@
                                 "script": "โหลดสคริปต์อีกครั้ง"
                             },
                             "server_management": {
-                                "confirm_restart": "คุณแน่ใจหรือไม่ว่าต้องการรีสตาร์ท?",
                                 "confirm_stop": "คุณแน่ใจหรือว่าต้องการหยุดการทำงานของ Home Assistant",
                                 "heading": "การจัดการเซิร์ฟเวอร์",
-                                "introduction": "การรีสตาร์ท Home Assistant จะหยุดแดชบอร์ดและระบบอัตโนมัติของคุณ หลังจากรีบูตการกําหนดค่าแต่ละรายการจะถูกโหลดใหม่",
                                 "restart": "เริ่มต้นใหม่",
                                 "stop": "หยุด"
                             },
@@ -1260,6 +1299,10 @@
                         "sensor": {
                             "graph_type": "ประเภทกราฟ"
                         },
+                        "statistics-graph": {
+                            "pick_statistic": "เพิ่มสถิติ",
+                            "picked_statistic": "สถิติ"
+                        },
                         "weather-forecast": {
                             "show_both": "แสดงสภาพอากาศปัจจุบันและการพยากรณ์",
                             "show_only_current": "แสดงเฉพาะสภาพอากาศปัจจุบัน",
@@ -1423,7 +1466,7 @@
                     "working": "กรุณารอสักครู่"
                 },
                 "initializing": "กำลังเริ่มการทำงาน",
-                "logging_in_with": "เข้าสู่ระบบด้วย ** {authProviderName} **",
+                "logging_in_with": "กำลังเข้าสู่ระบบด้วย **{authProviderName}**",
                 "pick_auth_provider": "หรือเข้าสู่ระบบด้วย",
                 "store_token": "ให้ฉันอยู่ในระบบต่อไป"
             },

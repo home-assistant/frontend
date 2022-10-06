@@ -348,7 +348,6 @@
                 "title": "إدارة مستودعات الإضافات"
             },
             "restart_addon": {
-                "confirm_text": "أعد تشغيل الإضافة",
                 "text": "هل تريد إعادة تشغيل الإضافة بالتغييرات التي قمت بها؟"
             }
         },
@@ -405,7 +404,6 @@
                 "log_provider": "مزود السجل"
             },
             "supervisor": {
-                "beta_join_confirm": "هل تريد الانضمام إلى النسخ التجريبية؟",
                 "channel": "قناة",
                 "cpu_usage": "استخدام supervisor لـ CPU",
                 "failed_to_reload": "فشل في إعادة تحميل supervisor",
@@ -663,10 +661,6 @@
             "attributes": {
                 "expansion_header": "سمات"
             },
-            "blueprint-picker": {
-                "add_user": "أضف مستخدم",
-                "remove_user": "إزالة مستخدم"
-            },
             "calendar": {
                 "my_calendars": "التقويمات الخاصة بي",
                 "today": "اليوم"
@@ -715,7 +709,6 @@
                 "no_history_found": "لم يتم العثور على سجل الحالات."
             },
             "logbook": {
-                "by": "بواسطة",
                 "entries_not_found": "لم يتم العثور على إدخالات في دفتر السجلات.",
                 "messages": {
                     "became_unavailable": "أصبح غير متوفر",
@@ -932,10 +925,6 @@
                 "remote": {
                     "activity": "النشاط الحالي"
                 },
-                "restored": {
-                    "confirm_remove_text": "هل أنت متأكد أنك تريد إزالة هذا الكيان؟",
-                    "not_provided": "هذا الكيان غير متاح حاليًا وهو معزول عن تكامل أو جهاز تمت إزالته أو تغييره أو اختلال وظيفته."
-                },
                 "script": {
                     "last_action": "الإجراء الأخير",
                     "last_triggered": "آخر تشغيل"
@@ -1001,7 +990,6 @@
                         "person": "الأشخاص",
                         "scene": "مشاهد",
                         "script": "السكريبتات",
-                        "server_control": "عناصر التحكم بالخادم",
                         "users": "المستخدمين",
                         "zone": "المناطق"
                     },
@@ -1057,11 +1045,8 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "أضف أجهزة عبر هذا الجهاز",
-                    "clusters": "إدارة العناقيد",
                     "reconfigure": "إعادة تكوين الجهاز",
-                    "remove": "إزالة الجهاز",
-                    "view_in_visualization": "عرض في التصور",
-                    "zigbee_information": "معلومات جهاز Zigbee"
+                    "remove": "إزالة الجهاز"
                 },
                 "confirmations": {
                     "remove": "هل أنت متأكد أنك تريد إزالة الجهاز؟"
@@ -1216,12 +1201,9 @@
                         "actions": {
                             "add": "أضف إجراء",
                             "delete": "حذف",
-                            "delete_confirm": "هل أنت متأكد أنك تريد حذف هذا؟",
                             "duplicate": "تكرار",
                             "header": "الإجراءات",
-                            "introduction": "الإجراءات هي ما سيفعله Home Assistant عند تشغيل الأتمتة.",
                             "learn_more": "معرفة المزيد عن الإجراءات",
-                            "name": "إجراء",
                             "type": {
                                 "condition": {
                                     "label": "الشرط"
@@ -1284,12 +1266,9 @@
                         "conditions": {
                             "add": "إضافة شرط",
                             "delete": "حذف",
-                            "delete_confirm": "هل أنت متأكد أنك تريد حذف هذا؟",
                             "duplicate": "تكرار",
                             "header": "الشروط",
-                            "introduction": "الشروط اختيارية وستمنع تشغيل الأتمتة ما لم يتم استيفاء جميع الشروط.",
                             "learn_more": "معرفة المزيد عن الشروط",
-                            "name": "الشرط",
                             "type": {
                                 "and": {
                                     "label": "و"
@@ -1372,8 +1351,6 @@
                         },
                         "edit_ui": "تحرير في المحرر المرئي",
                         "edit_yaml": "تحرير في YAML",
-                        "enable_disable": "تمكين/تعطيل التنفيذ التلقائي",
-                        "introduction": "استخدم الأتمتة لإضفاء الحيوية على منزلك.",
                         "load_error_not_editable": "الأتمتة فقط في automations.yaml قابلة للتحرير.",
                         "load_error_unknown": "خطأ في تحميل الأتمتة ({err_no}).",
                         "max": {
@@ -1381,8 +1358,6 @@
                             "queued": "طول قائمة الإنتظار"
                         },
                         "modes": {
-                            "description": "يتحكم الوضع في ما يحدث عند تشغيل الأتمتة أثناء استمرار تشغيل الإجراءات من مشغل سابق. تحقق من {documentation_link} للحصول على مزيد من المعلومات.",
-                            "documentation": "وثائق الأتمتة",
                             "label": "وضع",
                             "parallel": "موازي",
                             "queued": "في قائمة الإنتظار",
@@ -1402,13 +1377,10 @@
                         "triggers": {
                             "add": "أضف مشغل",
                             "delete": "حذف",
-                            "delete_confirm": "هل أنت متأكد أنك تريد حذف هذا؟",
                             "duplicate": "تكرار",
                             "header": "المشغلات",
                             "id": "معرف المشغل (المستخدم بواسطة شرط المشغل)",
-                            "introduction": "المشغلات هي التي تبدأ معالجةقاعدة الأتمتة. من الممكن تحديد عدة مشغلات لنفس القاعدة. بمجرد بدء المشغل ، سيقوم Home Assistant بالتحقق من صحة الشروط ، إن وجدت ، واستدعاء الإجراء.",
                             "learn_more": "معرفة المزيد عن المشغلات",
-                            "name": "المشغل",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1498,18 +1470,14 @@
                             },
                             "type_select": "نوع المشغل",
                             "unsupported_platform": "لا يوجد محرر مرئي يدعم النظام الأساسي: {platform}"
-                        },
-                        "unsaved_confirm": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟"
+                        }
                     },
                     "picker": {
                         "add_automation": "أضف أتمتة",
-                        "delete_automation": "حذف الأتمتة",
-                        "delete_confirm": "هل أنت متأكد أنك تريد حذف هذه الأتمتة؟",
                         "dev_automation": "تصحيح الأتمتة",
                         "dev_only_editable": "فقط عمليات الاتمتة التي تم تعيين معرف فريد لها يمكن تصحيح أخطاءها.",
                         "disabled": "معطل",
                         "duplicate": "تكرار",
-                        "duplicate_automation": "تكرار الاتمتة",
                         "edit_automation": "تحرير الأتمتة",
                         "header": "محرر الأتمتة",
                         "headers": {
@@ -1541,7 +1509,6 @@
                         "header": "استيراد مخطط",
                         "import_btn": "معاينة مخطط",
                         "import_header": "Blueprint \"{name}\"",
-                        "import_introduction_link": "يمكنك استيراد مخططات المستخدمين الآخرين من Github و {community_link} . أدخل عنوان URL للمخطط أدناه.",
                         "importing": "تحميل المخطط …",
                         "raw_blueprint": "محتوى المخطط",
                         "save_btn": "استورد Blueprint…",
@@ -1553,7 +1520,6 @@
                     "description": "إدارة المخططات",
                     "overview": {
                         "add_blueprint": "استورد مخطط…",
-                        "confirm_delete_header": "حذف هذا المخطط؟",
                         "confirm_delete_text": "هل أنت متأكد أنك تريد حذف هذا المخطط؟",
                         "delete_blueprint": "حذف المخطط",
                         "discover_more": "اكتشف المزيد من المخططات",
@@ -1580,8 +1546,6 @@
                             "info_state_reporting": "إذا قمت بتمكين تقارير الحالة ، فسيرسل Home Assistant جميع تغييرات الحالة للكيانات المكشوفة إلى Amazon. يتيح لك ذلك دائمًا الاطلاع على أحدث الحالات في تطبيق Alexa واستخدام تغييرات الحالة لإنشاء إجراءات روتينية.",
                             "manage_entities": "إدارة الكيانات",
                             "state_reporting_error": "تعذر {enable_disable} الابلاغ عن الحالة.",
-                            "sync_entities": "مزامنة الكيانات مع Amazon",
-                            "sync_entities_error": "فشلت مزامنة الكيانات:",
                             "title": "Alexa"
                         },
                         "connected": "متصل",
@@ -1602,7 +1566,6 @@
                             "not_configured_text": "قبل أن تتمكن من استخدام Google Assistant ، تحتاج إلى تنشيط مهارة Home Assistant Cloud لـ Google Assistant في تطبيق Google Home.",
                             "not_configured_title": "لم يتم تنشيط Google Assistant",
                             "security_devices": "أجهزة الأمان",
-                            "sync_entities": "مزامنة الكيانات مع Google",
                             "title": "Google Assistant"
                         },
                         "integrations": "تكاملات",
@@ -1662,7 +1625,6 @@
                         "exposed": "{selected} مكشوف",
                         "exposed_entities": "الكيانات المكشوفة",
                         "follow_domain": "تابع المجال",
-                        "manage_domains": "إدارة المجالات",
                         "not_exposed": "{selected} غير مكشوف",
                         "not_exposed_entities": "الكيانات غير المكشوفة",
                         "title": "Alexa"
@@ -1677,10 +1639,7 @@
                         "will_be_auto_renewed": "سيتم تجديده تلقائيًا"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "يتوفر webhook في URL التالي:",
                         "close": "إغلاق",
-                        "confirm_disable": "هل تريد بالتأكيد تعطيل webhook هذا؟",
-                        "copied_to_clipboard": "نسخ إلى الحافظة",
                         "info_disable_webhook": "إذا كنت لم تعد ترغب في استخدام هذا الwebhook ، يمكنك",
                         "link_disable_webhook": "عطله",
                         "managed_by_integration": "تتم إدارة webhook هذا بواسطة تكامل ولا يمكن تعطيله.",
@@ -1705,7 +1664,6 @@
                         "exposed": "{selected} مكشوف",
                         "exposed_entities": "الكيانات المكشوفة",
                         "follow_domain": "تابع المجال",
-                        "manage_domains": "إدارة المجالات",
                         "not_exposed": "{selected} غير مكشوف",
                         "not_exposed_entities": "الكيانات غير المكشوفة",
                         "sync_to_google": "مزامنة التغييرات إلى Google.",
@@ -2025,7 +1983,6 @@
                     "icons_by": "الايقونات بواسطة",
                     "issues": "الاعطال",
                     "license": "نشرت تحت رخصة Apache 2.0",
-                    "path_configuration": "المسار إلى configuration.yaml: {path}",
                     "server": "الخادم",
                     "setup_time": "وقت التنصيب",
                     "source": "مصدر:",
@@ -2044,11 +2001,9 @@
                         "check_the_logs": "تحقق من السجلات",
                         "configure": "إعداد",
                         "delete": "حذف",
-                        "delete_confirm": "هل تريد حقا حذف هذا التكامل؟",
                         "depends_on_cloud": "يعتمد على السحابة",
                         "devices": "{count} {count, plural,\n  one {جهاز}\n  other {أجهزة}\n}",
                         "disable": {
-                            "disable_confirm": "هل أنت متأكد أنك تريد تعطيل إدخال التكوين هذا؟ سيتم تعطيل أجهزتها وكياناتها.",
                             "disabled": "معطل",
                             "disabled_by": {
                                 "device": "جهاز",
@@ -2201,7 +2156,6 @@
                     "resources": {
                         "cant_edit_yaml": "انت تستخدم Lovelace في وضع YAML، ولذلك لا يمكنك إدارة الموارد الخاصة بك من خلال واجهة المستخدم. إدرها في configuration.yaml.",
                         "caption": "الموارد",
-                        "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا المورد؟",
                         "detail": {
                             "create": "إنشاء",
                             "delete": "حذف",
@@ -2238,8 +2192,6 @@
                 "person": {
                     "add_person": "إضافة شخص",
                     "caption": "الأشخاص",
-                    "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا الشخص؟",
-                    "confirm_delete2": "ستصبح جميع الأجهزة الخاصة بهذا الشخص غير محددة.",
                     "create_person": "إنشاء شخص",
                     "description": "إدارة الأشخاص الذين يتتبعهم Home Assistant.",
                     "detail": {
@@ -2279,15 +2231,12 @@
                             "introduction": "أضف الأجهزة التي تريد تضمينها في المشهد الخاص بك. اضبط جميع الأجهزة على الحالة التي تريدها لهذا المشهد."
                         },
                         "entities": {
-                            "device_entities": "إذا قمت بإضافة كيان ينتمي إلى جهاز ، فستتم إضافة الجهاز.",
                             "introduction": "يمكن هنا تعيين الكيانات التي لا تنتمي إلى جهاز.",
                             "without_device": "كيانات بدون جهاز"
                         },
                         "icon": "أيقونة",
-                        "introduction": "استخدم المشاهد لإضفاء الحيوية على منزلك.",
                         "name": "الاسم",
-                        "save": "حفظ",
-                        "unsaved_confirm": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟"
+                        "save": "حفظ"
                     },
                     "picker": {
                         "activate": "تفعيل",
@@ -2311,21 +2260,18 @@
                     "editor": {
                         "alias": "الاسم",
                         "default_name": "سكريبت جديد",
-                        "delete_confirm": "هل أنت متأكد أنك تريد حذف هذا البرنامج النصي؟",
                         "header": "سكريبت: {name}",
                         "icon": "أيقونة",
                         "id": "معرف الكيان",
                         "id_already_exists": "هذا المعرف موجود بالفعل",
                         "introduction": "استخدم البرامج النصية لتشغيل سلسلة من الإجراءات.",
                         "load_error_not_deletable": "فقط النصوص في scripts.yaml يمكن حذفها. ",
-                        "load_error_not_duplicable": "فقط النصوص في scripts.yaml يمكن تكرارها.",
                         "load_error_not_editable": "فقط البرامج النصية داخل scripts.yaml قابلة للتحرير.",
                         "max": {
                             "parallel": "أقصى عدد من التشغيلات المتوازية",
                             "queued": "طول قائمة الإنتظار"
                         },
                         "modes": {
-                            "description": "يتحكم الوضع في ما يحدث عند استدعاء البرنامج النصي بينما لا يزال قيد التشغيل من استدعاء واحد أو أكثر من الاستدعاءات السابقة. تحقق من {documentation_link} للحصول على مزيد من المعلومات.",
                             "label": "وضع",
                             "parallel": "موازي",
                             "queued": "في قائمة الإنتظار",
@@ -2340,9 +2286,7 @@
                     "picker": {
                         "add_script": "اضف سكريبت",
                         "delete": "حذف",
-                        "dev_script": "تصحيح البرنامج النصي",
                         "duplicate": "تكرار",
-                        "duplicate_script": "تكرار السكربت",
                         "header": "محرر البرامج النصية",
                         "headers": {
                             "name": "الاسم"
@@ -2404,15 +2348,12 @@
                         "admin": "مدير",
                         "caption": "عرض المستخدم",
                         "change_password": "تغيير كلمة المرور",
-                        "confirm_user_deletion": "هل أنت متأكد أنك تريد حذف {name} ؟",
                         "deactivate_user": "إلغاء تنشيط المستخدم",
                         "delete_user": "حذف المستخدم",
                         "group": "مجموعة",
                         "id": "معرف",
                         "name": "اسم العرض",
-                        "new_password": "كلمة مرور جديدة",
                         "owner": "مالك",
-                        "password_changed": "تم تغيير كلمة المرور بنجاح",
                         "system_generated": "منشئ من قبل النظام",
                         "system_generated_users_not_editable": "غير قادر على تحديث المستخدمين الذين تم إنشاؤهم بواسطة النظام.",
                         "system_generated_users_not_removable": "غير قادر على إزالة المستخدمين الذين تم إنشاؤهم من قبل النظام.",
@@ -2442,21 +2383,15 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "سمات الكتلة المحددة",
-                        "get_zigbee_attribute": "احصل على سمة Zigbee",
                         "header": "سمات الكتلة",
-                        "help_attribute_dropdown": "حدد سمة لعرض قيمتها أو تعيين قيمتها.",
-                        "help_get_zigbee_attribute": "احصل على قيمة السمة المحددة.",
-                        "help_set_zigbee_attribute": "عين قيمة السمة للكتلة المحددة على الكيان المحدد.",
-                        "introduction": "عرض وتحرير سمات الكتلة.",
-                        "set_zigbee_attribute": "تعيين سمة Zigbee"
+                        "introduction": "عرض وتحرير سمات الكتلة."
                     },
                     "cluster_commands": {
                         "header": "أوامر الكتلة"
                     },
                     "clusters": {
                         "header": "عناقيد",
-                        "help_cluster_dropdown": "حدد كتلة لعرض السمات والأوامر.",
-                        "introduction": "الكتل هي لبنات البناء لوظائف Zigbee. وهي تفصل الوظائف إلى وحدات منطقية. هناك أنواع العميل والخادم والتي تتألف من سمات وأوامر."
+                        "help_cluster_dropdown": "حدد كتلة لعرض السمات والأوامر."
                     },
                     "common": {
                         "clusters": "العناقيد",
@@ -2660,8 +2595,6 @@
                         "title": "نماذج"
                     },
                     "yaml": {
-                        "caption": "عناصر التحكم بالخادم",
-                        "description": "أعد تشغيل خادم Home Assistant وأوقفه",
                         "section": {
                             "reloading": {
                                 "automation": "الأتمتة",
@@ -2697,10 +2630,8 @@
                                 "zone": "المناطق"
                             },
                             "server_management": {
-                                "confirm_restart": "هل تريد بالتأكيد اعادة تشغيل Home Assistant؟",
                                 "confirm_stop": "هل تريد بالتأكيد إيقاف Home Assistant؟",
                                 "heading": "إدارة الخادم",
-                                "introduction": "تحكم في خادم Home Assistant … من Home Assistant.",
                                 "restart": "إعادة التشغيل",
                                 "stop": "ايقاف التشغيل"
                             },
@@ -2911,7 +2842,6 @@
                             "default_zoom": "التكبير الافتراضي",
                             "description": "بطاقة الخريطة التي تتيح لك عرض الكيانات على الخريطة.",
                             "geo_location_sources": "مصادر تحديد الموقع الجغرافي",
-                            "hours_to_show": "ساعات للعرض",
                             "name": "الخريطة",
                             "source": "المصدر"
                         },

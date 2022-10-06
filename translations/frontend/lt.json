@@ -258,7 +258,6 @@
                 "remove": "Pašalinti"
             },
             "restart_addon": {
-                "confirm_text": "Paleiskite priedą iš naujo",
                 "text": "Ar norite iš naujo paleisti priedą su pakeitimais?"
             }
         },
@@ -515,8 +514,6 @@
                 "expansion_header": "Atributai"
             },
             "blueprint-picker": {
-                "add_user": "Pridėti naudotoją",
-                "remove_user": "Pašalinti naudotoją",
                 "select_blueprint": "Pasirinkite techninį planą"
             },
             "climate-control": {
@@ -785,7 +782,6 @@
                 },
                 "input_number": {
                     "box": "Įvesties laukas",
-                    "initial": "Pradinė vertė",
                     "max": "Didžiausia reikšmė",
                     "mode": "Rodymo režimas",
                     "slider": "Slankiklis",
@@ -827,10 +823,6 @@
                 "remote": {
                     "activity": "Dabartinė veikla"
                 },
-                "restored": {
-                    "confirm_remove_title": "Pašalinti subjektą?",
-                    "remove_action": "Pašalinti subjektą"
-                },
                 "script": {
                     "last_action": "Paskutinis veiksmas"
                 },
@@ -842,7 +834,6 @@
                     "setting": "Nustatymas"
                 },
                 "update": {
-                    "current_version": "Esama versija",
                     "install": "Diegti",
                     "installed_version": "Įdiegta versija",
                     "latest_version": "Paskutinė versija",
@@ -946,9 +937,6 @@
                 "label": "Įveskite klausimą ir paspauskite „Enter“"
             },
             "zha_device_info": {
-                "buttons": {
-                    "device_children": "Peržiūrėti vaikus"
-                },
                 "confirmations": {
                     "remove": "Ar jūs tikrai norite pašalinti įrenginį?"
                 },
@@ -1018,7 +1006,6 @@
                         "caption": "Pridėti programos paskyrą",
                         "client_id": "OAuth vartotojo ID",
                         "client_secret": "OAuth vartotojo slaptažodis",
-                        "create": "Sukurti",
                         "domain": "Integracija",
                         "name": "Pavadinimas"
                     },
@@ -1086,14 +1073,12 @@
                         "actions": {
                             "add": "Pridėti veiksmą",
                             "delete": "Ištrinti",
-                            "delete_confirm": "Ar tikrai norite ištrinti?",
                             "disable": "Atjungti",
                             "disabled": "Neįgalinta",
                             "duplicate": "Dublikuoti",
                             "enable": "Įgalinti",
                             "header": "Veiksmai",
                             "learn_more": "Sužinokite daugiau apie veiksmus",
-                            "name": "Veiksmas",
                             "type": {
                                 "condition": {
                                     "label": "Sąlyga"
@@ -1150,12 +1135,9 @@
                         "conditions": {
                             "add": "Pridėti sąlygą",
                             "delete": "Ištrinti",
-                            "delete_confirm": "Ar tikrai norite ištrinti?",
                             "duplicate": "Dubliuoti",
                             "header": "Sąlygos",
-                            "introduction": "Sąlygos yra neprivalomos ir neleis automatikos scenarijams veikti, nebent bus įvykdytos visos sąlygos.",
                             "learn_more": "Sužinokite daugiau apie sąlygas",
-                            "name": "Sąlyga",
                             "test": "Testas",
                             "type": {
                                 "and": {
@@ -1230,24 +1212,19 @@
                         },
                         "edit_ui": "Redaguoti naudojant naudotojo sąsają",
                         "edit_yaml": "Redaguoti kaip YAML",
-                        "introduction": "Naudokite automatikos scenarijus, kad atgaivintumėte savo namus.",
                         "load_error_not_editable": "Redagavimas leidžiamas tik automatizavimai, esantys automations.yaml",
                         "load_error_unknown": "Nepavyko užkrauti automatikos ({err_no}).",
                         "modes": {
-                            "documentation": "automatikos dokumentacija",
                             "label": "Režimas"
                         },
                         "save": "Išsaugoti",
                         "triggers": {
                             "add": "Pridėti trigerį",
                             "delete": "Ištrinti",
-                            "delete_confirm": "Ar tikrai norite tai ištrinti?",
                             "duplicate": "Pasikartojantys",
                             "edit_id": "Redaguoti trigerio ID",
                             "header": "Trigeriai",
-                            "introduction": "Trigeriai yra tai, kas pradeda automatizavimo taisyklės apdorojimą. Tai pačiai taisyklei galima nurodyti kelis aktyviklius. Kai tik įsijungs trigeris, Home Assistant patikrins sąlygas, jei tokių yra, ir iškviečia veiksmą.",
                             "learn_more": "Sužinokite daugiau apie trigerius",
-                            "name": "Trigeris",
                             "type": {
                                 "calendar": {
                                     "after": "Vėliau",
@@ -1345,12 +1322,10 @@
                             },
                             "type_select": "Trigerio tipas",
                             "unsupported_platform": "Nėra UI palaikymo platformai: {platform}"
-                        },
-                        "unsaved_confirm": "Turite neišsaugotų pakeitimų, ar tikrai norite išeiti?"
+                        }
                     },
                     "picker": {
                         "add_automation": "Pridėti automatikos scenarijų",
-                        "delete_automation": "Ištrinti automatizavimą",
                         "edit_automation": "Redaguoti automatiką",
                         "header": "Automatikos redaktorius",
                         "headers": {
@@ -1415,7 +1390,6 @@
                     "description": "Tvarkyti techninius planus",
                     "overview": {
                         "add_blueprint": "Importuoti techninius planus",
-                        "confirm_delete_header": "Ištrinti šį techninį planą?",
                         "confirm_delete_text": "Ar tikrai norite ištrinti šį techninį planą?",
                         "create_automation": "Sukurti automatizavimą",
                         "create_script": "Sukurti skriptą",
@@ -1453,8 +1427,6 @@
                             "enter_pin_error": "Nepavyko išsaugoti PIN kodo:",
                             "not_configured_title": "Google Assistant nėra aktyvuotas",
                             "security_devices": "Apsaugoti įrenginiai",
-                            "sync_failed_text": "Nepavyko sinchronizuoti subjektų, bandykite dar kartą arba patikrinkite žurnalus.",
-                            "sync_failed_title": "Sinchronizavimas nepavyko",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integracijos",
@@ -1487,7 +1459,6 @@
                         }
                     },
                     "alexa": {
-                        "manage_domains": "Tvarkyti domenus",
                         "title": "Alexa"
                     },
                     "description_features": "Valdykite namus būdami išvykę ir integruokite su Alexa ir Google padėjėju",
@@ -1500,7 +1471,6 @@
                     },
                     "dialog_cloudhook": {
                         "close": "Uždaryti",
-                        "copied_to_clipboard": "Nukopijuota į iškarpinę",
                         "view_documentation": "Peržiūrėti dokumentaciją"
                     },
                     "forgot_password": {
@@ -1513,7 +1483,6 @@
                         "title": "Pamiršau slaptažodį"
                     },
                     "google": {
-                        "manage_domains": "Tvarkyti domenus",
                         "sync_to_google": "Sinchronizuojami pakeitimai su Google.",
                         "title": "Google Assistant"
                     },
@@ -1578,26 +1547,20 @@
                 },
                 "dashboard": {
                     "about": {
-                        "description": "Versija, sistemos būklė ir nuorodos į dokumentaciją",
                         "main": "Apie",
-                        "secondary": "Versijos informacija, padėkos ir daugiau",
-                        "title": "Apie"
+                        "secondary": "Versijos informacija, padėkos ir daugiau"
                     },
                     "areas": {
-                        "description": "Valdykite Home Assistant stebimas sritis ir zonas",
                         "main": "Sritys ir zonos",
-                        "secondary": "Tvarkyti vietoves namuose ir aplink",
-                        "title": "Sritys ir zonos"
+                        "secondary": "Tvarkyti vietoves namuose ir aplink"
                     },
                     "automations": {
                         "main": "Automatizacija ir scenos",
                         "secondary": "Automatizacija, scenos, skriptai ir eskizai"
                     },
                     "backup": {
-                        "description": "Kurti Home Assistant konfigūracijos atsargines kopijas",
                         "main": "Atsarginė kopija",
-                        "secondary": "Kurti Home Assistant konfigūracijos atsargines kopijas",
-                        "title": "Atsarginė kopija"
+                        "secondary": "Kurti Home Assistant konfigūracijos atsargines kopijas"
                     },
                     "companion": {
                         "main": "Jūsų programėlė",
@@ -1625,8 +1588,7 @@
                     },
                     "system": {
                         "main": "Sistema",
-                        "secondary": "Kurti atsargines kopijas, tikrinti žurnalus ar perkrauti sistemą",
-                        "title": "Sistema"
+                        "secondary": "Kurti atsargines kopijas, tikrinti žurnalus ar perkrauti sistemą"
                     },
                     "tags": {
                         "main": "Ženklinimai",
@@ -1700,8 +1662,6 @@
                     },
                     "name": "Pavadinimas",
                     "no_devices": "Nėra įrenginių",
-                    "open_configuration_url_device": "Žiūrėti įrenginį",
-                    "open_configuration_url_service": "Žiūrėti paslaugą",
                     "picker": {
                         "filter": {
                             "filter": "Filtras",
@@ -1803,9 +1763,7 @@
                     "failed_to_reboot_host": "Nepavyko paleisti iš naujo kompiuterio",
                     "failed_to_shutdown_host": "Nepavyko išjungti paslaugų kompiuterio",
                     "reboot_host": "Perkrauti",
-                    "reboot_host_confirm": "Ar tikrai norite savo kompiuterį paleisti iš naujo?",
-                    "shutdown_host": "Išjungti paslaugų kompiuterį",
-                    "shutdown_host_confirm": "Ar tikrai norite išjungti savo kompiuterį"
+                    "shutdown_host": "Išjungti paslaugų kompiuterį"
                 },
                 "header": "Konfigūruoti Home Assistant",
                 "helpers": {
@@ -2025,8 +1983,6 @@
                 "person": {
                     "add_person": "Pridėti asmenį",
                     "caption": "Asmenys",
-                    "confirm_delete": "Ar jūs tikrai norite ištrinti šį asmenį?",
-                    "confirm_delete2": "Visi šiam asmeniui priklausantys įrenginiai taps nepriskirti.",
                     "create_person": "Sukurti asmenį",
                     "detail": {
                         "admin": "Administratorius",
@@ -2052,7 +2008,6 @@
                     "copy": "Kopijuoti",
                     "critical": "Kritinis",
                     "dialog": {
-                        "alert_not_fixable": "Negalime išspręsti šios problemos.",
                         "breaks_in_version": "Tai nustojo veikti naudojant {version} versiją. Prieš atnaujindami nurodykite adresą.",
                         "fix": "Remontas",
                         "ignore": "Ignoruoti",
@@ -2063,7 +2018,6 @@
                         "unignore": "Nepaisyti"
                     },
                     "error": "Klaida",
-                    "hide_ignored": "Slėpti nepaisoma",
                     "integration_startup_time": "Integracijos paleidimo laikas",
                     "more_repairs": "Rodyti visas problemas",
                     "show_ignored": "Rodyti nepaisytas problemas",
@@ -2088,25 +2042,21 @@
                         "load_error_not_editable": "Redaguoti galima tik scenas, esančias scenes.yaml.",
                         "load_error_unknown": "Nepavyko užkrauti scenos ({err_no}).",
                         "name": "Pavadinimas",
-                        "save": "Išsaugoti",
-                        "unsaved_confirm": "Turite neišsaugotų pakeitimų, ar tikrai norite išeiti?"
+                        "save": "Išsaugoti"
                     },
                     "picker": {
                         "add_scene": "Pridėti sceną",
-                        "delete_confirm": "Ar jūs tikrai norite ištrinti šią sceną?",
                         "delete_scene": "Ištrinti sceną",
                         "duplicate": "Pasikartojantys",
                         "edit_scene": "Redaguoti sceną",
                         "header": "Scenų redaktorius",
                         "headers": {
-                            "edit": "Keisti",
                             "name": "Pavadinimas"
                         },
                         "learn_more": "Sužinokite daugiau apie scenas",
                         "no_scenes": "Neradome jokių redaguojamų scenų",
                         "only_editable": "Redaguoti galima tik scenas, esančias scenes.yaml.",
-                        "pick_scene": "Pasirinkite sceną, kurią norite redaguoti",
-                        "show_info_scene": "Rodyti informaciją apie sceną"
+                        "pick_scene": "Pasirinkite sceną, kurią norite redaguoti"
                     }
                 },
                 "script": {
@@ -2115,8 +2065,6 @@
                     "editor": {
                         "alias": "Pavadinimas",
                         "default_name": "Naujas scenarijus",
-                        "delete_confirm": "Ar tikrai norite ištrinti šį scenarijų?",
-                        "delete_script": "Ištrinti skriptą",
                         "header": "Scenarijus: {name}",
                         "id": "Subjekto ID",
                         "modes": {
@@ -2129,8 +2077,6 @@
                     "picker": {
                         "add_script": "Pridėti scenarijų",
                         "duplicate": "Dubliuoti",
-                        "duplicate_script": "Dubliuoti skriptą",
-                        "edit_script": "Redaguoti skriptą",
                         "header": "Skripto redaktorius",
                         "headers": {
                             "name": "Pavadinimas",
@@ -2148,7 +2094,6 @@
                         "move": "Perkelti",
                         "moving": "Perkeliamas duomenų diskas",
                         "moving_desc": "Startuojama iš naujo ir perkeliamas duomenų diskas. Palaukite",
-                        "no_devices": "Nerasta tinkamų prijungtų įrenginių",
                         "select_device": "Pasirinkite naują duomenų diską",
                         "title": "Perkelti duomenų diską"
                     },
@@ -2157,11 +2102,9 @@
                     "used_space": "Išnaudota vietos"
                 },
                 "system_dashboard": {
-                    "confirm_restart": "Ar tikrai norite perkrauti Home Asistentą?",
                     "confirm_restart_text": "Home Assistant perkrovimas sustabdys veikiančias vizualizacijas, automatizavimą ir skriptus.",
                     "confirm_restart_title": "Perkrauti Home Assistant?",
                     "restart_error": "Nepavyko startuoti Home Asistento",
-                    "restart_homeassistant": "Perkrauti Home Asistentą",
                     "restart_homeassistant_short": "Perkrauti"
                 },
                 "system_health": {
@@ -2170,7 +2113,6 @@
                     "cpu_usage": "Procesoriaus naudojimas",
                     "description": "Būsena, metrikos duomeys ir integracija starto metu",
                     "integration_start_time": "Integracijų pakilimo laikas",
-                    "long_loading_integrations": "Ilgai kylančios integracijos",
                     "ram_usage": "Atminties naudojimas",
                     "supervisor_stats": "Prižiūrėtojo metrikos duomenys"
                 },
@@ -2205,7 +2147,6 @@
                     "caption": "Naujiniai",
                     "check_updates": "Tikrinti, ar yra naujinų",
                     "description": "Valdyti Home Assistant naujinius, priedus ir įrenginius",
-                    "hide_skipped": "Slėpti praleistus",
                     "more_updates": "+{count} naujiniai",
                     "no_new_updates": "Naujų naujinių nerasta",
                     "no_updates": "Naujinių nėra",
@@ -2214,8 +2155,7 @@
                     "skipped": "Praleista",
                     "title": "{count} {count, plural,\n  one {naujinys}\n  other {naujiniai}\n}",
                     "unable_to_fetch": "Nepavyko įkrauti naujinių",
-                    "updates_refreshed": "{count} {count, plural,\n  one {naujinys atnaujintas}\n  other {naujinių atnaujinta}\n}",
-                    "version_available": "Prieinama versija {version_available}"
+                    "updates_refreshed": "{count} {count, plural,\n  one {naujinys atnaujintas}\n  other {naujinių atnaujinta}\n}"
                 },
                 "url": {
                     "enable_remote": "Įgalinti",
@@ -2238,15 +2178,12 @@
                         "admin": "Administratorius",
                         "caption": "Peržiūrėti naudotoją",
                         "change_password": "Pakeisti slaptažodį",
-                        "confirm_user_deletion": "Ar jūs tikrai norite ištrinti {vardą}?",
                         "deactivate_user": "Deaktyvinti naudotoją",
                         "delete_user": "Ištrinti naudotoją",
                         "group": "Grupė",
                         "id": "ID",
                         "name": "Rodomas pavadinimas",
-                        "new_password": "Naujas slaptažodis",
                         "owner": "Savininkas",
-                        "password_changed": "Slaptažodis sėkmingai pakeistas",
                         "system_generated": "Sugeneruota sistemos",
                         "unnamed_user": "Bevardis naudotojas",
                         "update_user": "Atnaujinti",
@@ -2493,7 +2430,6 @@
                         "title": "Šablonas"
                     },
                     "yaml": {
-                        "description": "Paleisti iš naujo ir sustabdyti Home Assistant serverį",
                         "section": {
                             "reloading": {
                                 "automation": "Automatika",
@@ -2509,15 +2445,12 @@
                                 "zone": "Zonos"
                             },
                             "server_management": {
-                                "confirm_restart": "Ar tikrai norite perkrauti Home Assistant?",
                                 "confirm_restart_text": "Home Assistant perkrovimas sustabdys veikiančias vizualizacijas, automatizavimą ir skriptus.",
                                 "confirm_restart_title": "Perkrauti Home Assistant?",
                                 "confirm_stop": "Ar jūs tikrai norite sustabdyti Home Assistant?",
                                 "heading": "Serverio valdymas",
-                                "introduction": "Valdykite Home Assistant serverį… iš Home Assistant.",
                                 "restart": "Perkrauti",
                                 "restart_error": "Nepavyko startuoti Home Asistento",
-                                "restart_home_assistant": "Perkrauti Home Asistentą",
                                 "stop": "Sustabdyti"
                             },
                             "validation": {
@@ -2903,15 +2836,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "Medijos grotuvas {name} neegzistuoja"
-                },
-                "tts": {
-                    "action_pick": "Pasirinkti",
-                    "gender": "Lytis",
-                    "gender_female": "Moteris",
-                    "gender_male": "Vyras",
-                    "language": "Kalba",
-                    "message": "Pranešimas",
-                    "set_as_default": "Nustatyti kaip numatytąsias parinktis"
                 }
             },
             "my": {

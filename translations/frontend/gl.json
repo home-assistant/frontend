@@ -284,7 +284,6 @@
                 "used": "O repositorio está en uso para os complementos instalados e non se pode eliminar."
             },
             "restart_addon": {
-                "confirm_text": "Reiniciar complemento",
                 "text": "¿Queres reiniciar o complemento cos teus cambios?"
             }
         },
@@ -338,10 +337,6 @@
                 "log_provider": "Provedor de rexistros"
             },
             "supervisor": {
-                "beta_backup": "Asegúrate de ter copias de seguridade dos teus datos antes de activar esta función.",
-                "beta_join_confirm": "Queres unirte á canle beta?",
-                "beta_release_items": "Isto inclúe versións beta para:",
-                "beta_warning": "As versións beta son para probadores e adoptantes anticipados e poden conter cambios de código inestables",
                 "channel": "Canle",
                 "cpu_usage": "Uso da CPU do supervisor",
                 "failed_to_reload": "Non se puido recargar o supervisor",
@@ -518,7 +513,6 @@
             },
             "service-control": {
                 "required": "Este campo é necesario",
-                "service_data": "Datos do servizo",
                 "target": "Obxectivos"
             },
             "statistic-picker": {
@@ -578,8 +572,6 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "device_children": "Ver fillos",
-                    "view_in_visualization": "Ver en Visualización",
                     "view_network": "Ver rede"
                 },
                 "device_children": "Dispositivos Zigbee fillos"
@@ -709,9 +701,6 @@
                             "no_hooks_yet": "Semella que aínda non tes webhooks. Comeza configurando un"
                         }
                     },
-                    "dialog_cloudhook": {
-                        "copied_to_clipboard": "copiado ao portapapeis"
-                    },
                     "forgot_password": {
                         "instructions": "Introduce o teu enderezo de correo electrónico e enviarémosche unha ligazón para restablecer o teu contrasinal."
                     },
@@ -822,7 +811,6 @@
                             "learn_more": "Aprende máis sobre Credenciais de Aplicacións"
                         },
                         "disable": {
-                            "disable_confirm": "Seguro que queres desactivar esta entrada de configuración? Os seus dispositivos e entidades estarán desactivados.",
                             "disabled": "Desactivado",
                             "disabled_by": {
                                 "device": "dispositivo",
@@ -843,10 +831,6 @@
                         "could_not_load": "Non se puido cargar o fluxo de configuración",
                         "error": "Erro",
                         "not_loaded": "Non se puido cargar a integración. Tenta reiniciar Home Assistant.",
-                        "pick_flow_step": {
-                            "new_flow": "Non, configura outra instancia de {integration}",
-                            "title": "Descubrimos estes, queres montalos?"
-                        },
                         "success": "Éxito"
                     },
                     "confirm_new": "¿Queres configurar {integration} ?",
@@ -894,9 +878,6 @@
                         "entities": {
                             "add": "Engadir unha entidade"
                         }
-                    },
-                    "picker": {
-                        "show_info_scene": "Amosar información sobre a escena"
                     }
                 },
                 "script": {
@@ -908,7 +889,6 @@
                 "users": {
                     "editor": {
                         "name": "Nome de visualización",
-                        "password_changed": "O contrasinal cambiouse correctamente",
                         "username": "Usuario"
                     },
                     "picker": {
@@ -1089,8 +1069,7 @@
                             "description": "A tarxeta Rexistro mostra unha lista de eventos das entidades."
                         },
                         "map": {
-                            "description": "A tarxeta de mapa que lle permite amosar funcións nun mapa.",
-                            "hours_to_show": "Horas para amosar"
+                            "description": "A tarxeta de mapa que lle permite amosar funcións nun mapa."
                         },
                         "markdown": {
                             "description": "A tarxeta Markdown úsase para representar Markdown.",
