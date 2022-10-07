@@ -57,6 +57,7 @@ import {
   mdiVideo,
   mdiWaterPercent,
   mdiWeatherCloudy,
+  mdiWeatherWindy,
   mdiWeight,
   mdiWhiteBalanceSunny,
   mdiWifi,
@@ -154,6 +155,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   voltage: mdiSineWave,
   // volume: TBD, => no well matching icon found
   weight: mdiWeight,
+  wind_speed: mdiWeatherWindy,
 };
 
 /** Domains that have a state card. */
