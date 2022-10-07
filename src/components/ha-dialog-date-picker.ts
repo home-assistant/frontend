@@ -56,7 +56,7 @@ export class HaDialogDatePicker extends LitElement {
   }
 
   private _setToday() {
-    this._value = new Date().toISOString().split("T")[0];
+    this._value = new Date().toLocaleDateString("en-CA");
   }
 
   private _setValue() {
