@@ -170,13 +170,14 @@ export class ZHAClusterCommands extends LitElement {
       cluster_type: this.selectedCluster!.type,
       command: this._selectedCommandId!,
       command_type: selectedCommand!.type,
-      data: this._commandData,
+      args: this._commandData,
     };
   }
 
   private async _commandDataChanged(ev: CustomEvent): Promise<void> {
     this._commandData = ev.detail.value;
-    this._computeIssueClusterCommandServiceData();
+    this._issueClusterCommandServiceData =
+      this._computeIssueClusterCommandServiceData();
   }
 
   private _onManufacturerCodeOverrideChanged(value: ChangeEvent): void {
