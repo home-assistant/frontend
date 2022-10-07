@@ -136,6 +136,7 @@ export class CloudRegister extends LitElement {
                     "ui.panel.config.cloud.register.email_address"
                   )}
                   type="email"
+                  autocomplete="email"
                   required
                   .value=${this.email}
                   @keydown=${this._keyDown}
@@ -148,6 +149,7 @@ export class CloudRegister extends LitElement {
                   label="Password"
                   .value=${this._password}
                   type="password"
+                  autocomplete="new-password"
                   minlength="8"
                   required
                   @keydown=${this._keyDown}
