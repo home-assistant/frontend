@@ -25,7 +25,10 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <style include="ha-style iron-flex iron-positioning"></style>
       <style>
         .content {
-          padding: 16px;
+          padding: calc(16px + env(safe-area-inset-top))
+            calc(16px + env(safe-area-inset-right))
+            calc(16px + env(safe-area-inset-bottom))
+            calc(16px + env(safe-area-inset-left));
           max-width: 1200px;
           margin: auto;
         }

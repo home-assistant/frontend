@@ -326,7 +326,10 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
       haStyle,
       css`
         .content {
-          padding: 16px;
+          padding: calc(16px + env(safe-area-inset-top))
+            calc(16px + env(safe-area-inset-right))
+            calc(16px + env(safe-area-inset-bottom))
+            calc(16px + env(safe-area-inset-left));
         }
 
         th {
