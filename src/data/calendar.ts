@@ -1,12 +1,40 @@
 import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
-import type { CalendarEvent, HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 
 export interface Calendar {
   entity_id: string;
   name?: string;
   backgroundColor?: string;
+}
+
+/** Object used to render a calendar even in fullcalendar. */
+export interface CalendarEvent {
+  title: string;
+  start: string;
+  end?: string;
+  backgroundColor?: string;
+  borderColor?: string;
+  calendar: string;
+  eventData: CalendarEventData;
+  [key: string]: any;
+}
+
+/** Data returned from the core APIs. */
+export interface CalendarEventData {
+  summary: string;
+  dtstart: string;
+  dtend?: string;
+  uid?: string;
+  recurrence_id?: string;
+  rrule?: string;
+}
+
+// The scope of a delete/update for a recurring event
+export enum RecurrenceRange {
+  THISEVENT = "",
+  THISANDFUTURE = "THISANDFUTURE",
 }
 
 export const fetchCalendarEvents = async (
@@ -41,14 +69,22 @@ export const fetchCalendarEvents = async (
         return;
       }
       const eventEnd = getCalendarDate(ev.end);
+      const eventData: CalendarEventData = {
+        uid: ev.uid,
+        summary: ev.summary,
+        dtstart: eventStart,
+        dtend: eventEnd,
+        recurrence_id: ev.recurrence_id,
+        rrule: ev.rrule,
+      };
       const event: CalendarEvent = {
         start: eventStart,
         end: eventEnd,
         title: ev.summary,
-        summary: ev.summary,
         backgroundColor: cal.backgroundColor,
         borderColor: cal.backgroundColor,
         calendar: cal.entity_id,
+        eventData: eventData,
       };
 
       calEvents.push(event);
@@ -83,3 +119,31 @@ export const getCalendars = (hass: HomeAssistant): Calendar[] =>
       name: computeStateName(hass.states[eid]),
       backgroundColor: getColorByIndex(idx),
     }));
+
+export const createCalendarEvent = (
+  hass: HomeAssistant,
+  entityId: string,
+  event: CalendarEventData
+) => {
+  hass.callWS<void>({
+    type: "calendar/event/create",
+    entity_id: entityId,
+    event: event,
+  });
+};
+
+export const deleteCalendarEvent = (
+  hass: HomeAssistant,
+  entityId: string,
+  uid: string,
+  recurrence_id?: string,
+  recurrence_range?: RecurrenceRange
+) => {
+  hass.callWS<void>({
+    type: "calendar/event/delete",
+    entity_id: entityId,
+    uid,
+    recurrence_id,
+    recurrence_range,
+  });
+};

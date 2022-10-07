@@ -11,7 +11,13 @@ import listPlugin from "@fullcalendar/list";
 // @ts-ignore
 import listStyle from "@fullcalendar/list/main.css";
 import "@material/mwc-button";
-import { mdiViewAgenda, mdiViewDay, mdiViewModule, mdiViewWeek } from "@mdi/js";
+import {
+  mdiPlus,
+  mdiViewAgenda,
+  mdiViewDay,
+  mdiViewModule,
+  mdiViewWeek,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -26,18 +32,23 @@ import memoize from "memoize-one";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button-toggle-group";
+import "../../components/ha-fab";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-icon-button-next";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import type {
-  CalendarEvent,
   CalendarViewChanged,
   FullCalendarView,
   HomeAssistant,
   ToggleButton,
 } from "../../types";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
+import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
+import type {
+  Calendar as CalendarData,
+  CalendarEvent,
+} from "../../data/calendar";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -85,6 +96,8 @@ export class HAFullCalendar extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public events: CalendarEvent[] = [];
+
+  @property({ attribute: false }) public mutableCalendars: CalendarData[] = [];
 
   @property({ attribute: false }) public views: FullCalendarView[] = [
     "dayGridMonth",
@@ -179,7 +192,17 @@ export class HAFullCalendar extends LitElement {
             </div>
           `
         : ""}
-      <div id="calendar"></div>
+
+      <div id="calendar">
+        <ha-fab
+          slot="fab"
+          .label=${this.hass.localize("ui.components.calendar.event.add")}
+          extended
+          @click=${this._createEvent}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
+      </div>
     `;
   }
 
@@ -236,14 +259,24 @@ export class HAFullCalendar extends LitElement {
     this._fireViewChanged();
   }
 
-  private _handleEventClick(info): void {
-    if (info.view.type !== "dayGridMonth") {
-      return;
-    }
+  private _createEvent(_info) {
+    showCalendarEventDetailDialog(this, {
+      calendars: this.mutableCalendars,
+      updated: () => {
+        this._fireViewChanged();
+      },
+    });
+  }
 
-    this._activeView = "dayGridDay";
-    this.calendar!.changeView("dayGridDay");
-    this.calendar!.gotoDate(info.event.startStr);
+  private _handleEventClick(info): void {
+    // TODO: Only can run when calendar supports edit features
+    showCalendarEventDetailDialog(this, {
+      calendarId: info.event.extendedProps.calendar,
+      calendarEvent: info.event.extendedProps.eventData,
+      updated: () => {
+        this._fireViewChanged();
+      },
+    });
   }
 
   private _handleDateClick(info): void {
