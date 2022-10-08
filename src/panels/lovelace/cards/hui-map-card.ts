@@ -375,6 +375,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
       #root {
         position: relative;
+        height: 100%;
       }
 
       :host([ispanel]) #root {
