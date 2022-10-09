@@ -646,6 +646,7 @@
             "recurring_prompt": "Do you want to delete only this event, or this and all future occurrences of the event?"
           },
           "repeat": {
+            "label": "Repeat",
             "freq": {
               "none": "No repeat",
               "label": "Repeat",

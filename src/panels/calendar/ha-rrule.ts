@@ -9,7 +9,7 @@ import "../../components/ha-select";
 import { HomeAssistant } from "../../types";
 import { NumberSelector } from "../../data/selector";
 
-const enum RepeatFrequency {
+enum RepeatFrequency {
   NONE = "none",
   YEARLY = "yearly",
   MONTHLY = "monthly",
@@ -73,7 +73,7 @@ export class HaRRule extends LitElement {
       this._freq = undefined;
       return;
     }
-    this._freq = convertFrequency(this._rrule!.freq);
+    this._freq = convertFrequency(this._rrule!.freq!);
   }
 
   protected render(): TemplateResult {
@@ -145,17 +145,23 @@ export class HaRRule extends LitElement {
     }
     const contentline = RRule.optionsToString(this._rrule);
     const rule = contentline.slice(6); // Strip "RRULE:" prefix
-    fireEvent(this, "change", { value: rule }); // Format is FREQ=DAILY;...
+    fireEvent(this, "value-changed", { value: rule }); // Format is FREQ=DAILY;...
   }
 
   private _intervalSelector(): NumberSelector {
+    if (
+      this._freq === RepeatFrequency.NONE ||
+      this._freq === RepeatFrequency.YEARLY
+    ) {
+      throw Error("Unexpected repeat frequency");
+    }
     return {
       number: {
         min: 1,
         step: 1,
         mode: "box",
         unit_of_measurement: this.hass.localize(
-          `ui.components.calendar.event.repeat.interval.${this._freq}`
+          `ui.components.calendar.event.repeat.interval.${this._freq!}`
         ),
       },
     };
