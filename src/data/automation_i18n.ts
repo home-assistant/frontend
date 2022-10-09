@@ -72,6 +72,20 @@ export const describeTrigger = (
       base += ` below ${trigger.below}`;
     }
 
+    if (trigger.for) {
+      let duration: string | null;
+      if (typeof trigger.for === "number") {
+        duration = secondsToDuration(trigger.for);
+      } else if (typeof trigger.for === "string") {
+        duration = trigger.for;
+      } else {
+        duration = formatDuration(trigger.for);
+      }
+      if (duration) {
+        base += ` for ${duration}`;
+      }
+    }
+
     return base;
   }
 
