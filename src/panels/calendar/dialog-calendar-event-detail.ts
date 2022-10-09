@@ -18,7 +18,6 @@ import {
   CalendarEventMutableParams,
   createCalendarEvent,
   deleteCalendarEvent,
-  RecurrenceRange,
 } from "../../data/calendar";
 import { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
@@ -340,7 +339,7 @@ class DialogCalendarEventDetail extends LitElement {
   private async _deleteEvent() {
     this._submitting = true;
     const entry = this._params!.entry!;
-    await showConfirmEventDialog(this, {
+    const range = await showConfirmEventDialog(this, {
       title: this.hass.localize(
         "ui.components.calendar.event.confirm_delete.delete"
       ),
@@ -363,44 +362,28 @@ class DialogCalendarEventDetail extends LitElement {
             "ui.components.calendar.event.confirm_delete.delete_future"
           )
         : undefined,
-      confirm: async () => {
-        try {
-          await deleteCalendarEvent(
-            this.hass!,
-            this._calendarId!,
-            entry.uid!,
-            entry.recurrence_id
-          );
-        } catch (err: any) {
-          this._error = err ? err.message : "Unknown error";
-          return;
-        } finally {
-          this._submitting = false;
-        }
-        await this._params!.updated();
-        this._params = undefined;
-      },
-      confirmFuture: async () => {
-        try {
-          await deleteCalendarEvent(
-            this.hass!,
-            this._calendarId!,
-            entry.uid!,
-            entry.recurrence_id!,
-            RecurrenceRange.THISANDFUTURE
-          );
-        } catch (err: any) {
-          this._error = err ? err.message : "Unknown error";
-          return;
-        } finally {
-          this._submitting = false;
-        }
-        await this._params!.updated();
-        this._params = undefined;
-      },
-      destructive: true,
     });
-    // TODO: Block the result and run the submitting check here?
+    if (range === undefined) {
+      // Cancel
+      this._submitting = false;
+      return;
+    }
+    try {
+      await deleteCalendarEvent(
+        this.hass!,
+        this._calendarId!,
+        entry.uid!,
+        entry.recurrence_id || "",
+        range!
+      );
+    } catch (err: any) {
+      this._error = err ? err.message : "Unknown error";
+      return;
+    } finally {
+      this._submitting = false;
+    }
+    await this._params!.updated();
+    this._close();
   }
 
   private _close(): void {

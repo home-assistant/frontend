@@ -1,15 +1,14 @@
 import { TemplateResult } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
+import { RecurrenceRange } from "../../data/calendar";
 
 export interface ConfirmEventDialogBoxParams {
   confirmText?: string;
-  confirm?: () => void;
   confirmFutureText?: string; // Prompt for future recurring events
-  confirmFuture?: () => void;
+  confirm?: (recurrenceRange: RecurrenceRange) => void;
   cancel?: () => void;
   text?: string | TemplateResult;
   title: string;
-  destructive: boolean;
 }
 
 export const loadGenericDialog = () => import("./confirm-event-dialog-box");
@@ -17,11 +16,20 @@ export const loadGenericDialog = () => import("./confirm-event-dialog-box");
 export const showConfirmEventDialog = (
   element: HTMLElement,
   dialogParams: ConfirmEventDialogBoxParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "confirm-event-dialog-box",
-    dialogImport: loadGenericDialog,
-    dialogParams: dialogParams,
-    addHistory: false,
+) =>
+  new Promise<RecurrenceRange | undefined>((resolve) => {
+    fireEvent(element, "show-dialog", {
+      dialogTag: "confirm-event-dialog-box",
+      dialogImport: loadGenericDialog,
+      dialogParams: {
+        ...dialogParams,
+        confirm: (thisAndFuture: RecurrenceRange) => {
+          resolve(thisAndFuture);
+        },
+        cancel: () => {
+          resolve(undefined);
+        },
+      },
+      addHistory: false,
+    });
   });
-};

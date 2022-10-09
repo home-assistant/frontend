@@ -7,6 +7,7 @@ import "../../components/ha-svg-icon";
 import "../../components/ha-switch";
 import { HomeAssistant } from "../../types";
 import { ConfirmEventDialogBoxParams } from "./show-confirm-event-dialog-box";
+import { RecurrenceRange } from "../../data/calendar";
 
 @customElement("confirm-event-dialog-box")
 class ConfirmEventDialogBox extends LitElement {
@@ -62,22 +63,22 @@ class ConfirmEventDialogBox extends LitElement {
   }
 
   private _dismiss(): void {
-    if (this._params?.cancel) {
-      this._params.cancel();
+    if (this._params!.cancel) {
+      this._params!.cancel();
     }
     this._close();
   }
 
   private _confirm(): void {
     if (this._params!.confirm) {
-      this._params!.confirm();
+      this._params!.confirm(RecurrenceRange.THISEVENT);
     }
     this._close();
   }
 
   private _confirmFuture(): void {
-    if (this._params!.confirmFuture) {
-      this._params!.confirmFuture();
+    if (this._params!.confirm) {
+      this._params!.confirm(RecurrenceRange.THISANDFUTURE);
     }
     this._close();
   }
