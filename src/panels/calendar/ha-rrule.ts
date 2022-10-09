@@ -53,6 +53,8 @@ const convertRepeatFrequency = (
 export class HaRRule extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public mutable?: boolean = false;
+
   @property() public value?: string;
 
   @state() private _freq?: RepeatFrequency;
@@ -63,22 +65,29 @@ export class HaRRule extends LitElement {
     if (this.value === undefined || this.value === "") {
       this._freq = RepeatFrequency.NONE;
       this._rrule = undefined;
+      this.requestUpdate();
       return;
     }
     try {
       this._rrule = RRule.parseString(this.value);
-    } catch {
+    } catch (ex) {
       // unsupported rrule string
       this._rrule = undefined;
       this._freq = undefined;
+      this.requestUpdate();
       return;
     }
     this._freq = convertFrequency(this._rrule!.freq!);
+    this.requestUpdate();
   }
 
   protected render(): TemplateResult {
     if (!this._freq) {
-      return html``;
+      // Unparsed RRULE string is just displayed as text
+      return html`${this.value}`;
+    }
+    if (!this.mutable) {
+      return html`${this._rruleText()}`;
     }
     return html`
       <ha-select
@@ -103,17 +112,15 @@ export class HaRRule extends LitElement {
 
       ${this._freq !== RepeatFrequency.NONE &&
       this._freq !== RepeatFrequency.YEARLY
-        ? html`
-            <ha-selector-number
-              label=${this.hass.localize(
-                `ui.components.calendar.event.repeat.interval.label`
-              )}
-              .hass=${this.hass}
-              .selector=${this._intervalSelector()}
-              .value=${this._rrule!.interval}
-              @value-changed=${this._handleIntervalChange}
-            ></ha-selector-number>
-          `
+        ? html` <ha-selector-number
+            label=${this.hass.localize(
+              `ui.components.calendar.event.repeat.interval.label`
+            )}
+            .hass=${this.hass}
+            .selector=${this._intervalSelector()}
+            .value=${this._rrule!.interval}
+            @value-changed=${this._handleIntervalChange}
+          ></ha-selector-number>`
         : html``}
     `;
   }
@@ -146,6 +153,11 @@ export class HaRRule extends LitElement {
     const contentline = RRule.optionsToString(this._rrule);
     const rule = contentline.slice(6); // Strip "RRULE:" prefix
     fireEvent(this, "value-changed", { value: rule }); // Format is FREQ=DAILY;...
+  }
+
+  private _rruleText() {
+    // This does not currently handle translations!
+    return RRule.fromString(`RRULE:${this.value}`).toText();
   }
 
   private _intervalSelector(): NumberSelector {

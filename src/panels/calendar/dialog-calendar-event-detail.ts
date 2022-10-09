@@ -6,7 +6,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import "../../components/ha-date-range-picker";
 import "../lovelace/components/hui-generic-entity-row";
-import { formatAttributeValue } from "../../data/entity_attributes";
 import { formatTime } from "../../common/datetime/format_time";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
@@ -152,18 +151,6 @@ class DialogCalendarEventDetail extends LitElement {
                   dialogInitialFocus
                 ></ha-textfield>
 
-                <ha-formfield
-                  .label=${this.hass.localize(
-                    "ui.components.calendar.event.all_day"
-                  )}
-                >
-                  <ha-switch
-                    id="all_day"
-                    .checked=${this._allDay}
-                    @change=${this._allDayToggleChanged}
-                  ></ha-switch>
-                </ha-formfield>
-
                 <ha-date-range-picker
                   .hass=${this.hass}
                   startDate=${this._dtstart!}
@@ -173,27 +160,42 @@ class DialogCalendarEventDetail extends LitElement {
                   @change=${this._dateRangeChanged}
                 ></ha-date-range-picker>
 
-                <ha-rrule
-                  .hass=${this.hass}
-                  .value=${this._data!.rrule}
-                  @value-changed=${this._handleRRuleChanged}
-                >
-                </ha-rrule>
+                <div id="date-range-margin"></div>
+                <div id="date-range-details-content">
+                  <ha-formfield
+                    .label=${this.hass.localize(
+                      "ui.components.calendar.event.all_day"
+                    )}
+                  >
+                    <ha-switch
+                      id="all_day"
+                      .checked=${this._allDay}
+                      @change=${this._allDayToggleChanged}
+                    ></ha-switch>
+                  </ha-formfield>
 
-                <ha-combo-box
-                  name="calendar"
-                  .hass=${this.hass}
-                  .disabled=${!this._params.calendarId}
-                  .label=${this.hass.localize("ui.components.calendar.label")}
-                  .value=${this._calendarId!}
-                  .renderer=${rowRenderer}
-                  .items=${this._calendars}
-                  item-id-path="entity_id"
-                  item-value-path="entity_id"
-                  item-label-path="name"
-                  required
-                  @value-changed=${this._handleCalendarPicked}
-                ></ha-combo-box>
+                  <ha-rrule
+                    .hass=${this.hass}
+                    .value=${this._data!.rrule}
+                    @value-changed=${this._handleRRuleChanged}
+                  >
+                  </ha-rrule>
+
+                  <ha-combo-box
+                    name="calendar"
+                    .hass=${this.hass}
+                    .disabled=${!this._params.calendarId}
+                    .label=${this.hass.localize("ui.components.calendar.label")}
+                    .value=${this._calendarId!}
+                    .renderer=${rowRenderer}
+                    .items=${this._calendars}
+                    item-id-path="entity_id"
+                    item-value-path="entity_id"
+                    item-label-path="name"
+                    required
+                    @value-changed=${this._handleCalendarPicked}
+                  ></ha-combo-box>
+                </div>
 
                 <mwc-button
                   slot="primaryAction"
@@ -209,7 +211,12 @@ class DialogCalendarEventDetail extends LitElement {
                   <div class="value">
                     ${this._formatDateRange()}<br />
                     ${this._data!.rrule !== undefined
-                      ? formatAttributeValue(this.hass, this._data!.rrule!)
+                      ? html` <ha-rrule
+                          .hass=${this.hass}
+                          .value=${this._data!.rrule}
+                          .mutable="false"
+                        >
+                        </ha-rrule>`
                       : html``}
                   </div>
                 </div>
@@ -395,6 +402,12 @@ class DialogCalendarEventDetail extends LitElement {
           margin-inline-end: 0;
           margin-inline-start: initial;
           direction: var(--direction);
+        }
+        .date-range-margin {
+          width: 100px;
+        }
+        .date-range-details-content {
+          display: inline-block;
         }
         ha-combo-box {
           display: block;
