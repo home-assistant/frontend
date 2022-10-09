@@ -60,15 +60,15 @@ export const describeTrigger = (
 
     base += ` ${entity} is`;
 
-    if ("above" in trigger) {
+    if (trigger.above !== undefined) {
       base += ` above ${trigger.above}`;
     }
 
-    if ("below" in trigger && "above" in trigger) {
+    if (trigger.below !== undefined && trigger.above !== undefined) {
       base += " and";
     }
 
-    if ("below" in trigger) {
+    if (trigger.below !== undefined) {
       base += ` below ${trigger.below}`;
     }
 
