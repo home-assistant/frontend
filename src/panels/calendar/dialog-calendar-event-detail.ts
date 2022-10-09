@@ -21,6 +21,7 @@ import {
 } from "../../data/calendar";
 import { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
+import "./ha-rrule";
 
 const rowRenderer: ComboBoxLitRenderer<Calendar> = (
   item
@@ -172,31 +173,12 @@ class DialogCalendarEventDetail extends LitElement {
                   @change=${this._dateRangeChanged}
                 ></ha-date-range-picker>
 
-                <ha-formfield
-                  .label=${this.hass.localize(
-                    "ui.components.calendar.event.repeat"
-                  )}
+                <ha-rrule
+                  .hass=${this.hass}
+                  .value=${this._data!.rrule}
+                  @change=${this._handleRRuleChanged}
                 >
-                  <ha-switch
-                    id="repeat"
-                    .checked=${this._data!.rrule !== undefined}
-                    @change=${this._handleRepeatChanged}
-                  ></ha-switch>
-                </ha-formfield>
-
-                ${this._data!.rrule !== undefined
-                  ? html`
-                      <ha-textfield
-                        id="rrule"
-                        .label=${this.hass.localize(
-                          "ui.components.calendar.event.repeat"
-                        )}
-                        .value=${this._data!.rrule}
-                        @change=${this._handleRRuleChanged}
-                      >
-                      </ha-textfield>
-                    `
-                  : html``}
+                </ha-rrule>
 
                 <ha-combo-box
                   name="calendar"
@@ -256,15 +238,6 @@ class DialogCalendarEventDetail extends LitElement {
 
   private _handleSummaryChanged(ev) {
     this._data!.summary = ev.target.value;
-  }
-
-  private _handleRepeatChanged(ev) {
-    if (ev.target.checked) {
-      this._data!.rrule = "FREQ=DAILY";
-    } else {
-      this._data!.rrule = undefined;
-    }
-    this.requestUpdate();
   }
 
   private _handleRRuleChanged(ev) {
@@ -427,7 +400,6 @@ class DialogCalendarEventDetail extends LitElement {
           display: block;
           margin-bottom: 24px;
         }
-
         ha-svg-icon {
           width: 40px;
           margin-right: 8px;
@@ -435,6 +407,9 @@ class DialogCalendarEventDetail extends LitElement {
           margin-inline-start: initial;
           direction: var(--direction);
           vertical-align: top;
+        }
+        ha-rrule {
+          display: inline-block;
         }
         .field {
           vertical-align: top;
