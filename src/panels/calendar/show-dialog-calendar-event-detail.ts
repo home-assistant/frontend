@@ -2,9 +2,9 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { Calendar, CalendarEventData } from "../../data/calendar";
 
 export interface CalendarEventDetailDialogParams {
-  calendars?: Calendar[];
+  calendars: Calendar[]; // Must have > 1 calendar to create an event
   calendarId?: string;
-  calendarEvent?: CalendarEventData;
+  entry?: CalendarEventData;
   updated: () => void;
 }
 

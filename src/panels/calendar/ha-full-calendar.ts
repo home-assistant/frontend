@@ -97,7 +97,7 @@ export class HAFullCalendar extends LitElement {
 
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
-  @property({ attribute: false }) public mutableCalendars: CalendarData[] = [];
+  @property({ attribute: false }) public mutableCalendars?: CalendarData[] = [];
 
   @property({ attribute: false }) public views: FullCalendarView[] = [
     "dayGridMonth",
@@ -194,14 +194,16 @@ export class HAFullCalendar extends LitElement {
         : ""}
 
       <div id="calendar">
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.components.calendar.event.add")}
-          extended
-          @click=${this._createEvent}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        ${this.mutableCalendars && this.mutableCalendars.length > 0
+          ? html` <ha-fab
+              slot="fab"
+              .label=${this.hass.localize("ui.components.calendar.event.add")}
+              extended
+              @click=${this._createEvent}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+            </ha-fab>`
+          : html``}
       </div>
     `;
   }
@@ -254,25 +256,38 @@ export class HAFullCalendar extends LitElement {
       this.shadowRoot!.getElementById("calendar")!,
       config
     );
-
     this.calendar!.render();
     this._fireViewChanged();
   }
 
   private _createEvent(_info) {
     showCalendarEventDetailDialog(this, {
-      calendars: this.mutableCalendars,
+      calendars: this.mutableCalendars!,
       updated: () => {
         this._fireViewChanged();
       },
     });
   }
 
+  private isMutableCalendar(entityId: string): boolean {
+    if (!this.mutableCalendars) {
+      return false;
+    }
+    return (
+      this.mutableCalendars.filter((selCal) => selCal.entity_id === entityId)
+        .length !== 0
+    );
+  }
+
   private _handleEventClick(info): void {
-    // TODO: Only can run when calendar supports edit features
+    if (!this.isMutableCalendar(info.event.extendedProps.calendar)) {
+      this._handleDateClick(info);
+      return;
+    }
     showCalendarEventDetailDialog(this, {
+      calendars: this.mutableCalendars!,
       calendarId: info.event.extendedProps.calendar,
-      calendarEvent: info.event.extendedProps.eventData,
+      entry: info.event.extendedProps.eventData,
       updated: () => {
         this._fireViewChanged();
       },
