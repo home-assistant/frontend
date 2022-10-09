@@ -424,16 +424,18 @@ export const describeCondition = (
 
     base += ` ${entity} is ${states}`;
 
-    if ("for" in condition) {
-      let duration: string;
+    if (condition.for) {
+      let duration: string | null;
       if (typeof condition.for === "number") {
-        duration = `for ${secondsToDuration(condition.for)!}`;
+        duration = secondsToDuration(condition.for);
       } else if (typeof condition.for === "string") {
-        duration = `for ${condition.for}`;
+        duration = condition.for;
       } else {
-        duration = `for ${JSON.stringify(condition.for)}`;
+        duration = formatDuration(condition.for);
       }
-      base += ` for ${duration}`;
+      if (duration) {
+        base += ` for ${duration}`;
+      }
     }
 
     return base;
