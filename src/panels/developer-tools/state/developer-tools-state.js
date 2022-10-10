@@ -40,10 +40,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           -webkit-user-select: initial;
           -moz-user-select: initial;
           display: block;
-          padding: calc(16px + env(safe-area-inset-top))
-            calc(16px + env(safe-area-inset-right))
-            calc(16px + env(safe-area-inset-bottom))
-            calc(16px + env(safe-area-inset-left));
+          padding: 16px;
+          padding: max(16px, env(safe-area-inset-top))
+            max(16px, env(safe-area-inset-right))
+            max(16px, env(safe-area-inset-bottom))
+            max(16px, env(safe-area-inset-left));
         }
 
         ha-textfield {
