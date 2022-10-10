@@ -44,6 +44,9 @@ const parseLocalDate = (str: string): Date => {
   );
 };
 
+// Convert a date to the local ISO8001 format date
+const toLocalDateString = (date: Date): string => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+
 class DialogCalendarEventDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -249,7 +252,7 @@ class DialogCalendarEventDetail extends LitElement {
   }
 
   private _handleRRuleChanged(ev) {
-    this._data!.rrule = ev.target.value;
+    this._data!.rrule = ev.detail.value;
     this.requestUpdate();
   }
 
@@ -271,8 +274,8 @@ class DialogCalendarEventDetail extends LitElement {
       // End date/time is exclusive when persisted
       const endDate = new Date(this._dtend!);
       endDate.setDate(endDate.getDate() + 1);
-      this._data!.dtstart = this._dtstart!.toJSON().substring(0, 10); // YYYY-MM-DD
-      this._data!.dtend = endDate.toJSON().substring(0, 10);
+      this._data!.dtstart = toLocalDateString(this._dtstart);
+      this._data!.dtend = toLocalDateString(endDate);
     } else {
       this._data!.dtstart = this._dtstart!.toJSON();
       this._data!.dtend = this._dtend!.toJSON();
