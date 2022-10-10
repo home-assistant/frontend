@@ -1679,15 +1679,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-utils@npm:^3.8.4":
-  version: 3.8.4
-  resolution: "@formatjs/intl-utils@npm:3.8.4"
-  dependencies:
-    emojis-list: ^3.0.0
-  checksum: e38a98d391ec68d8abc4bb1824426bd804dfb022ce61be004459faec69f7843ddb3733bae8d0dce4aafbfafad59cb10e67fc21d22d62f68d98251ce0bce8e704
-  languageName: node
-  linkType: hard
-
 "@fullcalendar/common@npm:5.9.0, @fullcalendar/common@npm:~5.9.0":
   version: 5.9.0
   resolution: "@fullcalendar/common@npm:5.9.0"
@@ -8982,7 +8973,6 @@ fsevents@^1.2.7:
     "@formatjs/intl-numberformat": ^7.2.5
     "@formatjs/intl-pluralrules": ^4.1.5
     "@formatjs/intl-relativetimeformat": ^9.3.2
-    "@formatjs/intl-utils": ^3.8.4
     "@fullcalendar/common": 5.9.0
     "@fullcalendar/core": 5.9.0
     "@fullcalendar/daygrid": 5.9.0

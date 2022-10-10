@@ -112,4 +112,12 @@ describe("relativeTime", () => {
       "1 month"
     );
   });
+
+  it("handles a jump between years", () => {
+    const inputdt = new Date("2021-12-29");
+    const compare = new Date("2022-01-01");
+
+    assert.strictEqual(relativeTime(inputdt, locale, compare), "3 days ago");
+    assert.strictEqual(relativeTime(inputdt, locale, compare, false), "3 days");
+  });
 });
