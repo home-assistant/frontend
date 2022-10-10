@@ -42,7 +42,6 @@ export type LocalizeKeys =
   | `ui.panel.config.url.${string}`
   | `ui.panel.config.zha.${string}`
   | `ui.panel.config.zwave_js.${string}`
-  | `ui.panel.developer-tools.tabs.${string}`
   | `ui.panel.lovelace.card.${string}`
   | `ui.panel.lovelace.editor.${string}`
   | `ui.panel.page-authorize.form.${string}`

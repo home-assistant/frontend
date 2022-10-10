@@ -9,7 +9,12 @@ import { checkCoreConfig } from "../../../data/core";
 import { domainToName } from "../../../data/integration";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route, TranslationDict } from "../../../types";
+
+type ReloadableDomain = Exclude<
+  keyof TranslationDict["ui"]["panel"]["developer-tools"]["tabs"]["yaml"]["section"]["reloading"],
+  "heading" | "introduction" | "reload"
+>;
 
 @customElement("developer-yaml-config")
 export class DeveloperYamlConfig extends LitElement {
@@ -25,7 +30,7 @@ export class DeveloperYamlConfig extends LitElement {
 
   @state() private _validating = false;
 
-  @state() private _reloadableDomains: string[] = [];
+  @state() private _reloadableDomains: ReloadableDomain[] = [];
 
   @state() private _isValid: boolean | null = null;
 
@@ -40,7 +45,7 @@ export class DeveloperYamlConfig extends LitElement {
       this._reloadableDomains = componentsWithService(
         this.hass,
         "reload"
-      ).sort();
+      ).sort() as ReloadableDomain[];
     }
   }
 
@@ -97,7 +102,7 @@ export class DeveloperYamlConfig extends LitElement {
             <mwc-button
               class="warning"
               @click=${this._restart}
-              .disabled=${this._validateLog}
+              .disabled=${!!this._validateLog}
             >
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.yaml.section.server_management.restart"
