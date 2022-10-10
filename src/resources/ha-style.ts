@@ -111,6 +111,30 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
       --rgb-card-background-color: 255, 255, 255;
+      --rgb-disabled-color: 189, 189, 189;
+
+      /* global colors */
+      --rgb-red-color: 244, 67, 54;
+      --rgb-pink-color: 233, 30, 99;
+      --rgb-purple-color: 156, 39, 176;
+      --rgb-deep-purple-color: 103, 58, 183;
+      --rgb-indigo-color: 63, 81, 181;
+      --rgb-blue-color: 33, 150, 243;
+      --rgb-light-blue-color: 3, 169, 244;
+      --rgb-cyan-color: 0, 188, 212;
+      --rgb-teal-color: 0, 150, 136;
+      --rgb-green-color: 76, 175, 80;
+      --rgb-light-green-color: 139, 195, 74;
+      --rgb-lime-color: 205, 220, 57;
+      --rgb-yellow-color: 255, 235, 59;
+      --rgb-amber-color: 255, 193, 7;
+      --rgb-orange-color: 255, 152, 0;
+      --rgb-deep-orange-color: 255, 87, 34;
+      --rgb-brown-color: 121, 85, 72;
+      --rgb-grey-color: 158, 158, 158;
+      --rgb-blue-grey-color: 96, 125, 139;
+      --rgb-black-color: 0, 0, 0;
+      --rgb-white-color: 255, 255, 255;
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
