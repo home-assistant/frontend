@@ -139,7 +139,7 @@ export class HaBaseTimeInput extends LitElement {
                 .value=${this.days.toFixed()}
                 .label=${this.dayLabel}
                 name="days"
-                @input=${this._valueChanged}
+                @change=${this._valueChanged}
                 @focusin=${this._onFocus}
                 no-spinner
                 .required=${this.required}
@@ -160,7 +160,7 @@ export class HaBaseTimeInput extends LitElement {
           .value=${this.hours.toFixed()}
           .label=${this.hourLabel}
           name="hours"
-          @input=${this._valueChanged}
+          @change=${this._valueChanged}
           @focusin=${this._onFocus}
           no-spinner
           .required=${this.required}
@@ -179,7 +179,7 @@ export class HaBaseTimeInput extends LitElement {
           inputmode="numeric"
           .value=${this._formatValue(this.minutes)}
           .label=${this.minLabel}
-          @input=${this._valueChanged}
+          @change=${this._valueChanged}
           @focusin=${this._onFocus}
           name="minutes"
           no-spinner
@@ -200,7 +200,7 @@ export class HaBaseTimeInput extends LitElement {
               inputmode="numeric"
               .value=${this._formatValue(this.seconds)}
               .label=${this.secLabel}
-              @input=${this._valueChanged}
+              @change=${this._valueChanged}
               @focusin=${this._onFocus}
               name="seconds"
               no-spinner
@@ -221,7 +221,7 @@ export class HaBaseTimeInput extends LitElement {
               type="number"
               .value=${this._formatValue(this.milliseconds, 3)}
               .label=${this.millisecLabel}
-              @input=${this._valueChanged}
+              @change=${this._valueChanged}
               @focusin=${this._onFocus}
               name="milliseconds"
               no-spinner
