@@ -1,13 +1,18 @@
 import { assert } from "chai";
 
 import { relativeTime } from "../../../src/common/datetime/relative_time";
-import { NumberFormat, TimeFormat } from "../../../src/data/translation";
+import {
+  NumberFormat,
+  TimeFormat,
+  FirstWeekday,
+} from "../../../src/data/translation";
 
 describe("relativeTime", () => {
   const locale = {
     language: "en",
     number_format: NumberFormat.language,
     time_format: TimeFormat.language,
+    first_weekday: FirstWeekday.language,
   };
 
   it("now", () => {
