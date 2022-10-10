@@ -6,6 +6,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-textfield";
 import "../../components/ha-select";
+import "../../components/ha-selector/ha-selector-number";
 import { HomeAssistant } from "../../types";
 import { NumberSelector } from "../../data/selector";
 
@@ -112,7 +113,7 @@ export class HaRRule extends LitElement {
 
       ${this._freq !== RepeatFrequency.NONE &&
       this._freq !== RepeatFrequency.YEARLY
-        ? html` <ha-selector-number
+        ? html`<ha-selector-number
             label=${this.hass.localize(
               `ui.components.calendar.event.repeat.interval.label`
             )}
