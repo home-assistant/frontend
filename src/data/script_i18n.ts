@@ -159,7 +159,7 @@ export const describeAction = <T extends ActionType>(
       return "Activate a scene";
     }
     const sceneStateObj = entityId ? hass.states[entityId] : undefined;
-    return `Active scene ${
+    return `Activate scene ${
       sceneStateObj ? computeStateName(sceneStateObj) : entityId
     }`;
   }
