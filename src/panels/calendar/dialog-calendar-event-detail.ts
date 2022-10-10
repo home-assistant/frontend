@@ -177,6 +177,7 @@ class DialogCalendarEventDetail extends LitElement {
                   <ha-rrule
                     .hass=${this.hass}
                     .value=${this._data!.rrule}
+                    .mutable=${true}
                     @value-changed=${this._handleRRuleChanged}
                   >
                   </ha-rrule>
@@ -214,7 +215,7 @@ class DialogCalendarEventDetail extends LitElement {
                       ? html` <ha-rrule
                           .hass=${this.hass}
                           .value=${this._data!.rrule}
-                          .mutable="false"
+                          .mutable=${false}
                         >
                         </ha-rrule>`
                       : html``}

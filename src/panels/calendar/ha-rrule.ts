@@ -53,7 +53,7 @@ const convertRepeatFrequency = (
 export class HaRRule extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public mutable?: boolean = false;
+  @property({ type: Boolean }) public mutable = true;
 
   @property() public value?: string;
 
