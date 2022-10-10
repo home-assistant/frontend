@@ -43,6 +43,8 @@ export class MoreInfoDialog extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
+  @property({ type: Boolean, reflect: true }) public extended = false;
+
   @state() private _entityId?: string | null;
 
   @state() private _currTab: Tab = "info";
@@ -55,6 +57,7 @@ export class MoreInfoDialog extends LitElement {
     }
     this._currTab = params.tab || "info";
     this.large = false;
+    this.extended = false;
   }
 
   public closeDialog() {
@@ -92,6 +95,9 @@ export class MoreInfoDialog extends LitElement {
     const domain = computeDomain(entityId);
     const name = (stateObj && computeStateName(stateObj)) || entityId;
     const tabs = this._getTabs(entityId, this.hass.user!.is_admin);
+    if (tabs.length > 3) {
+      this.extended = true;
+    }
 
     return html`
       <ha-dialog
@@ -306,6 +312,18 @@ export class MoreInfoDialog extends LitElement {
             --mdc-dialog-max-height: calc(100% - 72px);
           }
 
+          :host([extended]) ha-dialog {
+            --mdc-dialog-min-width: 560px;
+            --mdc-dialog-max-width: 85vw;
+            --dialog-surface-margin-top: 40px;
+            --mdc-dialog-max-height: calc(100% - 72px);
+          }
+
+          :host([extended]) .content {
+            min-width: 100%;
+            max-width: fit-content;
+          }
+
           .main-title {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -314,8 +332,8 @@ export class MoreInfoDialog extends LitElement {
 
           :host([large]) ha-dialog,
           ha-dialog[data-domain="camera"] {
-            --mdc-dialog-min-width: 90vw;
-            --mdc-dialog-max-width: 90vw;
+            --mdc-dialog-min-width: 90vw !important;
+            --mdc-dialog-max-width: 90vw !important;
           }
         }
 
