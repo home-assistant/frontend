@@ -262,7 +262,7 @@ class HuiEnergyDistrubutionCard
                   : html`<div class="circle-container low-carbon">
                       <span class="label"
                         >${this.hass.localize(
-                          "ui.panel.lovelace.cards.energy.energy_distribution.non_fossil"
+                          "ui.panel.lovelace.cards.energy.energy_distribution.low_carbon"
                         )}</span
                       >
                       <a
@@ -272,11 +272,9 @@ class HuiEnergyDistrubutionCard
                         rel="noopener no referrer"
                       >
                         <ha-svg-icon .path=${mdiLeaf}></ha-svg-icon>
-                        ${lowCarbonEnergy
-                          ? formatNumber(lowCarbonEnergy, this.hass.locale, {
-                              maximumFractionDigits: 1,
-                            })
-                          : "—"}
+                        ${formatNumber(lowCarbonEnergy || 0, this.hass.locale, {
+                          maximumFractionDigits: 1,
+                        })}
                         kWh
                       </a>
                       <svg width="80" height="30">
