@@ -179,7 +179,7 @@ export class CloudGooglePref extends LitElement {
   private async _enabledToggleChanged(ev) {
     const toggle = ev.target as HaSwitch;
     try {
-      await updateCloudPref(this.hass, { [toggle.id]: toggle.checked! });
+      await updateCloudPref(this.hass, { google_enabled: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err: any) {
       toggle.checked = !toggle.checked;
