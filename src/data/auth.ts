@@ -1,3 +1,4 @@
+import { HaFormSchema } from "../components/ha-form/types";
 import { HomeAssistant } from "../types";
 
 export interface AuthUrlSearchParams {
@@ -21,6 +22,20 @@ export interface SignedPath {
 }
 
 export const hassUrl = `${location.protocol}//${location.host}`;
+
+export const autofillAuthSchema = (schemas: HaFormSchema[]) =>
+  schemas.map((schema) => {
+    switch (schema.name) {
+      case "username":
+        return { ...schema, autofill: "username" };
+      case "password":
+        return { ...schema, autofill: "current-password" };
+      case "code":
+        return { ...schema, autofill: "one-time-code" };
+      default:
+        return schema;
+    }
+  });
 
 export const getSignedPath = (
   hass: HomeAssistant,

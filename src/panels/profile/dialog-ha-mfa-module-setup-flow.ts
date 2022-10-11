@@ -5,6 +5,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
+import { autofillAuthSchema } from "../../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
@@ -114,7 +115,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                     <ha-form
                       .hass=${this.hass}
                       .data=${this._stepData}
-                      .schema=${this._step.data_schema}
+                      .schema=${autofillAuthSchema(this._step.data_schema)}
                       .error=${this._step.errors}
                       .computeLabel=${this._computeLabel}
                       .computeError=${this._computeError}
