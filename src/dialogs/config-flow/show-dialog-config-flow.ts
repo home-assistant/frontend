@@ -204,7 +204,7 @@ export const showConfigFlowDialog = (
     },
 
     renderLoadingDescription(hass, reason, handler, step) {
-      if (!["loading_flow", "loading_step"].includes(reason)) {
+      if (reason !== "loading_flow" && reason !== "loading_step") {
         return "";
       }
       const domain = step?.handler || handler;

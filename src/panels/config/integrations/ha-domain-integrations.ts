@@ -74,35 +74,37 @@ class HaDomainIntegrations extends LitElement {
               : ""}`
         : ""}
       ${this.integration?.iot_standards
-        ? this.integration.iot_standards
-            .filter((standard) => standard in standardToDomain)
-            .map((standard) => {
-              const domain: string = standardToDomain[standard];
-              return html`<mwc-list-item
-                graphic="medium"
-                .domain=${domain}
-                @request-selected=${this._standardPicked}
-                hasMeta
+        ? (
+            this.integration.iot_standards.filter(
+              (standard) => standard in standardToDomain
+            ) as (keyof typeof standardToDomain)[]
+          ).map((standard) => {
+            const domain = standardToDomain[standard];
+            return html`<mwc-list-item
+              graphic="medium"
+              .domain=${domain}
+              @request-selected=${this._standardPicked}
+              hasMeta
+            >
+              <img
+                slot="graphic"
+                loading="lazy"
+                src=${brandsUrl({
+                  domain,
+                  type: "icon",
+                  useFallback: true,
+                  darkOptimized: this.hass.themes?.darkMode,
+                })}
+                referrerpolicy="no-referrer"
+              />
+              <span
+                >${this.hass.localize(
+                  `ui.panel.config.integrations.add_${domain}_device`
+                )}</span
               >
-                <img
-                  slot="graphic"
-                  loading="lazy"
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  referrerpolicy="no-referrer"
-                />
-                <span
-                  >${this.hass.localize(
-                    `ui.panel.config.integrations.add_${domain}_device`
-                  )}</span
-                >
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </mwc-list-item>`;
-            })
+              <ha-icon-next slot="meta"></ha-icon-next>
+            </mwc-list-item>`;
+          })
         : ""}
       ${this.integration?.integrations
         ? Object.entries(this.integration.integrations)
@@ -135,7 +137,7 @@ class HaDomainIntegrations extends LitElement {
                 </ha-integration-list-item>`
             )
         : ""}
-      ${["zha", "zwave_js"].includes(this.domain)
+      ${this.domain === "zha" || this.domain === "zwave_js"
         ? html`<mwc-list-item
             graphic="medium"
             .domain=${this.domain}
