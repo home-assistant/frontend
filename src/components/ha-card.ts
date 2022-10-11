@@ -5,6 +5,8 @@ import { customElement, property } from "lit/decorators";
 export class HaCard extends LitElement {
   @property() public header?: string;
 
+  @property({ type: Boolean, reflect: true }) public raised = false;
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
@@ -23,6 +25,16 @@ export class HaCard extends LitElement {
         display: block;
         transition: all 0.3s ease-out;
         position: relative;
+      }
+
+      :host([raised]) {
+        border: none;
+        box-shadow: var(
+          --ha-card-box-shadow,
+          0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+          0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+          0px 1px 3px 0px rgba(0, 0, 0, 0.12)
+        );
       }
 
       .card-header,
