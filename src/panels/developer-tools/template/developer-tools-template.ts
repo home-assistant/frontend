@@ -249,6 +249,10 @@ class HaPanelDevTemplate extends LitElement {
 
         .content {
           padding: 16px;
+          padding: max(16px, env(safe-area-inset-top))
+            max(16px, env(safe-area-inset-right))
+            max(16px, env(safe-area-inset-bottom))
+            max(16px, env(safe-area-inset-left));
         }
 
         .edit-pane {
