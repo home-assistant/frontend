@@ -113,7 +113,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         <text
           x="50%"
           dx="1"
-          y="60%"
+          y="73%"
           text-anchor="middle"
           id="set-values"
         >
@@ -358,7 +358,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         max-width: calc(100% - 40px);
         box-sizing: border-box;
         border-radius: 100%;
-        top: 50%;
+        top: 39%;
         left: 50%;
         transform: translate(-50%, -50%);
         --mdc-icon-button-size: 100%;
