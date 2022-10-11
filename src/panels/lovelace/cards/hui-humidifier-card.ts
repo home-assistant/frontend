@@ -351,7 +351,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       }
 
       .toggle-button {
-        color: var(--paper-item-icon-color, #44739e);
+        color: var(--primary-text-color);
         width: 60%;
         height: auto;
         position: absolute;
