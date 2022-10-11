@@ -16,6 +16,7 @@ import {
   localizeConfigFlowTitle,
 } from "../../../data/config_flow";
 import type { IntegrationManifest } from "../../../data/integration";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
@@ -112,7 +113,10 @@ export class HaConfigFlowCard extends LitElement {
           ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
           this.flow.context.unique_id
             ? html`
-                <mwc-list-item graphic="icon" @click=${this._ignoreFlow}>
+                <mwc-list-item
+                  graphic="icon"
+                  @request-selected=${this._ignoreFlow}
+                >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.ignore.ignore"
                   )}
@@ -134,7 +138,10 @@ export class HaConfigFlowCard extends LitElement {
     });
   }
 
-  private async _ignoreFlow() {
+  private async _ignoreFlow(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_ignore_title",
