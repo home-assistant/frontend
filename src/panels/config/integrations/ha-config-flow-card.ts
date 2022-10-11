@@ -8,6 +8,7 @@ import {
   mdiEyeOff,
   mdiOpenInNew,
 } from "@mdi/js";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ATTENTION_SOURCES,
@@ -138,7 +139,7 @@ export class HaConfigFlowCard extends LitElement {
     });
   }
 
-  private async _ignoreFlow(ev: CustomEvent<RequestSelectedDetail>): void {
+  private async _ignoreFlow(ev: CustomEvent<RequestSelectedDetail>) {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
