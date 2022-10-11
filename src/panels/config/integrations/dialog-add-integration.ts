@@ -143,7 +143,9 @@ class AddIntegrationDialog extends LitElement {
       localize: LocalizeFunc,
       filter?: string
     ): IntegrationListItem[] => {
-      const addDeviceRows: IntegrationListItem[] = ["zha", "zwave_js"]
+      const addDeviceRows: IntegrationListItem[] = (
+        ["zha", "zwave_js"] as const
+      )
         .filter((domain) => components.includes(domain))
         .map((domain) => ({
           name: localize(`ui.panel.config.integrations.add_${domain}_device`),
