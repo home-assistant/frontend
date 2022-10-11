@@ -163,7 +163,6 @@ export class HuiUnusedEntities extends LitElement {
         height: 100%;
       }
       ha-card {
-        --ha-card-box-shadow: none;
         --ha-card-border-radius: 0;
       }
       hui-entity-picker-table {
