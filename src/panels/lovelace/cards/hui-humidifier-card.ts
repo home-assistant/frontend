@@ -11,6 +11,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -98,6 +99,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       ? html` <round-slider disabled="true"></round-slider> `
       : html`
           <round-slider
+            class=${classMap({ "round-slider_off": stateObj.state === "off" })}
             .value=${targetHumidity}
             .min=${stateObj.attributes.min_humidity}
             .max=${stateObj.attributes.max_humidity}
@@ -319,6 +321,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       round-slider {
         --round-slider-path-color: var(--slider-track-color);
         --round-slider-bar-color: var(--primary-color);
+        padding-bottom: 10%;
+      }
+
+      .round-slider_off {
+        --round-slider-path-color: var(--slider-track-color);
+        --round-slider-bar-color: var(--disabled-text-color);
         padding-bottom: 10%;
       }
 
