@@ -23,10 +23,13 @@ const coreDir = workDir + "/core";
 const outDir = workDir + "/output";
 let mergeBackend = false;
 
-gulp.task("translations-enable-merge-backend", (done) => {
-  mergeBackend = true;
-  done();
-});
+gulp.task(
+  "translations-enable-merge-backend",
+  gulp.parallel((done) => {
+    mergeBackend = true;
+    done();
+  }, "allow-setup-fetch-nightly-translations")
+);
 
 // Panel translations which should be split from the core translations.
 const TRANSLATION_FRAGMENTS = Object.keys(

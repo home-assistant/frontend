@@ -20,6 +20,12 @@ const EXTRACT_DIR = "translations";
 const TOKEN_FILE = path.join(EXTRACT_DIR, "token.json");
 const ARTIFACT_FILE = path.join(EXTRACT_DIR, "artifact.json");
 
+let allowTokenSetup = false;
+gulp.task("allow-setup-fetch-nightly-translations", (done) => {
+  allowTokenSetup = true;
+  done();
+});
+
 gulp.task("fetch-nightly-translations", async function () {
   // Skip all when environment flag is set (assumes translations are already in place)
   if (process.env?.SKIP_FETCH_NIGHTLY_TRANSLATIONS) {
@@ -58,6 +64,10 @@ gulp.task("fetch-nightly-translations", async function () {
     try {
       tokenAuth = JSON.parse(await fs.readFile(TOKEN_FILE, "utf-8"));
     } catch {
+      if (!allowTokenSetup) {
+        console.log("No token found so  build wil continue with English only");
+        return;
+      }
       const auth = createOAuthDeviceAuth({
         clientType: "github-app",
         clientId: CLIENT_ID,
@@ -150,3 +160,11 @@ gulp.task("fetch-nightly-translations", async function () {
     extractStream.on("close", resolve).on("error", reject);
   });
 });
+
+gulp.task(
+  "setup-and-fetch-nightly-translations",
+  gulp.series(
+    "allow-setup-fetch-nightly-translations",
+    "fetch-nightly-translations"
+  )
+);
