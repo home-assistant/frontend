@@ -143,29 +143,51 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return css`
       :host {
         --main-color: var(--rgb-disabled-color);
+        --tap-padding: 6px;
       }
       ha-card {
         height: 100%;
       }
       .tile {
-        cursor: pointer;
-        padding: 12px;
+        padding: calc(12px - var(--tap-padding));
         display: flex;
         flex-direction: row;
         align-items: center;
       }
-      .tile ha-tile-icon {
+      ha-tile-icon {
+        padding: var(--tap-padding);
         flex: none;
-        margin-right: 12px;
-        margin-inline-end: 12px;
+        margin-right: calc(12px - 2 * var(--tap-padding));
+        margin-inline-end: calc(12px - 2 * var(--tap-padding));
         margin-inline-start: initial;
         direction: var(--direction);
         --color: var(--main-color);
-        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 180ms ease-in-out;
+      }
+      ha-tile-icon:focus {
+        outline: none;
+      }
+      ha-tile-icon:focus-visible {
+        transform: scale(1.2);
+      }
+      ha-tile-icon:active {
+        transform: scale(1.2);
       }
       ha-tile-info {
+        padding: var(--tap-padding);
         flex: 1;
         min-width: 0;
+        min-height: 40px;
+        border-radius: calc(var(--ha-card-border-radius, 12px) - 2px);
+        cursor: pointer;
+        transition: background-color 180ms ease-in-out;
+      }
+      ha-tile-info:focus {
+        outline: none;
+      }
+      ha-tile-info:focus-visible {
+        background-color: rgba(var(--main-color), 0.1);
       }
     `;
   }
