@@ -35,8 +35,8 @@ export class HaSlider extends PaperSliderClass {
 
               bottom: calc(15px + var(--calculated-paper-slider-height)/2);
               left: 50%;
-              width: 2.2em;
-              height: 2.2em;
+              width: 2.6em;
+              height: 2.6em;
 
               -webkit-transform-origin: left bottom;
               transform-origin: left bottom;
@@ -55,9 +55,9 @@ export class HaSlider extends PaperSliderClass {
 
               bottom: calc(15px + var(--calculated-paper-slider-height)/2);
               left: 50%;
-              margin-left: -1.1em;
-              width: 2.2em;
-              height: 2.1em;
+              margin-left: -1.3em;
+              width: 2.6em;
+              height: 2.5em;
 
               -webkit-transform-origin: center bottom;
               transform-origin: center bottom;
