@@ -253,7 +253,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     await this.updateComplete;
     setTimeout(() => {
       this._inputElement?.open();
-      this._inputElement?.focus();
+      setTimeout(() => {
+        this._inputElement?.focus();
+      }, 0);
     }, 0);
   }
 
