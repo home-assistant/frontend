@@ -2,6 +2,8 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeRgbColor } from "../../../common/color/compute-color";
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
 import "../../../components/ha-card";
@@ -53,9 +55,15 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity");
     }
 
+    const supportToggle =
+      config.entity && DOMAINS_TOGGLE.has(computeDomain(config.entity));
+
     this._config = {
       tap_action: {
         action: "more-info",
+      },
+      icon_action: {
+        action: supportToggle ? "toggle" : "more-info",
       },
       ...config,
     };
@@ -67,6 +75,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  private _handleIconAction() {
+    const config = {
+      entity: this._config!.entity,
+      tap_action: this._config!.icon_action,
+    };
+    handleAction(this, this.hass!, config, "tap");
   }
 
   render() {
@@ -101,17 +117,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card style=${styleMap(iconStyle)}>
-        <div
-          class="tile"
-          role="button"
-          tabindex="0"
-          @action=${this._handleAction}
-          .actionHandler=${actionHandler()}
-        >
-          <ha-tile-icon .icon=${icon} .iconPath=${iconPath}></ha-tile-icon>
+        <div class="tile">
+          <ha-tile-icon
+            .icon=${icon}
+            .iconPath=${iconPath}
+            role="button"
+            tabindex="0"
+            @action=${this._handleIconAction}
+            .actionHandler=${actionHandler()}
+          ></ha-tile-icon>
           <ha-tile-info
             .primary=${name}
             .secondary=${stateDisplay}
+            role="button"
+            tabindex="0"
+            @action=${this._handleAction}
+            .actionHandler=${actionHandler()}
           ></ha-tile-info>
         </div>
       </ha-card>
@@ -135,9 +156,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       .tile ha-tile-icon {
         flex: none;
-        padding: 8px;
-        margin: -8px;
-        margin-inline-end: 4px;
+        margin-right: 12px;
+        margin-inline-end: 12px;
+        margin-inline-start: initial;
+        direction: var(--direction);
         --color: var(--main-color);
         border-radius: 50%;
       }
