@@ -181,9 +181,11 @@ export const showOptionsFlowDialog = (
       renderLoadingDescription(hass, reason) {
         return (
           hass.localize(`component.${configEntry.domain}.options.loading`) ||
-          hass.localize(`ui.dialogs.options_flow.loading.${reason}`, {
-            integration: domainToName(hass.localize, configEntry.domain),
-          })
+          (reason === "loading_flow" || reason === "loading_step"
+            ? hass.localize(`ui.dialogs.options_flow.loading.${reason}`, {
+                integration: domainToName(hass.localize, configEntry.domain),
+              })
+            : "")
         );
       },
     }

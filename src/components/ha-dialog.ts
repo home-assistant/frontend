@@ -55,7 +55,7 @@ export class HaDialog extends DialogBase {
         flex: var(--primary-action-button-flex, unset);
       }
       .mdc-dialog__container {
-        align-items: var(--vertial-align-dialog, center);
+        align-items: var(--vertical-align-dialog, center);
       }
       .mdc-dialog__title {
         padding: 24px 24px 0 24px;

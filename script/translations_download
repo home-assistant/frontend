@@ -20,24 +20,28 @@ fi
 # Load token from file if not already in the environment
 [ -z "${LOKALISE_TOKEN-}" ] && LOKALISE_TOKEN="$(<.lokalise_token)"
 
-PROJECT_ID="3420425759f6d6d241f598.13594006"
-LOCAL_DIR="$(pwd)/translations/downloads"
-FILE_FORMAT=json
+declare -A PROJECT_ID=( \
+    [frontend]="3420425759f6d6d241f598.13594006" \
+    [backend]="130246255a974bd3b5e8a1.51616605" \
+    )
 
-mkdir -p ${LOCAL_DIR}
-
-docker run \
-     -v ${LOCAL_DIR}:/opt/dest/locale \
-     --rm \
-     lokalise/lokalise-cli-2@sha256:f1860b26be22fa73b8c93bc5f8690f2afc867610a42de6fc27adc790e5d4425d lokalise2 \
-     --token ${LOKALISE_TOKEN} \
-     --project-id ${PROJECT_ID} \
-     file download \
-     --export-empty-as skip \
-     --format json \
-     --json-unescaped-slashes=true \
-     --replace-breaks=false \
-     --original-filenames=false \
-     --unzip-to /opt/dest
+for project in ${!PROJECT_ID[*]}; do
+LOCAL_DIR=`pwd`/translations/${project}
+rm -f ${LOCAL_DIR}/* || mkdir -p ${LOCAL_DIR}
+    docker run \
+        -v ${LOCAL_DIR}:/opt/dest/locale \
+        --rm \
+        lokalise/lokalise-cli-2@sha256:f1860b26be22fa73b8c93bc5f8690f2afc867610a42de6fc27adc790e5d4425d \
+        lokalise2 \
+            --token ${LOKALISE_TOKEN} \
+            --project-id ${PROJECT_ID[${project}]} \
+            file download \
+            --export-empty-as skip \
+            --format json \
+            --json-unescaped-slashes=true \
+            --replace-breaks=false \
+            --original-filenames=false \
+            --unzip-to /opt/dest
+done
 
 ./node_modules/.bin/gulp check-downloaded-translations

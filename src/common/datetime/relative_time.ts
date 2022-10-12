@@ -1,7 +1,7 @@
-import { selectUnit } from "@formatjs/intl-utils";
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
 import { polyfillsLoaded } from "../translations/localize";
+import { selectUnit } from "../util/select-unit";
 
 if (__BUILD__ === "latest" && polyfillsLoaded) {
   await polyfillsLoaded;

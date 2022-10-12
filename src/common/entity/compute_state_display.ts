@@ -169,7 +169,8 @@ export const computeStateDisplayFromEntityAttributes = (
     // When update is not available and there is no latest_version show "Unavailable"
     return state === "on"
       ? updateIsInstallingFromAttributes(attributes)
-        ? supportsFeatureFromAttributes(attributes, UPDATE_SUPPORT_PROGRESS)
+        ? supportsFeatureFromAttributes(attributes, UPDATE_SUPPORT_PROGRESS) &&
+          typeof attributes.in_progress === "number"
           ? localize("ui.card.update.installing_with_progress", {
               progress: attributes.in_progress,
             })

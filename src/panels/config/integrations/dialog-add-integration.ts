@@ -36,10 +36,12 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
-import { AddIntegrationDialogParams } from "./show-add-integration-dialog";
+import {
+  AddIntegrationDialogParams,
+  showYamlIntegrationDialog,
+} from "./show-add-integration-dialog";
 
 export interface IntegrationListItem {
   name: string;
@@ -141,7 +143,9 @@ class AddIntegrationDialog extends LitElement {
       localize: LocalizeFunc,
       filter?: string
     ): IntegrationListItem[] => {
-      const addDeviceRows: IntegrationListItem[] = ["zha", "zwave_js"]
+      const addDeviceRows: IntegrationListItem[] = (
+        ["zha", "zwave_js"] as const
+      )
         .filter((domain) => components.includes(domain))
         .map((domain) => ({
           name: localize(`ui.panel.config.integrations.add_${domain}_device`),
@@ -545,35 +549,7 @@ class AddIntegrationDialog extends LitElement {
       this.hass,
       integration.domain
     );
-    showAlertDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.integrations.config_flow.yaml_only_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_flow.yaml_only_text",
-        {
-          link:
-            manifest?.is_built_in || manifest?.documentation
-              ? html`<a
-                  href=${manifest.is_built_in
-                    ? documentationUrl(
-                        this.hass,
-                        `/integrations/${manifest.domain}`
-                      )
-                    : manifest.documentation}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_flow.documentation"
-                  )}</a
-                >`
-              : this.hass.localize(
-                  "ui.panel.config.integrations.config_flow.documentation"
-                ),
-        }
-      ),
-    });
+    showYamlIntegrationDialog(this, { manifest });
   }
 
   private async _createFlow(integration: IntegrationListItem) {

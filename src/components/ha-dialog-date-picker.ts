@@ -40,6 +40,7 @@ export class HaDialogDatePicker extends LitElement {
         .max=${this._params.max}
         .locale=${this._params.locale}
         @datepicker-value-updated=${this._valueChanged}
+        .firstDayOfWeek=${this._params.firstWeekday}
       ></app-datepicker>
       <mwc-button slot="secondaryAction" @click=${this._setToday}
         >today</mwc-button

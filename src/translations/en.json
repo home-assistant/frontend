@@ -1117,6 +1117,15 @@
       "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
       "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
     },
+    "weekdays": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
     "errors": {
       "config": {
         "no_type_provided": "No type provided.",
@@ -2965,8 +2974,8 @@
             "next": "Next",
             "found_following_devices": "We found the following devices",
             "yaml_only_title": "This device can not be added from the UI",
-            "yaml_only_text": "You can add this device by adding it to your `configuration.yaml`. See the {link} for more information.",
-            "documentation": "documentation",
+            "yaml_only": "You can add this device by adding it to your ''configuration.yaml''. See the documentation for more information.",
+            "open_documentation": "Open documentation",
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
@@ -3691,7 +3700,7 @@
               "grid": "Grid",
               "gas": "Gas",
               "solar": "Solar",
-              "non_fossil": "Non-fossil",
+              "low_carbon": "Low-carbon",
               "home": "Home",
               "battery": "Battery",
               "go_to_energy_dashboard": "Go to the energy dashboard"
@@ -3702,8 +3711,8 @@
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind and nuclear. The higher, the better!",
-              "non_fossil_energy_consumed": "Non-fossil energy consumed",
-              "non_fossil_energy_not_calculated": "Consumed non-fossil energy couldn't be calculated"
+              "low_carbon_energy_consumed": "Low-carbon energy consumed",
+              "low_carbon_energy_not_calculated": "Consumed low-carbon energy couldn't be calculated"
             }
           }
         },
@@ -3893,7 +3902,7 @@
               "views": {
                 "dayGridMonth": "Month",
                 "dayGridDay": "Day",
-                "listWeek": "List"
+                "list": "List"
               }
             },
             "conditional": {
@@ -4271,6 +4280,21 @@
             "24": "24 hours"
           }
         },
+        "first_weekday": {
+          "header": "First day of the week",
+          "dropdown_label": "First day of the week",
+          "description": "Choose the starting day for calendars.",
+          "values": {
+            "language": "Auto (use language setting)",
+            "monday": "[%key:ui::weekdays::monday%]",
+            "tuesday": "[%key:ui::weekdays::tuesday%]",
+            "wednesday": "[%key:ui::weekdays::wednesday%]",
+            "thursday": "[%key:ui::weekdays::thursday%]",
+            "friday": "[%key:ui::weekdays::friday%]",
+            "saturday": "[%key:ui::weekdays::saturday%]",
+            "sunday": "[%key:ui::weekdays::sunday%]"
+          }
+        },
         "themes": {
           "header": "Theme",
           "error_no_theme": "No themes available.",
@@ -4571,9 +4595,6 @@
             "no_issue": "No issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
-              "units_changed_can_convert": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
-              "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''.",
-              "unsupported_unit_metadata": "The unit (''{metadata_unit}'') of the recorded statistics doesn't match the supported unit ''{supported_unit}'' of device class ''{device_class}''.",
               "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
               "entity_not_recorded": "This entity is excluded from being recorded.",
               "entity_no_longer_recorded": "This entity is no longer being recorded.",
@@ -4584,7 +4605,6 @@
               "units_changed": {
                 "title": "The unit of this entity changed",
                 "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
-                "change": "Convert all the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
                 "clear": "Delete all old statistic data for this entity"
               }
             },
@@ -4594,10 +4614,10 @@
             "title": "YAML",
             "section": {
               "validation": {
-                "heading": "Configuration validation",
-                "introduction": "Validate your configuration if you recently made some changes to it and want to make sure that it is all valid.",
+                "heading": "Check and Restart",
+                "introduction": "A basic validation of the configuration is automatically done before restarting. The basic validation ensures the YAML configuration doesn't have errors which will prevent Home Assistant or any integration from starting. It's also possible to only do the basic validation check without restarting.",
                 "check_config": "Check configuration",
-                "valid": "Configuration valid!",
+                "valid": "Configuration will not prevent Home Assistant from starting!",
                 "invalid": "Configuration invalid!"
               },
               "reloading": {

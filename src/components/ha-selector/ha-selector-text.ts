@@ -39,7 +39,7 @@ export class HaTextSelector extends LitElement {
         .disabled=${this.disabled}
         @input=${this._handleChange}
         autocapitalize="none"
-        autocomplete="off"
+        .autocomplete=${this.selector.text.autofill}
         spellcheck="false"
         .required=${this.required}
         autogrow
@@ -59,6 +59,7 @@ export class HaTextSelector extends LitElement {
             html`<div style="width: 24px"></div>`
           : this.selector.text?.suffix}
         .required=${this.required}
+        .autocomplete=${this.selector.text.autofill}
       ></ha-textfield>
       ${this.selector.text?.type === "password"
         ? html`<ha-icon-button
@@ -98,13 +99,13 @@ export class HaTextSelector extends LitElement {
       }
       ha-icon-button {
         position: absolute;
-        top: 16px;
-        right: 16px;
-        --mdc-icon-button-size: 24px;
+        top: 10px;
+        right: 10px;
+        --mdc-icon-button-size: 36px;
         --mdc-icon-size: 20px;
         color: var(--secondary-text-color);
         inset-inline-start: initial;
-        inset-inline-end: 16px;
+        inset-inline-end: 10px;
         direction: var(--direction);
       }
     `;

@@ -85,10 +85,6 @@ class HuiEnergyCarbonGaugeCard
 
     let value: number | undefined;
 
-    if (totalGridConsumption === 0) {
-      value = 100;
-    }
-
     if (this._data.fossilEnergyConsumption && totalGridConsumption) {
       const highCarbonEnergy = this._data.fossilEnergyConsumption
         ? Object.values(this._data.fossilEnergyConsumption).reduce(
@@ -141,12 +137,12 @@ class HuiEnergyCarbonGaugeCard
               ></ha-gauge>
               <div class="name">
                 ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.non_fossil_energy_consumed"
+                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_consumed"
                 )}
               </div>
             `
           : html`${this.hass.localize(
-              "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.non_fossil_energy_not_calculated"
+              "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_not_calculated"
             )}`}
       </ha-card>
     `;

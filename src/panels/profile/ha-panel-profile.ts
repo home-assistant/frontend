@@ -24,6 +24,7 @@ import "./ha-force-narrow-row";
 import "./ha-long-lived-access-tokens-card";
 import "./ha-mfa-modules-card";
 import "./ha-pick-dashboard-row";
+import "./ha-pick-first-weekday-row";
 import "./ha-pick-language-row";
 import "./ha-pick-number-format-row";
 import "./ha-pick-theme-row";
@@ -100,6 +101,10 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-time-format-row>
+            <ha-pick-first-weekday-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-first-weekday-row>
             <ha-pick-theme-row
               .narrow=${this.narrow}
               .hass=${this.hass}
