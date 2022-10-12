@@ -7,7 +7,7 @@ import { stateIconPath } from "../../../common/entity/state_icon_path";
 import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
-import { ActionConfig, ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -53,7 +53,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity");
     }
 
-    this._config = config;
+    this._config = {
+      tap_action: {
+        action: "more-info",
+      },
+      ...config,
+    };
   }
 
   public getCardSize(): number {
@@ -61,13 +66,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    const config = {
-      entity: this._config?.entity,
-      tap_action: {
-        action: "more-info",
-      } as ActionConfig,
-    };
-    handleAction(this, this.hass!, config, ev.detail.action!);
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
   render() {
@@ -104,6 +103,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       <ha-card style=${styleMap(iconStyle)}>
         <div
           class="tile"
+          role="button"
+          tabindex="0"
           @action=${this._handleAction}
           .actionHandler=${actionHandler()}
         >
@@ -131,12 +132,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: row;
         align-items: center;
-        background-color: rgba(var(--main-color), 0.12);
       }
       .tile ha-tile-icon {
         flex: none;
-        margin-right: 12px;
+        padding: 8px;
+        margin: -8px;
+        margin-inline-end: 4px;
         --color: var(--main-color);
+        border-radius: 50%;
       }
       ha-tile-info {
         flex: 1;

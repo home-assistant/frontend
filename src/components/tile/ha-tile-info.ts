@@ -32,6 +32,7 @@ export class HaTileInfo extends LitElement {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+        width: 100%;
       }
       .primary {
         font-weight: 500;
