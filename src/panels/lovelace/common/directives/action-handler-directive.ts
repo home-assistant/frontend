@@ -30,7 +30,7 @@ interface ActionHandlerElement extends HTMLElement {
     options: ActionHandlerOptions;
     start?: (ev: Event) => void;
     end?: (ev: Event) => void;
-    handleKeyUp?: (ev: KeyboardEvent) => void;
+    handleKeyDown?: (ev: KeyboardEvent) => void;
   };
 }
 
@@ -117,7 +117,10 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       element.removeEventListener("mousedown", element.actionHandler.start!);
       element.removeEventListener("click", element.actionHandler.end!);
 
-      element.removeEventListener("keyup", element.actionHandler.handleKeyUp!);
+      element.removeEventListener(
+        "keydown",
+        element.actionHandler.handleKeyDown!
+      );
     } else {
       element.addEventListener("contextmenu", (ev: Event) => {
         const e = ev || window.event;
@@ -196,7 +199,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       }
     };
 
-    element.actionHandler.handleKeyUp = (ev: KeyboardEvent) => {
+    element.actionHandler.handleKeyDown = (ev: KeyboardEvent) => {
       if (!["Enter", " "].includes(ev.key)) {
         return;
       }
@@ -214,7 +217,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
     });
     element.addEventListener("click", element.actionHandler.end);
 
-    element.addEventListener("keyup", element.actionHandler.handleKeyUp);
+    element.addEventListener("keydown", element.actionHandler.handleKeyDown);
   }
 
   private startAnimation(x: number, y: number) {
