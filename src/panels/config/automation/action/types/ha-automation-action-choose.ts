@@ -31,51 +31,58 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
     return html`
       ${(action.choose ? ensureArray(action.choose) : []).map(
-        (option, idx) => html`<ha-card>
-          <ha-icon-button
-            .idx=${idx}
-            .disabled=${this.disabled}
-            @click=${this._removeOption}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-            )}
-            .path=${mdiDelete}
-          ></ha-icon-button>
-          <div class="card-content">
-            <h2>
+        (option, idx) => html`<ha-card outlined>
+          <ha-expansion-panel leftChevron>
+            <h3 slot="header">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.choose.option",
                 "number",
                 idx + 1
-              )}:
-            </h2>
-            <h3>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.choose.conditions"
-              )}:
+              )}
             </h3>
-            <ha-automation-condition
-              .conditions=${ensureArray<string | Condition>(option.conditions)}
-              .reOrderMode=${this.reOrderMode}
-              .disabled=${this.disabled}
-              .hass=${this.hass}
+            <slot name="icons" slot="icons"></slot>
+
+            <ha-icon-button
               .idx=${idx}
-              @value-changed=${this._conditionChanged}
-            ></ha-automation-condition>
-            <h3>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.choose.sequence"
-              )}:
-            </h3>
-            <ha-automation-action
-              .actions=${ensureArray(option.sequence) || []}
-              .reOrderMode=${this.reOrderMode}
+              slot="icons"
               .disabled=${this.disabled}
-              .hass=${this.hass}
-              .idx=${idx}
-              @value-changed=${this._actionChanged}
-            ></ha-automation-action>
-          </div>
+              @click=${this._removeOption}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+              )}
+              .path=${mdiDelete}
+            ></ha-icon-button>
+            <div class="card-content">
+              <h3>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.choose.conditions"
+                )}:
+              </h3>
+              <ha-automation-condition
+                .conditions=${ensureArray<string | Condition>(
+                  option.conditions
+                )}
+                .reOrderMode=${this.reOrderMode}
+                .disabled=${this.disabled}
+                .hass=${this.hass}
+                .idx=${idx}
+                @value-changed=${this._conditionChanged}
+              ></ha-automation-condition>
+              <h3>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.choose.sequence"
+                )}:
+              </h3>
+              <ha-automation-action
+                .actions=${ensureArray(option.sequence) || []}
+                .reOrderMode=${this.reOrderMode}
+                .disabled=${this.disabled}
+                .hass=${this.hass}
+                .idx=${idx}
+                @value-changed=${this._actionChanged}
+              ></ha-automation-action>
+            </div>
+          </ha-expansion-panel>
         </ha-card>`
       )}
       <mwc-button
@@ -186,9 +193,21 @@ export class HaChooseAction extends LitElement implements ActionElement {
         ha-card {
           margin: 16px 0;
         }
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0 0 0 8px;
+          --expansion-panel-content-padding: 0;
+        }
+        h3 {
+          margin: 0;
+          font-size: inherit;
+          font-weight: inherit;
+        }
         .add-card mwc-button {
           display: block;
           text-align: center;
+        }
+        .card-content {
+          padding: 16px;
         }
         ha-icon-button {
           position: absolute;
