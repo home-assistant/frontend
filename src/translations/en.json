@@ -399,7 +399,7 @@
           "show_entities": "Show entities"
         },
         "entity-attribute-picker": {
-          "attribute": "Attribute",
+          "attribute": "Attribute (optional)",
           "show_attributes": "Show attributes"
         },
         "entity-state-picker": {
