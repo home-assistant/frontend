@@ -35,7 +35,7 @@ export interface IssueCommandServiceData {
   cluster_type: string;
   command: number;
   command_type: string;
-  args?: any;
+  params?: any;
 }
 
 export interface ZHADeviceSelectedParams {

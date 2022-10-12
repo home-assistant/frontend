@@ -170,7 +170,7 @@ export class ZHAClusterCommands extends LitElement {
       cluster_type: this.selectedCluster!.type,
       command: this._selectedCommandId!,
       command_type: selectedCommand!.type,
-      args: this._commandData,
+      params: this._commandData,
     };
   }
 
