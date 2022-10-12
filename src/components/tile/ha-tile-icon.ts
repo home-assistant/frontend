@@ -35,11 +35,13 @@ export class HaTileIcon extends LitElement {
         align-items: center;
         justify-content: center;
         background-color: var(--shape-color);
+        transition: background-color 180ms ease-in-out, color 180ms ease-in-out;
       }
       .shape ha-icon,
       .shape ha-svg-icon {
         display: flex;
         color: var(--icon-color);
+        transition: color 180ms ease-in-out;
       }
     `;
   }

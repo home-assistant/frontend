@@ -2,7 +2,7 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeRgbColor } from "../../../common/color/compute-color";
-import { DOMAINS_TOGGLE } from "../../../common/const";
+import { DOMAINS_TOGGLE, STATES_OFF } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
@@ -111,7 +111,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
 
     const iconStyle = {};
-    if (this._config.color) {
+    if (this._config.color && !STATES_OFF.includes(entity.state)) {
       iconStyle["--main-color"] = computeRgbColor(this._config.color);
     }
 
