@@ -207,7 +207,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
           text-align: center;
         }
         .card-content {
-          padding: 16px;
+          padding: 18px;
         }
         ha-icon-button {
           position: absolute;
