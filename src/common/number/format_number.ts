@@ -34,7 +34,7 @@ export const numberFormatToLocale = (
  * Formats a number based on the user's preference with thousands separator(s) and decimal character for better legibility.
  *
  * @param num The number to format
- * @param locale The user-selected language and number format, from `hass.locale`
+ * @param localeOptions The user-selected language and formatting, from `hass.locale`
  * @param options Intl.NumberFormatOptions to use
  */
 export const formatNumber = (
