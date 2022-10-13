@@ -398,7 +398,8 @@ export const describeCondition = (
 
     if (!conditions || conditions.length === 0) {
       return "Test if no condition matches";
-    } if (conditions.length === 1) {
+    }
+    if (conditions.length === 1) {
       return "Test if 1 condition does not match";
     }
     return `Test if none of ${conditions.length} conditions match`;
