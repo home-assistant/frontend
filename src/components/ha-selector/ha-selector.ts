@@ -9,6 +9,7 @@ import "./ha-selector-area";
 import "./ha-selector-attribute";
 import "./ha-selector-boolean";
 import "./ha-selector-color-rgb";
+import "./ha-selector-color-temp";
 import "./ha-selector-config-entry";
 import "./ha-selector-date";
 import "./ha-selector-datetime";
@@ -16,6 +17,9 @@ import "./ha-selector-device";
 import "./ha-selector-duration";
 import "./ha-selector-entity";
 import "./ha-selector-file";
+import "./ha-selector-icon";
+import "./ha-selector-location";
+import "./ha-selector-media";
 import "./ha-selector-navigation";
 import "./ha-selector-number";
 import "./ha-selector-object";
@@ -24,12 +28,9 @@ import "./ha-selector-state";
 import "./ha-selector-target";
 import "./ha-selector-template";
 import "./ha-selector-text";
-import "./ha-selector-time";
-import "./ha-selector-icon";
-import "./ha-selector-media";
 import "./ha-selector-theme";
-import "./ha-selector-location";
-import "./ha-selector-color-temp";
+import "./ha-selector-time";
+import "./ha-selector-ui-action";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {

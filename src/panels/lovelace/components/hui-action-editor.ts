@@ -221,7 +221,13 @@ export class HuiActionEditor extends LitElement {
       ha-textfield {
         width: 100%;
       }
-      ha-textfield {
+      ha-service-control,
+      ha-navigation-picker {
+        display: block;
+      }
+      ha-textfield,
+      ha-service-control,
+      ha-navigation-picker {
         margin-top: 8px;
       }
       ha-service-control {

@@ -30,7 +30,8 @@ export type Selector =
   | TargetSelector
   | TemplateSelector
   | ThemeSelector
-  | TimeSelector;
+  | TimeSelector
+  | UiActionSelector;
 
 export interface ActionSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -255,6 +256,19 @@ export interface ThemeSelector {
 export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   time: {};
+}
+
+export interface UiActionSelector {
+  "ui-action": {
+    actions?: (
+      | "more-info"
+      | "toggle"
+      | "navigate"
+      | "url"
+      | "call-service"
+      | "none"
+    )[];
+  };
 }
 
 export const filterSelectorDevices = (
