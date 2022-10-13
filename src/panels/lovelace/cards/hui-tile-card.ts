@@ -62,7 +62,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       tap_action: {
         action: "more-info",
       },
-      icon_action: {
+      icon_tap_action: {
         action: supportToggle ? "toggle" : "more-info",
       },
       ...config,
@@ -80,7 +80,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   private _handleIconAction() {
     const config = {
       entity: this._config!.entity,
-      tap_action: this._config!.icon_action,
+      tap_action: this._config!.icon_tap_action,
     };
     handleAction(this, this.hass!, config, "tap");
   }

@@ -13,6 +13,7 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(
@@ -22,6 +23,8 @@ const cardConfigStruct = assign(
     name: optional(string()),
     icon: optional(string()),
     color: optional(string()),
+    tap_action: optional(actionConfigStruct),
+    icon_tap_action: optional(actionConfigStruct),
   })
 );
 
@@ -40,39 +43,52 @@ export class HuiTileCardEditor
   }
 
   private _schema = memoizeOne(
-    (entity: string, icon?: string, entityState?: HassEntity) => [
-      { name: "entity", selector: { entity: {} } },
-      { name: "name", selector: { text: {} } },
-      {
-        name: "icon",
-        selector: {
-          icon: {
-            placeholder: icon || entityState?.attributes.icon,
-            fallbackPath:
-              !icon && !entityState?.attributes.icon && entityState
-                ? domainIcon(computeDomain(entity), entityState)
-                : undefined,
+    (entity: string, icon?: string, entityState?: HassEntity) =>
+      [
+        { name: "entity", selector: { entity: {} } },
+        { name: "name", selector: { text: {} } },
+        {
+          name: "icon",
+          selector: {
+            icon: {
+              placeholder: icon || entityState?.attributes.icon,
+              fallbackPath:
+                !icon && !entityState?.attributes.icon && entityState
+                  ? domainIcon(computeDomain(entity), entityState)
+                  : undefined,
+            },
           },
         },
-      },
-      {
-        name: "color",
-        selector: {
-          select: {
-            options: [
-              {
-                label: "Default",
-                value: "default",
-              },
-              ...COLORS.map((color) => ({
-                label: capitalizeFirstLetter(color),
-                value: color,
-              })),
-            ],
+        {
+          name: "color",
+          selector: {
+            select: {
+              options: [
+                {
+                  label: "Default",
+                  value: "default",
+                },
+                ...COLORS.map((color) => ({
+                  label: capitalizeFirstLetter(color),
+                  value: color,
+                })),
+              ],
+            },
           },
         },
-      },
-    ]
+        {
+          name: "tap_action",
+          selector: {
+            "ui-action": {},
+          },
+        },
+        {
+          name: "icon_tap_action",
+          selector: {
+            "ui-action": {},
+          },
+        },
+      ] as const
   );
 
   protected render(): TemplateResult {
@@ -105,15 +121,26 @@ export class HuiTileCardEditor
       ...ev.detail.value,
     };
     if (ev.detail.value.color === "default") {
-      delete config.color;
+      config.color = undefined;
     }
     fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) =>
-    this.hass!.localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
+  ) => {
+    switch (schema.name) {
+      case "color":
+      case "icon_tap_action":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.tile.${schema.name}`
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
 }
 
 declare global {
