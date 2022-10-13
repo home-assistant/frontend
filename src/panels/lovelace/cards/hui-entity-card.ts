@@ -146,8 +146,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                     stateObj.attributes[this._config.attribute!]
                   )
                 : this.hass.localize("state.default.unknown")
-              : isNumericState(stateObj) ||
-                (!isNaN(Number(stateObj.state)) && this._config.unit)
+              : isNumericState(stateObj) || this._config.unit
               ? formatNumber(stateObj.state, this.hass.locale)
               : computeStateDisplay(
                   this.hass.localize,
