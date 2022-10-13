@@ -247,7 +247,7 @@ export const describeAction = <T extends ActionType>(
     let base = "Repeat an action";
     if ("count" in config.repeat) {
       const count = config.repeat.count;
-      base += ` ${count} time${count === "1" || count === 1 ? "" : "s"}`;
+      base += ` ${count} time${Number(count) === 1 ? "" : "s"}`;
     } else if ("while" in config.repeat) {
       base += ` while ${ensureArray(config.repeat.while)
         .map((condition) => describeCondition(condition, hass))
