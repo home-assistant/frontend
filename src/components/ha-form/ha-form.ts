@@ -1,33 +1,25 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
+import { HomeAssistant } from "../../types";
 import "../ha-alert";
+import "../ha-selector/ha-selector";
 import "./ha-form-boolean";
 import "./ha-form-constant";
-import "./ha-form-grid";
 import "./ha-form-float";
+import "./ha-form-grid";
 import "./ha-form-integer";
 import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
 import "./ha-form-select";
 import "./ha-form-string";
-import { HaFormElement, HaFormDataContainer, HaFormSchema } from "./types";
-import { HomeAssistant } from "../../types";
+import { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
 
 const getValue = (obj, item) =>
   obj ? (!item.name ? obj : obj[item.name]) : null;
 
 const getError = (obj, item) => (obj && item.name ? obj[item.name] : null);
-
-let selectorImported = false;
 
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
@@ -60,18 +52,6 @@ export class HaForm extends LitElement implements HaFormElement {
         (child as HTMLElement).focus();
         break;
       }
-    }
-  }
-
-  willUpdate(changedProperties: PropertyValues) {
-    super.willUpdate(changedProperties);
-    if (
-      !selectorImported &&
-      changedProperties.has("schema") &&
-      this.schema?.some((item) => "selector" in item)
-    ) {
-      selectorImported = true;
-      import("../ha-selector/ha-selector");
     }
   }
 

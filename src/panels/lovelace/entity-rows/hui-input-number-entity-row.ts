@@ -113,8 +113,8 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
                   .max=${Number(stateObj.attributes.max)}
-                  .value=${stateObj.state}
-                  .suffix=${stateObj.attributes.unit_of_measurement}
+                  .value=${Number(stateObj.state).toString()}
+                  .suffix=${stateObj.attributes.unit_of_measurement || ""}
                   type="number"
                   @change=${this._selectedValueChanged}
                 >
@@ -179,11 +179,15 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     }
   }
 
-  private _selectedValueChanged(ev): void {
+  private _selectedValueChanged(ev: Event): void {
     const stateObj = this.hass!.states[this._config!.entity];
 
-    if (ev.target.value !== stateObj.state) {
-      setValue(this.hass!, stateObj.entity_id, ev.target.value);
+    if ((ev.target as HTMLInputElement).value !== stateObj.state) {
+      setValue(
+        this.hass!,
+        stateObj.entity_id,
+        (ev.target as HTMLInputElement).value
+      );
     }
   }
 }
