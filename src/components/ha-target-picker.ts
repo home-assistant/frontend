@@ -252,7 +252,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     this._addMode = ev.currentTarget.type;
     await this.updateComplete;
     await this._inputElement?.focus();
-    this._inputElement?.open();
+    await this._inputElement?.open();
   }
 
   private _renderChip(
