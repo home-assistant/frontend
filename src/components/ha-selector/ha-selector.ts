@@ -64,7 +64,7 @@ export class HaSelector extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("selector") && this.selector) {
-      LOAD_ELEMENTS[this._type]();
+      LOAD_ELEMENTS[this._type]?.();
     }
   }
 
