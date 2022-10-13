@@ -21,7 +21,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { ensureArray } from "../common/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
-import { nextRender } from "../common/util/render-status";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -251,10 +250,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private async _showPicker(ev) {
     this._addMode = ev.currentTarget.type;
-    await nextRender();
+    await this.updateComplete;
+    await this._inputElement?.focus();
     this._inputElement?.open();
-    await nextRender();
-    this._inputElement?.focus();
   }
 
   private _renderChip(
