@@ -3,15 +3,13 @@ import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { ActionConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureEntityCardConfig } from "../../cards/types";
-import "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import "../../../../components/ha-form/ha-form";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -61,6 +59,14 @@ const SCHEMA = [
     ],
   },
   { name: "theme", selector: { theme: {} } },
+  {
+    name: "tap_action",
+    selector: { "ui-action": {} },
+  },
+  {
+    name: "hold_action",
+    selector: { "ui-action": {} },
+  },
 ] as const;
 
 @customElement("hui-picture-entity-card-editor")
@@ -77,20 +83,10 @@ export class HuiPictureEntityCardEditor
     this._config = config;
   }
 
-  get _tap_action(): ActionConfig {
-    return this._config!.tap_action || { action: "more-info" };
-  }
-
-  get _hold_action(): ActionConfig | undefined {
-    return this._config!.hold_action;
-  }
-
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
-
-    const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
 
     const data = {
       show_state: true,
@@ -107,31 +103,6 @@ export class HuiPictureEntityCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <div class="card-config">
-        <hui-action-editor
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.tap_action"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .hass=${this.hass}
-          .config=${this._tap_action}
-          .actions=${actions}
-          .configValue=${"tap_action"}
-          @value-changed=${this._changed}
-        ></hui-action-editor>
-        <hui-action-editor
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.hold_action"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .hass=${this.hass}
-          .config=${this._hold_action}
-          .actions=${actions}
-          .configValue=${"hold_action"}
-          @value-changed=${this._changed}
-        ></hui-action-editor>
       </div>
     `;
   }
@@ -140,32 +111,11 @@ export class HuiPictureEntityCardEditor
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _changed(ev: CustomEvent): void {
-    if (!this._config || !this.hass) {
-      return;
-    }
-    const target = ev.target! as EditorTarget;
-    const value = ev.detail.value;
-
-    if (this[`_${target.configValue}`] === value) {
-      return;
-    }
-
-    if (value !== false && !value) {
-      this._config = { ...this._config };
-      delete this._config[target.configValue!];
-    } else {
-      this._config = {
-        ...this._config,
-        [target.configValue!]: value,
-      };
-    }
-    fireEvent(this, "config-changed", { config: this._config });
-  }
-
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
       case "theme":
+      case "tap_action":
+      case "hold_action":
         return `${this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.theme"
         )} (${this.hass!.localize(
