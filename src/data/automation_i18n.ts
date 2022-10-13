@@ -374,7 +374,7 @@ export const describeCondition = (
   if (condition.condition === "or") {
     const conditions = ensureArray(condition.conditions);
 
-    if (conditions && conditions.length > 0) {
+    if (!conditions || conditions.length === 0) {
       return "Test if any condition matches";
     }
     const count = conditions.length;
