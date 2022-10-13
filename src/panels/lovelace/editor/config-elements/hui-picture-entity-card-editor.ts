@@ -117,7 +117,7 @@ export class HuiPictureEntityCardEditor
       case "tap_action":
       case "hold_action":
         return `${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.theme"
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
         )} (${this.hass!.localize(
           "ui.panel.lovelace.editor.card.config.optional"
         )})`;
