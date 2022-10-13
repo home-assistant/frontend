@@ -6,15 +6,6 @@ import { HomeAssistant } from "../../types";
 import "../../panels/lovelace/components/hui-action-editor";
 import { ActionConfig } from "../../data/lovelace";
 
-const DEFAULT_ACTIONS = [
-  "more-info",
-  "toggle",
-  "navigate",
-  "url",
-  "call-service",
-  "none",
-];
-
 @customElement("ha-selector-ui-action")
 export class HaSelectorUiAction extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -33,7 +24,7 @@ export class HaSelectorUiAction extends LitElement {
         .label=${this.label}
         .hass=${this.hass}
         .config=${this.value}
-        .actions=${this.selector["ui-action"].actions ?? DEFAULT_ACTIONS}
+        .actions=${this.selector["ui-action"].actions}
         .tooltipText=${this.helper}
         @value-changed=${this._valueChanged}
       ></hui-action-editor>

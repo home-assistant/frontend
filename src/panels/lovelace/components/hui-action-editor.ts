@@ -16,13 +16,24 @@ import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
 import "../../../components/ha-navigation-picker";
 
+export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
+
+const DEFAULT_ACTIONS: UiAction[] = [
+  "more-info",
+  "toggle",
+  "navigate",
+  "url",
+  "call-service",
+  "none",
+];
+
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
   @property() public config?: ActionConfig;
 
   @property() public label?: string;
 
-  @property() public actions?: string[];
+  @property() public actions?: UiAction[];
 
   @property() public tooltipText?: string;
 
@@ -52,9 +63,11 @@ export class HuiActionEditor extends LitElement {
   );
 
   protected render(): TemplateResult {
-    if (!this.hass || !this.actions) {
+    if (!this.hass) {
       return html``;
     }
+
+    const actions = this.actions ?? DEFAULT_ACTIONS;
 
     return html`
       <div class="dropdown">
@@ -72,7 +85,7 @@ export class HuiActionEditor extends LitElement {
               "ui.panel.lovelace.editor.action-editor.actions.default_action"
             )}
           </mwc-list-item>
-          ${this.actions.map(
+          ${actions.map(
             (action) => html`
               <mwc-list-item .value=${action}>
                 ${this.hass!.localize(

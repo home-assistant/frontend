@@ -1,5 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { UiAction } from "../panels/lovelace/components/hui-action-editor";
 import type { DeviceRegistryEntry } from "./device_registry";
 import type { EntitySources } from "./entity_sources";
 
@@ -260,14 +261,7 @@ export interface TimeSelector {
 
 export interface UiActionSelector {
   "ui-action": {
-    actions?: (
-      | "more-info"
-      | "toggle"
-      | "navigate"
-      | "url"
-      | "call-service"
-      | "none"
-    )[];
+    actions?: UiAction[];
   };
 }
 
