@@ -70,7 +70,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return 2;
+    return 1;
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
