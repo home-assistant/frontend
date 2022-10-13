@@ -329,7 +329,8 @@
       "successfully_deleted": "Successfully deleted",
       "error_required": "Required",
       "copied": "Copied",
-      "copied_clipboard": "Copied to clipboard"
+      "copied_clipboard": "Copied to clipboard",
+      "optional": "optional"
     },
     "components": {
       "selectors": {
@@ -399,7 +400,7 @@
           "show_entities": "Show entities"
         },
         "entity-attribute-picker": {
-          "attribute": "Attribute (optional)",
+          "attribute": "Attribute",
           "show_attributes": "Show attributes"
         },
         "entity-state-picker": {
