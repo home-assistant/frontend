@@ -3816,6 +3816,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/hammerjs@npm:^2.0.41":
+  version: 2.0.41
+  resolution: "@types/hammerjs@npm:2.0.41"
+  checksum: d16fbd688fc9b18cc270abe8dea8d4c50ef7bd8375e593d92c233d299387933a6b003c8db69819344833052458bc5f9ef1b472001277a49f095928d184356006
+  languageName: node
+  linkType: hard
+
 "@types/har-format@npm:*":
   version: 1.2.4
   resolution: "@types/har-format@npm:1.2.4"
@@ -8823,6 +8830,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"hammerjs@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "hammerjs@npm:2.0.8"
+  checksum: b092da7d1565a165d7edb53ef0ce212837a8b11f897aa3cf81a7818b66686b0ab3f4747fbce8fc8a41d1376594639ce3a054b0fd4889ca8b5b136a29ca500e27
+  languageName: node
+  linkType: hard
+
 "handle-thing@npm:^2.0.0":
   version: 2.0.0
   resolution: "handle-thing@npm:2.0.0"
@@ -9032,6 +9046,7 @@ fsevents@^1.2.7:
     "@types/chromecast-caf-receiver": 5.0.12
     "@types/chromecast-caf-sender": ^1.0.3
     "@types/glob": ^7
+    "@types/hammerjs": ^2.0.41
     "@types/js-yaml": ^4
     "@types/leaflet": ^1
     "@types/leaflet-draw": ^1
@@ -9085,6 +9100,7 @@ fsevents@^1.2.7:
     gulp-merge-json: ^1.3.1
     gulp-rename: ^2.0.0
     gulp-zopfli-green: ^3.0.1
+    hammerjs: ^2.0.8
     hls.js: ^1.2.3
     home-assistant-js-websocket: ^8.0.0
     html-minifier: ^4.0.0
