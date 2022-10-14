@@ -68,7 +68,7 @@ export class HuiTileCardEditor
                   label: "Default",
                   value: "default",
                 },
-                ...COLORS.map((color) => ({
+                ...Array.from(COLORS).map((color) => ({
                   label: capitalizeFirstLetter(color),
                   value: color,
                 })),

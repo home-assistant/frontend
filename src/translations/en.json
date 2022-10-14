@@ -243,6 +243,9 @@
           "finish": "finish"
         }
       },
+      "tile": {
+        "not_found": "Entity not found"
+      },
       "vacuum": {
         "actions": {
           "resume_cleaning": "Resume cleaning",
@@ -4122,7 +4125,7 @@
             },
             "tile": {
               "name": "Tile",
-              "description": "Description for tile card",
+              "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
               "color": "Color",
               "icon_tap_action": "Icon tap action"
             },

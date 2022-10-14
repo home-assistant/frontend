@@ -1,6 +1,6 @@
 import { hex2rgb } from "./convert-color";
 
-export const COLORS = [
+export const COLORS = new Set([
   "red",
   "pink",
   "purple",
@@ -22,10 +22,11 @@ export const COLORS = [
   "blue-grey",
   "black",
   "white",
-];
+  "disabled",
+]);
 
 export function computeRgbColor(color: string): string {
-  if (COLORS.includes(color)) {
+  if (COLORS.has(color)) {
     return `var(--rgb-${color}-color)`;
   }
   if (color.startsWith("#")) {

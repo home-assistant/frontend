@@ -1,3 +1,4 @@
+import { mdiHelp } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -14,7 +15,6 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig, TileCardConfig } from "./types";
 
@@ -94,9 +94,15 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     if (!entity) {
       return html`
-        <hui-warning>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
-        </hui-warning>
+        <ha-card class="disabled">
+          <div class="tile">
+            <ha-tile-icon .iconPath=${mdiHelp}></ha-tile-icon>
+            <ha-tile-info
+              .primary=${entityId}
+              secondary=${this.hass.localize("ui.card.tile.not_found")}
+            ></ha-tile-info>
+          </div>
+        </ha-card>
       `;
     }
 
@@ -148,6 +154,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       ha-card {
         height: 100%;
       }
+      ha-card.disabled {
+        background: rgba(var(--rgb-disabled-color), 0.1);
+      }
       .tile {
         padding: calc(12px - var(--tap-padding));
         display: flex;
@@ -162,16 +171,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         margin-inline-start: initial;
         direction: var(--direction);
         --color: var(--main-color);
-        cursor: pointer;
         transition: transform 180ms ease-in-out;
       }
-      ha-tile-icon:focus {
+      [role="button"] {
+        cursor: pointer;
+      }
+      ha-tile-icon[role="button"]:focus {
         outline: none;
       }
-      ha-tile-icon:focus-visible {
+      ha-tile-icon[role="button"]:focus-visible {
         transform: scale(1.2);
       }
-      ha-tile-icon:active {
+      ha-tile-icon[role="button"]:active {
         transform: scale(1.2);
       }
       ha-tile-info {
@@ -180,7 +191,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         min-width: 0;
         min-height: 40px;
         border-radius: calc(var(--ha-card-border-radius, 12px) - 2px);
-        cursor: pointer;
         transition: background-color 180ms ease-in-out;
       }
       ha-tile-info:focus {
