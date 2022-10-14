@@ -1611,9 +1611,9 @@
                 "elevation_meters": "meters",
                 "time_zone": "Time Zone",
                 "unit_system": "Unit System",
-                "unit_system_imperial": "Imperial",
+                "unit_system_us_customary": "US customary",
                 "unit_system_metric": "Metric",
-                "imperial_example": "Fahrenheit, pounds",
+                "us_customary_example": "Fahrenheit, pounds",
                 "metric_example": "Celsius, kilograms",
                 "find_currency_value": "Find my value",
                 "save_button": "Save",
@@ -2359,7 +2359,9 @@
             "sequence_sentence": "The sequence of actions of this script.",
             "link_available_actions": "Learn more about available actions."
           },
-          "trace": { "edit_script": "Edit script" }
+          "trace": {
+            "edit_script": "Edit script"
+          }
         },
         "scene": {
           "caption": "Scenes",
