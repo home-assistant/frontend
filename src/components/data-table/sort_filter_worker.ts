@@ -13,19 +13,21 @@ const filterData = (
   columns: SortableColumnContainer,
   filter: string
 ) => {
-  filter = filter.toUpperCase();
+  const filterWords = filter.toUpperCase().split(" ");
   return data.filter((row) =>
     Object.entries(columns).some((columnEntry) => {
       const [key, column] = columnEntry;
       if (column.filterable) {
         if (
-          String(
-            column.filterKey
-              ? row[column.valueColumn || key][column.filterKey]
-              : row[column.valueColumn || key]
+          filterWords.every((word) =>
+            String(
+              column.filterKey
+                ? row[column.valueColumn || key][column.filterKey]
+                : row[column.valueColumn || key]
+            )
+              .toUpperCase()
+              .includes(word)
           )
-            .toUpperCase()
-            .includes(filter)
         ) {
           return true;
         }
