@@ -301,7 +301,7 @@ export class MoreInfoDialog extends LitElement {
         @media all and (min-width: 600px) and (min-height: 501px) {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
-            --mdc-dialog-max-width: 560px;
+            --mdc-dialog-max-width: 580px;
             --dialog-surface-margin-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
