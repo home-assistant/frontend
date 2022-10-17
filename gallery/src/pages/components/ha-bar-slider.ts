@@ -1,7 +1,36 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { repeat } from "lit/directives/repeat";
 import "../../../../src/components/ha-bar-slider";
 import "../../../../src/components/ha-card";
+
+const sliders: {
+  trackMode?: "start" | "end" | "indicator";
+  class?: string;
+}[] = [
+  {
+    trackMode: "start",
+  },
+  {
+    trackMode: "end",
+  },
+  {
+    trackMode: "indicator",
+  },
+  {
+    trackMode: "start",
+    class: "yellow",
+  },
+  {
+    trackMode: "end",
+    class: "yellow",
+  },
+  {
+    trackMode: "indicator",
+    class: "yellow",
+  },
+];
 
 @customElement("demo-components-ha-bar-slider")
 export class DemoHaBarSlider extends LitElement {
@@ -20,27 +49,40 @@ export class DemoHaBarSlider extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card>
-        <ha-bar-slider
-          .value=${this.value}
-          @value-changed=${this.handleValueChanged}
-          @slider-moved=${this.handleSliderMoved}
-          track-mode="active"
-        ></ha-bar-slider>
-        <ha-bar-slider
-          .value=${this.value}
-          @value-changed=${this.handleValueChanged}
-          @slider-moved=${this.handleSliderMoved}
-          track-mode="indicator"
-        ></ha-bar-slider>
-        <ha-bar-slider
-          .value=${this.value}
-          @value-changed=${this.handleValueChanged}
-          @slider-moved=${this.handleSliderMoved}
-          track-mode="active"
-          class="light"
-        ></ha-bar-slider>
-        <p>value : ${this.value} position: ${this.sliderPosition}</p>
+        <div class="card-content">
+          <p><b>Slider values</b></p>
+          <table>
+            <tbody>
+              <tr>
+                <td>position</td>
+                <td>${this.sliderPosition ?? "-"}</td>
+              </tr>
+              <tr>
+                <td>value</td>
+                <td>${this.value ?? "-"}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </ha-card>
+      ${repeat(
+        sliders,
+        (slider) => html`
+          <ha-card>
+            <div class="card-content">
+              <pre>Config: ${JSON.stringify(slider)}</pre>
+              <ha-bar-slider
+                .value=${this.value}
+                @value-changed=${this.handleValueChanged}
+                @slider-moved=${this.handleSliderMoved}
+                .trackMode=${slider.trackMode}
+                class=${ifDefined(slider.class)}
+              >
+              </ha-bar-slider>
+            </div>
+          </ha-card>
+        `
+      )}
     `;
   }
 
@@ -49,13 +91,15 @@ export class DemoHaBarSlider extends LitElement {
       ha-card {
         max-width: 600px;
         margin: 24px auto;
-        padding: 16px;
       }
-      ha-bar-slider {
-        display: block;
-        margin-bottom: 12px;
+      pre {
+        margin-top: 0;
+        margin-bottom: 8px;
       }
-      .light {
+      p {
+        margin: 0;
+      }
+      .yellow {
         --main-color: #ffcf4c;
         --bg-color: #ffcf4c4a;
       }

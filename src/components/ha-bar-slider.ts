@@ -42,7 +42,7 @@ export class HaBarSlider extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ attribute: "track-mode" })
-  public trackMode: "indicator" | "active" = "active";
+  public trackMode?: "indicator" | "start" | "end" = "start";
 
   @property({ attribute: false, type: Number, reflect: true })
   public value?: number;
@@ -156,20 +156,20 @@ export class HaBarSlider extends LitElement {
     switch (e.code) {
       case "ArrowRight":
       case "ArrowUp":
-        this.value = this.boundedValue(this.value ?? 0 + this.step);
+        this.value = this.boundedValue((this.value ?? 0) + this.step);
         break;
       case "ArrowLeft":
       case "ArrowDown":
-        this.value = this.boundedValue(this.value ?? 0 - this.step);
+        this.value = this.boundedValue((this.value ?? 0) - this.step);
         break;
       case "PageUp":
         this.value = this.steppedValue(
-          this.boundedValue(this.value ?? 0 + this._tenPercentStep)
+          this.boundedValue((this.value ?? 0) + this._tenPercentStep)
         );
         break;
       case "PageDown":
         this.value = this.steppedValue(
-          this.boundedValue(this.value ?? 0 - this._tenPercentStep)
+          this.boundedValue((this.value ?? 0) - this._tenPercentStep)
         );
         break;
       case "Home":
@@ -219,8 +219,11 @@ export class HaBarSlider extends LitElement {
           aria-labelledby=${ifDefined(this.label)}
         >
           <div class="slider-track-background"></div>
-          ${this.trackMode === "active"
-            ? html`<div class="slider-track-active"></div>`
+          ${this.trackMode === "start"
+            ? html`<div class="slider-track-bar"></div>`
+            : null}
+          ${this.trackMode === "end"
+            ? html`<div class="slider-track-bar end"></div>`
             : null}
           ${this.trackMode === "indicator"
             ? html`<div class="slider-track-indicator"></div>`
@@ -246,7 +249,7 @@ export class HaBarSlider extends LitElement {
         position: relative;
         height: 100%;
         width: 100%;
-        border-radius: 16px;
+        border-radius: 12px;
         transform: translateZ(0);
         overflow: hidden;
         cursor: pointer;
@@ -263,19 +266,19 @@ export class HaBarSlider extends LitElement {
         background-color: var(--bg-color);
         background-image: var(--gradient);
       }
-      .slider .slider-track-active {
+      .slider .slider-track-bar {
         position: absolute;
         top: 0;
         left: 0;
         height: 100%;
         width: 100%;
-        transform: translate3d(calc(-100% + var(--value, 0) * 100%), 0, 0);
+        transform: translate3d(calc((var(--value, 0) - 1) * 100%), 0, 0);
         border-radius: 0 8px 8px 0;
         transform-origin: left;
         background-color: var(--main-color);
         transition: transform 180ms ease-in-out;
       }
-      .slider .slider-track-active::after {
+      .slider .slider-track-bar::after {
         display: block;
         content: "";
         position: absolute;
@@ -288,6 +291,17 @@ export class HaBarSlider extends LitElement {
         border-radius: 2px;
         background-color: white;
       }
+      .slider .slider-track-bar.end {
+        right: 0;
+        left: initial;
+        transform: translate3d(calc(var(--value, 0) * 100%), 0, 0);
+        border-radius: 8px 0 0 8px;
+        transform-origin: right;
+      }
+      .slider .slider-track-bar.end::after {
+        right: initial;
+        left: 6px;
+      }
       .slider .slider-track-indicator {
         position: absolute;
         top: 0;
@@ -296,7 +310,6 @@ export class HaBarSlider extends LitElement {
         width: 10px;
         border-radius: 3px;
         background-color: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         transition: left 180ms ease-in-out;
       }
       .slider .slider-track-indicator:after {
@@ -313,7 +326,7 @@ export class HaBarSlider extends LitElement {
         width: 2px;
         border-radius: 1px;
       }
-      .controlled .slider .slider-track-active {
+      .controlled .slider .slider-track-bar {
         transition: none;
       }
       .controlled .slider .slider-track-indicator {
