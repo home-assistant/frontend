@@ -1,4 +1,7 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import {
+  HassEntity,
+  HassEntityAttributeBase,
+} from "home-assistant-js-websocket";
 import { FrontendLocaleData, NumberFormat } from "../../data/translation";
 import { round } from "./round";
 
@@ -9,9 +12,9 @@ import { round } from "./round";
 export const isNumericState = (stateObj: HassEntity): boolean =>
   isNumericFromAttributes(stateObj.attributes);
 
-export const isNumericFromAttributes = (attributes: {
-  [key: string]: any;
-}): boolean => !!attributes.unit_of_measurement || !!attributes.state_class;
+export const isNumericFromAttributes = (
+  attributes: HassEntityAttributeBase
+): boolean => !!attributes.unit_of_measurement || !!attributes.state_class;
 
 export const numberFormatToLocale = (
   localeOptions: FrontendLocaleData
