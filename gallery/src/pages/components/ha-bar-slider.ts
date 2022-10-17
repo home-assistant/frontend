@@ -75,7 +75,7 @@ export class DemoHaBarSlider extends LitElement {
                 .value=${this.value}
                 @value-changed=${this.handleValueChanged}
                 @slider-moved=${this.handleSliderMoved}
-                .trackMode=${slider.trackMode}
+                track-mode=${ifDefined(slider.trackMode)}
                 class=${ifDefined(slider.class)}
               >
               </ha-bar-slider>
@@ -83,6 +83,27 @@ export class DemoHaBarSlider extends LitElement {
           </ha-card>
         `
       )}
+      <ha-card>
+        <div class="card-content">
+          <p class="title"><b>Vertical</b></p>
+          <div class="vertical-sliders">
+            ${repeat(
+              sliders,
+              (slider) => html`
+                <ha-bar-slider
+                  .value=${this.value}
+                  @value-changed=${this.handleValueChanged}
+                  @slider-moved=${this.handleSliderMoved}
+                  track-mode=${ifDefined(slider.trackMode)}
+                  orientation="vertical"
+                  class=${ifDefined(slider.class)}
+                >
+                </ha-bar-slider>
+              `
+            )}
+          </div>
+        </div>
+      </ha-card>
     `;
   }
 
@@ -102,6 +123,18 @@ export class DemoHaBarSlider extends LitElement {
       .yellow {
         --main-color: #ffcf4c;
         --bg-color: #ffcf4c4a;
+      }
+      .vertical-sliders {
+        height: 300px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      p.title {
+        margin-bottom: 12px;
+      }
+      .vertical-sliders > *:not(:last-child) {
+        margin-right: 4px;
       }
     `;
   }
