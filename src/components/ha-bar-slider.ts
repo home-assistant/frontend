@@ -151,25 +151,25 @@ export class HaBarSlider extends LitElement {
   }
 
   _handleKeyDown(e: KeyboardEvent) {
-    if (this.value === undefined || !A11K_CODE_KEYS.has(e.code)) return;
+    if (!A11K_CODE_KEYS.has(e.code)) return;
     e.preventDefault();
     switch (e.code) {
       case "ArrowRight":
       case "ArrowUp":
-        this.value = this.boundedValue(this.value + this.step);
+        this.value = this.boundedValue(this.value ?? 0 + this.step);
         break;
       case "ArrowLeft":
       case "ArrowDown":
-        this.value = this.boundedValue(this.value - this.step);
+        this.value = this.boundedValue(this.value ?? 0 - this.step);
         break;
       case "PageUp":
         this.value = this.steppedValue(
-          this.boundedValue(this.value + this._tenPercentStep)
+          this.boundedValue(this.value ?? 0 + this._tenPercentStep)
         );
         break;
       case "PageDown":
         this.value = this.steppedValue(
-          this.boundedValue(this.value - this._tenPercentStep)
+          this.boundedValue(this.value ?? 0 - this._tenPercentStep)
         );
         break;
       case "Home":
@@ -183,7 +183,7 @@ export class HaBarSlider extends LitElement {
   }
 
   _handleKeyUp(e: KeyboardEvent) {
-    if (this.value === undefined || !A11K_CODE_KEYS.has(e.code)) return;
+    if (!A11K_CODE_KEYS.has(e.code)) return;
     e.preventDefault();
     fireEvent(this, "value-changed", { value: this.value });
   }
