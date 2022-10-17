@@ -111,7 +111,7 @@ class DateRangePickerElement extends WrappedElement {
           .daterangepicker {
             left: 0px !important;
             top: auto;
-            box-shadow: var(--ha-card-box-shadow, "none");
+            box-shadow: var(--ha-card-box-shadow, none);
             background-color: var(--card-background-color);
             border-radius: var(--ha-card-border-radius, 16px);
             border-width: var(--ha-card-border-width, 1px);
