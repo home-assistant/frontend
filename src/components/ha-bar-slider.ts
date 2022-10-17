@@ -262,26 +262,22 @@ export class HaBarSlider extends LitElement {
     return css`
       :host {
         display: block;
-        --main-color: rgba(var(--rgb-primary-color), 1);
-        --bg-gradient: none;
-        --bg-color: rgba(var(--rgb-secondary-text-color), 0.2);
-        --bg-border-radius: 12px;
-        --track-border-radius: 6px;
-        --track-thickness: 40px;
-        --track-indicator-margin: 6px;
-        --track-indicator-size: 2px;
-        height: var(--track-thickness);
+        --slider-bar-color: rgba(var(--rgb-primary-color), 1);
+        --slider-bar-background: rgba(var(--rgb-secondary-text-color), 0.2);
+        --slider-bar-thickness: 40px;
+        --slider-bar-border-radius: 12px;
+        height: var(--slider-bar-thickness);
         width: 100%;
       }
       :host([orientation="vertical"]) {
-        width: var(--track-thickness);
+        width: var(--slider-bar-thickness);
         height: 100%;
       }
       .slider {
         position: relative;
         height: 100%;
         width: 100%;
-        border-radius: var(--bg-border-radius);
+        border-radius: var(--slider-bar-border-radius);
         transform: translateZ(0);
         overflow: hidden;
         cursor: pointer;
@@ -295,14 +291,16 @@ export class HaBarSlider extends LitElement {
         left: 0;
         height: 100%;
         width: 100%;
-        background-color: var(--bg-color);
-        background-image: var(--gradient);
+        background-color: var(--slider-bar-background);
       }
       .slider .slider-track-bar {
+        --border-radius: calc(var(--slider-bar-border-radius) / 2);
+        --handle-size: 4px;
+        --handle-margin: calc(var(--slider-bar-thickness) / 8);
         position: absolute;
         height: 100%;
         width: 100%;
-        background-color: var(--main-color);
+        background-color: var(--slider-bar-color);
         transition: transform 180ms ease-in-out;
       }
       .slider .slider-track-bar::after {
@@ -310,99 +308,96 @@ export class HaBarSlider extends LitElement {
         content: "";
         position: absolute;
         margin: auto;
-        border-radius: calc(var(--track-indicator-size) / 2);
+        border-radius: var(--handle-size);
         background-color: white;
       }
       .slider .slider-track-bar.horizontal {
         top: 0;
         left: 0;
         transform: translate3d(calc((var(--value, 0) - 1) * 100%), 0, 0);
-        border-radius: 0 var(--track-border-radius) var(--track-border-radius) 0;
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
       }
       .slider .slider-track-bar.horizontal:after {
         top: 0;
         bottom: 0;
-        right: var(--track-indicator-margin);
+        right: var(--handle-margin);
         height: 50%;
-        width: var(--track-indicator-size);
+        width: var(--handle-size);
       }
       .slider .slider-track-bar.horizontal.end {
         right: 0;
         left: initial;
         transform: translate3d(calc(var(--value, 0) * 100%), 0, 0);
-        border-radius: var(--track-border-radius) 0 0 var(--track-border-radius);
+        border-radius: var(--border-radius) 0 0 var(--border-radius);
       }
       .slider .slider-track-bar.horizontal.end::after {
         right: initial;
-        left: var(--track-indicator-margin);
+        left: var(--handle-margin);
       }
 
       .slider .slider-track-bar.vertical {
         bottom: 0;
         left: 0;
         transform: translate3d(0, calc((1 - var(--value, 0)) * 100%), 0);
-        border-radius: var(--track-border-radius) var(--track-border-radius) 0 0;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
       }
       .slider .slider-track-bar.vertical:after {
-        top: var(--track-indicator-margin);
+        top: var(--handle-margin);
         right: 0;
         left: 0;
         width: 50%;
-        height: var(--track-indicator-size);
+        height: var(--handle-size);
       }
       .slider .slider-track-bar.vertical.end {
         top: 0;
         bottom: initial;
         transform: translate3d(0, calc((0 - var(--value, 0)) * 100%), 0);
-        border-radius: 0 0 var(--track-border-radius) var(--track-border-radius);
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
       }
       .slider .slider-track-bar.vertical.end::after {
         top: initial;
-        bottom: var(--track-indicator-margin);
+        bottom: var(--handle-margin);
       }
 
       .slider .slider-track-indicator {
+        --indicator-size: calc(var(--slider-bar-thickness) / 4);
+        --handle-size: 4px;
         position: absolute;
-        border-radius: 0;
         background-color: white;
         transition: left 180ms ease-in-out, bottom 180ms ease-in-out;
       }
       .slider .slider-track-indicator:after {
         display: block;
         content: "";
-        background-color: var(--main-color);
+        background-color: var(--slider-bar-color);
         position: absolute;
         top: 0;
         left: 0;
         bottom: 0;
         right: 0;
         margin: auto;
-        border-radius: calc(var(--track-indicator-size) / 2);
+        border-radius: var(--handle-size);
       }
 
       .slider .slider-track-indicator.horizontal {
         top: 0;
         bottom: 0;
-        left: calc(
-          var(--value, 0) * (100% - var(--track-indicator-margin) * 2)
-        );
-        width: calc(var(--track-indicator-margin) * 2);
+        left: calc(var(--value, 0) * (100% - var(--indicator-size)));
+        width: var(--indicator-size);
       }
       .slider .slider-track-indicator.horizontal:after {
         height: 50%;
-        width: var(--track-indicator-size);
+        width: var(--handle-size);
       }
 
       .slider .slider-track-indicator.vertical {
         right: 0;
         left: 0;
-        bottom: calc(
-          var(--value, 0) * (100% - var(--track-indicator-margin) * 2)
-        );
-        height: calc(var(--track-indicator-margin) * 2);
+        bottom: calc(var(--value, 0) * (100% - var(--indicator-size)));
+        height: var(--indicator-size);
       }
       .slider .slider-track-indicator.vertical:after {
-        height: var(--track-indicator-size);
+        height: var(--handle-size);
         width: 50%;
       }
 

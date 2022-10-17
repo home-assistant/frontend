@@ -121,13 +121,10 @@ export class DemoHaBarSlider extends LitElement {
         margin: 0;
       }
       .custom {
-        --main-color: #ffcf4c;
-        --bg-color: #ffcf4c64;
-        --bg-border-radius: 24px;
-        --track-thickness: 100px;
-        --track-indicator-margin: 12px;
-        --track-indicator-size: 4px;
-        --track-border-radius: 8px;
+        --slider-bar-color: #ffcf4c;
+        --slider-bar-background: #ffcf4c64;
+        --slider-bar-thickness: 100px;
+        --slider-bar-border-radius: 24px;
       }
       .vertical-sliders {
         height: 300px;
