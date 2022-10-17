@@ -10,6 +10,7 @@ import "../cards/hui-light-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
 import "../cards/hui-weather-forecast-card";
+import "../cards/hui-tile-card";
 import {
   createLovelaceElement,
   getLovelaceElementClass,
@@ -27,6 +28,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "sensor",
   "thermostat",
   "weather-forecast",
+  "tile",
 ]);
 
 const LAZY_LOAD_TYPES = {
