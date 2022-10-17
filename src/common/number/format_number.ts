@@ -102,7 +102,8 @@ const getDefaultFormatOptions = (
   // Keep decimal trailing zeros if they are present in a string numeric value
   if (
     !options ||
-    (!options.minimumFractionDigits && !options.maximumFractionDigits)
+    (options.minimumFractionDigits === undefined &&
+      options.maximumFractionDigits === undefined)
   ) {
     const digits = num.indexOf(".") > -1 ? num.split(".")[1].length : 0;
     defaultOptions.minimumFractionDigits = digits;
