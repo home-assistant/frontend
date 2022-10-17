@@ -16,6 +16,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import {
   formatNumber,
+  getMaxDigits,
   isNumericState,
 } from "../../common/number/format_number";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
@@ -149,7 +150,11 @@ export class HaStateLabelBadge extends LitElement {
           entityState.state === UNAVAILABLE
           ? "—"
           : isNumericState(entityState)
-          ? formatNumber(entityState.state, this.hass!.locale)
+          ? formatNumber(
+              entityState.state,
+              this.hass!.locale,
+              getMaxDigits(entityState)
+            )
           : computeStateDisplay(
               this.hass!.localize,
               entityState,

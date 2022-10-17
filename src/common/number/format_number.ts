@@ -85,6 +85,23 @@ export const formatNumber = (
 };
 
 /**
+ * Checks if the current entity state should be formatted as an integer based on the `state` and `step` attribute and returns the appropriate `Intl.NumberFormatOptions` object with `maximumFractionDigits` set
+ * @param entityState The state object of the entity
+ * @returns An `Intl.NumberFormatOptions` object with `maximumFractionDigits` set to 0, or `undefined`
+ */
+export const getMaxDigits = (
+  entityState: HassEntity
+): Intl.NumberFormatOptions | undefined => {
+  if (
+    Number.isInteger(Number(entityState.attributes?.step)) &&
+    Number.isInteger(Number(entityState.state))
+  ) {
+    return { maximumFractionDigits: 0 };
+  }
+  return undefined;
+};
+
+/**
  * Generates default options for Intl.NumberFormat
  * @param num The number to be formatted
  * @param options The Intl.NumberFormatOptions that should be included in the returned options

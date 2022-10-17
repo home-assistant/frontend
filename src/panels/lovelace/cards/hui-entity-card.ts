@@ -17,6 +17,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import {
   formatNumber,
+  getMaxDigits,
   isNumericState,
 } from "../../../common/number/format_number";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
@@ -147,7 +148,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   )
                 : this.hass.localize("state.default.unknown")
               : isNumericState(stateObj) || this._config.unit
-              ? formatNumber(stateObj.state, this.hass.locale)
+              ? formatNumber(
+                  stateObj.state,
+                  this.hass.locale,
+                  getMaxDigits(stateObj)
+                )
               : computeStateDisplay(
                   this.hass.localize,
                   stateObj,
