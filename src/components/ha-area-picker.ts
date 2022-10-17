@@ -116,16 +116,14 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  public open() {
-    this.updateComplete.then(() => {
-      this.comboBox?.open();
-    });
+  public async open() {
+    await this.updateComplete;
+    await this.comboBox?.open();
   }
 
-  public focus() {
-    this.updateComplete.then(() => {
-      this.comboBox?.focus();
-    });
+  public async focus() {
+    await this.updateComplete;
+    await this.comboBox?.focus();
   }
 
   private _getAreas = memoizeOne(
@@ -290,7 +288,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
   protected updated(changedProps: PropertyValues) {
     if (
       (!this._init && this._devices && this._areas && this._entities) ||
-      (changedProps.has("_opened") && this._opened)
+      (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
       (this.comboBox as any).items = this._getAreas(
@@ -308,9 +306,6 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    if (!this._devices || !this._areas || !this._entities) {
-      return html``;
-    }
     return html`
       <ha-combo-box
         .hass=${this.hass}
