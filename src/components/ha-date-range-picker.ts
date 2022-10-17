@@ -166,7 +166,7 @@ export class HaDateRangePicker extends LitElement {
       ha-textfield {
         display: inline-block;
         max-width: 250px;
-        min-width: 200px;
+        min-width: 220px;
       }
 
       ha-textfield:last-child {
