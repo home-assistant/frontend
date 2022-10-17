@@ -374,35 +374,35 @@ export const describeCondition = (
   if (condition.condition === "or") {
     const conditions = ensureArray(condition.conditions);
 
-    let count = "condition";
-
-    if (conditions && conditions.length > 0) {
-      count = `of ${conditions.length} conditions`;
+    if (!conditions || conditions.length === 0) {
+      return "Test if any condition matches";
     }
-
-    return `Test if any ${count} matches`;
+    const count = conditions.length;
+    return `Test if any of ${count} condition${count === 1 ? "" : "s"} matches`;
   }
 
   if (condition.condition === "and") {
     const conditions = ensureArray(condition.conditions);
 
-    const count =
-      conditions && conditions.length > 0
-        ? `${conditions.length} `
-        : "multiple";
-
-    return `Test if ${count} conditions match`;
+    if (!conditions || conditions.length === 0) {
+      return "Test if multiple conditions match";
+    }
+    const count = conditions.length;
+    return `Test if ${count} condition${count === 1 ? "" : "s"} match${
+      count === 1 ? "es" : ""
+    }`;
   }
 
   if (condition.condition === "not") {
     const conditions = ensureArray(condition.conditions);
 
-    const what =
-      conditions && conditions.length > 0
-        ? `none of ${conditions.length} conditions match`
-        : "no condition matches";
-
-    return `Test if ${what}`;
+    if (!conditions || conditions.length === 0) {
+      return "Test if no condition matches";
+    }
+    if (conditions.length === 1) {
+      return "Test if 1 condition does not match";
+    }
+    return `Test if none of ${conditions.length} conditions match`;
   }
 
   // State Condition
