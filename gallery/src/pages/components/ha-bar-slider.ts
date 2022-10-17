@@ -93,7 +93,7 @@ export class DemoHaBarSlider extends LitElement {
                 <ha-bar-slider
                   .value=${this.value}
                   .mode=${slider.mode}
-                  orientation="vertical"
+                  vertical
                   class=${ifDefined(slider.class)}
                   @value-changed=${this.handleValueChanged}
                   @slider-moved=${this.handleSliderMoved}

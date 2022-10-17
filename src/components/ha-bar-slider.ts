@@ -45,13 +45,14 @@ const getPercentageFromEvent = (e: HammerInput, vertical: boolean) => {
 
 @customElement("ha-bar-slider")
 export class HaBarSlider extends LitElement {
-  @property({ type: Boolean }) public disabled = false;
+  @property({ type: Boolean })
+  public disabled = false;
 
   @property()
   public mode?: "start" | "end" | "indicator" = "start";
 
-  @property()
-  public orientation?: "horizontal" | "vertical" = "horizontal";
+  @property({ type: Boolean })
+  public vertical = false;
 
   @property({ type: Number })
   public value?: number;
@@ -109,7 +110,7 @@ export class HaBarSlider extends LitElement {
   setupListeners() {
     if (this.slider && !this._mc) {
       this._mc = new Hammer.Manager(this.slider, {
-        touchAction: this.orientation === "vertical" ? "pan-x" : "pan-y",
+        touchAction: this.vertical ? "pan-x" : "pan-y",
       });
       this._mc.add(
         new Hammer.Pan({
@@ -134,10 +135,7 @@ export class HaBarSlider extends LitElement {
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;
-        const percentage = getPercentageFromEvent(
-          e,
-          this.orientation === "vertical"
-        );
+        const percentage = getPercentageFromEvent(e, this.vertical);
         this.value = this.percentageToValue(percentage);
         const value = this.steppedValue(this.value);
         fireEvent(this, "slider-moved", { value });
@@ -145,10 +143,7 @@ export class HaBarSlider extends LitElement {
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
         this.controlled = false;
-        const percentage = getPercentageFromEvent(
-          e,
-          this.orientation === "vertical"
-        );
+        const percentage = getPercentageFromEvent(e, this.vertical);
         this.value = this.steppedValue(this.percentageToValue(percentage));
         fireEvent(this, "slider-moved", { value: undefined });
         fireEvent(this, "value-changed", { value: this.value });
@@ -156,10 +151,7 @@ export class HaBarSlider extends LitElement {
 
       this._mc.on("singletap", (e) => {
         if (this.disabled) return;
-        const percentage = getPercentageFromEvent(
-          e,
-          this.orientation === "vertical"
-        );
+        const percentage = getPercentageFromEvent(e, this.vertical);
         this.value = this.steppedValue(this.percentageToValue(percentage));
         fireEvent(this, "value-changed", { value: this.value });
       });
@@ -241,7 +233,7 @@ export class HaBarSlider extends LitElement {
               <div
                 class=${classMap({
                   "slider-track-indicator": true,
-                  [this.orientation ?? "horizontal"]: true,
+                  vertical: this.vertical,
                 })}
               ></div>
             `
@@ -249,7 +241,7 @@ export class HaBarSlider extends LitElement {
               <div
                 class=${classMap({
                   "slider-track-bar": true,
-                  [this.orientation ?? "horizontal"]: true,
+                  vertical: this.vertical,
                   [this.mode ?? "start"]: true,
                 })}
               ></div>
@@ -269,7 +261,7 @@ export class HaBarSlider extends LitElement {
         height: var(--slider-bar-thickness);
         width: 100%;
       }
-      :host([orientation="vertical"]) {
+      :host([vertical]) {
         width: var(--slider-bar-thickness);
         height: 100%;
       }
@@ -311,26 +303,26 @@ export class HaBarSlider extends LitElement {
         border-radius: var(--handle-size);
         background-color: white;
       }
-      .slider .slider-track-bar.horizontal {
+      .slider .slider-track-bar {
         top: 0;
         left: 0;
         transform: translate3d(calc((var(--value, 0) - 1) * 100%), 0, 0);
         border-radius: 0 var(--border-radius) var(--border-radius) 0;
       }
-      .slider .slider-track-bar.horizontal:after {
+      .slider .slider-track-bar:after {
         top: 0;
         bottom: 0;
         right: var(--handle-margin);
         height: 50%;
         width: var(--handle-size);
       }
-      .slider .slider-track-bar.horizontal.end {
+      .slider .slider-track-bar.end {
         right: 0;
         left: initial;
         transform: translate3d(calc(var(--value, 0) * 100%), 0, 0);
         border-radius: var(--border-radius) 0 0 var(--border-radius);
       }
-      .slider .slider-track-bar.horizontal.end::after {
+      .slider .slider-track-bar.end::after {
         right: initial;
         left: var(--handle-margin);
       }
@@ -345,6 +337,7 @@ export class HaBarSlider extends LitElement {
         top: var(--handle-margin);
         right: 0;
         left: 0;
+        bottom: initial;
         width: 50%;
         height: var(--handle-size);
       }
@@ -359,14 +352,6 @@ export class HaBarSlider extends LitElement {
         bottom: var(--handle-margin);
       }
 
-      .slider .slider-track-indicator {
-        --indicator-size: calc(var(--slider-bar-thickness) / 4);
-        --handle-size: 4px;
-        position: absolute;
-        background-color: white;
-        border-radius: var(--handle-size);
-        transition: left 180ms ease-in-out, bottom 180ms ease-in-out;
-      }
       .slider .slider-track-indicator:after {
         display: block;
         content: "";
@@ -380,22 +365,30 @@ export class HaBarSlider extends LitElement {
         border-radius: var(--handle-size);
       }
 
-      .slider .slider-track-indicator.horizontal {
+      .slider .slider-track-indicator {
+        --indicator-size: calc(var(--slider-bar-thickness) / 4);
+        --handle-size: 4px;
+        position: absolute;
+        background-color: white;
+        border-radius: var(--handle-size);
+        transition: left 180ms ease-in-out, bottom 180ms ease-in-out;
         top: 0;
         bottom: 0;
         left: calc(var(--value, 0) * (100% - var(--indicator-size)));
         width: var(--indicator-size);
       }
-      .slider .slider-track-indicator.horizontal:after {
+      .slider .slider-track-indicator:after {
         height: 50%;
         width: var(--handle-size);
       }
 
       .slider .slider-track-indicator.vertical {
+        top: initial;
         right: 0;
         left: 0;
         bottom: calc(var(--value, 0) * (100% - var(--indicator-size)));
         height: var(--indicator-size);
+        width: 100%;
       }
       .slider .slider-track-indicator.vertical:after {
         height: var(--handle-size);
