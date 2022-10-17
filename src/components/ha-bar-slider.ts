@@ -9,6 +9,7 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 
@@ -17,6 +18,17 @@ declare global {
     "slider-moved": { value?: number };
   }
 }
+
+const A11K_CODE_KEYS = new Set([
+  "ArrowRight",
+  "ArrowUp",
+  "ArrowLeft",
+  "ArrowDown",
+  "PageUp",
+  "PageDown",
+  "Home",
+  "End",
+]);
 
 const getPercentageFromEvent = (e: HammerInput) => {
   const x = e.center.x;
@@ -44,6 +56,9 @@ export class HaBarSlider extends LitElement {
   @property({ type: Number })
   public max = 100;
 
+  @property()
+  public label?: string;
+
   private _mc?: HammerManager;
 
   @state() controlled = false;
@@ -58,6 +73,10 @@ export class HaBarSlider extends LitElement {
 
   steppedValue(value: number) {
     return Math.round(value / this.step) * this.step;
+  }
+
+  boundedValue(value: number) {
+    return Math.min(Math.max(value, this.min), this.max);
   }
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -127,31 +146,46 @@ export class HaBarSlider extends LitElement {
     }
   }
 
+  private get _tenPercentStep() {
+    return Math.max(this.step, (this.max - this.min) / 10);
+  }
+
   _handleKeyDown(e: KeyboardEvent) {
-    if (this.value === undefined) return;
+    if (this.value === undefined || !A11K_CODE_KEYS.has(e.code)) return;
+    e.preventDefault();
     switch (e.code) {
       case "ArrowRight":
-        this.value = Math.min(
-          Math.max(this.value + this.step, this.min),
-          this.max
-        );
-        fireEvent(this, "slider-moved", { value: this.value });
-
+      case "ArrowUp":
+        this.value = this.boundedValue(this.value + this.step);
         break;
       case "ArrowLeft":
-        this.value = Math.min(
-          Math.max(this.value - this.step, this.min),
-          this.max
+      case "ArrowDown":
+        this.value = this.boundedValue(this.value - this.step);
+        break;
+      case "PageUp":
+        this.value = this.steppedValue(
+          this.boundedValue(this.value + this._tenPercentStep)
         );
-        fireEvent(this, "slider-moved", { value: this.value });
+        break;
+      case "PageDown":
+        this.value = this.steppedValue(
+          this.boundedValue(this.value - this._tenPercentStep)
+        );
+        break;
+      case "Home":
+        this.value = this.min;
+        break;
+      case "End":
+        this.value = this.max;
         break;
     }
+    fireEvent(this, "slider-moved", { value: this.value });
   }
 
   _handleKeyUp(e: KeyboardEvent) {
-    if (e.code === "ArrowRight" || e.code === "ArrowLeft") {
-      fireEvent(this, "value-changed", { value: this.value });
-    }
+    if (this.value === undefined || !A11K_CODE_KEYS.has(e.code)) return;
+    e.preventDefault();
+    fireEvent(this, "value-changed", { value: this.value });
   }
 
   destroyListeners() {
@@ -175,13 +209,14 @@ export class HaBarSlider extends LitElement {
           style=${styleMap({
             "--value": `${this.valueToPercentage(this.value ?? 0)}`,
           })}
-          tabindex="1"
+          tabindex="0"
           @keydown=${this._handleKeyDown}
           @keyup=${this._handleKeyUp}
           role="slider"
           aria-valuemin=${this.min}
           aria-valuemax=${this.max}
           aria-valuenow=${this.value ?? 0}
+          aria-labelledby=${ifDefined(this.label)}
         >
           <div class="slider-track-background"></div>
           ${this.trackMode === "active"
