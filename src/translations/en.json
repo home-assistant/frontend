@@ -1965,7 +1965,7 @@
                   "label": "State",
                   "attribute": "Attribute (optional)",
                   "from": "From (optional)",
-                  "for": "For (optional)",
+                  "for": "For",
                   "to": "To (optional)"
                 },
                 "homeassistant": {
@@ -1983,7 +1983,7 @@
                   "label": "Numeric state",
                   "above": "Above",
                   "below": "Below",
-                  "value_template": "Value template (optional)"
+                  "value_template": "Value template"
                 },
                 "sun": {
                   "label": "Sun",
