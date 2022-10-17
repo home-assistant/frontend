@@ -129,6 +129,9 @@ export class StateHistoryChartTimeline extends LitElement {
       // If the line is more than 5 minutes old, re-gen it
       // so the X axis grows even if there is no new data
       this._generateData();
+    }
+
+    if (changedProps.has("startTime") || changedProps.has("endTime")) {
       this._createOptions();
     }
   }
