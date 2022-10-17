@@ -6,29 +6,29 @@ import "../../../../src/components/ha-bar-slider";
 import "../../../../src/components/ha-card";
 
 const sliders: {
-  trackMode?: "start" | "end" | "indicator";
+  mode?: "start" | "end" | "indicator";
   class?: string;
 }[] = [
   {
-    trackMode: "start",
+    mode: "start",
   },
   {
-    trackMode: "end",
+    mode: "end",
   },
   {
-    trackMode: "indicator",
+    mode: "indicator",
   },
   {
-    trackMode: "start",
-    class: "yellow",
+    mode: "start",
+    class: "custom",
   },
   {
-    trackMode: "end",
-    class: "yellow",
+    mode: "end",
+    class: "custom",
   },
   {
-    trackMode: "indicator",
-    class: "yellow",
+    mode: "indicator",
+    class: "custom",
   },
 ];
 
@@ -75,7 +75,7 @@ export class DemoHaBarSlider extends LitElement {
                 .value=${this.value}
                 @value-changed=${this.handleValueChanged}
                 @slider-moved=${this.handleSliderMoved}
-                track-mode=${ifDefined(slider.trackMode)}
+                mode=${ifDefined(slider.mode)}
                 class=${ifDefined(slider.class)}
               >
               </ha-bar-slider>
@@ -94,7 +94,7 @@ export class DemoHaBarSlider extends LitElement {
                   .value=${this.value}
                   @value-changed=${this.handleValueChanged}
                   @slider-moved=${this.handleSliderMoved}
-                  track-mode=${ifDefined(slider.trackMode)}
+                  mode=${ifDefined(slider.mode)}
                   orientation="vertical"
                   class=${ifDefined(slider.class)}
                 >
@@ -120,9 +120,14 @@ export class DemoHaBarSlider extends LitElement {
       p {
         margin: 0;
       }
-      .yellow {
+      .custom {
         --main-color: #ffcf4c;
-        --bg-color: #ffcf4c4a;
+        --bg-color: #ffcf4c64;
+        --bg-border-radius: 24px;
+        --track-thickness: 100px;
+        --track-indicator-margin: 12px;
+        --track-indicator-size: 4px;
+        --track-border-radius: 8px;
       }
       .vertical-sliders {
         height: 300px;

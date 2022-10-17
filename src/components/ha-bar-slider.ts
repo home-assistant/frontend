@@ -47,8 +47,8 @@ const getPercentageFromEvent = (e: HammerInput, vertical: boolean) => {
 export class HaBarSlider extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: "track-mode" })
-  public trackMode?: "indicator" | "start" | "end" = "start";
+  @property({ attribute: "mode" })
+  public mode?: "start" | "end" | "indicator" = "start";
 
   @property({ attribute: "orientation" })
   public orientation?: "horizontal" | "vertical" = "horizontal";
@@ -236,20 +236,24 @@ export class HaBarSlider extends LitElement {
         aria-labelledby=${ifDefined(this.label)}
       >
         <div class="slider-track-background"></div>
-        ${this.trackMode === "indicator"
-          ? html`<div
-              class=${classMap({
-                "slider-track-indicator": true,
-                [this.orientation ?? "horizontal"]: true,
-              })}
-            ></div> `
-          : html`<div
-              class=${classMap({
-                "slider-track-bar": true,
-                [this.orientation ?? "horizontal"]: true,
-                [this.trackMode ?? "start"]: true,
-              })}
-            ></div>`}
+        ${this.mode === "indicator"
+          ? html`
+              <div
+                class=${classMap({
+                  "slider-track-indicator": true,
+                  [this.orientation ?? "horizontal"]: true,
+                })}
+              ></div>
+            `
+          : html`
+              <div
+                class=${classMap({
+                  "slider-track-bar": true,
+                  [this.orientation ?? "horizontal"]: true,
+                  [this.mode ?? "start"]: true,
+                })}
+              ></div>
+            `}
       </div>
     `;
   }
@@ -261,18 +265,23 @@ export class HaBarSlider extends LitElement {
         --main-color: rgba(var(--rgb-primary-color), 1);
         --bg-gradient: none;
         --bg-color: rgba(var(--rgb-secondary-text-color), 0.2);
-        height: 40px;
+        --bg-border-radius: 12px;
+        --track-border-radius: 6px;
+        --track-thickness: 40px;
+        --track-indicator-margin: 6px;
+        --track-indicator-size: 2px;
+        height: var(--track-thickness);
         width: 100%;
       }
       :host([orientation="vertical"]) {
-        width: 40px;
+        width: var(--track-thickness);
         height: 100%;
       }
       .slider {
         position: relative;
         height: 100%;
         width: 100%;
-        border-radius: 12px;
+        border-radius: var(--bg-border-radius);
         transform: translateZ(0);
         overflow: hidden;
         cursor: pointer;
@@ -301,61 +310,62 @@ export class HaBarSlider extends LitElement {
         content: "";
         position: absolute;
         margin: auto;
-        border-radius: 2px;
+        border-radius: calc(var(--track-indicator-size) / 2);
         background-color: white;
       }
       .slider .slider-track-bar.horizontal {
         top: 0;
         left: 0;
         transform: translate3d(calc((var(--value, 0) - 1) * 100%), 0, 0);
-        border-radius: 0 8px 8px 0;
+        border-radius: 0 var(--track-border-radius) var(--track-border-radius) 0;
       }
       .slider .slider-track-bar.horizontal:after {
         top: 0;
         bottom: 0;
-        right: 6px;
+        right: var(--track-indicator-margin);
         height: 50%;
-        width: 3px;
+        width: var(--track-indicator-size);
       }
       .slider .slider-track-bar.horizontal.end {
         right: 0;
         left: initial;
         transform: translate3d(calc(var(--value, 0) * 100%), 0, 0);
-        border-radius: 8px 0 0 8px;
+        border-radius: var(--track-border-radius) 0 0 var(--track-border-radius);
       }
       .slider .slider-track-bar.horizontal.end::after {
         right: initial;
-        left: 6px;
+        left: var(--track-indicator-margin);
       }
 
       .slider .slider-track-bar.vertical {
         bottom: 0;
         left: 0;
         transform: translate3d(0, calc((1 - var(--value, 0)) * 100%), 0);
-        border-radius: 8px 8px 0 0;
+        border-radius: var(--track-border-radius) var(--track-border-radius) 0 0;
       }
       .slider .slider-track-bar.vertical:after {
-        top: 6px;
+        top: var(--track-indicator-margin);
         right: 0;
         left: 0;
         width: 50%;
-        height: 3px;
+        height: var(--track-indicator-size);
       }
       .slider .slider-track-bar.vertical.end {
         top: 0;
         bottom: initial;
         transform: translate3d(0, calc((0 - var(--value, 0)) * 100%), 0);
-        border-radius: 0 0 8px 8px;
+        border-radius: 0 0 var(--track-border-radius) var(--track-border-radius);
       }
       .slider .slider-track-bar.vertical.end::after {
         top: initial;
-        bottom: 6px;
+        bottom: var(--track-indicator-margin);
       }
 
       .slider .slider-track-indicator {
         position: absolute;
-        border-radius: 3px;
+        border-radius: 0;
         background-color: white;
+        transition: left 180ms ease-in-out, bottom 180ms ease-in-out;
       }
       .slider .slider-track-indicator:after {
         display: block;
@@ -367,29 +377,32 @@ export class HaBarSlider extends LitElement {
         bottom: 0;
         right: 0;
         margin: auto;
-        border-radius: 1px;
-        transition: left 180ms ease-in-out, bottom 180ms ease-in-out;
+        border-radius: calc(var(--track-indicator-size) / 2);
       }
 
       .slider .slider-track-indicator.horizontal {
         top: 0;
         bottom: 0;
-        left: calc(var(--value, 0) * (100% - 10px));
-        width: 10px;
+        left: calc(
+          var(--value, 0) * (100% - var(--track-indicator-margin) * 2)
+        );
+        width: calc(var(--track-indicator-margin) * 2);
       }
       .slider .slider-track-indicator.horizontal:after {
         height: 50%;
-        width: 2px;
+        width: var(--track-indicator-size);
       }
 
       .slider .slider-track-indicator.vertical {
         right: 0;
         left: 0;
-        bottom: calc(var(--value, 0) * (100% - 10px));
-        height: 10px;
+        bottom: calc(
+          var(--value, 0) * (100% - var(--track-indicator-margin) * 2)
+        );
+        height: calc(var(--track-indicator-margin) * 2);
       }
       .slider .slider-track-indicator.vertical:after {
-        height: 2px;
+        height: var(--track-indicator-size);
         width: 50%;
       }
 
