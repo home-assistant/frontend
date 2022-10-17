@@ -19,7 +19,7 @@ declare global {
   }
 }
 
-const A11K_CODE_KEYS = new Set([
+const A11Y_KEY_CODES = new Set([
   "ArrowRight",
   "ArrowUp",
   "ArrowLeft",
@@ -151,7 +151,7 @@ export class HaBarSlider extends LitElement {
   }
 
   _handleKeyDown(e: KeyboardEvent) {
-    if (!A11K_CODE_KEYS.has(e.code)) return;
+    if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
     switch (e.code) {
       case "ArrowRight":
@@ -183,7 +183,7 @@ export class HaBarSlider extends LitElement {
   }
 
   _handleKeyUp(e: KeyboardEvent) {
-    if (!A11K_CODE_KEYS.has(e.code)) return;
+    if (!A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
     fireEvent(this, "value-changed", { value: this.value });
   }
