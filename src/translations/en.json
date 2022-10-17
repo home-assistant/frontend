@@ -243,6 +243,9 @@
           "finish": "finish"
         }
       },
+      "tile": {
+        "not_found": "Entity not found"
+      },
       "vacuum": {
         "actions": {
           "resume_cleaning": "Resume cleaning",
@@ -4119,6 +4122,12 @@
             "thermostat": {
               "name": "Thermostat",
               "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity."
+            },
+            "tile": {
+              "name": "Tile",
+              "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
+              "color": "Color",
+              "icon_tap_action": "Icon tap action"
             },
             "vertical-stack": {
               "name": "Vertical Stack",

@@ -111,6 +111,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
       --rgb-card-background-color: 255, 255, 255;
+      --rgb-disabled-color: 189, 189, 189;
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);

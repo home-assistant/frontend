@@ -472,3 +472,12 @@ export interface EnergyFlowCardConfig extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
 }
+
+export interface TileCardConfig extends LovelaceCardConfig {
+  entity: string;
+  name?: string;
+  icon?: string;
+  color?: string;
+  tap_action?: ActionConfig;
+  icon_tap_action?: ActionConfig;
+}
