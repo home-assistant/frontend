@@ -232,7 +232,7 @@ export class HaBarSlider extends LitElement {
         role="slider"
         aria-valuemin=${this.min}
         aria-valuemax=${this.max}
-        aria-valuenow=${this.value ?? 0}
+        aria-valuenow=${this.steppedValue(this.value ?? 0)}
         aria-labelledby=${ifDefined(this.label)}
       >
         <div class="slider-track-background"></div>
