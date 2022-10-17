@@ -106,7 +106,7 @@ export const getMaxDigits = (
  * @param num The number to be formatted
  * @param options The Intl.NumberFormatOptions that should be included in the returned options
  */
-const getDefaultFormatOptions = (
+export const getDefaultFormatOptions = (
   num: string | number,
   options?: Intl.NumberFormatOptions
 ): Intl.NumberFormatOptions => {
