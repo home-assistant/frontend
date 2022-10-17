@@ -73,10 +73,10 @@ export class DemoHaBarSlider extends LitElement {
               <pre>Config: ${JSON.stringify(slider)}</pre>
               <ha-bar-slider
                 .value=${this.value}
+                .mode=${slider.mode}
+                class=${ifDefined(slider.class)}
                 @value-changed=${this.handleValueChanged}
                 @slider-moved=${this.handleSliderMoved}
-                mode=${ifDefined(slider.mode)}
-                class=${ifDefined(slider.class)}
               >
               </ha-bar-slider>
             </div>
@@ -92,11 +92,11 @@ export class DemoHaBarSlider extends LitElement {
               (slider) => html`
                 <ha-bar-slider
                   .value=${this.value}
-                  @value-changed=${this.handleValueChanged}
-                  @slider-moved=${this.handleSliderMoved}
-                  mode=${ifDefined(slider.mode)}
+                  .mode=${slider.mode}
                   orientation="vertical"
                   class=${ifDefined(slider.class)}
+                  @value-changed=${this.handleValueChanged}
+                  @slider-moved=${this.handleSliderMoved}
                 >
                 </ha-bar-slider>
               `

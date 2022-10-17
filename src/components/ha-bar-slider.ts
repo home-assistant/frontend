@@ -47,13 +47,13 @@ const getPercentageFromEvent = (e: HammerInput, vertical: boolean) => {
 export class HaBarSlider extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: "mode" })
+  @property()
   public mode?: "start" | "end" | "indicator" = "start";
 
-  @property({ attribute: "orientation" })
+  @property()
   public orientation?: "horizontal" | "vertical" = "horizontal";
 
-  @property({ attribute: false, type: Number, reflect: true })
+  @property({ type: Number })
   public value?: number;
 
   @property({ type: Number })
