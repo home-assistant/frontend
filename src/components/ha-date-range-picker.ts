@@ -71,7 +71,7 @@ export class HaDateRangePicker extends LitElement {
         <div slot="input" class="date-range-inputs">
           <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
           <ha-textfield
-            .value=${this.timePicker === true
+            .value=${this.timePicker
               ? formatDateTime(this.startDate, this.hass.locale)
               : formatDate(this.startDate, this.hass.locale)}
             .label=${this.hass.localize(
@@ -82,7 +82,7 @@ export class HaDateRangePicker extends LitElement {
             readonly
           ></ha-textfield>
           <ha-textfield
-            .value=${this.timePicker === true
+            .value=${this.timePicker
               ? formatDateTime(this.endDate, this.hass.locale)
               : formatDate(this.endDate, this.hass.locale)}
             .label=${this.hass.localize(

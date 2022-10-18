@@ -181,7 +181,7 @@ class DialogCalendarEventDetail extends LitElement {
                   <ha-rrule
                     .hass=${this.hass}
                     .value=${this._data!.rrule}
-                    .mutable=${true}
+                    mutable
                     @value-changed=${this._handleRRuleChanged}
                   >
                   </ha-rrule>
@@ -230,12 +230,12 @@ class DialogCalendarEventDetail extends LitElement {
                   <state-info
                     .hass=${this.hass}
                     .stateObj=${stateObj}
-                    .inDialog="true"
+                    inDialog
                   ></state-info>
                 </div>
 
                 <mwc-button
-                  slot="secondaryAction"
+                  slot="primaryAction"
                   class="warning"
                   @click=${this._deleteEvent}
                   .disabled=${this._submitting}
