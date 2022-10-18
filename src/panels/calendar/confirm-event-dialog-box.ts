@@ -35,7 +35,6 @@ class ConfirmEventDialogBox extends LitElement {
         ?escapeKeyAction="true"
         @closed=${this._dialogClosed}
         defaultAction="ignore"
-        hideActions="false"
         .heading=${this._params.title}
       >
         <div>
@@ -44,7 +43,8 @@ class ConfirmEventDialogBox extends LitElement {
         <mwc-button @click=${this._dismiss} slot="secondaryAction">
           ${this.hass.localize("ui.dialogs.generic.cancel")}
         </mwc-button>
-        <mwc-button slot="primaryAction"
+        <mwc-button
+          slot="primaryAction"
           @click=${this._confirm}
           dialogInitialFocus
           class="destructive"
@@ -53,7 +53,11 @@ class ConfirmEventDialogBox extends LitElement {
         </mwc-button>
         ${this._params.confirmFutureText
           ? html`
-              <mwc-button @click=${this._confirmFuture} class="destructive"  slot="primaryAction">
+              <mwc-button
+                @click=${this._confirmFuture}
+                class="destructive"
+                slot="primaryAction"
+              >
                 ${this._params.confirmFutureText}
               </mwc-button>
             `

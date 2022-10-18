@@ -54,7 +54,7 @@ const convertRepeatFrequency = (
 export class HaRRule extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public mutable = true;
+  @property({ type: Boolean }) public disabled = false;
 
   @property() public value?: string;
 
@@ -87,7 +87,7 @@ export class HaRRule extends LitElement {
       // Unparsed RRULE string is just displayed as text
       return html`${this.value}`;
     }
-    if (!this.mutable) {
+    if (this.disabled) {
       return html`${this._rruleText()}`;
     }
     return html`

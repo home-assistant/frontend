@@ -136,8 +136,7 @@ class DialogCalendarEventDetail extends LitElement {
       >
         <div class="content">
           ${isCreate
-            ? html`
-                ${this._error
+            ? html` ${this._error
                   ? html` <div class="error">${this._error}</div> `
                   : ""}
 
@@ -181,7 +180,6 @@ class DialogCalendarEventDetail extends LitElement {
                   <ha-rrule
                     .hass=${this.hass}
                     .value=${this._data!.rrule}
-                    mutable
                     @value-changed=${this._handleRRuleChanged}
                   >
                   </ha-rrule>
@@ -200,26 +198,16 @@ class DialogCalendarEventDetail extends LitElement {
                     required
                     @value-changed=${this._handleCalendarPicked}
                   ></ha-combo-box>
-                </div>
-
-                <mwc-button
-                  slot="primaryAction"
-                  @click=${this._createEvent}
-                  .disabled=${this._submitting}
-                >
-                  ${this.hass.localize("ui.components.calendar.event.add")}
-                </mwc-button>
-              `
-            : html`
-                <div class="field">
+                </div>`
+            : html` <div class="field">
                   <ha-svg-icon .path=${mdiCalendarClock}></ha-svg-icon>
                   <div class="value">
                     ${this._formatDateRange()}<br />
                     ${this._data!.rrule !== undefined
-                      ? html` <ha-rrule
+                      ? html`<ha-rrule
                           .hass=${this.hass}
                           .value=${this._data!.rrule}
-                          .mutable=${false}
+                          disabled
                         >
                         </ha-rrule>`
                       : html``}
@@ -232,18 +220,28 @@ class DialogCalendarEventDetail extends LitElement {
                     .stateObj=${stateObj}
                     inDialog
                   ></state-info>
-                </div>
-
-                <mwc-button
-                  slot="primaryAction"
-                  class="warning"
-                  @click=${this._deleteEvent}
-                  .disabled=${this._submitting}
-                >
-                  ${this.hass.localize("ui.components.calendar.event.delete")}
-                </mwc-button>
-              `}
+                </div>`}
         </div>
+        ${isCreate
+          ? html`
+              <mwc-button
+                slot="primaryAction"
+                @click=${this._createEvent}
+                .disabled=${this._submitting}
+              >
+                ${this.hass.localize("ui.components.calendar.event.add")}
+              </mwc-button>
+            `
+          : html`
+              <mwc-button
+                slot="primaryAction"
+                class="warning"
+                @click=${this._deleteEvent}
+                .disabled=${this._submitting}
+              >
+                ${this.hass.localize("ui.components.calendar.event.delete")}
+              </mwc-button>
+            `}
       </ha-dialog>
     `;
   }
