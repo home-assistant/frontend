@@ -3,7 +3,7 @@ import { LocalizeFunc } from "../common/translations/localize";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 import { DataEntryFlowProgress, DataEntryFlowStep } from "./data_entry_flow";
-import { domainToName } from "./integration";
+import { domainToName, integrationType } from "./integration";
 
 export const DISCOVERY_SOURCES = [
   "bluetooth",
@@ -68,7 +68,7 @@ export const deleteConfigFlow = (hass: HomeAssistant, flowId: string) =>
 
 export const getConfigFlowHandlers = (
   hass: HomeAssistant,
-  type?: Array<"device" | "helper" | "hub" | "service">
+  type?: Array<integrationType>
 ) =>
   hass.callApi<string[]>(
     "GET",

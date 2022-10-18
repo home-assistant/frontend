@@ -1,7 +1,6 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
-
-type integrationType = "device" | "helper" | "hub" | "service";
+import { integrationType } from "./integration";
 
 export interface ConfigEntry {
   entry_id: string;
@@ -76,7 +75,7 @@ export const subscribeConfigEntries = (
 export const getConfigEntries = (
   hass: HomeAssistant,
   filters?: {
-    type?: Array<"device" | "helper" | "hub" | "service">;
+    type?: Array<integrationType>;
     domain?: string;
   }
 ): Promise<ConfigEntry[]> => {
