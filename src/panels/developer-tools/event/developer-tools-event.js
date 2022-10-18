@@ -56,6 +56,9 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .code-editor {
           margin-right: 16px;
+          margin-inline-start: initial;
+          margin-inline-end: 16px;
+          direction: var(--direction);
         }
 
         .header {
@@ -65,6 +68,9 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
         event-subscribe-card {
           display: block;
           margin: 16px 16px 0 0;
+          margin-inline-start: initial;
+          margin-inline-end: 16px;
+          direction: var(--direction);
         }
 
         a {
