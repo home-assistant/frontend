@@ -60,8 +60,8 @@ export class HaDateRangePicker extends LitElement {
     return html`
       <date-range-picker
         ?disabled=${this.disabled}
-        auto-apply=${this.autoApply}
-        time-picker=${this.timePicker}
+        ?auto-apply=${this.autoApply}
+        ?time-picker=${this.timePicker}
         twentyfour-hours=${this._hour24format}
         start-date=${this.startDate}
         end-date=${this.endDate}
