@@ -76,7 +76,7 @@ export class DialogHelperDetail extends LitElement {
     this._opened = true;
     await this.updateComplete;
     Promise.all([
-      getConfigFlowHandlers(this.hass, "helper"),
+      getConfigFlowHandlers(this.hass, ["helper"]),
       // Ensure the titles are loaded before we render the flows.
       this.hass.loadBackendTranslation("title", undefined, true),
     ]).then(([flows]) => {
