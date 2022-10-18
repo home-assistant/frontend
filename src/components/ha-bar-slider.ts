@@ -7,9 +7,8 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 
@@ -71,7 +70,8 @@ export class HaBarSlider extends LitElement {
 
   private _mc?: HammerManager;
 
-  @state() controlled = false;
+  @property({ type: Boolean, reflect: true })
+  public pressed = false;
 
   valueToPercentage(value: number) {
     return (value - this.min) / (this.max - this.min);
@@ -92,6 +92,30 @@ export class HaBarSlider extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     this.setupListeners();
+    if (!this.hasAttribute("role")) {
+      this.setAttribute("role", "slider");
+    }
+    if (!this.hasAttribute("tabindex")) {
+      this.setAttribute("tabindex", "0");
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("value")) {
+      const valuenow = this.steppedValue(this.value ?? 0);
+      this.setAttribute("aria-valuenow", valuenow.toString());
+    }
+    if (changedProps.has("min")) {
+      this.setAttribute("aria-valuemin", this.min.toString());
+    }
+    if (changedProps.has("max")) {
+      this.setAttribute("aria-valuemax", this.max.toString());
+    }
+    if (changedProps.has("vertical")) {
+      const orientation = this.vertical ? "vertical" : "horizontal";
+      this.setAttribute("aria-orientation", orientation);
+    }
   }
 
   connectedCallback(): void {
@@ -125,12 +149,12 @@ export class HaBarSlider extends LitElement {
       let savedValue;
       this._mc.on("panstart", () => {
         if (this.disabled) return;
-        this.controlled = true;
+        this.pressed = true;
         savedValue = this.value;
       });
       this._mc.on("pancancel", () => {
         if (this.disabled) return;
-        this.controlled = false;
+        this.pressed = false;
         this.value = savedValue;
       });
       this._mc.on("panmove", (e) => {
@@ -142,7 +166,7 @@ export class HaBarSlider extends LitElement {
       });
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
-        this.controlled = false;
+        this.pressed = false;
         const percentage = getPercentageFromEvent(e, this.vertical);
         this.value = this.steppedValue(this.percentageToValue(percentage));
         fireEvent(this, "slider-moved", { value: undefined });
@@ -155,7 +179,19 @@ export class HaBarSlider extends LitElement {
         this.value = this.steppedValue(this.percentageToValue(percentage));
         fireEvent(this, "value-changed", { value: this.value });
       });
+
+      this.addEventListener("keydown", this._handleKeyDown);
+      this.addEventListener("keyup", this._handleKeyUp);
     }
+  }
+
+  destroyListeners() {
+    if (this._mc) {
+      this._mc.destroy();
+      this._mc = undefined;
+    }
+    this.removeEventListener("keydown", this._handleKeyDown);
+    this.removeEventListener("keyup", this._handleKeyDown);
   }
 
   private get _tenPercentStep() {
@@ -200,32 +236,14 @@ export class HaBarSlider extends LitElement {
     fireEvent(this, "value-changed", { value: this.value });
   }
 
-  destroyListeners() {
-    if (this._mc) {
-      this._mc.destroy();
-      this._mc = undefined;
-    }
-  }
-
   protected render(): TemplateResult {
     return html`
       <div
         id="slider"
-        class=${classMap({
-          slider: true,
-          controlled: this.controlled,
-        })}
+        class="slider"
         style=${styleMap({
           "--value": `${this.valueToPercentage(this.value ?? 0)}`,
         })}
-        tabindex="0"
-        @keydown=${this._handleKeyDown}
-        @keyup=${this._handleKeyUp}
-        role="slider"
-        aria-valuemin=${this.min}
-        aria-valuemax=${this.max}
-        aria-valuenow=${this.steppedValue(this.value ?? 0)}
-        aria-labelledby=${ifDefined(this.label)}
       >
         <div class="slider-track-background"></div>
         ${this.mode === "indicator"
@@ -395,10 +413,8 @@ export class HaBarSlider extends LitElement {
         width: 50%;
       }
 
-      .controlled .slider-track-bar {
-        transition: none;
-      }
-      .controlled .slider-track-indicator {
+      :host([pressed]) .slider-track-bar,
+      :host([pressed]) .slider-track-indicator {
         transition: none;
       }
     `;

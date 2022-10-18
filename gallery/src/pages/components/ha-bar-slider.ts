@@ -6,27 +6,41 @@ import "../../../../src/components/ha-bar-slider";
 import "../../../../src/components/ha-card";
 
 const sliders: {
+  id: string;
+  label: string;
   mode?: "start" | "end" | "indicator";
   class?: string;
 }[] = [
   {
+    id: "slider-start",
+    label: "Slider (start mode)",
     mode: "start",
   },
   {
+    id: "slider-end",
+    label: "Slider (end mode)",
     mode: "end",
   },
   {
+    id: "slider-indicator",
+    label: "Slider (indicator mode)",
     mode: "indicator",
   },
   {
+    id: "slider-start-custom",
+    label: "Slider (start mode) and custom style",
     mode: "start",
     class: "custom",
   },
   {
+    id: "slider-end-custom",
+    label: "Slider (end mode) and custom style",
     mode: "end",
     class: "custom",
   },
   {
+    id: "slider-indicator-custom",
+    label: "Slider (indicator mode) and custom style",
     mode: "indicator",
     class: "custom",
   },
@@ -65,42 +79,45 @@ export class DemoHaBarSlider extends LitElement {
           </table>
         </div>
       </ha-card>
-      ${repeat(
-        sliders,
-        (slider) => html`
+      ${repeat(sliders, (slider) => {
+        const { id, label, ...config } = slider;
+        return html`
           <ha-card>
             <div class="card-content">
-              <pre>Config: ${JSON.stringify(slider)}</pre>
+              <label id=${id}>${label}</label>
+              <pre>Config: ${JSON.stringify(config)}</pre>
               <ha-bar-slider
                 .value=${this.value}
-                .mode=${slider.mode}
-                class=${ifDefined(slider.class)}
+                .mode=${config.mode}
+                class=${ifDefined(config.class)}
                 @value-changed=${this.handleValueChanged}
                 @slider-moved=${this.handleSliderMoved}
+                aria-labelledby=${id}
               >
               </ha-bar-slider>
             </div>
           </ha-card>
-        `
-      )}
+        `;
+      })}
       <ha-card>
         <div class="card-content">
           <p class="title"><b>Vertical</b></p>
           <div class="vertical-sliders">
-            ${repeat(
-              sliders,
-              (slider) => html`
+            ${repeat(sliders, (slider) => {
+              const { id, label, ...config } = slider;
+              return html`
                 <ha-bar-slider
                   .value=${this.value}
-                  .mode=${slider.mode}
+                  .mode=${config.mode}
                   vertical
-                  class=${ifDefined(slider.class)}
+                  class=${ifDefined(config.class)}
                   @value-changed=${this.handleValueChanged}
                   @slider-moved=${this.handleSliderMoved}
+                  aria-label=${label}
                 >
                 </ha-bar-slider>
-              `
-            )}
+              `;
+            })}
           </div>
         </div>
       </ha-card>
@@ -119,6 +136,9 @@ export class DemoHaBarSlider extends LitElement {
       }
       p {
         margin: 0;
+      }
+      label {
+        font-weight: 600;
       }
       .custom {
         --slider-bar-color: #ffcf4c;
