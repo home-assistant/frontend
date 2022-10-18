@@ -201,7 +201,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     super.firstUpdated(changedProps);
     if (this.entry.config_entry_id) {
       getConfigEntries(this.hass, {
-        type: "helper",
+        type: ["helper"],
         domain: this.entry.platform,
       }).then((entries) => {
         this._helperConfigEntry = entries.find(

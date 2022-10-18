@@ -228,7 +228,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               )
           );
         },
-        { type: "integration" }
+        { type: ["device", "hub", "service"] }
       ),
     ];
   }
