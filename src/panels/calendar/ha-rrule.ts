@@ -58,15 +58,19 @@ export class HaRRule extends LitElement {
 
   @property() public value?: string;
 
-  @state() private _freq?: RepeatFrequency;
+  @state() private _freq?: RepeatFrequency = RepeatFrequency.NONE;
 
   @state() private _rrule?: Partial<Options>;
 
-  protected firstUpdated() {
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (!changedProps.has("value")) {
+      return;
+    }
     if (this.value === undefined || this.value === "") {
       this._freq = RepeatFrequency.NONE;
       this._rrule = undefined;
-      this.requestUpdate();
       return;
     }
     try {
@@ -75,15 +79,13 @@ export class HaRRule extends LitElement {
       // unsupported rrule string
       this._rrule = undefined;
       this._freq = undefined;
-      this.requestUpdate();
       return;
     }
     this._freq = convertFrequency(this._rrule!.freq!);
-    this.requestUpdate();
   }
 
   protected render(): TemplateResult {
-    if (!this._freq) {
+    if (this._freq === undefined) {
       // Unparsed RRULE string is just displayed as text
       return html`${this.value}`;
     }
