@@ -693,7 +693,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const handlers = await getConfigFlowHandlers(this.hass, "integration");
+    const handlers = await getConfigFlowHandlers(this.hass, [
+      "device",
+      "hub",
+      "service",
+    ]);
 
     // Integration exists, so we can just create a flow
     if (handlers.includes(domain)) {
@@ -760,7 +764,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       });
       return;
     }
-    const helpers = await getConfigFlowHandlers(this.hass, "helper");
+    const helpers = await getConfigFlowHandlers(this.hass, ["helper"]);
     if (helpers.includes(domain)) {
       navigate(`/config/helpers/add?domain=${domain}`, {
         replace: true,

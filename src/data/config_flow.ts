@@ -68,7 +68,7 @@ export const deleteConfigFlow = (hass: HomeAssistant, flowId: string) =>
 
 export const getConfigFlowHandlers = (
   hass: HomeAssistant,
-  type?: Array<"device" | "helper" | "service">
+  type?: Array<"device" | "helper" | "hub" | "service">
 ) =>
   hass.callApi<string[]>(
     "GET",
