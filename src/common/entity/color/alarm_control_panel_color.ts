@@ -1,8 +1,4 @@
-import { DomainColor } from "../domain_color";
-
-export const alarmControlPanelColor = (
-  state?: string
-): DomainColor | undefined => {
+export const alarmControlPanelColor = (state?: string): string | undefined => {
   switch (state) {
     case "armed_away":
     case "armed_vacation":

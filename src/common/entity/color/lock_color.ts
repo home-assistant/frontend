@@ -1,6 +1,4 @@
-import { DomainColor } from "../domain_color";
-
-export const lockColor = (state?: string): DomainColor | undefined => {
+export const lockColor = (state?: string): string | undefined => {
   switch (state) {
     case "locked":
       return "lock-locked";

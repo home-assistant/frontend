@@ -1,20 +1,19 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { DomainColor } from "../domain_color";
 
 const SECURE_DEVICE_CLASSES = new Set(["door", "gate", "garage", "window"]);
 
 export const coverColor = (
   state?: string,
   stateObj?: HassEntity
-): DomainColor => {
-  if (state === "closed") return "cover-off";
+): string | undefined => {
+  if (state === "closed" || state === "closing") return "cover-closed";
 
-  if (
-    stateObj?.attributes.device_class &&
-    SECURE_DEVICE_CLASSES.has(stateObj.attributes.device_class)
-  ) {
-    return "cover-secure-on";
+  if (state === "open" || state === "opening") {
+    const isSecure =
+      stateObj?.attributes.device_class &&
+      SECURE_DEVICE_CLASSES.has(stateObj.attributes.device_class);
+    return isSecure ? "cover-secure-open" : "cover-open";
   }
 
-  return "cover-on";
+  return undefined;
 };

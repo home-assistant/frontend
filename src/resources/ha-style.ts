@@ -139,9 +139,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-alarm-disarmed-color: var(--rgb-primary-color);
       --rgb-state-alarm-pending-color: var(--rgb-orange-color);
       --rgb-state-alarm-triggered-color: var(--rgb-red-color);
-      --rgb-state-cover-off-color: var(--rgb-disabled-color);
-      --rgb-state-cover-on-color: var(--rgb-blue-color);
-      --rgb-state-cover-secure-on-color: var(--rgb-red-color);
+      --rgb-state-cover-closed-color: var(--rgb-disabled-color);
+      --rgb-state-cover-open-color: var(--rgb-blue-color);
+      --rgb-state-cover-secure-open-color: var(--rgb-red-color);
       --rgb-state-humidifier-off-color: var(--rgb-disabled-color);
       --rgb-state-humidifier-on-color: var(--rgb-purple-color);
       --rgb-state-light-off-color: var(--rgb-disabled-color);
@@ -150,6 +150,17 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-lock-locked-color: var(--rgb-green-color);
       --rgb-state-lock-pending-color: var(--rgb-orange-color);
       --rgb-state-lock-unlocked-color: var(--rgb-red-color);
+      --rgb-state-battery-0-color: var(--rgb-red-color);
+      --rgb-state-battery-10-color: var(--rgb-red-color);
+      --rgb-state-battery-20-color: var(--rgb-red-color);
+      --rgb-state-battery-30-color: var(--rgb-orange-color);
+      --rgb-state-battery-40-color: var(--rgb-orange-color);
+      --rgb-state-battery-50-color: var(--rgb-orange-color);
+      --rgb-state-battery-60-color: var(--rgb-orange-color);
+      --rgb-state-battery-70-color: var(--rgb-orange-color);
+      --rgb-state-battery-80-color: var(--rgb-green-color);
+      --rgb-state-battery-90-color: var(--rgb-green-color);
+      --rgb-state-battery-100-color: var(--rgb-green-color);
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
