@@ -1,6 +1,8 @@
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 
+export type integrationType = "device" | "helper" | "hub" | "service";
+
 export interface IntegrationManifest {
   is_built_in: boolean;
   domain: string;
@@ -15,6 +17,7 @@ export interface IntegrationManifest {
   ssdp?: Array<{ manufacturer?: string; modelName?: string; st?: string }>;
   zeroconf?: string[];
   homekit?: { models: string[] };
+  integration_type?: integrationType;
   quality_scale?: "gold" | "internal" | "platinum" | "silver";
   iot_class:
     | "assumed_state"
@@ -23,7 +26,6 @@ export interface IntegrationManifest {
     | "local_polling"
     | "local_push";
 }
-
 export interface IntegrationSetup {
   domain: string;
   seconds?: number;
