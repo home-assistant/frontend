@@ -98,15 +98,15 @@ export class HuiGaugeCardEditor
                 schema: [
                   {
                     name: "green",
-                    selector: { number: { min: 0, mode: "box" } },
+                    selector: { number: { mode: "box" } },
                   },
                   {
                     name: "yellow",
-                    selector: { number: { min: 0, mode: "box" } },
+                    selector: { number: { mode: "box" } },
                   },
                   {
                     name: "red",
-                    selector: { number: { min: 0, mode: "box" } },
+                    selector: { number: { mode: "box" } },
                   },
                 ],
               },
