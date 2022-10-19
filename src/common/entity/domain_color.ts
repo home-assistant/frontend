@@ -1,16 +1,24 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
+import { coverColor } from "./color/cover_color";
+import { lockColor } from "./color/lock_color";
 
 export const DOMAIN_COLOR = [
   "alarm-armed",
+  "alarm-disarmed",
   "alarm-pending",
   "alarm-triggered",
-  "alarm-disarmed",
-  "lock-locked",
-  "lock-unlocked",
-  "lock-jammed",
-  "lock-pending",
-  "light-on",
+  "cover-off",
+  "cover-on",
+  "cover-secure-on",
+  "humidifier-off",
+  "humidifier-on",
   "light-off",
+  "light-on",
+  "lock-jammed",
+  "lock-locked",
+  "lock-pending",
+  "lock-unlocked",
 ] as const;
 
 export type DomainColor = typeof DOMAIN_COLOR[number];
@@ -26,40 +34,19 @@ export const domainColor = (
 
   switch (domain) {
     case "alarm_control_panel":
-      switch (state) {
-        case "armed_away":
-        case "armed_vacation":
-        case "armed_home":
-        case "armed_night":
-        case "armed_custom_bypass":
-          return "alarm-armed";
-        case "pending":
-          return "alarm-pending";
-        case "triggered":
-          return "alarm-triggered";
-        case "disarmed":
-          return "alarm-disarmed";
-        default:
-          return undefined;
-      }
+      return alarmControlPanelColor(state);
+
+    case "cover":
+      return coverColor(state, stateObj);
 
     case "lock":
-      switch (state) {
-        case "locked":
-          return "lock-locked";
-        case "unlocked":
-          return "lock-unlocked";
-        case "jammed":
-          return "lock-jammed";
-        case "locking":
-        case "unlocking":
-          return "lock-pending";
-        default:
-          return undefined;
-      }
+      return lockColor(state);
 
     case "light":
       return state === "on" ? "light-on" : "light-off";
+
+    case "humidifier":
+      return state === "on" ? "humidifier-on" : "humidifier-off";
 
     // TODO implements all domains and device classes
   }

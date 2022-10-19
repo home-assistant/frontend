@@ -119,10 +119,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const color = this._config.color || stateColor(entity);
 
-    const iconStyle = {};
-    if (color) {
-      iconStyle["--main-color"] = computeRgbColor(color);
-    }
+    const iconStyle = {
+      "--main-color": this._config.color
+        ? computeRgbColor(color)
+        : stateColor(entity),
+    };
 
     return html`
       <ha-card style=${styleMap(iconStyle)}>

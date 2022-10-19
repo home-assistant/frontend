@@ -1,24 +1,6 @@
 import "@polymer/paper-styles/paper-styles";
 import "@polymer/polymer/lib/elements/custom-style";
-import { computeRgbColor } from "../common/color/compute-color";
-import {
-  computeCssDomainColor,
-  DomainColor,
-} from "../common/entity/domain_color";
 import { derivedStyles } from "./styles";
-
-export const DOMAIN_COLOR_VALUES: Record<DomainColor, string> = {
-  "alarm-armed": "green",
-  "alarm-disarmed": "primary",
-  "alarm-pending": "orange",
-  "alarm-triggered": "red",
-  "light-off": "disabled",
-  "light-on": "orange",
-  "lock-jammed": "red",
-  "lock-locked": "green",
-  "lock-pending": "orange",
-  "lock-unlocked": "red",
-};
 
 export const DEFAULT_PRIMARY_COLOR = "#03a9f4";
 export const DEFAULT_ACCENT_COLOR = "#ff9800";
@@ -125,21 +107,50 @@ documentContainer.innerHTML = `<custom-style>
       /* rgb */
       --rgb-primary-color: 3, 169, 244;
       --rgb-accent-color: 255, 152, 0;
+      --rgb-disabled-color: 189, 189, 189;
       --rgb-primary-text-color: 33, 33, 33;
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
       --rgb-card-background-color: 255, 255, 255;
-      --rgb-disabled-color: 189, 189, 189;
+      --rgb-red-color: 244, 67, 54;
+      --rgb-pink-color: 233, 30, 99;
+      --rgb-purple-color: 156, 39, 176;
+      --rgb-deep-purple-color: 103, 58, 183;
+      --rgb-indigo-color: 63, 81, 181;
+      --rgb-blue-color: 33, 150, 243;
+      --rgb-light-blue-color: 3, 169, 244;
+      --rgb-cyan-color: 0, 188, 212;
+      --rgb-teal-color: 0, 150, 136;
+      --rgb-green-color: 76, 175, 80;
+      --rgb-light-green-color: 139, 195, 74;
+      --rgb-lime-color: 205, 220, 57;
+      --rgb-yellow-color: 255, 235, 59;
+      --rgb-amber-color: 255, 193, 7;
+      --rgb-orange-color: 255, 152, 0;
+      --rgb-deep-orange-color: 255, 87, 34;
+      --rgb-brown-color: 121, 85, 72;
+      --rgb-grey-color: 158, 158, 158;
+      --rgb-blue-grey-color: 96, 125, 139;
+      --rgb-black-color: 0, 0, 0;
+      --rgb-white-color: 255, 255, 255;
 
-      ${Object.entries(DOMAIN_COLOR_VALUES)
-        .map(
-          ([key, value]) =>
-            `${computeCssDomainColor(key as DomainColor)}: ${computeRgbColor(
-              value
-            )};`
-        )
-        .join("")}
-        
+      /* rgb state color */
+      --rgb-state-alarm-armed-color: var(--rgb-green-color);
+      --rgb-state-alarm-disarmed-color: var(--rgb-primary-color);
+      --rgb-state-alarm-pending-color: var(--rgb-orange-color);
+      --rgb-state-alarm-triggered-color: var(--rgb-red-color);
+      --rgb-state-cover-off-color: var(--rgb-disabled-color);
+      --rgb-state-cover-on-color: var(--rgb-blue-color);
+      --rgb-state-cover-secure-on-color: var(--rgb-red-color);
+      --rgb-state-humidifier-off-color: var(--rgb-disabled-color);
+      --rgb-state-humidifier-on-color: var(--rgb-purple-color);
+      --rgb-state-light-off-color: var(--rgb-disabled-color);
+      --rgb-state-light-on-color: var(--rgb-orange-color);
+      --rgb-state-lock-jammed-color: var(--rgb-red-color);
+      --rgb-state-lock-locked-color: var(--rgb-green-color);
+      --rgb-state-lock-pending-color: var(--rgb-orange-color);
+      --rgb-state-lock-unlocked-color: var(--rgb-red-color);
+
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
       --input-hover-line-color: rgba(0, 0, 0, 0.87);
