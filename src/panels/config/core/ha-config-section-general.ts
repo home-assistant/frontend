@@ -144,20 +144,20 @@ class HaConfigSectionGeneral extends LitElement {
                   .label=${html`
                     <span style="font-size: 14px">
                       ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.imperial_example"
+                        "ui.panel.config.core.section.core.core_config.us_customary_example"
                       )}
                     </span>
                     <div style="color: var(--secondary-text-color)">
                       ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.unit_system_imperial"
+                        "ui.panel.config.core.section.core.core_config.unit_system_us_customary"
                       )}
                     </div>
                   `}
                 >
                   <ha-radio
                     name="unit_system"
-                    value="imperial"
-                    .checked=${this._unitSystem === "imperial"}
+                    value="us_customary"
+                    .checked=${this._unitSystem === "us_customary"}
                     @change=${this._unitSystemChanged}
                     .disabled=${this._submitting}
                   ></ha-radio>
@@ -238,7 +238,7 @@ class HaConfigSectionGeneral extends LitElement {
     this._unitSystem =
       this.hass.config.unit_system.temperature === UNIT_C
         ? "metric"
-        : "imperial";
+        : "us_customary";
     this._currency = this.hass.config.currency;
     this._elevation = this.hass.config.elevation;
     this._timeZone = this.hass.config.time_zone;
@@ -259,7 +259,9 @@ class HaConfigSectionGeneral extends LitElement {
   }
 
   private _unitSystemChanged(ev: CustomEvent) {
-    this._unitSystem = (ev.target as HaRadio).value as "metric" | "imperial";
+    this._unitSystem = (ev.target as HaRadio).value as
+      | "metric"
+      | "us_customary";
   }
 
   private _locationChanged(ev: CustomEvent) {
