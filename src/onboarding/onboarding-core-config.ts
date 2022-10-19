@@ -163,18 +163,18 @@ class OnboardingCoreConfig extends LitElement {
           </ha-formfield>
           <ha-formfield
             .label=${html`${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.unit_system_imperial"
+                "ui.panel.config.core.section.core.core_config.unit_system_us_customary"
               )}
               <div class="secondary">
                 ${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.imperial_example"
+                  "ui.panel.config.core.section.core.core_config.us_customary_example"
                 )}
               </div>`}
           >
             <ha-radio
               name="unit_system"
-              value="imperial"
-              .checked=${this._unitSystemValue === "imperial"}
+              value="us_customary"
+              .checked=${this._unitSystemValue === "us_customary"}
               @change=${this._unitSystemChanged}
               .disabled=${this._working}
             ></ha-radio>
@@ -301,7 +301,9 @@ class OnboardingCoreConfig extends LitElement {
   }
 
   private _unitSystemChanged(ev: CustomEvent) {
-    this._unitSystem = (ev.target as HaRadio).value as "metric" | "imperial";
+    this._unitSystem = (ev.target as HaRadio).value as
+      | "metric"
+      | "us_customary";
   }
 
   private async _detect() {
