@@ -74,6 +74,14 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     component: "zwave_js",
     redirect: "/config/zwave_js/dashboard",
   },
+  add_zigbee_device: {
+    component: "zha",
+    redirect: "/config/zha/add",
+  },
+  add_zwave_device: {
+    component: "zwave_js",
+    redirect: "/config/zwave_js/add",
+  },
   config_energy: {
     component: "energy",
     redirect: "/config/energy/dashboard",
