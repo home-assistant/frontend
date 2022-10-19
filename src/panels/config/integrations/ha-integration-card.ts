@@ -929,6 +929,10 @@ export class HaIntegrationCard extends LitElement {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;
         }
+        paper-listbox {
+          border-radius: 0 0 var(--ha-card-border-radius, 16px)
+            var(--ha-card-border-radius, 16px);
+        }
         @media (min-width: 563px) {
           ha-card.group {
             position: relative;
