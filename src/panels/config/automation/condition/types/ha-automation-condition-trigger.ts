@@ -72,9 +72,9 @@ export class HaTriggerCondition extends LitElement {
   private _automationUpdated(config?: AutomationConfig) {
     const seenIds = new Set();
     this._triggers = config?.trigger
-      ? ensureArray(config.trigger)
-          .filter((t) => t.id)
-          .filter((t) => (seenIds.has(t.id) ? false : seenIds.add(t.id)))
+      ? ensureArray(config.trigger).filter(
+          (t) => t.id && (seenIds.has(t.id) ? false : seenIds.add(t.id))
+        )
       : [];
   }
 
