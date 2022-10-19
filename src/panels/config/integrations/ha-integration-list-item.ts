@@ -93,7 +93,10 @@ export class HaIntegrationListItem extends ListItemBase {
               >${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.yaml_only"
               )}</paper-tooltip
-            ><ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon
+            ><ha-svg-icon
+              .path=${mdiOpenInNew}
+              class="open-in-new"
+            ></ha-svg-icon
           ></span>`
         : html`<ha-icon-next></ha-icon-next>`}
     </span>`;
@@ -140,6 +143,10 @@ export class HaIntegrationListItem extends ListItemBase {
         }
         ha-icon-next {
           margin-right: 8px;
+        }
+        .open-in-new {
+          --mdc-icon-size: 22px;
+          padding: 1px;
         }
       `,
     ];
