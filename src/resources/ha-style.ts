@@ -1,6 +1,24 @@
 import "@polymer/paper-styles/paper-styles";
 import "@polymer/polymer/lib/elements/custom-style";
+import { computeRgbColor } from "../common/color/compute-color";
+import {
+  computeCssDomainColor,
+  DomainColor,
+} from "../common/entity/domain_color";
 import { derivedStyles } from "./styles";
+
+export const DOMAIN_COLOR_VALUES: Record<DomainColor, string> = {
+  "alarm-armed": "green",
+  "alarm-disarmed": "primary",
+  "alarm-pending": "orange",
+  "alarm-triggered": "red",
+  "light-off": "disabled",
+  "light-on": "orange",
+  "lock-jammed": "red",
+  "lock-locked": "green",
+  "lock-pending": "orange",
+  "lock-unlocked": "red",
+};
 
 export const DEFAULT_PRIMARY_COLOR = "#03a9f4";
 export const DEFAULT_ACCENT_COLOR = "#ff9800";
@@ -113,6 +131,15 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-card-background-color: 255, 255, 255;
       --rgb-disabled-color: 189, 189, 189;
 
+      ${Object.entries(DOMAIN_COLOR_VALUES)
+        .map(
+          ([key, value]) =>
+            `${computeCssDomainColor(key as DomainColor)}: ${computeRgbColor(
+              value
+            )};`
+        )
+        .join("")}
+        
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
       --input-hover-line-color: rgba(0, 0, 0, 0.87);
@@ -132,7 +159,7 @@ documentContainer.innerHTML = `<custom-style>
       --material-small-font-size: 0.875rem;
       --material-caption-font-size: 0.75rem;
       --material-button-font-size: 0.875rem;
-
+        
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
         .join("")}
