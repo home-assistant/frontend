@@ -92,9 +92,7 @@ export class HaBarSlider extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     this.setupListeners();
-    if (!this.hasAttribute("role")) {
-      this.setAttribute("role", "slider");
-    }
+    this.setAttribute("role", "slider");
     if (!this.hasAttribute("tabindex")) {
       this.setAttribute("tabindex", "0");
     }
