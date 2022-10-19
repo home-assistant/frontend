@@ -1861,6 +1861,7 @@
             "disabled": "Automation is disabled",
             "read_only": "This automation can not be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
             "migrate": "Migrate",
+            "duplicate": "[%key:ui::common::duplicate%]",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
@@ -2337,7 +2338,7 @@
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "read_only": "This script can not be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "migrate": "Migrate",
-            "duplicate": "Duplicate",
+            "duplicate": "[%key:ui::common::duplicate%]",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
