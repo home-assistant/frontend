@@ -23,7 +23,7 @@ export const COLORS = new Map([
   ["grey", "#9e9e9e"],
   ["blue-grey", "#607d8b"],
   ["black", "#000000"],
-  ["white", "ffffff"],
+  ["white", "#ffffff"],
 ]);
 
 export function computeRgbColor(color: string): string {
