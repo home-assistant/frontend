@@ -2924,7 +2924,7 @@
             "known_issues": "Known issues",
             "delete": "Delete",
             "delete_confirm_title": "Delete {title}?",
-            "delete_confirm_text": "Its devices and entities will be permantly deleted.",
+            "delete_confirm_text": "Its devices and entities will be permanently deleted.",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
