@@ -1,5 +1,6 @@
 /** Return an color representing a state. */
 import { HassEntity } from "home-assistant-js-websocket";
+import { UNAVAILABLE_STATES } from "../../data/entity";
 import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
 import { binarySensorColor } from "./color/binary_sensor_color";
 import { coverColor } from "./color/cover_color";
@@ -12,15 +13,21 @@ export const stateColorCss = (stateObj?: HassEntity) => {
     return `var(--rgb-primary-color)`;
   }
 
+  if (UNAVAILABLE_STATES.includes(stateObj.state)) {
+    return `var(--rgb-disabled-color)`;
+  }
+
   const color = stateColor(stateObj);
 
   if (color) {
     return `var(--rgb-state-${color}-color)`;
   }
 
-  return stateObj.state === "off"
-    ? `var(--rgb-disabled-color)`
-    : `var(--rgb-primary-color)`;
+  if (stateObj.state === "off") {
+    return `var(--rgb-disabled-color)`;
+  }
+
+  return `var(--rgb-primary-color)`;
 };
 
 export const stateColor = (stateObj: HassEntity) => {
@@ -45,6 +52,10 @@ export const stateColor = (stateObj: HassEntity) => {
 
     case "humidifier":
       return state === "on" ? "humidifier-on" : "humidifier-off";
+
+    case "person":
+    case "device_tracker":
+      return state === "not_home" ? "person-not-home" : "person-home";
 
     case "sensor":
       return sensorColor(stateObj);

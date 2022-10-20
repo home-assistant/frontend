@@ -139,6 +139,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-alarm-disarmed-color: var(--rgb-primary-color);
       --rgb-state-alarm-pending-color: var(--rgb-orange-color);
       --rgb-state-alarm-triggered-color: var(--rgb-red-color);
+      --rgb-state-binary-sensor-danger-on-color: var(--rgb-red-color);
+      --rgb-state-binary-sensor-normal-on-color: var(--rgb-green-color);
+      --rgb-state-binary-sensor-off-color: var(--rgb-disabled-color);
       --rgb-state-cover-closed-color: var(--rgb-disabled-color);
       --rgb-state-cover-open-color: var(--rgb-blue-color);
       --rgb-state-cover-secure-open-color: var(--rgb-red-color);
@@ -150,20 +153,19 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-lock-locked-color: var(--rgb-green-color);
       --rgb-state-lock-pending-color: var(--rgb-orange-color);
       --rgb-state-lock-unlocked-color: var(--rgb-red-color);
+      --rgb-state-person-home-color: var(--rgb-primary-color);
+      --rgb-state-person-not-home-color: var(--rgb-disabled-color);
       --rgb-state-sensor-battery-low-color: var(--rgb-red-color);
       --rgb-state-sensor-battery-medium-color: var(--rgb-orange-color);
       --rgb-state-sensor-battery-high-color: var(--rgb-green-color);
       --rgb-state-sensor-battery-unknown-color: var(--rgb-disabled-color);
+      --rgb-state-sensor-color: var(--rgb-blue-grey-color);
       --rgb-state-sensor-energy-color: var(--rgb-amber-color);
-      --rgb-state-sensor-temperature-color: var(--rgb-deep-orange-color);
       --rgb-state-sensor-humidity-color: var(--rgb-deep-purple-color);
       --rgb-state-sensor-illuminance-color: var(--rgb-yellow-color);
       --rgb-state-sensor-moisture-color: var(--rgb-light-blue-color);
-      --rgb-state-sensor-color: var(--rgb-blue-grey-color);
-      --rgb-state-binary-sensor-normal-on-color: var(--rgb-green-color);
-      --rgb-state-binary-sensor-danger-on-color: var(--rgb-red-color);
-      --rgb-state-binary-sensor-off-color: var(--rgb-disabled-color);
-
+      --rgb-state-sensor-temperature-color: var(--rgb-deep-orange-color);
+      
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
       --input-hover-line-color: rgba(0, 0, 0, 0.87);
