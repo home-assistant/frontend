@@ -313,13 +313,13 @@ export class MoreInfoDialog extends LitElement {
           }
 
           :host([large]) ha-dialog,
-          ha-dialog[data-domain="camera"] {
+          :host([tab="info"]) ha-dialog[data-domain="camera"] {
             --mdc-dialog-min-width: 90vw;
             --mdc-dialog-max-width: 90vw;
           }
         }
 
-        ha-dialog[data-domain="camera"] {
+        :host([tab="info"]) ha-dialog[data-domain="camera"] {
           --dialog-content-padding: 0;
         }
       `,
