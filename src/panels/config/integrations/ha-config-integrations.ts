@@ -32,7 +32,6 @@ import {
   subscribeConfigEntries,
 } from "../../../data/config_entries";
 import {
-  getConfigFlowHandlers,
   getConfigFlowInProgressCollection,
   localizeConfigFlowTitle,
   subscribeConfigFlowInProgress,
@@ -695,11 +694,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     }
 
     const descriptions = await getIntegrationDescriptions(this.hass);
+    const integrations = {
+      ...descriptions.core.integration,
+      ...descriptions.custom.integration,
+    };
 
-    const integration = findIntegration(
-      { ...descriptions.core.integration, ...descriptions.custom.integration },
-      domain
-    );
+    const integration = findIntegration(integrations, domain);
 
     if (integration?.config_flow) {
       // Integration exists, so we can just create a flow
@@ -727,10 +727,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       // Integration is a alias, so we can just create a flow
       const localize = await localizePromise;
       const supportedIntegration = findIntegration(
-        {
-          ...descriptions.core.integration,
-          ...descriptions.custom.integration,
-        },
+        integrations,
         integration.supported_by
       );
 
@@ -780,8 +777,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       });
       return;
     }
-    const helpers = await getConfigFlowHandlers(this.hass, ["helper"]);
-    if (helpers.includes(domain)) {
+    const helpers = {
+      ...descriptions.core.helper,
+      ...descriptions.custom.helper,
+    };
+    const helper = findIntegration(helpers, domain);
+    if (helper) {
       navigate(`/config/helpers/add?domain=${domain}`, {
         replace: true,
       });
