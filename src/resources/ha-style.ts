@@ -143,24 +143,23 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-cover-open-color: var(--rgb-blue-color);
       --rgb-state-cover-secure-open-color: var(--rgb-red-color);
       --rgb-state-humidifier-off-color: var(--rgb-disabled-color);
-      --rgb-state-humidifier-on-color: var(--rgb-purple-color);
+      --rgb-state-humidifier-on-color: var(--rgb-deep-purple-color);
       --rgb-state-light-off-color: var(--rgb-disabled-color);
       --rgb-state-light-on-color: var(--rgb-orange-color);
       --rgb-state-lock-jammed-color: var(--rgb-red-color);
       --rgb-state-lock-locked-color: var(--rgb-green-color);
       --rgb-state-lock-pending-color: var(--rgb-orange-color);
       --rgb-state-lock-unlocked-color: var(--rgb-red-color);
-      --rgb-state-battery-0-color: var(--rgb-red-color);
-      --rgb-state-battery-10-color: var(--rgb-red-color);
-      --rgb-state-battery-20-color: var(--rgb-red-color);
-      --rgb-state-battery-30-color: var(--rgb-orange-color);
-      --rgb-state-battery-40-color: var(--rgb-orange-color);
-      --rgb-state-battery-50-color: var(--rgb-orange-color);
-      --rgb-state-battery-60-color: var(--rgb-orange-color);
-      --rgb-state-battery-70-color: var(--rgb-orange-color);
-      --rgb-state-battery-80-color: var(--rgb-green-color);
-      --rgb-state-battery-90-color: var(--rgb-green-color);
-      --rgb-state-battery-100-color: var(--rgb-green-color);
+      --rgb-state-sensor-battery-low-color: var(--rgb-red-color);
+      --rgb-state-sensor-battery-medium-color: var(--rgb-orange-color);
+      --rgb-state-sensor-battery-high-color: var(--rgb-green-color);
+      --rgb-state-sensor-battery-unknown-color: var(--rgb-disabled-color);
+      --rgb-state-sensor-energy-color: var(--rgb-amber-color);
+      --rgb-state-sensor-temperature-color: var(--rgb-deep-orange-color);
+      --rgb-state-sensor-humidity-color: var(--rgb-deep-purple-color);
+      --rgb-state-sensor-illuminance-color: var(--rgb-yellow-color);
+      --rgb-state-sensor-moisture-color: var(--rgb-light-blue-color);
+      --rgb-state-sensor-color: var(--rgb-blue-grey-color);
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
