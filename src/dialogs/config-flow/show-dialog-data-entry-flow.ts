@@ -13,10 +13,6 @@ import {
 import type { IntegrationManifest } from "../../data/integration";
 import type { HomeAssistant } from "../../types";
 
-export interface FlowHandlers {
-  integrations: string[];
-  helpers: string[];
-}
 export interface FlowConfig {
   loadDevicesAndAreas: boolean;
 
