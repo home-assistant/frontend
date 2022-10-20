@@ -472,7 +472,7 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private async _handleIntegrationPicked(integration: IntegrationListItem) {
-    if ("supported_by" in integration) {
+    if (integration.supported_by) {
       this._supportedBy(integration);
       return;
     }
