@@ -160,6 +160,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-sensor-illuminance-color: var(--rgb-yellow-color);
       --rgb-state-sensor-moisture-color: var(--rgb-light-blue-color);
       --rgb-state-sensor-color: var(--rgb-blue-grey-color);
+      --rgb-state-binary-sensor-normal-on-color: var(--rgb-green-color);
+      --rgb-state-binary-sensor-danger-on-color: var(--rgb-red-color);
+      --rgb-state-binary-sensor-off-color: var(--rgb-disabled-color);
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);

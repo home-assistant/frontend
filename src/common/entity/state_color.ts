@@ -1,6 +1,7 @@
 /** Return an color representing a state. */
 import { HassEntity } from "home-assistant-js-websocket";
 import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
+import { binarySensorColor } from "./color/binary_sensor_color";
 import { coverColor } from "./color/cover_color";
 import { lockColor } from "./color/lock_color";
 import { sensorColor } from "./color/sensor_color";
@@ -29,6 +30,9 @@ export const stateColor = (stateObj: HassEntity) => {
   switch (domain) {
     case "alarm_control_panel":
       return alarmControlPanelColor(state);
+
+    case "binary_sensor":
+      return binarySensorColor(state, stateObj);
 
     case "cover":
       return coverColor(state, stateObj);
