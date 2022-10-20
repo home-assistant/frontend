@@ -23,17 +23,18 @@ export interface SignedPath {
 
 export const hassUrl = `${location.protocol}//${location.host}`;
 
-export const autofillAuthSchema = (schemas: HaFormSchema[]) =>
-  schemas.map((schema) => {
-    switch (schema.name) {
+export const autocompleteLoginFields = (schema: HaFormSchema[]) =>
+  schema.map((field) => {
+    if (field.type !== "string") return field;
+    switch (field.name) {
       case "username":
-        return { ...schema, autofill: "username" };
+        return { ...field, autocomplete: "username" };
       case "password":
-        return { ...schema, autofill: "current-password" };
+        return { ...field, autocomplete: "current-password" };
       case "code":
-        return { ...schema, autofill: "one-time-code" };
+        return { ...field, autocomplete: "one-time-code" };
       default:
-        return schema;
+        return field;
     }
   });
 

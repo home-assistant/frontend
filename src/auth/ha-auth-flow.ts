@@ -15,7 +15,7 @@ import { computeInitialHaFormData } from "../components/ha-form/compute-initial-
 import "../components/ha-form/ha-form";
 import "../components/ha-formfield";
 import "../components/ha-markdown";
-import { AuthProvider, autofillAuthSchema } from "../data/auth";
+import { AuthProvider, autocompleteLoginFields } from "../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
@@ -204,7 +204,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             : html``}
           <ha-form
             .data=${this._stepData}
-            .schema=${autofillAuthSchema(step.data_schema)}
+            .schema=${autocompleteLoginFields(step.data_schema)}
             .error=${step.errors}
             .disabled=${this._submitting}
             .computeLabel=${this._computeLabelCallback(step)}

@@ -71,7 +71,7 @@ export interface HaFormFloatSchema extends HaFormBaseSchema {
 export interface HaFormStringSchema extends HaFormBaseSchema {
   type: "string";
   format?: string;
-  autofill?: string;
+  autocomplete?: string;
 }
 
 export interface HaFormBooleanSchema extends HaFormBaseSchema {
