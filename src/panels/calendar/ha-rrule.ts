@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { state, customElement, property } from "lit/decorators";
 import { RRule, Frequency } from "rrule";
 import type { Options } from "rrule";
@@ -139,12 +139,14 @@ export class HaRRule extends LitElement {
       };
     }
     this.requestUpdate();
+    ev.stopPropagation();
     this._updateRule();
   }
 
   private _handleIntervalChange(ev) {
     this._rrule!.interval = ev.detail.value;
     this.requestUpdate();
+    ev.stopPropagation();
     this._updateRule();
   }
 

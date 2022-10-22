@@ -18,6 +18,9 @@ export const showConfirmEventDialog = (
   dialogParams: ConfirmEventDialogBoxParams
 ) =>
   new Promise<RecurrenceRange | undefined>((resolve) => {
+    const origConfirm = dialogParams.confirm;
+    const origCancel = dialogParams.cancel;
+
     fireEvent(element, "show-dialog", {
       dialogTag: "confirm-event-dialog-box",
       dialogImport: loadGenericDialog,
@@ -25,9 +28,15 @@ export const showConfirmEventDialog = (
         ...dialogParams,
         confirm: (thisAndFuture: RecurrenceRange) => {
           resolve(thisAndFuture);
+          if (origConfirm) {
+            origConfirm();
+          }
         },
         cancel: () => {
           resolve(undefined);
+          if (origCancel) {
+            origCancel();
+          }
         },
       },
       addHistory: false,

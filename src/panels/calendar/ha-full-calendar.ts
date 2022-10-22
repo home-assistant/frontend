@@ -195,7 +195,7 @@ export class HAFullCalendar extends LitElement {
 
       <div id="calendar">
         ${this.mutableCalendars && this.mutableCalendars.length > 0
-          ? html` <ha-fab
+          ? html`<ha-fab
               slot="fab"
               .label=${this.hass.localize("ui.components.calendar.event.add")}
               extended
