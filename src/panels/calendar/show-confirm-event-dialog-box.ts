@@ -29,7 +29,7 @@ export const showConfirmEventDialog = (
         confirm: (thisAndFuture: RecurrenceRange) => {
           resolve(thisAndFuture);
           if (origConfirm) {
-            origConfirm();
+            origConfirm(thisAndFuture);
           }
         },
         cancel: () => {
