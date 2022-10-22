@@ -4019,6 +4019,7 @@
                 "hour": "Hour",
                 "day": "Day",
                 "month": "Month",
+                "week": "Week",
                 "5minute": "5 Minutes"
               },
               "pick_statistic": "Add a statistic",
