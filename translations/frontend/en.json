@@ -2950,7 +2950,7 @@
                         "check_the_logs": "Check the logs",
                         "configure": "Configure",
                         "delete": "Delete",
-                        "delete_confirm_text": "Its devices and entities will be permanently deleted.",
+                        "delete_confirm_text": "Its devices and entities will be permantly deleted.",
                         "delete_confirm_title": "Delete {title}?",
                         "depends_on_cloud": "Depends on the cloud",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
