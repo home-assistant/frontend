@@ -15,7 +15,6 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
-import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-card";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
@@ -24,7 +23,6 @@ import {
   CalendarEvent,
   fetchCalendarEvents,
   getCalendars,
-  CalendarEntityFeature,
 } from "../../data/calendar";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
@@ -100,7 +98,7 @@ class PanelCalendar extends LitElement {
           </div>
           <ha-full-calendar
             .events=${this._events}
-            .mutableCalendars=${this._mutableCalendars}
+            .calendars=${this._calendars}
             .narrow=${this.narrow}
             .hass=${this.hass}
             @view-changed=${this._handleViewChanged}
@@ -113,18 +111,6 @@ class PanelCalendar extends LitElement {
   private get _selectedCalendars(): Calendar[] {
     return this._calendars
       .filter((selCal) => !this._deSelectedCalendars.includes(selCal.entity_id))
-      .map((cal) => cal);
-  }
-
-  private get _mutableCalendars(): Calendar[] {
-    return this._calendars
-      .filter((selCal) => {
-        const entityStateObj = this.hass.states[selCal.entity_id];
-        return (
-          entityStateObj &&
-          supportsFeature(entityStateObj, CalendarEntityFeature.MUTABLE)
-        );
-      })
       .map((cal) => cal);
   }
 

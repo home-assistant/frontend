@@ -44,11 +44,13 @@ import type {
   ToggleButton,
 } from "../../types";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
+import { supportsFeature } from "../../common/entity/supports-feature";
 import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
 import type {
   Calendar as CalendarData,
   CalendarEvent,
 } from "../../data/calendar";
+import { CalendarEntityFeature } from "../../data/calendar";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -97,7 +99,7 @@ export class HAFullCalendar extends LitElement {
 
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
-  @property({ attribute: false }) public mutableCalendars?: CalendarData[] = [];
+  @property({ attribute: false }) public calendars: CalendarData[] = [];
 
   @property({ attribute: false }) public views: FullCalendarView[] = [
     "dayGridMonth",
@@ -194,7 +196,7 @@ export class HAFullCalendar extends LitElement {
         : ""}
 
       <div id="calendar">
-        ${this.mutableCalendars && this.mutableCalendars.length > 0
+        ${this._mutableCalendars.length > 0
           ? html`<ha-fab
               slot="fab"
               .label=${this.hass.localize("ui.components.calendar.event.add")}
@@ -260,37 +262,41 @@ export class HAFullCalendar extends LitElement {
     this._fireViewChanged();
   }
 
+  // Return calendars that support creating events
+  private get _mutableCalendars(): CalendarData[] {
+    return this.calendars
+      .filter((selCal) => {
+        const entityStateObj = this.hass.states[selCal.entity_id];
+        return (
+          entityStateObj &&
+          supportsFeature(entityStateObj, CalendarEntityFeature.CREATE_EVENT)
+        );
+      })
+      .map((cal) => cal);
+  }
+
   private _createEvent(_info) {
     showCalendarEventDetailDialog(this, {
-      calendars: this.mutableCalendars!,
+      calendars: this._mutableCalendars,
       updated: () => {
         this._fireViewChanged();
       },
     });
   }
 
-  private isMutableCalendar(entityId: string): boolean {
-    if (!this.mutableCalendars) {
-      return false;
-    }
-    return (
-      this.mutableCalendars.filter((selCal) => selCal.entity_id === entityId)
-        .length !== 0
-    );
-  }
-
   private _handleEventClick(info): void {
-    if (!this.isMutableCalendar(info.event.extendedProps.calendar)) {
-      this._handleDateClick(info);
-      return;
-    }
+    const entityStateObj = this.hass.states[info.event.extendedProps.calendar];
+    const canDelete =
+      entityStateObj &&
+      supportsFeature(entityStateObj, CalendarEntityFeature.DELETE_EVENT);
     showCalendarEventDetailDialog(this, {
-      calendars: this.mutableCalendars!,
+      calendars: this.calendars,
       calendarId: info.event.extendedProps.calendar,
       entry: info.event.extendedProps.eventData,
       updated: () => {
         this._fireViewChanged();
       },
+      canDelete: canDelete,
     });
   }
 

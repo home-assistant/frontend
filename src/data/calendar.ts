@@ -45,7 +45,8 @@ export enum RecurrenceRange {
 }
 
 export const enum CalendarEntityFeature {
-  MUTABLE = 1,
+  CREATE_EVENT = 1,
+  DELETE_EVENT = 2,
 }
 
 export const fetchCalendarEvents = async (

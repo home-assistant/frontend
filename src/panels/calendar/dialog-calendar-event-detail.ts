@@ -232,7 +232,8 @@ class DialogCalendarEventDetail extends LitElement {
                 ${this.hass.localize("ui.components.calendar.event.add")}
               </mwc-button>
             `
-          : html`
+          : this._params.canDelete
+          ? html`
               <mwc-button
                 slot="primaryAction"
                 class="warning"
@@ -241,7 +242,8 @@ class DialogCalendarEventDetail extends LitElement {
               >
                 ${this.hass.localize("ui.components.calendar.event.delete")}
               </mwc-button>
-            `}
+            `
+          : html``}
       </ha-dialog>
     `;
   }
