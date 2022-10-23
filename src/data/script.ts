@@ -225,8 +225,12 @@ export interface StopAction extends BaseAction {
   error?: boolean;
 }
 
+export interface SequenceAction extends BaseAction {
+  sequence: ManualScriptConfig | Action | (ManualScriptConfig | Action)[];
+}
+
 export interface ParallelAction extends BaseAction {
-  parallel: ManualScriptConfig | Action | (ManualScriptConfig | Action)[];
+  parallel: SequenceAction | SequenceAction[];
 }
 
 interface UnknownAction extends BaseAction {
