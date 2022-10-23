@@ -11,7 +11,9 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   @property({ attribute: false }) public data!: HaFormFloatData;
 
-  @property() public label!: string;
+  @property() public label?: string;
+
+  @property() public helper?: string;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -29,10 +31,12 @@ export class HaFormFloat extends LitElement implements HaFormElement {
         type="numeric"
         inputMode="decimal"
         .label=${this.label}
+        .helper=${this.helper}
+        helperPersistent
         .value=${this.data !== undefined ? this.data : ""}
         .disabled=${this.disabled}
-        .required=${this.schema.required}
-        .autoValidate=${this.schema.required}
+        ?required=${this.schema.required}
+        ?autoValidate=${this.schema.required}
         .suffix=${this.schema.description?.suffix}
         .validationMessage=${this.schema.required ? "Required" : undefined}
         @input=${this._valueChanged}
