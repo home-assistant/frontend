@@ -215,11 +215,12 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
           unitClass = metadata.unit_class;
           this._unit = this._config!.unit;
         }
-      } else {
-        const metadata = this._metadata?.[this._entities[0]];
+      }
+      if (!unitClass && this._metadata) {
+        const metadata = this._metadata[this._entities[0]];
         unitClass = metadata?.unit_class;
         this._unit = unitClass
-          ? getDisplayUnit(this.hass!, metadata?.statistic_id, metadata) ||
+          ? getDisplayUnit(this.hass!, metadata.statistic_id, metadata) ||
             undefined
           : undefined;
       }
