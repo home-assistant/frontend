@@ -1,19 +1,16 @@
 /** Return an color representing a state. */
 import { HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE_STATES } from "../../data/entity";
+import { UpdateEntity, updateIsInstalling } from "../../data/update";
 import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
 import { binarySensorColor } from "./color/binary_sensor_color";
 import { coverColor } from "./color/cover_color";
 import { lockColor } from "./color/lock_color";
 import { sensorColor } from "./color/sensor_color";
 import { computeDomain } from "./compute_domain";
+import { stateActive } from "./state_active";
 
 export const stateColorCss = (stateObj?: HassEntity) => {
-  if (!stateObj) {
-    return `var(--rgb-primary-color)`;
-  }
-
-  if (UNAVAILABLE_STATES.includes(stateObj.state)) {
+  if (!stateObj || !stateActive(stateObj)) {
     return `var(--rgb-disabled-color)`;
   }
 
@@ -21,10 +18,6 @@ export const stateColorCss = (stateObj?: HassEntity) => {
 
   if (color) {
     return `var(--rgb-state-${color}-color)`;
-  }
-
-  if (stateObj.state === "off") {
-    return `var(--rgb-disabled-color)`;
   }
 
   return `var(--rgb-primary-color)`;
@@ -39,26 +32,37 @@ export const stateColor = (stateObj: HassEntity) => {
       return alarmControlPanelColor(state);
 
     case "binary_sensor":
-      return binarySensorColor(state, stateObj);
+      return binarySensorColor(stateObj);
 
     case "cover":
-      return coverColor(state, stateObj);
+      return coverColor(stateObj);
 
     case "lock":
       return lockColor(state);
 
     case "light":
-      return state === "on" ? "light-on" : "light-off";
+      return "light";
 
     case "humidifier":
-      return state === "on" ? "humidifier-on" : "humidifier-off";
+      return "humidifier";
+
+    case "media_player":
+      return "media-player";
 
     case "person":
     case "device_tracker":
-      return state === "not_home" ? "person-not-home" : "person-home";
+      return "person";
 
     case "sensor":
       return sensorColor(stateObj);
+
+    case "sun":
+      return state === "above_horizon" ? "sun-day" : "sun-night";
+
+    case "update":
+      return updateIsInstalling(stateObj as UpdateEntity)
+        ? "update-installing"
+        : "update";
   }
 
   return undefined;
