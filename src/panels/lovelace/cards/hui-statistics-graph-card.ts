@@ -118,7 +118,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (!this._config || !changedProps.has("_config")) {
+    if (
+      !this._config ||
+      (!changedProps.has("_config") && !changedProps.has("_metadata"))
+    ) {
       return;
     }
 
@@ -126,14 +129,20 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       | StatisticsGraphCardConfig
       | undefined;
 
-    if (oldConfig?.entities !== this._config.entities) {
+    if (
+      changedProps.has("_config") &&
+      oldConfig?.entities !== this._config.entities
+    ) {
       this._getStatisticsMetaData(this._entities);
     }
 
     if (
-      oldConfig?.entities !== this._config.entities ||
-      oldConfig?.days_to_show !== this._config.days_to_show ||
-      oldConfig?.period !== this._config.period
+      changedProps.has("_metadata") ||
+      (changedProps.has("_config") &&
+        (oldConfig?.entities !== this._config.entities ||
+          oldConfig?.days_to_show !== this._config.days_to_show ||
+          oldConfig?.period !== this._config.period ||
+          oldConfig?.unit !== this._config.unit))
     ) {
       this._getStatistics();
       // statistics are created every hour
@@ -195,12 +204,25 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         1000 * 60 * 60 * (24 * (this._config!.days_to_show || 30) + 1)
     );
     try {
-      const metadata = this._metadata?.[this._entities[0]];
-      const unitClass = metadata?.unit_class;
-      this._unit = unitClass
-        ? getDisplayUnit(this.hass!, metadata?.statistic_id, metadata) ||
-          undefined
-        : undefined;
+      let unitClass;
+      if (this._config!.unit && this._metadata) {
+        const metadata = Object.values(this._metadata).find(
+          (metaData) =>
+            getDisplayUnit(this.hass!, metaData?.statistic_id, metaData) ===
+            this._config!.unit
+        );
+        if (metadata) {
+          unitClass = metadata.unit_class;
+          this._unit = this._config!.unit;
+        }
+      } else {
+        const metadata = this._metadata?.[this._entities[0]];
+        unitClass = metadata?.unit_class;
+        this._unit = unitClass
+          ? getDisplayUnit(this.hass!, metadata?.statistic_id, metadata) ||
+            undefined
+          : undefined;
+      }
       const unitconfig = unitClass ? { [unitClass]: this._unit } : undefined;
       this._statistics = await fetchStatistics(
         this.hass!,
