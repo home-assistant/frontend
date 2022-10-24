@@ -1,5 +1,6 @@
+import { mdiGestureTap, mdiPalette } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, assign, object, optional, string } from "superstruct";
@@ -42,10 +43,11 @@ export class HuiTileCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
+  private _mainSchema = [{ name: "entity", selector: { entity: {} } }] as const;
+
+  private _appareanceSchema = memoizeOne(
     (entity: string, icon?: string, entityState?: HassEntity) =>
       [
-        { name: "entity", selector: { entity: {} } },
         { name: "name", selector: { text: {} } },
         {
           name: "icon",
@@ -76,20 +78,23 @@ export class HuiTileCardEditor
             },
           },
         },
-        {
-          name: "tap_action",
-          selector: {
-            "ui-action": {},
-          },
-        },
-        {
-          name: "icon_tap_action",
-          selector: {
-            "ui-action": {},
-          },
-        },
       ] as const
   );
+
+  private _actionsSchema = [
+    {
+      name: "tap_action",
+      selector: {
+        "ui-action": {},
+      },
+    },
+    {
+      name: "icon_tap_action",
+      selector: {
+        "ui-action": {},
+      },
+    },
+  ] as const;
 
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
@@ -98,7 +103,13 @@ export class HuiTileCardEditor
 
     const entity = this.hass.states[this._config.entity ?? ""];
 
-    const schema = this._schema(this._config.entity, this._config.icon, entity);
+    const mainSchema = this._mainSchema;
+    const appareanceSchema = this._appareanceSchema(
+      this._config.entity,
+      this._config.icon,
+      entity
+    );
+    const actionsSchema = this._actionsSchema;
 
     const data = {
       color: "default",
@@ -106,13 +117,51 @@ export class HuiTileCardEditor
     };
 
     return html`
-      <ha-form
-        .hass=${this.hass}
-        .data=${data}
-        .schema=${schema}
-        .computeLabel=${this._computeLabelCallback}
-        @value-changed=${this._valueChanged}
-      ></ha-form>
+      <div class="container">
+        <div class="group">
+          <ha-form
+            .hass=${this.hass}
+            .data=${data}
+            .schema=${mainSchema}
+            .computeLabel=${this._computeLabelCallback}
+            @value-changed=${this._valueChanged}
+          ></ha-form>
+        </div>
+        <div class="group">
+          <ha-expansion-panel header="Appearence">
+            <div slot="header">
+              <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
+              Appearence
+            </div>
+            <div class="content">
+              <ha-form
+                .hass=${this.hass}
+                .data=${data}
+                .schema=${appareanceSchema}
+                .computeLabel=${this._computeLabelCallback}
+                @value-changed=${this._valueChanged}
+              ></ha-form>
+            </div>
+          </ha-expansion-panel>
+        </div>
+        <div class="group">
+          <ha-expansion-panel>
+            <div slot="header">
+              <ha-svg-icon .path=${mdiGestureTap}></ha-svg-icon>
+              Actions
+            </div>
+            <div class="content">
+              <ha-form
+                .hass=${this.hass}
+                .data=${data}
+                .schema=${actionsSchema}
+                .computeLabel=${this._computeLabelCallback}
+                @value-changed=${this._valueChanged}
+              ></ha-form>
+            </div>
+          </ha-expansion-panel>
+        </div>
+      </div>
     `;
   }
 
@@ -127,7 +176,10 @@ export class HuiTileCardEditor
   }
 
   private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
+    schema:
+      | SchemaUnion<typeof this._mainSchema>
+      | SchemaUnion<ReturnType<typeof this._appareanceSchema>>
+      | SchemaUnion<typeof this._actionsSchema>
   ) => {
     switch (schema.name) {
       case "color":
@@ -141,6 +193,30 @@ export class HuiTileCardEditor
         );
     }
   };
+
+  static get styles() {
+    return css`
+      .container {
+        display: flex;
+        flex-direction: column;
+      }
+      .group:not(:last-child) {
+        margin-bottom: 12px;
+      }
+      .content {
+        padding: 8px;
+      }
+      ha-expansion-panel {
+        --expansion-panel-summary-padding: 0 8px 0 8px;
+        --expansion-panel-content-padding: 0;
+        border: 1px solid var(--divider-color);
+        border-radius: 6px;
+      }
+      ha-svg-icon {
+        color: var(--secondary-text-color);
+      }
+    `;
+  }
 }
 
 declare global {
