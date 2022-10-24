@@ -3,6 +3,7 @@ import { OFF_STATES } from "../../data/entity";
 import { computeDomain } from "./compute_domain";
 
 const NORMAL_UNKNOWN_DOMAIN = ["button", "input_button", "scene"];
+const NORMAL_OFF_DOMAIN = ["script"];
 
 export function stateActive(stateObj: HassEntity): boolean {
   const domain = computeDomain(stateObj.entity_id);
@@ -10,7 +11,8 @@ export function stateActive(stateObj: HassEntity): boolean {
 
   if (
     OFF_STATES.includes(state) &&
-    !(NORMAL_UNKNOWN_DOMAIN.includes(domain) && state === "unknown")
+    !(NORMAL_UNKNOWN_DOMAIN.includes(domain) && state === "unknown") &&
+    !(NORMAL_OFF_DOMAIN.includes(domain) && state === "script")
   ) {
     return false;
   }
@@ -21,7 +23,7 @@ export function stateActive(stateObj: HassEntity): boolean {
       return state === "open" || state === "opening";
     case "device_tracker":
     case "person":
-      return state === "home";
+      return state !== "not_home";
     case "media-player":
       return state !== "idle";
     case "vacuum":

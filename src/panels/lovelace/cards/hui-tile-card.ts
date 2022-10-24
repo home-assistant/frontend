@@ -6,6 +6,7 @@ import { computeRgbColor } from "../../../common/color/compute-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
 import "../../../components/ha-card";
@@ -119,7 +120,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const style = {
       "--tile-color": this._config.color
-        ? computeRgbColor(this._config.color)
+        ? stateActive(entity)
+          ? computeRgbColor(this._config.color)
+          : undefined
         : stateColorCss(entity),
     };
 

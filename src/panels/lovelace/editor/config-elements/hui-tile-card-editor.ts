@@ -65,7 +65,7 @@ export class HuiTileCardEditor
             select: {
               options: [
                 {
-                  label: "Default (based of state)",
+                  label: "Default (based on state)",
                   value: "default",
                 },
                 ...Array.from(THEME_COLORS).map((color) => ({

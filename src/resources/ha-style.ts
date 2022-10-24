@@ -192,7 +192,7 @@ documentContainer.innerHTML = `<custom-style>
       --material-small-font-size: 0.875rem;
       --material-caption-font-size: 0.75rem;
       --material-button-font-size: 0.875rem;
-        
+
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
         .join("")}
