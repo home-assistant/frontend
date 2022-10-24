@@ -3,6 +3,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { UpdateEntity, updateIsInstalling } from "../../data/update";
 import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
 import { binarySensorColor } from "./color/binary_sensor_color";
+import { climateColor } from "./color/climate_color";
 import { coverColor } from "./color/cover_color";
 import { lockColor } from "./color/lock_color";
 import { sensorColor } from "./color/sensor_color";
@@ -37,6 +38,9 @@ export const stateColor = (stateObj: HassEntity) => {
     case "cover":
       return coverColor(stateObj);
 
+    case "climate":
+      return climateColor(state);
+
     case "lock":
       return lockColor(state);
 
@@ -55,6 +59,9 @@ export const stateColor = (stateObj: HassEntity) => {
 
     case "sensor":
       return sensorColor(stateObj);
+
+    case "vacuum":
+      return "vacuum";
 
     case "sun":
       return state === "above_horizon" ? "sun-day" : "sun-night";

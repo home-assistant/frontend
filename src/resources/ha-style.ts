@@ -165,6 +165,13 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-sun-night-color: var(--rgb-deep-purple-color);
       --rgb-state-update-color: var(--rgb-green-color);
       --rgb-state-update-installing-color: var(--rgb-orange-color);
+      --rgb-state-vacuum-color: var(--rgb-teal-color);
+      --rgb-state-climate-auto-color: var(--rgb-green-color);
+      --rgb-state-climate-cool-color: var(--rgb-blue-color);
+      --rgb-state-climate-dry-color: var(--rgb-orange-color);
+      --rgb-state-climate-fan-only-color: var(--rgb-teal-color);
+      --rgb-state-climate-heat-color: var(--rgb-deep-orange-color);
+      --rgb-state-climate-heat-cool-color: var(--rgb-green-color);
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
