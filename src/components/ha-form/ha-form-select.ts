@@ -45,7 +45,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
-        ?required=${this.schema.required}
+        .required=${this.schema.required}
         .selector=${this._selectSchema(this.schema.options)}
         @value-changed=${this._valueChanged}
       ></ha-selector-select>
