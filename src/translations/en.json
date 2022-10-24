@@ -2235,7 +2235,10 @@
                   "error": "Stop because of an unexpected error"
                 },
                 "parallel": {
-                  "label": "Run in parallel"
+                  "label": "Run in parallel",
+                  "add_sequence": "Add sequence",
+                  "remove_sequence": "Remove sequence",
+                  "sequence": "Actions"
                 }
               }
             }
