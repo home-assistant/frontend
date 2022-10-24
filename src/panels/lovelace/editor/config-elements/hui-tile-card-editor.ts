@@ -45,38 +45,44 @@ export class HuiTileCardEditor
 
   private _mainSchema = [{ name: "entity", selector: { entity: {} } }] as const;
 
-  private _appareanceSchema = memoizeOne(
+  private _appearanceSchema = memoizeOne(
     (entity: string, icon?: string, entityState?: HassEntity) =>
       [
-        { name: "name", selector: { text: {} } },
         {
-          name: "icon",
-          selector: {
-            icon: {
-              placeholder: icon || entityState?.attributes.icon,
-              fallbackPath:
-                !icon && !entityState?.attributes.icon && entityState
-                  ? domainIcon(computeDomain(entity), entityState)
-                  : undefined,
-            },
-          },
-        },
-        {
-          name: "color",
-          selector: {
-            select: {
-              options: [
-                {
-                  label: "Default (based on state)",
-                  value: "default",
+          name: "",
+          type: "grid",
+          schema: [
+            { name: "name", selector: { text: {} } },
+            {
+              name: "icon",
+              selector: {
+                icon: {
+                  placeholder: icon || entityState?.attributes.icon,
+                  fallbackPath:
+                    !icon && !entityState?.attributes.icon && entityState
+                      ? domainIcon(computeDomain(entity), entityState)
+                      : undefined,
                 },
-                ...Array.from(THEME_COLORS).map((color) => ({
-                  label: capitalizeFirstLetter(color),
-                  value: color,
-                })),
-              ],
+              },
             },
-          },
+            {
+              name: "color",
+              selector: {
+                select: {
+                  options: [
+                    {
+                      label: "Default (based on state)",
+                      value: "default",
+                    },
+                    ...Array.from(THEME_COLORS).map((color) => ({
+                      label: capitalizeFirstLetter(color),
+                      value: color,
+                    })),
+                  ],
+                },
+              },
+            },
+          ] as const,
         },
       ] as const
   );
@@ -104,7 +110,7 @@ export class HuiTileCardEditor
     const entity = this.hass.states[this._config.entity ?? ""];
 
     const mainSchema = this._mainSchema;
-    const appareanceSchema = this._appareanceSchema(
+    const appareanceSchema = this._appearanceSchema(
       this._config.entity,
       this._config.icon,
       entity
@@ -131,7 +137,7 @@ export class HuiTileCardEditor
           <ha-expansion-panel header="Appearence">
             <div slot="header">
               <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
-              Appearence
+              Appearance
             </div>
             <div class="content">
               <ha-form
@@ -178,7 +184,7 @@ export class HuiTileCardEditor
   private _computeLabelCallback = (
     schema:
       | SchemaUnion<typeof this._mainSchema>
-      | SchemaUnion<ReturnType<typeof this._appareanceSchema>>
+      | SchemaUnion<ReturnType<typeof this._appearanceSchema>>
       | SchemaUnion<typeof this._actionsSchema>
   ) => {
     switch (schema.name) {
@@ -204,10 +210,9 @@ export class HuiTileCardEditor
         margin-bottom: 12px;
       }
       .content {
-        padding: 8px;
+        padding: 12px;
       }
       ha-expansion-panel {
-        --expansion-panel-summary-padding: 0 8px 0 8px;
         --expansion-panel-content-padding: 0;
         border: 1px solid var(--divider-color);
         border-radius: 6px;
