@@ -302,8 +302,7 @@ class HaPanelMy extends LitElement {
 
     if (
       this._redirect.component &&
-      (this._redirect.component === "zwave_js" ||
-        !isComponentLoaded(this.hass, this._redirect.component))
+      !isComponentLoaded(this.hass, this._redirect.component)
     ) {
       this.hass.loadBackendTranslation("title", this._redirect.component);
       this._error = "no_component";
@@ -315,7 +314,7 @@ class HaPanelMy extends LitElement {
           .then()
           .then(() => {
             protocolIntegrationPicked(this, this.hass, component, {
-              domain: params.brand,
+              domain: params.domain,
               brand: params.brand,
             });
           });

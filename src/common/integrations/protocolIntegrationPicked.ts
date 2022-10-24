@@ -33,7 +33,7 @@ export const protocolIntegrationPicked = async (
       domain,
     });
 
-    if (isComponentLoaded(hass, "zwave_js") || !entries.length) {
+    if (!isComponentLoaded(hass, "zwave_js") || !entries.length) {
       // If the component isn't loaded, ask them to load the integration first
       showConfirmationDialog(element, {
         title: hass.localize(
@@ -71,8 +71,12 @@ export const protocolIntegrationPicked = async (
       entry_id: entries[0].entry_id,
     });
   } else if (domain === "zha") {
-    // If the component isn't loaded, ask them to load the integration first
-    if (!isComponentLoaded(hass, "zha")) {
+    const entries = await getConfigEntries(hass, {
+      domain,
+    });
+
+    if (!isComponentLoaded(hass, "zha") || !entries.length) {
+      // If the component isn't loaded, ask them to load the integration first
       showConfirmationDialog(element, {
         title: hass.localize(
           "ui.panel.config.integrations.config_flow.missing_zwave_zigbee_title",
