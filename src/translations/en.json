@@ -2999,7 +2999,8 @@
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
-            "missing_zwave_zigbee": "To add a {integration} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
+            "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
+            "missing_zwave_zigbee_title": "{integration} is not setup",
             "supported_hardware": "supported hardware",
             "proceed": "Proceed"
           }
