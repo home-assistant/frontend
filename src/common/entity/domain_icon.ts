@@ -25,6 +25,8 @@ import {
   mdiPackageUp,
   mdiPowerPlug,
   mdiPowerPlugOff,
+  mdiAudioVideo,
+  mdiAudioVideoOff,
   mdiRestart,
   mdiSpeaker,
   mdiSpeakerOff,
@@ -158,6 +160,13 @@ export const domainIconWithoutDefault = (
               return mdiTelevisionOff;
             default:
               return mdiTelevision;
+          }
+        case "receiver":
+          switch (compareState) {
+            case "off":
+              return mdiAudioVideoOff;
+            default:
+              return mdiAudioVideo;
           }
         default:
           switch (compareState) {
