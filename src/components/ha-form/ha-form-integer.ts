@@ -21,6 +21,8 @@ export class HaFormInteger extends LitElement implements HaFormElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   @query("ha-textfield ha-slider") private _input?:
@@ -74,6 +76,8 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         type="number"
         inputMode="numeric"
         .label=${this.label}
+        .helper=${this.helper}
+        helperPersistent
         .value=${this.data !== undefined ? this.data : ""}
         .disabled=${this.disabled}
         .required=${this.schema.required}
