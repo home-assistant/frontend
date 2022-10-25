@@ -3,9 +3,11 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeRgbColor } from "../../../common/color/compute-color";
-import { DOMAINS_TOGGLE, STATES_OFF } from "../../../common/const";
+import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { stateActive } from "../../../common/entity/state_active";
+import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
 import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-icon";
@@ -116,13 +118,16 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       this.hass.locale
     );
 
-    const iconStyle = {};
-    if (this._config.color && !STATES_OFF.includes(entity.state)) {
-      iconStyle["--main-color"] = computeRgbColor(this._config.color);
-    }
+    const style = {
+      "--tile-color": this._config.color
+        ? stateActive(entity)
+          ? computeRgbColor(this._config.color)
+          : undefined
+        : stateColorCss(entity),
+    };
 
     return html`
-      <ha-card style=${styleMap(iconStyle)}>
+      <ha-card style=${styleMap(style)}>
         <div class="tile">
           <ha-tile-icon
             .icon=${icon}
@@ -148,8 +153,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --main-color: var(--rgb-disabled-color);
-        --tap-padding: 6px;
+        --tile-color: var(--rgb-disabled-color);
+        --tile-tap-padding: 6px;
       }
       ha-card {
         height: 100%;
@@ -158,19 +163,19 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         background: rgba(var(--rgb-disabled-color), 0.1);
       }
       .tile {
-        padding: calc(12px - var(--tap-padding));
+        padding: calc(12px - var(--tile-tap-padding));
         display: flex;
         flex-direction: row;
         align-items: center;
       }
       ha-tile-icon {
-        padding: var(--tap-padding);
+        padding: var(--tile-tap-padding);
         flex: none;
-        margin-right: calc(12px - 2 * var(--tap-padding));
-        margin-inline-end: calc(12px - 2 * var(--tap-padding));
+        margin-right: calc(12px - 2 * var(--tile-tap-padding));
+        margin-inline-end: calc(12px - 2 * var(--tile-tap-padding));
         margin-inline-start: initial;
         direction: var(--direction);
-        --color: var(--main-color);
+        --color: var(--tile-color);
         transition: transform 180ms ease-in-out;
       }
       [role="button"] {
@@ -186,7 +191,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         transform: scale(1.2);
       }
       ha-tile-info {
-        padding: var(--tap-padding);
+        padding: var(--tile-tap-padding);
         flex: 1;
         min-width: 0;
         min-height: 40px;
@@ -197,7 +202,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         outline: none;
       }
       ha-tile-info:focus-visible {
-        background-color: rgba(var(--main-color), 0.1);
+        background-color: rgba(var(--tile-color), 0.1);
       }
     `;
   }
