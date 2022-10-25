@@ -84,6 +84,7 @@ export class HaManualScriptEditor extends LitElement {
         .narrow=${this.narrow}
         .disabled=${this.disabled}
         .reOrderMode=${this.reOrderMode}
+        @re-order=${this._enterReOrderMode}
       ></ha-automation-action>
     `;
   }
@@ -96,7 +97,11 @@ export class HaManualScriptEditor extends LitElement {
   }
 
   private _exitReOrderMode() {
-    this.reOrderMode = !this.reOrderMode;
+    this.reOrderMode = false;
+  }
+
+  private _enterReOrderMode() {
+    this.reOrderMode = true;
   }
 
   private _duplicate() {

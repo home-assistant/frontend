@@ -113,8 +113,9 @@ export class HaManualAutomationEditor extends LitElement {
         .triggers=${this.config.trigger}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
-        .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
+        .reOrderMode=${this.reOrderMode}
+        @re-order=${this._enterReOrderMode}
       ></ha-automation-trigger>
 
       <div class="header">
@@ -143,8 +144,9 @@ export class HaManualAutomationEditor extends LitElement {
         .conditions=${this.config.condition || []}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
-        .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
+        .reOrderMode=${this.reOrderMode}
+        @re-order=${this._enterReOrderMode}
       ></ha-automation-condition>
 
       <div class="header">
@@ -176,14 +178,19 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._actionChanged}
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
+        .reOrderMode=${this.reOrderMode}
+        @re-order=${this._enterReOrderMode}
       ></ha-automation-action>
     `;
   }
 
   private _exitReOrderMode() {
-    this.reOrderMode = !this.reOrderMode;
+    this.reOrderMode = false;
+  }
+
+  private _enterReOrderMode() {
+    this.reOrderMode = true;
   }
 
   private _triggerChanged(ev: CustomEvent): void {

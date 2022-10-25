@@ -1884,6 +1884,7 @@
             "re_order_mode": {
               "title": "Re-order mode",
               "description": "You are in re-order mode, you can re-order your triggers, conditions and actions.",
+              "description_actions": "You are in re-order mode, you can re-order your actions.",
               "exit": "Exit"
             },
             "description": {
@@ -1921,6 +1922,7 @@
               "id": "Trigger ID",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
+              "re_order": "Re-order",
               "rename": "Rename",
               "change_alias": "Rename trigger",
               "alias": "Trigger name",
@@ -2042,6 +2044,7 @@
               "invalid_condition": "Invalid condition configuration",
               "test_failed": "Error occurred while testing condition",
               "duplicate": "[%key:ui::common::duplicate%]",
+              "re-order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
               "change_alias": "Rename condition",
               "alias": "Condition name",
@@ -2134,6 +2137,7 @@
               "run_action_error": "Error running action",
               "run_action_success": "Action run successfully",
               "duplicate": "[%key:ui::common::duplicate%]",
+              "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
               "change_alias": "Rename action",
               "alias": "Action name",

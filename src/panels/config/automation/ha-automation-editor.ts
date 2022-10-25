@@ -79,6 +79,7 @@ declare global {
     };
     "ui-mode-not-available": Error;
     duplicate: undefined;
+    "re-order": undefined;
   }
 }
 
