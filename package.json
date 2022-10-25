@@ -43,7 +43,6 @@
     "@formatjs/intl-numberformat": "^7.2.5",
     "@formatjs/intl-pluralrules": "^4.1.5",
     "@formatjs/intl-relativetimeformat": "^9.3.2",
-    "@formatjs/intl-utils": "^3.8.4",
     "@fullcalendar/common": "5.9.0",
     "@fullcalendar/core": "5.9.0",
     "@fullcalendar/daygrid": "5.9.0",
@@ -111,6 +110,7 @@
     "deep-freeze": "^0.0.1",
     "fuse.js": "^6.0.0",
     "google-timezones-json": "^1.0.2",
+    "hammerjs": "^2.0.8",
     "hls.js": "^1.2.3",
     "home-assistant-js-websocket": "^8.0.0",
     "idb-keyval": "^5.1.3",
@@ -138,6 +138,7 @@
     "vis-network": "^8.5.4",
     "vue": "^2.6.12",
     "vue2-daterange-picker": "^0.5.1",
+    "weekstart": "^1.1.0",
     "workbox-cacheable-response": "^6.4.2",
     "workbox-core": "^6.4.2",
     "workbox-expiration": "^6.4.2",
@@ -169,6 +170,7 @@
     "@types/chromecast-caf-receiver": "5.0.12",
     "@types/chromecast-caf-sender": "^1.0.3",
     "@types/glob": "^7",
+    "@types/hammerjs": "^2.0.41",
     "@types/js-yaml": "^4",
     "@types/leaflet": "^1",
     "@types/leaflet-draw": "^1",
@@ -253,5 +255,5 @@
     "trailingComma": "es5",
     "arrowParens": "always"
   },
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.2.3"
 }

@@ -1,5 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { UiAction } from "../panels/lovelace/components/hui-action-editor";
 import type { DeviceRegistryEntry } from "./device_registry";
 import type { EntitySources } from "./entity_sources";
 
@@ -30,7 +31,8 @@ export type Selector =
   | TargetSelector
   | TemplateSelector
   | ThemeSelector
-  | TimeSelector;
+  | TimeSelector
+  | UiActionSelector;
 
 export interface ActionSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -232,6 +234,7 @@ export interface StringSelector {
       | "datetime-local"
       | "color";
     suffix?: string;
+    autofill?: string;
   };
 }
 
@@ -254,6 +257,12 @@ export interface ThemeSelector {
 export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   time: {};
+}
+
+export interface UiActionSelector {
+  "ui-action": {
+    actions?: UiAction[];
+  };
 }
 
 export const filterSelectorDevices = (

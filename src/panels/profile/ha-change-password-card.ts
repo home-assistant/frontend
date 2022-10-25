@@ -55,6 +55,7 @@ class HaChangePasswordCard extends LitElement {
                 "ui.panel.profile.change_password.current_password"
               )}
               type="password"
+              autocomplete="current-password"
               .value=${this._currentPassword}
               @input=${this._currentPasswordChanged}
               required
@@ -67,6 +68,7 @@ class HaChangePasswordCard extends LitElement {
                     )}
                     name="password"
                     type="password"
+                    autocomplete="new-password"
                     .value=${this._password}
                     @change=${this._newPasswordChanged}
                     required
@@ -78,6 +80,7 @@ class HaChangePasswordCard extends LitElement {
                     )}
                     name="passwordConfirm"
                     type="password"
+                    autocomplete="new-password"
                     .value=${this._passwordConfirm}
                     @input=${this._newPasswordConfirmChanged}
                     required

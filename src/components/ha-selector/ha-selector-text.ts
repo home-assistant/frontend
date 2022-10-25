@@ -39,7 +39,7 @@ export class HaTextSelector extends LitElement {
         .disabled=${this.disabled}
         @input=${this._handleChange}
         autocapitalize="none"
-        autocomplete="off"
+        .autocomplete=${this.selector.text.autofill}
         spellcheck="false"
         .required=${this.required}
         autogrow
@@ -59,6 +59,7 @@ export class HaTextSelector extends LitElement {
             html`<div style="width: 24px"></div>`
           : this.selector.text?.suffix}
         .required=${this.required}
+        .autocomplete=${this.selector.text.autofill}
       ></ha-textfield>
       ${this.selector.text?.type === "password"
         ? html`<ha-icon-button

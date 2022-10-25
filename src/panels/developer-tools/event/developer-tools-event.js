@@ -26,6 +26,10 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <style>
         .content {
           padding: 16px;
+          padding: max(16px, env(safe-area-inset-top))
+            max(16px, env(safe-area-inset-right))
+            max(16px, env(safe-area-inset-bottom))
+            max(16px, env(safe-area-inset-left));
           max-width: 1200px;
           margin: auto;
         }
@@ -52,6 +56,9 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .code-editor {
           margin-right: 16px;
+          margin-inline-start: initial;
+          margin-inline-end: 16px;
+          direction: var(--direction);
         }
 
         .header {
@@ -61,6 +68,9 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
         event-subscribe-card {
           display: block;
           margin: 16px 16px 0 0;
+          margin-inline-start: initial;
+          margin-inline-end: 16px;
+          direction: var(--direction);
         }
 
         a {

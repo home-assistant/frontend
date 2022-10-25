@@ -19,7 +19,7 @@ import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import {
   EDITABLE_DOMAINS_WITH_ID,
-  EDITABLE_DOMAINS,
+  EDITABLE_DOMAINS_WITH_UNIQUE_ID,
   DOMAINS_WITH_MORE_INFO,
   computeShowHistoryComponent,
   computeShowLogBookComponent,
@@ -72,7 +72,7 @@ export class MoreInfoDialog extends LitElement {
     if (EDITABLE_DOMAINS_WITH_ID.includes(domain) && stateObj.attributes.id) {
       return true;
     }
-    if (EDITABLE_DOMAINS.includes(domain)) {
+    if (EDITABLE_DOMAINS_WITH_UNIQUE_ID.includes(domain)) {
       return true;
     }
     if (domain === "person" && stateObj.attributes.editable !== "false") {
@@ -246,6 +246,9 @@ export class MoreInfoDialog extends LitElement {
     if (EDITABLE_DOMAINS_WITH_ID.includes(domain) || domain === "person") {
       idToPassThroughUrl = stateObj.attributes.id;
     }
+    if (EDITABLE_DOMAINS_WITH_UNIQUE_ID.includes(domain)) {
+      idToPassThroughUrl = this.hass.entities[this._entityId!].unique_id;
+    }
 
     navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
     this.closeDialog();
@@ -269,7 +272,7 @@ export class MoreInfoDialog extends LitElement {
         ha-dialog {
           --dialog-surface-position: static;
           --dialog-content-position: static;
-          --vertial-align-dialog: flex-start;
+          --vertical-align-dialog: flex-start;
         }
 
         ha-header-bar {
@@ -294,6 +297,10 @@ export class MoreInfoDialog extends LitElement {
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
+        :host([tab="info"]) ha-dialog[data-domain="camera"] {
+          --mdc-dialog-max-width: auto;
+        }
+
         :host([tab="settings"]) ha-dialog {
           --dialog-content-padding: 0px;
         }
@@ -301,7 +308,7 @@ export class MoreInfoDialog extends LitElement {
         @media all and (min-width: 600px) and (min-height: 501px) {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
-            --mdc-dialog-max-width: 560px;
+            --mdc-dialog-max-width: 580px;
             --dialog-surface-margin-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
@@ -312,14 +319,14 @@ export class MoreInfoDialog extends LitElement {
             cursor: default;
           }
 
-          :host([large]) ha-dialog,
-          ha-dialog[data-domain="camera"] {
+          :host([large]):not([data-domain="camera"]) ha-dialog,
+          :host([tab="info"][large]) ha-dialog[data-domain="camera"] {
             --mdc-dialog-min-width: 90vw;
             --mdc-dialog-max-width: 90vw;
           }
         }
 
-        ha-dialog[data-domain="camera"] {
+        :host([tab="info"]) ha-dialog[data-domain="camera"] {
           --dialog-content-padding: 0;
         }
       `,

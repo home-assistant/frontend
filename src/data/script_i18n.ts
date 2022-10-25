@@ -159,7 +159,7 @@ export const describeAction = <T extends ActionType>(
       return "Activate a scene";
     }
     const sceneStateObj = entityId ? hass.states[entityId] : undefined;
-    return `Active scene ${
+    return `Activate scene ${
       sceneStateObj ? computeStateName(sceneStateObj) : entityId
     }`;
   }
@@ -231,32 +231,37 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "choose") {
     const config = action as ChooseAction;
-    return config.choose
-      ? `Choose between ${
-          ensureArray(config.choose).length + (config.default ? 1 : 0)
-        } actions`
-      : "Choose an action";
+    if (config.choose) {
+      const numActions =
+        ensureArray(config.choose).length + (config.default ? 1 : 0);
+      return `Choose between ${numActions} action${
+        numActions === 1 ? "" : "s"
+      }`;
+    }
+    return "Choose an action";
   }
 
   if (actionType === "repeat") {
     const config = action as RepeatAction;
-    return `Repeat an action ${
-      "count" in config.repeat ? `${config.repeat.count} times` : ""
-    }${
-      "while" in config.repeat
-        ? `while ${ensureArray(config.repeat.while)
-            .map((condition) => describeCondition(condition, hass))
-            .join(", ")} is true`
-        : "until" in config.repeat
-        ? `until ${ensureArray(config.repeat.until)
-            .map((condition) => describeCondition(condition, hass))
-            .join(", ")} is true`
-        : "for_each" in config.repeat
-        ? `for every item: ${ensureArray(config.repeat.for_each)
-            .map((item) => JSON.stringify(item))
-            .join(", ")}`
-        : ""
-    }`;
+
+    let base = "Repeat an action";
+    if ("count" in config.repeat) {
+      const count = config.repeat.count;
+      base += ` ${count} time${Number(count) === 1 ? "" : "s"}`;
+    } else if ("while" in config.repeat) {
+      base += ` while ${ensureArray(config.repeat.while)
+        .map((condition) => describeCondition(condition, hass))
+        .join(", ")} is true`;
+    } else if ("until" in config.repeat) {
+      base += ` until ${ensureArray(config.repeat.until)
+        .map((condition) => describeCondition(condition, hass))
+        .join(", ")} is true`;
+    } else if ("for_each" in config.repeat) {
+      base += ` for every item: ${ensureArray(config.repeat.for_each)
+        .map((item) => JSON.stringify(item))
+        .join(", ")}`;
+    }
+    return base;
   }
 
   if (actionType === "check_condition") {
@@ -280,7 +285,8 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "parallel") {
     const config = action as ParallelAction;
-    return `Run  ${ensureArray(config.parallel).length} actions in parallel`;
+    const numActions = ensureArray(config.parallel).length;
+    return `Run ${numActions} action${numActions === 1 ? "" : "s"} in parallel`;
   }
 
   return actionType;

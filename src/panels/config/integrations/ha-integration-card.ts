@@ -875,6 +875,8 @@ export class HaIntegrationCard extends LitElement {
           --mdc-icon-button-size: 32px;
           transition: height 0.1s;
           overflow: hidden;
+          border-top-left-radius: var(--ha-card-border-radius, 16px);
+          border-top-right-radius: var(--ha-card-border-radius, 16px);
         }
         .hasMultiple.single .back-btn {
           height: 24px;
@@ -928,6 +930,10 @@ export class HaIntegrationCard extends LitElement {
         ha-button-menu {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;
+        }
+        paper-listbox {
+          border-radius: 0 0 var(--ha-card-border-radius, 16px)
+            var(--ha-card-border-radius, 16px);
         }
         @media (min-width: 563px) {
           ha-card.group {

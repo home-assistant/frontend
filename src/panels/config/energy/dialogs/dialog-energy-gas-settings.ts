@@ -81,9 +81,9 @@ export class DialogEnergyGasSettings
     const pickableUnit =
       this._pickableUnit ||
       (this._params.allowedGasUnitClass === undefined
-        ? "ft³, m³, Wh, kWh or MWh"
+        ? "ft³, m³, Wh, kWh, MWh or GJ"
         : this._params.allowedGasUnitClass === "energy"
-        ? "Wh, kWh or MWh"
+        ? "Wh, kWh, MWh or GJ"
         : "ft³ or m³");
 
     const externalSource =

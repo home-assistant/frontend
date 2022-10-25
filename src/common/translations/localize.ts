@@ -22,9 +22,7 @@ export type LocalizeKeys =
   | `ui.components.selectors.file.${string}`
   | `ui.dialogs.entity_registry.editor.${string}`
   | `ui.dialogs.more_info_control.vacuum.${string}`
-  | `ui.dialogs.options_flow.loading.${string}`
   | `ui.dialogs.quick-bar.commands.${string}`
-  | `ui.dialogs.repair_flow.loading.${string}`
   | `ui.dialogs.unhealthy.reason.${string}`
   | `ui.dialogs.unsupported.reason.${string}`
   | `ui.panel.config.${string}.${"caption" | "description"}`
@@ -34,7 +32,6 @@ export type LocalizeKeys =
   | `ui.panel.config.energy.${string}`
   | `ui.panel.config.helpers.${string}`
   | `ui.panel.config.info.${string}`
-  | `ui.panel.config.integrations.${string}`
   | `ui.panel.config.logs.${string}`
   | `ui.panel.config.lovelace.${string}`
   | `ui.panel.config.network.${string}`
@@ -42,7 +39,6 @@ export type LocalizeKeys =
   | `ui.panel.config.url.${string}`
   | `ui.panel.config.zha.${string}`
   | `ui.panel.config.zwave_js.${string}`
-  | `ui.panel.developer-tools.tabs.${string}`
   | `ui.panel.lovelace.card.${string}`
   | `ui.panel.lovelace.editor.${string}`
   | `ui.panel.page-authorize.form.${string}`

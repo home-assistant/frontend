@@ -11,14 +11,8 @@ import {
   DataEntryFlowStepProgress,
 } from "../../data/data_entry_flow";
 import type { IntegrationManifest } from "../../data/integration";
-import type { SupportedBrandHandler } from "../../data/supported_brands";
 import type { HomeAssistant } from "../../types";
 
-export interface FlowHandlers {
-  integrations: string[];
-  helpers: string[];
-  supportedBrands: Record<string, SupportedBrandHandler>;
-}
 export interface FlowConfig {
   loadDevicesAndAreas: boolean;
 
