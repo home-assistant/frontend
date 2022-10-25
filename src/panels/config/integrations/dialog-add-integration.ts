@@ -69,6 +69,8 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _pickedBrand?: string;
 
+  @state() private _prevPickedBrand?: string;
+
   @state() private _flowsInProgress?: DataEntryFlowProgress[];
 
   @state() private _open = false;
@@ -94,6 +96,7 @@ class AddIntegrationDialog extends LitElement {
     this._integrations = undefined;
     this._helpers = undefined;
     this._pickedBrand = undefined;
+    this._prevPickedBrand = undefined;
     this._flowsInProgress = undefined;
     this._filter = undefined;
     this._width = undefined;
@@ -327,6 +330,7 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _handleSelectBrandEvent(ev: CustomEvent) {
+    this._prevPickedBrand = this._pickedBrand;
     this._pickedBrand = ev.detail.brand;
   }
 
@@ -589,8 +593,11 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _prevClicked() {
-    this._pickedBrand = undefined;
-    this._flowsInProgress = undefined;
+    this._pickedBrand = this._prevPickedBrand;
+    if (!this._prevPickedBrand) {
+      this._flowsInProgress = undefined;
+    }
+    this._prevPickedBrand = undefined;
   }
 
   static styles = [
