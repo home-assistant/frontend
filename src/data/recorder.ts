@@ -67,7 +67,7 @@ export interface StatisticsValidationResultUnitsChanged {
 }
 
 export interface StatisticsUnitConfiguration {
-  energy?: "Wh" | "kWh" | "MWh";
+  energy?: "Wh" | "kWh" | "MWh" | "GJ";
   power?: "W" | "kW";
   pressure?:
     | "Pa"
