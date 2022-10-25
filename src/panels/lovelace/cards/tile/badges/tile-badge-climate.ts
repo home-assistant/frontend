@@ -5,12 +5,8 @@ import {
   mdiSnowflake,
   mdiWaterPercent,
 } from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import "../../../../../components/tile/ha-tile-badge";
 import { ClimateEntity, HvacAction } from "../../../../../data/climate";
+import { ComputeBadgeFunction } from "./tile-badge";
 
 export const CLIMATE_HVAC_ACTION_COLORS: Record<HvacAction, string> = {
   cooling: "var(--rgb-state-climate-cool-color)",
@@ -28,47 +24,15 @@ export const CLIMATE_HVAC_ACTION_ICONS: Record<HvacAction, string> = {
   off: mdiPower,
 };
 
-@customElement("tile-badge-climate")
-export class TileBadgeClimate extends LitElement {
-  @property() public stateObj?: HassEntity;
+export const computeClimateBadge: ComputeBadgeFunction = (stateObj) => {
+  const hvacAction = (stateObj as ClimateEntity).attributes.hvac_action;
 
-  protected render(): TemplateResult {
-    if (!this.stateObj) {
-      return html``;
-    }
-
-    const hvacAction = (this.stateObj as ClimateEntity).attributes.hvac_action;
-
-    if (!hvacAction || hvacAction === "off") {
-      return html``;
-    }
-
-    const iconPath = CLIMATE_HVAC_ACTION_ICONS[hvacAction];
-    const color = CLIMATE_HVAC_ACTION_COLORS[hvacAction];
-
-    const style = {
-      "--badge-color": color,
-    };
-
-    return html`
-      <ha-tile-badge
-        style=${styleMap(style)}
-        .iconPath=${iconPath}
-      ></ha-tile-badge>
-    `;
+  if (!hvacAction || hvacAction === "off") {
+    return undefined;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-tile-badge {
-        --tile-badge-background-color: rgb(var(--badge-color));
-      }
-    `;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    "tile-badge-climate": TileBadgeClimate;
-  }
-}
+  return {
+    iconPath: CLIMATE_HVAC_ACTION_ICONS[hvacAction],
+    color: CLIMATE_HVAC_ACTION_COLORS[hvacAction],
+  };
+};

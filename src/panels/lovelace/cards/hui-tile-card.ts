@@ -5,13 +5,13 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeRgbColor } from "../../../common/color/compute-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
 import "../../../components/ha-card";
+import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
@@ -22,17 +22,8 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import "./tile/badges/tile-badge-climate";
-import "./tile/badges/tile-badge-person";
+import { computeTileBadge } from "./tile/badges/tile-badge";
 import { ThermostatCardConfig, TileCardConfig } from "./types";
-
-const DOMAINS_WITH_BADGE = ["person", "device_tracker", "climate"] as const;
-
-const BADGE_COMPONENTS: Record<typeof DOMAINS_WITH_BADGE[number], string> = {
-  person: "tile-badge-person",
-  device_tracker: "tile-badge-person",
-  climate: "tile-badge-climate",
-};
 
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
@@ -160,7 +151,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const imageUrl = this._config.show_entity_picture
       ? this._getImageUrl(entity)
       : undefined;
-    const domain = computeDomain(entityId);
+    const badge = computeTileBadge(entity, this.hass);
 
     return html`
       <ha-card style=${styleMap(style)}>
@@ -186,12 +177,17 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                     .iconPath=${iconPath}
                   ></ha-tile-icon>
                 `}
-            ${(DOMAINS_WITH_BADGE as unknown as string[]).includes(domain)
-              ? dynamicElement(BADGE_COMPONENTS[domain], {
-                  stateObj: entity,
-                  hass: this.hass,
-                  className: "badge",
-                })
+            ${badge
+              ? html`
+                  <ha-tile-badge
+                    class="badge"
+                    .icon=${badge.icon}
+                    .iconPath=${badge.iconPath}
+                    style=${styleMap({
+                      "--tile-badge-background-color": `rgb(${badge.color})`,
+                    })}
+                  ></ha-tile-badge>
+                `
               : null}
           </div>
           <ha-tile-info
