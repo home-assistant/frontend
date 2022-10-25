@@ -60,7 +60,6 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import { HaDeviceAction } from "../automation/action/types/ha-automation-action-device_id";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
@@ -505,10 +504,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       this._dirty = !!initData;
       const baseConfig: Partial<ScriptConfig> = {
         alias: this.hass.localize("ui.panel.config.script.editor.default_name"),
+        sequence: [],
       };
-      if (!initData || !("use_blueprint" in initData)) {
-        baseConfig.sequence = [{ ...HaDeviceAction.defaultConfig }];
-      }
       this._config = {
         ...baseConfig,
         ...initData,
