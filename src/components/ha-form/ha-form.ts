@@ -155,14 +155,10 @@ export class HaForm extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      .root {
-        margin-bottom: -24px;
-        overflow: clip visible;
-      }
       .root > * {
         display: block;
       }
-      .root > *:not([own-margin]) {
+      .root > *:not([own-margin]):not(:last-child) {
         margin-bottom: 24px;
       }
       ha-alert[own-margin] {
