@@ -504,8 +504,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       this._dirty = !!initData;
       const baseConfig: Partial<ScriptConfig> = {
         alias: this.hass.localize("ui.panel.config.script.editor.default_name"),
-        sequence: [],
       };
+      if (!initData || !("use_blueprint" in initData)) {
+        baseConfig.sequence = [];
+      }
       this._config = {
         ...baseConfig,
         ...initData,
