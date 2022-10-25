@@ -22,14 +22,16 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
+import "./tile/badges/tile-badge-climate";
 import "./tile/badges/tile-badge-person";
 import { ThermostatCardConfig, TileCardConfig } from "./types";
 
-const DOMAINS_WITH_BADGE = ["person", "device_tracker"] as const;
+const DOMAINS_WITH_BADGE = ["person", "device_tracker", "climate"] as const;
 
 const BADGE_COMPONENTS: Record<typeof DOMAINS_WITH_BADGE[number], string> = {
   person: "tile-badge-person",
   device_tracker: "tile-badge-person",
+  climate: "tile-badge-climate",
 };
 
 @customElement("hui-tile-card")

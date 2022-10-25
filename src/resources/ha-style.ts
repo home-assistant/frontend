@@ -176,6 +176,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-climate-fan-only-color: var(--rgb-teal-color);
       --rgb-state-climate-heat-color: var(--rgb-deep-orange-color);
       --rgb-state-climate-heat-cool-color: var(--rgb-green-color);
+      --rgb-state-climate-idle-color: var(--rgb-disabled-color);
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
