@@ -89,7 +89,7 @@ export const formatNumber = (
  * @param entityState The state object of the entity
  * @returns An `Intl.NumberFormatOptions` object with `maximumFractionDigits` set to 0, or `undefined`
  */
-export const getMaxDigits = (
+export const getNumberFormatOptions = (
   entityState: HassEntity
 ): Intl.NumberFormatOptions | undefined => {
   if (

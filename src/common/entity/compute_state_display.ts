@@ -11,7 +11,7 @@ import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
 import {
   formatNumber,
-  getMaxDigits,
+  getNumberFormatOptions,
   isNumericFromAttributes,
 } from "../number/format_number";
 import { blankBeforePercent } from "../translations/blank_before_percent";
@@ -77,7 +77,7 @@ export const computeStateDisplayFromEntityAttributes = (
     return `${formatNumber(
       state,
       locale,
-      getMaxDigits({ state, attributes } as HassEntity)
+      getNumberFormatOptions({ state, attributes } as HassEntity)
     )}${unit}`;
   }
 
@@ -155,7 +155,7 @@ export const computeStateDisplayFromEntityAttributes = (
     return formatNumber(
       state,
       locale,
-      getMaxDigits({ state, attributes } as HassEntity)
+      getNumberFormatOptions({ state, attributes } as HassEntity)
     );
   }
 

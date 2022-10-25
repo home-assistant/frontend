@@ -4,7 +4,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   formatNumber,
   getDefaultFormatOptions,
-  getMaxDigits,
+  getNumberFormatOptions,
 } from "../../../src/common/number/format_number";
 import {
   FrontendLocaleData,
@@ -111,7 +111,7 @@ describe("formatNumber", () => {
 
   it("Sets maximumFractionDigits to '0' when the state value and step are integers", () => {
     assert.deepEqual(
-      getMaxDigits({
+      getNumberFormatOptions({
         state: "3.0",
         attributes: { step: 1 },
       } as unknown as HassEntity),
@@ -123,7 +123,7 @@ describe("formatNumber", () => {
 
   it("Does not set any Intl.NumberFormatOptions when the step is not an integer", () => {
     assert.strictEqual(
-      getMaxDigits({
+      getNumberFormatOptions({
         state: "3.0",
         attributes: { step: 0.5 },
       } as unknown as HassEntity),
@@ -133,14 +133,14 @@ describe("formatNumber", () => {
 
   it("Does not set any Intl.NumberFormatOptions when the state value is not an integer", () => {
     assert.strictEqual(
-      getMaxDigits({ state: "3.5" } as unknown as HassEntity),
+      getNumberFormatOptions({ state: "3.5" } as unknown as HassEntity),
       undefined
     );
   });
 
   it("Does not set any Intl.NumberFormatOptions when there is no step attribute", () => {
     assert.strictEqual(
-      getMaxDigits({ state: "3.0" } as unknown as HassEntity),
+      getNumberFormatOptions({ state: "3.0" } as unknown as HassEntity),
       undefined
     );
   });
