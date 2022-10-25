@@ -102,7 +102,7 @@ class HaAutomationPicker extends LitElement {
           ),
           type: "icon",
           template: (_, automation) =>
-            html` <ha-state-icon .state=${automation}></ha-state-icon> `,
+            html`<ha-state-icon .state=${automation}></ha-state-icon>`,
         },
         name: {
           title: this.hass.localize(
