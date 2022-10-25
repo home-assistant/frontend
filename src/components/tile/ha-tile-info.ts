@@ -1,7 +1,5 @@
 import { CSSResultGroup, html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../ha-icon";
-import "../ha-svg-icon";
 
 @customElement("ha-tile-info")
 export class HaTileInfo extends LitElement {

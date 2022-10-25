@@ -3,7 +3,7 @@ import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, assign, object, optional, string } from "superstruct";
-import { COLORS, THEME_COLORS } from "../../../../common/color/compute-color";
+import { THEME_COLORS } from "../../../../common/color/compute-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
@@ -65,13 +65,10 @@ export class HuiTileCardEditor
             select: {
               options: [
                 {
-                  label: "Default",
+                  label: "Default (based on state)",
                   value: "default",
                 },
-                ...[
-                  ...Array.from(THEME_COLORS),
-                  ...Array.from(COLORS.keys()),
-                ].map((color) => ({
+                ...Array.from(THEME_COLORS).map((color) => ({
                   label: capitalizeFirstLetter(color),
                   value: color,
                 })),
