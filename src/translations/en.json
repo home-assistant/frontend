@@ -1497,7 +1497,7 @@
               "cost_number": "Use a static price",
               "cost_number_input": "Price per {unit}",
               "gas_usage": "Gas usage",
-              "m3_or_kWh": "ft³, m³, Wh, kWh or MWh"
+              "m3_or_kWh": "ft³, m³, Wh, kWh, MWh or GJ"
             }
           },
           "device_consumption": {
@@ -1538,19 +1538,19 @@
               },
               "entity_unexpected_unit_energy": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh' or 'MWh':"
+                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ':"
               },
               "entity_unexpected_unit_gas": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh' or 'MWh' for an energy sensor or 'm³' or 'ft³' for a gas sensor:"
+                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ' for an energy sensor or 'm³' or 'ft³' for a gas sensor:"
               },
               "entity_unexpected_unit_energy_price": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'' or ''{currency}/MWh'':"
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'' or ''{currency}/GJ'':"
               },
               "entity_unexpected_unit_gas_price": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'', ''{currency}/m³'' or ''{currency}/ft³'':"
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'', ''{currency}/GJ'', ''{currency}/m³'' or ''{currency}/ft³'':"
               },
               "entity_unexpected_state_class": {
                 "title": "Unexpected state class",
