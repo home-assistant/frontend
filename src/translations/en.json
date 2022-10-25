@@ -1837,7 +1837,8 @@
               "toggle": "Enable/disable",
               "name": "Name",
               "trigger": "Trigger",
-              "actions": "Actions"
+              "actions": "Actions",
+              "state": "State"
             }
           },
           "dialog_new": {
