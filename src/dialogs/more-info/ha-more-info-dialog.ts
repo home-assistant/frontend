@@ -294,6 +294,10 @@ export class MoreInfoDialog extends LitElement {
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
+        :host([tab="info"]) ha-dialog[data-domain="camera"] {
+          --mdc-dialog-max-width: auto;
+        }
+
         :host([tab="settings"]) ha-dialog {
           --dialog-content-padding: 0px;
         }
