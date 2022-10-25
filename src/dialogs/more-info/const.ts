@@ -12,7 +12,7 @@ export const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 /**
  * Entity Domains that should always be editable; {@see shouldShowEditIcon}.
  * */
-export const EDITABLE_DOMAINS = ["script"];
+export const EDITABLE_DOMAINS_WITH_UNIQUE_ID = ["script"];
 
 /** Domains with separate more info dialog. */
 export const DOMAINS_WITH_MORE_INFO = [
