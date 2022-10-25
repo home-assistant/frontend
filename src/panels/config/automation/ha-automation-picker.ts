@@ -95,6 +95,15 @@ class HaAutomationPicker extends LitElement {
   private _columns = memoizeOne(
     (narrow: boolean, _locale): DataTableColumnContainer => {
       const columns: DataTableColumnContainer = {
+        icon: {
+          title: "",
+          label: this.hass.localize(
+            "ui.panel.config.automation.picker.headers.state"
+          ),
+          type: "icon",
+          template: (_, automation) =>
+            html` <ha-state-icon .state=${automation}></ha-state-icon> `,
+        },
         name: {
           title: this.hass.localize(
             "ui.panel.config.automation.picker.headers.name"
