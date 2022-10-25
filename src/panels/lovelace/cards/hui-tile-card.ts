@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeRgbColor } from "../../../common/color/compute-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
+import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateActive } from "../../../common/entity/state_active";
@@ -21,7 +22,15 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
+import "./tile/badges/tile-badge-person";
 import { ThermostatCardConfig, TileCardConfig } from "./types";
+
+const DOMAINS_WITH_BADGE = ["person", "device_tracker"] as const;
+
+const BADGE_COMPONENTS: Record<typeof DOMAINS_WITH_BADGE[number], string> = {
+  person: "tile-badge-person",
+  device_tracker: "tile-badge-person",
+};
 
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
@@ -116,7 +125,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       return html`
         <ha-card class="disabled">
           <div class="tile">
-            <ha-tile-icon .iconPath=${mdiHelp}></ha-tile-icon>
+            <div class="icon-container">
+              <ha-tile-icon .iconPath=${mdiHelp}></ha-tile-icon>
+            </div>
             <ha-tile-info
               .primary=${entityId}
               secondary=${this.hass.localize("ui.card.tile.not_found")}
@@ -147,32 +158,40 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const imageUrl = this._config.show_entity_picture
       ? this._getImageUrl(entity)
       : undefined;
+    const domain = computeDomain(entityId);
 
     return html`
       <ha-card style=${styleMap(style)}>
         <div class="tile">
-          ${imageUrl
-            ? html`
-                <ha-tile-image
-                  class="icon"
-                  .imageUrl=${imageUrl}
-                  role="button"
-                  tabindex="0"
-                  @action=${this._handleIconAction}
-                  .actionHandler=${actionHandler()}
-                ></ha-tile-image>
-              `
-            : html`
-                <ha-tile-icon
-                  class="icon"
-                  .icon=${icon}
-                  .iconPath=${iconPath}
-                  role="button"
-                  tabindex="0"
-                  @action=${this._handleIconAction}
-                  .actionHandler=${actionHandler()}
-                ></ha-tile-icon>
-              `}
+          <div
+            class="icon-container"
+            role="button"
+            tabindex="0"
+            @action=${this._handleIconAction}
+            .actionHandler=${actionHandler()}
+          >
+            ${imageUrl
+              ? html`
+                  <ha-tile-image
+                    class="icon"
+                    .imageUrl=${imageUrl}
+                  ></ha-tile-image>
+                `
+              : html`
+                  <ha-tile-icon
+                    class="icon"
+                    .icon=${icon}
+                    .iconPath=${iconPath}
+                  ></ha-tile-icon>
+                `}
+            ${(DOMAINS_WITH_BADGE as unknown as string[]).includes(domain)
+              ? dynamicElement(BADGE_COMPONENTS[domain], {
+                  stateObj: entity,
+                  hass: this.hass,
+                  className: "badge",
+                })
+              : null}
+          </div>
           <ha-tile-info
             .primary=${name}
             .secondary=${stateDisplay}
@@ -198,32 +217,39 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       ha-card.disabled {
         background: rgba(var(--rgb-disabled-color), 0.1);
       }
+      [role="button"] {
+        cursor: pointer;
+      }
+      [role="button"]:focus {
+        outline: none;
+      }
       .tile {
         padding: calc(12px - var(--tile-tap-padding));
         display: flex;
         flex-direction: row;
         align-items: center;
       }
-      .icon {
+      .icon-container {
+        position: relative;
         padding: var(--tile-tap-padding);
         flex: none;
         margin-right: calc(12px - 2 * var(--tile-tap-padding));
         margin-inline-end: calc(12px - 2 * var(--tile-tap-padding));
         margin-inline-start: initial;
         direction: var(--direction);
-        --color: var(--tile-color);
         transition: transform 180ms ease-in-out;
       }
-      [role="button"] {
-        cursor: pointer;
+      .icon-container .icon {
+        --icon-color: rgb(var(--tile-color));
+        --shape-color: rgba(var(--tile-color), 0.2);
       }
-      .icon[role="button"]:focus {
-        outline: none;
+      .icon-container .badge {
+        position: absolute;
+        top: calc(-3px + var(--tile-tap-padding));
+        right: calc(-3px + var(--tile-tap-padding));
       }
-      .icon[role="button"]:focus-visible {
-        transform: scale(1.2);
-      }
-      .icon[role="button"]:active {
+      .icon-container[role="button"]:focus-visible,
+      .icon-container[role="button"]:active {
         transform: scale(1.2);
       }
       ha-tile-info {
@@ -233,9 +259,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         min-height: 40px;
         border-radius: calc(var(--ha-card-border-radius, 10px) - 2px);
         transition: background-color 180ms ease-in-out;
-      }
-      ha-tile-info:focus {
-        outline: none;
       }
       ha-tile-info:focus-visible {
         background-color: rgba(var(--tile-color), 0.1);

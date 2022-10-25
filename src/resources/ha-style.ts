@@ -152,6 +152,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-lock-unlocked-color: var(--rgb-red-color);
       --rgb-state-media-player-color: var(--rgb-indigo-color);
       --rgb-state-person-color: var(--rgb-blue-grey-color);
+      --rgb-state-person-home-color: var(--rgb-green-color);
+      --rgb-state-person-not-home-color: var(--rgb-red-color);
+      --rgb-state-person-zone-color: var(--rgb-blue-color);
       --rgb-state-sensor-battery-high-color: var(--rgb-green-color);
       --rgb-state-sensor-battery-low-color: var(--rgb-red-color);
       --rgb-state-sensor-battery-medium-color: var(--rgb-orange-color);
