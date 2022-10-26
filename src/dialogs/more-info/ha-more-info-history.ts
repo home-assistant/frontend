@@ -22,6 +22,8 @@ declare global {
   }
 }
 
+const statTypes = ["state", "min", "mean", "max"];
+
 @customElement("ha-more-info-history")
 export class MoreInfoHistory extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -59,6 +61,7 @@ export class MoreInfoHistory extends LitElement {
                 .hass=${this.hass}
                 .isLoadingData=${!this._statistics}
                 .statisticsData=${this._statistics}
+                .statTypes=${statTypes}
               ></statistics-chart>`
             : html`<state-history-charts
                 up-to-now
