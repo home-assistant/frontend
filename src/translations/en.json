@@ -4140,7 +4140,8 @@
               "icon_tap_action": "Icon tap action",
               "actions": "Actions",
               "appearance": "Appearance",
-              "default_color": "Default color (state)"
+              "default_color": "Default color (state)",
+              "show_entity_picture": "Show entity picture"
             },
             "vertical-stack": {
               "name": "Vertical Stack",
