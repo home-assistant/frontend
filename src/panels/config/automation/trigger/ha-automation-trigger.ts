@@ -43,9 +43,11 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property() public triggers!: Trigger[];
 
-  @property({ type: Boolean }) public reOrderMode = false;
-
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public nested = false;
+
+  @property({ type: Boolean }) public reOrderMode = false;
 
   private _focusLastTriggerOnChange = false;
 
@@ -55,6 +57,27 @@ export default class HaAutomationTrigger extends LitElement {
 
   protected render() {
     return html`
+      ${
+        this.reOrderMode && !this.nested
+          ? html`
+              <ha-alert
+                alert-type="info"
+                .title=${this.hass.localize(
+                  "ui.panel.config.automation.editor.re_order_mode.title"
+                )}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.re_order_mode.description_triggers"
+                )}
+                <mwc-button slot="action" @click=${this._exitReOrderMode}>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.re_order_mode.exit"
+                  )}
+                </mwc-button>
+              </ha-alert>
+            `
+          : null
+      }
       <div class="triggers">
         ${repeat(
           this.triggers,
@@ -68,6 +91,7 @@ export default class HaAutomationTrigger extends LitElement {
               @value-changed=${this._triggerChanged}
               .hass=${this.hass}
               .disabled=${this.disabled}
+              @re-order=${this._enterReOrderMode}
             >
               ${this.reOrderMode
                 ? html`
@@ -146,6 +170,16 @@ export default class HaAutomationTrigger extends LitElement {
         row.focus();
       });
     }
+  }
+
+  private async _enterReOrderMode(ev: CustomEvent) {
+    if (this.nested) return;
+    ev.stopPropagation();
+    this.reOrderMode = true;
+  }
+
+  private async _exitReOrderMode() {
+    this.reOrderMode = false;
   }
 
   private async _createSortable() {
@@ -282,6 +316,12 @@ export default class HaAutomationTrigger extends LitElement {
         }
         ha-svg-icon {
           height: 20px;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
+          border-radius: var(--ha-card-border-radius, 16px);
+          overflow: hidden;
         }
         .handle {
           cursor: move;

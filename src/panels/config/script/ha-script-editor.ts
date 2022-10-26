@@ -7,7 +7,6 @@ import {
   mdiDotsVertical,
   mdiInformationOutline,
   mdiPlay,
-  mdiSort,
   mdiTransitConnection,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
@@ -62,7 +61,6 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
-import type { HaManualScriptEditor } from "./manual-script-editor";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -92,9 +90,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _readOnly = false;
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
-
-  @query("manual-script-editor")
-  private _manualEditor?: HaManualScriptEditor;
 
   private _schema = memoizeOne(
     (
@@ -236,23 +231,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                     ></ha-svg-icon>
                   </mwc-list-item>
                 </a>
-              `
-            : ""}
-          ${this._config && !("use_blueprint" in this._config)
-            ? html`
-                <mwc-list-item
-                  aria-label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.re_order"
-                  )}
-                  graphic="icon"
-                  .disabled=${this._readOnly || this._mode !== "gui"}
-                  @click=${this._toggleReOrderMode}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.re_order"
-                  )}
-                  <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
-                </mwc-list-item>
               `
             : ""}
 
@@ -799,12 +777,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _switchYamlMode() {
     this._mode = "yaml";
-  }
-
-  private _toggleReOrderMode() {
-    if (this._manualEditor) {
-      this._manualEditor.reOrderMode = !this._manualEditor.reOrderMode;
-    }
   }
 
   private async _saveScript(): Promise<void> {
