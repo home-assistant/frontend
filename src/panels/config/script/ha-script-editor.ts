@@ -7,7 +7,6 @@ import {
   mdiDotsVertical,
   mdiInformationOutline,
   mdiPlay,
-  mdiSort,
   mdiTransitConnection,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
@@ -237,23 +236,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                     ></ha-svg-icon>
                   </mwc-list-item>
                 </a>
-              `
-            : ""}
-          ${this._config && !("use_blueprint" in this._config)
-            ? html`
-                <mwc-list-item
-                  aria-label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.re_order"
-                  )}
-                  graphic="icon"
-                  .disabled=${this._readOnly || this._mode !== "gui"}
-                  @click=${this._toggleReOrderMode}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.re_order"
-                  )}
-                  <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
-                </mwc-list-item>
               `
             : ""}
 
@@ -800,12 +782,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _switchYamlMode() {
     this._mode = "yaml";
-  }
-
-  private _toggleReOrderMode() {
-    if (this._manualEditor) {
-      this._manualEditor.reOrderMode = !this._manualEditor.reOrderMode;
-    }
   }
 
   private async _saveScript(): Promise<void> {

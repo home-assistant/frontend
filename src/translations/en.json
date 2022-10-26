@@ -1883,7 +1883,8 @@
             "re_order": "Re-order",
             "re_order_mode": {
               "title": "Re-order mode",
-              "description": "You are in re-order mode, you can re-order your triggers, conditions and actions.",
+              "description_triggers": "You are in re-order mode, you can re-order your triggers.",
+              "description_conditions": "You are in re-order mode, you can re-order your conditions.",
               "description_actions": "You are in re-order mode, you can re-order your actions.",
               "exit": "Exit"
             },
@@ -2044,7 +2045,7 @@
               "invalid_condition": "Invalid condition configuration",
               "test_failed": "Error occurred while testing condition",
               "duplicate": "[%key:ui::common::duplicate%]",
-              "re-order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
+              "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
               "change_alias": "Rename condition",
               "alias": "Condition name",

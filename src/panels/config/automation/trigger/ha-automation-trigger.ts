@@ -67,7 +67,7 @@ export default class HaAutomationTrigger extends LitElement {
                 )}
               >
                 ${this.hass.localize(
-                  "ui.panel.config.automation.editor.re_order_mode.description_actions"
+                  "ui.panel.config.automation.editor.re_order_mode.description_triggers"
                 )}
                 <mwc-button slot="action" @click=${this._exitReOrderMode}>
                   ${this.hass.localize(

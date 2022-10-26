@@ -6,7 +6,6 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-alert";
 import {
   Condition,
   ManualAutomationConfig,
@@ -34,9 +33,6 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @property({ type: Boolean, reflect: true, attribute: "re-order-mode" })
-  public reOrderMode = false;
-
   protected render() {
     return html`
       ${this.disabled
@@ -56,25 +52,6 @@ export class HaManualAutomationEditor extends LitElement {
               <mwc-button slot="action" @click=${this._enable}>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.enable"
-                )}
-              </mwc-button>
-            </ha-alert>
-          `
-        : ""}
-      ${this.reOrderMode
-        ? html`
-            <ha-alert
-              alert-type="info"
-              .title=${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.title"
-              )}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.description"
-              )}
-              <mwc-button slot="action" @click=${this._exitReOrderMode}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.re_order_mode.exit"
                 )}
               </mwc-button>
             </ha-alert>
@@ -114,8 +91,6 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
-        .reOrderMode=${this.reOrderMode}
-        @re-order=${this._enterReOrderMode}
       ></ha-automation-trigger>
 
       <div class="header">
@@ -145,8 +120,6 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
-        .reOrderMode=${this.reOrderMode}
-        @re-order=${this._enterReOrderMode}
       ></ha-automation-condition>
 
       <div class="header">
@@ -179,18 +152,8 @@ export class HaManualAutomationEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
-        .reOrderMode=${this.reOrderMode}
-        @re-order=${this._enterReOrderMode}
       ></ha-automation-action>
     `;
-  }
-
-  private _exitReOrderMode() {
-    this.reOrderMode = false;
-  }
-
-  private _enterReOrderMode() {
-    this.reOrderMode = true;
   }
 
   private _triggerChanged(ev: CustomEvent): void {
@@ -260,10 +223,6 @@ export class HaManualAutomationEditor extends LitElement {
         }
         .header a {
           color: var(--secondary-text-color);
-        }
-        ha-alert {
-          display: block;
-          margin-bottom: 16px;
         }
       `,
     ];

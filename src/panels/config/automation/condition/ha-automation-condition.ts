@@ -113,7 +113,7 @@ export default class HaAutomationCondition extends LitElement {
               )}
             >
               ${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.description"
+                "ui.panel.config.automation.editor.re_order_mode.description_conditions"
               )}
               <mwc-button slot="action" @click=${this._exitReOrderMode}>
                 ${this.hass.localize(
@@ -342,6 +342,12 @@ export default class HaAutomationCondition extends LitElement {
         }
         ha-svg-icon {
           height: 20px;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
+          border-radius: var(--ha-card-border-radius, 12px);
+          overflow: hidden;
         }
         .handle {
           cursor: move;
