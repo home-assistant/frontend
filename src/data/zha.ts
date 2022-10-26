@@ -106,6 +106,7 @@ export interface Command {
   name: string;
   id: number;
   type: string;
+  schema: HaFormSchema[];
 }
 
 export interface ReadAttributeServiceData {

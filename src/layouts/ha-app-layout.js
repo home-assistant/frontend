@@ -36,6 +36,8 @@ class HaAppLayout extends customElements.get("app-header-layout") {
          */
           position: relative;
           z-index: 0;
+          padding: env(safe-area-inset-top) env(safe-area-inset-right)
+            env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         #wrapper ::slotted([slot="header"]) {

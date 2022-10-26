@@ -3,6 +3,7 @@ import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HaFormSchema } from "../components/ha-form/types";
+import { autocompleteLoginFields } from "../data/auth";
 import type { DataEntryFlowStep } from "../data/data_entry_flow";
 
 declare global {
@@ -69,7 +70,9 @@ export class HaPasswordManagerPolyfill extends LitElement {
           aria-hidden="true"
           @submit=${this._handleSubmit}
         >
-          ${this.step.data_schema.map((input) => this.render_input(input))}
+          ${autocompleteLoginFields(this.step.data_schema).map((input) =>
+            this.render_input(input)
+          )}
           <input type="submit" />
           <style>
             ${this.styles}
@@ -91,6 +94,7 @@ export class HaPasswordManagerPolyfill extends LitElement {
         .id=${schema.name}
         .type=${inputType}
         .value=${this.stepData[schema.name] || ""}
+        .autocomplete=${schema.autocomplete}
         @input=${this._valueChanged}
       />
     `;

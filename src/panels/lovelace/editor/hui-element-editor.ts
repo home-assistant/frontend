@@ -271,6 +271,11 @@ export abstract class HuiElementEditor<T> extends LitElement {
   private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
     ev.stopPropagation();
     const config = ev.detail.config;
+    Object.keys(config).forEach((key) => {
+      if (config[key] === undefined) {
+        delete config[key];
+      }
+    });
     this.value = config as unknown as T;
   }
 

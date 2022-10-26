@@ -206,9 +206,11 @@ export const showRepairsFlowDialog = (
               issue.translation_key || issue.issue_id
             }.fix_flow.loading`
           ) ||
-          hass.localize(`ui.dialogs.repair_flow.loading.${reason}`, {
-            integration: domainToName(hass.localize, issue.domain),
-          })
+          (reason === "loading_flow" || reason === "loading_step"
+            ? hass.localize(`ui.dialogs.repair_flow.loading.${reason}`, {
+                integration: domainToName(hass.localize, issue.domain),
+              })
+            : "")
         );
       },
     }
