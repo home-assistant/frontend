@@ -38,6 +38,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}*:
       </h3>
       <ha-automation-condition
+        nested
         .conditions=${action.if}
         .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
@@ -51,6 +52,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}*:
       </h3>
       <ha-automation-action
+        nested
         .actions=${action.then}
         .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}
@@ -65,6 +67,7 @@ export class HaIfAction extends LitElement implements ActionElement {
               )}:
             </h3>
             <ha-automation-action
+              nested
               .actions=${action.else || []}
               .reOrderMode=${this.reOrderMode}
               .disabled=${this.disabled}

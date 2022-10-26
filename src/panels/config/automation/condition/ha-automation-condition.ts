@@ -44,6 +44,8 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public nested = false;
+
   @property({ type: Boolean }) public reOrderMode = false;
 
   private _focusLastConditionOnChange = false;
@@ -102,6 +104,25 @@ export default class HaAutomationCondition extends LitElement {
       return html``;
     }
     return html`
+      ${this.reOrderMode && !this.nested
+        ? html`
+            <ha-alert
+              alert-type="info"
+              .title=${this.hass.localize(
+                "ui.panel.config.automation.editor.re_order_mode.title"
+              )}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.re_order_mode.description_conditions"
+              )}
+              <mwc-button slot="action" @click=${this._exitReOrderMode}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.re_order_mode.exit"
+                )}
+              </mwc-button>
+            </ha-alert>
+          `
+        : null}
       <div class="conditions">
         ${repeat(
           this.conditions,
@@ -117,6 +138,7 @@ export default class HaAutomationCondition extends LitElement {
               @duplicate=${this._duplicateCondition}
               @move-condition=${this._move}
               @value-changed=${this._conditionChanged}
+              @re-order=${this._enterReOrderMode}
               .hass=${this.hass}
             >
               ${this.reOrderMode
@@ -174,6 +196,16 @@ export default class HaAutomationCondition extends LitElement {
         )}
       </ha-button-menu>
     `;
+  }
+
+  private async _enterReOrderMode(ev: CustomEvent) {
+    if (this.nested) return;
+    ev.stopPropagation();
+    this.reOrderMode = true;
+  }
+
+  private async _exitReOrderMode() {
+    this.reOrderMode = false;
   }
 
   private async _createSortable() {
@@ -310,6 +342,12 @@ export default class HaAutomationCondition extends LitElement {
         }
         ha-svg-icon {
           height: 20px;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
+          border-radius: var(--ha-card-border-radius, 16px);
+          overflow: hidden;
         }
         .handle {
           cursor: move;
