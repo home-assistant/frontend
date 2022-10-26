@@ -286,7 +286,8 @@ class HaDomainIntegrations extends LitElement {
     protocolIntegrationPicked(
       root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
       this.hass,
-      domain
+      domain,
+      { brand: this.domain }
     );
   }
 
