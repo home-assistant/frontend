@@ -60,6 +60,7 @@ import {
   mdiWaterPercent,
   mdiWeatherCloudy,
   mdiWeatherPouring,
+  mdiWeatherWindy,
   mdiWeight,
   mdiWhiteBalanceSunny,
   mdiWifi,
@@ -159,6 +160,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   volume: mdiCarCoolantLevel,
   water: mdiWater,
   weight: mdiWeight,
+  wind_speed: mdiWeatherWindy,
 };
 
 /** Domains that have a state card. */

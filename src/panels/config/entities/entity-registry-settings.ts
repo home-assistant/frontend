@@ -124,6 +124,7 @@ const OVERRIDE_SENSOR_UNITS = {
   volume: ["fl. oz.", "ft³", "gal", "L", "mL", "m³"],
   water: ["ft³", "gal", "L", "m³"],
   weight: ["g", "kg", "lb", "mg", "oz", "µg"],
+  wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
 };
 
 const OVERRIDE_WEATHER_UNITS = {
@@ -131,7 +132,7 @@ const OVERRIDE_WEATHER_UNITS = {
   pressure: ["hPa", "mbar", "mmHg", "inHg"],
   temperature: ["°C", "°F"],
   visibility: ["km", "mi"],
-  wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
+  wind_speed: ["ft/s", "km/h", "kn", "m/s", "mph"],
 };
 
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
