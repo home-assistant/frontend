@@ -9,7 +9,11 @@ import { formatDuration, UNIT_TO_SECOND_CONVERT } from "../datetime/duration";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
-import { formatNumber, isNumericFromAttributes } from "../number/format_number";
+import {
+  formatNumber,
+  getNumberFormatOptions,
+  isNumericFromAttributes,
+} from "../number/format_number";
 import { blankBeforePercent } from "../translations/blank_before_percent";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
@@ -70,7 +74,11 @@ export const computeStateDisplayFromEntityAttributes = (
       : attributes.unit_of_measurement === "%"
       ? blankBeforePercent(locale) + "%"
       : ` ${attributes.unit_of_measurement}`;
-    return `${formatNumber(state, locale)}${unit}`;
+    return `${formatNumber(
+      state,
+      locale,
+      getNumberFormatOptions({ state, attributes } as HassEntity)
+    )}${unit}`;
   }
 
   const domain = computeDomain(entityId);
@@ -143,7 +151,12 @@ export const computeStateDisplayFromEntityAttributes = (
     domain === "number" ||
     domain === "input_number"
   ) {
-    return formatNumber(state, locale);
+    // Format as an integer if the value and step are integers
+    return formatNumber(
+      state,
+      locale,
+      getNumberFormatOptions({ state, attributes } as HassEntity)
+    );
   }
 
   // state of button is a timestamp
