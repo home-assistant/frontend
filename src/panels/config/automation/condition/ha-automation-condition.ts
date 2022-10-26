@@ -346,7 +346,7 @@ export default class HaAutomationCondition extends LitElement {
         ha-alert {
           display: block;
           margin-bottom: 16px;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(--ha-card-border-radius, 16px);
           overflow: hidden;
         }
         .handle {
