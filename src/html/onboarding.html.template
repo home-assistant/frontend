@@ -16,7 +16,7 @@
       .content {
         box-sizing: border-box;
         padding: 20px 16px;
-        border-radius: var(--ha-card-border-radius, 16px);
+        border-radius: var(--ha-card-border-radius, 12px);
         max-width: 432px;
         margin: 64px auto 0;
         box-shadow: var(
