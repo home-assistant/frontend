@@ -4132,7 +4132,10 @@
               "name": "Tile",
               "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
               "color": "Color",
-              "icon_tap_action": "Icon tap action"
+              "icon_tap_action": "Icon tap action",
+              "actions": "Actions",
+              "appearance": "Appearance",
+              "default_color": "Default color (state)"
             },
             "vertical-stack": {
               "name": "Vertical Stack",

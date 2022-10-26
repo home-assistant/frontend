@@ -9,6 +9,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -46,7 +47,12 @@ export class HuiTileCardEditor
   private _mainSchema = [{ name: "entity", selector: { entity: {} } }] as const;
 
   private _appearanceSchema = memoizeOne(
-    (entity: string, icon?: string, entityState?: HassEntity) =>
+    (
+      localize: LocalizeFunc,
+      entity: string,
+      icon?: string,
+      entityState?: HassEntity
+    ) =>
       [
         {
           name: "",
@@ -71,7 +77,9 @@ export class HuiTileCardEditor
                 select: {
                   options: [
                     {
-                      label: "Default (based on state)",
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.tile.default_color`
+                      ),
                       value: "default",
                     },
                     ...Array.from(THEME_COLORS).map((color) => ({
@@ -107,10 +115,13 @@ export class HuiTileCardEditor
       return html``;
     }
 
-    const entity = this.hass.states[this._config.entity ?? ""];
+    const entity = this.hass.states[this._config.entity ?? ""] as
+      | HassEntity
+      | undefined;
 
     const mainSchema = this._mainSchema;
     const appareanceSchema = this._appearanceSchema(
+      this.hass.localize,
       this._config.entity,
       this._config.icon,
       entity
@@ -134,10 +145,12 @@ export class HuiTileCardEditor
           ></ha-form>
         </div>
         <div class="group">
-          <ha-expansion-panel header="Appearence">
+          <ha-expansion-panel>
             <div slot="header">
               <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
-              Appearance
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.card.tile.appearance`
+              )}
             </div>
             <div class="content">
               <ha-form
@@ -154,7 +167,9 @@ export class HuiTileCardEditor
           <ha-expansion-panel>
             <div slot="header">
               <ha-svg-icon .path=${mdiGestureTap}></ha-svg-icon>
-              Actions
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.card.tile.actions`
+              )}
             </div>
             <div class="content">
               <ha-form
