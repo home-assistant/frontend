@@ -83,7 +83,7 @@ class HuiEnergyDistrubutionCard
     const hasConsumption = true;
 
     const hasSolarProduction = types.solar !== undefined;
-    const hasBattery = false; // types.battery !== undefined;
+    const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
     const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
