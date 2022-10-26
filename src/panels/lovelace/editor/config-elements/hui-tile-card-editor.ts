@@ -3,7 +3,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, object, optional, string } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { THEME_COLORS } from "../../../../common/color/compute-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -25,6 +25,7 @@ const cardConfigStruct = assign(
     name: optional(string()),
     icon: optional(string()),
     color: optional(string()),
+    show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     icon_tap_action: optional(actionConfigStruct),
   })
@@ -88,6 +89,12 @@ export class HuiTileCardEditor
                     })),
                   ],
                 },
+              },
+            },
+            {
+              name: "show_entity_picture",
+              selector: {
+                boolean: {},
               },
             },
           ] as const,
@@ -205,9 +212,11 @@ export class HuiTileCardEditor
     switch (schema.name) {
       case "color":
       case "icon_tap_action":
+      case "show_entity_picture":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );
+
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
