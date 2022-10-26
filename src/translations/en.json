@@ -1500,6 +1500,29 @@
               "m3_or_kWh": "ft³, m³, Wh, kWh or MWh"
             }
           },
+          "water": {
+            "title": "Water Consumption",
+            "sub": "Let Home Assistant monitor your water usage.",
+            "learn_more": "More information on how to get started.",
+            "water_consumption": "Water consumption",
+            "edit_water_source": "Edit water source",
+            "delete_water_source": "Delete water source",
+            "add_water_source": "Add water source",
+            "dialog": {
+              "header": "Configure water consumption",
+              "paragraph": "Gas consumption is the volume of water that flows to your home.",
+              "energy_stat": "Consumed water (m³/ft³)",
+              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
+              "no_cost": "Do not track costs",
+              "cost_stat": "Use an entity tracking the total costs",
+              "cost_stat_input": "Total Costs Entity",
+              "cost_entity": "Use an entity with current price",
+              "cost_entity_input": "Entity with the current price per m³",
+              "cost_number": "Use a static price",
+              "cost_number_input": "Price per m³",
+              "water_usage": "Water usage (m³/ft³)"
+            }
+          },
           "device_consumption": {
             "title": "Individual devices",
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
@@ -1544,6 +1567,10 @@
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh' or 'MWh' for an energy sensor or 'm³' or 'ft³' for a gas sensor:"
               },
+              "entity_unexpected_unit_water": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement 'm³' or 'ft³' for a water sensor:"
+              },
               "entity_unexpected_unit_energy_price": {
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'' or ''{currency}/MWh'':"
@@ -1551,6 +1578,10 @@
               "entity_unexpected_unit_gas_price": {
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'', ''{currency}/m³'' or ''{currency}/ft³'':"
+              },
+              "entity_unexpected_unit_water_price": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement ''{currency}/m³'' or ''{currency}/ft³'':"
               },
               "entity_unexpected_state_class": {
                 "title": "Unexpected state class",
@@ -3676,6 +3707,7 @@
             "energy_sources_table": {
               "grid_total": "Grid total",
               "gas_total": "Gas total",
+              "water_total": "Water total",
               "source": "Source",
               "energy": "Energy",
               "cost": "Cost",
@@ -3706,6 +3738,7 @@
               "title_today": "Energy distribution today",
               "grid": "Grid",
               "gas": "Gas",
+              "water": "Water",
               "solar": "Solar",
               "low_carbon": "Low-carbon",
               "home": "Home",
@@ -4763,6 +4796,7 @@
           "energy_usage_graph_title": "Energy usage",
           "energy_solar_graph_title": "Solar production",
           "energy_gas_graph_title": "Gas consumption",
+          "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Monitor individual devices"

@@ -1,60 +1,47 @@
-import { mdiFire } from "@mdi/js";
+import "@material/mwc-button/mwc-button";
+import { mdiWater } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
+import type { HaRadio } from "../../../../components/ha-radio";
+import "../../../../components/ha-textfield";
 import {
-  emptyGasEnergyPreference,
-  GasSourceTypeEnergyPreference,
+  emptyWaterEnergyPreference,
+  WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
+import { isExternalStatistic } from "../../../../data/recorder";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
-import "@material/mwc-button/mwc-button";
-import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-radio";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-textfield";
-import type { HaRadio } from "../../../../components/ha-radio";
-import {
-  getStatisticMetadata,
-  getDisplayUnit,
-  isExternalStatistic,
-} from "../../../../data/recorder";
+import { EnergySettingsWaterDialogParams } from "./show-dialogs-energy";
 
-@customElement("dialog-energy-gas-settings")
-export class DialogEnergyGasSettings
+@customElement("dialog-energy-water-settings")
+export class DialogEnergyWaterSettings
   extends LitElement
-  implements HassDialog<EnergySettingsGasDialogParams>
+  implements HassDialog<EnergySettingsWaterDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _params?: EnergySettingsGasDialogParams;
+  @state() private _params?: EnergySettingsWaterDialogParams;
 
-  @state() private _source?: GasSourceTypeEnergyPreference;
+  @state() private _source?: WaterSourceTypeEnergyPreference;
 
   @state() private _costs?: "no-costs" | "number" | "entity" | "statistic";
-
-  @state() private _pickableUnit?: string;
-
-  @state() private _pickedDisplayUnit?: string | null;
 
   @state() private _error?: string;
 
   public async showDialog(
-    params: EnergySettingsGasDialogParams
+    params: EnergySettingsWaterDialogParams
   ): Promise<void> {
     this._params = params;
     this._source = params.source
       ? { ...params.source }
-      : emptyGasEnergyPreference();
-    this._pickedDisplayUnit = getDisplayUnit(
-      this.hass,
-      params.source?.stat_energy_from,
-      params.metadata
-    );
+      : emptyWaterEnergyPreference();
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
@@ -67,8 +54,6 @@ export class DialogEnergyGasSettings
   public closeDialog(): void {
     this._params = undefined;
     this._source = undefined;
-    this._pickableUnit = undefined;
-    this._pickedDisplayUnit = undefined;
     this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -78,14 +63,6 @@ export class DialogEnergyGasSettings
       return html``;
     }
 
-    const pickableUnit =
-      this._pickableUnit ||
-      (this._params.allowedGasUnitClass === undefined
-        ? "ft³, m³, Wh, kWh or MWh"
-        : this._params.allowedGasUnitClass === "energy"
-        ? "Wh, kWh or MWh"
-        : "ft³ or m³");
-
     const externalSource =
       this._source.stat_cost && isExternalStatistic(this._source.stat_cost);
 
@@ -93,42 +70,33 @@ export class DialogEnergyGasSettings
       <ha-dialog
         open
         .heading=${html`<ha-svg-icon
-            .path=${mdiFire}
+            .path=${mdiWater}
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.gas.dialog.header")}`}
+          ${this.hass.localize("ui.panel.config.energy.water.dialog.header")}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitClass=${this._params.allowedGasUnitClass || [
-            "volume",
-            "energy",
-          ]}
-          include-device-class="gas"
+          include-unit-class="volume"
+          include-device-class="water"
           .value=${this._source.stat_energy_from}
-          .label=${`${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.gas_usage"
-          )} (${
-            this._params.allowedGasUnitClass === undefined
-              ? this.hass.localize(
-                  "ui.panel.config.energy.gas.dialog.m3_or_kWh"
-                )
-              : pickableUnit
-          })`}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.water.dialog.water_usage"
+          )}
           @value-changed=${this._statisticChanged}
           dialogInitialFocus
         ></ha-statistic-picker>
 
         <p>
-          ${this.hass.localize(`ui.panel.config.energy.gas.dialog.cost_para`)}
+          ${this.hass.localize(`ui.panel.config.energy.water.dialog.cost_para`)}
         </p>
 
         <ha-formfield
           .label=${this.hass.localize(
-            `ui.panel.config.energy.gas.dialog.no_cost`
+            `ui.panel.config.energy.water.dialog.no_cost`
           )}
         >
           <ha-radio
@@ -140,7 +108,7 @@ export class DialogEnergyGasSettings
         </ha-formfield>
         <ha-formfield
           .label=${this.hass.localize(
-            `ui.panel.config.energy.gas.dialog.cost_stat`
+            `ui.panel.config.energy.water.dialog.cost_stat`
           )}
         >
           <ha-radio
@@ -158,14 +126,14 @@ export class DialogEnergyGasSettings
               statistic-types="sum"
               .value=${this._source.stat_cost}
               .label=${this.hass.localize(
-                `ui.panel.config.energy.gas.dialog.cost_stat_input`
+                `ui.panel.config.energy.water.dialog.cost_stat_input`
               )}
               @value-changed=${this._priceStatChanged}
             ></ha-statistic-picker>`
           : ""}
         <ha-formfield
           .label=${this.hass.localize(
-            `ui.panel.config.energy.gas.dialog.cost_entity`
+            `ui.panel.config.energy.water.dialog.cost_entity`
           )}
         >
           <ha-radio
@@ -183,15 +151,14 @@ export class DialogEnergyGasSettings
               include-domains='["sensor", "input_number"]'
               .value=${this._source.entity_energy_price}
               .label=${this.hass.localize(
-                `ui.panel.config.energy.gas.dialog.cost_entity_input`,
-                { unit: this._pickedDisplayUnit || pickableUnit }
+                `ui.panel.config.energy.water.dialog.cost_entity_input`
               )}
               @value-changed=${this._priceEntityChanged}
             ></ha-entity-picker>`
           : ""}
         <ha-formfield
           .label=${this.hass.localize(
-            `ui.panel.config.energy.gas.dialog.cost_number`
+            `ui.panel.config.energy.water.dialog.cost_number`
           )}
         >
           <ha-radio
@@ -204,17 +171,14 @@ export class DialogEnergyGasSettings
         ${this._costs === "number"
           ? html`<ha-textfield
               .label=${this.hass.localize(
-                `ui.panel.config.energy.gas.dialog.cost_number_input`,
-                { unit: this._pickedDisplayUnit || pickableUnit }
+                `ui.panel.config.energy.water.dialog.cost_number_input`
               )}
               class="price-options"
               step=".01"
               type="number"
               .value=${this._source.number_energy_price}
               @change=${this._numberPriceChanged}
-              .suffix=${`${this.hass.config.currency}/${
-                this._pickedDisplayUnit || pickableUnit
-              }`}
+              .suffix=${`${this.hass.config.currency}/m³`}
             >
             </ha-textfield>`
           : ""}
@@ -266,16 +230,6 @@ export class DialogEnergyGasSettings
   }
 
   private async _statisticChanged(ev: CustomEvent<{ value: string }>) {
-    if (ev.detail.value) {
-      const metadata = await getStatisticMetadata(this.hass, [ev.detail.value]);
-      this._pickedDisplayUnit = getDisplayUnit(
-        this.hass,
-        ev.detail.value,
-        metadata[0]
-      );
-    } else {
-      this._pickedDisplayUnit = undefined;
-    }
     if (isExternalStatistic(ev.detail.value) && this._costs !== "statistic") {
       this._costs = "no-costs";
     }
@@ -322,6 +276,6 @@ export class DialogEnergyGasSettings
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-energy-gas-settings": DialogEnergyGasSettings;
+    "dialog-energy-water-settings": DialogEnergyWaterSettings;
   }
 }

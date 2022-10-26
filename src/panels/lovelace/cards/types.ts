@@ -133,6 +133,12 @@ export interface EnergyGasGraphCardConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
+export interface EnergyWaterGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-water-graph";
+  title?: string;
+  collection_key?: string;
+}
+
 export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
   type: "energy-devices-graph";
   title?: string;
