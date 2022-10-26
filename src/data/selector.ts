@@ -203,7 +203,7 @@ export interface ObjectSelector {
 }
 
 export interface SelectOption {
-  value: string;
+  value: any;
   label: string;
   disabled?: boolean;
 }
