@@ -62,7 +62,6 @@ import { showToast } from "../../../util/toast";
 import { HaDeviceAction } from "../automation/action/types/ha-automation-action-device_id";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
-import type { HaManualScriptEditor } from "./manual-script-editor";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -92,9 +91,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _readOnly = false;
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
-
-  @query("manual-script-editor")
-  private _manualEditor?: HaManualScriptEditor;
 
   private _schema = memoizeOne(
     (
