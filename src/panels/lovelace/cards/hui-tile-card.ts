@@ -231,7 +231,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         flex: 1;
         min-width: 0;
         min-height: 40px;
-        border-radius: calc(var(--ha-card-border-radius, 12px) - 2px);
+        border-radius: calc(var(--ha-card-border-radius, 10px) - 2px);
         transition: background-color 180ms ease-in-out;
       }
       ha-tile-info:focus {
