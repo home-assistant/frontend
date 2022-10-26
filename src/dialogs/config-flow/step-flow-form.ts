@@ -16,6 +16,7 @@ import { computeInitialHaFormData } from "../../components/ha-form/compute-initi
 import "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/types";
 import "../../components/ha-markdown";
+import { autocompleteLoginFields } from "../../data/auth";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
@@ -51,7 +52,7 @@ class StepFlowForm extends LitElement {
           .data=${stepData}
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
-          .schema=${step.data_schema}
+          .schema=${autocompleteLoginFields(step.data_schema)}
           .error=${step.errors}
           .computeLabel=${this._labelCallback}
           .computeHelper=${this._helperCallback}
