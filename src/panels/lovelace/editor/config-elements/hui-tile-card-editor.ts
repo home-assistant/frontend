@@ -49,7 +49,7 @@ export class HuiTileCardEditor
         { name: "entity", selector: { entity: {} } },
         {
           name: "",
-          type: "group",
+          type: "expandable",
           iconPath: mdiPalette,
           title: this.hass!.localize(
             `ui.panel.lovelace.editor.card.tile.appearance`
@@ -97,7 +97,7 @@ export class HuiTileCardEditor
         },
         {
           name: "",
-          type: "group",
+          type: "expandable",
           title: this.hass!.localize(
             `ui.panel.lovelace.editor.card.tile.actions`
           ),

@@ -5,17 +5,17 @@ import "./ha-form";
 import type {
   HaFormDataContainer,
   HaFormElement,
-  HaFormGroupSchema,
+  HaFormExpandableSchema,
   HaFormSchema,
 } from "./types";
 
-@customElement("ha-form-group")
-export class HaFormGrid extends LitElement implements HaFormElement {
+@customElement("ha-form-expandable")
+export class HaFormExpendable extends LitElement implements HaFormElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
-  @property({ attribute: false }) public schema!: HaFormGroupSchema;
+  @property({ attribute: false }) public schema!: HaFormExpandableSchema;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -78,6 +78,6 @@ export class HaFormGrid extends LitElement implements HaFormElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-form-group": HaFormGrid;
+    "ha-form-expandable": HaFormExpendable;
   }
 }
