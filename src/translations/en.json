@@ -4026,7 +4026,7 @@
               "picked_statistic": "Statistic"
             },
             "statistic": {
-              "name": "Statistic Card",
+              "name": "Statistic",
               "description": "The Statistic card allows you to display a statistical value of an entity of a certain period.",
               "period": "Period",
               "stat_types": "Show stat",

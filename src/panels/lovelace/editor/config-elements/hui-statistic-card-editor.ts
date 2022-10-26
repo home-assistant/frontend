@@ -239,9 +239,9 @@ export class HuiStatisticCardEditor
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
-    if (schema.name === "entity") {
+    if (schema.name === "period") {
       return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.entity"
+        "ui.panel.lovelace.editor.card.statistic.period"
       );
     }
 
