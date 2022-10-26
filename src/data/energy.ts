@@ -62,6 +62,7 @@ export const emptyBatteryEnergyPreference =
     stat_energy_from: "",
     stat_energy_to: "",
   });
+
 export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
   type: "gas",
   stat_energy_from: "",
@@ -69,6 +70,15 @@ export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
   entity_energy_price: null,
   number_energy_price: null,
 });
+
+export const emptyWaterEnergyPreference =
+  (): WaterSourceTypeEnergyPreference => ({
+    type: "water",
+    stat_energy_from: "",
+    stat_cost: null,
+    entity_energy_price: null,
+    number_energy_price: null,
+  });
 
 interface EnergySolarForecast {
   wh_hours: Record<string, number>;
@@ -130,7 +140,22 @@ export interface BatterySourceTypeEnergyPreference {
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
 
-  // kWh meter
+  // kWh/volume meter
+  stat_energy_from: string;
+
+  // $ meter
+  stat_cost: string | null;
+
+  // Can be used to generate costs if stat_cost omitted
+  entity_energy_price: string | null;
+  number_energy_price: number | null;
+  unit_of_measurement?: string | null;
+}
+
+export interface WaterSourceTypeEnergyPreference {
+  type: "water";
+
+  // volume meter
   stat_energy_from: string;
 
   // $ meter
@@ -146,7 +171,8 @@ type EnergySource =
   | SolarSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
-  | GasSourceTypeEnergyPreference;
+  | GasSourceTypeEnergyPreference
+  | WaterSourceTypeEnergyPreference;
 
 export interface EnergyPreferences {
   energy_sources: EnergySource[];
@@ -222,6 +248,7 @@ interface EnergySourceByType {
   solar?: SolarSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
   gas?: GasSourceTypeEnergyPreference[];
+  water?: WaterSourceTypeEnergyPreference[];
 }
 
 export const energySourcesByType = (prefs: EnergyPreferences) =>
@@ -255,7 +282,7 @@ export const getReferencedStatisticIds = (
       continue;
     }
 
-    if (source.type === "gas") {
+    if (source.type === "gas" || source.type === "water") {
       statIDs.push(source.stat_energy_from);
       if (source.stat_cost) {
         statIDs.push(source.stat_cost);
@@ -642,3 +669,6 @@ export const getEnergyGasUnit = (
     ? "m³"
     : "ft³";
 };
+
+export const getEnergyWaterUnit = (hass: HomeAssistant): string | undefined =>
+  hass.config.unit_system.length === "km" ? "m³" : "ft³";
