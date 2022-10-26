@@ -91,6 +91,7 @@ documentContainer.innerHTML = `<custom-style>
       --energy-battery-out-color: #4db6ac;
       --energy-battery-in-color: #f06292;
       --energy-gas-color: #8E021B;
+      --energy-water-color: #00bcd4;
 
       /* opacity for dark text on a light background */
       --dark-divider-opacity: 0.12;
