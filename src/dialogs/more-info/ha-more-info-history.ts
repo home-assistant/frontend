@@ -91,7 +91,8 @@ export class MoreInfoHistory extends LitElement {
       return;
     }
 
-    if (!this.entityId || !changedProps.has("hass")) {
+    if (this._statistics || !this.entityId || !changedProps.has("hass")) {
+      // Don't update statistics on a state update, as they only update every 5 minutes.
       return;
     }
 
