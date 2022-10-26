@@ -1,4 +1,5 @@
 import { mdiHelp } from "@mdi/js";
+import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -11,7 +12,9 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
 import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-icon";
+import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
+import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -87,6 +90,21 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, config, "tap");
   }
 
+  private _getImageUrl(entity: HassEntity): string | undefined {
+    const entityPicture =
+      entity.attributes.entity_picture_local ||
+      entity.attributes.entity_picture;
+
+    if (!entityPicture) return undefined;
+
+    let imageUrl = this.hass!.hassUrl(entityPicture);
+    if (computeDomain(entity.entity_id) === "camera") {
+      imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
+    }
+
+    return imageUrl;
+  }
+
   render() {
     if (!this._config || !this.hass) {
       return html``;
@@ -126,17 +144,35 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         : stateColorCss(entity),
     };
 
+    const imageUrl = this._config.show_entity_picture
+      ? this._getImageUrl(entity)
+      : undefined;
+
     return html`
       <ha-card style=${styleMap(style)}>
         <div class="tile">
-          <ha-tile-icon
-            .icon=${icon}
-            .iconPath=${iconPath}
-            role="button"
-            tabindex="0"
-            @action=${this._handleIconAction}
-            .actionHandler=${actionHandler()}
-          ></ha-tile-icon>
+          ${imageUrl
+            ? html`
+                <ha-tile-image
+                  class="icon"
+                  .imageUrl=${imageUrl}
+                  role="button"
+                  tabindex="0"
+                  @action=${this._handleIconAction}
+                  .actionHandler=${actionHandler()}
+                ></ha-tile-image>
+              `
+            : html`
+                <ha-tile-icon
+                  class="icon"
+                  .icon=${icon}
+                  .iconPath=${iconPath}
+                  role="button"
+                  tabindex="0"
+                  @action=${this._handleIconAction}
+                  .actionHandler=${actionHandler()}
+                ></ha-tile-icon>
+              `}
           <ha-tile-info
             .primary=${name}
             .secondary=${stateDisplay}
@@ -168,7 +204,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         flex-direction: row;
         align-items: center;
       }
-      ha-tile-icon {
+      .icon {
         padding: var(--tile-tap-padding);
         flex: none;
         margin-right: calc(12px - 2 * var(--tile-tap-padding));
@@ -181,13 +217,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       [role="button"] {
         cursor: pointer;
       }
-      ha-tile-icon[role="button"]:focus {
+      .icon[role="button"]:focus {
         outline: none;
       }
-      ha-tile-icon[role="button"]:focus-visible {
+      .icon[role="button"]:focus-visible {
         transform: scale(1.2);
       }
-      ha-tile-icon[role="button"]:active {
+      .icon[role="button"]:active {
         transform: scale(1.2);
       }
       ha-tile-info {
