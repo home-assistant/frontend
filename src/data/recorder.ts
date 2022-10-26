@@ -1,4 +1,5 @@
 import { computeStateName } from "../common/entity/compute_state_name";
+import { HaDurationData } from "../components/ha-duration-input";
 import { HomeAssistant } from "../types";
 
 export type StatisticType = "state" | "sum" | "min" | "max" | "mean";
@@ -17,6 +18,13 @@ export interface StatisticValue {
   min: number | null;
   sum: number | null;
   state: number | null;
+}
+
+export interface Statistic {
+  max: number | null;
+  mean: number | null;
+  min: number | null;
+  change: number | null;
 }
 
 export interface StatisticsMetaData {
@@ -120,6 +128,36 @@ export const fetchStatistics = (
     statistic_ids,
     period,
     units,
+  });
+
+export const fetchStatistic = (
+  hass: HomeAssistant,
+  statistic_id: string,
+  period: {
+    fixed_period?: { start: string | Date; end: string | Date };
+    calendar?: { period: string; offset: number };
+    rolling_window?: { duration: HaDurationData; offset: HaDurationData };
+  },
+  units?: StatisticsUnitConfiguration
+) =>
+  hass.callWS<Statistic>({
+    type: "recorder/statistic_during_period",
+    statistic_id,
+    units,
+    fixed_period: period.fixed_period
+      ? {
+          start_time:
+            period.fixed_period.start instanceof Date
+              ? period.fixed_period.start.toISOString()
+              : period.fixed_period.start,
+          end_time:
+            period.fixed_period.end instanceof Date
+              ? period.fixed_period.end.toISOString()
+              : period.fixed_period.end,
+        }
+      : undefined,
+    calendar: period.calendar,
+    rolling_window: period.rolling_window,
   });
 
 export const validateStatistics = (hass: HomeAssistant) =>

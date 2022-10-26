@@ -27,6 +27,7 @@ export type Selector =
   | ObjectSelector
   | SelectSelector
   | StateSelector
+  | StatisticSelector
   | StringSelector
   | TargetSelector
   | TemplateSelector
@@ -130,6 +131,13 @@ export interface EntitySelector {
     multiple?: boolean;
     include_entities?: string[];
     exclude_entities?: string[];
+  };
+}
+
+export interface StatisticSelector {
+  statistic: {
+    device_class?: string;
+    multiple?: boolean;
   };
 }
 
