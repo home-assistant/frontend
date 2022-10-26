@@ -9,7 +9,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
-import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -44,71 +43,82 @@ export class HuiTileCardEditor
     this._config = config;
   }
 
-  private _mainSchema = [{ name: "entity", selector: { entity: {} } }] as const;
-
-  private _appearanceSchema = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      entity: string,
-      icon?: string,
-      entityState?: HassEntity
-    ) =>
+  private _schema = memoizeOne(
+    (entity: string, icon?: string, entityState?: HassEntity) =>
       [
+        { name: "entity", selector: { entity: {} } },
         {
           name: "",
-          type: "grid",
+          type: "group",
+          iconPath: mdiPalette,
+          title: this.hass!.localize(
+            `ui.panel.lovelace.editor.card.tile.appearance`
+          ),
           schema: [
-            { name: "name", selector: { text: {} } },
             {
-              name: "icon",
-              selector: {
-                icon: {
-                  placeholder: icon || entityState?.attributes.icon,
-                  fallbackPath:
-                    !icon && !entityState?.attributes.icon && entityState
-                      ? domainIcon(computeDomain(entity), entityState)
-                      : undefined,
+              name: "",
+              type: "grid",
+              schema: [
+                { name: "name", selector: { text: {} } },
+                {
+                  name: "icon",
+                  selector: {
+                    icon: {
+                      placeholder: icon || entityState?.attributes.icon,
+                      fallbackPath:
+                        !icon && !entityState?.attributes.icon && entityState
+                          ? domainIcon(computeDomain(entity), entityState)
+                          : undefined,
+                    },
+                  },
                 },
+                {
+                  name: "color",
+                  selector: {
+                    select: {
+                      options: [
+                        {
+                          label: this.hass!.localize(
+                            `ui.panel.lovelace.editor.card.tile.default_color`
+                          ),
+                          value: "default",
+                        },
+                        ...Array.from(THEME_COLORS).map((color) => ({
+                          label: capitalizeFirstLetter(color),
+                          value: color,
+                        })),
+                      ],
+                    },
+                  },
+                },
+              ] as const,
+            },
+          ] as const,
+        },
+        {
+          name: "",
+          type: "group",
+          title: this.hass!.localize(
+            `ui.panel.lovelace.editor.card.tile.actions`
+          ),
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "tap_action",
+              selector: {
+                "ui-action": {},
               },
             },
             {
-              name: "color",
+              name: "icon_tap_action",
               selector: {
-                select: {
-                  options: [
-                    {
-                      label: localize(
-                        `ui.panel.lovelace.editor.card.tile.default_color`
-                      ),
-                      value: "default",
-                    },
-                    ...Array.from(THEME_COLORS).map((color) => ({
-                      label: capitalizeFirstLetter(color),
-                      value: color,
-                    })),
-                  ],
-                },
+                "ui-action": {},
               },
             },
           ] as const,
         },
       ] as const
   );
-
-  private _actionsSchema = [
-    {
-      name: "tap_action",
-      selector: {
-        "ui-action": {},
-      },
-    },
-    {
-      name: "icon_tap_action",
-      selector: {
-        "ui-action": {},
-      },
-    },
-  ] as const;
 
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
@@ -119,14 +129,7 @@ export class HuiTileCardEditor
       | HassEntity
       | undefined;
 
-    const mainSchema = this._mainSchema;
-    const appareanceSchema = this._appearanceSchema(
-      this.hass.localize,
-      this._config.entity,
-      this._config.icon,
-      entity
-    );
-    const actionsSchema = this._actionsSchema;
+    const schema = this._schema(this._config.entity, this._config.icon, entity);
 
     const data = {
       color: "default",
@@ -134,55 +137,13 @@ export class HuiTileCardEditor
     };
 
     return html`
-      <div class="container">
-        <div class="group">
-          <ha-form
-            .hass=${this.hass}
-            .data=${data}
-            .schema=${mainSchema}
-            .computeLabel=${this._computeLabelCallback}
-            @value-changed=${this._valueChanged}
-          ></ha-form>
-        </div>
-        <div class="group">
-          <ha-expansion-panel>
-            <div slot="header">
-              <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
-              ${this.hass!.localize(
-                `ui.panel.lovelace.editor.card.tile.appearance`
-              )}
-            </div>
-            <div class="content">
-              <ha-form
-                .hass=${this.hass}
-                .data=${data}
-                .schema=${appareanceSchema}
-                .computeLabel=${this._computeLabelCallback}
-                @value-changed=${this._valueChanged}
-              ></ha-form>
-            </div>
-          </ha-expansion-panel>
-        </div>
-        <div class="group">
-          <ha-expansion-panel>
-            <div slot="header">
-              <ha-svg-icon .path=${mdiGestureTap}></ha-svg-icon>
-              ${this.hass!.localize(
-                `ui.panel.lovelace.editor.card.tile.actions`
-              )}
-            </div>
-            <div class="content">
-              <ha-form
-                .hass=${this.hass}
-                .data=${data}
-                .schema=${actionsSchema}
-                .computeLabel=${this._computeLabelCallback}
-                @value-changed=${this._valueChanged}
-              ></ha-form>
-            </div>
-          </ha-expansion-panel>
-        </div>
-      </div>
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${schema}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
     `;
   }
 
@@ -197,10 +158,7 @@ export class HuiTileCardEditor
   }
 
   private _computeLabelCallback = (
-    schema:
-      | SchemaUnion<typeof this._mainSchema>
-      | SchemaUnion<ReturnType<typeof this._appearanceSchema>>
-      | SchemaUnion<typeof this._actionsSchema>
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
       case "color":
@@ -220,20 +178,6 @@ export class HuiTileCardEditor
       .container {
         display: flex;
         flex-direction: column;
-      }
-      .group:not(:last-child) {
-        margin-bottom: 12px;
-      }
-      .content {
-        padding: 12px;
-      }
-      ha-expansion-panel {
-        --expansion-panel-content-padding: 0;
-        border: 1px solid var(--divider-color);
-        border-radius: 6px;
-      }
-      ha-svg-icon {
-        color: var(--secondary-text-color);
       }
     `;
   }
