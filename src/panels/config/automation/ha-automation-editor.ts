@@ -11,7 +11,6 @@ import {
   mdiPlay,
   mdiPlayCircleOutline,
   mdiRenameBox,
-  mdiSort,
   mdiStopCircleOutline,
   mdiTransitConnection,
 } from "@mdi/js";
@@ -43,9 +42,9 @@ import {
   AutomationConfig,
   AutomationEntity,
   deleteAutomation,
-  getAutomationStateConfig,
   fetchAutomationFileConfig,
   getAutomationEditorInitData,
+  getAutomationStateConfig,
   saveAutomationConfig,
   showAutomationEditor,
   triggerAutomationActions,
@@ -65,7 +64,6 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationRenameDialog } from "./automation-rename-dialog/show-dialog-automation-rename";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
-import type { HaManualAutomationEditor } from "./manual-automation-editor";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -79,6 +77,7 @@ declare global {
     };
     "ui-mode-not-available": Error;
     duplicate: undefined;
+    "re-order": undefined;
   }
 }
 
@@ -110,9 +109,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @state() private _readOnly = false;
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
-
-  @query("manual-automation-editor")
-  private _manualEditor?: HaManualAutomationEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -214,18 +210,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   ></ha-svg-icon>
                 </mwc-list-item>
               `
-            : ""}
-          ${this._config && !("use_blueprint" in this._config)
-            ? html`<mwc-list-item
-                graphic="icon"
-                @click=${this._toggleReOrderMode}
-                .disabled=${this._readOnly || this._mode === "yaml"}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.re_order"
-                )}
-                <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
-              </mwc-list-item>`
             : ""}
 
           <mwc-list-item
@@ -665,12 +649,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _switchYamlMode() {
     this._mode = "yaml";
-  }
-
-  private _toggleReOrderMode() {
-    if (this._manualEditor) {
-      this._manualEditor.reOrderMode = !this._manualEditor.reOrderMode;
-    }
   }
 
   private async _promptAutomationAlias(): Promise<void> {

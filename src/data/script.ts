@@ -185,7 +185,7 @@ interface BaseRepeat extends BaseAction {
 }
 
 export interface CountRepeat extends BaseRepeat {
-  count: number;
+  count: number | string;
 }
 
 export interface WhileRepeat extends BaseRepeat {

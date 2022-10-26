@@ -57,7 +57,7 @@ class DialogRepairsIssue extends LitElement {
         <div>
           ${this._issue.breaks_in_ha_version
             ? html`
-                <ha-alert alert-type="error">
+                <ha-alert alert-type="warning">
                   ${this.hass.localize(
                     "ui.panel.config.repairs.dialog.breaks_in_version",
                     { version: this._issue.breaks_in_ha_version }

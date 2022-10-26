@@ -14,6 +14,7 @@ import {
 import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../common/datetime/format_date_time";
 import { useAmPm } from "../common/datetime/use_am_pm";
+import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import { HomeAssistant } from "../types";
 import "./date-range-picker";
@@ -58,6 +59,7 @@ export class HaDateRangePicker extends LitElement {
         start-date=${this.startDate}
         end-date=${this.endDate}
         ?ranges=${this.ranges !== undefined}
+        first-day=${firstWeekdayIndex(this.hass.locale)}
       >
         <div slot="input" class="date-range-inputs">
           <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
@@ -164,7 +166,7 @@ export class HaDateRangePicker extends LitElement {
       ha-textfield {
         display: inline-block;
         max-width: 250px;
-        min-width: 200px;
+        min-width: 220px;
       }
 
       ha-textfield:last-child {

@@ -91,7 +91,7 @@ class HaScriptPicker extends LitElement {
         ),
         type: "icon",
         template: (_icon, script) =>
-          html` <ha-state-icon .state=${script}></ha-state-icon>`,
+          html`<ha-state-icon .state=${script}></ha-state-icon>`,
       },
       name: {
         title: this.hass.localize("ui.panel.config.script.picker.headers.name"),

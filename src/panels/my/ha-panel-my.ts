@@ -2,6 +2,7 @@ import { sanitizeUrl } from "@braintree/sanitize-url";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { protocolIntegrationPicked } from "../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -73,6 +74,14 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   config_zwave_js: {
     component: "zwave_js",
     redirect: "/config/zwave_js/dashboard",
+  },
+  add_zigbee_device: {
+    component: "zha",
+    redirect: "/config/zha/add",
+  },
+  add_zwave_device: {
+    component: "zwave_js",
+    redirect: "/config/zwave_js/add",
   },
   config_energy: {
     component: "energy",
@@ -295,7 +304,21 @@ class HaPanelMy extends LitElement {
       this._redirect.component &&
       !isComponentLoaded(this.hass, this._redirect.component)
     ) {
+      this.hass.loadBackendTranslation("title", this._redirect.component);
       this._error = "no_component";
+      if (["add_zwave_device", "add_zigbee_device"].includes(path)) {
+        const params = extractSearchParamsObject();
+        const component = this._redirect.component;
+        this.hass
+          .loadFragmentTranslation("config")
+          .then()
+          .then(() => {
+            protocolIntegrationPicked(this, this.hass, component, {
+              domain: params.domain,
+              brand: params.brand,
+            });
+          });
+      }
       return;
     }
 
@@ -343,9 +366,11 @@ class HaPanelMy extends LitElement {
                   this.hass,
                   `/integrations/${this._redirect!.component!}`
                 )}
-              >
-                ${domainToName(this.hass.localize, this._redirect!.component!)}
-              </a>`
+                >${domainToName(
+                  this.hass.localize,
+                  this._redirect!.component!
+                )}</a
+              >`
             ) || "This redirect is not supported.";
           break;
         case "no_supervisor":
@@ -363,7 +388,10 @@ class HaPanelMy extends LitElement {
         default:
           error = this.hass.localize("ui.panel.my.error") || "Unknown error";
       }
-      return html`<hass-error-screen .error=${error}></hass-error-screen>`;
+      return html`<hass-error-screen
+        .error=${error}
+        .hass=${this.hass}
+      ></hass-error-screen>`;
     }
     return html``;
   }

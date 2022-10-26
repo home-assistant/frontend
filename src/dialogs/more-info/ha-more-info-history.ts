@@ -1,4 +1,4 @@
-import { startOfYesterday } from "date-fns/esm";
+import { startOfYesterday, subHours } from "date-fns/esm";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -7,13 +7,22 @@ import { throttle } from "../../common/util/throttle";
 import "../../components/chart/state-history-charts";
 import { getRecentWithCache } from "../../data/cached-history";
 import { HistoryResult } from "../../data/history";
+import {
+  fetchStatistics,
+  getStatisticMetadata,
+  Statistics,
+} from "../../data/recorder";
 import { HomeAssistant } from "../../types";
+import "../../components/chart/statistics-chart";
+import { computeDomain } from "../../common/entity/compute_domain";
 
 declare global {
   interface HASSDomEvents {
     closed: undefined;
   }
 }
+
+const statTypes = ["state", "min", "mean", "max"];
 
 @customElement("ha-more-info-history")
 export class MoreInfoHistory extends LitElement {
@@ -22,6 +31,8 @@ export class MoreInfoHistory extends LitElement {
   @property() public entityId!: string;
 
   @state() private _stateHistory?: HistoryResult;
+
+  @state() private _statistics?: Statistics;
 
   private _showMoreHref = "";
 
@@ -35,7 +46,7 @@ export class MoreInfoHistory extends LitElement {
     }
 
     return html`${isComponentLoaded(this.hass, "history")
-      ? html` <div class="header">
+      ? html`<div class="header">
             <div class="title">
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
             </div>
@@ -45,12 +56,19 @@ export class MoreInfoHistory extends LitElement {
               )}</a
             >
           </div>
-          <state-history-charts
-            up-to-now
-            .hass=${this.hass}
-            .historyData=${this._stateHistory}
-            .isLoadingData=${!this._stateHistory}
-          ></state-history-charts>`
+          ${this._statistics
+            ? html`<statistics-chart
+                .hass=${this.hass}
+                .isLoadingData=${!this._statistics}
+                .statisticsData=${this._statistics}
+                .statTypes=${statTypes}
+              ></statistics-chart>`
+            : html`<state-history-charts
+                up-to-now
+                .hass=${this.hass}
+                .historyData=${this._stateHistory}
+                .isLoadingData=${!this._stateHistory}
+              ></state-history-charts>`}`
       : ""}`;
   }
 
@@ -59,6 +77,7 @@ export class MoreInfoHistory extends LitElement {
 
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;
+      this._statistics = undefined;
 
       if (!this.entityId) {
         return;
@@ -72,7 +91,8 @@ export class MoreInfoHistory extends LitElement {
       return;
     }
 
-    if (!this.entityId || !changedProps.has("hass")) {
+    if (this._statistics || !this.entityId || !changedProps.has("hass")) {
+      // Don't update statistics on a state update, as they only update every 5 minutes.
       return;
     }
 
@@ -88,6 +108,22 @@ export class MoreInfoHistory extends LitElement {
   }
 
   private async _getStateHistory(): Promise<void> {
+    if (
+      isComponentLoaded(this.hass, "recorder") &&
+      computeDomain(this.entityId) === "sensor"
+    ) {
+      const metadata = await getStatisticMetadata(this.hass, [this.entityId]);
+      if (metadata.length) {
+        this._statistics = await fetchStatistics(
+          this.hass!,
+          subHours(new Date(), 24),
+          undefined,
+          [this.entityId],
+          "hour"
+        );
+        return;
+      }
+    }
     if (!isComponentLoaded(this.hass, "history")) {
       return;
     }
