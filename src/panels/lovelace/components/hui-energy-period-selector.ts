@@ -36,6 +36,7 @@ import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, ToggleButton } from "../../../types";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -183,7 +184,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       this._period === "day"
         ? startOfDay(start)
         : this._period === "week"
-        ? startOfWeek(start, { weekStartsOn: 1 })
+        ? startOfWeek(start, {
+            weekStartsOn: firstWeekdayIndex(this.hass.locale),
+          })
         : this._period === "month"
         ? startOfMonth(start)
         : startOfYear(start)
@@ -195,7 +198,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       this._period === "day"
         ? startOfToday()
         : this._period === "week"
-        ? startOfWeek(new Date(), { weekStartsOn: 1 })
+        ? startOfWeek(new Date(), {
+            weekStartsOn: firstWeekdayIndex(this.hass.locale),
+          })
         : this._period === "month"
         ? startOfMonth(new Date())
         : startOfYear(new Date())
@@ -231,7 +236,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       this._period === "day"
         ? endOfDay(startDate)
         : this._period === "week"
-        ? endOfWeek(startDate, { weekStartsOn: 1 })
+        ? endOfWeek(startDate, {
+            weekStartsOn: firstWeekdayIndex(this.hass.locale),
+          })
         : this._period === "month"
         ? endOfMonth(startDate)
         : endOfYear(startDate);
