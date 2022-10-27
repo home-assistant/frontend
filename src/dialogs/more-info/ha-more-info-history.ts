@@ -123,7 +123,7 @@ export class MoreInfoHistory extends LitElement {
           subHours(new Date(), 24),
           undefined,
           [this.entityId],
-          "hour"
+          "5minute"
         );
         return;
       }
