@@ -30,14 +30,14 @@ export class HaEntitySelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   protected render() {
-    if (!this.selector.entity.multiple) {
+    if (!this.selector.entity?.multiple) {
       return html`<ha-entity-picker
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
-        .includeEntities=${this.selector.entity.include_entities}
-        .excludeEntities=${this.selector.entity.exclude_entities}
+        .includeEntities=${this.selector.entity?.include_entities}
+        .excludeEntities=${this.selector.entity?.exclude_entities}
         .entityFilter=${this._filterEntities}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -64,7 +64,7 @@ export class HaEntitySelector extends LitElement {
     super.updated(changedProps);
     if (
       changedProps.has("selector") &&
-      this.selector.entity.integration &&
+      this.selector.entity?.integration &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -73,8 +73,16 @@ export class HaEntitySelector extends LitElement {
     }
   }
 
-  private _filterEntities = (entity: HassEntity): boolean =>
-    filterSelectorEntities(this.selector.entity, entity, this._entitySources);
+  private _filterEntities = (entity: HassEntity): boolean => {
+    if (!this.selector?.entity) {
+      return true;
+    }
+    return filterSelectorEntities(
+      this.selector.entity,
+      entity,
+      this._entitySources
+    );
+  };
 }
 
 declare global {
