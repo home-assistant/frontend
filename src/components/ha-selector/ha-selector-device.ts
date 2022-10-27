@@ -53,7 +53,7 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
     super.updated(changedProperties);
     if (
       changedProperties.has("selector") &&
-      this.selector.device.integration &&
+      this.selector.device?.integration &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -63,11 +63,11 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (this.selector.device.integration && !this._entitySources) {
+    if (this.selector.device?.integration && !this._entitySources) {
       return html``;
     }
 
-    if (!this.selector.device.multiple) {
+    if (!this.selector.device?.multiple) {
       return html`
         <ha-device-picker
           .hass=${this.hass}
@@ -75,10 +75,10 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
           .label=${this.label}
           .helper=${this.helper}
           .deviceFilter=${this._filterDevices}
-          .includeDeviceClasses=${this.selector.device.entity?.device_class
+          .includeDeviceClasses=${this.selector.device?.entity?.device_class
             ? [this.selector.device.entity.device_class]
             : undefined}
-          .includeDomains=${this.selector.device.entity?.domain
+          .includeDomains=${this.selector.device?.entity?.domain
             ? [this.selector.device.entity.domain]
             : undefined}
           .disabled=${this.disabled}
@@ -113,6 +113,9 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
         ? this._deviceIntegrationLookup(this._entitySources, this._entities)
         : undefined;
 
+    if (!this.selector.device) {
+      return true;
+    }
     return filterSelectorDevices(
       this.selector.device,
       device,
