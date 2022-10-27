@@ -1,4 +1,4 @@
-import { StatisticType } from "../../../data/recorder";
+import { Statistic, StatisticType } from "../../../data/recorder";
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { FullCalendarView, TranslationDict } from "../../../types";
 import { Condition } from "../common/validate-condition";
@@ -10,6 +10,7 @@ import {
   LovelaceRowConfig,
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { HaDurationData } from "../../../components/ha-duration-input";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -307,6 +308,18 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   period?: "5minute" | "hour" | "day" | "month";
   stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
+}
+
+export interface StatisticCardConfig extends LovelaceCardConfig {
+  title?: string;
+  entities: Array<EntityConfig | string>;
+  period: {
+    fixed_period?: { start: string; end: string };
+    calendar?: { period: string; offset: number };
+    rolling_window?: { duration: HaDurationData; offset: HaDurationData };
+  };
+  stat_type: keyof Statistic;
+  theme?: string;
 }
 
 export interface PictureCardConfig extends LovelaceCardConfig {

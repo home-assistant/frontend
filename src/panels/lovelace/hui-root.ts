@@ -1007,7 +1007,10 @@ class HUIRoot extends LitElement {
           color: var(--error-color);
         }
         #view {
-          min-height: calc(100vh - var(--header-height));
+          min-height: calc(
+            100vh - var(--header-height) - env(safe-area-inset-top) -
+              env(safe-area-inset-bottom)
+          );
           /**
           * Since we only set min-height, if child nodes need percentage
           * heights they must use absolute positioning so we need relative
@@ -1022,7 +1025,10 @@ class HUIRoot extends LitElement {
          * In edit mode we have the tab bar on a new line *
          */
         .edit-mode #view {
-          min-height: calc(100vh - var(--header-height) - 48px);
+          min-height: calc(
+            100vh - var(--header-height) - 48px - env(safe-area-inset-top) -
+              env(safe-area-inset-bottom)
+          );
         }
         #view > * {
           /**

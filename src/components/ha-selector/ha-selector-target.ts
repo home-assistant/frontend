@@ -64,8 +64,8 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     super.updated(changedProperties);
     if (
       changedProperties.has("selector") &&
-      (this.selector.target.device?.integration ||
-        this.selector.target.entity?.integration) &&
+      (this.selector.target?.device?.integration ||
+        this.selector.target?.entity?.integration) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -76,8 +76,8 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     if (
-      (this.selector.target.device?.integration ||
-        this.selector.target.entity?.integration) &&
+      (this.selector.target?.device?.integration ||
+        this.selector.target?.entity?.integration) &&
       !this._entitySources
     ) {
       return html``;
@@ -94,7 +94,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
   }
 
   private _filterEntities = (entity: HassEntity): boolean => {
-    if (!this.selector.target.entity) {
+    if (!this.selector.target?.entity) {
       return true;
     }
 
@@ -106,7 +106,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
   };
 
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {
-    if (!this.selector.target.device) {
+    if (!this.selector.target?.device) {
       return true;
     }
 

@@ -30,9 +30,9 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
     return html`
       <ha-entity-state-picker
         .hass=${this.hass}
-        .entityId=${this.selector.state.entity_id ||
+        .entityId=${this.selector.state?.entity_id ||
         this.context?.filter_entity}
-        .attribute=${this.selector.state.attribute ||
+        .attribute=${this.selector.state?.attribute ||
         this.context?.filter_attribute}
         .value=${this.value}
         .label=${this.label}
