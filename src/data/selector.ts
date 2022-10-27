@@ -36,26 +36,26 @@ export type Selector =
 
 export interface ActionSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  action: {};
+  action: {} | null;
 }
 
 export interface AddonSelector {
   addon: {
     name?: string;
     slug?: string;
-  };
+  } | null;
 }
 
 export interface SelectorDevice {
-  integration?: DeviceSelector["device"]["integration"];
-  manufacturer?: DeviceSelector["device"]["manufacturer"];
-  model?: DeviceSelector["device"]["model"];
+  integration?: NonNullable<DeviceSelector["device"]>["integration"];
+  manufacturer?: NonNullable<DeviceSelector["device"]>["manufacturer"];
+  model?: NonNullable<DeviceSelector["device"]>["model"];
 }
 
 export interface SelectorEntity {
-  integration?: EntitySelector["entity"]["integration"];
-  domain?: EntitySelector["entity"]["domain"];
-  device_class?: EntitySelector["entity"]["device_class"];
+  integration?: NonNullable<EntitySelector["entity"]>["integration"];
+  domain?: NonNullable<EntitySelector["entity"]>["domain"];
+  device_class?: NonNullable<EntitySelector["entity"]>["device_class"];
 }
 
 export interface AreaSelector {
@@ -63,47 +63,47 @@ export interface AreaSelector {
     entity?: SelectorEntity;
     device?: SelectorDevice;
     multiple?: boolean;
-  };
+  } | null;
 }
 
 export interface AttributeSelector {
   attribute: {
     entity_id?: string;
     hide_attributes?: readonly string[];
-  };
+  } | null;
 }
 
 export interface BooleanSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  boolean: {};
+  boolean: {} | null;
 }
 
 export interface ColorRGBSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  color_rgb: {};
+  color_rgb: {} | null;
 }
 
 export interface ColorTempSelector {
   color_temp: {
     min_mireds?: number;
     max_mireds?: number;
-  };
+  } | null;
 }
 
 export interface ConfigEntrySelector {
   config_entry: {
     integration?: string;
-  };
+  } | null;
 }
 
 export interface DateSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  date: {};
+  date: {} | null;
 }
 
 export interface DateTimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  datetime: {};
+  datetime: {} | null;
 }
 
 export interface DeviceSelector {
@@ -113,13 +113,13 @@ export interface DeviceSelector {
     model?: string;
     entity?: SelectorEntity;
     multiple?: boolean;
-  };
+  } | null;
 }
 
 export interface DurationSelector {
   duration: {
     enable_day?: boolean;
-  };
+  } | null;
 }
 
 export interface EntitySelector {
@@ -130,24 +130,24 @@ export interface EntitySelector {
     multiple?: boolean;
     include_entities?: string[];
     exclude_entities?: string[];
-  };
+  } | null;
 }
 
 export interface FileSelector {
   file: {
     accept: string;
-  };
+  } | null;
 }
 
 export interface IconSelector {
   icon: {
     placeholder?: string;
     fallbackPath?: string;
-  };
+  } | null;
 }
 
 export interface LocationSelector {
-  location: { radius?: boolean; icon?: string };
+  location: { radius?: boolean; icon?: string } | null;
 }
 
 export interface LocationSelectorValue {
@@ -158,7 +158,7 @@ export interface LocationSelectorValue {
 
 export interface MediaSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  media: {};
+  media: {} | null;
 }
 
 export interface MediaSelectorValue {
@@ -176,7 +176,7 @@ export interface MediaSelectorValue {
 
 export interface NavigationSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  navigation: {};
+  navigation: {} | null;
 }
 
 export interface NumberSelector {
@@ -186,12 +186,12 @@ export interface NumberSelector {
     step?: number;
     mode?: "box" | "slider";
     unit_of_measurement?: string;
-  };
+  } | null;
 }
 
 export interface ObjectSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  object: {};
+  object: {} | null;
 }
 
 export interface SelectOption {
@@ -206,14 +206,14 @@ export interface SelectSelector {
     custom_value?: boolean;
     mode?: "list" | "dropdown";
     options: readonly string[] | readonly SelectOption[];
-  };
+  } | null;
 }
 
 export interface StateSelector {
   state: {
     entity_id?: string;
     attribute?: string;
-  };
+  } | null;
 }
 
 export interface StringSelector {
@@ -235,34 +235,34 @@ export interface StringSelector {
       | "color";
     suffix?: string;
     autocomplete?: string;
-  };
+  } | null;
 }
 
 export interface TargetSelector {
   target: {
     entity?: SelectorEntity;
     device?: SelectorDevice;
-  };
+  } | null;
 }
 
 export interface TemplateSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  template: {};
+  template: {} | null;
 }
 
 export interface ThemeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  theme: {};
+  theme: {} | null;
 }
 export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  time: {};
+  time: {} | null;
 }
 
 export interface UiActionSelector {
   "ui-action": {
     actions?: UiAction[];
-  };
+  } | null;
 }
 
 export const filterSelectorDevices = (

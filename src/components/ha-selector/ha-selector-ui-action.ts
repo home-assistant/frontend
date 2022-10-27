@@ -24,7 +24,7 @@ export class HaSelectorUiAction extends LitElement {
         .label=${this.label}
         .hass=${this.hass}
         .config=${this.value}
-        .actions=${this.selector["ui-action"].actions}
+        .actions=${this.selector["ui-action"]?.actions}
         .tooltipText=${this.helper}
         @value-changed=${this._valueChanged}
       ></hui-action-editor>
