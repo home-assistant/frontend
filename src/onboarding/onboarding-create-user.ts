@@ -18,21 +18,25 @@ import { onboardUserStep } from "../data/onboarding";
 import { PolymerChangedEvent } from "../polymer-types";
 
 const CREATE_USER_SCHEMA: HaFormSchema[] = [
-  { name: "name", required: true, selector: { text: { autofill: "name" } } },
+  {
+    name: "name",
+    required: true,
+    selector: { text: { autocomplete: "name" } },
+  },
   {
     name: "username",
     required: true,
-    selector: { text: { autofill: "username" } },
+    selector: { text: { autocomplete: "username" } },
   },
   {
     name: "password",
     required: true,
-    selector: { text: { type: "password", autofill: "new-password" } },
+    selector: { text: { type: "password", autocomplete: "new-password" } },
   },
   {
     name: "password_confirm",
     required: true,
-    selector: { text: { type: "password", autofill: "new-password" } },
+    selector: { text: { type: "password", autocomplete: "new-password" } },
   },
 ];
 
