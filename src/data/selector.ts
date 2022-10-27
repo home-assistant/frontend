@@ -234,7 +234,7 @@ export interface StringSelector {
       | "datetime-local"
       | "color";
     suffix?: string;
-    autofill?: string;
+    autocomplete?: string;
   };
 }
 
