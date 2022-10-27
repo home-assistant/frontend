@@ -27,3 +27,5 @@ A complete guide can be found at the following [link](https://www.home-assistant
 Home Assistant is open-source and Apache 2 licensed. Feel free to browse the repository, learn and reuse parts in your own projects.
 
 We use [BrowserStack](https://www.browserstack.com) to test Home Assistant on a large variety of devices.
+
+CHecking an upadting new depencencies
