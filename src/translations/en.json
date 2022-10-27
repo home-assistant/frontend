@@ -4065,6 +4065,28 @@
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic"
             },
+            "statistic": {
+              "name": "Statistic",
+              "description": "The Statistic card allows you to display a statistical value of an entity of a certain period.",
+              "period": "Period",
+              "stat_types": "Show stat",
+              "stat_type_labels": {
+                "mean": "Mean",
+                "min": "Min",
+                "max": "Max",
+                "change": "Change"
+              },
+              "periods": {
+                "today": "Today",
+                "yesterday": "Yesterday",
+                "this_week": "This week",
+                "last_week": "Last week",
+                "this_month": "This month",
+                "last_month": "Last month",
+                "this_year": "This year",
+                "last_year": "Last year"
+              }
+            },
             "horizontal-stack": {
               "name": "Horizontal Stack",
               "description": "The Horizontal Stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."

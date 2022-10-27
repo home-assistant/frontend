@@ -17,6 +17,7 @@ const LOAD_ELEMENTS = {
   device: () => import("./ha-selector-device"),
   duration: () => import("./ha-selector-duration"),
   entity: () => import("./ha-selector-entity"),
+  statistic: () => import("./ha-selector-statistic"),
   file: () => import("./ha-selector-file"),
   navigation: () => import("./ha-selector-navigation"),
   number: () => import("./ha-selector-number"),
