@@ -1,3 +1,4 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -11,8 +12,8 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
-import "../../../components/ha-card";
 import "../../../components/ha-alert";
+import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
 import {
   fetchStatistic,
@@ -54,7 +55,8 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
       maxEntities,
       entities,
       entitiesFill,
-      includeDomains
+      includeDomains,
+      (stateObj: HassEntity) => "state_class" in stateObj.attributes
     );
 
     return {
@@ -77,6 +79,11 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    clearInterval(this._interval);
+  }
+
   public setConfig(config: StatisticCardConfig): void {
     if (!config.entity) {
       throw new Error("Entity must be specified");
@@ -96,6 +103,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+    this._error = undefined;
     this._fetchStatistic();
     this._fetchMetadata();
 
@@ -215,21 +223,30 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
       () => this._fetchStatistic(),
       5 * 1000 * 60
     );
-    const stats = await fetchStatistic(
-      this.hass,
-      this._config.entity,
-      this._config.period
-    );
-    this._value = stats[this._config!.stat_type];
+    try {
+      const stats = await fetchStatistic(
+        this.hass,
+        this._config.entity,
+        this._config.period
+      );
+      this._value = stats[this._config!.stat_type];
+      this._error = undefined;
+    } catch (e: any) {
+      this._error = e.message;
+    }
   }
 
   private async _fetchMetadata() {
     if (!this.hass || !this._config) {
       return;
     }
-    this._metadata = (
-      await getStatisticMetadata(this.hass, [this._config.entity])
-    )[0];
+    try {
+      this._metadata = (
+        await getStatisticMetadata(this.hass, [this._config.entity])
+      )?.[0];
+    } catch (e: any) {
+      this._error = e.message;
+    }
   }
 
   private _handleClick(): void {
