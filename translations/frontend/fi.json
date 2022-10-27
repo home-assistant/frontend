@@ -4840,7 +4840,7 @@
                 "customize_sidebar": {
                     "button": "Muokkaa",
                     "description": "Voit myös aktivoida muokkaustilan pitämällä sivupalkin otsikkoa painettuna.",
-                    "header": "Muuta järjestystä ja piiloita kohteita sivupalkista"
+                    "header": "Muuta järjestystä ja piilota kohteita sivupalkista"
                 },
                 "dashboard": {
                     "default_dashboard_label": "Yleiskatsaus (oletus)",
