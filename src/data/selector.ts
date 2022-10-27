@@ -27,6 +27,7 @@ export type Selector =
   | ObjectSelector
   | SelectSelector
   | StateSelector
+  | StatisticSelector
   | StringSelector
   | TargetSelector
   | TemplateSelector
@@ -133,6 +134,13 @@ export interface EntitySelector {
   } | null;
 }
 
+export interface StatisticSelector {
+  statistic: {
+    device_class?: string;
+    multiple?: boolean;
+  };
+}
+
 export interface FileSelector {
   file: {
     accept: string;
@@ -195,7 +203,7 @@ export interface ObjectSelector {
 }
 
 export interface SelectOption {
-  value: string;
+  value: any;
   label: string;
   disabled?: boolean;
 }
