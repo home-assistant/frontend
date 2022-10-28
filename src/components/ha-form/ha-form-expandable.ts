@@ -29,7 +29,11 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     return html`
       <ha-expansion-panel outlined .expanded=${Boolean(this.schema.expanded)}>
-        <div slot="header">
+        <div
+          slot="header"
+          role="heading"
+          aria-level=${this.schema.ariaLevel ?? 3}
+        >
           ${this.schema.icon
             ? html` <ha-icon .icon=${this.schema.icon}></ha-icon> `
             : this.schema.iconPath

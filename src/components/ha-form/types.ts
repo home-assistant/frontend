@@ -42,6 +42,7 @@ export interface HaFormExpandableSchema extends HaFormBaseSchema {
   icon?: string;
   iconPath?: string;
   expanded?: boolean;
+  ariaLevel?: number;
   schema: readonly HaFormSchema[];
 }
 
