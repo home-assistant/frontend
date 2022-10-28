@@ -115,6 +115,7 @@ const OVERRIDE_NUMBER_UNITS = {
 };
 
 const OVERRIDE_SENSOR_UNITS = {
+  accumulated_precipitation: ["in", "mm"],
   distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
   gas: ["ft³", "m³"],
   precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
