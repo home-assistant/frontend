@@ -32,7 +32,7 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
         <div
           slot="header"
           role="heading"
-          aria-level=${this.schema.ariaLevel ?? 3}
+          aria-level=${this.schema.headingLevel?.toString() ?? "3"}
         >
           ${this.schema.icon
             ? html` <ha-icon .icon=${this.schema.icon}></ha-icon> `
