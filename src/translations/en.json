@@ -1510,7 +1510,7 @@
             "add_water_source": "Add water source",
             "dialog": {
               "header": "Configure water consumption",
-              "paragraph": "Gas consumption is the volume of water that flows to your home.",
+              "paragraph": "Water consumption is the volume of water that flows to your home.",
               "energy_stat": "Consumed water (m³/ft³)",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
               "no_cost": "Do not track costs",
