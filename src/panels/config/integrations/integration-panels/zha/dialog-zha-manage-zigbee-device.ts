@@ -221,7 +221,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
       device &&
       (device.device_type === "Router" || device.device_type === "Coordinator")
     ) {
-      tabs.push("children");
+      tabs.push("neighbors");
     }
 
     return tabs;

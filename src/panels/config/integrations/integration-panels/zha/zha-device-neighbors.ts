@@ -33,7 +33,7 @@ class ZHADeviceNeighbors extends LitElement {
     }
   }
 
-  private _deviceChildren = memoizeOne(
+  private _deviceNeighbors = memoizeOne(
     (
       device: ZHADevice | undefined,
       devices: Map<string, ZHADevice> | undefined
@@ -86,7 +86,7 @@ class ZHADeviceNeighbors extends LitElement {
         : html`<ha-data-table
             .hass=${this.hass}
             .columns=${this._columns}
-            .data=${this._deviceChildren(this.device, this._devices)}
+            .data=${this._deviceNeighbors(this.device, this._devices)}
             auto-height
             .dir=${computeRTLDirection(this.hass)}
             .searchLabel=${this.hass.localize(
