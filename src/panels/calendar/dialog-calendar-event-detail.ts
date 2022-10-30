@@ -195,10 +195,10 @@ class DialogCalendarEventDetail extends LitElement {
                     item-value-path="entity_id"
                     item-label-path="name"
                     required
-                    @value-changed=${this._handleCalendarPicked}
+                    @value-changed=${this._handleCalendarChanged}
                   ></ha-combo-box>
                 </div>`
-            : html` <div class="field">
+            : html`<div class="field">
                   <ha-svg-icon .path=${mdiCalendarClock}></ha-svg-icon>
                   <div class="value">
                     ${this._formatDateRange()}<br />
@@ -302,9 +302,8 @@ class DialogCalendarEventDetail extends LitElement {
     )} - ${formatDateTime(this._dtend!, this.hass.locale)}`;
   }
 
-  private _handleCalendarPicked(_ev) {
-    // XXX
-    this.requestUpdate();
+  private _handleCalendarChanged(ev: PolymerChangedEvent<string>) {
+    this._calendarId = ev.detail.value;
   }
 
   private async _createEvent() {
