@@ -18,8 +18,8 @@ export interface DeviceRowData extends DataTableRowData {
   lqi: number;
 }
 
-@customElement("zha-device-children")
-class ZHADeviceChildren extends LitElement {
+@customElement("zha-device-neighbors")
+class ZHADeviceNeighbors extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public device: ZHADevice | undefined;
@@ -111,6 +111,6 @@ class ZHADeviceChildren extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "zha-device-children": ZHADeviceChildren;
+    "zha-device-neighbors": ZHADeviceNeighbors;
   }
 }

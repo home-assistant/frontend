@@ -27,7 +27,7 @@ import "./zha-cluster-commands";
 import "./zha-manage-clusters";
 import "./zha-device-binding";
 import "./zha-group-binding";
-import "./zha-device-children";
+import "./zha-device-neighbors";
 import "./zha-device-signature";
 import {
   Tab,
@@ -179,10 +179,10 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                   ></zha-device-zigbee-info>
                 `
               : html`
-                  <zha-device-children
+                  <zha-device-neighbors
                     .hass=${this.hass}
                     .device=${this._device}
-                  ></zha-device-children>
+                  ></zha-device-neighbors>
                 `
           )}
         </div>
