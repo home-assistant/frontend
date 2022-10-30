@@ -1024,7 +1024,7 @@
           "clusters": "Clusters",
           "bindings": "Bindings",
           "signature": "Signature",
-          "children": "Children"
+          "neighbors": "Neighbors"
         }
       },
       "zha_device_info": {

@@ -182,6 +182,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                   <zha-device-neighbors
                     .hass=${this.hass}
                     .device=${this._device}
+                    .narrow=${!this.large}
                   ></zha-device-neighbors>
                 `
           )}

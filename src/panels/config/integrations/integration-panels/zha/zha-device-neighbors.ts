@@ -22,6 +22,8 @@ export interface DeviceRowData extends DataTableRowData {
 class ZHADeviceNeighbors extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow!: boolean;
+
   @property() public device: ZHADevice | undefined;
 
   @state() private _devices: Map<string, ZHADevice> | undefined;
@@ -40,13 +42,15 @@ class ZHADeviceNeighbors extends LitElement {
     ) => {
       const outputDevices: DeviceRowData[] = [];
       if (device && devices) {
-        device.neighbors.forEach((child) => {
-          const zhaDevice: ZHADevice | undefined = devices.get(child.ieee);
+        device.neighbors.forEach((neighbor) => {
+          const zhaDevice: ZHADevice | undefined = devices.get(neighbor.ieee);
           if (zhaDevice) {
             outputDevices.push({
               name: zhaDevice.user_given_name || zhaDevice.name,
               id: zhaDevice.device_reg_id,
-              lqi: parseInt(child.lqi),
+              lqi: parseInt(neighbor.lqi),
+              depth: parseInt(neighbor.depth),
+              relationship: neighbor.relationship,
             });
           }
         });
@@ -55,22 +59,55 @@ class ZHADeviceNeighbors extends LitElement {
     }
   );
 
-  private _columns: DataTableColumnContainer = {
-    name: {
-      title: "Name",
-      sortable: true,
-      filterable: true,
-      direction: "asc",
-      grows: true,
-    },
-    lqi: {
-      title: "LQI",
-      sortable: true,
-      filterable: true,
-      type: "numeric",
-      width: "75px",
-    },
-  };
+  private _columns = memoizeOne(
+    (narrow: boolean): DataTableColumnContainer =>
+      narrow
+        ? {
+            name: {
+              title: "Name",
+              sortable: true,
+              filterable: true,
+              direction: "asc",
+              grows: true,
+            },
+            lqi: {
+              title: "LQI",
+              sortable: true,
+              filterable: true,
+              type: "numeric",
+              width: "75px",
+            },
+          }
+        : {
+            name: {
+              title: "Name",
+              sortable: true,
+              filterable: true,
+              direction: "asc",
+              grows: true,
+            },
+            lqi: {
+              title: "LQI",
+              sortable: true,
+              filterable: true,
+              type: "numeric",
+              width: "75px",
+            },
+            relationship: {
+              title: "Relationship",
+              sortable: true,
+              filterable: true,
+              width: "150px",
+            },
+            depth: {
+              title: "Depth",
+              sortable: true,
+              filterable: true,
+              type: "numeric",
+              width: "75px",
+            },
+          }
+  );
 
   protected render(): TemplateResult {
     if (!this.device) {
@@ -85,7 +122,7 @@ class ZHADeviceNeighbors extends LitElement {
           ></ha-circular-progress>`
         : html`<ha-data-table
             .hass=${this.hass}
-            .columns=${this._columns}
+            .columns=${this._columns(this.narrow)}
             .data=${this._deviceNeighbors(this.device, this._devices)}
             auto-height
             .dir=${computeRTLDirection(this.hass)}
