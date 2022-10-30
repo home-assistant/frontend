@@ -16,6 +16,8 @@ export interface DeviceRowData extends DataTableRowData {
   id: string;
   name: string;
   lqi: number;
+  depth: number;
+  relationship: string;
 }
 
 @customElement("zha-device-neighbors")
@@ -64,14 +66,14 @@ class ZHADeviceNeighbors extends LitElement {
       narrow
         ? {
             name: {
-              title: "Name",
+              title: this.hass.localize("ui.panel.config.zha.neighbors.name"),
               sortable: true,
               filterable: true,
               direction: "asc",
               grows: true,
             },
             lqi: {
-              title: "LQI",
+              title: this.hass.localize("ui.panel.config.zha.neighbors.lqi"),
               sortable: true,
               filterable: true,
               type: "numeric",
@@ -80,27 +82,29 @@ class ZHADeviceNeighbors extends LitElement {
           }
         : {
             name: {
-              title: "Name",
+              title: this.hass.localize("ui.panel.config.zha.neighbors.name"),
               sortable: true,
               filterable: true,
               direction: "asc",
               grows: true,
             },
             lqi: {
-              title: "LQI",
+              title: this.hass.localize("ui.panel.config.zha.neighbors.lqi"),
               sortable: true,
               filterable: true,
               type: "numeric",
               width: "75px",
             },
             relationship: {
-              title: "Relationship",
+              title: this.hass.localize(
+                "ui.panel.config.zha.neighbors.relationship"
+              ),
               sortable: true,
               filterable: true,
               width: "150px",
             },
             depth: {
-              title: "Depth",
+              title: this.hass.localize("ui.panel.config.zha.neighbors.depth"),
               sortable: true,
               filterable: true,
               type: "numeric",
