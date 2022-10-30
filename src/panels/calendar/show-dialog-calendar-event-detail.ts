@@ -14,11 +14,11 @@ export const loadCalendarEventDetailDialog = () =>
 
 export const showCalendarEventDetailDialog = (
   element: HTMLElement,
-  systemLogDetailParams: CalendarEventDetailDialogParams
+  detailParams: CalendarEventDetailDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-calendar-event-detail",
     dialogImport: loadCalendarEventDetailDialog,
-    dialogParams: systemLogDetailParams,
+    dialogParams: detailParams,
   });
 };

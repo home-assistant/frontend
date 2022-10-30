@@ -187,7 +187,6 @@ class DialogCalendarEventDetail extends LitElement {
                   <ha-combo-box
                     name="calendar"
                     .hass=${this.hass}
-                    .disabled=${!this._params.calendarId}
                     .label=${this.hass.localize("ui.components.calendar.label")}
                     .value=${this._calendarId!}
                     .renderer=${rowRenderer}
