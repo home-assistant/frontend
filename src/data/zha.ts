@@ -36,6 +36,8 @@ export interface Neighbor {
   ieee: string;
   nwk: string;
   lqi: string;
+  depth: string;
+  relationship: string;
 }
 
 export interface ZHADeviceEndpoint {

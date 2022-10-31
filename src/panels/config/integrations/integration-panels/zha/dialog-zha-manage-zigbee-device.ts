@@ -27,7 +27,7 @@ import "./zha-cluster-commands";
 import "./zha-manage-clusters";
 import "./zha-device-binding";
 import "./zha-group-binding";
-import "./zha-device-children";
+import "./zha-device-neighbors";
 import "./zha-device-signature";
 import {
   Tab,
@@ -179,10 +179,11 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                   ></zha-device-zigbee-info>
                 `
               : html`
-                  <zha-device-children
+                  <zha-device-neighbors
                     .hass=${this.hass}
                     .device=${this._device}
-                  ></zha-device-children>
+                    .narrow=${!this.large}
+                  ></zha-device-neighbors>
                 `
           )}
         </div>
@@ -221,7 +222,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
       device &&
       (device.device_type === "Router" || device.device_type === "Coordinator")
     ) {
-      tabs.push("children");
+      tabs.push("neighbors");
     }
 
     return tabs;
