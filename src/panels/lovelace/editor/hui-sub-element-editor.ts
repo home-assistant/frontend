@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import { mdiArrowLeft } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-icon-button";
 import type { HomeAssistant } from "../../../types";
@@ -10,6 +10,7 @@ import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import "./entity-row-editor/hui-row-element-editor";
 import "./header-footer-editor/hui-header-footer-element-editor";
 import type { HuiElementEditor } from "./hui-element-editor";
+import "./tile-control/hui-tile-control-element-editor";
 import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
 
 declare global {
@@ -78,6 +79,16 @@ export class HuiSubElementEditor extends LitElement {
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
             ></hui-headerfooter-element-editor>
+          `
+        : this.config.type === "tile-control"
+        ? html`
+            <hui-tile-control-element-editor
+              class="editor"
+              .hass=${this.hass}
+              .value=${this.config.elementConfig}
+              @config-changed=${this._handleConfigChanged}
+              @GUImode-changed=${this._handleGUIModeChanged}
+            ></hui-tile-control-element-editor>
           `
         : ""}
     `;

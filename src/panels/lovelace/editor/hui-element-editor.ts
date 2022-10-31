@@ -27,9 +27,14 @@ import type { LovelaceGenericElementEditor } from "../types";
 import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
+import { LovelaceTileControlConfig } from "../tile-control/types";
 
 export interface ConfigChangedEvent {
-  config: LovelaceCardConfig | LovelaceRowConfig | LovelaceHeaderFooterConfig;
+  config:
+    | LovelaceCardConfig
+    | LovelaceRowConfig
+    | LovelaceHeaderFooterConfig
+    | LovelaceTileControlConfig;
   error?: string;
   guiModeAvailable?: boolean;
 }
@@ -44,7 +49,11 @@ declare global {
 
 export interface UIConfigChangedEvent extends Event {
   detail: {
-    config: LovelaceCardConfig | LovelaceRowConfig | LovelaceHeaderFooterConfig;
+    config:
+      | LovelaceCardConfig
+      | LovelaceRowConfig
+      | LovelaceHeaderFooterConfig
+      | LovelaceTileControlConfig;
   };
 }
 

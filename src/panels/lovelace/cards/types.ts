@@ -11,6 +11,7 @@ import {
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { HaDurationData } from "../../../components/ha-duration-input";
+import { LovelaceTileControlConfig } from "../tile-control/types";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -501,4 +502,5 @@ export interface TileCardConfig extends LovelaceCardConfig {
   show_entity_picture?: string;
   tap_action?: ActionConfig;
   icon_tap_action?: ActionConfig;
+  controls?: LovelaceTileControlConfig[];
 }

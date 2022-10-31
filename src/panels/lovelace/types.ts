@@ -7,6 +7,7 @@ import { FrontendLocaleData } from "../../data/translation";
 import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
+import { LovelaceTileControlConfig } from "./tile-control/types";
 
 declare global {
   // eslint-disable-next-line
@@ -91,4 +92,20 @@ export interface LovelaceGenericElementEditor extends HTMLElement {
   lovelace?: LovelaceConfig;
   setConfig(config: any): void;
   focusYamlEditor?: () => void;
+}
+
+export interface LovelaceTileControl extends HTMLElement {
+  hass?: HomeAssistant;
+  setConfig(config: LovelaceTileControlConfig);
+}
+
+export interface LovelaceTileControlConstructor
+  extends Constructor<LovelaceTileControl> {
+  getConfigElement?: () => LovelaceTileControlEditor;
+  getStubConfig?: (hass: HomeAssistant) => LovelaceHeaderFooterConfig;
+}
+
+export interface LovelaceTileControlEditor
+  extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceTileControlConfig): void;
 }
