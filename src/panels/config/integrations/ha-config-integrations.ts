@@ -32,7 +32,6 @@ import {
   subscribeConfigEntries,
 } from "../../../data/config_entries";
 import {
-  getConfigFlowHandlers,
   getConfigFlowInProgressCollection,
   localizeConfigFlowTitle,
   subscribeConfigFlowInProgress,
@@ -49,13 +48,14 @@ import {
 } from "../../../data/entity_registry";
 import {
   domainToName,
+  fetchIntegrationManifest,
   fetchIntegrationManifests,
   IntegrationManifest,
 } from "../../../data/integration";
 import {
-  getSupportedBrands,
-  getSupportedBrandsLookup,
-} from "../../../data/supported_brands";
+  getIntegrationDescriptions,
+  findIntegration,
+} from "../../../data/integrations";
 import { scanUSBDevices } from "../../../data/usb";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import {
@@ -228,7 +228,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               )
           );
         },
-        { type: "integration" }
+        { type: ["device", "hub", "service"] }
       ),
     ];
   }
@@ -693,15 +693,21 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const handlers = await getConfigFlowHandlers(this.hass, "integration");
+    const descriptions = await getIntegrationDescriptions(this.hass);
+    const integrations = {
+      ...descriptions.core.integration,
+      ...descriptions.custom.integration,
+    };
 
-    // Integration exists, so we can just create a flow
-    if (handlers.includes(domain)) {
+    const integration = findIntegration(integrations, domain);
+
+    if (integration?.config_flow) {
+      // Integration exists, so we can just create a flow
       const localize = await localizePromise;
       if (
         await showConfirmationDialog(this, {
           title: localize("ui.panel.config.integrations.confirm_new", {
-            integration: domainToName(localize, domain),
+            integration: integration.name || domainToName(localize, domain),
           }),
         })
       ) {
@@ -710,46 +716,57 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             this._handleFlowUpdated();
           },
           startFlowHandler: domain,
-          manifest: this._manifests[domain],
+          manifest: await fetchIntegrationManifest(this.hass, domain),
           showAdvanced: this.hass.userData?.showAdvanced,
         });
       }
       return;
     }
 
-    const supportedBrands = await getSupportedBrands(this.hass);
-    const supportedBrandsIntegrations =
-      getSupportedBrandsLookup(supportedBrands);
+    if (integration?.supported_by) {
+      // Integration is a alias, so we can just create a flow
+      const localize = await localizePromise;
+      const supportedIntegration = findIntegration(
+        integrations,
+        integration.supported_by
+      );
 
-    // Supported brand exists, so we can just create a flow
-    if (Object.keys(supportedBrandsIntegrations).includes(domain)) {
-      const supBrand = supportedBrandsIntegrations[domain];
-      const slug = supBrand.supported_flows![0];
+      if (!supportedIntegration) {
+        return;
+      }
 
       showConfirmationDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.supported_brand_flow",
           {
-            supported_brand: supBrand.name,
-            flow_domain_name: domainToName(this.hass.localize, slug),
+            supported_brand: integration.name || domainToName(localize, domain),
+            flow_domain_name:
+              supportedIntegration.name ||
+              domainToName(localize, integration.supported_by),
           }
         ),
-        confirm: () => {
-          if (["zha", "zwave_js"].includes(slug)) {
-            protocolIntegrationPicked(this, this.hass, slug);
+        confirm: async () => {
+          if (["zha", "zwave_js"].includes(integration.supported_by!)) {
+            protocolIntegrationPicked(
+              this,
+              this.hass,
+              integration.supported_by!
+            );
             return;
           }
           showConfigFlowDialog(this, {
             dialogClosedCallback: () => {
               this._handleFlowUpdated();
             },
-            startFlowHandler: slug,
-            manifest: this._manifests[slug],
+            startFlowHandler: integration.supported_by,
+            manifest: await fetchIntegrationManifest(
+              this.hass,
+              integration.supported_by!
+            ),
             showAdvanced: this.hass.userData?.showAdvanced,
           });
         },
       });
-
       return;
     }
 
@@ -760,8 +777,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       });
       return;
     }
-    const helpers = await getConfigFlowHandlers(this.hass, "helper");
-    if (helpers.includes(domain)) {
+    const helpers = {
+      ...descriptions.core.helper,
+      ...descriptions.custom.helper,
+    };
+    const helper = findIntegration(helpers, domain);
+    if (helper) {
       navigate(`/config/helpers/add?domain=${domain}`, {
         replace: true,
       });

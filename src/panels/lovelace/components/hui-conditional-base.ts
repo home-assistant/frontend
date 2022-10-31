@@ -76,6 +76,8 @@ export class HuiConditionalBase extends ReactiveElement {
       if (!this._element.parentElement) {
         this.appendChild(this._element);
       }
+    } else if (this._element.parentElement) {
+      this.removeChild(this._element);
     }
   }
 }

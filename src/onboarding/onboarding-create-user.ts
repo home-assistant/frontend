@@ -18,17 +18,25 @@ import { onboardUserStep } from "../data/onboarding";
 import { PolymerChangedEvent } from "../polymer-types";
 
 const CREATE_USER_SCHEMA: HaFormSchema[] = [
-  { name: "name", required: true, selector: { text: {} } },
-  { name: "username", required: true, selector: { text: {} } },
+  {
+    name: "name",
+    required: true,
+    selector: { text: { autocomplete: "name" } },
+  },
+  {
+    name: "username",
+    required: true,
+    selector: { text: { autocomplete: "username" } },
+  },
   {
     name: "password",
     required: true,
-    selector: { text: { type: "password" } },
+    selector: { text: { type: "password", autocomplete: "new-password" } },
   },
   {
     name: "password_confirm",
     required: true,
-    selector: { text: { type: "password" } },
+    selector: { text: { type: "password", autocomplete: "new-password" } },
   },
 ];
 
@@ -72,7 +80,9 @@ class OnboardingCreateUser extends LitElement {
         .disabled=${this._loading ||
         !this._newUser.name ||
         !this._newUser.username ||
-        !this._newUser.password}
+        !this._newUser.password ||
+        !this._newUser.password_confirm ||
+        this._newUser.password !== this._newUser.password_confirm}
       >
         ${this.localize("ui.panel.page-onboarding.user.create_account")}
       </mwc-button>
@@ -88,7 +98,8 @@ class OnboardingCreateUser extends LitElement {
         this._newUser.name &&
         this._newUser.username &&
         this._newUser.password &&
-        this._newUser.password_confirm
+        this._newUser.password_confirm &&
+        this._newUser.password === this._newUser.password_confirm
       ) {
         this._submitForm(ev);
       }

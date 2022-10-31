@@ -118,7 +118,7 @@ class HassioAddonRepositoryEl extends LitElement {
   }
 
   private _addonTapped(ev) {
-    navigate(`/hassio/addon/${ev.currentTarget.addon.slug}`);
+    navigate(`/hassio/addon/${ev.currentTarget.addon.slug}?store=true`);
   }
 
   static get styles(): CSSResultGroup {

@@ -82,7 +82,6 @@ export class HaFormGrid extends LitElement implements HaFormElement {
       }
       :host > ha-form {
         display: block;
-        margin-bottom: 24px;
       }
     `;
   }

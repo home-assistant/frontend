@@ -114,6 +114,7 @@ export class CloudLogin extends LitElement {
                   )}
                   id="email"
                   type="email"
+                  autocomplete="username"
                   required
                   .value=${this.email}
                   @keydown=${this._keyDown}
@@ -129,6 +130,7 @@ export class CloudLogin extends LitElement {
                   )}
                   .value=${this._password || ""}
                   type="password"
+                  autocomplete="current-password"
                   required
                   minlength="8"
                   @keydown=${this._keyDown}

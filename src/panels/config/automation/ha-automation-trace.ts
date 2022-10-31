@@ -518,6 +518,7 @@ export class HaAutomationTrace extends LitElement {
           height: calc(100% - 56px);
           display: flex;
           background-color: var(--card-background-color);
+          direction: ltr;
         }
 
         :host([narrow]) .main {
@@ -551,6 +552,10 @@ export class HaAutomationTrace extends LitElement {
         }
         .trace-link {
           text-decoration: none;
+        }
+
+        ha-trace-logbook {
+          direction: var(--direction);
         }
       `,
     ];

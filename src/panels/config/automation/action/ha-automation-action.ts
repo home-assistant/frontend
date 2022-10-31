@@ -46,6 +46,8 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public nested = false;
+
   @property() public actions!: Action[];
 
   @property({ type: Boolean }) public reOrderMode = false;
@@ -58,6 +60,25 @@ export default class HaAutomationAction extends LitElement {
 
   protected render() {
     return html`
+      ${this.reOrderMode && !this.nested
+        ? html`
+            <ha-alert
+              alert-type="info"
+              .title=${this.hass.localize(
+                "ui.panel.config.automation.editor.re_order_mode.title"
+              )}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.re_order_mode.description_actions"
+              )}
+              <mwc-button slot="action" @click=${this._exitReOrderMode}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.re_order_mode.exit"
+                )}
+              </mwc-button>
+            </ha-alert>
+          `
+        : null}
       <div class="actions">
         ${repeat(
           this.actions,
@@ -72,6 +93,7 @@ export default class HaAutomationAction extends LitElement {
               .reOrderMode=${this.reOrderMode}
               @duplicate=${this._duplicateAction}
               @value-changed=${this._actionChanged}
+              @re-order=${this._enterReOrderMode}
               .hass=${this.hass}
             >
               ${this.reOrderMode
@@ -153,6 +175,16 @@ export default class HaAutomationAction extends LitElement {
         row.focus();
       });
     }
+  }
+
+  private async _enterReOrderMode(ev: CustomEvent) {
+    if (this.nested) return;
+    ev.stopPropagation();
+    this.reOrderMode = true;
+  }
+
+  private async _exitReOrderMode() {
+    this.reOrderMode = false;
   }
 
   private async _createSortable() {
@@ -281,6 +313,12 @@ export default class HaAutomationAction extends LitElement {
         }
         ha-svg-icon {
           height: 20px;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
+          border-radius: var(--ha-card-border-radius, 12px);
+          overflow: hidden;
         }
         .handle {
           cursor: move;

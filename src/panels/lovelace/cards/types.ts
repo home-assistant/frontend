@@ -1,4 +1,4 @@
-import { StatisticType } from "../../../data/recorder";
+import { Statistic, StatisticType } from "../../../data/recorder";
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { FullCalendarView, TranslationDict } from "../../../types";
 import { Condition } from "../common/validate-condition";
@@ -11,6 +11,7 @@ import {
   LovelaceRowConfig,
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { HaDurationData } from "../../../components/ha-duration-input";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -131,6 +132,12 @@ export interface EnergySolarGraphCardConfig extends LovelaceCardConfig {
 
 export interface EnergyGasGraphCardConfig extends LovelaceCardConfig {
   type: "energy-gas-graph";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergyWaterGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-water-graph";
   title?: string;
   collection_key?: string;
 }
@@ -305,6 +312,18 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   chart_type?: "line" | "bar";
 }
 
+export interface StatisticCardConfig extends LovelaceCardConfig {
+  title?: string;
+  entities: Array<EntityConfig | string>;
+  period: {
+    fixed_period?: { start: string; end: string };
+    calendar?: { period: string; offset: number };
+    rolling_window?: { duration: HaDurationData; offset: HaDurationData };
+  };
+  stat_type: keyof Statistic;
+  theme?: string;
+}
+
 export interface PictureCardConfig extends LovelaceCardConfig {
   image?: string;
   tap_action?: ActionConfig;
@@ -473,4 +492,14 @@ export interface EnergyFlowCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+}
+
+export interface TileCardConfig extends LovelaceCardConfig {
+  entity: string;
+  name?: string;
+  icon?: string;
+  color?: string;
+  show_entity_picture?: string;
+  tap_action?: ActionConfig;
+  icon_tap_action?: ActionConfig;
 }

@@ -573,6 +573,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
           var(--card-background-color, white)
         );
         border-top: 1px solid var(--divider-color);
+        padding-bottom: env(safe-area-inset-bottom);
       }
 
       mwc-linear-progress {

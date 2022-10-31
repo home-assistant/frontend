@@ -12,7 +12,8 @@ export type HaFormSchema =
   | HaFormMultiSelectSchema
   | HaFormTimeSchema
   | HaFormSelector
-  | HaFormGridSchema;
+  | HaFormGridSchema
+  | HaFormExpandableSchema;
 
 export interface HaFormBaseSchema {
   name: string;
@@ -31,6 +32,17 @@ export interface HaFormGridSchema extends HaFormBaseSchema {
   type: "grid";
   name: "";
   column_min_width?: string;
+  schema: readonly HaFormSchema[];
+}
+
+export interface HaFormExpandableSchema extends HaFormBaseSchema {
+  type: "expandable";
+  name: "";
+  title: string;
+  icon?: string;
+  iconPath?: string;
+  expanded?: boolean;
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
   schema: readonly HaFormSchema[];
 }
 
@@ -71,6 +83,7 @@ export interface HaFormFloatSchema extends HaFormBaseSchema {
 export interface HaFormStringSchema extends HaFormBaseSchema {
   type: "string";
   format?: string;
+  autocomplete?: string;
 }
 
 export interface HaFormBooleanSchema extends HaFormBaseSchema {
@@ -85,7 +98,9 @@ export interface HaFormTimeSchema extends HaFormBaseSchema {
 export type SchemaUnion<
   SchemaArray extends readonly HaFormSchema[],
   Schema = SchemaArray[number]
-> = Schema extends HaFormGridSchema ? SchemaUnion<Schema["schema"]> : Schema;
+> = Schema extends HaFormGridSchema | HaFormExpandableSchema
+  ? SchemaUnion<Schema["schema"]>
+  : Schema;
 
 export interface HaFormDataContainer {
   [key: string]: HaFormData;

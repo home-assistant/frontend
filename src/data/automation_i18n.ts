@@ -60,16 +60,30 @@ export const describeTrigger = (
 
     base += ` ${entity} is`;
 
-    if ("above" in trigger) {
+    if (trigger.above !== undefined) {
       base += ` above ${trigger.above}`;
     }
 
-    if ("below" in trigger && "above" in trigger) {
+    if (trigger.below !== undefined && trigger.above !== undefined) {
       base += " and";
     }
 
-    if ("below" in trigger) {
+    if (trigger.below !== undefined) {
       base += ` below ${trigger.below}`;
+    }
+
+    if (trigger.for) {
+      let duration: string | null;
+      if (typeof trigger.for === "number") {
+        duration = secondsToDuration(trigger.for);
+      } else if (typeof trigger.for === "string") {
+        duration = trigger.for;
+      } else {
+        duration = formatDuration(trigger.for);
+      }
+      if (duration) {
+        base += ` for ${duration}`;
+      }
     }
 
     return base;
@@ -188,15 +202,16 @@ export const describeTrigger = (
 
   // Time Trigger
   if (trigger.platform === "time" && trigger.at) {
-    const at = trigger.at.includes(".")
-      ? `entity ${
-          hass.states[trigger.at]
-            ? computeStateName(hass.states[trigger.at])
-            : trigger.at
-        }`
-      : trigger.at;
+    const result = ensureArray(trigger.at).map((at) =>
+      at.toString().includes(".")
+        ? `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`
+        : at
+    );
 
-    return `When the time is equal to ${at}`;
+    const last = result.splice(-1, 1)[0];
+    return `When the time is equal to ${
+      result.length ? `${result.join(", ")} or ` : ""
+    }${last}`;
   }
 
   // Time Patter Trigger
@@ -359,35 +374,35 @@ export const describeCondition = (
   if (condition.condition === "or") {
     const conditions = ensureArray(condition.conditions);
 
-    let count = "condition";
-
-    if (conditions && conditions.length > 0) {
-      count = `of ${conditions.length} conditions`;
+    if (!conditions || conditions.length === 0) {
+      return "Test if any condition matches";
     }
-
-    return `Test if any ${count} matches`;
+    const count = conditions.length;
+    return `Test if any of ${count} condition${count === 1 ? "" : "s"} matches`;
   }
 
   if (condition.condition === "and") {
     const conditions = ensureArray(condition.conditions);
 
-    const count =
-      conditions && conditions.length > 0
-        ? `${conditions.length} `
-        : "multiple";
-
-    return `Test if ${count} conditions match`;
+    if (!conditions || conditions.length === 0) {
+      return "Test if multiple conditions match";
+    }
+    const count = conditions.length;
+    return `Test if ${count} condition${count === 1 ? "" : "s"} match${
+      count === 1 ? "es" : ""
+    }`;
   }
 
   if (condition.condition === "not") {
     const conditions = ensureArray(condition.conditions);
 
-    const what =
-      conditions && conditions.length > 0
-        ? `none of ${conditions.length} conditions match`
-        : "no condition matches";
-
-    return `Test if ${what}`;
+    if (!conditions || conditions.length === 0) {
+      return "Test if no condition matches";
+    }
+    if (conditions.length === 1) {
+      return "Test if 1 condition does not match";
+    }
+    return `Test if none of ${conditions.length} conditions match`;
   }
 
   // State Condition
@@ -424,16 +439,18 @@ export const describeCondition = (
 
     base += ` ${entity} is ${states}`;
 
-    if ("for" in condition) {
-      let duration: string;
+    if (condition.for) {
+      let duration: string | null;
       if (typeof condition.for === "number") {
-        duration = `for ${secondsToDuration(condition.for)!}`;
+        duration = secondsToDuration(condition.for);
       } else if (typeof condition.for === "string") {
-        duration = `for ${condition.for}`;
+        duration = condition.for;
       } else {
-        duration = `for ${JSON.stringify(condition.for)}`;
+        duration = formatDuration(condition.for);
       }
-      base += ` for ${duration}`;
+      if (duration) {
+        base += ` for ${duration}`;
+      }
     }
 
     return base;

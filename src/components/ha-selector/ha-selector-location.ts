@@ -43,7 +43,7 @@ export class HaLocationSelector extends LitElement {
       value?: LocationSelectorValue
     ): MarkerLocation[] => {
       const computedStyles = getComputedStyle(this);
-      const zoneRadiusColor = selector.location.radius
+      const zoneRadiusColor = selector.location?.radius
         ? computedStyles.getPropertyValue("--zone-radius-color") ||
           computedStyles.getPropertyValue("--accent-color")
         : undefined;
@@ -52,10 +52,10 @@ export class HaLocationSelector extends LitElement {
           id: "location",
           latitude: value?.latitude || this.hass.config.latitude,
           longitude: value?.longitude || this.hass.config.longitude,
-          radius: selector.location.radius ? value?.radius || 1000 : undefined,
+          radius: selector.location?.radius ? value?.radius || 1000 : undefined,
           radius_color: zoneRadiusColor,
           icon:
-            selector.location.icon || selector.location.radius
+            selector.location?.icon || selector.location?.radius
               ? "mdi:map-marker-radius"
               : "mdi:map-marker",
           location_editable: true,

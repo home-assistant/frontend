@@ -55,6 +55,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               )}:
             </h3>
             <ha-automation-condition
+              nested
               .conditions=${ensureArray<string | Condition>(option.conditions)}
               .reOrderMode=${this.reOrderMode}
               .disabled=${this.disabled}
@@ -68,6 +69,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               )}:
             </h3>
             <ha-automation-action
+              nested
               .actions=${ensureArray(option.sequence) || []}
               .reOrderMode=${this.reOrderMode}
               .disabled=${this.disabled}
@@ -96,6 +98,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               )}:
             </h2>
             <ha-automation-action
+              nested
               .actions=${ensureArray(action.default) || []}
               .reOrderMode=${this.reOrderMode}
               .disabled=${this.disabled}

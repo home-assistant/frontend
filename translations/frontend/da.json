@@ -420,7 +420,6 @@
                 "used": "Repository er i brug til installerede tilføjelsesprogrammer og kan ikke fjernes."
             },
             "restart_addon": {
-                "confirm_text": "Genstart tilføjelsesprogrammet",
                 "text": "Vil du genstarte tilføjelsesprogrammet med ændringerne?"
             }
         },
@@ -485,10 +484,6 @@
                 "log_provider": "Logudbyder"
             },
             "supervisor": {
-                "beta_backup": "Sørg for, at du har sikkerhedskopier af dine data, før du aktiverer denne funktion.",
-                "beta_join_confirm": "Vil du tilmelde dig beta-kanalen?",
-                "beta_release_items": "Dette omfatter betaversioner af:",
-                "beta_warning": "Betaversioner er henvendt til testere og tidlige brugere og kan indeholde ustabil kode",
                 "channel": "Kanal",
                 "cpu_usage": "Supervisor CPU-forbrug",
                 "failed_to_reload": "Genindlæsning af Supervisor mislykkedes",
@@ -802,8 +797,6 @@
                 "expansion_header": "Attributter"
             },
             "blueprint-picker": {
-                "add_user": "Tilføj bruger",
-                "remove_user": "Fjern bruger",
                 "select_blueprint": "Vælg et Blueprint"
             },
             "calendar": {
@@ -867,7 +860,6 @@
                 "no_history_found": "Ingen tilstandshistorik fundet."
             },
             "logbook": {
-                "by": "af",
                 "entries_not_found": "Der blev ikke fundet nogen logbogshændelser.",
                 "messages": {
                     "became_unavailable": "blev utilgængelig",
@@ -1019,7 +1011,6 @@
             "service-control": {
                 "integration_doc": "Dokumentation for integration",
                 "required": "Dette felt er påkrævet",
-                "service_data": "Service data",
                 "target": "Mål",
                 "target_description": "Hvad skal denne tjeneste bruge som mål områder, enheder eller entiteter."
             },
@@ -1192,7 +1183,6 @@
                 },
                 "input_number": {
                     "box": "Inputfelt",
-                    "initial": "Startværdi",
                     "max": "Maksimumsværdi",
                     "min": "Minimumsværdi",
                     "mode": "Visningstilstand",
@@ -1228,7 +1218,6 @@
             },
             "join_beta_channel": {
                 "backup": "Sørg for at have backup af alle dine data før du aktiverer denne mulighed",
-                "confirm": "Ønsker du at deltage i beta-kanalen?",
                 "release_items": "Denne inkluderer beta-udgivelser af:",
                 "title": "Deltag i beta-kanal",
                 "warning": "Beta-udgaver er for testere og pionerer og kan indeholde ustabile programdele"
@@ -1254,13 +1243,6 @@
                 "remote": {
                     "activity": "Nuværende aktivitet"
                 },
-                "restored": {
-                    "confirm_remove_text": "Er du sikker på, at du vil fjerne denne entitet?",
-                    "confirm_remove_title": "Fjern entitet?",
-                    "not_provided": "Denne entitet er i øjeblikket ikke tilgængelig og er blevet gjort forældreløs af en fjernet, ændret eller dysfunktionel integration eller enhed.",
-                    "remove_action": "Fjern entitet",
-                    "remove_intro": "Hvis entiteten ikke længere er i brug, kan du rydde op ved at fjerne den."
-                },
                 "script": {
                     "last_action": "Senest udført",
                     "last_triggered": "Senest udført"
@@ -1275,7 +1257,6 @@
                 "update": {
                     "clear_skipped": "Ryd oversprunget",
                     "create_backup": "Opret sikkerhedskopi, før du opdaterer",
-                    "current_version": "Nuværende version",
                     "install": "Installer",
                     "installed_version": "Installeret version",
                     "latest_version": "Seneste version",
@@ -1458,13 +1439,9 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Tilføj enheder via denne enhed",
-                    "clusters": "Administrer klynger",
-                    "device_children": "Se underordnede",
                     "reconfigure": "Genkonfigurer enhed",
                     "remove": "Fjern enhed",
-                    "view_in_visualization": "Vis i Visualisering",
-                    "view_network": "Vis netværk",
-                    "zigbee_information": "Zigbee-enhedssignatur"
+                    "view_network": "Vis netværk"
                 },
                 "confirmations": {
                     "remove": "Er du sikker på, at du vil fjerne enheden?"
@@ -1633,7 +1610,6 @@
                         "actions": {
                             "add": "Tilføj handling",
                             "delete": "Slet",
-                            "delete_confirm": "Er du sikker på, at du vil slette?",
                             "delete_confirm_text": "Det vil blive slettet permanent.",
                             "delete_confirm_title": "Slet handling?",
                             "disable": "Deaktiver",
@@ -1641,13 +1617,10 @@
                             "duplicate": "Dupliker",
                             "enable": "Aktiver",
                             "header": "Handlinger",
-                            "introduction": "Handlinger er, hvad Home Assistant skal gøre, når automatiseringen udløses.",
                             "invalid_action": "Ugyldig handling",
                             "learn_more": "Lær om handlinger",
-                            "name": "Handling",
                             "rename": "Omdøb",
                             "run": "Kør",
-                            "run_action": "Kør handling",
                             "run_action_error": "Fejl ved afvikling af handling",
                             "run_action_success": "Handlingen blev afviklet uden fejl",
                             "type": {
@@ -1757,15 +1730,12 @@
                         "conditions": {
                             "add": "Tilføj betingelse",
                             "delete": "Slet",
-                            "delete_confirm": "Er du sikker på, at du vil slette?",
                             "delete_confirm_text": "Det vil blive slettet permanent.",
                             "delete_confirm_title": "Slet betingelse?",
                             "duplicate": "Dupliker",
                             "header": "Betingelser",
-                            "introduction": "Betingelser er valgfri og forhindrer yderligere udførelse, medmindre alle betingelser er opfyldt.",
                             "invalid_condition": "Ugyldig konfiguration af betingelser",
                             "learn_more": "Lær om betingelser",
-                            "name": "Betingelse",
                             "rename": "Omdøb",
                             "test": "Test",
                             "test_failed": "Der opstod en fejl under test af betingelser",
@@ -1858,10 +1828,7 @@
                         "edit_ui": "Rediger via brugerfladen",
                         "edit_yaml": "Rediger i YAML",
                         "enable": "Aktiver",
-                        "enable_disable": "Aktiver/deaktiver automatisering",
-                        "introduction": "Brug automatiseringer til at vække dit hjem til live.",
                         "load_error_not_deletable": "Kun automatiseringer i filen \"automations.yaml\" kan slettes.",
-                        "load_error_not_duplicable": "Kun automatiseringer i filen \"automations.yaml\" kan kopieres.",
                         "load_error_not_editable": "Kun automatiseringer i 'automations.yaml' kan redigeres.",
                         "load_error_unknown": "Fejl ved indlæsning af automatisering ({err_no}).",
                         "max": {
@@ -1870,8 +1837,6 @@
                         },
                         "missing_name": "Kan ikke gemme automatisering uden et navn",
                         "modes": {
-                            "description": "Tilstanden styrer, hvad der sker, når automatiseringen udløses, mens handlingerne stadig kører fra en tidligere udløser. Læs {documentation_link} for at få flere oplysninger.",
-                            "documentation": "automatiseringsdokumentationen",
                             "label": "Tilstand",
                             "learn_more": "Få mere at vide om tilstande",
                             "parallel": "Parallelt",
@@ -1892,16 +1857,13 @@
                         "triggers": {
                             "add": "Tilføj udløser",
                             "delete": "Slet",
-                            "delete_confirm": "Er du sikker på, at du vil slette?",
                             "delete_confirm_text": "Det vil blive slettet permanent.",
                             "delete_confirm_title": "Slet udløser?",
                             "duplicate": "Dupliker",
                             "edit_id": "Rediger trigger-ID",
                             "header": "Udløsere",
                             "id": "Udløser-ID",
-                            "introduction": "Udløsere er, hvad der starter behandlingen af en automatiseringsregel. Det er muligt at angive flere udløsere til samme regel. Når en udløser starter, vil Home Assistant validere eventuelle betingelser og udføre handlingen.",
                             "learn_more": "Lær om udløsere",
-                            "name": "Udløser",
                             "rename": "Omdøb",
                             "triggered": "Udløst",
                             "type": {
@@ -2006,22 +1968,18 @@
                             "type_select": "Udløsertype",
                             "unsupported_platform": "Ingen UI-understøttelse af platform: {platform}"
                         },
-                        "unsaved_confirm": "Du har ikke-gemte ændringer. Er du sikker på, at du vil forlade?",
                         "unsaved_confirm_text": "Ikke-gemte ændringer går tabt.",
                         "unsaved_confirm_title": "Afslut redigering?"
                     },
                     "picker": {
                         "add_automation": "Tilføj automatisering",
                         "delete": "Slet",
-                        "delete_automation": "Slet automatisering",
-                        "delete_confirm": "Er du sikker på, at du vil slette denne automatisering?",
                         "delete_confirm_text": "{name} vil blive slettet permanent.",
                         "delete_confirm_title": "Slet automatisering?",
                         "dev_automation": "Fejlfindingsautomatisering",
                         "dev_only_editable": "Kun automatiseringer, der har fået tildelt et unikt ID, kan fejlsøges.",
                         "disabled": "Deaktiveret",
                         "duplicate": "Kopier",
-                        "duplicate_automation": "Kopier automatisering",
                         "edit_automation": "Rediger automatisering",
                         "header": "Automatiserings-editor",
                         "headers": {
@@ -2096,7 +2054,6 @@
                         "import_btn": "Forhåndsvisning af blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction": "Importer blueprints fra andre brugere fra GitHub og HA's forum ved at indsætte adressen nedenfor.",
-                        "import_introduction_link": "Du kan importere blueprintsr fra andre brugere på Github og {community_link} . Indtast webadressen til blueprint nedenfor.",
                         "importing": "Indlæser blueprint…",
                         "raw_blueprint": "Blueprint indhold",
                         "save_btn": "Importer blueprint",
@@ -2108,7 +2065,6 @@
                     "description": "Administrer blueprints",
                     "overview": {
                         "add_blueprint": "Importer blueprint",
-                        "confirm_delete_header": "Slet dette blueprint?",
                         "confirm_delete_text": "Er du sikker på, at du vil slette dette blueprint?",
                         "confirm_delete_title": "Slet blueprint?",
                         "create_automation": "Opret automatisering",
@@ -2146,8 +2102,6 @@
                             "not_configured_text": "Før du kan bruge Alexa, skal du aktivere Home Assistant-færdigheden for Alexa i Alexa-appen.",
                             "not_configured_title": "Alexa er ikke aktiveret",
                             "state_reporting_error": "Kunne ikke {enable_disable} rapporteringstilstand.",
-                            "sync_entities": "Synkroniser entiteter til Amazon",
-                            "sync_entities_error": "Kunne ikke synkronisere entiteter:",
                             "title": "Alexa"
                         },
                         "connected": "Forbundet",
@@ -2170,9 +2124,6 @@
                             "not_configured_text": "Inden du kan bruge Google Assistant, skal du aktivere \"Home Assistant Cloud skill for Google Assistant\" i Google Home-appen.",
                             "not_configured_title": "Google Assistent er ikke aktiveret",
                             "security_devices": "Sikkerhedsenheder",
-                            "sync_entities": "Synkroniser entiteter til Google",
-                            "sync_failed_text": "Synkronisering af entiteter mislykkedes, prøv igen eller tjek logfilerne.",
-                            "sync_failed_title": "Synkronisering mislykkedes",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integrationer",
@@ -2235,7 +2186,6 @@
                         "exposed": "{selected} er udstillet",
                         "exposed_entities": "Eksponerede entiteter",
                         "follow_domain": "Følg domæne",
-                        "manage_domains": "Administrer domæner",
                         "not_exposed": "{selected} er ikke udstillet",
                         "not_exposed_entities": "Ikke-eksponerede entiteter",
                         "title": "Alexa"
@@ -2251,12 +2201,9 @@
                         "will_be_auto_renewed": "vil automatisk blive fornyet"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "Webhook er tilgængelig på følgende webadresse:",
                         "close": "Luk",
-                        "confirm_disable": "Er du sikker på, at du vil deaktivere denne webhook?",
                         "confirm_disable_text": "Webhook for {name} deaktiveres.",
                         "confirm_disable_title": "Deaktiver webhook",
-                        "copied_to_clipboard": "Kopieret til udklipsholder",
                         "info_disable_webhook": "Hvis du ikke længere vil bruge denne webhook, kan du",
                         "link_disable_webhook": "deaktivere den",
                         "managed_by_integration": "Denne webhook administreres af en integration og kan ikke deaktiveres.",
@@ -2282,7 +2229,6 @@
                         "exposed": "{selected} er udstillet",
                         "exposed_entities": "Eksponerede entiteter",
                         "follow_domain": "Følg domæne",
-                        "manage_domains": "Administrer domæner",
                         "not_exposed": "{selected} er ikke udstillet",
                         "not_exposed_entities": "Ikke-eksponerede entiteter",
                         "sync_to_google": "Synkroniserer ændringer til Google.",
@@ -2368,26 +2314,20 @@
                 },
                 "dashboard": {
                     "about": {
-                        "description": "Version, systemtilstand og links til dokumentation",
                         "main": "Om",
-                        "secondary": "Versionsoplysninger, anerkendelser og mere",
-                        "title": "Om"
+                        "secondary": "Versionsoplysninger, anerkendelser og mere"
                     },
                     "areas": {
-                        "description": "Administrer områder og zoner, som Home Assistant sporer",
                         "main": "Områder og Zoner",
-                        "secondary": "Administrer lokaliteter i og omkring dit hus",
-                        "title": "Områder og zoner"
+                        "secondary": "Administrer lokaliteter i og omkring dit hus"
                     },
                     "automations": {
                         "main": "Automatiseringer og scener",
                         "secondary": "Automatiseringer, scener, scripts og blueprints"
                     },
                     "backup": {
-                        "description": "Sikkerhedskopier din Home Assistant-konfiguration",
                         "main": "Sikkerhedskopi",
-                        "secondary": "Sikkerhedskopier din Home Assistant-konfiguration",
-                        "title": "Sikkerhedskopi"
+                        "secondary": "Sikkerhedskopier din Home Assistant-konfiguration"
                     },
                     "companion": {
                         "main": "Companion App",
@@ -2414,10 +2354,8 @@
                         "secondary": "Kør ekstra applikationer ved siden af Home Assistant"
                     },
                     "system": {
-                        "description": "Opret sikkerhedskopier, tjek logfiler eller genstart dit system",
                         "main": "System",
-                        "secondary": "Opret sikkerhedskopier, tjek logfiler eller genstart dit system",
-                        "title": "System"
+                        "secondary": "Opret sikkerhedskopier, tjek logfiler eller genstart dit system"
                     },
                     "tags": {
                         "main": "Tags",
@@ -2501,8 +2439,6 @@
                     "name": "Navn",
                     "no_devices": "Ingen enheder",
                     "open_configuration_url": "Besøg",
-                    "open_configuration_url_device": "Besøg enhed",
-                    "open_configuration_url_service": "Besøg tjeneste",
                     "picker": {
                         "filter": {
                             "filter": "Filtrer",
@@ -2781,12 +2717,10 @@
                     "processor": "Processor",
                     "reboot": "Genstart",
                     "reboot_host": "Genstart værtssystem",
-                    "reboot_host_confirm": "Er du sikker på, at du vil genstarte værtssystem?",
                     "reboot_host_text": "Dette vil genstarte hele systemet inklusiv HA Core og alle tilføjelsesprogrammer.",
                     "reboot_host_title": "Genstart systemet?",
                     "shutdown": "Luk systemet",
                     "shutdown_host": "Sluk værtssystem",
-                    "shutdown_host_confirm": "Er du sikker på at du vil slukke værtssystem?",
                     "shutdown_host_text": "Dette lukker hele systemet inklusiv HA Core og alle tilføjelsesprogrammer.",
                     "shutdown_host_title": "Luk systemet?"
                 },
@@ -2837,7 +2771,6 @@
                         "thanks": "Tak til"
                     },
                     "license": "Udgivet under Apache 2.0-licensen",
-                    "path_configuration": "Sti til 'configuration.yaml': {path}",
                     "server": "server",
                     "setup_time": "Opsætningstid",
                     "source": "Kilde:",
@@ -2866,13 +2799,11 @@
                         "check_the_logs": "Kontroller logfilerne",
                         "configure": "Konfigurer",
                         "delete": "Slet",
-                        "delete_confirm": "Er du sikker på, at du vil slette integrationen {title}?",
                         "delete_confirm_text": "Dens enheder og entiteter vil blive slettet permanent.",
                         "delete_confirm_title": "Slet {title}?",
                         "depends_on_cloud": "Afhængig af Cloud tjenester",
                         "devices": "{count} {count, plural,\n  one {enhed}\n  other {enheder}\n}",
                         "disable": {
-                            "disable_confirm": "Er du sikker på, at du vil deaktivere denne integration? Integrationens enheder og entiteter vil blive deaktiveret.",
                             "disabled": "Deaktiveret",
                             "disabled_by": {
                                 "device": "enhed",
@@ -2941,10 +2872,6 @@
                         "no_config_flow": "Denne integration understøtter ikke konfiguration via brugergrænsefladen. Hvis du har fulgt dette link fra Home Assistant-hjemmesiden, skal du sørge for at køre den nyeste version af Home Assistant.",
                         "not_all_required_fields": "Ikke alle påkrævede felter er udfyldt.",
                         "not_loaded": "Integrationen kunne ikke indlæses, prøv at genstarte Home Assistant.",
-                        "pick_flow_step": {
-                            "new_flow": "Nej, konfigurer en anden forekomst af {integration}",
-                            "title": "Vi opdagede disse, vil du oprette dem?"
-                        },
                         "submit": "Send",
                         "success": "Fuldført"
                     },
@@ -3060,7 +2987,6 @@
                     "resources": {
                         "cant_edit_yaml": "Du redigerer dette betjeningspanel i YAML-tilstand, og derfor kan du ikke administrere dine ressourcer gennem brugerfladen. Administrer dem i configuration.yaml.",
                         "caption": "Ressourcer",
-                        "confirm_delete": "Er du sikker på, at du vil slette denne ressource?",
                         "confirm_delete_text": "{url} vil blive slettet permanent.",
                         "confirm_delete_title": "Slet ressource?",
                         "detail": {
@@ -3132,8 +3058,6 @@
                 "person": {
                     "add_person": "Tilføj person",
                     "caption": "Personer",
-                    "confirm_delete": "Er du sikker på, at du vil slette denne person?",
-                    "confirm_delete2": "Alle enheder, der tilhører denne person, bliver utildelte.",
                     "confirm_delete_text": "Denne person vil blive slettet permanent, og alle enheder, der tilhører denne person, vil blive fjernet.",
                     "confirm_delete_title": "Slet {name}?",
                     "create_person": "Opret person",
@@ -3166,7 +3090,6 @@
                 },
                 "repairs": {
                     "dialog": {
-                        "alert_not_fixable": "Vi kan ikke reparere dette problem for dig.",
                         "fix": "Reparer"
                     }
                 },
@@ -3186,18 +3109,15 @@
                         "entities": {
                             "add": "Tilføj en entitet",
                             "delete": "Slet entitet",
-                            "device_entities": "Hvis du tilføjer en entitet, der hører til en enhed, tilføjes enheden også.",
                             "header": "Entiteter",
                             "introduction": "Entiteter, der ikke hører til en enhed, kan indstilles her.",
                             "without_device": "Entiteter uden enhed"
                         },
                         "icon": "Ikon",
-                        "introduction": "Brug scener til at vække dit hjem til live",
                         "load_error_not_editable": "Kun scener i 'scenes.yaml' er redigerbare.",
                         "load_error_unknown": "Fejl under indlæsning af scene ({err_no}).",
                         "name": "Navn",
                         "save": "Gem",
-                        "unsaved_confirm": "Du har ikke-gemte ændringer. Er du sikker på, at du vil forlade?",
                         "unsaved_confirm_text": "Ikke-gemte ændringer vil gå tabt.",
                         "unsaved_confirm_title": "Afslut redigering?"
                     },
@@ -3205,7 +3125,6 @@
                         "activate": "Aktivér",
                         "add_scene": "Tilføj scene",
                         "delete": "Slet",
-                        "delete_confirm": "Er du sikker på, at du vil slette denne scene?",
                         "delete_confirm_text": "{name} vil blive slettet permanent.",
                         "delete_confirm_title": "Slet scene?",
                         "delete_scene": "Slet scene",
@@ -3214,20 +3133,15 @@
                         "edit_scene": "Rediger scene",
                         "header": "Sceneredigering",
                         "headers": {
-                            "activate": "Aktiver",
-                            "edit": "Rediger",
                             "last_activated": "Sidst aktiveret",
-                            "name": "Navn",
-                            "show_info": "Vis oplysninger",
-                            "state": "Tilstand"
+                            "name": "Navn"
                         },
                         "introduction": "Sceneredigering giver dig mulighed for at oprette og redigere scener. Følg nedenstående link for at læse instruktionerne for at sikre dig, at du har konfigureret Home Assistant korrekt.",
                         "learn_more": "Lær mere om scener",
                         "no_scenes": "Vi kunne ikke finde nogen redigerbare scener",
                         "only_editable": "Kun scener defineret i 'scenes.yaml' kan redigeres.",
                         "pick_scene": "Vælg scene for at redigere",
-                        "show_info": "Information",
-                        "show_info_scene": "Vis info om scene"
+                        "show_info": "Information"
                     }
                 },
                 "script": {
@@ -3236,10 +3150,8 @@
                     "editor": {
                         "alias": "Navn",
                         "default_name": "Nyt script",
-                        "delete_confirm": "Er du sikker på, at du vil slette dette script?",
                         "delete_confirm_text": "{name} slettes permanent.",
                         "delete_confirm_title": "Slet script?",
-                        "delete_script": "Slet script",
                         "header": "Script: {name}",
                         "icon": "Ikon",
                         "id": "Entitets-ID",
@@ -3248,15 +3160,12 @@
                         "introduction": "Brug scripts til at udløse en sekvens af handlinger.",
                         "link_available_actions": "Lær mere om tilgængelige handlinger.",
                         "load_error_not_deletable": "Kun scripts i filen \"scripts.yaml\" kan slettes.",
-                        "load_error_not_duplicable": "Kun scripts i filen \"scripts.yaml\" kan kopieres.",
                         "load_error_not_editable": "Kun scripts i 'scripts.yaml' kan redigeres.",
                         "max": {
                             "parallel": "Maksimalt antal parallelle kørsler",
                             "queued": "Kølængde"
                         },
                         "modes": {
-                            "description": "Tilstanden styrer, hvad der sker, når scriptet aktiveres, mens det stadig kører fra en eller flere tidligere aktiveringer. Læs {documentation_link} for at få flere oplysninger.",
-                            "documentation": "script-dokumentationen",
                             "label": "Tilstand",
                             "learn_more": "Få mere at vide om tilstande",
                             "parallel": "Parallelt",
@@ -3273,10 +3182,7 @@
                     "picker": {
                         "add_script": "Tilføj script",
                         "delete": "Slet",
-                        "dev_script": "Fejlfinding af script",
                         "duplicate": "Kopier",
-                        "duplicate_script": "Kopier script",
-                        "edit_script": "Rediger script",
                         "header": "Script-redigering",
                         "headers": {
                             "name": "Navn",
@@ -3304,7 +3210,6 @@
                         "move": "Flyt",
                         "moving": "Flytter datadisk",
                         "moving_desc": "Genstarter og flytter datadisk. Vent venligst.",
-                        "no_devices": "Ingen passende tilsluttede enheder fundet",
                         "no_devices_text": "Der findes ingen brugbar ekstern enhed. Lagerkapaciteten på den eksterne datadisk skal være større end lagerkapaciteten på den eksisterende disk",
                         "no_devices_title": "Der blev ikke fundet et lagermedie",
                         "select_device": "Vælg ny datadisk",
@@ -3315,11 +3220,9 @@
                     "used_space": "Anvendt plads"
                 },
                 "system_dashboard": {
-                    "confirm_restart": "Er du sikker på at du vil genstarte Home Assistant?",
                     "confirm_restart_text": "Genstart af Home Assistant vil stoppe alle dine betjeningspaneler, automatiseringer og scripts.",
                     "confirm_restart_title": "Genstart Home Assistant?",
                     "restart_error": "Kunne ikke genstarte Home Assistant",
-                    "restart_homeassistant": "Genstart Home Assistant",
                     "restart_homeassistant_short": "Genstart"
                 },
                 "system_health": {
@@ -3328,7 +3231,6 @@
                     "cpu_usage": "Processorbrug",
                     "description": "Status, metrikker og opstartstid på integrationer",
                     "integration_start_time": "Opstartstid for integration",
-                    "long_loading_integrations": "Integrationer med lang indlæsningstid",
                     "ram_usage": "Hukommelsesbrug",
                     "supervisor_stats": "Data for Supervisor"
                 },
@@ -3374,7 +3276,6 @@
                     "caption": "Opdateringer",
                     "check_updates": "Søg efter opdateringer",
                     "description": "Håndtér opdateringer til Home-Assistant, tilføjelsesprogrammer og enheder",
-                    "hide_skipped": "Skjul oversprunget",
                     "join_beta": "Deltag i beta-kanal",
                     "leave_beta": "Forlad beta-kanal",
                     "more_updates": "+ {count} opdateringer",
@@ -3389,8 +3290,7 @@
                     "skipped": "Oversprunget",
                     "title": "{count} {count, plural,\n  one {opdatering}\n  other {opdateringer}\n}",
                     "unable_to_fetch": "Kan ikke indlæse opdateringer",
-                    "updates_refreshed": "{count} {count, plural,\n  one {opdatering}\n  other {opdateringer}\n} indlæst",
-                    "version_available": "Version {version_available} er tilgængelig"
+                    "updates_refreshed": "{count} {count, plural,\n  one {opdatering}\n  other {opdateringer}\n} indlæst"
                 },
                 "url": {
                     "caption": "Home Assistant-URL",
@@ -3423,7 +3323,6 @@
                         "admin": "Administrator",
                         "caption": "Vis bruger",
                         "change_password": "Skift adgangskode",
-                        "confirm_user_deletion": "Er du sikker på, at du vil slette {name}?",
                         "confirm_user_deletion_text": "Denne bruger vil blive slettet permanent.",
                         "confirm_user_deletion_title": "Slet {name}?",
                         "deactivate_user": "Deaktiver bruger",
@@ -3432,9 +3331,7 @@
                         "id": "ID",
                         "local_only": "Kan kun logge ind fra det lokale netværk",
                         "name": "Navn",
-                        "new_password": "Ny Adgangskode",
                         "owner": "Ejer",
-                        "password_changed": "Adgangskoden er ændret",
                         "system_generated": "Systembruger",
                         "system_generated_users_not_editable": "Systemoprettede brugere kan ikke opdateres.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemgenererede brugere.",
@@ -3471,13 +3368,8 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Egenskaber for den valgte klynge",
-                        "get_zigbee_attribute": "Hent Zigbee-egenskab",
                         "header": "Klyngeegenskaber",
-                        "help_attribute_dropdown": "Vælg en egenskab for at se eller indstille dens værdi.",
-                        "help_get_zigbee_attribute": "Hent værdien for den valgte egenskab.",
-                        "help_set_zigbee_attribute": "Indstil egenskabsværdi for den specificerede klynge på den specificerede entitet.",
-                        "introduction": "Se og rediger klyngeegenskaber",
-                        "set_zigbee_attribute": "Angiv Zigbee-egenskab"
+                        "introduction": "Se og rediger klyngeegenskaber"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "Kommandoer for den valgte klynge",
@@ -3488,8 +3380,7 @@
                     },
                     "clusters": {
                         "header": "Klynger",
-                        "help_cluster_dropdown": "Vælg en klynge for at se egenskaber og kommandoer.",
-                        "introduction": "Klynger er byggestenene til Zigbee-funktionalitet. De adskiller funktionalitet i logiske enheder. Der er klient- og servertyper, og de består af egenskaber og kommandoer."
+                        "help_cluster_dropdown": "Vælg en klynge for at se egenskaber og kommandoer."
                     },
                     "common": {
                         "clusters": "Klynger",
@@ -3870,8 +3761,6 @@
                         "unknown_error_template": "Ukendt fejl ved gengivelse af skabelon"
                     },
                     "yaml": {
-                        "caption": "Serveradministration",
-                        "description": "Validér og genstart Home Assistant-serveren",
                         "section": {
                             "reloading": {
                                 "automation": "Genindlæs automatiseringer",
@@ -3912,15 +3801,12 @@
                                 "zone": "Genindlæs zoner"
                             },
                             "server_management": {
-                                "confirm_restart": "Er du sikker på, at du vil genstarte Home Assistant?",
                                 "confirm_restart_text": "Genstart af Home Assistant vil stoppe alle dine betjeningspaneler, automatiseringer og scripts.",
                                 "confirm_restart_title": "Genstart Home Assistant?",
                                 "confirm_stop": "Er du sikker på, at du vil stoppe Home Assistant?",
                                 "heading": "Home Assistant",
-                                "introduction": "Genstart af Home Assistant vil stoppe dit betjeningspanel og automatiseringer. Efter genstart vil konfigurationen blive genindlæst.",
                                 "restart": "Genstart",
                                 "restart_error": "Kunne ikke genstarte Home Assistant",
-                                "restart_home_assistant": "Genstart Home Assistant",
                                 "stop": "Stop"
                             },
                             "validation": {
@@ -4268,7 +4154,6 @@
                             "default_zoom": "Standard-zoom",
                             "description": "Kort-kortet giver dig mulighed for at vise entiteter på et kort.",
                             "geo_location_sources": "Lokalitetskilder",
-                            "hours_to_show": "Vis i antal timer",
                             "name": "Kort",
                             "source": "Kilde"
                         },
@@ -4557,18 +4442,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "Medieafspiller {name} findes ikke"
-                },
-                "tts": {
-                    "action_pick": "Vælg",
-                    "action_play": "Sig",
-                    "example_message": "Hej {name}, du kan afspille enhver tekst på enhver understøttet medieafspiller!",
-                    "faild_to_store_defaults": "Kunne ikke gemme standardindstillinger: {error}",
-                    "gender": "Køn",
-                    "gender_female": "Kvinde",
-                    "gender_male": "Mand",
-                    "language": "Sprog",
-                    "message": "Besked",
-                    "set_as_default": "Indstil som standardindstillinger"
                 }
             },
             "my": {

@@ -15,6 +15,8 @@ export class HaTextField extends TextFieldBase {
   // @ts-ignore
   @property({ type: Boolean }) public iconTrailing?: boolean;
 
+  @property() public autocomplete?: string;
+
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (
@@ -26,6 +28,13 @@ export class HaTextField extends TextFieldBase {
         this.invalid ? this.errorMessage || "Invalid" : ""
       );
       this.reportValidity();
+    }
+    if (changedProperties.has("autocomplete")) {
+      if (this.autocomplete) {
+        this.formElement.setAttribute("autocomplete", this.autocomplete);
+      } else {
+        this.formElement.removeAttribute("autocomplete");
+      }
     }
   }
 

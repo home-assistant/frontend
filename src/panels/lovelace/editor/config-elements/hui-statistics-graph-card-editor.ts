@@ -59,6 +59,7 @@ const cardConfigStruct = assign(
         literal("5minute"),
         literal("hour"),
         literal("day"),
+        literal("week"),
         literal("month"),
       ])
     ),
@@ -67,7 +68,7 @@ const cardConfigStruct = assign(
   })
 );
 
-const periods = ["5minute", "hour", "day", "month"] as const;
+const periods = ["5minute", "hour", "day", "week", "month"] as const;
 const stat_types = ["mean", "min", "max", "sum", "state"] as const;
 
 @customElement("hui-statistics-graph-card-editor")

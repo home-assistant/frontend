@@ -13,6 +13,7 @@ import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-form/ha-form";
 import {
   Cluster,
   Command,
@@ -41,6 +42,12 @@ export class ZHAClusterCommands extends LitElement {
 
   @state()
   private _issueClusterCommandServiceData?: IssueCommandServiceData;
+
+  @state()
+  private _canIssueCommand = false;
+
+  @state()
+  private _commandData: Record<string, any> = {};
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {
@@ -93,12 +100,23 @@ export class ZHAClusterCommands extends LitElement {
                   )}
                 ></paper-input>
               </div>
+              <div class="command-form">
+                <ha-form
+                  .hass=${this.hass}
+                  .schema=${this._commands.find(
+                    (command) => command.id === this._selectedCommandId
+                  )!.schema}
+                  @value-changed=${this._commandDataChanged}
+                  .data=${this._commandData}
+                ></ha-form>
+              </div>
               <div class="card-actions">
                 <ha-call-service-button
                   .hass=${this.hass}
                   domain="zha"
                   service="issue_zigbee_cluster_command"
                   .serviceData=${this._issueClusterCommandServiceData}
+                  .disabled=${!this._canIssueCommand}
                 >
                   ${this.hass!.localize(
                     "ui.panel.config.zha.cluster_commands.issue_zigbee_command"
@@ -133,16 +151,33 @@ export class ZHAClusterCommands extends LitElement {
     if (!this.device || !this.selectedCluster || !this._commands) {
       return undefined;
     }
+    const selectedCommand = this._commands.find(
+      (command) => command.id === this._selectedCommandId
+    );
+
+    this._canIssueCommand =
+      this._commandData &&
+      selectedCommand!.schema.every(
+        (field) =>
+          !field.required ||
+          !["", undefined].includes(this._commandData![field.name])
+      );
+
     return {
       ieee: this.device!.ieee,
       endpoint_id: this.selectedCluster!.endpoint_id,
       cluster_id: this.selectedCluster!.id,
       cluster_type: this.selectedCluster!.type,
       command: this._selectedCommandId!,
-      command_type: this._commands.find(
-        (command) => command.id === this._selectedCommandId
-      )!.type,
+      command_type: selectedCommand!.type,
+      params: this._commandData,
     };
+  }
+
+  private async _commandDataChanged(ev: CustomEvent): Promise<void> {
+    this._commandData = ev.detail.value;
+    this._issueClusterCommandServiceData =
+      this._computeIssueClusterCommandServiceData();
   }
 
   private _onManufacturerCodeOverrideChanged(value: ChangeEvent): void {
@@ -180,6 +215,12 @@ export class ZHAClusterCommands extends LitElement {
         }
 
         .input-text {
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 10px;
+        }
+
+        .command-form {
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;

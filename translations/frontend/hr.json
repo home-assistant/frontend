@@ -395,9 +395,6 @@
             },
             "quick-bar": {
                 "commands": {
-                    "navigation": {
-                        "server_control": "Upravljanje poslužiteljem"
-                    },
                     "reload": {
                         "automation": "Ponovo učitavanje automatizacija",
                         "core": "Ponovno učitavanje jezgre",
@@ -506,14 +503,10 @@
                         "actions": {
                             "add": "Dodajte radnju",
                             "delete": "Obriši",
-                            "delete_confirm": "Sigurno želite pobrisati?",
                             "duplicate": "Dupliciraj",
                             "header": "Akcije",
-                            "introduction": "Radnje su ono što će Home Assistant učiniti kada se aktivira automatizacija. \n\n [Saznajte više o radnjama.] (Https://home-assistant.io/docs/automation/action/)",
                             "invalid_action": "Nevažeća akcija",
                             "learn_more": "Saznajte više o akcijama",
-                            "name": "Radnja",
-                            "run_action": "Pokrenite akciju",
                             "run_action_error": "Greška u pokretanju akcije",
                             "run_action_success": "Akcija je uspješno pokrenuta",
                             "type": {
@@ -554,12 +547,9 @@
                         "conditions": {
                             "add": "Dodaj uvjet",
                             "delete": "Obriši",
-                            "delete_confirm": "Sigurno želite pobrisati?",
                             "duplicate": "Dupliciran",
                             "header": "Uvjeti",
-                            "introduction": "Uvjeti su neobvezni dio automatizacije i mogu se upotrebljavati kako bi se spriječilo izvršavanje automatizacije sve dok svi uvjeti nisu zadovoljeni.",
                             "learn_more": "Saznajte više o uvjetima",
-                            "name": "Uvjet",
                             "type": {
                                 "and": {
                                     "label": "I"
@@ -624,19 +614,15 @@
                             "label": "Opis",
                             "placeholder": "Neobavezni opis"
                         },
-                        "introduction": "Upotrijebite automatizaciju kako bi vaš dom oživio",
                         "load_error_not_editable": "Samo automatizacije u automations.yaml se mogu uređivati.",
                         "load_error_unknown": "Pogreška pri učitavanju automatizacije ({err_no}).",
                         "save": "Spremi",
                         "triggers": {
                             "add": "Dodaj okidač",
                             "delete": "Obriši",
-                            "delete_confirm": "Jeste li sigurni dai želite izbrisati?",
                             "duplicate": "Udvostruči",
                             "header": "Okidači",
-                            "introduction": "Okidači pokreću automatizacije. Moguće je odrediti više okidača za istu automatizaciju. Kada se okidač pokrene, Home Assistant provjerit će uvjete (ako ih ima) i pozvati akciju.",
                             "learn_more": "Saznajte više o okidačima",
-                            "name": "Okidač",
                             "triggered": "Aktiviran",
                             "type": {
                                 "device": {
@@ -722,13 +708,10 @@
                             },
                             "type_select": "Tip okidača",
                             "unsupported_platform": "Nepodržana platforma: {platform}"
-                        },
-                        "unsaved_confirm": "Imate nespremljene izmjene. Jeste li sigurni da želite napustiti?"
+                        }
                     },
                     "picker": {
                         "add_automation": "Dodaj automatizaciju",
-                        "delete_automation": "Izbriši automatizaciju",
-                        "delete_confirm": "Jeste li sigurni da želite izbrisati tu automatizaciju?",
                         "edit_automation": "Uredi automatizaciju",
                         "header": "Urednik Automatizacije",
                         "headers": {
@@ -770,10 +753,7 @@
                             "http_use_ssl_warning_title": "Lokalna komunikacija nije dostupna",
                             "info_state_reporting": "Ako omogućite izvješćivanje o stanju, Home Assistant će poslati Googleu sve promjene stanja izloženih entiteta. To ubrzava glasovne naredbe i omogućuje vam da uvijek vidite najnovija stanja u aplikaciji Google.",
                             "manage_entities": "Upravljanje entitetima",
-                            "security_devices": "Sigurnosni uređaji",
-                            "sync_entities": "Sinkronizirajte entitete s Googleom",
-                            "sync_failed_text": "Sinkronizacija vaših entiteta nije uspjela, pokušajte ponovno ili provjerite zapisnike (logs).",
-                            "sync_failed_title": "Sinkronizacija nije uspjela"
+                            "security_devices": "Sigurnosni uređaji"
                         },
                         "integrations": "Integracije",
                         "integrations_introduction": "Integracije za Home Assistant Cloud omogućuju vam povezivanje s uslugama u oblaku bez potrebe da svoju instancu Home Assistanta izlažete javno na internetu.",
@@ -985,7 +965,6 @@
                     "frontend_version": "Verzija sučelja: {version} - {type}",
                     "home_assistant_logo": "Logotip Home Assistanta",
                     "license": "Objavljeno pod licencom Apache 2.0",
-                    "path_configuration": "Put do configuration.yaml: {path}",
                     "source": "Izvorni kod:"
                 },
                 "integrations": {
@@ -994,7 +973,6 @@
                     "caption": "Integracije",
                     "config_entry": {
                         "configure": "Konfiguriraj",
-                        "delete_confirm": "Jeste li sigurni da želite izbrisati tu integraciju?",
                         "firmware": "Firmware: {version}",
                         "manuf": "od {manufacturer}",
                         "no_area": "Nema područja",
@@ -1067,37 +1045,28 @@
                         "entities": {
                             "add": "Dodaj entitet",
                             "delete": "Izbriši entitet",
-                            "device_entities": "Ako dodate entitet koji pripada uređaju, uređaj će biti dodan.",
                             "header": "Entiteti",
                             "introduction": "Entiteti koji ne pripadaju uređajima mogu se postaviti ovdje.",
                             "without_device": "Entiteti bez uređaja"
                         },
-                        "introduction": "Upotrijebite scene kako bi vaš dom oživio",
                         "load_error_not_editable": "Samo scene u scenes.yaml se mogu uređivati.",
                         "load_error_unknown": "Pogreška pri učitavanju scene ({err_no}).",
                         "name": "Ime",
-                        "save": "Spremi",
-                        "unsaved_confirm": "Imate nespremljene izmjene. Jeste li sigurni da želite napustiti?"
+                        "save": "Spremi"
                     },
                     "picker": {
                         "add_scene": "Dodaj scenu",
-                        "delete_confirm": "Jeste li sigurni da želite izbrisati tu scenu?",
                         "delete_scene": "Izbriši scenu",
                         "edit_scene": "Uredi scenu",
                         "header": "Urednik scena",
                         "headers": {
-                            "activate": "Aktiviraj",
-                            "edit": "Uredi",
-                            "name": "Ime",
-                            "show_info": "Prikaži informacije",
-                            "state": "Stanje"
+                            "name": "Ime"
                         },
                         "introduction": "Urednik scena omogućuje vam stvaranje i uređivanje scena. Molimo slijedite donju vezu da biste pročitali upute kako biste bili sigurni da ste ispravno konfigurirali Home Assistant.",
                         "learn_more": "Saznajte više o scenama",
                         "no_scenes": "Nismo mogli pronaći nikakve scene koje se mogu uređivati",
                         "only_editable": "Samo scene definirane u scenes.yaml se mogu uređivati.",
-                        "pick_scene": "Odaberite scenu za uređivanje",
-                        "show_info_scene": "Prikaži informacije o sceni"
+                        "pick_scene": "Odaberite scenu za uređivanje"
                     }
                 },
                 "script": {
@@ -1106,8 +1075,6 @@
                     "editor": {
                         "alias": "Ime",
                         "default_name": "Nova skripta",
-                        "delete_confirm": "Jeste li sigurni da želite izbrisati tu skriptu?",
-                        "delete_script": "Izbriši skriptu",
                         "header": "Skripta: {name}",
                         "introduction": "Upotrijebite skripte za izvršenje slijeda radnji.",
                         "link_available_actions": "Saznajte više o dostupnim radnjama.",
@@ -1117,7 +1084,6 @@
                     },
                     "picker": {
                         "add_script": "Dodaj skriptu",
-                        "edit_script": "Uredi skriptu",
                         "header": "Urednik skripta",
                         "headers": {
                             "name": "Ime",
@@ -1266,8 +1232,6 @@
                         "unknown_error_template": "Nepoznata pogreška pri prikazu predloška"
                     },
                     "yaml": {
-                        "caption": "Upravljanje poslužiteljem",
-                        "description": "Ponovo pokrenite i zaustavite Home Assistant poslužitelj",
                         "section": {
                             "reloading": {
                                 "automation": "Ponovo učitavanje automatizacija",
@@ -1279,10 +1243,8 @@
                                 "script": "Ponovno učitavanje skripti"
                             },
                             "server_management": {
-                                "confirm_restart": "Jeste li sigurni da želite ponovo pokrenuti Home Assistant?",
                                 "confirm_stop": "Jeste li sigurni da želite zaustaviti Home Assostant?",
                                 "heading": "Upravljanje poslužiteljem",
-                                "introduction": "Upravljajte vašim Home Assistantom.",
                                 "restart": "Ponovno pokretanje",
                                 "stop": "Stop"
                             },
@@ -1493,18 +1455,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "Media player {name} ne postoji"
-                },
-                "tts": {
-                    "action_pick": "Odaberi",
-                    "action_play": "Reci",
-                    "example_message": "Pozdrav {name}, možeš reproducirati bilo koji tekst na bilo kojem podržanom media playeru!",
-                    "faild_to_store_defaults": "Pohranjivanje zadanih postavki nije uspjelo: {error}",
-                    "gender": "Rod",
-                    "gender_female": "Žena",
-                    "gender_male": "Muškarac",
-                    "language": "Jezik",
-                    "message": "Poruka",
-                    "set_as_default": "Postavi kao zadane opcije"
                 }
             },
             "page-authorize": {

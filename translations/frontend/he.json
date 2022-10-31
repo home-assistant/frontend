@@ -420,8 +420,14 @@
                 "used": "המאגר נמצא בשימוש עבור הרחבות מותקנות ולא ניתן להסירו."
             },
             "restart_addon": {
-                "confirm_text": "הפעל מחדש את ההרחבה",
-                "text": "האם ברצונך להפעיל מחדש את ההרחבה עם השינויים שביצעת?"
+                "restart": "הפעלה מחדש",
+                "text": "כדי להשתמש בתצורה החדשה שנשמרה, יש להפעיל מחדש הרחבה זו.",
+                "title": "להפעיל מחדש את {name}?"
+            },
+            "uninstall_addon": {
+                "text": "התצורה שלה תימחק לצמיתות.",
+                "title": "להסיר את {name}?",
+                "uninstall": "הסרת התקנה"
             }
         },
         "my": {
@@ -485,10 +491,6 @@
                 "log_provider": "ספק יומן רישום"
             },
             "supervisor": {
-                "beta_backup": "ודא שיש לך גיבויים של הנתונים לפני הפעלת תכונה זו.",
-                "beta_join_confirm": "האם ברצונך להצטרף לערוץ הביטא?",
-                "beta_release_items": "זה כולל גרסאות בטא עבור:",
-                "beta_warning": "גרסאות בטא מיועדות לבודקים ומאמצים מוקדמים ויכולות להכיל שינויי קוד לא יציבים",
                 "channel": "ערוץ",
                 "cpu_usage": "שימוש המפקח במעבד",
                 "failed_to_reload": "טעינה מחדש של המפקח נכשלה",
@@ -802,8 +804,6 @@
                 "expansion_header": "תכונות"
             },
             "blueprint-picker": {
-                "add_user": "הוספת משתמש",
-                "remove_user": "הסרת משתמש",
                 "select_blueprint": "בחירת שרטוט"
             },
             "calendar": {
@@ -867,15 +867,7 @@
                 "no_history_found": "לא נמצאה היסטוריה"
             },
             "logbook": {
-                "by": "על ידי",
-                "by_user": "על ידי משתמש",
                 "entries_not_found": "לא נמצאו אירועי יומן רישום.",
-                "event": "אירוע",
-                "for": "למשך",
-                "from": "מ",
-                "from_automation": "מאוטומציה",
-                "from_script": "מסקריפט",
-                "from_service": "משירות",
                 "messages": {
                     "became_unavailable": "הפך ללא זמין",
                     "changed_to_state": "השתנה ל{state}",
@@ -1039,7 +1031,6 @@
                 "data": "נתוני שירות",
                 "integration_doc": "תיעוד שילוב",
                 "required": "שדה זה נדרש",
-                "service_data": "נתוני שירות",
                 "target": "יעדים",
                 "target_description": "אלה האיזורים, התקנים וישויות בהם ישתמש שירות זה"
             },
@@ -1060,6 +1051,7 @@
                     "max": "מקסימום",
                     "mean": "מתכוון",
                     "min": "דקות",
+                    "state": "מצב",
                     "sum": "סכום"
                 }
             },
@@ -1179,9 +1171,21 @@
                     "note": "הערה: יתכן שזה עדיין לא פועל עם כל השילובים.",
                     "open_device_settings": "פתיחת הגדרות התקן",
                     "precipitation_unit": "יחידת משקעים",
-                    "preload_stream": "טען מראש זרם מצלמה",
-                    "preload_stream_description": "פעולה זו משאירה את זרם המצלמה פתוח ברקע כך שהוא מוצג מהר יותר. אזהרה! זהו התקן אינטנסיבי.",
                     "pressure_unit": "יחידת לחץ ברומטרית",
+                    "stream": {
+                        "preload_stream": "טען מראש זרם מצלמה",
+                        "preload_stream_description": "פעולה זו משאירה את זרם המצלמה פתוח ברקע כך שהוא מוצג מהר יותר. אזהרה! זהו התקן אינטנסיבי.",
+                        "stream_orientation": "כיוון זרם המצלמה",
+                        "stream_orientation_1": "אין שינוי כיוון",
+                        "stream_orientation_2": "מראה",
+                        "stream_orientation_3": "סיבוב 180",
+                        "stream_orientation_4": "היפוך",
+                        "stream_orientation_5": "סיבוב שמאלה והיפוך",
+                        "stream_orientation_6": "סיבוב שמאלה",
+                        "stream_orientation_7": "סיבוב ימינה והיפוך",
+                        "stream_orientation_8": "סיבוב ימינה",
+                        "stream_orientation_description": "שינוי הכיוון לשימוש עבור זרם המצלמה."
+                    },
                     "switch_as_x_confirm": "מתג זה יוסתר ויתווסף {domain} חדש. התצורות הקיימות שלך באמצעות ההמתג ימשיכו לפעול.",
                     "temperature_unit": "יחידת טמפרטורה",
                     "unavailable": "ישות זו אינה זמינה.",
@@ -1221,7 +1225,6 @@
                 },
                 "input_number": {
                     "box": "שדה קלט",
-                    "initial": "ערך התחלתי",
                     "max": "ערך מקסימאלי",
                     "min": "ערך מינימלי",
                     "mode": "מצב תצוגה",
@@ -1256,10 +1259,11 @@
                 "crop": "חתוך"
             },
             "join_beta_channel": {
-                "backup": "ודא שיש לך גיבויים של הנתונים לפני הפעלת תכונה זו.",
-                "confirm": "האם ברצונך להצטרף לערוץ הביטא?",
+                "backup": "יש לודא שיש לך גיבויים של הנתונים שלך לפני הפעלת תכונה זו.",
+                "join": "הצטרפות",
                 "release_items": "זה כולל גרסאות בטא עבור:",
                 "title": "הצטרף לערוץ ביטא",
+                "view_documentation": "הצגת תיעוד",
                 "warning": "גרסאות בטא מיועדות לבודקים ומאמצים מוקדמים ויכולות להכיל שינויי קוד לא יציבים"
             },
             "more_info_control": {
@@ -1286,13 +1290,7 @@
                     "activity": "פעילות נוכחית"
                 },
                 "restored": {
-                    "confirm_remove_text": "האם בוודאות ברצונך להסיר ישות זו?",
-                    "confirm_remove_title": "להסיר את הישות?",
-                    "no_longer_provided": "ישות זו אינה מסופקת עוד על ידי האינטגרציה של {integration}. אם הישות אינה בשימוש עוד, יש למחוק אותה בהגדרות.",
-                    "not_provided": "ישות זו אינה מסופקת עוד על ידי האינטגרציה של {integration}. אם הישות אינה בשימוש עוד, יש למחוק אותה בהגדרות.",
-                    "remove_action": "הסר יישות",
-                    "remove_intro": "אם הישות כבר אינה בשימוש, ניתן לנקות אותה על ידי הסרתה.",
-                    "title": "הישות אינה זמינה"
+                    "no_longer_provided": "ישות זו אינה מסופקת עוד על ידי האינטגרציה של {integration}. אם הישות אינה בשימוש עוד, יש למחוק אותה בהגדרות."
                 },
                 "script": {
                     "last_action": "פעולה אחרונה",
@@ -1308,7 +1306,6 @@
                 "update": {
                     "clear_skipped": "ניקוי דולג",
                     "create_backup": "יצירת גיבוי לפני העדכון",
-                    "current_version": "גירסה נוכחית",
                     "install": "התקנה",
                     "installed_version": "גירסה מותקנת",
                     "latest_version": "הגירסה העדכנית",
@@ -1498,13 +1495,10 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "הוספת התקנים באמצעות התקן זה",
-                    "clusters": "ניהול אשכולות",
-                    "device_children": "צפייה בילדים",
+                    "manage": "ניהול מכשיר zigbee",
                     "reconfigure": "קביעת תצורה מחדש",
                     "remove": "הסרה",
-                    "view_in_visualization": "הצג בפריט חזותי",
-                    "view_network": "הצגת רשת",
-                    "zigbee_information": "חתימת Zigbee"
+                    "view_network": "הצגת רשת"
                 },
                 "confirmations": {
                     "remove": "האם בוודאות ברצונך למחוק התקן זה?"
@@ -1525,6 +1519,15 @@
                 "unknown": "לא ידוע",
                 "zha_device_card": {
                     "device_name_placeholder": "שנה שם התקן"
+                }
+            },
+            "zha_manage_device": {
+                "heading": "ניהול התקן Zigbee",
+                "tabs": {
+                    "bindings": "איגודי",
+                    "children": "ילדים",
+                    "clusters": "אשכולות",
+                    "signature": "חתימה"
                 }
             },
             "zha_reconfigure_device": {
@@ -1607,12 +1610,18 @@
                     "caption": "אישורי יישום",
                     "description": "ניהול אישורי היישום של OAuth המשמשים שילובים",
                     "editor": {
-                        "caption": "הוספת אישור יישום",
+                        "add": "הוספה",
+                        "caption": "הוספת אישור",
                         "client_id": "מזהה לקוח OAuth",
+                        "client_id_helper": "מזהה ציבורי של יישום OAuth",
                         "client_secret": "סוד לקוח של OAuth",
-                        "create": "יצירה",
+                        "client_secret_helper": "סוד היישום OAuth",
+                        "description": "OAuth משמש כדי להעניק ל-Home Assistant גישה למידע באתרי אינטרנט אחרים מבלי לספק סיסמאות. מנגנון זה משמש חברות כמו ספוטיפיי, גוגל, וויטינגס, מיקרוסופט וטוויטר.",
                         "domain": "שילוב",
-                        "name": "שם"
+                        "missing_credentials": "הגדרת {integration} דורשת קביעת תצורה של אישורי יישום.",
+                        "missing_credentials_domain_link": "הצגת תיעוד {integration}",
+                        "name": "שם",
+                        "view_documentation": "הצגת תיעוד של אישורי יישום"
                     },
                     "picker": {
                         "add_application_credential": "הוספת אישור יישום",
@@ -1641,8 +1650,8 @@
                         "entities": "ישויות"
                     },
                     "delete": {
-                        "confirmation_text": "המשתמש הזה יימחק לצמיתות.",
-                        "confirmation_title": "האם בוודאות ברצונך למחוק אזור זה?"
+                        "confirmation_text": "אזור זה יימחק לצמיתות וכל ההתקנים השייכים לאזור זה לא יוקצו.",
+                        "confirmation_title": "למחוק את {name}?"
                     },
                     "description": "קיבוץ התקנים וישויות לאזורים",
                     "edit_settings": "הגדרות אזור",
@@ -1692,7 +1701,6 @@
                             "alias": "שם פעולה",
                             "change_alias": "שינוי שם הפעולה",
                             "delete": "מחיקה",
-                            "delete_confirm": "האם בוודאות ברצונך למחוק זאת?",
                             "delete_confirm_text": "זה יימחק לצמיתות.",
                             "delete_confirm_title": "למחוק פעולה?",
                             "disable": "השבתה",
@@ -1700,13 +1708,10 @@
                             "duplicate": "שיכפול",
                             "enable": "הפעלה",
                             "header": "פעולות",
-                            "introduction": "הפעולות הן מה שHome Assistant יעשה כאשר אוטומציה מופעלת.",
                             "invalid_action": "פעולה לא חוקית",
                             "learn_more": "למד עוד על פעולות",
-                            "name": "פעולה",
                             "rename": "שינוי שם",
                             "run": "רוץ",
-                            "run_action": "הרצת פעולות",
                             "run_action_error": "שגיאה בהרצת הפעולה",
                             "run_action_success": "הפעולה הורצה בהצלחה",
                             "type": {
@@ -1820,15 +1825,12 @@
                             "alias": "שם התנאי",
                             "change_alias": "שינוי שם התנאי",
                             "delete": "מחיקה",
-                            "delete_confirm": "האם בוודאות ברצונך למחוק זאת?",
                             "delete_confirm_text": "זה יימחק לצמיתות.",
                             "delete_confirm_title": "למחוק את התנאי?",
                             "duplicate": "שיכפול",
                             "header": "תנאים",
-                            "introduction": "התנאים הם אופציונליים וימנעו מהאוטומציה לפעול אלא אם כן כל התנאים מתקיימים.",
                             "invalid_condition": "תצורת תנאי לא חוקית",
                             "learn_more": "למד עוד על תנאים",
-                            "name": "תנאים",
                             "rename": "שינוי שם",
                             "test": "בדיקה",
                             "test_failed": "אירעה שגיאה בעת בדיקת מצב",
@@ -1923,20 +1925,16 @@
                         "edit_ui": "עריכה בעורך חזותי",
                         "edit_yaml": "עריכה ב-YAML",
                         "enable": "אפשר",
-                        "enable_disable": "הפעל / השבת אוטומציה",
-                        "introduction": "השתמש באוטומציות כדי לעורר את ביתך לחיים.",
                         "load_error_not_deletable": "ניתן למחוק רק אוטומציות הנמצאות ב-automations.yaml.",
-                        "load_error_not_duplicable": "ניתן לשכפל רק אוטומציות הנמצאות ב-automations.yaml.",
                         "load_error_not_editable": "רק אוטומציה ב automations.yaml ניתנים לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת אוטומציה ({err_no}).",
                         "max": {
                             "parallel": "המספר המרבי של ריצות מקבילות",
                             "queued": "אורך התור"
                         },
+                        "migrate": "הגירה",
                         "missing_name": "לא ניתן לשמור אוטומציה ללא שם",
                         "modes": {
-                            "description": "המצב קובע מה קורה כאשר האוטומציה מופעלת כאשר הפעולות עדיין פועלות מגורם מפעיל קודם. מידע נוסף ב{documentation_link}.",
-                            "documentation": "תיעוד אוטומציה",
                             "label": "מצב",
                             "learn_more": "למידה על מצבים",
                             "parallel": "במקביל",
@@ -1946,32 +1944,31 @@
                         },
                         "move_down": "הזז למטה",
                         "move_up": "הזז למעלה",
-                        "re_order": "הזמנה מחדש",
+                        "re_order": "סדר מחדש",
                         "re_order_mode": {
-                            "description": "הינך במצב הזמנה מחדש, ניתן להזמין מחדש את המפעילים, התנאים והפעולות שלך.",
+                            "description": "הינך במצב סידר מחדש, ניתן לסדר מחדש את המפעילים, התנאים והפעולות שלך.",
                             "exit": "יציאה",
-                            "title": "מצב הזמנה מחדש"
+                            "title": "מצב סידור מחדש"
                         },
+                        "read_only": "לא ניתן לערוך אוטומציה זו ממשק המשתמש, מכיוון שהיא אינה מאוחסנת בקובץ automations.yaml, או שאין לה מזהה.",
                         "rename": "שינוי שם",
                         "run": "רוץ",
                         "save": "שמור",
                         "show_info": "מידע",
                         "show_trace": "עקבות",
+                        "traces_not_available": "אוטומציות זקוקות למזהה כדי שניתן יהיה לעקוב אחר ההיסטוריה. יש להוסיף מזהה לאוטומציה שלך כדי להפוך אותו לזמין בעקבות.",
                         "triggers": {
                             "add": "הוספת גורם מפעיל",
                             "alias": "שם גורם מפעיל",
                             "change_alias": "שינוי שם גורם מפעיל",
                             "delete": "מחיקה",
-                            "delete_confirm": "האם בוודאות ברצונך למחוק זאת?",
                             "delete_confirm_text": "זה יימחק לצמיתות.",
                             "delete_confirm_title": "למחוק גורם מפעיל?",
                             "duplicate": "שיכפול",
                             "edit_id": "עריכת מזהה",
                             "header": "גורמים מפעילים",
                             "id": "מזהה גורם מפעיל",
-                            "introduction": "גורמים מפעילים הם מה שמתחיל כל אוטומציה. ניתן לציין מספר גורמים מפעילים עבור אותו כלל. לאחר הפעלת גורם מפעיל, Home Assistant יאמת את התנאים, אם ישנם, ויפעיל את הפעולה.",
                             "learn_more": "למידע נוסף על גורמים מפעילים",
-                            "name": "גורם מפעיל",
                             "rename": "שינוי שם",
                             "triggered": "הופעל",
                             "type": {
@@ -2079,22 +2076,18 @@
                             "type_select": "סוג גורם מפעיל",
                             "unsupported_platform": "אין תמיכה בעורך חזותי עבור פלטפורמה: {platform}"
                         },
-                        "unsaved_confirm": "יש לך שינויים שלא נשמרו. האם בוודאות ברצונך להפסיק?",
                         "unsaved_confirm_text": "שינויים שלא נשמרו יאבדו.",
                         "unsaved_confirm_title": "לעזוב את העורך?"
                     },
                     "picker": {
                         "add_automation": "יצירת אוטומציה",
                         "delete": "מחיקה",
-                        "delete_automation": "מחק אוטומציה",
-                        "delete_confirm": "האם בוודאות ברצונך למחוק אוטומציה זו?",
                         "delete_confirm_text": "{name} יימחק לצמיתות.",
                         "delete_confirm_title": "למחוק אוטומציה?",
                         "dev_automation": "דבג אוטומציה",
                         "dev_only_editable": "רק אוטומציות שהוקצה להן מזהה ייחודי ניתנות לדיבוג.",
                         "disabled": "מושבת",
                         "duplicate": "שיכפול",
-                        "duplicate_automation": "שכפול אוטומציה",
                         "edit_automation": "עריכת אוטומציה",
                         "header": "עורך אוטומציה",
                         "headers": {
@@ -2169,7 +2162,6 @@
                         "import_btn": "תצוגה מקדימה",
                         "import_header": "שרטוט ''{name}''",
                         "import_introduction": "יבא שרטוטים של משתמשים אחרים מ-GitHub ומהפורומים הקהילתיים על ידי הדבקת הכתובת שלהלן.",
-                        "import_introduction_link": "באפשרותך לייבא שרטוטים של משתמשים אחרים מ-Github ומ-{community_link}. יש להזין את כתובת האתר של השרטוט.",
                         "importing": "טוען שרטוט…",
                         "raw_blueprint": "תוכן שרטוט",
                         "save_btn": "יבוא שרטוט",
@@ -2181,7 +2173,6 @@
                     "description": "ניהול שרטוטים",
                     "overview": {
                         "add_blueprint": "יבוא שרטוט",
-                        "confirm_delete_header": "האם למחוק את השרטוט הזה?",
                         "confirm_delete_text": "{name} יימחק לצמיתות.",
                         "confirm_delete_title": "למחוק שרטוט?",
                         "create_automation": "יצירת אוטומציה",
@@ -2215,12 +2206,11 @@
                             "enable_state_reporting": "הפוך דיווח מצב לזמין",
                             "info": "עם השילוב של אלכסה עבור Home Assistant Cloud, ניתן לשלוט בכל התקני Home Assistant שלך באמצעות כל התקן המותאם לשימוש באלכסה.",
                             "info_state_reporting": "אם תאפשר דיווח על מצב, Home Assistant ישלח כל שינוי מצב של ישויות חשופות לאמזון. זה יאפשר לך לראות תמיד את המצב העדכני ביישום אלקסה ולהשתמש בשינויי המצב ליצירת שגרות.",
+                            "link_learn_how_it_works": "למד כיצד זה עובד",
                             "manage_entities": "נהל ישויות",
                             "not_configured_text": "לפני שאפשר יהיה להשתמש באלקסה יש להפעיל את מיומנות Home Assistant באלקסה ביישום של אלקסה",
                             "not_configured_title": "אלקסה אינה מופעלת",
                             "state_reporting_error": "אין אפשרות לעשות {enable_disable} לדיווח מצב.",
-                            "sync_entities": "סנכרן ישויות לאמזון",
-                            "sync_entities_error": "סינכרון ישויות נכשל:",
                             "title": "אלקסה"
                         },
                         "connected": "מחובר",
@@ -2239,13 +2229,11 @@
                             "http_use_ssl_warning_title": "תקשורת מקומית אינה זמינה",
                             "info": "עם שילוב מסייע Google עבור ענן Home Assistant ניתן לשלוט בכל התקני Home Assistant שלך באמצעות כל התקן המקושר למסייע של Google.",
                             "info_state_reporting": "אם תפעיל דיווח מצבים, Home Assistant ישלח את כל שינויי המצב של ישויות חשופות לגוגל. פעולה זו מאיצה פקודות קוליות ומאפשרת לך תמיד לראות את המצבים העדכניים ביותר ביישום גוגל.",
+                            "link_learn_how_it_works": "למד כיצד זה עובד",
                             "manage_entities": "נהל ישויות",
-                            "not_configured_text": "לפני שתוכל להשתמש ב- Google Assistant, עליך להפעיל את Home Assistant Cloud skill עבור Google Assistant באפליקציית Google Home.",
+                            "not_configured_text": "לפני שיהיה ניתן להשתמש בגוגל אסיסטנט, יש להפעיל את ענן Home Assistant עבור גוגל אסיסטנט ביישום גוגל בית.",
                             "not_configured_title": "Google Assistant אינו מופעל",
                             "security_devices": "התקני אבטחה",
-                            "sync_entities": "סנכרן ישויות לגוגל",
-                            "sync_failed_text": "סינכרון הישויות שלך נכשל, נסה שוב או בדוק את יומני הרישום.",
-                            "sync_failed_title": "הסינכרון נכשל",
                             "title": "Google Assistant"
                         },
                         "integrations": "שילובים",
@@ -2311,9 +2299,10 @@
                         "follow_domain": "עקוב אחר התחום",
                         "manage_defaults": "ניהול ברירות מחדל",
                         "manage_defaults_dialog_description": "ישויות יכולות להיחשף כברירת מחדל על סמך סוגן.",
-                        "manage_domains": "נהל תחומים",
                         "not_exposed": "{selected} לא חשוף",
                         "not_exposed_entities": "ישויות לא חשופות",
+                        "sync_entities": "סינכרון ישויות",
+                        "sync_entities_error": "סינכרון ישויות נכשל:",
                         "title": "אלקסה"
                     },
                     "description_features": "שליטה על הבית מרחוק, ושילוב עם Alexa ו-Google Assistant.",
@@ -2327,12 +2316,9 @@
                         "will_be_auto_renewed": "תתחדש באופן אוטומטי"
                     },
                     "dialog_cloudhook": {
-                        "available_at": "ה-webhook זמין בכתובת הבאה:",
                         "close": "סגור",
-                        "confirm_disable": "האם בוודאות ברצונך להשבית את ה-webhook?",
                         "confirm_disable_text": "Webhook יושבת עבור {name}.",
                         "confirm_disable_title": "השבתת webhook",
-                        "copied_to_clipboard": "הועתק ללוח",
                         "info_disable_webhook": "אם אינך מעוניין עוד להשתמש ב-webhook זה, באפשרותך",
                         "link_disable_webhook": "השבת אותו",
                         "managed_by_integration": "webhook זה מנוהל על ידי שילוב ולא ניתן להשבית.",
@@ -2360,9 +2346,14 @@
                         "follow_domain": "עקוב אחר התחום",
                         "manage_defaults": "ניהול ברירות מחדל",
                         "manage_defaults_dialog_description": "ישויות יכולות להיחשף כברירת מחדל על סמך סוגן.",
-                        "manage_domains": "נהל תחומים",
+                        "not_configured_text": "לפני שיהיה ניתן להשתמש בגוגל אסיסטנט, יש להפעיל את ענן Home Assistant עבור גוגל אסיסטנט ביישום גוגל בית.",
+                        "not_configured_title": "Google Assistant אינו מופעל",
                         "not_exposed": "{selected} לא חשוף",
                         "not_exposed_entities": "ישויות לא חשופות",
+                        "sync_entities": "סינכרון ישויות",
+                        "sync_entities_error": "סינכרון ישויות נכשל:",
+                        "sync_failed_text": "סינכרון הישויות שלך נכשל, נסה שוב או בדוק את יומני הרישום.",
+                        "sync_failed_title": "הסינכרון נכשל",
                         "sync_to_google": "מסנכרן שינויים ל-Google.",
                         "title": "Google Assistant"
                     },
@@ -2446,26 +2437,20 @@
                 },
                 "dashboard": {
                     "about": {
-                        "description": "גרסה, תקינות המערכת וקישורים לתיעוד",
                         "main": "אודות",
-                        "secondary": "פרטי גרסה, קרדיטים ועוד",
-                        "title": "אודות"
+                        "secondary": "פרטי גרסה, קרדיטים ועוד"
                     },
                     "areas": {
-                        "description": "ניהול שטחים ואזורים ש-Home Assistant עוקב אחריהם",
                         "main": "שטחים ואזורים",
-                        "secondary": "ניהול מיקומים בבית ובסביבתו",
-                        "title": "שטחים ואזורים"
+                        "secondary": "ניהול מיקומים בבית ובסביבתו"
                     },
                     "automations": {
                         "main": "אוטומציות וסצנות",
                         "secondary": "אוטומציות, סצנות, סקריפטים ושרטוטים"
                     },
                     "backup": {
-                        "description": "יצירת גיבויים של תצורת Home Assistant",
                         "main": "גיבוי",
-                        "secondary": "יצירת גיבויים של תצורת Home Assistant",
-                        "title": "גיבוי"
+                        "secondary": "יצירת גיבויים של תצורת Home Assistant"
                     },
                     "companion": {
                         "main": "יישום נלווה",
@@ -2492,10 +2477,8 @@
                         "secondary": "הפעלת יישומים נוספים לצד Home Assistant"
                     },
                     "system": {
-                        "description": "יצירת גיבויים, בדיקת יומני רישום או אתחול מחדש של המערכת",
                         "main": "מערכת",
-                        "secondary": "יצירת גיבויים, בדיקת יומני רישום או אתחול מחדש של המערכת",
-                        "title": "מערכת"
+                        "secondary": "יצירת גיבויים, בדיקת יומני רישום או אתחול מחדש של המערכת"
                     },
                     "tags": {
                         "main": "תגים",
@@ -2503,6 +2486,7 @@
                     }
                 },
                 "devices": {
+                    "add_device": "הוספת התקן",
                     "add_prompt": "עדיין לא נוסף {name} באמצעות {type} זה. באפשרותך להוסיף אחד על ידי לחיצה על לחצן + לעיל.",
                     "automation": {
                         "actions": {
@@ -2579,8 +2563,6 @@
                     "name": "שם",
                     "no_devices": "אין התקנים",
                     "open_configuration_url": "ביקור",
-                    "open_configuration_url_device": "ביקור בהתקן",
-                    "open_configuration_url_service": "ביקור בשירות",
                     "picker": {
                         "filter": {
                             "filter": "מסנן",
@@ -2874,13 +2856,11 @@
                     "processor": "מעבד",
                     "reboot": "הפעלה מחדש",
                     "reboot_host": "הפעלת המערכת מחדש",
-                    "reboot_host_confirm": "האם בוודאות ברצונך לאתחל את השרת המארח שלך?",
                     "reboot_host_text": "פעולה זו תאתחל מחדש את כל המערכת וכוללת את הליבה ואת כל התוספות.",
                     "reboot_host_title": "הפעלת המערכת מחדש?",
                     "rebooting_host": "מאתחל את המערכת",
                     "shutdown": "כיבוי",
                     "shutdown_host": "כיבוי המערכת",
-                    "shutdown_host_confirm": "האם בוודאות ברצונך לכבות את השרת המארח שלך?",
                     "shutdown_host_text": "פעולה זו תכבה את כל המערכת וכוללת את הליבה ואת כל התוספות.",
                     "shutdown_host_title": "לכבות את המערכת?"
                 },
@@ -2941,7 +2921,6 @@
                         "thanks": "תודות ל"
                     },
                     "license": "פורסם תחת רישיון Apache 2.0",
-                    "path_configuration": "נתיב אל configuration.yaml: {path}",
                     "server": "שרת",
                     "setup_time": "זמן התקנה",
                     "source": "מקור:",
@@ -2956,6 +2935,7 @@
                     "add_zha_device": "הוספת התקן Zigbee",
                     "add_zwave_js_device": "הוספת התקן Z-Wave",
                     "attention": "נדרשת תשומת לב",
+                    "available_integrations": "שילובים זמינים",
                     "caption": "שילובים",
                     "config_entry": {
                         "application_credentials": {
@@ -2970,13 +2950,11 @@
                         "check_the_logs": "בדוק את היומנים",
                         "configure": "הגדר",
                         "delete": "מחק",
-                        "delete_confirm": "האם בוודאות ברצונך למחוק את השילוב {title}?",
                         "delete_confirm_text": "ההתקנים והישויות שלהם יימחקו לצמיתות.",
                         "delete_confirm_title": "למחוק את {title}?",
                         "depends_on_cloud": "תלוי בענן",
                         "devices": "{count, plural,\n  one {התקן אחד}\n  other {{count} התקנים}\n}",
                         "disable": {
-                            "disable_confirm": "האם בוודאות ברצונך להשבית את רשומת התצורה הזו? ההתקנים והישויות שלו יושבתו.",
                             "disabled": "מושבת",
                             "disabled_by": {
                                 "device": "התקן",
@@ -3022,7 +3000,8 @@
                         "unknown_via_device": "התקן לא ידוע",
                         "unnamed_entry": "ערך ללא שם",
                         "version": "גרסה: {version}",
-                        "via": "מחובר באמצעות"
+                        "via": "מחובר באמצעות",
+                        "yaml_only": "זקוק לתצורה ידנית"
                     },
                     "config_flow": {
                         "aborted": "הופסק",
@@ -3040,26 +3019,20 @@
                         "found_following_devices": "מצאנו את המכשירים הבאים",
                         "loading": {
                             "fallback_title": "השילוב",
-                            "loading_flow": "יש להמתין בזמן שההגדרה של {integration} מתבצעת",
+                            "loading_flow": "נא להמתין, הפעלת אשף התצורה עבור {integration}",
                             "loading_step": "טוען את השלב הבא עבור {integration}"
                         },
-                        "missing_credentials": "הגדרת {integration} דורשת קביעת תצורה של אישורי יישומים. ברצונך לעשות זאת כעת?",
-                        "missing_zha": "כדי להוסיף התקן Zigbee, יש להגדיר תחילה את שילוב האוטומציה הביתית של Zigbee. האם ברצונך לעשות זאת עכשיו?",
-                        "missing_zwave_js": "כדי להוסיף התקן Z-Wave, יש להגדיר תחילה את שילוב האוטומציה הביתית של Z-Wave. האם ברצונך לעשות זאת עכשיו?",
                         "missing_zwave_zigbee": "כדי להוסיף את התקן {integration} , יש להגדיר תחילה את {supported_hardware_link} ואת השילוב {integration}. אם כבר יש לך את החומרה, ניתן להמשיך עם ההגדרה של {integration}.",
                         "next": "הבא",
                         "no_config_flow": "שילוב זה אינו תומך בתצורה באמצעות ממשק המשתמש. אם עקבת אחר קישור זה מאתר האינטרנט של Home Assistant, יש להקפיד להפעיל את הגירסה העדכנית ביותר של Home Assistant.",
                         "not_all_required_fields": "לא כל שדות החובה מולאו.",
                         "not_loaded": "לא ניתן היה לטעון את השילוב, נסה להפעיל מחדש את Home Assistant.",
-                        "pick_flow_step": {
-                            "new_flow": "לא, הגדר מופע אחר של {integration}",
-                            "title": "גילינו את אלה, רוצים להגדיר אותם?"
-                        },
                         "proceed": "המשך",
                         "submit": "המשך",
                         "success": "הצלחה",
                         "supported_brand_flow": "התמיכה בהתקני {supported_brand} מסופקת על ידי {flow_domain_name}. האם ברצונך להמשיך?",
-                        "supported_hardware": "חומרה נתמכת"
+                        "supported_hardware": "חומרה נתמכת",
+                        "yaml_only_title": "לא ניתן להוסיף התקן זה ממשק המשתמש"
                     },
                     "configure": "הגדר",
                     "configured": "הוגדר",
@@ -3085,7 +3058,8 @@
                     },
                     "integration": "שילוב",
                     "integration_not_found": "השילוב לא נמצא.",
-                    "new": "הגדרת שילוב חדש",
+                    "new": "בחירת מותג",
+                    "new_flow": "הגדרת מופע נוסף של {integration}",
                     "no_integrations": "נראה שעדיין לא הוגדרו שילובים. לחץ על הכפתור למטה כדי להוסיף את השילוב הראשון שלך!",
                     "none": "כלום אינו הוגדר עדיין",
                     "none_found": "לא נמצאו שילובים",
@@ -3095,7 +3069,8 @@
                     "reconfigure": "קביעת תצורה מחדש",
                     "rename_dialog": "עריכת שם של ערך תצורה זה",
                     "rename_input_label": "שם ישות",
-                    "search": "חפש שילובים"
+                    "search": "חפש שילובים",
+                    "search_brand": "חיפוש שם מותג"
                 },
                 "logs": {
                     "caption": "יומנים",
@@ -3173,7 +3148,6 @@
                     "resources": {
                         "cant_edit_yaml": "כעת השימוש בלוח המחוונים שלך הוא במצב YAML, ולכן אין באפשרותך לנהל את המשאבים שלך באמצעות ממשק המשתמש. יש לנהל אותם ב- configuration.yaml.",
                         "caption": "משאבים",
-                        "confirm_delete": "האם בוודאות ברצונך למחוק משאב זה?",
                         "confirm_delete_text": "{url} יימחק לצמיתות.",
                         "confirm_delete_title": "למחוק משאב?",
                         "detail": {
@@ -3245,8 +3219,6 @@
                 "person": {
                     "add_person": "הוסף אדם",
                     "caption": "אנשים",
-                    "confirm_delete": "האם בוודאות ברצונך למחוק אדם זה?",
-                    "confirm_delete2": "כל ההתקנים השייכים לאדם זה לא יהיו מוקצים.",
                     "confirm_delete_text": "אדם זה יימחק לצמיתות וכל ההתקנים השייכים לאדם זה יהפכו ללא מוקצים.",
                     "confirm_delete_title": "למחוק את {name}?",
                     "create_person": "יצירת אדם",
@@ -3283,7 +3255,6 @@
                     "critical": "קריטי",
                     "description": "איתור ותיקון בעיות במופע Home Assistant",
                     "dialog": {
-                        "alert_not_fixable": "איננו יכולים לתקן בעיה זו עבורך.",
                         "breaks_in_version": "זה יפסיק לפעול בגרסה {version}. נא לטפל בזה לפני השדרוג.",
                         "fix": "תיקון",
                         "ignore": "להתעלם",
@@ -3294,7 +3265,6 @@
                         "unignore": "לא להתעלם"
                     },
                     "error": "שגיאה",
-                    "hide_ignored": "הסתרת התעלמות",
                     "integration_startup_time": "זמן אתחול השילוב",
                     "more_repairs": "הצגת כל התיקונים",
                     "no_repairs": "אין תיקונים זמינים כרגע",
@@ -3319,18 +3289,15 @@
                         "entities": {
                             "add": "הוסף ישות",
                             "delete": "מחק ישות",
-                            "device_entities": "אם תוסיף ישות השייכת להתקן, ההתקן יתווסף.",
                             "header": "ישויות",
                             "introduction": "ניתן להוסיף ישויות בודדות כאן.",
                             "without_device": "ישויות"
                         },
                         "icon": "סמליל",
-                        "introduction": "השתמש בסצנות כדי להחיות את ביתך.",
                         "load_error_not_editable": "רק סצנות ב-scenes.yaml ניתנות לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת סצנה ({err_no}).",
                         "name": "שם",
                         "save": "שמור",
-                        "unsaved_confirm": "יש לך שינויים שלא נשמרו. האם בוודאות ברצונך להפסיק?",
                         "unsaved_confirm_text": "שינויים שלא נשמרו יאבדו.",
                         "unsaved_confirm_title": "לעזוב את העורך?"
                     },
@@ -3338,7 +3305,6 @@
                         "activate": "הפעל",
                         "add_scene": "הוסף סצנה",
                         "delete": "מחיקה",
-                        "delete_confirm": "האם בוודאות ברצונך למחוק את הסצינה הזו?",
                         "delete_confirm_text": "{name} יימחק לצמיתות.",
                         "delete_confirm_title": "למחוק סצנה?",
                         "delete_scene": "מחק סצנה",
@@ -3347,20 +3313,15 @@
                         "edit_scene": "עריכת סצנה",
                         "header": "עורך סצנות",
                         "headers": {
-                            "activate": "הפעל",
-                            "edit": "עריכה",
                             "last_activated": "הופעל לאחרונה",
-                            "name": "שם",
-                            "show_info": "הצגת מידע",
-                            "state": "מצב"
+                            "name": "שם"
                         },
                         "introduction": "עורך הסצנות מאפשר לך ליצור ולערוך סצנות. נא עקוב אחר הקישור שלהלן כדי לקרוא את ההוראות כדי לוודא שתצורת Home Assistant נקבעה כראוי.",
                         "learn_more": "למידע נוסף על סצנות",
                         "no_scenes": "לא מצאנו שום סצנה",
                         "only_editable": "רק סצנות שהוגדרו ב-scenes.yaml ניתנות לעריכה.",
                         "pick_scene": "בחר סצינה לעריכה",
-                        "show_info": "מידע",
-                        "show_info_scene": "הצג מידע על הסצנה"
+                        "show_info": "מידע"
                     }
                 },
                 "script": {
@@ -3369,10 +3330,9 @@
                     "editor": {
                         "alias": "שם",
                         "default_name": "סקריפט חדש",
-                        "delete_confirm": "האם בוודאות ברצונך למחוק סקריפט זה?",
                         "delete_confirm_text": "{name} יימחק לצמיתות.",
                         "delete_confirm_title": "למחוק סקריפט?",
-                        "delete_script": "מחק סקריפט",
+                        "duplicate": "שיכפול",
                         "header": "סקריפט: {name}",
                         "icon": "סמליל",
                         "id": "מזהה ישות",
@@ -3381,16 +3341,14 @@
                         "introduction": "השתמש בסקריפטים כדי לבצע רצף של הרצות.",
                         "link_available_actions": "למד עוד אודות פעולות זמינות.",
                         "load_error_not_deletable": "ניתן למחוק רק סקריפטים הנמצאים ב-scripts.yaml.",
-                        "load_error_not_duplicable": "ניתן לשכפל רק סקריפטים הנמצאים ב-scripts.yaml.",
                         "load_error_not_editable": "רק סקריפטים בתוך קובץ scripts.yaml ניתנים לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת סקריפט ({err_no}).",
                         "max": {
                             "parallel": "המספר המרבי של ריצות מקבילות",
                             "queued": "אורך התור"
                         },
+                        "migrate": "הגירה",
                         "modes": {
-                            "description": "המצב שולט במה שקורה כאשר רץ סקריפט בזמן שהוא עדיין רץ מהרצה קודמת אחת או יותר. עיין ב-{documentation_link} למידע נוסף.",
-                            "documentation": "תיעוד סקריפט",
                             "label": "מצב",
                             "learn_more": "למידה על מצבים",
                             "parallel": "במקביל",
@@ -3398,6 +3356,7 @@
                             "restart": "הפעלה מחדש",
                             "single": "יחיד"
                         },
+                        "read_only": "לא ניתן לערוך סקריפט זה ממשק המשתמש, מכיוון שהוא אינו מאוחסן בקובץ ''scripts.yaml''.",
                         "save_script": "שמור סקריפט",
                         "sequence": "סדר פעולות",
                         "sequence_sentence": "רצף הפעולות של סקריפט זה.",
@@ -3407,10 +3366,7 @@
                     "picker": {
                         "add_script": "הוסף סקריפט",
                         "delete": "מחיקה",
-                        "dev_script": "ניפוי באגים סקריפט",
                         "duplicate": "שיכפול",
-                        "duplicate_script": "שכפול סקריפט",
-                        "edit_script": "עריכת סקריפט",
                         "header": "עורך סקריפטים",
                         "headers": {
                             "name": "שם",
@@ -3438,7 +3394,6 @@
                         "move": "העברה",
                         "moving": "מעביר ערכת נתונים",
                         "moving_desc": "מאתחל ומעביר את ערכת הנתונים. נא להתאזר בסבלנות.",
-                        "no_devices": "לא נמצאו התקנים מחוברים מתאימים",
                         "no_devices_text": "לא נמצא התקן חיצוני מתאים. קיבולת האחסון של דיסק הנתונים החיצוני חייבת להיות גדולה מקיבולת האחסון של הדיסק הקיים",
                         "no_devices_title": "לא נמצא אחסון מתאים",
                         "select_device": "בחירת ערכת נתונים חדשה",
@@ -3449,11 +3404,9 @@
                     "used_space": "שטח בשימוש"
                 },
                 "system_dashboard": {
-                    "confirm_restart": "האם בוודאות ברצונך להפעיל מחדש את Home Assistant?",
                     "confirm_restart_text": "פעולה זו תעצור את כל לוחות המחוונים הפעילים, האוטומציות והסקריפטים שלך.",
                     "confirm_restart_title": "לאתחל את Home Assistant?",
                     "restart_error": "הפעלה מחדש של Home Assistant נכשלה",
-                    "restart_homeassistant": "הפעלה מחדש של Home Assistant",
                     "restart_homeassistant_short": "אתחול"
                 },
                 "system_health": {
@@ -3462,7 +3415,6 @@
                     "cpu_usage": "שימוש במעבד",
                     "description": "מצב, מדדים וזמן אתחול של שילוב",
                     "integration_start_time": "זמן אתחול של שילוב",
-                    "long_loading_integrations": "שילובים שנטענים לאט",
                     "ram_usage": "שימוש בזיכרון",
                     "supervisor_stats": "מדדי מפקח"
                 },
@@ -3508,7 +3460,6 @@
                     "caption": "עדכונים",
                     "check_updates": "בדיקת עדכונים",
                     "description": "ניהול עדכונים של Home Assistant, הרחבות והתקנים",
-                    "hide_skipped": "הסתר דולג",
                     "join_beta": "הצטרף לערוץ ביטא",
                     "leave_beta": "עזוב את ערוץ הביטא",
                     "more_updates": "הצגת כל העדכונים",
@@ -3523,8 +3474,7 @@
                     "skipped": "דולג",
                     "title": "{count, plural,\n  one {עדכון אחד}\n  other {{count} עדכונים}\n}",
                     "unable_to_fetch": "לא ניתן לטעון עדכונים",
-                    "updates_refreshed": "{count, plural,\n  one {עדכון רוענן}\n  other {{count} עדכונים רועננו}\n}",
-                    "version_available": "גרסה {version_available} זמינה"
+                    "updates_refreshed": "{count, plural,\n  one {עדכון רוענן}\n  other {{count} עדכונים רועננו}\n}"
                 },
                 "url": {
                     "caption": "כתובת קישור Home Assistant",
@@ -3550,6 +3500,14 @@
                         "password_not_match": "סיסמאות אינן תואמות"
                     },
                     "caption": "משתמשים",
+                    "change_password": {
+                        "caption": "שינוי סיסמה",
+                        "change": "שינוי",
+                        "new_password": "סיסמה חדשה",
+                        "password_changed": "הסיסמה שונתה בהצלחה.",
+                        "password_confirm": "אישור סיסמה",
+                        "password_no_match": "הסיסמאות אינן תואמות"
+                    },
                     "description": "נהל את חשבונות המשתמש ב-Home Assistant",
                     "editor": {
                         "activate_user": "הפעל משתמש",
@@ -3558,7 +3516,6 @@
                         "admin": "מנהל",
                         "caption": "הצג משתמש",
                         "change_password": "שינוי סיסמה",
-                        "confirm_user_deletion": "האם בוודאות ברצונך למחוק את {name}?",
                         "confirm_user_deletion_text": "המשתמש הזה יימחק לצמיתות.",
                         "confirm_user_deletion_title": "למחוק את {name}?",
                         "deactivate_user": "בטל את המשתמש",
@@ -3567,9 +3524,7 @@
                         "id": "מזהה",
                         "local_only": "ניתן להתחבר מהרשת המקומית בלבד",
                         "name": "שם תצוגה",
-                        "new_password": "סיסמה חדשה",
                         "owner": "בעלים",
-                        "password_changed": "הסיסמה שונתה בהצלחה",
                         "system_generated": "משתמש מערכת",
                         "system_generated_users_not_editable": "לא ניתן לעדכן את משתמשי המערכת.",
                         "system_generated_users_not_removable": "לא ניתן להסיר משתמשי מערכת.",
@@ -3606,13 +3561,10 @@
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "תכונות של האשכול שנבחר",
-                        "get_zigbee_attribute": "קבל שדה Zigbee",
                         "header": "תכונות אשכול",
-                        "help_attribute_dropdown": "בחר שדה לצפייה או לשינוי ערכו.",
-                        "help_get_zigbee_attribute": "קבל את הערך עבור השדה שנבחר.",
-                        "help_set_zigbee_attribute": "הגדר ערך תכונה עבור האשכול שצוין ביישות שצוינה.",
                         "introduction": "הצגה ועריכה של תכונות אשכול.",
-                        "set_zigbee_attribute": "קבע שדה Zigbee"
+                        "read_zigbee_attribute": "קריאת תכונה",
+                        "write_zigbee_attribute": "כתיבת תכונה"
                     },
                     "cluster_commands": {
                         "commands_of_cluster": "פקודות של האשכול שנבחר",
@@ -3624,7 +3576,10 @@
                     "clusters": {
                         "header": "אשכולות",
                         "help_cluster_dropdown": "בחר אשכול כדי להציג תכונות ופקודות.",
-                        "introduction": "אשכולות הם אבני הבניין עבור פונקציונליות Zigbee. הם מפרידים פונקציונליות ליחידות לוגיות. קיימים סוגי לקוחות ושרתים המורכבים מתכונות ופקודות."
+                        "tabs": {
+                            "attributes": "תכונות",
+                            "commands": "פקודות"
+                        }
                     },
                     "common": {
                         "clusters": "אשכולות",
@@ -3637,6 +3592,11 @@
                         "network_settings_title": "הגדרות רשת",
                         "shortcuts_title": "קיצורי דרך",
                         "update_button": "עדכן תצורה"
+                    },
+                    "device_binding": {
+                        "bind": "קשירה",
+                        "picker_label": "התקנים הניתנים לקשירה",
+                        "unbind": "ביטול קשירה"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "קביעת התצורה הושלמה",
@@ -4124,9 +4084,10 @@
                         "fix_issue": {
                             "fix": "תיקון הבעיה",
                             "units_changed": {
+                                "change": "המרת כל ערכי הסטטיסטיקה ההיסטוריים מ-\"{metadata_unit}\" אל \"{state_unit}\"",
                                 "clear": "מחיקת כל נתוני הסטטיסטיקה הישנים עבור ישות זו",
                                 "title": "היחידה של ישות זו השתנתה",
-                                "update": "עדכון ערכי הסטטיסטיקה ההיסטוריים מ-''{metadata_unit}'' אל ''{state_unit}''"
+                                "update": "עידכון היחידה של הערכים הסטטיסטיים ההיסטוריים מ-\"{metadata_unit}\" אל \"{state_unit}\", מבלי לבצע המרה."
                             }
                         },
                         "issue": "בעיה",
@@ -4135,6 +4096,7 @@
                             "entity_not_recorded": "ישות זו אינה נכללת בהקלטה.",
                             "no_state": "אין מצב זמין עבור ישות זו.",
                             "units_changed": "היחידה של ישות זו השתנתה מ-''{metadata_unit}'' אל ''{state_unit}''",
+                            "units_changed_can_convert": "היחידה של ישות זו השתנתה מ-\"{metadata_unit}\" אל \"{state_unit}\"",
                             "unsupported_state_class": "מחלקת המצב ''{state_class}'' של ישות זו אינה נתמכת.",
                             "unsupported_unit_metadata": "היחידה (''{metadata_unit}'') של הסטטיסטיקה המתועדת אינה תואמת ליחידה הנתמכת ''{supported_unit}'' של מחלקת ההתקן ''{device_class}''.",
                             "unsupported_unit_state": "היחידה (\"{state_unit}\") של ישות זו אינה תואמת ליחידה של מחלקת התקן ''{device_class}''."
@@ -4159,8 +4121,6 @@
                         "unknown_error_template": "תבנית עיבוד שגיאות לא ידועה"
                     },
                     "yaml": {
-                        "caption": "פקדי שרת",
-                        "description": "אימות והפעלה מחדש של שרת Home Assistant",
                         "section": {
                             "reloading": {
                                 "automation": "אוטומציות",
@@ -4201,15 +4161,12 @@
                                 "zone": "אזורים"
                             },
                             "server_management": {
-                                "confirm_restart": "האם בוודאות ברצונך להפעיל מחדש את Home Assistant?",
                                 "confirm_restart_text": "הפעלה מחדש של Home Assistant תעצור את כל לוחות המחוונים, האוטומציות והסקריפטים הפעילים שלך.",
                                 "confirm_restart_title": "לאתחל את Home Assistant?",
                                 "confirm_stop": "האם בוודאות ברצונך לעצור את Home Assistant?",
                                 "heading": "Home Assistant",
-                                "introduction": "הפעלה מחדש של Home Assistant תעצור את לוח המחוונים והאוטומציות שלך. לאחר האתחול מחדש, כל תצורה תיטען מחדש.",
                                 "restart": "הפעלה מחדש",
                                 "restart_error": "הפעלה מחדש של Home Assistant נכשלה",
-                                "restart_home_assistant": "הפעלה מחדש של Home Assistant",
                                 "stop": "עצור"
                             },
                             "validation": {
@@ -4568,7 +4525,6 @@
                             "default_zoom": "זום התחלתי",
                             "description": "כרטיס המפה המאפשר להציג ישויות במפה.",
                             "geo_location_sources": "מקורות מיקום גאוגרפי",
-                            "hours_to_show": "שעות להצגה",
                             "name": "מפה",
                             "source": "מקור"
                         },
@@ -4599,8 +4555,8 @@
                             "name": "תמונה"
                         },
                         "plant-status": {
-                            "description": "כרטיס סטטוס הצמח מיועד לכל הבוטנאים המקסימים שיש שם.",
-                            "name": "מצב הצמח"
+                            "description": "כרטיס \"מצב צמח\" מיועד לכל הבוטנאים המקסימים שבינינו.",
+                            "name": "מצב צמח"
                         },
                         "sensor": {
                             "description": "כרטיס החיישן מעניק לך סקירה מהירה של מצב החיישנים שלך באמצעות גרף אופציונלי להמחשת שינוי לאורך זמן.",
@@ -4630,7 +4586,8 @@
                                 "max": "מקסימום",
                                 "mean": "הכוונה",
                                 "min": "מינימום",
-                                "sum": "סכום"
+                                "state": "מצב",
+                                "sum": "סכום (שינוי במהלך תקופה)"
                             },
                             "stat_types": "הצגת סוגי סטטיסטיקה"
                         },
@@ -4676,7 +4633,7 @@
                         "duplicate": "שכפל כרטיס",
                         "edit": "עריכה",
                         "header": "תצורת כרטיסייה",
-                        "move": "עבור לתצוגה",
+                        "move": "העבר לתצוגה",
                         "move_after": "העבר כרטיס אחרי",
                         "move_before": "העבר כרטיס לפני",
                         "move_down": "הזזת כרטיס למטה",
@@ -4684,7 +4641,7 @@
                         "options": "אפשרויות נוספות",
                         "pick_card": "איזה כרטיס ברצונך להוסיף?",
                         "pick_card_view_title": "איזה כרטיס ברצונך להוסיף לתצוגת {name}?",
-                        "search_cards": "כרטיסי חיפוש",
+                        "search_cards": "חיפוש כרטיסים",
                         "show_code_editor": "הצג עורך קוד",
                         "show_visual_editor": "הצג עורך ויזואלי",
                         "toggle_editor": "עורך בורר דו-מצבי",
@@ -4701,10 +4658,14 @@
                         "add": "הוסף תצוגה",
                         "delete": "מחק תצוגה",
                         "edit": "עריכת תצוגה",
+                        "edit_ui": "עריכה בעורך חזותי",
+                        "edit_yaml": "עריכה ב-YAML",
                         "header": "הצג תצורה",
                         "header_name": "הצג את תצורת {name}",
                         "move_left": "הזז את התצוגה שמאלה",
                         "move_right": "הזז את התצוגה ימינה",
+                        "subview": "תצוגת משנה",
+                        "subview_helper": "צפיות משנה אינן מופיעות בכרטיסיות וכוללות לחצן הקודם.",
                         "tab_badges": "תגים",
                         "tab_settings": "הגדרות",
                         "tab_visibility": "ניראות",
@@ -4858,18 +4819,6 @@
             "media-browser": {
                 "error": {
                     "player_not_exist": "נגן המדיה {name} אינו קיים"
-                },
-                "tts": {
-                    "action_pick": "בחר",
-                    "action_play": "אמר",
-                    "example_message": "שלום {name} , כעת ניתן לנגן כל טקסט בכל נגן מדיה נתמך!",
-                    "faild_to_store_defaults": "אחסון ברירות מחדל נכשל: {error}",
-                    "gender": "מגדר",
-                    "gender_female": "נקבה",
-                    "gender_male": "זכר",
-                    "language": "שפה",
-                    "message": "הודעה",
-                    "set_as_default": "קביעה כאפשרויות ברירת מחדל"
                 }
             },
             "my": {

@@ -53,6 +53,13 @@ export class HaStatisticPicker extends LitElement {
   public includeUnitClass?: string | string[];
 
   /**
+   * Show only statistics with these device classes.
+   * @attr include-device-class
+   */
+  @property({ attribute: "include-device-class" })
+  public includeDeviceClass?: string | string[];
+
+  /**
    * Show only statistics on entities.
    * @type {Boolean}
    * @attr entities-only
@@ -94,6 +101,7 @@ export class HaStatisticPicker extends LitElement {
       statisticIds: StatisticsMetaData[],
       includeStatisticsUnitOfMeasurement?: string | string[],
       includeUnitClass?: string | string[],
+      includeDeviceClass?: string | string[],
       entitiesOnly?: boolean
     ): Array<{ id: string; name: string; state?: HassEntity }> => {
       if (!statisticIds.length) {
@@ -121,6 +129,19 @@ export class HaStatisticPicker extends LitElement {
         statisticIds = statisticIds.filter((meta) =>
           includeUnitClasses.includes(meta.unit_class)
         );
+      }
+      if (includeDeviceClass) {
+        const includeDeviceClasses: (string | null)[] =
+          ensureArray(includeDeviceClass);
+        statisticIds = statisticIds.filter((meta) => {
+          const stateObj = this.hass.states[meta.statistic_id];
+          if (!stateObj) {
+            return true;
+          }
+          return includeDeviceClasses.includes(
+            stateObj.attributes.device_class || ""
+          );
+        });
       }
 
       const output: Array<{
@@ -195,6 +216,7 @@ export class HaStatisticPicker extends LitElement {
           this.statisticIds!,
           this.includeStatisticsUnitOfMeasurement,
           this.includeUnitClass,
+          this.includeDeviceClass,
           this.entitiesOnly
         );
       } else {
@@ -203,6 +225,7 @@ export class HaStatisticPicker extends LitElement {
             this.statisticIds!,
             this.includeStatisticsUnitOfMeasurement,
             this.includeUnitClass,
+            this.includeDeviceClass,
             this.entitiesOnly
           );
         });

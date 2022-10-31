@@ -13,7 +13,7 @@ import {
   domainToName,
   fetchIntegrationManifest,
 } from "../../../data/integration";
-import { Integration } from "../../../data/integrations";
+import { Brand, Integration } from "../../../data/integrations";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -29,7 +29,7 @@ class HaDomainIntegrations extends LitElement {
 
   @property() public domain!: string;
 
-  @property({ attribute: false }) public integration?: Integration;
+  @property({ attribute: false }) public integration?: Brand | Integration;
 
   @property({ attribute: false })
   public flowsInProgress?: DataEntryFlowProgress[];
@@ -65,7 +65,9 @@ class HaDomainIntegrations extends LitElement {
               </mwc-list-item>`
             )}
             <li divider role="separator"></li>
-            ${this.integration?.integrations
+            ${this.integration &&
+            "integrations" in this.integration &&
+            this.integration.integrations
               ? html`<h3>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.available_integrations"
@@ -74,37 +76,41 @@ class HaDomainIntegrations extends LitElement {
               : ""}`
         : ""}
       ${this.integration?.iot_standards
-        ? this.integration.iot_standards
-            .filter((standard) => standard in standardToDomain)
-            .map((standard) => {
-              const domain: string = standardToDomain[standard];
-              return html`<mwc-list-item
-                graphic="medium"
-                .domain=${domain}
-                @request-selected=${this._standardPicked}
-                hasMeta
+        ? (
+            this.integration.iot_standards.filter(
+              (standard) => standard in standardToDomain
+            ) as (keyof typeof standardToDomain)[]
+          ).map((standard) => {
+            const domain = standardToDomain[standard];
+            return html`<mwc-list-item
+              graphic="medium"
+              .domain=${domain}
+              @request-selected=${this._standardPicked}
+              hasMeta
+            >
+              <img
+                slot="graphic"
+                loading="lazy"
+                src=${brandsUrl({
+                  domain,
+                  type: "icon",
+                  useFallback: true,
+                  darkOptimized: this.hass.themes?.darkMode,
+                })}
+                referrerpolicy="no-referrer"
+              />
+              <span
+                >${this.hass.localize(
+                  `ui.panel.config.integrations.add_${domain}_device`
+                )}</span
               >
-                <img
-                  slot="graphic"
-                  loading="lazy"
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  referrerpolicy="no-referrer"
-                />
-                <span
-                  >${this.hass.localize(
-                    `ui.panel.config.integrations.add_${domain}_device`
-                  )}</span
-                >
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </mwc-list-item>`;
-            })
+              <ha-icon-next slot="meta"></ha-icon-next>
+            </mwc-list-item>`;
+          })
         : ""}
-      ${this.integration?.integrations
+      ${this.integration &&
+      "integrations" in this.integration &&
+      this.integration.integrations
         ? Object.entries(this.integration.integrations)
             .sort((a, b) => {
               if (a[1].config_flow && !b[1].config_flow) {
@@ -135,7 +141,7 @@ class HaDomainIntegrations extends LitElement {
                 </ha-integration-list-item>`
             )
         : ""}
-      ${["zha", "zwave_js"].includes(this.domain)
+      ${this.domain === "zha" || this.domain === "zwave_js"
         ? html`<mwc-list-item
             graphic="medium"
             .domain=${this.domain}
@@ -161,7 +167,9 @@ class HaDomainIntegrations extends LitElement {
             <ha-icon-next slot="meta"></ha-icon-next>
           </mwc-list-item>`
         : ""}
-      ${this.integration?.config_flow
+      ${this.integration &&
+      "config_flow" in this.integration &&
+      this.integration.config_flow
         ? html`${this.flowsInProgress?.length
             ? html`<mwc-list-item
                 .domain=${this.domain}
@@ -209,12 +217,30 @@ class HaDomainIntegrations extends LitElement {
       return;
     }
 
+    const integration = (ev.currentTarget as any).integration;
+
+    if (integration.supported_by) {
+      // @ts-ignore
+      fireEvent(this, "supported-by", { integration });
+      return;
+    }
+
+    if (integration.iot_standards) {
+      // @ts-ignore
+      fireEvent(this, "select-brand", {
+        brand: integration.domain,
+      });
+      return;
+    }
+
     if (
       (domain === this.domain &&
-        (!this.integration!.integrations ||
-          !(domain in this.integration!.integrations)) &&
-        !this.integration!.config_flow) ||
-      this.integration!.integrations?.[domain]?.config_flow === false
+        (("integration_type" in this.integration! &&
+          !this.integration.config_flow) ||
+          (!("integration_type" in this.integration!) &&
+            (!this.integration!.integrations ||
+              !(domain in this.integration!.integrations))))) ||
+      (this.integration as Brand)!.integrations?.[domain]?.config_flow === false
     ) {
       const manifest = await fetchIntegrationManifest(this.hass, domain);
       showYamlIntegrationDialog(this, { manifest });
@@ -260,7 +286,8 @@ class HaDomainIntegrations extends LitElement {
     protocolIntegrationPicked(
       root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
       this.hass,
-      domain
+      domain,
+      { brand: this.domain }
     );
   }
 
