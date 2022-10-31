@@ -92,6 +92,12 @@ export class HuiTileCardEditor
                     },
                   },
                 },
+                {
+                  name: "show_entity_picture",
+                  selector: {
+                    boolean: {},
+                  },
+                },
               ] as const,
             },
           ] as const,
@@ -114,12 +120,6 @@ export class HuiTileCardEditor
               name: "icon_tap_action",
               selector: {
                 "ui-action": {},
-              },
-            },
-            {
-              name: "show_entity_picture",
-              selector: {
-                boolean: {},
               },
             },
           ] as const,
