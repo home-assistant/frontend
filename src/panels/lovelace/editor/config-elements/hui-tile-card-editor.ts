@@ -284,6 +284,10 @@ export class HuiTileCardEditor
           display: flex;
           flex-direction: column;
         }
+        ha-form {
+          display: block;
+          margin-bottom: 24px;
+        }
       `,
     ];
   }

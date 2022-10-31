@@ -1,6 +1,7 @@
 import {
   mdiClose,
   mdiDrag,
+  mdiListBox,
   mdiPencil,
   mdiPlus,
   mdiWindowShutter,
@@ -61,58 +62,67 @@ export class HuiTileCardControlsEditor extends LitElement {
     }
 
     return html`
-      <h3>Controls</h3>
-      <div class="controls">
-        ${repeat(
-          this.controls,
-          (controlConf) => this._getKey(controlConf),
-          (controlConf, index) => html`
-            <div class="control">
-              <div class="handle">
-                <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-              </div>
-              <div class="special-row">
-                <div>
-                  <span> ${controlConf.type} </span>
+      <ha-expansion-panel outlined>
+        <h3 slot="header">
+          <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
+          Controls
+        </h3>
+        <div class="content">
+          <div class="controls">
+            ${repeat(
+              this.controls,
+              (controlConf) => this._getKey(controlConf),
+              (controlConf, index) => html`
+                <div class="control">
+                  <div class="handle">
+                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                  </div>
+                  <div class="control-content">
+                    <div>
+                      <span> ${controlConf.type} </span>
+                    </div>
+                  </div>
+
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.components.entity.entity-picker.clear"
+                    )}
+                    .path=${mdiClose}
+                    class="remove-icon"
+                    .index=${index}
+                    @click=${this._removeControl}
+                  ></ha-icon-button>
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.components.entity.entity-picker.edit"
+                    )}
+                    .path=${mdiPencil}
+                    class="edit-icon"
+                    .index=${index}
+                    @click=${this._editControl}
+                  ></ha-icon-button>
                 </div>
-              </div>
-
-              <ha-icon-button
-                .label=${this.hass!.localize(
-                  "ui.components.entity.entity-picker.clear"
-                )}
-                .path=${mdiClose}
-                class="remove-icon"
-                .index=${index}
-                @click=${this._removeControl}
-              ></ha-icon-button>
-              <ha-icon-button
-                .label=${this.hass!.localize(
-                  "ui.components.entity.entity-picker.edit"
-                )}
-                .path=${mdiPencil}
-                class="edit-icon"
-                .index=${index}
-                @click=${this._editControl}
-              ></ha-icon-button>
-            </div>
-          `
-        )}
-      </div>
-
-      <ha-button-menu
-        fixed
-        @action=${this._addControl}
-        @closed=${stopPropagation}
-      >
-        <mwc-button slot="trigger" outlined label="Add control">
-          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </mwc-button>
-        <mwc-list-item value="cover-position">
-          <ha-svg-icon slot="graphic" .path=${mdiWindowShutter}></ha-svg-icon>
-          Cover position
-        </mwc-list-item>
-      </ha-button-menu>
+              `
+            )}
+          </div>
+          <ha-button-menu
+            fixed
+            @action=${this._addControl}
+            @closed=${stopPropagation}
+          >
+            <mwc-button slot="trigger" outlined label="Add control">
+              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+            </mwc-button>
+            <mwc-list-item value="cover-position">
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiWindowShutter}
+              ></ha-svg-icon>
+              Cover position
+            </mwc-list-item>
+          </ha-button-menu>
+        </div>
+      </ha-expansion-panel>
     `;
   }
 
@@ -196,22 +206,34 @@ export class HuiTileCardControlsEditor extends LitElement {
     return [
       sortableStyles,
       css`
-        ha-entity-picker {
-          margin-top: 8px;
+        :host {
+          display: flex !important;
+          flex-direction: column;
         }
-        .add-entity {
+        .content {
+          padding: 12px;
+        }
+        ha-expansion-panel {
           display: block;
-          margin-left: 31px;
-          margin-right: 71px;
-          margin-inline-start: 31px;
-          margin-inline-end: 71px;
-          direction: var(--direction);
+          --expansion-panel-content-padding: 0;
+          border-radius: 6px;
+        }
+        h3 {
+          margin: 0;
+          font-size: inherit;
+          font-weight: inherit;
+        }
+        ha-svg-icon,
+        ha-icon {
+          color: var(--secondary-text-color);
+        }
+        ha-button-menu {
+          margin-top: 8px;
         }
         .control {
           display: flex;
           align-items: center;
         }
-
         .control .handle {
           padding-right: 8px;
           cursor: move;
@@ -223,11 +245,7 @@ export class HuiTileCardControlsEditor extends LitElement {
           pointer-events: none;
         }
 
-        .control ha-entity-picker {
-          flex-grow: 1;
-        }
-
-        .special-row {
+        .control-content {
           height: 60px;
           font-size: 16px;
           display: flex;
