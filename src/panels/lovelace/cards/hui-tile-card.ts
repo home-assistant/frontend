@@ -69,8 +69,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity");
     }
 
-    const supportToggle =
-      config.entity && DOMAINS_TOGGLE.has(computeDomain(config.entity));
+    const supportToggle = DOMAINS_TOGGLE.has(computeDomain(config.entity));
 
     this._config = {
       tap_action: {
