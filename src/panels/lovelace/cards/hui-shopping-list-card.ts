@@ -132,6 +132,7 @@ class HuiShoppingListCard
               "ui.panel.lovelace.cards.shopping-list.add_item"
             )}
             @keydown=${this._addKeyPress}
+            .inputProps=${{ enterkeyhint: "done" }}
           ></ha-textfield>
           <ha-svg-icon
             class="reorderButton"
@@ -220,6 +221,7 @@ class HuiShoppingListCard
                 .value=${item.name}
                 .itemId=${item.id}
                 @change=${this._saveEdit}
+                .inputProps=${{ enterkeyhint: "done" }}
               ></ha-textfield>
               ${this._reordering
                 ? html`
