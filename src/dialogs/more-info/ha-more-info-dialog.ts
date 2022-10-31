@@ -323,6 +323,7 @@ export class MoreInfoDialog extends LitElement {
 
         :host([tab="info"]) ha-dialog[data-domain="camera"] {
           --dialog-content-padding: 0;
+          /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
           --video-max-height: calc(100vh - 113px - 72px);
         }
       `,
