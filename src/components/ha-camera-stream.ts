@@ -24,7 +24,7 @@ import "./ha-hls-player";
 import "./ha-web-rtc-player";
 
 @customElement("ha-camera-stream")
-class HaCameraStream extends LitElement {
+export class HaCameraStream extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: CameraEntity;
@@ -81,7 +81,7 @@ class HaCameraStream extends LitElement {
       return html``;
     }
     if (__DEMO__ || this._shouldRenderMJPEG) {
-      return html` <img
+      return html`<img
         .src=${__DEMO__
           ? this.stateObj.attributes.entity_picture!
           : this._connected
