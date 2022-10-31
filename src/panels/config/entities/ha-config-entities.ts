@@ -934,6 +934,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._showDisabled = true;
     this._showReadOnly = true;
     this._showUnavailable = true;
+    this._showHidden = true;
   }
 
   static get styles(): CSSResultGroup {
