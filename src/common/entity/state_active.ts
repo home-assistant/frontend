@@ -25,7 +25,7 @@ export function stateActive(stateObj: HassEntity): boolean {
     case "person":
       return state !== "not_home";
     case "media-player":
-      return state !== "idle";
+      return state !== "idle" && state !== "standby";
     case "vacuum":
       return state === "on" || state === "cleaning";
     case "plant":
