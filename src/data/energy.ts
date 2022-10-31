@@ -272,11 +272,15 @@ export interface EnergyData {
 
 export const getReferencedStatisticIds = (
   prefs: EnergyPreferences,
-  info: EnergyInfo
+  info: EnergyInfo,
+  exclude?: string[]
 ): string[] => {
   const statIDs: string[] = [];
 
   for (const source of prefs.energy_sources) {
+    if (exclude?.includes(source.type)) {
+      continue;
+    }
     if (source.type === "solar") {
       statIDs.push(source.stat_energy_from);
       continue;
@@ -362,6 +366,7 @@ const getEnergyData = async (
     }
   }
 
+  const waterStatIds: string[] = [];
   const consumptionStatIDs: string[] = [];
   for (const source of prefs.energy_sources) {
     // grid source
@@ -370,8 +375,13 @@ const getEnergyData = async (
         consumptionStatIDs.push(flowFrom.stat_energy_from);
       }
     }
+    if (source.type === "water") {
+      waterStatIds.push(source.stat_energy_from);
+    }
   }
-  const statIDs = getReferencedStatisticIds(prefs, info);
+  const energyStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
+
+  const allStatIDs = [...energyStatIds, ...waterStatIds];
 
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
@@ -381,19 +391,32 @@ const getEnergyData = async (
   const startMinHour = addHours(start, -1);
 
   const lengthUnit = hass.config.unit_system.length || "";
-  const units: StatisticsUnitConfiguration = {
+  const energyUnits: StatisticsUnitConfiguration = {
     energy: "kWh",
     volume: lengthUnit === "km" ? "m³" : "ft³",
   };
+  const waterUnits: StatisticsUnitConfiguration = {
+    volume: lengthUnit === "km" ? "L" : "gal",
+  };
 
-  const stats = await fetchStatistics(
-    hass!,
-    startMinHour,
-    end,
-    statIDs,
-    period,
-    units
-  );
+  const stats = {
+    ...(await fetchStatistics(
+      hass!,
+      startMinHour,
+      end,
+      energyStatIds,
+      period,
+      energyUnits
+    )),
+    ...(await fetchStatistics(
+      hass!,
+      startMinHour,
+      end,
+      waterStatIds,
+      period,
+      waterUnits
+    )),
+  };
 
   let statsCompare;
   let startCompare;
@@ -409,14 +432,24 @@ const getEnergyData = async (
     const compareStartMinHour = addHours(startCompare, -1);
     endCompare = addMilliseconds(start, -1);
 
-    statsCompare = await fetchStatistics(
-      hass!,
-      compareStartMinHour,
-      endCompare,
-      statIDs,
-      period,
-      units
-    );
+    statsCompare = {
+      ...(await fetchStatistics(
+        hass!,
+        compareStartMinHour,
+        endCompare,
+        energyStatIds,
+        period,
+        energyUnits
+      )),
+      ...(await fetchStatistics(
+        hass!,
+        startMinHour,
+        end,
+        waterStatIds,
+        period,
+        waterUnits
+      )),
+    };
   }
 
   let fossilEnergyConsumption: FossilEnergyConsumption | undefined;
@@ -456,7 +489,7 @@ const getEnergyData = async (
     }
   });
 
-  const statsMetadataArray = await getStatisticMetadata(hass, statIDs);
+  const statsMetadataArray = await getStatisticMetadata(hass, allStatIDs);
   const statsMetadata: Record<string, StatisticsMetaData> = {};
   statsMetadataArray.forEach((x) => {
     statsMetadata[x.statistic_id] = x;
@@ -671,4 +704,4 @@ export const getEnergyGasUnit = (
 };
 
 export const getEnergyWaterUnit = (hass: HomeAssistant): string | undefined =>
-  hass.config.unit_system.length === "km" ? "m³" : "ft³";
+  hass.config.unit_system.length === "km" ? "L" : "gal";

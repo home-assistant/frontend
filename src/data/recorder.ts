@@ -88,7 +88,7 @@ export interface StatisticsUnitConfiguration {
     | "psi"
     | "mmHg";
   temperature?: "°C" | "°F" | "K";
-  volume?: "ft³" | "m³";
+  volume?: "L" | "gal" | "ft³" | "m³";
 }
 
 export interface StatisticsValidationResults {

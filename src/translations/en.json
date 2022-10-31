@@ -1024,7 +1024,7 @@
           "clusters": "Clusters",
           "bindings": "Bindings",
           "signature": "Signature",
-          "children": "Children"
+          "neighbors": "Neighbors"
         }
       },
       "zha_device_info": {
@@ -3247,6 +3247,12 @@
             "unbind_button_label": "Unbind Group",
             "bind_button_help": "Bind the selected group to the selected device clusters.",
             "unbind_button_help": "Unbind the selected group from the selected device clusters."
+          },
+          "neighbors": {
+            "name": "Name",
+            "lqi": "LQI",
+            "relationship": "Relationship",
+            "depth": "Depth"
           }
         },
         "zwave_js": {
