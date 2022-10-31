@@ -9,6 +9,7 @@ import "./ha-form-boolean";
 import "./ha-form-constant";
 import "./ha-form-float";
 import "./ha-form-grid";
+import "./ha-form-expandable";
 import "./ha-form-integer";
 import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";

@@ -152,6 +152,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-lock-unlocked-color: var(--rgb-red-color);
       --rgb-state-media-player-color: var(--rgb-indigo-color);
       --rgb-state-person-color: var(--rgb-blue-grey-color);
+      --rgb-state-person-home-color: var(--rgb-green-color);
+      --rgb-state-person-not-home-color: var(--rgb-red-color);
+      --rgb-state-person-zone-color: var(--rgb-blue-color);
       --rgb-state-sensor-battery-high-color: var(--rgb-green-color);
       --rgb-state-sensor-battery-low-color: var(--rgb-red-color);
       --rgb-state-sensor-battery-medium-color: var(--rgb-orange-color);
@@ -173,6 +176,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-climate-fan-only-color: var(--rgb-teal-color);
       --rgb-state-climate-heat-color: var(--rgb-deep-orange-color);
       --rgb-state-climate-heat-cool-color: var(--rgb-green-color);
+      --rgb-state-climate-idle-color: var(--rgb-disabled-color);
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);

@@ -297,10 +297,6 @@ export class MoreInfoDialog extends LitElement {
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
-        :host([tab="info"]) ha-dialog[data-domain="camera"] {
-          --mdc-dialog-max-width: auto;
-        }
-
         :host([tab="settings"]) ha-dialog {
           --dialog-content-padding: 0px;
         }
@@ -319,8 +315,7 @@ export class MoreInfoDialog extends LitElement {
             cursor: default;
           }
 
-          :host([large]) ha-dialog:not([data-domain="camera"]),
-          :host([tab="info"][large]) ha-dialog[data-domain="camera"] {
+          :host([tab="info"][large]) {
             --mdc-dialog-min-width: 90vw;
             --mdc-dialog-max-width: 90vw;
           }
@@ -328,6 +323,8 @@ export class MoreInfoDialog extends LitElement {
 
         :host([tab="info"]) ha-dialog[data-domain="camera"] {
           --dialog-content-padding: 0;
+          /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
+          --video-max-height: calc(100vh - 113px - 72px);
         }
       `,
     ];
