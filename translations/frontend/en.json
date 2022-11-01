@@ -3104,7 +3104,7 @@
                 "lovelace": {
                     "caption": "Dashboards",
                     "dashboards": {
-                        "cant_edit_default": "The default dashboard, Overview, cannot be edited from the UI. You can hide it by setting another dashboard as default.",
+                        "cant_edit_default": "Visibility settings for the default dashboard, Overview, cannot be edited from the UI. You can hide it by setting another dashboard as default.",
                         "cant_edit_yaml": "Dashboards created in YAML cannot be edited from the UI. Change them in configuration.yaml.",
                         "caption": "Dashboards",
                         "conf_mode": {
