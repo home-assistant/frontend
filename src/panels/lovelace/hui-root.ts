@@ -747,10 +747,10 @@ class HUIRoot extends LitElement {
 
     if (curViewConfig?.back_path) {
       navigate(curViewConfig.back_path);
-    } else if (history.length > 0) {
+    } else if (history.length > 1) {
       history.back();
     } else {
-      navigate(views[0].path!);
+      navigate(this.route!.prefix);
     }
   }
 
