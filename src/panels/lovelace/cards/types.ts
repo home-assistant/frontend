@@ -311,7 +311,7 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {
-  title?: string;
+  name?: string;
   entities: Array<EntityConfig | string>;
   period: {
     fixed_period?: { start: string; end: string };
