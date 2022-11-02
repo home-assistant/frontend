@@ -273,21 +273,23 @@ export interface EnergyData {
 export const getReferencedStatisticIds = (
   prefs: EnergyPreferences,
   info: EnergyInfo,
-  exclude?: string[]
+  excludeEnergyStatTypes?: string[]
 ): string[] => {
   const statIDs: string[] = [];
 
   for (const source of prefs.energy_sources) {
-    if (exclude?.includes(source.type)) {
-      continue;
-    }
     if (source.type === "solar") {
-      statIDs.push(source.stat_energy_from);
+      if (!excludeEnergyStatTypes?.includes(source.type)) {
+        statIDs.push(source.stat_energy_from);
+      }
       continue;
     }
 
     if (source.type === "gas" || source.type === "water") {
-      statIDs.push(source.stat_energy_from);
+      if (!excludeEnergyStatTypes?.includes(source.type)) {
+        statIDs.push(source.stat_energy_from);
+      }
+
       if (source.stat_cost) {
         statIDs.push(source.stat_cost);
       }
@@ -299,14 +301,18 @@ export const getReferencedStatisticIds = (
     }
 
     if (source.type === "battery") {
-      statIDs.push(source.stat_energy_from);
-      statIDs.push(source.stat_energy_to);
+      if (!excludeEnergyStatTypes?.includes(source.type)) {
+        statIDs.push(source.stat_energy_from);
+        statIDs.push(source.stat_energy_to);
+      }
       continue;
     }
 
     // grid source
     for (const flowFrom of source.flow_from) {
-      statIDs.push(flowFrom.stat_energy_from);
+      if (!excludeEnergyStatTypes?.includes(source.type)) {
+        statIDs.push(flowFrom.stat_energy_from);
+      }
       if (flowFrom.stat_cost) {
         statIDs.push(flowFrom.stat_cost);
       }
@@ -316,7 +322,9 @@ export const getReferencedStatisticIds = (
       }
     }
     for (const flowTo of source.flow_to) {
-      statIDs.push(flowTo.stat_energy_to);
+      if (!excludeEnergyStatTypes?.includes(source.type)) {
+        statIDs.push(flowTo.stat_energy_to);
+      }
       if (flowTo.stat_compensation) {
         statIDs.push(flowTo.stat_compensation);
       }
