@@ -61,7 +61,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
     return {
       entity: foundEntities[0] || "",
-      period: { calendar: { period: "month", offset: 0 } },
+      period: { calendar: { period: "month" } },
     };
   }
 
