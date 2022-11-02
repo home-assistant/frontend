@@ -20,7 +20,7 @@ const SCHEMA = [
     selector: {
       text: {
         type: "password",
-        autofill: "new-password",
+        autocomplete: "new-password",
       },
     },
   },
@@ -30,7 +30,7 @@ const SCHEMA = [
     selector: {
       text: {
         type: "password",
-        autofill: "new-password",
+        autocomplete: "new-password",
       },
     },
   },
