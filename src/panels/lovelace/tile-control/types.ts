@@ -1,9 +1,6 @@
-export interface LovelaceTileControlConfig {
-  type: "cover-position";
-}
-
-export interface CoverPositionTileControlConfig
-  extends LovelaceTileControlConfig {
+export interface CoverPositionTileControlConfig {
   type: "cover-position";
   mode: "slider" | "button";
 }
+
+export type LovelaceTileControlConfig = CoverPositionTileControlConfig;

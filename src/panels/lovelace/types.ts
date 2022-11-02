@@ -1,3 +1,4 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   LovelaceBadgeConfig,
   LovelaceCardConfig,
@@ -96,6 +97,7 @@ export interface LovelaceGenericElementEditor extends HTMLElement {
 
 export interface LovelaceTileControl extends HTMLElement {
   hass?: HomeAssistant;
+  stateObj?: HassEntity;
   setConfig(config: LovelaceTileControlConfig);
 }
 
