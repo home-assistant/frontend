@@ -51,6 +51,7 @@ class HaChangePasswordCard extends LitElement {
 
             <ha-textfield
               id="currentPassword"
+              name="currentPassword"
               .label=${this.hass.localize(
                 "ui.panel.profile.change_password.current_password"
               )}
