@@ -36,8 +36,6 @@ class HaAppLayout extends customElements.get("app-header-layout") {
          */
           position: relative;
           z-index: 0;
-          padding: env(safe-area-inset-top) env(safe-area-inset-right)
-            env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         #wrapper ::slotted([slot="header"]) {
@@ -82,6 +80,8 @@ class HaAppLayout extends customElements.get("app-header-layout") {
           transform: translate(0);
           margin-left: env(safe-area-inset-left);
           margin-right: env(safe-area-inset-right);
+          padding-top: env(safe-area-inset-top);
+          padding-bottom: env(safe-area-inset-bottom);
         }
 
         @media print {
