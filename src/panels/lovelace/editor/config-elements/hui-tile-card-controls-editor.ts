@@ -21,6 +21,7 @@ import {
   SortableInstance,
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
+import { getTileControlElementClass } from "../../create-element/create-tile-control-element";
 import { LovelaceTileControlConfig } from "../../tile-control/types";
 
 declare global {
@@ -165,7 +166,15 @@ export class HuiTileCardControlsEditor extends LitElement {
 
     if (index == null) return;
 
-    const newControl = { type: "cover-position" } as LovelaceTileControlConfig;
+    const value = "cover-position";
+    const elClass = await getTileControlElementClass("cover-position");
+
+    let newControl: LovelaceTileControlConfig;
+    if (elClass && elClass.getStubConfig) {
+      newControl = await elClass.getStubConfig(this.hass!);
+    } else {
+      newControl = { type: value } as LovelaceTileControlConfig;
+    }
     const newConfigControls = this.controls!.concat(newControl);
     fireEvent(this, "controls-changed", { controls: newConfigControls });
   }
@@ -175,11 +184,11 @@ export class HuiTileCardControlsEditor extends LitElement {
       return;
     }
 
-    const newEntities = this.controls!.concat();
+    const newControls = this.controls!.concat();
 
-    newEntities.splice(ev.newIndex!, 0, newEntities.splice(ev.oldIndex!, 1)[0]);
+    newControls.splice(ev.newIndex!, 0, newControls.splice(ev.oldIndex!, 1)[0]);
 
-    fireEvent(this, "controls-changed", { controls: newEntities });
+    fireEvent(this, "controls-changed", { controls: newControls });
   }
 
   private _removeControl(ev: CustomEvent): void {
