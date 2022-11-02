@@ -14,6 +14,8 @@ export class HaTextSelector extends LitElement {
 
   @property() public value?: any;
 
+  @property() public name?: string;
+
   @property() public label?: string;
 
   @property() public placeholder?: string;
@@ -31,6 +33,7 @@ export class HaTextSelector extends LitElement {
   protected render() {
     if (this.selector.text?.multiline) {
       return html`<ha-textarea
+        .name=${this.name}
         .label=${this.label}
         .placeholder=${this.placeholder}
         .value=${this.value || ""}
@@ -46,6 +49,7 @@ export class HaTextSelector extends LitElement {
       ></ha-textarea>`;
     }
     return html`<ha-textfield
+        .name=${this.name}
         .value=${this.value || ""}
         .placeholder=${this.placeholder || ""}
         .helper=${this.helper}

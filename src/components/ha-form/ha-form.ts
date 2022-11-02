@@ -58,7 +58,7 @@ export class HaForm extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="root" part="root">
+      <form class="root" part="root">
         ${this.error && this.error.base
           ? html`
               <ha-alert alert-type="error">
@@ -81,6 +81,7 @@ export class HaForm extends LitElement implements HaFormElement {
               ? html`<ha-selector
                   .schema=${item}
                   .hass=${this.hass}
+                  .name=${item.name}
                   .selector=${item.selector}
                   .value=${getValue(this.data, item)}
                   .label=${this._computeLabel(item, this.data)}
@@ -102,7 +103,7 @@ export class HaForm extends LitElement implements HaFormElement {
                 })}
           `;
         })}
-      </div>
+      </form>
     `;
   }
 
