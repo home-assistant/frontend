@@ -40,6 +40,8 @@ const LOAD_ELEMENTS = {
 export class HaSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
+  @property() public name?: string;
+
   @property() public selector!: Selector;
 
   @property() public value?: any;
@@ -74,6 +76,7 @@ export class HaSelector extends LitElement {
     return html`
       ${dynamicElement(`ha-selector-${this._type}`, {
         hass: this.hass,
+        name: this.name,
         selector: this.selector,
         value: this.value,
         label: this.label,
