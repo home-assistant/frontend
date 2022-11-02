@@ -58,7 +58,7 @@ export class HaForm extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <form class="root" part="root">
+      <div class="root" part="root">
         ${this.error && this.error.base
           ? html`
               <ha-alert alert-type="error">
@@ -103,7 +103,7 @@ export class HaForm extends LitElement implements HaFormElement {
                 })}
           `;
         })}
-      </form>
+      </div>
     `;
   }
 
