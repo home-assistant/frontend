@@ -273,22 +273,22 @@ export interface EnergyData {
 export const getReferencedStatisticIds = (
   prefs: EnergyPreferences,
   info: EnergyInfo,
-  excludeEnergyStatTypes?: string[]
+  includeTypes?: string[]
 ): string[] => {
   const statIDs: string[] = [];
 
   for (const source of prefs.energy_sources) {
+    if (includeTypes && !includeTypes.includes(source.type)) {
+      continue;
+    }
+
     if (source.type === "solar") {
-      if (!excludeEnergyStatTypes?.includes(source.type)) {
-        statIDs.push(source.stat_energy_from);
-      }
+      statIDs.push(source.stat_energy_from);
       continue;
     }
 
     if (source.type === "gas" || source.type === "water") {
-      if (!excludeEnergyStatTypes?.includes(source.type)) {
-        statIDs.push(source.stat_energy_from);
-      }
+      statIDs.push(source.stat_energy_from);
 
       if (source.stat_cost) {
         statIDs.push(source.stat_cost);
@@ -301,18 +301,14 @@ export const getReferencedStatisticIds = (
     }
 
     if (source.type === "battery") {
-      if (!excludeEnergyStatTypes?.includes(source.type)) {
-        statIDs.push(source.stat_energy_from);
-        statIDs.push(source.stat_energy_to);
-      }
+      statIDs.push(source.stat_energy_from);
+      statIDs.push(source.stat_energy_to);
       continue;
     }
 
     // grid source
     for (const flowFrom of source.flow_from) {
-      if (!excludeEnergyStatTypes?.includes(source.type)) {
-        statIDs.push(flowFrom.stat_energy_from);
-      }
+      statIDs.push(flowFrom.stat_energy_from);
       if (flowFrom.stat_cost) {
         statIDs.push(flowFrom.stat_cost);
       }
@@ -322,9 +318,7 @@ export const getReferencedStatisticIds = (
       }
     }
     for (const flowTo of source.flow_to) {
-      if (!excludeEnergyStatTypes?.includes(source.type)) {
-        statIDs.push(flowTo.stat_energy_to);
-      }
+      statIDs.push(flowTo.stat_energy_to);
       if (flowTo.stat_compensation) {
         statIDs.push(flowTo.stat_compensation);
       }
@@ -374,7 +368,6 @@ const getEnergyData = async (
     }
   }
 
-  const waterStatIds: string[] = [];
   const consumptionStatIDs: string[] = [];
   for (const source of prefs.energy_sources) {
     // grid source
@@ -383,11 +376,14 @@ const getEnergyData = async (
         consumptionStatIDs.push(flowFrom.stat_energy_from);
       }
     }
-    if (source.type === "water") {
-      waterStatIds.push(source.stat_energy_from);
-    }
   }
-  const energyStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
+  const energyStatIds = getReferencedStatisticIds(prefs, info, [
+    "grid",
+    "solar",
+    "battery",
+    "gas",
+  ]);
+  const waterStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
 
   const allStatIDs = [...energyStatIds, ...waterStatIds];
 
