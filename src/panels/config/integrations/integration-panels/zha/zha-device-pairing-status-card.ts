@@ -109,6 +109,8 @@ class ZHADevicePairingStatusCard extends LitElement {
           padding: 8px;
           text-align: center;
           margin-bottom: 20px;
+          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: var(--ha-card-border-radius, 12px);
         }
         .discovered.initialized .header {
           background: var(--success-color);
