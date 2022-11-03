@@ -105,7 +105,6 @@ export interface LovelaceTileControlConstructor
   extends Constructor<LovelaceTileControl> {
   getConfigElement?: () => LovelaceTileControlEditor;
   getStubConfig?: (hass: HomeAssistant) => LovelaceTileControlConfig;
-  isSupported?(stateObj: HassEntity): boolean;
 }
 
 export interface LovelaceTileControlEditor

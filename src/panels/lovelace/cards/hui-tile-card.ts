@@ -1,14 +1,7 @@
 import { memoize } from "@fullcalendar/common";
 import { mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeRgbColor } from "../../../common/color/compute-color";
@@ -33,10 +26,8 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import "../components/hui-timestamp-display";
-import {
-  createTileControlElement,
-  getTileControlElementClass,
-} from "../create-element/create-tile-control-element";
+import { createTileControlElement } from "../create-element/create-tile-control-element";
+import { supportsTileControl } from "../tile-control/supports_tile_controls";
 import { LovelaceTileControlConfig } from "../tile-control/types";
 import {
   LovelaceCard,
@@ -79,44 +70,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: TileCardConfig;
-
-  private _supportedControls: Map<LovelaceTileControlConfig["type"], boolean> =
-    new Map();
-
-  protected async updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (changedProps.has("_config") || changedProps.has("hass")) {
-      this._updateSupportedControls();
-    }
-  }
-
-  protected _updateSupportedControls() {
-    if (!this.hass || !this._config) {
-      this._supportedControls.clear();
-      return;
-    }
-
-    const entityId = this._config.entity;
-    const stateObj = entityId ? this.hass.states[entityId] : undefined;
-
-    if (!stateObj) {
-      this._supportedControls.clear();
-      return;
-    }
-
-    this._config.controls?.forEach(async (control) => {
-      try {
-        const controlClass = await getTileControlElementClass(control.type);
-        const supported =
-          controlClass &&
-          (!controlClass.isSupported || controlClass.isSupported(stateObj));
-        this._supportedControls.set(control.type, supported);
-        this.requestUpdate();
-      } catch (err) {
-        // just ignore
-      }
-    });
-  }
 
   public setConfig(config: ThermostatCardConfig): void {
     if (!config.entity) {
@@ -253,6 +206,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : undefined;
     const badge = computeTileBadge(stateObj, this.hass);
 
+    const supportedControls = this._config.controls?.filter((control) =>
+      supportsTileControl(stateObj, control.type)
+    );
+
     return html`
       <ha-card style=${styleMap(style)}>
         <div class="tile">
@@ -299,10 +256,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .actionHandler=${actionHandler()}
           ></ha-tile-info>
         </div>
-        ${this._config.controls?.length
+        ${supportedControls?.length
           ? html`
               <div class="controls">
-                ${this._config.controls.map((controlConf) =>
+                ${supportedControls.map((controlConf) =>
                   this.renderControl(controlConf, stateObj)
                 )}
               </div>
@@ -318,7 +275,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   ): TemplateResult {
     const element = createTileControlElement(controlConf);
 
-    if (!this._supportedControls.get(controlConf.type)) return html``;
     if (this.hass) {
       element.hass = this.hass;
       (element as LovelaceTileControl).stateObj = stateObj;

@@ -6,6 +6,7 @@ import {
   mdiPlus,
   mdiWindowShutter,
 } from "@mdi/js";
+import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -22,6 +23,7 @@ import {
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
 import { getTileControlElementClass } from "../../create-element/create-tile-control-element";
+import { supportsTileControl } from "../../tile-control/supports_tile_controls";
 import { LovelaceTileControlConfig } from "../../tile-control/types";
 
 declare global {
@@ -35,6 +37,8 @@ declare global {
 @customElement("hui-tile-card-controls-editor")
 export class HuiTileCardControlsEditor extends LitElement {
   @property({ attribute: false }) protected hass?: HomeAssistant;
+
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ attribute: false })
   protected controls?: LovelaceTileControlConfig[];
@@ -81,6 +85,10 @@ export class HuiTileCardControlsEditor extends LitElement {
                   <div class="control-content">
                     <div>
                       <span> ${controlConf.type} </span>
+                      ${this.stateObj &&
+                      !supportsTileControl(this.stateObj, "cover-position")
+                        ? html`<span class="secondary">Not Compatible</span>`
+                        : null}
                     </div>
                   </div>
 
@@ -120,6 +128,10 @@ export class HuiTileCardControlsEditor extends LitElement {
                 .path=${mdiWindowShutter}
               ></ha-svg-icon>
               Cover position
+              ${this.stateObj &&
+              !supportsTileControl(this.stateObj, "cover-position")
+                ? html`<span slot="secondary">Not Compatible</span>`
+                : null}
             </mwc-list-item>
           </ha-button-menu>
         </div>
@@ -263,7 +275,7 @@ export class HuiTileCardControlsEditor extends LitElement {
           flex-grow: 1;
         }
 
-        .special-row div {
+        .control-content div {
           display: flex;
           flex-direction: column;
         }

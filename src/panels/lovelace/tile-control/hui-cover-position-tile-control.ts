@@ -2,10 +2,9 @@ import { mdiStop } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import {
-  computeOpenIcon,
   computeCloseIcon,
+  computeOpenIcon,
 } from "../../../common/entity/cover_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/tile/ha-tile-button";
@@ -35,12 +34,7 @@ class HuiCoverPositionTileControl
   static getStubConfig(): CoverPositionTileControlConfig {
     return {
       type: "cover-position",
-      mode: "button",
     };
-  }
-
-  static isSupported(stateObj: HassEntity): boolean {
-    return computeDomain(stateObj.entity_id) === "cover";
   }
 
   public setConfig(config: CoverPositionTileControlConfig): void {

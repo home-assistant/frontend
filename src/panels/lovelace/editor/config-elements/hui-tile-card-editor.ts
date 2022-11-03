@@ -62,7 +62,7 @@ export class HuiTileCardEditor
   }
 
   private _schema = memoizeOne(
-    (entity: string, icon?: string, entityState?: HassEntity) =>
+    (entity: string, icon?: string, stateObj?: HassEntity) =>
       [
         { name: "entity", selector: { entity: {} } },
         {
@@ -82,10 +82,10 @@ export class HuiTileCardEditor
                   name: "icon",
                   selector: {
                     icon: {
-                      placeholder: icon || entityState?.attributes.icon,
+                      placeholder: icon || stateObj?.attributes.icon,
                       fallbackPath:
-                        !icon && !entityState?.attributes.icon && entityState
-                          ? domainIcon(computeDomain(entity), entityState)
+                        !icon && !stateObj?.attributes.icon && stateObj
+                          ? domainIcon(computeDomain(entity), stateObj)
                           : undefined,
                     },
                   },
@@ -149,11 +149,15 @@ export class HuiTileCardEditor
       return html``;
     }
 
-    const entity = this.hass.states[this._config.entity ?? ""] as
+    const stateObj = this.hass.states[this._config.entity ?? ""] as
       | HassEntity
       | undefined;
 
-    const schema = this._schema(this._config.entity, this._config.icon, entity);
+    const schema = this._schema(
+      this._config.entity,
+      this._config.icon,
+      stateObj
+    );
 
     const data = {
       color: "default",
@@ -182,6 +186,7 @@ export class HuiTileCardEditor
       ></ha-form>
       <hui-tile-card-controls-editor
         .hass=${this.hass}
+        .stateObj=${stateObj}
         .controls=${this._config!.controls ?? []}
         @controls-changed=${this._controlsChanged}
         @edit-detail-element=${this._editDetailElement}
