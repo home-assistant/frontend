@@ -61,6 +61,8 @@ class StatisticsChart extends LitElement {
 
   @property() public chartType: ChartType = "line";
 
+  @property({ type: Boolean }) public hideLegend = false;
+
   @property({ type: Boolean }) public isLoadingData = false;
 
   @state() private _chartData: ChartData = { datasets: [] };
@@ -175,7 +177,7 @@ class StatisticsChart extends LitElement {
           propagate: true,
         },
         legend: {
-          display: true,
+          display: !this.hideLegend,
           labels: {
             usePointStyle: true,
           },
@@ -339,7 +341,7 @@ class StatisticsChart extends LitElement {
                 ? "-1"
                 : false
               : false,
-            borderColor: band ? color + "7F" : color,
+            borderColor: band ? color + (this.hideLegend ? "00" : "7F") : color,
             backgroundColor: band ? color + "3F" : color + "7F",
             pointRadius: 0,
             data: [],
