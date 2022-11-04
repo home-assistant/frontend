@@ -16,6 +16,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { isUnavailableState } from "../../../data/entity";
@@ -67,6 +68,15 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity from within the humidifier domain");
     }
 
+    if (
+      config.current_humidity_sensor &&
+      config.current_humidity_sensor.split(".")[0] !== "sensor"
+    ) {
+      throw new Error(
+        "Current humidity sensor must be from within the sensor domain"
+      );
+    }
+
     this._config = config;
   }
 
@@ -83,6 +93,10 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         </hui-warning>
       `;
     }
+
+    const stateObjCurrentHumidity = this._config!.current_humidity_sensor
+      ? this.hass.states[this._config.current_humidity_sensor]
+      : undefined;
 
     const name =
       this._config!.name ||
@@ -128,8 +142,30 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         </text>
       </svg>
     `;
+
+    const currentHumidity = html`
+      <svg
+        viewBox="0 0 40 10"
+        id="current_humidity"
+        @click=${this._handleMoreInfoCurrentHumidity}
+      >
+        <text x="50%" y="50%" text-anchor="middle" id="current-humidity">
+          ${stateObjCurrentHumidity
+            ? html`
+                ${computeStateDisplay(
+                  this.hass!.localize,
+                  stateObjCurrentHumidity,
+                  this.hass!.locale,
+                  this.hass!.entities
+                )}
+              `
+            : ""}
+        </text>
+      </svg>
+    `;
+
     const currentMode = html`
-      <svg viewBox="0 0 40 10" id="humidity">
+      <svg viewBox="0 0 40 10" id="mode">
         <text x="50%" y="50%" text-anchor="middle" id="set-mode">
           ${this.hass!.localize(`state.default.${stateObj.state}`)}
           ${stateObj.attributes.mode && !isUnavailableState(stateObj.state)
@@ -166,7 +202,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
                 >
                   ${setValues}
                 </ha-icon-button>
-                ${currentMode}
+                ${currentHumidity} ${currentMode}
               </div>
             </div>
           </div>
@@ -177,7 +213,14 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
+    const oldHass = changedProps.get("hass") as HomeAssistant;
+
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      (this._config!.current_humidity_sensor !== undefined &&
+        oldHass.states[this._config!.current_humidity_sensor] !==
+          this.hass!.states[this._config!.current_humidity_sensor])
+    );
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -254,6 +297,14 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     });
   }
 
+  private _handleMoreInfoCurrentHumidity() {
+    if (this._config!.current_humidity_sensor) {
+      fireEvent(this, "hass-more-info", {
+        entityId: this._config!.current_humidity_sensor,
+      });
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
@@ -328,9 +379,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         overflow-wrap: break-word;
       }
 
-      #humidity {
+      #mode {
         max-width: 80%;
-        transform: translate(0, 350%);
+        transform: translate(0, 250%);
       }
 
       #set-values {
@@ -342,6 +393,16 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       #set-mode {
         fill: var(--secondary-text-color);
         font-size: 4px;
+      }
+
+      #current_humidity {
+        max-width: 80%;
+        transform: translate(0, 300%);
+      }
+
+      #current-humidity {
+        fill: var(--primary-text-color);
+        font-size: 5px;
       }
 
       .toggle-button {

@@ -244,6 +244,7 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
+  current_humidity_sensor?: string;
 }
 
 export interface IframeCardConfig extends LovelaceCardConfig {
