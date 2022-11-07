@@ -408,7 +408,9 @@ export class HaIntegrationCard extends LitElement {
             : ""}
           ${this.logInfo
             ? html`<mwc-list-item
-                @request-selected=${this._handleDebugLogging}
+                @request-selected=${this.logInfo.level === LogSeverity.DEBUG
+                  ? this._handleDisableDebugLogging
+                  : this._handleEnableDebugLogging}
                 graphic="icon"
               >
                 ${this.logInfo.level === LogSeverity.DEBUG
@@ -529,13 +531,24 @@ export class HaIntegrationCard extends LitElement {
     `;
   }
 
-  private async _handleDebugLogging(e: MouseEvent) {
+  private async _handleEnableDebugLogging(e: MouseEvent) {
     const integration = (e.currentTarget as any).integration;
-    const newLevel =
-      integration.logInfo.level === LogSeverity.DEBUG
-        ? LogSeverity[LogSeverity.NOTSET]
-        : LogSeverity[LogSeverity.DEBUG];
-    await setIntegrationLogLevel(this.hass, integration, newLevel, "once");
+    await setIntegrationLogLevel(
+      this.hass,
+      integration,
+      LogSeverity[LogSeverity.DEBUG],
+      "once"
+    );
+  }
+
+  private async _handleDisableDebugLogging(e: MouseEvent) {
+    const integration = (e.currentTarget as any).integration;
+    await setIntegrationLogLevel(
+      this.hass,
+      integration,
+      LogSeverity[LogSeverity.NOTSET],
+      "once"
+    );
   }
 
   private get _selectededConfigEntry(): ConfigEntryExtended | undefined {
