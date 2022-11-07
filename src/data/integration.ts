@@ -20,6 +20,7 @@ export interface IntegrationManifest {
   zeroconf?: string[];
   homekit?: { models: string[] };
   integration_type?: IntegrationType;
+  loggers?: string[];
   quality_scale?: "gold" | "internal" | "platinum" | "silver";
   iot_class:
     | "assumed_state"
