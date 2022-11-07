@@ -257,10 +257,9 @@ class HUIRoot extends LitElement {
                           dir=${computeRTLDirection(this.hass!)}
                         >
                           ${views.map(
-                            (view, i) => html`
+                            (view) => html`
                               <paper-tab
                                 aria-label=${ifDefined(view.title)}
-                                id="paper-tab-${i}"
                                 class=${classMap({
                                   "hide-tab": Boolean(
                                     view.subview ||
