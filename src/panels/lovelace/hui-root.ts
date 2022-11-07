@@ -257,9 +257,10 @@ class HUIRoot extends LitElement {
                           dir=${computeRTLDirection(this.hass!)}
                         >
                           ${views.map(
-                            (view) => html`
+                            (view, i) => html`
                               <paper-tab
                                 aria-label=${ifDefined(view.title)}
+                                id="paper-tab-${i}"
                                 class=${classMap({
                                   "hide-tab": Boolean(
                                     view.subview ||
@@ -577,6 +578,55 @@ class HUIRoot extends LitElement {
     `;
   }
 
+  private _setupViewScroll = () => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (!isMobile) return;
+
+    let xPress = 0;
+    let yPress = 0;
+    let swipeStart: Date;
+
+    const resetPosition = () => {
+      xPress = 0;
+      yPress = 0;
+    };
+
+    const handleTouchStart = (e) => {
+      xPress = e.touches[0].clientX;
+      yPress = e.touches[0].clientY;
+      swipeStart = new Date();
+    };
+
+    const handleTouchEnd = (e) => {
+      const swipeEnd = new Date();
+
+      if (!xPress || !yPress) return;
+
+      const xRelease = e.changedTouches[0].clientX;
+      const yRelease = e.changedTouches[0].clientY;
+
+      const xDiff = xPress - xRelease;
+      const yDiff = yPress - yRelease;
+
+      if (
+        Math.abs(xDiff) > Math.abs(yDiff) * 2 &&
+        Math.abs(xDiff) > window.innerWidth * 0.3 &&
+        swipeEnd.getMilliseconds() - swipeStart.getMilliseconds() < 200 &&
+        xDiff > 0
+          ? (this._curView as number) + 1 < this.config.views.length
+          : (this._curView as number) > 0
+      )
+        if (xDiff > 0) this._selectView((this._curView as number) + 1, false);
+        else this._selectView((this._curView as number) - 1, false);
+
+      resetPosition();
+    };
+
+    document.ontouchstart = handleTouchStart;
+    document.ontouchend = handleTouchEnd;
+  };
+
   private _isVisible = (view: LovelaceViewConfig) =>
     Boolean(
       this._editMode ||
@@ -615,6 +665,8 @@ class HUIRoot extends LitElement {
 
     if (changedProperties.has("route")) {
       const views = this.config.views;
+
+      if (views.length > 1) this._setupViewScroll();
 
       if (!viewPath && views.length) {
         newSelectView = views.findIndex(this._isVisible);
