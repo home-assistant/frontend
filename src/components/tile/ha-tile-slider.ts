@@ -1,10 +1,10 @@
-import { css, CSSResultGroup, html, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { HaBarSlider } from "../ha-bar-slider";
+import "../ha-bar-slider";
 
 @customElement("ha-tile-slider")
-export class HaTileSlider extends HaBarSlider {
+export class HaTileSlider extends LitElement {
   @property({ type: Boolean })
   public disabled = false;
 
