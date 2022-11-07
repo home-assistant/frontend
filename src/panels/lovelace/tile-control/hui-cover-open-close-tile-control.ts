@@ -18,10 +18,10 @@ import {
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileControl } from "../types";
-import { CoverPositionButtonsTileControlConfig } from "./types";
+import { CoverOpenCloseTileControlConfig } from "./types";
 
-@customElement("hui-cover-position-buttons-tile-control")
-class HuiCoverPositionButtonsTileControl
+@customElement("hui-cover-open-close-tile-control")
+class HuiCoverOpenCloseTileControl
   extends LitElement
   implements LovelaceTileControl
 {
@@ -29,15 +29,15 @@ class HuiCoverPositionButtonsTileControl
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: CoverPositionButtonsTileControlConfig;
+  @state() private _config?: CoverOpenCloseTileControlConfig;
 
-  static getStubConfig(): CoverPositionButtonsTileControlConfig {
+  static getStubConfig(): CoverOpenCloseTileControlConfig {
     return {
-      type: "cover-position-buttons",
+      type: "cover-open-close",
     };
   }
 
-  public setConfig(config: CoverPositionButtonsTileControlConfig): void {
+  public setConfig(config: CoverOpenCloseTileControlConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -97,7 +97,7 @@ class HuiCoverPositionButtonsTileControl
     }
 
     return html`
-      <div class="buttons">
+      <div class="container">
         ${supportsFeature(this.stateObj, CoverEntityFeature.OPEN)
           ? html`
               <ha-tile-button
@@ -145,7 +145,7 @@ class HuiCoverPositionButtonsTileControl
 
   static get styles() {
     return css`
-      .buttons {
+      .container {
         display: flex;
         flex-direction: row;
         padding: 0 12px 12px 12px;
@@ -166,6 +166,6 @@ class HuiCoverPositionButtonsTileControl
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-cover-position-buttons-tile-control": HuiCoverPositionButtonsTileControl;
+    "hui-cover-open-close-tile-control": HuiCoverOpenCloseTileControl;
   }
 }

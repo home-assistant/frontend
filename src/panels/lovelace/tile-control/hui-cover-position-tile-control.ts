@@ -6,10 +6,10 @@ import "../../../components/tile/ha-tile-slider";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileControl } from "../types";
-import { CoverPositionSliderTileControlConfig } from "./types";
+import { CoverPositionTileControlConfig } from "./types";
 
-@customElement("hui-cover-position-slider-tile-control")
-class HuiCoverPositionSliderTileControl
+@customElement("hui-cover-position-tile-control")
+class HuiCoverPositionTileControl
   extends LitElement
   implements LovelaceTileControl
 {
@@ -17,15 +17,15 @@ class HuiCoverPositionSliderTileControl
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: CoverPositionSliderTileControlConfig;
+  @state() private _config?: CoverPositionTileControlConfig;
 
-  static getStubConfig(): CoverPositionSliderTileControlConfig {
+  static getStubConfig(): CoverPositionTileControlConfig {
     return {
-      type: "cover-position-slider",
+      type: "cover-position",
     };
   }
 
-  public setConfig(config: CoverPositionSliderTileControlConfig): void {
+  public setConfig(config: CoverPositionTileControlConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -43,7 +43,7 @@ class HuiCoverPositionSliderTileControl
         : undefined;
 
     return html`
-      <div class="slider">
+      <div class="container">
         <ha-tile-slider
           .value=${position}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
@@ -70,7 +70,7 @@ class HuiCoverPositionSliderTileControl
         --tile-slider-bar-color: rgb(var(--tile-color));
         --tile-slider-bar-background: rgba(var(--tile-color), 0.2);
       }
-      .slider {
+      .container {
         padding: 0 12px 12px 12px;
         width: auto;
       }
@@ -80,6 +80,6 @@ class HuiCoverPositionSliderTileControl
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-cover-position-slider-tile-control": HuiCoverPositionSliderTileControl;
+    "hui-cover-position-tile-control": HuiCoverPositionTileControl;
   }
 }

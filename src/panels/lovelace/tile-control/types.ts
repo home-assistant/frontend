@@ -1,11 +1,16 @@
-export interface CoverPositionButtonsTileControlConfig {
-  type: "cover-position-buttons";
+export interface CoverOpenCloseTileControlConfig {
+  type: "cover-open-close";
 }
 
-export interface CoverPositionSliderTileControlConfig {
-  type: "cover-position-slider";
+export interface CoverPositionTileControlConfig {
+  type: "cover-position";
+}
+
+export interface LightBrightnessTileControlConfig {
+  type: "light-brightness";
 }
 
 export type LovelaceTileControlConfig =
-  | CoverPositionButtonsTileControlConfig
-  | CoverPositionSliderTileControlConfig;
+  | CoverOpenCloseTileControlConfig
+  | CoverPositionTileControlConfig
+  | LightBrightnessTileControlConfig;

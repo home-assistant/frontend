@@ -4219,11 +4219,14 @@
                 "edit": "Edit control",
                 "remove": "Remove control",
                 "types": {
-                  "cover-position-buttons": {
-                    "label": "Cover position buttons"
+                  "cover-open-close": {
+                    "label": "Cover open/close"
                   },
-                  "cover-position-slider": {
-                    "label": "Cover position slider"
+                  "cover-position": {
+                    "label": "Cover position"
+                  },
+                  "light-brightness": {
+                    "label": "Light brightness"
                   }
                 }
               }

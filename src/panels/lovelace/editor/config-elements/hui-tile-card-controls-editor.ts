@@ -27,8 +27,9 @@ import { supportsTileControl } from "../../tile-control/supports_tile_controls";
 import { LovelaceTileControlConfig } from "../../tile-control/types";
 
 const CONTROLS_TYPE: LovelaceTileControlConfig["type"][] = [
-  "cover-position-buttons",
-  "cover-position-slider",
+  "cover-open-close",
+  "cover-position",
+  "light-brightness",
 ];
 
 declare global {
