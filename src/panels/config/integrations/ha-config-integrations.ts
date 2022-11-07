@@ -51,6 +51,8 @@ import {
   fetchIntegrationManifest,
   fetchIntegrationManifests,
   IntegrationManifest,
+  IntegrationLogInfo,
+  subscribeLogInfo,
 } from "../../../data/integration";
 import {
   getIntegrationDescriptions,
@@ -154,6 +156,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
 
+  @state() private _logInfos?: {
+    [integration: string]: IntegrationLogInfo;
+  };
+
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
       subscribeEntityRegistry(this.hass.connection, (entries) => {
@@ -230,6 +236,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         },
         { type: ["device", "hub", "service"] }
       ),
+      subscribeLogInfo(this.hass.connection!, (log_infos) => {
+        const logInfoLookup: { [integration: string]: IntegrationLogInfo } = {};
+        for (const log_info of log_infos) {
+          logInfoLookup[log_info.domain] = log_info;
+        }
+        this._logInfos = logInfoLookup;
+      }),
     ];
   }
 
@@ -514,6 +527,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     .supportsDiagnostics=${this._diagnosticHandlers
                       ? this._diagnosticHandlers[domain]
                       : false}
+                    .logInfo=${this._logInfos ? this._logInfos[domain] : null}
                   ></ha-integration-card>`
               )
             : this._filter &&

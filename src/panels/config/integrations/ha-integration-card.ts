@@ -5,6 +5,8 @@ import {
   mdiAlertCircle,
   mdiBookshelf,
   mdiBug,
+  mdiBugPlay,
+  mdiBugStop,
   mdiChevronLeft,
   mdiCog,
   mdiDelete,
@@ -51,7 +53,12 @@ import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
-import { integrationIssuesUrl } from "../../../data/integration";
+import {
+  integrationIssuesUrl,
+  IntegrationLogInfo,
+  LogSeverity,
+  setIntegrationLogLevel,
+} from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
@@ -93,6 +100,8 @@ export class HaIntegrationCard extends LitElement {
   @property({ type: Boolean }) public entryDisabled = false;
 
   @property({ type: Boolean }) public supportsDiagnostics = false;
+
+  @property() public logInfo?: IntegrationLogInfo;
 
   protected render(): TemplateResult {
     let item = this._selectededConfigEntry;
@@ -397,6 +406,26 @@ export class HaIntegrationCard extends LitElement {
                 </mwc-list-item>
               </a>`
             : ""}
+          ${this.logInfo
+            ? html`<mwc-list-item
+                @request-selected=${this._handleDebugLogging}
+                graphic="icon"
+              >
+                ${this.logInfo.level === LogSeverity.DEBUG
+                  ? this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.disable_debug_logging"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.enable_debug_logging"
+                    )}
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${this.logInfo.level === LogSeverity.DEBUG
+                    ? mdiBugStop
+                    : mdiBugPlay}
+                ></ha-svg-icon>
+              </mwc-list-item>`
+            : ""}
           ${this.manifest &&
           (this.manifest.is_built_in ||
             this.manifest.issue_tracker ||
@@ -498,6 +527,15 @@ export class HaIntegrationCard extends LitElement {
         </ha-button-menu>
       </div>
     `;
+  }
+
+  private async _handleDebugLogging(e: MouseEvent) {
+    const integration = (e.currentTarget as any).integration;
+    const newLevel =
+      integration.logInfo.level === LogSeverity.DEBUG
+        ? LogSeverity[LogSeverity.NOTSET]
+        : LogSeverity[LogSeverity.DEBUG];
+    await setIntegrationLogLevel(this.hass, integration, newLevel);
   }
 
   private get _selectededConfigEntry(): ConfigEntryExtended | undefined {
