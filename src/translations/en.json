@@ -4211,13 +4211,20 @@
               "appearance": "Appearance",
               "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
-              "not_compatible": "Not compatible",
               "controls": {
-                "cover-position-buttons": {
-                  "label": "Cover position buttons"
-                },
-                "cover-position-slider": {
-                  "label": "Cover position slider"
+                "name": "Controls",
+                "not_compatible": "Not compatible",
+                "no_compatible_available": "No compatible controls available for this entity",
+                "add": "Add control",
+                "edit": "Edit control",
+                "remove": "Remove control",
+                "types": {
+                  "cover-position-buttons": {
+                    "label": "Cover position buttons"
+                  },
+                  "cover-position-slider": {
+                    "label": "Cover position slider"
+                  }
                 }
               }
             },

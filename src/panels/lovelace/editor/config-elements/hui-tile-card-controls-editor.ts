@@ -66,6 +66,14 @@ export class HuiTileCardControlsEditor extends LitElement {
     return this._controlKeys.get(control)!;
   }
 
+  private get _supportedControlTypes() {
+    if (!this.stateObj) return [];
+
+    return CONTROLS_TYPE.filter((type) =>
+      supportsTileControl(this.stateObj!, type)
+    );
+  }
+
   protected render(): TemplateResult {
     if (!this.controls || !this.hass) {
       return html``;
@@ -75,9 +83,21 @@ export class HuiTileCardControlsEditor extends LitElement {
       <ha-expansion-panel outlined>
         <h3 slot="header">
           <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
-          Controls
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.tile.controls.name"
+          )}
         </h3>
         <div class="content">
+          ${this._supportedControlTypes.length === 0 &&
+          this.controls.length === 0
+            ? html`
+                <ha-alert type="info">
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.card.tile.controls.no_compatible_available"
+                  )}
+                </ha-alert>
+              `
+            : null}
           <div class="controls">
             ${repeat(
               this.controls,
@@ -89,25 +109,25 @@ export class HuiTileCardControlsEditor extends LitElement {
                   </div>
                   <div class="control-content">
                     <div>
-                      <span
-                        >${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.tile.controls.${controlConf.type}.label`
-                        )}</span
-                      >
+                      <span>
+                        ${this.hass!.localize(
+                          `ui.panel.lovelace.editor.card.tile.controls.types.${controlConf.type}.label`
+                        )}
+                      </span>
                       ${this.stateObj &&
                       !supportsTileControl(this.stateObj, controlConf.type)
-                        ? html`<span class="secondary"
-                            >${this.hass!.localize(
-                              "ui.panel.lovelace.editor.card.tile.not_compatible"
-                            )}</span
-                          >`
+                        ? html`<span class="secondary">
+                            ${this.hass!.localize(
+                              "ui.panel.lovelace.editor.card.tile.controls.not_compatible"
+                            )}
+                          </span>`
                         : null}
                     </div>
                   </div>
 
                   <ha-icon-button
                     .label=${this.hass!.localize(
-                      "ui.components.entity.entity-picker.clear"
+                      `ui.panel.lovelace.editor.card.tile.controls.remove`
                     )}
                     .path=${mdiClose}
                     class="remove-icon"
@@ -116,7 +136,7 @@ export class HuiTileCardControlsEditor extends LitElement {
                   ></ha-icon-button>
                   <ha-icon-button
                     .label=${this.hass!.localize(
-                      "ui.components.entity.entity-picker.edit"
+                      `ui.panel.lovelace.editor.card.tile.controls.edit`
                     )}
                     .path=${mdiPencil}
                     class="edit-icon"
@@ -127,34 +147,36 @@ export class HuiTileCardControlsEditor extends LitElement {
               `
             )}
           </div>
-          <ha-button-menu
-            fixed
-            @action=${this._addControl}
-            @closed=${stopPropagation}
-          >
-            <mwc-button slot="trigger" outlined label="Add control">
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-            </mwc-button>
-            ${CONTROLS_TYPE.map(
-              (controlType) => html` <mwc-list-item .value=${controlType}>
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiWindowShutter}
-                ></ha-svg-icon>
-                ${this.hass!.localize(
-                  `ui.panel.lovelace.editor.card.tile.controls.${controlType}.label`
-                )}
-                ${this.stateObj &&
-                !supportsTileControl(this.stateObj, controlType)
-                  ? html`<span slot="secondary"
-                      >${this.hass!.localize(
-                        "ui.panel.lovelace.editor.card.tile.not_compatible"
-                      )}</span
-                    >`
-                  : null}
-              </mwc-list-item>`
-            )}
-          </ha-button-menu>
+          ${this._supportedControlTypes.length > 0
+            ? html`
+                <ha-button-menu
+                  fixed
+                  @action=${this._addControl}
+                  @closed=${stopPropagation}
+                >
+                  <mwc-button
+                    slot="trigger"
+                    outlined
+                    .label=${this.hass!.localize(
+                      `ui.panel.lovelace.editor.card.tile.controls.add`
+                    )}
+                  >
+                    <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+                  </mwc-button>
+                  ${this._supportedControlTypes.map(
+                    (controlType) => html` <mwc-list-item .value=${controlType}>
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${mdiWindowShutter}
+                      ></ha-svg-icon>
+                      ${this.hass!.localize(
+                        `ui.panel.lovelace.editor.card.tile.controls.types.${controlType}.label`
+                      )}
+                    </mwc-list-item>`
+                  )}
+                </ha-button-menu>
+              `
+            : null}
         </div>
       </ha-expansion-panel>
     `;
@@ -199,7 +221,7 @@ export class HuiTileCardControlsEditor extends LitElement {
 
     if (index == null) return;
 
-    const value = CONTROLS_TYPE[index];
+    const value = this._supportedControlTypes[index];
     const elClass = await getTileControlElementClass(value);
 
     let newControl: LovelaceTileControlConfig;
