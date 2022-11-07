@@ -275,7 +275,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     LovelaceTileControl | HuiErrorCard
   >();
 
-  private _createControlElement(control: LovelaceTileControlConfig) {
+  private _getControlElement(control: LovelaceTileControlConfig) {
     if (!this._controlsElements.has(control)) {
       const element = createTileControlElement(control);
       this._controlsElements.set(control, element);
@@ -289,7 +289,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     controlConf: LovelaceTileControlConfig,
     stateObj: HassEntity
   ): TemplateResult {
-    const element = this._createControlElement(controlConf);
+    const element = this._getControlElement(controlConf);
 
     if (this.hass) {
       element.hass = this.hass;
