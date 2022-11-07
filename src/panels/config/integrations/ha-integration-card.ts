@@ -145,6 +145,8 @@ export class HaIntegrationCard extends LitElement {
           .localizedDomainName=${item ? item.localized_domain_name : undefined}
           .manifest=${this.manifest}
           .configEntry=${item}
+          .debugLoggingEnabled=${this.logInfo &&
+          this.logInfo.level === LogSeverity.DEBUG}
         >
           ${this.items.length > 1
             ? html`
@@ -531,8 +533,10 @@ export class HaIntegrationCard extends LitElement {
     `;
   }
 
-  private async _handleEnableDebugLogging(e: MouseEvent) {
-    const integration = (e.currentTarget as any).integration;
+  private async _handleEnableDebugLogging(ev: MouseEvent) {
+    const configEntry = ((ev.target as HTMLElement).closest("ha-card") as any)
+      .configEntry;
+    const integration = configEntry.domain;
     await setIntegrationLogLevel(
       this.hass,
       integration,
@@ -541,8 +545,10 @@ export class HaIntegrationCard extends LitElement {
     );
   }
 
-  private async _handleDisableDebugLogging(e: MouseEvent) {
-    const integration = (e.currentTarget as any).integration;
+  private async _handleDisableDebugLogging(ev: MouseEvent) {
+    const configEntry = ((ev.target as HTMLElement).closest("ha-card") as any)
+      .configEntry;
+    const integration = configEntry.domain;
     await setIntegrationLogLevel(
       this.hass,
       integration,
