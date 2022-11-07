@@ -34,6 +34,7 @@ import {
   LovelaceCardEditor,
   LovelaceTileControl,
 } from "../types";
+import { HuiErrorCard } from "./hui-error-card";
 import { computeTileBadge } from "./tile/badges/tile-badge";
 import { ThermostatCardConfig, TileCardConfig } from "./types";
 
@@ -269,11 +270,26 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     `;
   }
 
+  private _controlsElements = new WeakMap<
+    LovelaceTileControlConfig,
+    LovelaceTileControl | HuiErrorCard
+  >();
+
+  private _createControlElement(control: LovelaceTileControlConfig) {
+    if (!this._controlsElements.has(control)) {
+      const element = createTileControlElement(control);
+      this._controlsElements.set(control, element);
+      return element;
+    }
+
+    return this._controlsElements.get(control)!;
+  }
+
   private renderControl(
     controlConf: LovelaceTileControlConfig,
     stateObj: HassEntity
   ): TemplateResult {
-    const element = createTileControlElement(controlConf);
+    const element = this._createControlElement(controlConf);
 
     if (this.hass) {
       element.hass = this.hass;

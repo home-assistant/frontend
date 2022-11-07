@@ -3,9 +3,13 @@ import {
   createLovelaceElement,
   getLovelaceElementClass,
 } from "./create-element-base";
-import "../tile-control/hui-cover-position-tile-control";
+import "../tile-control/hui-cover-position-buttons-tile-control";
+import "../tile-control/hui-cover-position-slider-tile-control";
 
-const ALWAYS_LOADED_TYPES = new Set(["cover-position"]);
+const ALWAYS_LOADED_TYPES: Set<LovelaceTileControlConfig["type"]> = new Set([
+  "cover-position-buttons",
+  "cover-position-slider",
+]);
 
 const LAZY_LOAD_TYPES = {};
 

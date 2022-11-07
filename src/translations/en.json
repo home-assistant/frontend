@@ -4210,7 +4210,16 @@
               "actions": "Actions",
               "appearance": "Appearance",
               "default_color": "Default color (state)",
-              "show_entity_picture": "Show entity picture"
+              "show_entity_picture": "Show entity picture",
+              "not_compatible": "Not compatible",
+              "controls": {
+                "cover-position-buttons": {
+                  "label": "Cover position buttons"
+                },
+                "cover-position-slider": {
+                  "label": "Cover position slider"
+                }
+              }
             },
             "vertical-stack": {
               "name": "Vertical Stack",

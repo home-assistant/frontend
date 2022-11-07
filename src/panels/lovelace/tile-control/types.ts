@@ -1,5 +1,11 @@
-export interface CoverPositionTileControlConfig {
-  type: "cover-position";
+export interface CoverPositionButtonsTileControlConfig {
+  type: "cover-position-buttons";
 }
 
-export type LovelaceTileControlConfig = CoverPositionTileControlConfig;
+export interface CoverPositionSliderTileControlConfig {
+  type: "cover-position-slider";
+}
+
+export type LovelaceTileControlConfig =
+  | CoverPositionButtonsTileControlConfig
+  | CoverPositionSliderTileControlConfig;

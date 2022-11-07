@@ -18,10 +18,10 @@ import {
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileControl } from "../types";
-import { CoverPositionTileControlConfig } from "./types";
+import { CoverPositionButtonsTileControlConfig } from "./types";
 
-@customElement("hui-cover-position-tile-control")
-class HuiCoverPositionTileControl
+@customElement("hui-cover-position-buttons-tile-control")
+class HuiCoverPositionButtonsTileControl
   extends LitElement
   implements LovelaceTileControl
 {
@@ -29,15 +29,15 @@ class HuiCoverPositionTileControl
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: CoverPositionTileControlConfig;
+  @state() private _config?: CoverPositionButtonsTileControlConfig;
 
-  static getStubConfig(): CoverPositionTileControlConfig {
+  static getStubConfig(): CoverPositionButtonsTileControlConfig {
     return {
-      type: "cover-position",
+      type: "cover-position-buttons",
     };
   }
 
-  public setConfig(config: CoverPositionTileControlConfig): void {
+  public setConfig(config: CoverPositionButtonsTileControlConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -166,6 +166,6 @@ class HuiCoverPositionTileControl
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-cover-position-tile-control": HuiCoverPositionTileControl;
+    "hui-cover-position-buttons-tile-control": HuiCoverPositionButtonsTileControl;
   }
 }

@@ -26,6 +26,11 @@ import { getTileControlElementClass } from "../../create-element/create-tile-con
 import { supportsTileControl } from "../../tile-control/supports_tile_controls";
 import { LovelaceTileControlConfig } from "../../tile-control/types";
 
+const CONTROLS_TYPE: LovelaceTileControlConfig["type"][] = [
+  "cover-position-buttons",
+  "cover-position-slider",
+];
+
 declare global {
   interface HASSDomEvents {
     "controls-changed": {
@@ -84,10 +89,18 @@ export class HuiTileCardControlsEditor extends LitElement {
                   </div>
                   <div class="control-content">
                     <div>
-                      <span> ${controlConf.type} </span>
+                      <span
+                        >${this.hass!.localize(
+                          `ui.panel.lovelace.editor.card.tile.controls.${controlConf.type}.label`
+                        )}</span
+                      >
                       ${this.stateObj &&
-                      !supportsTileControl(this.stateObj, "cover-position")
-                        ? html`<span class="secondary">Not Compatible</span>`
+                      !supportsTileControl(this.stateObj, controlConf.type)
+                        ? html`<span class="secondary"
+                            >${this.hass!.localize(
+                              "ui.panel.lovelace.editor.card.tile.not_compatible"
+                            )}</span
+                          >`
                         : null}
                     </div>
                   </div>
@@ -122,17 +135,25 @@ export class HuiTileCardControlsEditor extends LitElement {
             <mwc-button slot="trigger" outlined label="Add control">
               <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </mwc-button>
-            <mwc-list-item value="cover-position">
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiWindowShutter}
-              ></ha-svg-icon>
-              Cover position
-              ${this.stateObj &&
-              !supportsTileControl(this.stateObj, "cover-position")
-                ? html`<span slot="secondary">Not Compatible</span>`
-                : null}
-            </mwc-list-item>
+            ${CONTROLS_TYPE.map(
+              (controlType) => html` <mwc-list-item .value=${controlType}>
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiWindowShutter}
+                ></ha-svg-icon>
+                ${this.hass!.localize(
+                  `ui.panel.lovelace.editor.card.tile.controls.${controlType}.label`
+                )}
+                ${this.stateObj &&
+                !supportsTileControl(this.stateObj, controlType)
+                  ? html`<span slot="secondary"
+                      >${this.hass!.localize(
+                        "ui.panel.lovelace.editor.card.tile.not_compatible"
+                      )}</span
+                    >`
+                  : null}
+              </mwc-list-item>`
+            )}
           </ha-button-menu>
         </div>
       </ha-expansion-panel>
@@ -178,8 +199,8 @@ export class HuiTileCardControlsEditor extends LitElement {
 
     if (index == null) return;
 
-    const value = "cover-position";
-    const elClass = await getTileControlElementClass("cover-position");
+    const value = CONTROLS_TYPE[index];
+    const elClass = await getTileControlElementClass(value);
 
     let newControl: LovelaceTileControlConfig;
     if (elClass && elClass.getStubConfig) {
