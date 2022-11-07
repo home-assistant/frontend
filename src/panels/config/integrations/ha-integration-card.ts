@@ -535,7 +535,7 @@ export class HaIntegrationCard extends LitElement {
       integration.logInfo.level === LogSeverity.DEBUG
         ? LogSeverity[LogSeverity.NOTSET]
         : LogSeverity[LogSeverity.DEBUG];
-    await setIntegrationLogLevel(this.hass, integration, newLevel);
+    await setIntegrationLogLevel(this.hass, integration, newLevel, "once");
   }
 
   private get _selectededConfigEntry(): ConfigEntryExtended | undefined {

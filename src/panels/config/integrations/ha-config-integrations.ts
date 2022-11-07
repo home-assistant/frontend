@@ -236,7 +236,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         },
         { type: ["device", "hub", "service"] }
       ),
-      subscribeLogInfo(this.hass.connection!, (log_infos) => {
+      subscribeLogInfo(this.hass.connection, (log_infos) => {
         const logInfoLookup: { [integration: string]: IntegrationLogInfo } = {};
         for (const log_info of log_infos) {
           logInfoLookup[log_info.domain] = log_info;

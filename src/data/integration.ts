@@ -49,6 +49,8 @@ export enum LogSeverity {
   NOTSET = 0,
 }
 
+export type IntegrationLogPersistance = "none" | "once" | "permanent";
+
 export const integrationIssuesUrl = (
   domain: string,
   manifest: IntegrationManifest
@@ -85,14 +87,21 @@ export const fetchIntegrationSetups = (hass: HomeAssistant) =>
 
 export const fetchIntegrationLogInfo = (conn) =>
   conn.sendMessagePromise({
-    type: "integration/log_info",
+    type: "logger/log_info",
   });
 
 export const setIntegrationLogLevel = (
   hass: HomeAssistant,
   integration: string,
-  level: string
-) => hass.callWS({ type: "integration/log_level", integration, level });
+  level: string,
+  persistence: IntegrationLogPersistance
+) =>
+  hass.callWS({
+    type: "logger/integration_log_level",
+    integration,
+    level,
+    persistence,
+  });
 
 const subscribeLogInfoUpdates = (conn, store) =>
   conn.subscribeEvents(
