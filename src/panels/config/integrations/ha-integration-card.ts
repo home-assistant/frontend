@@ -553,7 +553,7 @@ export class HaIntegrationCard extends LitElement {
       this.hass,
       integration,
       LogSeverity[LogSeverity.NOTSET],
-      "permanent"
+      "once"
     );
   }
 
