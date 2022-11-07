@@ -149,7 +149,7 @@ class HUIRoot extends LitElement {
                     @click=${this._editModeDisable}
                   ></mwc-button>
                   <a
-                    href=${documentationUrl(this.hass, "/lovelace/")}
+                    href=${documentationUrl(this.hass, "/dashboards/")}
                     rel="noreferrer"
                     class="menu-link"
                     target="_blank"
