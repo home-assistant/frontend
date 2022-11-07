@@ -71,7 +71,7 @@ class HaClimateControl extends LitElement {
   }
 
   private _incrementValue() {
-    const newValue = this._round(this.value + this.step);
+    const newValue = this._round(Number(this.value) + Number(this.step));
     this._processNewValue(newValue);
   }
 
