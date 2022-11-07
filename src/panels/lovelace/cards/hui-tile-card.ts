@@ -4,6 +4,7 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeRgbColor } from "../../../common/color/compute-color";
+import { hsv2rgb, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -140,12 +141,32 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       this.hass.locale
     );
 
+    let color = this._config.color
+      ? stateActive(entity)
+        ? computeRgbColor(this._config.color)
+        : undefined
+      : stateColorCss(entity);
+
+    if (
+      computeDomain(entity.entity_id) === "light" &&
+      entity.attributes.rgb_color
+    ) {
+      const hsvColor = rgb2hsv(entity.attributes.rgb_color);
+
+      // Modify the real rgb color for better contrast
+      if (hsvColor[1] < 0.4) {
+        // Special case for very light color (e.g: white)
+        if (hsvColor[1] < 0.1) {
+          hsvColor[2] = 225;
+        } else {
+          hsvColor[1] = 0.4;
+        }
+      }
+      color = hsv2rgb(hsvColor).join(",");
+    }
+
     const style = {
-      "--tile-color": this._config.color
-        ? stateActive(entity)
-          ? computeRgbColor(this._config.color)
-          : undefined
-        : stateColorCss(entity),
+      "--tile-color": color,
     };
 
     const imageUrl = this._config.show_entity_picture
