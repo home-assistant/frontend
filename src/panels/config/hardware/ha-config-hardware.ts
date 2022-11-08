@@ -176,9 +176,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     let imageURL: string | undefined;
     let documentationURL: string | undefined;
 
-    if (this._hardwareInfo?.hardware.length) {
-      const boardData = this._hardwareInfo.hardware[0];
+    const boardData = this._hardwareInfo?.hardware.find(
+      (hw) => hw.board !== null
+    );
 
+    if (boardData) {
       boardId = boardData.board.hassio_board_id;
       boardName = boardData.name;
       documentationURL = boardData.url;

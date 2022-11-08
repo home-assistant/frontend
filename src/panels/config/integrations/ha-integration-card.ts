@@ -90,7 +90,7 @@ export class HaIntegrationCard extends LitElement {
 
   @property() public selectedConfigEntryId?: string;
 
-  @property({ type: Boolean }) public disabled = false;
+  @property({ type: Boolean }) public entryDisabled = false;
 
   @property({ type: Boolean }) public supportsDiagnostics = false;
 
@@ -114,7 +114,7 @@ export class HaIntegrationCard extends LitElement {
           single: hasItem,
           group: !hasItem,
           hasMultiple: this.items.length > 1,
-          disabled: this.disabled,
+          disabled: this.entryDisabled,
           "state-not-loaded": hasItem && item!.state === "not_loaded",
           "state-failed-unload": hasItem && item!.state === "failed_unload",
           "state-setup": hasItem && item!.state === "setup_in_progress",
@@ -124,7 +124,7 @@ export class HaIntegrationCard extends LitElement {
       >
         <ha-integration-header
           .hass=${this.hass}
-          .banner=${this.disabled
+          .banner=${this.entryDisabled
             ? this.hass.localize(
                 "ui.panel.config.integrations.config_entry.disable.disabled"
               )
