@@ -60,6 +60,7 @@ import {
   mdiWaterPercent,
   mdiWeatherCloudy,
   mdiWeatherPouring,
+  mdiWeatherRainy,
   mdiWeatherWindy,
   mdiWeight,
   mdiWhiteBalanceSunny,
@@ -122,7 +123,7 @@ export const FIXED_DOMAIN_ICONS = {
 };
 
 export const FIXED_DEVICE_CLASS_ICONS = {
-  accumulated_precipitation: mdiWater,
+  accumulated_precipitation: mdiWeatherRainy,
   apparent_power: mdiFlash,
   aqi: mdiAirFilter,
   // battery: mdiBattery, => not included by design since `sensorIcon()` will dynamically determine the icon
