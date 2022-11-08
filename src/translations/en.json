@@ -529,7 +529,10 @@
           "today": "Today",
           "yesterday": "Yesterday",
           "this_week": "This week",
-          "last_week": "Last week"
+          "last_week": "Last week",
+          "this_quarter": "This quarter",
+          "this_month": "This month",
+          "this_year": "This year"
         }
       },
       "relative_time": {

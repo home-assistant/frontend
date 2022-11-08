@@ -126,6 +126,7 @@ class DateRangePickerElement extends WrappedElement {
           ${dateRangePickerStyles}
           .calendars {
             display: flex;
+            flex-wrap: nowrap !important;
           }
           .daterangepicker {
             left: 0px !important;
@@ -251,6 +252,9 @@ class DateRangePickerElement extends WrappedElement {
           .daterangepicker.ltr {
             direction: ltr;
             text-align: left;
+          }
+          .vue-daterange-picker{
+            min-width: unset !important;
           }
         `;
     const shadowRoot = this.shadowRoot!;

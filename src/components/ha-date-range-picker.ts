@@ -15,6 +15,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
@@ -53,6 +54,8 @@ export class HaDateRangePicker extends LitElement {
   @property({ type: Boolean }) private _hour24format = false;
 
   @property({ type: String }) private _rtlDirection = "ltr";
+
+  @property({ type: Boolean }) private minimal = false;
 
   protected willUpdate() {
     if (!this.hasUpdated && this.ranges === undefined) {
@@ -133,7 +136,7 @@ export class HaDateRangePicker extends LitElement {
       <date-range-picker
         ?disabled=${this.disabled}
         ?auto-apply=${this.autoApply}
-        ?time-picker=${this.timePicker}
+        time-picker=${this.timePicker}
         twentyfour-hours=${this._hour24format}
         start-date=${this.startDate}
         end-date=${this.endDate}
@@ -142,32 +145,46 @@ export class HaDateRangePicker extends LitElement {
       >
         <div slot="input" class="date-range-inputs">
           <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
-          <ha-textfield
-            .value=${this.timePicker
-              ? formatDateTime(
-                  this.startDate,
-                  this.hass.locale,
-                  this.hass.config
-                )
-              : formatDate(this.startDate, this.hass.locale, this.hass.config)}
-            .label=${this.hass.localize(
-              "ui.components.date-range-picker.start_date"
-            )}
-            .disabled=${this.disabled}
-            @click=${this._handleInputClick}
-            readonly
-          ></ha-textfield>
-          <ha-textfield
-            .value=${this.timePicker
-              ? formatDateTime(this.endDate, this.hass.locale, this.hass.config)
-              : formatDate(this.endDate, this.hass.locale, this.hass.config)}
-            .label=${this.hass.localize(
-              "ui.components.date-range-picker.end_date"
-            )}
-            .disabled=${this.disabled}
-            @click=${this._handleInputClick}
-            readonly
-          ></ha-textfield>
+          ${!this.minimal
+            ? html`<ha-textfield
+                  .value=${this.timePicker
+                    ? formatDateTime(
+                        this.startDate,
+                        this.hass.locale,
+                        this.hass.config
+                      )
+                    : formatDate(
+                        this.startDate,
+                        this.hass.locale,
+                        this.hass.config
+                      )}
+                  .label=${this.hass.localize(
+                    "ui.components.date-range-picker.start_date"
+                  )}
+                  .disabled=${this.disabled}
+                  @click=${this._handleInputClick}
+                  readonly
+                ></ha-textfield>
+                <ha-textfield
+                  .value=${this.timePicker
+                    ? formatDateTime(
+                        this.endDate,
+                        this.hass.locale,
+                        this.hass.config
+                      )
+                    : formatDate(
+                        this.endDate,
+                        this.hass.locale,
+                        this.hass.config
+                      )}
+                  .label=${this.hass.localize(
+                    "ui.components.date-range-picker.end_date"
+                  )}
+                  .disabled=${this.disabled}
+                  @click=${this._handleInputClick}
+                  readonly
+                ></ha-textfield>`
+            : nothing}
         </div>
         ${this.ranges
           ? html`<div
@@ -181,7 +198,7 @@ export class HaDateRangePicker extends LitElement {
                 )}
               </mwc-list>
             </div>`
-          : ""}
+          : nothing}
         <div slot="footer" class="date-range-footer">
           <mwc-button @click=${this._cancelDateRange}
             >${this.hass.localize("ui.common.cancel")}</mwc-button
@@ -233,6 +250,11 @@ export class HaDateRangePicker extends LitElement {
         margin-inline-start: initial;
         direction: var(--direction);
       }
+      :host([minimal]) ha-svg-icon {
+        margin-right: unset;
+        margin-inline-end: unset;
+        margin-inline-start: unset;
+      }
 
       .date-range-inputs {
         display: flex;
@@ -277,6 +299,9 @@ export class HaDateRangePicker extends LitElement {
 
         ha-svg-icon {
           display: none;
+        }
+        :host([minimal]) ha-svg-icon {
+          display: unset;
         }
       }
     `;
