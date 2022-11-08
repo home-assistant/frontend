@@ -315,7 +315,7 @@ export class MoreInfoDialog extends LitElement {
             cursor: default;
           }
 
-          :host([tab="info"][large]) ha-dialog {
+          :host([large]) ha-dialog {
             --mdc-dialog-min-width: 90vw;
             --mdc-dialog-max-width: 90vw;
           }
