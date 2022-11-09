@@ -24,7 +24,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
     case "device_tracker":
     case "person":
       return compareState !== "not_home";
-    case "media-player":
+    case "media_player":
       return compareState !== "idle" && compareState !== "standby";
     case "vacuum":
       return compareState === "on" || compareState === "cleaning";
