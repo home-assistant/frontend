@@ -1,19 +1,16 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { OFF_STATES } from "../../data/entity";
+import { OFF_STATES, UNAVAILABLE } from "../../data/entity";
 import { computeDomain } from "./compute_domain";
-
-const NORMAL_UNKNOWN_DOMAIN = ["button", "input_button", "scene"];
-const NORMAL_OFF_DOMAIN = ["script"];
 
 export function stateActive(stateObj: HassEntity, state?: string): boolean {
   const domain = computeDomain(stateObj.entity_id);
   const compareState = state !== undefined ? state : stateObj?.state;
 
-  if (
-    OFF_STATES.includes(compareState) &&
-    !(NORMAL_UNKNOWN_DOMAIN.includes(domain) && compareState === "unknown") &&
-    !(NORMAL_OFF_DOMAIN.includes(domain) && compareState === "script")
-  ) {
+  if (["button", "input_button", "scene"].includes(domain)) {
+    return compareState !== UNAVAILABLE;
+  }
+
+  if (OFF_STATES.includes(compareState)) {
     return false;
   }
 
