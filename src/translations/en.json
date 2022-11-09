@@ -525,6 +525,7 @@
         "start_date": "Start date",
         "end_date": "End date",
         "select": "Select",
+        "select_date_range": "Select time period",
         "ranges": {
           "today": "Today",
           "yesterday": "Yesterday",

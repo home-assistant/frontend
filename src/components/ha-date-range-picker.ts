@@ -30,6 +30,7 @@ import { HomeAssistant } from "../types";
 import "./date-range-picker";
 import "./ha-svg-icon";
 import "./ha-textfield";
+import "./ha-icon-button";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -144,9 +145,9 @@ export class HaDateRangePicker extends LitElement {
         first-day=${firstWeekdayIndex(this.hass.locale)}
       >
         <div slot="input" class="date-range-inputs">
-          <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
           ${!this.minimal
-            ? html`<ha-textfield
+            ? html`<ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
+                <ha-textfield
                   .value=${this.timePicker
                     ? formatDateTime(
                         this.startDate,
@@ -184,7 +185,12 @@ export class HaDateRangePicker extends LitElement {
                   @click=${this._handleInputClick}
                   readonly
                 ></ha-textfield>`
-            : nothing}
+            : html`<ha-icon-button
+                .label=${this.hass.localize(
+                  "ui.components.date-range-picker.select_date_range"
+                )}
+                .path=${mdiCalendar}
+              ></ha-icon-button>`}
         </div>
         ${this.ranges
           ? html`<div
@@ -250,10 +256,9 @@ export class HaDateRangePicker extends LitElement {
         margin-inline-start: initial;
         direction: var(--direction);
       }
-      :host([minimal]) ha-svg-icon {
-        margin-right: unset;
-        margin-inline-end: unset;
-        margin-inline-start: unset;
+
+      ha-icon-button {
+        direction: var(--direction);
       }
 
       .date-range-inputs {
@@ -299,9 +304,6 @@ export class HaDateRangePicker extends LitElement {
 
         ha-svg-icon {
           display: none;
-        }
-        :host([minimal]) ha-svg-icon {
-          display: unset;
         }
       }
     `;
