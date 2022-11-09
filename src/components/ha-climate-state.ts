@@ -33,7 +33,9 @@ class HaClimateState extends LitElement {
 
       ${currentStatus && !UNAVAILABLE_STATES.includes(this.stateObj.state)
         ? html`<div class="current">
-            ${this.hass.localize("ui.card.climate.currently")}:
+            ${this.stateObj.attributes.hvac_action
+              ? this._localizeAction()
+              : this.hass.localize("ui.card.climate.currently")}
             <div class="unit">${currentStatus}</div>
           </div>`
         : ""}`;
@@ -113,15 +115,15 @@ class HaClimateState extends LitElement {
       return this.hass.localize(`state.default.${this.stateObj.state}`);
     }
 
-    const stateString = this.hass.localize(
+    return this.hass.localize(
       `component.climate.state._.${this.stateObj.state}`
     );
+  }
 
-    return this.stateObj.attributes.hvac_action
-      ? `${this.hass.localize(
-          `state_attributes.climate.hvac_action.${this.stateObj.attributes.hvac_action}`
-        )} (${stateString})`
-      : stateString;
+  private _localizeAction(): string {
+    return this.hass.localize(
+      `state_attributes.climate.hvac_action.${this.stateObj.attributes.hvac_action}`
+    );
   }
 
   static get styles(): CSSResultGroup {
