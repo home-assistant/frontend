@@ -7,6 +7,7 @@ export const alarmControlPanelColor = (state?: string): string | undefined => {
     case "armed_custom_bypass":
       return "alarm-armed";
     case "pending":
+    case "arming":
       return "alarm-pending";
     case "arming":
     case "disarming":

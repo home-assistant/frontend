@@ -11,9 +11,10 @@ import {
 import { property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
-import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { stateActive } from "../../common/entity/state_active";
+import { stateColor } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import type { HomeAssistant } from "../../types";
@@ -35,6 +36,13 @@ export class StateBadge extends LitElement {
 
   @state() private _iconStyle: { [name: string]: string } = {};
 
+  private get _stateColor() {
+    const domain = this.stateObj
+      ? computeStateDomain(this.stateObj)
+      : undefined;
+    return this.stateColor || (domain === "light" && this.stateColor !== false);
+  }
+
   protected render(): TemplateResult {
     const stateObj = this.stateObj;
 
@@ -50,15 +58,13 @@ export class StateBadge extends LitElement {
     }
 
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
+    const active = this._stateColor && stateObj ? stateActive(stateObj) : false;
 
     return html`<ha-state-icon
       style=${styleMap(this._iconStyle)}
-      data-domain=${ifDefined(
-        this.stateColor || (domain === "light" && this.stateColor !== false)
-          ? domain
-          : undefined
-      )}
-      data-state=${stateObj ? computeActiveState(stateObj) : ""}
+      ?data-active=${active}
+      data-domain=${ifDefined(domain)}
+      data-state=${ifDefined(stateObj?.state)}
       .icon=${this.overrideIcon}
       .state=${stateObj}
     ></ha-state-icon>`;
@@ -69,7 +75,8 @@ export class StateBadge extends LitElement {
     if (
       !changedProps.has("stateObj") &&
       !changedProps.has("overrideImage") &&
-      !changedProps.has("overrideIcon")
+      !changedProps.has("overrideIcon") &&
+      !changedProps.has("stateColor")
     ) {
       return;
     }
@@ -100,11 +107,15 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
-      } else if (stateObj.state === "on") {
-        if (this.stateColor !== false && stateObj.attributes.rgb_color) {
+      } else if (stateActive(stateObj) && this._stateColor) {
+        const iconColor = stateColor(stateObj);
+        if (iconColor) {
+          iconStyle.color = `rgb(var(--rgb-state-${iconColor}-color))`;
+        }
+        if (stateObj.attributes.rgb_color) {
           iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
         }
-        if (stateObj.attributes.brightness && this.stateColor !== false) {
+        if (stateObj.attributes.brightness) {
           const brightness = stateObj.attributes.brightness;
           if (typeof brightness !== "number") {
             const errorMessage = `Type error: state-badge expected number, but type of ${
