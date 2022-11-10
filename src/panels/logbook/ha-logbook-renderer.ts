@@ -11,12 +11,15 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { stateActive } from "../../common/entity/state_active";
+import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
@@ -66,6 +69,9 @@ class HaLogbookRenderer extends LitElement {
 
   @property({ type: Boolean, attribute: "virtualize", reflect: true })
   public virtualize = false;
+
+  @property({ type: Boolean, attribute: "show-indicator" })
+  public showIndicator = false;
 
   @property({ type: Boolean, attribute: "no-icon" })
   public noIcon = false;
@@ -132,7 +138,7 @@ class HaLogbookRenderer extends LitElement {
     if (!item || index === undefined) {
       return html``;
     }
-    const previous = this.entries[index - 1];
+    const previous = this.entries[index - 1] as LogbookEntry | undefined;
     const seenEntityIds: string[] = [];
     const currentStateObj = item.entity_id
       ? this.hass.states[item.entity_id]
@@ -199,6 +205,7 @@ class HaLogbookRenderer extends LitElement {
                   ></state-badge>
                 `
               : ""}
+            ${this.showIndicator ? this._renderIndicator(item) : ""}
             <div class="message-relative_time">
               <div class="message">
                 ${!this.noName // Used for more-info panel (single entity case)
@@ -251,6 +258,23 @@ class HaLogbookRenderer extends LitElement {
     fireEvent(this, "hass-logbook-live", {
       enable: e.first === 0,
     });
+  }
+
+  private _renderIndicator(item: LogbookEntry) {
+    const stateObj = this.hass.states[item.entity_id!] as
+      | HassEntity
+      | undefined;
+
+    const color =
+      stateObj && stateActive(stateObj, item.state)
+        ? stateColorCss(stateObj, item.state)
+        : undefined;
+
+    const style = {
+      "--indicator-color": color,
+    };
+
+    return html` <div class="indicator" style=${styleMap(style)}></div> `;
   }
 
   private _renderMessage(
@@ -541,6 +565,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .entry {
+          position: relative;
           display: flex;
           width: 100%;
           line-height: 2em;
@@ -549,6 +574,20 @@ class HaLogbookRenderer extends LitElement {
           border-top: 1px solid var(--divider-color);
           justify-content: space-between;
           align-items: center;
+        }
+
+        .indicator {
+          background-color: rgb(
+            var(--indicator-color, var(--rgb-disabled-color))
+          );
+          height: 8px;
+          width: 8px;
+          border-radius: 4px;
+          flex-shrink: 0;
+          margin-right: 12px;
+          margin-inline-start: initial;
+          margin-inline-end: 12px;
+          direction: var(--direction);
         }
 
         ha-icon-next {
