@@ -1,9 +1,11 @@
+import { memoize } from "@fullcalendar/common";
 import { mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeRgbColor } from "../../../common/color/compute-color";
+import { hsv2rgb, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -107,6 +109,38 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return imageUrl;
   }
 
+  private _computeStateColor = memoize((entity: HassEntity, color?: string) => {
+    if (!stateActive(entity)) {
+      return undefined;
+    }
+
+    if (color) {
+      return computeRgbColor(color);
+    }
+
+    let stateColor = stateColorCss(entity);
+
+    if (
+      computeDomain(entity.entity_id) === "light" &&
+      entity.attributes.rgb_color
+    ) {
+      const hsvColor = rgb2hsv(entity.attributes.rgb_color);
+
+      // Modify the real rgb color for better contrast
+      if (hsvColor[1] < 0.4) {
+        // Special case for very light color (e.g: white)
+        if (hsvColor[1] < 0.1) {
+          hsvColor[2] = 225;
+        } else {
+          hsvColor[1] = 0.4;
+        }
+      }
+      stateColor = hsv2rgb(hsvColor).join(",");
+    }
+
+    return stateColor;
+  });
+
   render() {
     if (!this._config || !this.hass) {
       return html``;
@@ -140,12 +174,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       this.hass.locale
     );
 
+    const color = this._computeStateColor(entity, this._config.color);
+
     const style = {
-      "--tile-color": this._config.color
-        ? stateActive(entity)
-          ? computeRgbColor(this._config.color)
-          : undefined
-        : stateColorCss(entity),
+      "--tile-color": color,
     };
 
     const imageUrl = this._config.show_entity_picture
