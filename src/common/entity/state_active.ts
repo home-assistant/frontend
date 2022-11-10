@@ -5,14 +5,14 @@ import { computeDomain } from "./compute_domain";
 const NORMAL_UNKNOWN_DOMAIN = ["button", "input_button", "scene"];
 const NORMAL_OFF_DOMAIN = ["script"];
 
-export function stateActive(stateObj: HassEntity): boolean {
+export function stateActive(stateObj: HassEntity, state?: string): boolean {
   const domain = computeDomain(stateObj.entity_id);
-  const state = stateObj.state;
+  const compareState = state !== undefined ? state : stateObj?.state;
 
   if (
-    OFF_STATES.includes(state) &&
-    !(NORMAL_UNKNOWN_DOMAIN.includes(domain) && state === "unknown") &&
-    !(NORMAL_OFF_DOMAIN.includes(domain) && state === "script")
+    OFF_STATES.includes(compareState) &&
+    !(NORMAL_UNKNOWN_DOMAIN.includes(domain) && compareState === "unknown") &&
+    !(NORMAL_OFF_DOMAIN.includes(domain) && compareState === "script")
   ) {
     return false;
   }
@@ -20,16 +20,16 @@ export function stateActive(stateObj: HassEntity): boolean {
   // Custom cases
   switch (domain) {
     case "cover":
-      return state === "open" || state === "opening";
+      return compareState === "open" || compareState === "opening";
     case "device_tracker":
     case "person":
-      return state !== "not_home";
+      return compareState !== "not_home";
     case "media-player":
-      return state !== "idle" && state !== "standby";
+      return compareState !== "idle" && compareState !== "standby";
     case "vacuum":
-      return state === "on" || state === "cleaning";
+      return compareState === "on" || compareState === "cleaning";
     case "plant":
-      return state === "problem";
+      return compareState === "problem";
     default:
       return true;
   }
