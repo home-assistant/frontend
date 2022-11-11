@@ -9,6 +9,7 @@ import "../../components/ha-tabs";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant, Route } from "../../types";
+import { setupHorizontalSwipe } from "../../util/swipe";
 import "./developer-tools-router";
 
 @customElement("ha-panel-developer-tools")
@@ -19,9 +20,17 @@ class PanelDeveloperTools extends LitElement {
 
   @property() public narrow!: boolean;
 
+  private _removeHorizontalSwipe?: () => void;
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+  }
+
+  protected updated() {
+    this._removeHorizontalSwipe =
+      this._removeHorizontalSwipe ||
+      setupHorizontalSwipe(this._handleSwipeLeft, this._handleSwipeRight);
   }
 
   protected render(): TemplateResult {
@@ -37,6 +46,7 @@ class PanelDeveloperTools extends LitElement {
             <div main-title>${this.hass.localize("panel.developer_tools")}</div>
           </app-toolbar>
           <ha-tabs
+            id="devtools-tabs"
             scrollable
             attr-for-selected="page-name"
             .selected=${page}
@@ -90,8 +100,43 @@ class PanelDeveloperTools extends LitElement {
     }
   }
 
+  private _handleSwipeLeft = () => {
+    if (!this._prevPage) return;
+    navigate(`/developer-tools/${this._prevPage}`);
+    scrollTo(0, 0);
+  };
+
+  private _handleSwipeRight = () => {
+    if (!this._nextPage) return;
+    navigate(`/developer-tools/${this._nextPage}`);
+    scrollTo(0, 0);
+  };
+
   private get _page() {
     return this.route.path.substr(1);
+  }
+
+  private get _pages() {
+    return [
+      ...(this.shadowRoot?.getElementById("devtools-tabs")?.children || []),
+    ].map((e) => e.getAttribute("page-name"));
+  }
+
+  private get _prevPage() {
+    const currentPage = this._pages.findIndex((p) => p === this._page);
+
+    return this._pages[currentPage - 1];
+  }
+
+  private get _nextPage() {
+    const currentPage = this._pages.findIndex((p) => p === this._page);
+
+    return this._pages[currentPage + 1];
+  }
+
+  disconnectedCallback() {
+    this._removeHorizontalSwipe?.();
+    this._removeHorizontalSwipe = undefined;
   }
 
   static get styles(): CSSResultGroup {

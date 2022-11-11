@@ -75,6 +75,7 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
+import { setupHorizontalSwipe } from "../../util/swipe";
 
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -91,6 +92,8 @@ class HUIRoot extends LitElement {
   @state() private _curView?: number | "hass-unused-entities";
 
   @query("ha-app-layout", true) private _appLayout!: haAppLayout;
+
+  private _removeHorizontalSwipe?: () => void;
 
   private _viewCache?: { [viewId: string]: HUIView };
 
@@ -578,52 +581,21 @@ class HUIRoot extends LitElement {
   }
 
   private _setupViewScroll = () => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    this._removeHorizontalSwipe =
+      this._removeHorizontalSwipe ||
+      setupHorizontalSwipe(this._handleSwipeLeft, this._handleSwipeRight);
+  };
 
-    if (!isMobile) return;
+  private _handleSwipeLeft = () => {
+    if ((this._curView as number) < 1) return;
+    this._selectView((this._curView as number) - 1, false);
+    scrollTo(0, 0);
+  };
 
-    let xPress = 0;
-    let yPress = 0;
-    let swipeStart: Date;
-
-    const resetPosition = () => {
-      xPress = 0;
-      yPress = 0;
-    };
-
-    const handleTouchStart = (e) => {
-      xPress = e.touches[0].clientX;
-      yPress = e.touches[0].clientY;
-      swipeStart = new Date();
-    };
-
-    const handleTouchEnd = (e) => {
-      const swipeEnd = new Date();
-
-      if (!xPress || !yPress) return;
-
-      const xRelease = e.changedTouches[0].clientX;
-      const yRelease = e.changedTouches[0].clientY;
-
-      const xDiff = xPress - xRelease;
-      const yDiff = yPress - yRelease;
-
-      if (
-        Math.abs(xDiff) > Math.abs(yDiff) * 2 &&
-        Math.abs(xDiff) > window.innerWidth * 0.3 &&
-        swipeEnd.getMilliseconds() - swipeStart.getMilliseconds() < 200 &&
-        xDiff > 0
-          ? (this._curView as number) + 1 < this.config.views.length
-          : (this._curView as number) > 0
-      )
-        if (xDiff > 0) this._selectView((this._curView as number) + 1, false);
-        else this._selectView((this._curView as number) - 1, false);
-
-      resetPosition();
-    };
-
-    document.ontouchstart = handleTouchStart;
-    document.ontouchend = handleTouchEnd;
+  private _handleSwipeRight = () => {
+    if ((this._curView as number) + 1 >= this.config.views.length) return;
+    this._selectView((this._curView as number) + 1, false);
+    scrollTo(0, 0);
   };
 
   private _isVisible = (view: LovelaceViewConfig) =>
@@ -987,6 +959,11 @@ class HUIRoot extends LitElement {
     root.appendChild(view);
     // Recalculate to see if we need to adjust content area for tab bar
     fireEvent(this, "iron-resize");
+  }
+
+  disconnectedCallback() {
+    this._removeHorizontalSwipe?.();
+    this._removeHorizontalSwipe = undefined;
   }
 
   static get styles(): CSSResultGroup {
