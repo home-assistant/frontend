@@ -58,7 +58,19 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ type: Boolean }) private minimal = false;
 
+  @property() private _openingDirection = "right";
+
   protected willUpdate() {
+    // set dialog opening direction based on position
+    const datePickerPosition = this.getBoundingClientRect().x;
+    if (datePickerPosition > (2 * window.innerWidth) / 3) {
+      this._openingDirection = "left";
+    } else if (datePickerPosition < window.innerWidth / 3) {
+      this._openingDirection = "right";
+    } else {
+      this._openingDirection = "center";
+    }
+
     if (!this.hasUpdated && this.ranges === undefined) {
       const today = new Date();
       const weekStartsOn = firstWeekdayIndex(this.hass.locale);
@@ -142,6 +154,7 @@ export class HaDateRangePicker extends LitElement {
         start-date=${this.startDate}
         end-date=${this.endDate}
         ?ranges=${this.ranges !== false}
+        opening-direction=${this._openingDirection}
         first-day=${firstWeekdayIndex(this.hass.locale)}
       >
         <div slot="input" class="date-range-inputs">

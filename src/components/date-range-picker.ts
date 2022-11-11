@@ -31,6 +31,10 @@ const Component = Vue.extend({
       type: Boolean,
       default: true,
     },
+    openingDirection: {
+      type: String,
+      default: "right",
+    },
     disabled: {
       type: Boolean,
       default: false,
@@ -66,7 +70,7 @@ const Component = Vue.extend({
       props: {
         "time-picker": this.timePicker,
         "auto-apply": this.autoApply,
-        opens: "right",
+        opens: this.openingDirection,
         "show-dropdowns": false,
         "time-picker24-hour": this.twentyfourHours,
         disabled: this.disabled,
@@ -129,7 +133,6 @@ class DateRangePickerElement extends WrappedElement {
             flex-wrap: nowrap !important;
           }
           .daterangepicker {
-            left: 0px !important;
             top: auto;
             box-shadow: var(--ha-card-box-shadow, none);
             background-color: var(--card-background-color);
