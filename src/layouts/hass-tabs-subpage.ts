@@ -12,6 +12,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import { navigate } from "../common/navigate";
 import { LocalizeFunc } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-icon-button-arrow-prev";
@@ -19,6 +20,7 @@ import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
 import { HomeAssistant, Route } from "../types";
+import { setupHorizontalSwipe } from "../util/swipe";
 
 export interface PageNavigation {
   path: string;
@@ -61,8 +63,34 @@ class HassTabsSubpage extends LitElement {
 
   @state() private _activeTab?: PageNavigation;
 
+  private _removeHorizontalSwipe?: () => void;
+
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
+
+  private _getShownTabs = memoizeOne((tabs, showAdvanced, localizeFn?) => {
+    const localizeFunc = localizeFn || this.localizeFunc || this.hass.localize;
+
+    const shownTabs = tabs.filter(
+      (page) =>
+        (!page.component ||
+          page.core ||
+          isComponentLoaded(this.hass, page.component)) &&
+        (!page.advancedOnly || showAdvanced)
+    );
+
+    if (shownTabs.length < 2) {
+      if (shownTabs.length === 1) {
+        const page = shownTabs[0];
+        return [
+          page.translationKey ? localizeFunc(page.translationKey) : page.name,
+        ];
+      }
+      return [""];
+    }
+
+    return shownTabs;
+  });
 
   private _getTabs = memoizeOne(
     (
@@ -74,23 +102,7 @@ class HassTabsSubpage extends LitElement {
       _narrow,
       localizeFunc
     ) => {
-      const shownTabs = tabs.filter(
-        (page) =>
-          (!page.component ||
-            page.core ||
-            isComponentLoaded(this.hass, page.component)) &&
-          (!page.advancedOnly || showAdvanced)
-      );
-
-      if (shownTabs.length < 2) {
-        if (shownTabs.length === 1) {
-          const page = shownTabs[0];
-          return [
-            page.translationKey ? localizeFunc(page.translationKey) : page.name,
-          ];
-        }
-        return [""];
-      }
+      const shownTabs = this._getShownTabs(tabs, showAdvanced, localizeFunc);
 
       return shownTabs.map(
         (page) =>
@@ -117,6 +129,44 @@ class HassTabsSubpage extends LitElement {
     }
   );
 
+  private _handleSwipeLeft = () => {
+    if (!this._prevTab) return;
+    navigate(this._prevTab.path);
+    scrollTo(0, 0);
+  };
+
+  private _handleSwipeRight = () => {
+    if (!this._nextTab) return;
+    navigate(this._nextTab.path);
+    scrollTo(0, 0);
+  };
+
+  private get _nextTab() {
+    const shownTabs = this._getShownTabs(
+      this.tabs,
+      this.hass.userData?.showAdvanced
+    );
+
+    const currentTab = shownTabs.findIndex((t) =>
+      window.location.pathname.startsWith(t.path)
+    );
+
+    return shownTabs[currentTab + 1];
+  }
+
+  private get _prevTab() {
+    const shownTabs = this._getShownTabs(
+      this.tabs,
+      this.hass.userData?.showAdvanced
+    );
+
+    const currentTab = shownTabs.findIndex((t) =>
+      window.location.pathname.startsWith(t.path)
+    );
+
+    return shownTabs[currentTab - 1];
+  }
+
   public willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("route")) {
       this._activeTab = this.tabs.find((tab) =>
@@ -134,6 +184,14 @@ class HassTabsSubpage extends LitElement {
     super.willUpdate(changedProperties);
   }
 
+  protected updated(changedProperties) {
+    super.updated(changedProperties);
+
+    this._removeHorizontalSwipe =
+      this._removeHorizontalSwipe ||
+      setupHorizontalSwipe(this._handleSwipeLeft, this._handleSwipeRight);
+  }
+
   protected render(): TemplateResult {
     const tabs = this._getTabs(
       this.tabs,
@@ -144,6 +202,7 @@ class HassTabsSubpage extends LitElement {
       this.narrow,
       this.localizeFunc || this.hass.localize
     );
+
     const showTabs = tabs.length > 1;
     return html`
       <div class="toolbar">
@@ -208,6 +267,11 @@ class HassTabsSubpage extends LitElement {
       return;
     }
     history.back();
+  }
+
+  disconnectedCallback() {
+    this._removeHorizontalSwipe?.();
+    this._removeHorizontalSwipe = undefined;
   }
 
   static get styles(): CSSResultGroup {

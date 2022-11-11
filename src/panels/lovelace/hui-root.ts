@@ -587,14 +587,32 @@ class HUIRoot extends LitElement {
   };
 
   private _handleSwipeLeft = () => {
-    if ((this._curView as number) < 1) return;
-    this._selectView((this._curView as number) - 1, false);
+    const prevVisibleView = this.config.views
+      .slice(0, this._curView as number)
+      .reverse()
+      .find(this._isVisible);
+
+    if (!prevVisibleView) return;
+
+    this._selectView(
+      this.config.views.findIndex((v) => v.path === prevVisibleView?.path),
+      false
+    );
+
     scrollTo(0, 0);
   };
 
   private _handleSwipeRight = () => {
-    if ((this._curView as number) + 1 >= this.config.views.length) return;
-    this._selectView((this._curView as number) + 1, false);
+    const nextVisibleView = this.config.views
+      .slice((this._curView as number) + 1)
+      .find(this._isVisible);
+
+    if (!nextVisibleView) return;
+
+    this._selectView(
+      this.config.views.findIndex((v) => v.path === nextVisibleView?.path),
+      false
+    );
     scrollTo(0, 0);
   };
 
