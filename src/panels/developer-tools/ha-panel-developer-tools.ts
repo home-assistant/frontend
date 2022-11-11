@@ -27,7 +27,8 @@ class PanelDeveloperTools extends LitElement {
     this.hass.loadBackendTranslation("title");
   }
 
-  protected updated() {
+  protected updated(changedProps) {
+    super.updated(changedProps);
     this._removeHorizontalSwipe =
       this._removeHorizontalSwipe ||
       setupHorizontalSwipe(this._handleSwipeLeft, this._handleSwipeRight);
