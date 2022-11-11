@@ -647,7 +647,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         }
 
         img {
-          border-radius: var(--ha-card-border-radius, 16px);
+          border-radius: var(--ha-card-border-radius, 12px);
           width: 100%;
         }
 

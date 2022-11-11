@@ -19,7 +19,7 @@ import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import {
   EDITABLE_DOMAINS_WITH_ID,
-  EDITABLE_DOMAINS,
+  EDITABLE_DOMAINS_WITH_UNIQUE_ID,
   DOMAINS_WITH_MORE_INFO,
   computeShowHistoryComponent,
   computeShowLogBookComponent,
@@ -72,7 +72,7 @@ export class MoreInfoDialog extends LitElement {
     if (EDITABLE_DOMAINS_WITH_ID.includes(domain) && stateObj.attributes.id) {
       return true;
     }
-    if (EDITABLE_DOMAINS.includes(domain)) {
+    if (EDITABLE_DOMAINS_WITH_UNIQUE_ID.includes(domain)) {
       return true;
     }
     if (domain === "person" && stateObj.attributes.editable !== "false") {
@@ -246,6 +246,9 @@ export class MoreInfoDialog extends LitElement {
     if (EDITABLE_DOMAINS_WITH_ID.includes(domain) || domain === "person") {
       idToPassThroughUrl = stateObj.attributes.id;
     }
+    if (EDITABLE_DOMAINS_WITH_UNIQUE_ID.includes(domain)) {
+      idToPassThroughUrl = this.hass.entities[this._entityId!].unique_id;
+    }
 
     navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
     this.closeDialog();
@@ -312,8 +315,7 @@ export class MoreInfoDialog extends LitElement {
             cursor: default;
           }
 
-          :host([large]) ha-dialog,
-          :host([tab="info"]) ha-dialog[data-domain="camera"] {
+          :host([large]) ha-dialog {
             --mdc-dialog-min-width: 90vw;
             --mdc-dialog-max-width: 90vw;
           }
@@ -321,6 +323,8 @@ export class MoreInfoDialog extends LitElement {
 
         :host([tab="info"]) ha-dialog[data-domain="camera"] {
           --dialog-content-padding: 0;
+          /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
+          --video-max-height: calc(100vh - 113px - 72px);
         }
       `,
     ];

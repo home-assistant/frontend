@@ -13,6 +13,7 @@ import {
   mdiBullhorn,
   mdiCalendar,
   mdiCalendarClock,
+  mdiCarCoolantLevel,
   mdiCash,
   mdiClock,
   mdiCloudUpload,
@@ -55,9 +56,11 @@ import {
   mdiThermostat,
   mdiTimerOutline,
   mdiVideo,
+  mdiWater,
   mdiWaterPercent,
   mdiWeatherCloudy,
   mdiWeatherPouring,
+  mdiWeatherWindy,
   mdiWeight,
   mdiWhiteBalanceSunny,
   mdiWifi,
@@ -154,8 +157,10 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   timestamp: mdiClock,
   volatile_organic_compounds: mdiMolecule,
   voltage: mdiSineWave,
-  // volume: TBD, => no well matching icon found
+  volume: mdiCarCoolantLevel,
+  water: mdiWater,
   weight: mdiWeight,
+  wind_speed: mdiWeatherWindy,
 };
 
 /** Domains that have a state card. */

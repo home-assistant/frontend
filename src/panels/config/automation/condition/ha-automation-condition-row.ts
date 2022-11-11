@@ -8,6 +8,7 @@ import {
   mdiFlask,
   mdiPlayCircleOutline,
   mdiRenameBox,
+  mdiSort,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
@@ -142,6 +143,14 @@ export default class HaAutomationConditionRow extends LitElement {
                       .path=${mdiRenameBox}
                     ></ha-svg-icon>
                   </mwc-list-item>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.conditions.re_order"
+                    )}
+                    <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
+                  </mwc-list-item>
+
                   <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.duplicate"
@@ -294,20 +303,23 @@ export default class HaAutomationConditionRow extends LitElement {
         await this._renameCondition();
         break;
       case 2:
-        fireEvent(this, "duplicate");
+        fireEvent(this, "re-order");
         break;
       case 3:
+        fireEvent(this, "duplicate");
+        break;
+      case 4:
         this._switchUiMode();
         this.expand();
         break;
-      case 4:
+      case 5:
         this._switchYamlMode();
         this.expand();
         break;
-      case 5:
+      case 6:
         this._onDisable();
         break;
-      case 6:
+      case 7:
         this._onDelete();
         break;
     }
@@ -493,8 +505,8 @@ export default class HaAutomationConditionRow extends LitElement {
           overflow: hidden;
           transition: max-height 0.3s;
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 16px);
-          border-top-left-radius: var(--ha-card-border-radius, 16px);
+          border-top-right-radius: var(--ha-card-border-radius, 12px);
+          border-top-left-radius: var(--ha-card-border-radius, 12px);
         }
         .testing.active {
           max-height: 100px;

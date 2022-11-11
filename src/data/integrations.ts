@@ -31,13 +31,11 @@ export interface Brands {
 export interface IntegrationDescriptions {
   core: {
     integration: Brands;
-    hardware: Integrations;
     helper: Integrations;
     translated_name: string[];
   };
   custom: {
     integration: Brands;
-    hardware: Integrations;
     helper: Integrations;
   };
 }

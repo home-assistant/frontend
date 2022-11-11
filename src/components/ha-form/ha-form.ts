@@ -9,6 +9,7 @@ import "./ha-form-boolean";
 import "./ha-form-constant";
 import "./ha-form-float";
 import "./ha-form-grid";
+import "./ha-form-expandable";
 import "./ha-form-integer";
 import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
@@ -80,6 +81,7 @@ export class HaForm extends LitElement implements HaFormElement {
               ? html`<ha-selector
                   .schema=${item}
                   .hass=${this.hass}
+                  .name=${item.name}
                   .selector=${item.selector}
                   .value=${getValue(this.data, item)}
                   .label=${this._computeLabel(item, this.data)}
@@ -92,6 +94,7 @@ export class HaForm extends LitElement implements HaFormElement {
                   schema: item,
                   data: getValue(this.data, item),
                   label: this._computeLabel(item, this.data),
+                  helper: this._computeHelper(item),
                   disabled: this.disabled || item.disabled,
                   hass: this.hass,
                   computeLabel: this.computeLabel,
@@ -154,14 +157,10 @@ export class HaForm extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      .root {
-        margin-bottom: -24px;
-        overflow: clip visible;
-      }
       .root > * {
         display: block;
       }
-      .root > *:not([own-margin]) {
+      .root > *:not([own-margin]):not(:last-child) {
         margin-bottom: 24px;
       }
       ha-alert[own-margin] {

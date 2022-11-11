@@ -490,7 +490,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                 ([domain, items]) =>
                   html`<ha-integration-card
                     data-domain=${domain}
-                    disabled
+                    entryDisabled
                     .hass=${this.hass}
                     .domain=${domain}
                     .items=${items}

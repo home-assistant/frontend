@@ -77,6 +77,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                 )}:
               </h3>
               <ha-automation-condition
+                nested
                 .conditions=${(action as WhileRepeat).while || []}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
@@ -89,6 +90,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                 )}:
               </h3>
               <ha-automation-condition
+                nested
                 .conditions=${(action as UntilRepeat).until || []}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
@@ -102,6 +104,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
         )}:
       </h3>
       <ha-automation-action
+        nested
         .actions=${action.sequence}
         .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}

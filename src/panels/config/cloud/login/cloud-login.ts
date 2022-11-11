@@ -113,6 +113,7 @@ export class CloudLogin extends LitElement {
                     "ui.panel.config.cloud.login.email"
                   )}
                   id="email"
+                  name="username"
                   type="email"
                   autocomplete="username"
                   required
@@ -125,6 +126,7 @@ export class CloudLogin extends LitElement {
                 ></ha-textfield>
                 <ha-textfield
                   id="password"
+                  name="password"
                   .label=${this.hass.localize(
                     "ui.panel.config.cloud.login.password"
                   )}

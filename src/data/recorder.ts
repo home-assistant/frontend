@@ -1,4 +1,5 @@
 import { computeStateName } from "../common/entity/compute_state_name";
+import { HaDurationData } from "../components/ha-duration-input";
 import { HomeAssistant } from "../types";
 
 export type StatisticType = "state" | "sum" | "min" | "max" | "mean";
@@ -17,6 +18,13 @@ export interface StatisticValue {
   min: number | null;
   sum: number | null;
   state: number | null;
+}
+
+export interface Statistic {
+  max: number | null;
+  mean: number | null;
+  min: number | null;
+  change: number | null;
 }
 
 export interface StatisticsMetaData {
@@ -67,7 +75,7 @@ export interface StatisticsValidationResultUnitsChanged {
 }
 
 export interface StatisticsUnitConfiguration {
-  energy?: "Wh" | "kWh" | "MWh";
+  energy?: "Wh" | "kWh" | "MWh" | "GJ";
   power?: "W" | "kW";
   pressure?:
     | "Pa"
@@ -80,7 +88,7 @@ export interface StatisticsUnitConfiguration {
     | "psi"
     | "mmHg";
   temperature?: "°C" | "°F" | "K";
-  volume?: "ft³" | "m³";
+  volume?: "L" | "gal" | "ft³" | "m³";
 }
 
 export interface StatisticsValidationResults {
@@ -110,7 +118,7 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
-  period: "5minute" | "hour" | "day" | "month" = "hour",
+  period: "5minute" | "hour" | "day" | "week" | "month" = "hour",
   units?: StatisticsUnitConfiguration
 ) =>
   hass.callWS<Statistics>({
@@ -120,6 +128,36 @@ export const fetchStatistics = (
     statistic_ids,
     period,
     units,
+  });
+
+export const fetchStatistic = (
+  hass: HomeAssistant,
+  statistic_id: string,
+  period: {
+    fixed_period?: { start: string | Date; end: string | Date };
+    calendar?: { period: string; offset: number };
+    rolling_window?: { duration: HaDurationData; offset: HaDurationData };
+  },
+  units?: StatisticsUnitConfiguration
+) =>
+  hass.callWS<Statistic>({
+    type: "recorder/statistic_during_period",
+    statistic_id,
+    units,
+    fixed_period: period.fixed_period
+      ? {
+          start_time:
+            period.fixed_period.start instanceof Date
+              ? period.fixed_period.start.toISOString()
+              : period.fixed_period.start,
+          end_time:
+            period.fixed_period.end instanceof Date
+              ? period.fixed_period.end.toISOString()
+              : period.fixed_period.end,
+        }
+      : undefined,
+    calendar: period.calendar,
+    rolling_window: period.rolling_window,
   });
 
 export const validateStatistics = (hass: HomeAssistant) =>

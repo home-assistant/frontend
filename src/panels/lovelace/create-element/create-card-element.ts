@@ -47,6 +47,8 @@ const LAZY_LOAD_TYPES = {
   "energy-distribution": () =>
     import("../cards/energy/hui-energy-distribution-card"),
   "energy-gas-graph": () => import("../cards/energy/hui-energy-gas-graph-card"),
+  "energy-water-graph": () =>
+    import("../cards/energy/hui-energy-water-graph-card"),
   "energy-grid-neutrality-gauge": () =>
     import("../cards/energy/hui-energy-grid-neutrality-gauge-card"),
   "energy-solar-consumed-gauge": () =>
@@ -77,6 +79,7 @@ const LAZY_LOAD_TYPES = {
   "shopping-list": () => import("../cards/hui-shopping-list-card"),
   starting: () => import("../cards/hui-starting-card"),
   "statistics-graph": () => import("../cards/hui-statistics-graph-card"),
+  statistic: () => import("../cards/hui-statistic-card"),
   "vertical-stack": () => import("../cards/hui-vertical-stack-card"),
 };
 

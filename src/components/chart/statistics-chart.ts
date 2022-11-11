@@ -67,6 +67,8 @@ class StatisticsChart extends LitElement {
 
   @property() public chartType: ChartType = "line";
 
+  @property({ type: Boolean }) public hideLegend = false;
+
   @property({ type: Boolean }) public isLoadingData = false;
 
   @state() private _chartData: ChartData = { datasets: [] };
@@ -181,7 +183,7 @@ class StatisticsChart extends LitElement {
           propagate: true,
         },
         legend: {
-          display: true,
+          display: !this.hideLegend,
           labels: {
             usePointStyle: true,
           },
@@ -259,7 +261,7 @@ class StatisticsChart extends LitElement {
       const firstStat = stats[0];
       const meta = statisticsMetaData?.[firstStat.statistic_id];
       let name = names[firstStat.statistic_id];
-      if (!name) {
+      if (name === undefined) {
         name = getStatisticLabel(this.hass, firstStat.statistic_id, meta);
       }
 
@@ -331,10 +333,14 @@ class StatisticsChart extends LitElement {
           const band = drawBands && (type === "min" || type === "max");
           statTypes.push(type);
           statDataSets.push({
-            label: `${name} (${this.hass.localize(
-              `ui.components.statistics_charts.statistic_types.${type}`
-            )})
-            `,
+            label: name
+              ? `${name} (${this.hass.localize(
+                  `ui.components.statistics_charts.statistic_types.${type}`
+                )})
+            `
+              : this.hass.localize(
+                  `ui.components.statistics_charts.statistic_types.${type}`
+                ),
             fill: drawBands
               ? type === "min"
                 ? "+1"
@@ -342,7 +348,7 @@ class StatisticsChart extends LitElement {
                 ? "-1"
                 : false
               : false,
-            borderColor: band ? color + "7F" : color,
+            borderColor: band ? color + (this.hideLegend ? "00" : "7F") : color,
             backgroundColor: band ? color + "3F" : color + "7F",
             pointRadius: 0,
             data: [],

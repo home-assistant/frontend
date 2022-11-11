@@ -60,6 +60,8 @@ export class HaFormString extends LitElement implements HaFormElement {
         .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
+        .name=${this.schema.name}
+        .autocomplete=${this.schema.autocomplete}
         .suffix=${isPassword
           ? // reserve some space for the icon.
             html`<div style="width: 24px"></div>`

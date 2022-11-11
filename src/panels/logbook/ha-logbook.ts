@@ -65,6 +65,9 @@ export class HaLogbook extends LitElement {
   @property({ type: Boolean, attribute: "no-name" })
   public noName = false;
 
+  @property({ type: Boolean, attribute: "show-indicator" })
+  public showIndicator = false;
+
   @property({ type: Boolean, attribute: "relative-time" })
   public relativeTime = false;
 
@@ -126,6 +129,7 @@ export class HaLogbook extends LitElement {
         .virtualize=${this.virtualize}
         .noIcon=${this.noIcon}
         .noName=${this.noName}
+        .showIndicator=${this.showIndicator}
         .relativeTime=${this.relativeTime}
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}

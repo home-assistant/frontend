@@ -11,12 +11,13 @@ const LOAD_ELEMENTS = {
   attribute: () => import("./ha-selector-attribute"),
   boolean: () => import("./ha-selector-boolean"),
   "color-rgb": () => import("./ha-selector-color-rgb"),
-  "config-entry": () => import("./ha-selector-config-entry"),
+  config_entry: () => import("./ha-selector-config-entry"),
   date: () => import("./ha-selector-date"),
   datetime: () => import("./ha-selector-datetime"),
   device: () => import("./ha-selector-device"),
   duration: () => import("./ha-selector-duration"),
   entity: () => import("./ha-selector-entity"),
+  statistic: () => import("./ha-selector-statistic"),
   file: () => import("./ha-selector-file"),
   navigation: () => import("./ha-selector-navigation"),
   number: () => import("./ha-selector-number"),
@@ -38,6 +39,8 @@ const LOAD_ELEMENTS = {
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
   @property() public hass!: HomeAssistant;
+
+  @property() public name?: string;
 
   @property() public selector!: Selector;
 
@@ -73,6 +76,7 @@ export class HaSelector extends LitElement {
     return html`
       ${dynamicElement(`ha-selector-${this._type}`, {
         hass: this.hass,
+        name: this.name,
         selector: this.selector,
         value: this.value,
         label: this.label,
