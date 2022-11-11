@@ -1700,6 +1700,7 @@
           "failed_to_shutdown_host": "Failed to shutdown system",
           "board": "Board",
           "documentation": "Documentation",
+          "configure": "Configure",
           "documentation_description": "Find extra information about your device"
         },
         "info": {
