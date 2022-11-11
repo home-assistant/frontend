@@ -304,6 +304,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
 export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   title?: string;
   entities: Array<EntityConfig | string>;
+  unit?: string;
   days_to_show?: number;
   period?: "5minute" | "hour" | "day" | "month";
   stat_types?: StatisticType | StatisticType[];
