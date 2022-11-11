@@ -26,6 +26,7 @@ import {
   getStatisticMetadata,
   Statistics,
   statisticsHaveType,
+  StatisticsMetaData,
   StatisticType,
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
@@ -45,6 +46,11 @@ class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public statisticsData!: Statistics;
+
+  @property({ attribute: false }) public metadata?: Record<
+    string,
+    StatisticsMetaData
+  >;
 
   @property() public names: boolean | Record<string, string> = false;
 
@@ -76,7 +82,7 @@ class StatisticsChart extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated) {
+    if (!this.hasUpdated || changedProps.has("unit")) {
       this._createOptions();
     }
     if (changedProps.has("statisticsData") || changedProps.has("statTypes")) {
@@ -120,7 +126,7 @@ class StatisticsChart extends LitElement {
     `;
   }
 
-  private _createOptions() {
+  private _createOptions(unit?: string) {
     this._chartOptions = {
       parsing: false,
       animation: false,
@@ -154,8 +160,8 @@ class StatisticsChart extends LitElement {
             maxTicksLimit: 7,
           },
           title: {
-            display: this.unit,
-            text: this.unit,
+            display: unit || this.unit,
+            text: unit || this.unit,
           },
         },
       },
@@ -220,9 +226,9 @@ class StatisticsChart extends LitElement {
       return;
     }
 
-    const statisticsMetaData = await this._getStatisticsMetaData(
-      Object.keys(this.statisticsData)
-    );
+    const statisticsMetaData =
+      this.metadata ||
+      (await this._getStatisticsMetaData(Object.keys(this.statisticsData)));
 
     let colorIndex = 0;
     const statisticsData = Object.values(this.statisticsData);
@@ -263,6 +269,7 @@ class StatisticsChart extends LitElement {
         if (unit === undefined) {
           unit = getDisplayUnit(this.hass, firstStat.statistic_id, meta);
         } else if (
+          unit !== null &&
           unit !== getDisplayUnit(this.hass, firstStat.statistic_id, meta)
         ) {
           // Clear unit if not all statistics have same unit
@@ -386,17 +393,8 @@ class StatisticsChart extends LitElement {
       Array.prototype.push.apply(totalDataSets, statDataSets);
     });
 
-    if (unit !== null) {
-      this._chartOptions = {
-        ...this._chartOptions,
-        scales: {
-          ...this._chartOptions!.scales,
-          y: {
-            ...(this._chartOptions!.scales!.y as Record<string, unknown>),
-            title: { display: unit, text: unit },
-          },
-        },
-      };
+    if (unit) {
+      this._createOptions(unit);
     }
 
     this._chartData = {
