@@ -260,6 +260,9 @@ class MoreInfoUpdate extends LitElement {
         margin-bottom: -8px;
         margin-top: 4px;
       }
+      ha-markdown {
+        direction: ltr;
+      }
     `;
   }
 }
