@@ -70,7 +70,7 @@ export class HaDeviceAction extends LitElement {
           "ui.panel.config.automation.editor.actions.type.device_id.action"
         )}
       ></ha-device-action-picker>
-      ${this._capabilities?.extra_fields
+      ${this._capabilities?.extra_fields?.length > 0
         ? html`
             <ha-form
               .hass=${this.hass}
