@@ -302,7 +302,7 @@ class DialogCalendarEventDetail extends LitElement {
     )} - ${formatDateTime(this._dtend!, this.hass.locale)}`;
   }
 
-  private _handleCalendarChanged(ev: PolymerChangedEvent<string>) {
+  private _handleCalendarChanged(ev: CustomEvent) {
     this._calendarId = ev.detail.value;
   }
 

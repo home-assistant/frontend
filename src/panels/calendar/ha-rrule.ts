@@ -1,4 +1,11 @@
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { state, customElement, property } from "lit/decorators";
 import { RRule, Frequency } from "rrule";
 import type { Options } from "rrule";
