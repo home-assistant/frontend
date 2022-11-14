@@ -1,4 +1,4 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { state, customElement, property } from "lit/decorators";
 import { RRule, Frequency } from "rrule";
 import type { Options } from "rrule";
@@ -182,6 +182,21 @@ export class HaRRule extends LitElement {
         ),
       },
     };
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      css`
+        ha-select {
+          display: block;
+          margin-bottom: 24px;
+        }
+        ha-selector-number {
+          display: block;
+          margin-bottom: 24px;
+        }
+      `,
+    ];
   }
 }
 
