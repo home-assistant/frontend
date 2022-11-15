@@ -391,6 +391,7 @@
           "turned_on": "turned on",
           "changed_to_state": "changed to {state}",
           "became_unavailable": "became unavailable",
+          "became_unknown": "became unknown",
           "detected_tampering": "detected tampering",
           "cleared_tampering": "cleared tampering"
         }
