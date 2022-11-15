@@ -3684,7 +3684,7 @@
                     "edit_zone": "Edit Zone",
                     "go_to_core_config": "Go to general configuration?",
                     "home_zone_core_config": "The location of your home zone is editable from the general configuration page. The radius of the Home zone can't be edited from the frontend yet. Do you want to go to the general configuration?",
-                    "introduction": "Zones allow you to specify certain regions on Earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
+                    "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
                     "no_zones_created_yet": "Looks like you have not added any zones yet."
                 },
                 "zwave_js": {
