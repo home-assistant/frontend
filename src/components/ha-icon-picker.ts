@@ -167,7 +167,10 @@ export class HaIconPicker extends LitElement {
       filteredItems.push(...filteredItemsByKeywords);
 
       if (filteredItems.length > 0) {
-        this.comboBox.filteredItems = filteredItems;
+        // Setting it sync cause browser freeze when user paste an icon text
+        setTimeout(() => {
+          this.comboBox.filteredItems = filteredItems;
+        }, 1);
       } else {
         this.comboBox.filteredItems = [{ icon: filterString, keywords: [] }];
       }
