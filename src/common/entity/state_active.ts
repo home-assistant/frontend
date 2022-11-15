@@ -22,7 +22,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
     case "person":
       return compareState !== "not_home";
     case "media_player":
-      return compareState !== "idle" && compareState !== "standby";
+      return compareState !== "standby";
     case "vacuum":
       return compareState === "on" || compareState === "cleaning";
     case "plant":
