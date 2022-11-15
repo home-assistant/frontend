@@ -419,7 +419,7 @@ export const localizeStateMessage = (
     return localize(`${LOGBOOK_LOCALIZE_PATH}.became_unknown`);
   }
 
-  if (UNAVAILABLE_STATES.includes(state)) {
+  if (state === UNAVAILABLE) {
     return localize(`${LOGBOOK_LOCALIZE_PATH}.became_unavailable`);
   }
 
