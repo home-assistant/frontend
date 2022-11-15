@@ -189,7 +189,11 @@ class HassTabsSubpage extends LitElement {
 
     this._removeHorizontalSwipe =
       this._removeHorizontalSwipe ||
-      setupHorizontalSwipe(this._handleSwipeLeft, this._handleSwipeRight);
+      setupHorizontalSwipe(
+        this._handleSwipeLeft,
+        this._handleSwipeRight,
+        this.shadowRoot
+      );
   }
 
   protected render(): TemplateResult {

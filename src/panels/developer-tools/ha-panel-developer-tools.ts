@@ -31,7 +31,11 @@ class PanelDeveloperTools extends LitElement {
     super.updated(changedProps);
     this._removeHorizontalSwipe =
       this._removeHorizontalSwipe ||
-      setupHorizontalSwipe(this._handleSwipeLeft, this._handleSwipeRight);
+      setupHorizontalSwipe(
+        this._handleSwipeLeft,
+        this._handleSwipeRight,
+        this.shadowRoot
+      );
   }
 
   protected render(): TemplateResult {

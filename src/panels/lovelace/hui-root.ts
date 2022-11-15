@@ -583,7 +583,11 @@ class HUIRoot extends LitElement {
   private _setupViewScroll = () => {
     this._removeHorizontalSwipe =
       this._removeHorizontalSwipe ||
-      setupHorizontalSwipe(this._handleSwipeLeft, this._handleSwipeRight);
+      setupHorizontalSwipe(
+        this._handleSwipeLeft,
+        this._handleSwipeRight,
+        this.shadowRoot
+      );
   };
 
   private _handleSwipeLeft = () => {
