@@ -2866,7 +2866,7 @@
         "zone": {
           "caption": "Zones",
           "description": "Manage the zones you want to track people in",
-          "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
+          "introduction": "Zones allow you to specify certain regions on Earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not added any zones yet.",
           "create_zone": "Add Zone",
           "add_zone": "Add Zone",
