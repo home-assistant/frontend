@@ -10,7 +10,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../types";
-import { UNAVAILABLE_STATES, UNKNOWN } from "./entity";
+import { UNAVAILABLE, UNKNOWN } from "./entity";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["counter", "proximity", "sensor", "zone"];
