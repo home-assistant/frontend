@@ -18,14 +18,19 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
+import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
+import "../components/hui-timestamp-display";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { computeTileBadge } from "./tile/badges/tile-badge";
 import { ThermostatCardConfig, TileCardConfig } from "./types";
+
+const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
@@ -164,15 +169,25 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const domain = computeDomain(entity.entity_id);
+
     const icon = this._config.icon || entity.attributes.icon;
     const iconPath = stateIconPath(entity);
 
     const name = this._config.name || entity.attributes.friendly_name;
-    const stateDisplay = computeStateDisplay(
-      this.hass.localize,
-      entity,
-      this.hass.locale
-    );
+    const stateDisplay =
+      (entity.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
+        TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
+      !UNAVAILABLE_STATES.includes(entity.state)
+        ? html`
+            <hui-timestamp-display
+              .hass=${this.hass}
+              .ts=${new Date(entity.state)}
+              .format=${this._config.format}
+              capitalize
+            ></hui-timestamp-display>
+          `
+        : computeStateDisplay(this.hass!.localize, entity, this.hass.locale);
 
     const color = this._computeStateColor(entity, this._config.color);
 
