@@ -398,11 +398,17 @@ export const localizeStateMessage = (
       break;
 
     case "lock":
-      if (state === "unlocked") {
-        return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
-      }
-      if (state === "locked") {
-        return localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
+      switch (state) {
+        case "unlocked":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
+        case "locking":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_locking`);
+        case "unlocking":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_unlocking`);
+        case "locked":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
+        case "jammed":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_jammed`);
       }
       break;
   }
