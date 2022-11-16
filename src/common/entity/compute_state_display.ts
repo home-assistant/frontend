@@ -117,7 +117,7 @@ export const computeStateDisplayFromEntityAttributes = (
 
   const domain = computeDomain(entityId);
 
-  if (domain === "input_datetime") {
+  if (domain === "input_datetime" || domain === "time") {
     if (state !== undefined) {
       // If trying to display an explicit state, need to parse the explicit state to `Date` then format.
       // Attributes aren't available, we have to use `state`.
@@ -164,7 +164,7 @@ export const computeStateDisplayFromEntityAttributes = (
         date = new Date(attributes.year, attributes.month - 1, attributes.day);
         return formatDate(date, locale);
       }
-      if (attributes.has_time) {
+      if (domain === "time" || attributes.has_time) {
         date = new Date();
         date.setHours(attributes.hour, attributes.minute);
         return formatTime(date, locale);
