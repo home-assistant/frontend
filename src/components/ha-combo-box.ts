@@ -226,13 +226,13 @@ export class HaComboBox extends LitElement {
   }
 
   private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
+    ev.stopPropagation();
     const opened = ev.detail.value;
     // delay this so we can handle click event before setting _opened
     setTimeout(() => {
       this.opened = opened;
     }, 0);
-    // @ts-ignore
-    fireEvent(this, ev.type, ev.detail);
+    fireEvent(this, "opened-changed", { value: ev.detail.value });
 
     if (opened) {
       this.removeInertOnOverlay();
@@ -290,8 +290,8 @@ export class HaComboBox extends LitElement {
   }
 
   private _filterChanged(ev: ComboBoxLightFilterChangedEvent) {
-    // @ts-ignore
-    fireEvent(this, ev.type, ev.detail, { composed: false });
+    ev.stopPropagation();
+    fireEvent(this, "filter-changed", { value: ev.detail.value });
   }
 
   private _valueChanged(ev: ComboBoxLightValueChangedEvent) {
@@ -351,5 +351,12 @@ export class HaComboBox extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-combo-box": HaComboBox;
+  }
+}
+
+declare global {
+  interface HASSDomEvents {
+    "filter-changed": { value: string };
+    "opened-changed": { value: boolean };
   }
 }
