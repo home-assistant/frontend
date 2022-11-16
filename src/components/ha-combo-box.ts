@@ -107,9 +107,9 @@ export class HaComboBox extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "opened" })
   public opened?: boolean;
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
+  @query("vaadin-combo-box-light") private _comboBox!: ComboBoxLight;
 
-  @query("ha-textfield", true) private _inputElement!: HaTextField;
+  @query("ha-textfield") private _inputElement!: HaTextField;
 
   private _overlayMutationObserver?: MutationObserver;
 
@@ -157,6 +157,7 @@ export class HaComboBox extends LitElement {
         @filter-changed=${this._filterChanged}
         @value-changed=${this._valueChanged}
         attr-for-value="value"
+        .opened=${this.opened ?? false}
       >
         <ha-textfield
           label=${ifDefined(this.label)}
@@ -227,10 +228,7 @@ export class HaComboBox extends LitElement {
 
   private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
     const opened = ev.detail.value;
-    // delay this so we can handle click event before setting _opened
-    setTimeout(() => {
-      this.opened = opened;
-    }, 0);
+    this.opened = opened;
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail);
 
@@ -282,8 +280,8 @@ export class HaComboBox extends LitElement {
   updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (
-      changedProps.has("filteredItems") ||
-      (changedProps.has("items") && this.opened)
+      (changedProps.has("filteredItems") || changedProps.has("items")) &&
+      this.opened
     ) {
       this.removeInertOnOverlay();
     }
