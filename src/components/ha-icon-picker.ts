@@ -1,12 +1,11 @@
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-combo-box";
-import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon";
 
 type IconItem = {
@@ -48,7 +47,7 @@ export class HaIconPicker extends LitElement {
 
   @state() private _opened = false;
 
-  @query("ha-combo-box", true) private comboBox!: HaComboBox;
+  @state() private _filteredItems?: IconItem[];
 
   protected render(): TemplateResult {
     return html`
@@ -58,7 +57,7 @@ export class HaIconPicker extends LitElement {
         item-label-path="icon"
         .value=${this._value}
         allow-custom-value
-        .filteredItems=${iconItems}
+        .filteredItems=${this._filteredItems ?? iconItems}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
@@ -98,7 +97,7 @@ export class HaIconPicker extends LitElement {
       }));
       iconLoaded = true;
 
-      this.comboBox.filteredItems = iconItems;
+      this._filteredItems = iconItems;
 
       Object.keys(customIcons).forEach((iconSet) => {
         this._loadCustomIconItems(iconSet);
@@ -118,7 +117,7 @@ export class HaIconPicker extends LitElement {
         keywords: icon.keywords ?? [],
       }));
       iconItems.push(...customIconItems);
-      this.comboBox.filteredItems = iconItems;
+      this._filteredItems = iconItems;
     } catch (e) {
       // eslint-disable-next-line
       console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
@@ -126,7 +125,11 @@ export class HaIconPicker extends LitElement {
   }
 
   protected shouldUpdate(changedProps: PropertyValues) {
-    return !this._opened || changedProps.has("_opened");
+    return (
+      !this._opened ||
+      changedProps.has("_opened") ||
+      changedProps.has("_filteredItems")
+    );
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {
@@ -169,13 +172,13 @@ export class HaIconPicker extends LitElement {
       if (filteredItems.length > 0) {
         // Setting it sync cause browser freeze when user paste an icon text
         setTimeout(() => {
-          this.comboBox.filteredItems = filteredItems;
+          this._filteredItems = filteredItems;
         }, 1);
       } else {
-        this.comboBox.filteredItems = [{ icon: filterString, keywords: [] }];
+        this._filteredItems = [{ icon: filterString, keywords: [] }];
       }
     } else {
-      this.comboBox.filteredItems = iconItems;
+      this._filteredItems = iconItems;
     }
   }
 
