@@ -32,7 +32,7 @@ import {
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
-export type ExtendedStatisticType = StatisticType | "state";
+export type ExtendedStatisticType = StatisticType | "state" | "change";
 
 export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
   mean: "mean",
@@ -40,7 +40,9 @@ export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
   max: "max",
   sum: "sum",
   state: "sum",
+  change: "sum",
 };
+
 @customElement("statistics-chart")
 class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -361,6 +363,7 @@ class StatisticsChart extends LitElement {
 
       let prevDate: Date | null = null;
       // Process chart data.
+      let firstSum: number | null = null;
       let prevSum: number | null = null;
       stats.forEach((stat) => {
         const date = new Date(stat.start);
@@ -372,12 +375,19 @@ class StatisticsChart extends LitElement {
         statTypes.forEach((type) => {
           let val: number | null;
           if (type === "sum") {
-            if (prevSum === null) {
+            if (firstSum === null) {
               val = 0;
-              prevSum = stat.sum;
+              firstSum = stat.sum;
             } else {
-              val = (stat.sum || 0) - prevSum;
+              val = (stat.sum || 0) - firstSum;
             }
+          } else if (type === "change") {
+            if (prevSum === null) {
+              prevSum = stat.sum;
+              return;
+            }
+            val = (stat.sum || 0) - prevSum;
+            prevSum = stat.sum;
           } else {
             val = stat[type];
           }
@@ -385,9 +395,6 @@ class StatisticsChart extends LitElement {
         });
         pushData(date, dataValues);
       });
-
-      // Add an entry for final values
-      pushData(endTime, prevValues);
 
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);

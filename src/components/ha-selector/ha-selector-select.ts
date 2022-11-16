@@ -89,23 +89,25 @@ export class HaSelectSelector extends LitElement {
         !this.value || this.value === "" ? [] : (this.value as string[]);
 
       return html`
-        <ha-chip-set>
-          ${value?.map(
-            (item, idx) =>
-              html`
-                <ha-chip hasTrailingIcon>
-                  ${options.find((option) => option.value === item)?.label ||
-                  item}
-                  <ha-svg-icon
-                    slot="trailing-icon"
-                    .path=${mdiClose}
-                    .idx=${idx}
-                    @click=${this._removeItem}
-                  ></ha-svg-icon>
-                </ha-chip>
-              `
-          )}
-        </ha-chip-set>
+        ${value?.length
+          ? html`<ha-chip-set>
+              ${value.map(
+                (item, idx) =>
+                  html`
+                    <ha-chip hasTrailingIcon>
+                      ${options.find((option) => option.value === item)
+                        ?.label || item}
+                      <ha-svg-icon
+                        slot="trailing-icon"
+                        .path=${mdiClose}
+                        .idx=${idx}
+                        @click=${this._removeItem}
+                      ></ha-svg-icon>
+                    </ha-chip>
+                  `
+              )}
+            </ha-chip-set>`
+          : ""}
 
         <ha-combo-box
           item-value-path="value"
@@ -116,7 +118,7 @@ export class HaSelectSelector extends LitElement {
           .disabled=${this.disabled}
           .required=${this.required && !value.length}
           .value=${this._filter}
-          .items=${options.filter(
+          .filteredItems=${options.filter(
             (option) => !option.disabled && !value?.includes(option.value)
           )}
           @filter-changed=${this._filterChanged}
