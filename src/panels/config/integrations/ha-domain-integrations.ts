@@ -240,7 +240,8 @@ class HaDomainIntegrations extends LitElement {
           (!("integration_type" in this.integration!) &&
             (!this.integration!.integrations ||
               !(domain in this.integration!.integrations))))) ||
-      (this.integration as Brand)!.integrations?.[domain]?.config_flow === false
+      // config_flow being undefined means its false
+      !(this.integration as Brand)!.integrations?.[domain]?.config_flow
     ) {
       const manifest = await fetchIntegrationManifest(this.hass, domain);
       showYamlIntegrationDialog(this, { manifest });
