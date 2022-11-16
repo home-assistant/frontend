@@ -13,6 +13,10 @@ const TILE_CONTROLS: Record<TileControlType, SupportsTileControl> = {
     computeDomain(stateObj.entity_id) === "cover" &&
     (supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
       supportsFeature(stateObj, CoverEntityFeature.CLOSE)),
+  "cover-tilt": (stateObj) =>
+    computeDomain(stateObj.entity_id) === "cover" &&
+    (supportsFeature(stateObj, CoverEntityFeature.OPEN_TILT) ||
+      supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT)),
   "cover-position": (stateObj) =>
     computeDomain(stateObj.entity_id) === "cover" &&
     supportsFeature(stateObj, CoverEntityFeature.SET_POSITION),

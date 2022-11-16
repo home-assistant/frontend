@@ -30,6 +30,7 @@ const CONTROLS_TYPE: LovelaceTileControlConfig["type"][] = [
   "cover-open-close",
   "cover-position",
   "light-brightness",
+  "cover-tilt",
 ];
 
 declare global {
