@@ -4,19 +4,6 @@ import {
 } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 
-export interface InputDate {
-  id: string;
-  name: string;
-  icon?: string;
-  initial?: string;
-}
-
-export interface DateMutableParams {
-  name: string;
-  icon: string;
-  initial: string;
-}
-
 interface DateEntityAttributes extends HassEntityAttributeBase {
   year?: number;
   month?: number;
