@@ -1,3 +1,4 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -18,6 +19,7 @@ import {
   StatisticsMetaData,
 } from "../../../data/recorder";
 import { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
@@ -30,8 +32,25 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-statistics-graph-card-editor");
   }
 
-  public static getStubConfig(): StatisticsGraphCardConfig {
-    return { type: "statistics-graph", entities: [] };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFill: string[]
+  ): StatisticsGraphCardConfig {
+    const includeDomains = ["sensor"];
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains,
+      (stateObj: HassEntity) => "state_class" in stateObj.attributes
+    );
+    return {
+      type: "statistics-graph",
+      entities: foundEntities.length ? [foundEntities[0]] : [],
+    };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;

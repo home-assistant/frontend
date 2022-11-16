@@ -525,7 +525,8 @@
           "max": "max",
           "mean": "mean",
           "state": "state",
-          "sum": "sum"
+          "sum": "sum",
+          "change": "change"
         }
       },
       "service-picker": {
@@ -4063,7 +4064,8 @@
                 "min": "Min",
                 "max": "Max",
                 "state": "State",
-                "sum": "Sum (change during period)"
+                "sum": "Sum",
+                "change": "Change"
               },
               "chart_type": "Chart type",
               "periods": {

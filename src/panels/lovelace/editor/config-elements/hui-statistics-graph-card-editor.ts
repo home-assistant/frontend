@@ -23,7 +23,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { ensureArray } from "../../../../common/ensure-array";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { deepEqual } from "../../../../common/util/deep-equal";
-import { statTypeMap } from "../../../../components/chart/statistics-chart";
+import {
+  ExtendedStatisticType,
+  statTypeMap,
+} from "../../../../components/chart/statistics-chart";
 import "../../../../components/entity/ha-statistics-picker";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
@@ -44,6 +47,7 @@ import { entitiesConfigStruct } from "../structs/entities-struct";
 const statTypeStruct = union([
   literal("state"),
   literal("sum"),
+  literal("change"),
   literal("min"),
   literal("max"),
   literal("mean"),
@@ -71,7 +75,14 @@ const cardConfigStruct = assign(
 );
 
 const periods = ["5minute", "hour", "day", "week", "month"] as const;
-const stat_types = ["mean", "min", "max", "sum", "state"] as const;
+const stat_types = [
+  "mean",
+  "min",
+  "max",
+  "sum",
+  "state",
+  "change",
+] as ExtendedStatisticType[];
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor
@@ -165,6 +176,7 @@ export class HuiStatisticsGraphCardEditor
               selector: {
                 select: {
                   multiple: true,
+                  mode: "list",
                   options: stat_types.map((stat_type) => ({
                     value: stat_type,
                     label: localize(
@@ -222,13 +234,13 @@ export class HuiStatisticsGraphCardEditor
       this._metaDatas
     );
     const configured_stat_types = this._config!.stat_types
-      ? Array.isArray(this._config!.stat_types)
-        ? this._config!.stat_types
-        : [this._config!.stat_types]
-      : stat_types.filter((stat_type) =>
-          this._metaDatas?.every((metaData) =>
-            statisticsMetaHasType(metaData, statTypeMap[stat_type])
-          )
+      ? ensureArray(this._config.stat_types)
+      : stat_types.filter(
+          (stat_type) =>
+            stat_type !== "change" &&
+            this._metaDatas?.every((metaData) =>
+              statisticsMetaHasType(metaData, statTypeMap[stat_type])
+            )
         );
     const data = {
       chart_type: "line",
