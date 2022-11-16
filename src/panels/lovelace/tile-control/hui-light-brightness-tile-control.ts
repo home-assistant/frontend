@@ -49,6 +49,8 @@ class HuiLightBrightnessTileControl
       <div class="container">
         <ha-tile-slider
           .value=${position}
+          min="1"
+          max="100"
           .disabled=${this.stateObj!.state === UNAVAILABLE}
           @value-changed=${this._valueChanged}
           .label=${this.hass.localize("ui.card.cover.position")}
