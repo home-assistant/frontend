@@ -339,19 +339,20 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                             </ha-clickable-list-item>
                           `
                         : ""}
-                      ${boardConfigEntries.map(
-                        (configEntry) =>
-                          html`<ha-list-item
-                            .entry=${configEntry}
-                            @click=${this._openOptionsFlow}
-                          >
-                            ${this.hass.localize(
-                              "ui.panel.config.hardware.configure"
-                            )}
-                          </ha-list-item>`
-                      )}
                     </mwc-list>
                   </div>
+                  ${boardConfigEntries.length
+                    ? html`<div class="card-actions">
+                        <mwc-button
+                          .entry=${boardConfigEntries[0]}
+                          @click=${this._openOptionsFlow}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.hardware.configure"
+                          )}
+                        </mwc-button>
+                      </div>`
+                    : ""}
                 </ha-card>
               `
             : ""}
