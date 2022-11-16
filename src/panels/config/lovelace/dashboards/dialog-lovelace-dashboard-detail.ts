@@ -248,7 +248,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       ...this._data,
       url_path: slugifyTitle.includes("-")
         ? slugifyTitle
-        : `lovelace-${slugifyTitle}`,
+        : `dashboard-${slugifyTitle}`,
     };
   }
 
