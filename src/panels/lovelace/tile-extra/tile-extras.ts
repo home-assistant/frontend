@@ -32,5 +32,3 @@ export const supportsTileExtra = (
 
 export const isTileExtraEditable = (extra: TileExtraType): boolean =>
   TILE_EXTRAS_EDITABLE.has(extra);
-
-export const MAX_DISPLAYED_EXTRAS = 1;

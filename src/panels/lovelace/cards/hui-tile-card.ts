@@ -27,10 +27,7 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import "../components/hui-timestamp-display";
 import { createTileExtraElement } from "../create-element/create-tile-extra-element";
-import {
-  MAX_DISPLAYED_EXTRAS,
-  supportsTileExtra,
-} from "../tile-extra/tile-extras";
+import { supportsTileExtra } from "../tile-extra/tile-extras";
 import { LovelaceTileExtraConfig } from "../tile-extra/types";
 import { LovelaceCard, LovelaceCardEditor, LovelaceTileExtra } from "../types";
 import { HuiErrorCard } from "./hui-error-card";
@@ -206,9 +203,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : undefined;
     const badge = computeTileBadge(stateObj, this.hass);
 
-    const supportedExtras = this._config.extras
-      ?.filter((extra) => supportsTileExtra(stateObj, extra.type))
-      .slice(0, MAX_DISPLAYED_EXTRAS);
+    const supportedExtras = this._config.extras?.filter((extra) =>
+      supportsTileExtra(stateObj, extra.type)
+    );
 
     return html`
       <ha-card style=${styleMap(style)}>

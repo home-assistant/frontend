@@ -4215,7 +4215,6 @@
                 "name": "Extras",
                 "not_compatible": "Not compatible",
                 "no_compatible_available": "No compatible extras available for this entity",
-                "max_displayed_extra_reached": "Only {count} {count, plural,\n  one {extra}\n  other {extras}\n} max {count, plural,\n  one {is}\n  other {are}\n} allowed. The others will be hidden.",
                 "add": "Add extra",
                 "edit": "Edit extra",
                 "remove": "Remove extra",
