@@ -31,8 +31,6 @@ import { LovelaceTileControlConfig } from "../../tile-control/types";
 
 const CONTROLS_TYPE: LovelaceTileControlConfig["type"][] = [
   "cover-open-close",
-  "cover-position",
-  "light-brightness",
   "cover-tilt",
 ];
 
