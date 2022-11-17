@@ -58,7 +58,7 @@ export class HaIconPicker extends LitElement {
         item-label-path="icon"
         .value=${this._value}
         allow-custom-value
-        .filteredItems=${this._filterIcons(this._filterString)}
+        .filteredItems=${this._filterIcons(this._filterString, ICONS)}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
