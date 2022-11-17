@@ -17,14 +17,14 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
   // Custom cases
   switch (domain) {
     case "cover":
-      return compareState === "open" || compareState === "opening";
+      return !["close", "closing"].includes(compareState);
     case "device_tracker":
     case "person":
       return compareState !== "not_home";
     case "media_player":
       return compareState !== "standby";
     case "vacuum":
-      return compareState === "on" || compareState === "cleaning";
+      return !["idle", "docked", "paused"].includes(compareState);
     case "plant":
       return compareState === "problem";
     default:
