@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import { mdiRefresh } from "@mdi/js";
+import { mdiRefresh, mdiDownload } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -16,11 +16,17 @@ import "../../../components/ha-ansi-to-html";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
-import { fetchErrorLog } from "../../../data/error_log";
+import { getSignedPath } from "../../../data/auth";
+
+import { fetchErrorLog, getErrorLogDownloadUrl } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import { fetchHassioLogs } from "../../../data/hassio/supervisor";
+import {
+  fetchHassioLogs,
+  getHassioLogDownloadUrl,
+} from "../../../data/hassio/supervisor";
 import { HomeAssistant } from "../../../types";
 import { debounce } from "../../../common/util/debounce";
+import { fileDownload } from "../../../util/file_download";
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
@@ -51,11 +57,20 @@ class ErrorLogCard extends LitElement {
                   <h2>
                     ${this.hass.localize("ui.panel.config.logs.full_logs")}
                   </h2>
-                  <ha-icon-button
-                    .path=${mdiRefresh}
-                    @click=${this._refresh}
-                    .label=${this.hass.localize("ui.common.refresh")}
-                  ></ha-icon-button>
+                  <div>
+                    <ha-icon-button
+                      .path=${mdiRefresh}
+                      @click=${this._refresh}
+                      .label=${this.hass.localize("ui.common.refresh")}
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      .path=${mdiDownload}
+                      @click=${this._downloadFullLog}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.logs.download_full_log"
+                      )}
+                    ></ha-icon-button>
+                  </div>
                 </div>
                 <div class="card-content error-log">${this._logHTML}</div>
               </ha-card>
@@ -65,6 +80,9 @@ class ErrorLogCard extends LitElement {
           ? html`
               <mwc-button raised @click=${this._refreshLogs}>
                 ${this.hass.localize("ui.panel.config.logs.load_logs")}
+              </mwc-button>
+              <mwc-button raised @click=${this._downloadFullLog}>
+                ${this.hass.localize("ui.panel.config.logs.download_full_log")}
               </mwc-button>
             `
           : ""}
@@ -113,6 +131,20 @@ class ErrorLogCard extends LitElement {
 
     await this._refreshLogs();
     button.progress = false;
+  }
+
+  private async _downloadFullLog(): Promise<void> {
+    const timeString = new Date().toISOString().replace(/:/g, "-");
+    const downloadUrl =
+      this.provider !== "core"
+        ? getHassioLogDownloadUrl(this.provider)
+        : getErrorLogDownloadUrl();
+    const logFileName =
+      this.provider !== "core"
+        ? `${this.provider}_${timeString}.log`
+        : `home-assistant_${timeString}.log`;
+    const signedUrl = await getSignedPath(this.hass, downloadUrl);
+    fileDownload(signedUrl.path, logFileName);
   }
 
   private async _refreshLogs(): Promise<void> {
