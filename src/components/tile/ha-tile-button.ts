@@ -99,7 +99,6 @@ export class HaTileButton extends LitElement {
         border: none;
         background-color: var(--bg-color);
         transition: background-color 280ms ease-in-out, transform 180ms ease-out;
-        font-size: var(--control-height);
         margin: 0;
         padding: 0;
         box-sizing: border-box;
