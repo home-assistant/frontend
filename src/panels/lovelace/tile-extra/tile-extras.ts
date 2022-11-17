@@ -2,12 +2,12 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntityFeature } from "../../../data/cover";
-import { LovelaceTileControlConfig } from "./types";
+import { LovelaceTileExtraConfig } from "./types";
 
-type TileControlType = LovelaceTileControlConfig["type"];
-export type SupportsTileControl = (stateObj: HassEntity) => boolean;
+type TileExtraType = LovelaceTileExtraConfig["type"];
+export type SupportsTileExtra = (stateObj: HassEntity) => boolean;
 
-const TILE_CONTROLS_SUPPORT: Record<TileControlType, SupportsTileControl> = {
+const TILE_EXTRAS_SUPPORT: Record<TileExtraType, SupportsTileExtra> = {
   "cover-open-close": (stateObj) =>
     computeDomain(stateObj.entity_id) === "cover" &&
     (supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
@@ -18,17 +18,17 @@ const TILE_CONTROLS_SUPPORT: Record<TileControlType, SupportsTileControl> = {
       supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT)),
 };
 
-const TILE_CONTROLS_EDITABLE: Set<TileControlType> = new Set([]);
+const TILE_EXTRAS_EDITABLE: Set<TileExtraType> = new Set([]);
 
-export const supportsTileControl = (
+export const supportsTileExtra = (
   stateObj: HassEntity,
-  control: TileControlType
+  extra: TileExtraType
 ): boolean => {
-  const supportFunction = TILE_CONTROLS_SUPPORT[control] as
-    | SupportsTileControl
+  const supportFunction = TILE_EXTRAS_SUPPORT[extra] as
+    | SupportsTileExtra
     | undefined;
   return !supportFunction || supportFunction(stateObj);
 };
 
-export const isTileControlEditable = (control: TileControlType): boolean =>
-  TILE_CONTROLS_EDITABLE.has(control);
+export const isTileExtraEditable = (extra: TileExtraType): boolean =>
+  TILE_EXTRAS_EDITABLE.has(extra);

@@ -4211,25 +4211,19 @@
               "appearance": "Appearance",
               "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
-              "controls": {
-                "name": "Controls",
+              "extras": {
+                "name": "Extras",
                 "not_compatible": "Not compatible",
-                "no_compatible_available": "No compatible controls available for this entity",
-                "add": "Add control",
-                "edit": "Edit control",
-                "remove": "Remove control",
+                "no_compatible_available": "No compatible extras available for this entity",
+                "add": "Add extra",
+                "edit": "Edit extra",
+                "remove": "Remove extra",
                 "types": {
                   "cover-open-close": {
                     "label": "Cover open/close"
                   },
                   "cover-tilt": {
                     "label": "Cover tilt"
-                  },
-                  "cover-position": {
-                    "label": "Cover position"
-                  },
-                  "light-brightness": {
-                    "label": "Light brightness"
                   }
                 }
               }

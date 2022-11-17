@@ -11,27 +11,24 @@ import {
 } from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileControl } from "../types";
-import { CoverTiltTileControlConfig } from "./types";
+import { LovelaceTileExtra } from "../types";
+import { CoverTiltTileExtraConfig } from "./types";
 
-@customElement("hui-cover-tilt-tile-control")
-class HuiCoverTiltTileControl
-  extends LitElement
-  implements LovelaceTileControl
-{
+@customElement("hui-cover-tilt-tile-extra")
+class HuiCoverTiltTileExtra extends LitElement implements LovelaceTileExtra {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: CoverTiltTileControlConfig;
+  @state() private _config?: CoverTiltTileExtraConfig;
 
-  static getStubConfig(): CoverTiltTileControlConfig {
+  static getStubConfig(): CoverTiltTileExtraConfig {
     return {
       type: "cover-tilt",
     };
   }
 
-  public setConfig(config: CoverTiltTileControlConfig): void {
+  public setConfig(config: CoverTiltTileExtraConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -150,6 +147,6 @@ class HuiCoverTiltTileControl
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-cover-tilt-tile-control": HuiCoverTiltTileControl;
+    "hui-cover-tilt-tile-extra": HuiCoverTiltTileExtra;
   }
 }

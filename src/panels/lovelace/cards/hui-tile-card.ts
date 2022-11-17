@@ -26,14 +26,10 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import "../components/hui-timestamp-display";
-import { createTileControlElement } from "../create-element/create-tile-control-element";
-import { supportsTileControl } from "../tile-control/tile-controls";
-import { LovelaceTileControlConfig } from "../tile-control/types";
-import {
-  LovelaceCard,
-  LovelaceCardEditor,
-  LovelaceTileControl,
-} from "../types";
+import { createTileExtraElement } from "../create-element/create-tile-extra-element";
+import { supportsTileExtra } from "../tile-extra/tile-extras";
+import { LovelaceTileExtraConfig } from "../tile-extra/types";
+import { LovelaceCard, LovelaceCardEditor, LovelaceTileExtra } from "../types";
 import { HuiErrorCard } from "./hui-error-card";
 import { computeTileBadge } from "./tile/badges/tile-badge";
 import { ThermostatCardConfig, TileCardConfig } from "./types";
@@ -207,8 +203,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : undefined;
     const badge = computeTileBadge(stateObj, this.hass);
 
-    const supportedControls = this._config.controls?.filter((control) =>
-      supportsTileControl(stateObj, control.type)
+    const supportedExtras = this._config.extras?.filter((extra) =>
+      supportsTileExtra(stateObj, extra.type)
     );
 
     return html`
@@ -257,11 +253,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .actionHandler=${actionHandler()}
           ></ha-tile-info>
         </div>
-        ${supportedControls?.length
+        ${supportedExtras?.length
           ? html`
-              <div class="controls">
-                ${supportedControls.map((controlConf) =>
-                  this.renderControl(controlConf, stateObj)
+              <div class="extras">
+                ${supportedExtras.map((extraConf) =>
+                  this.renderExtra(extraConf, stateObj)
                 )}
               </div>
             `
@@ -270,33 +266,33 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _controlsElements = new WeakMap<
-    LovelaceTileControlConfig,
-    LovelaceTileControl | HuiErrorCard
+  private _extrasElements = new WeakMap<
+    LovelaceTileExtraConfig,
+    LovelaceTileExtra | HuiErrorCard
   >();
 
-  private _getControlElement(control: LovelaceTileControlConfig) {
-    if (!this._controlsElements.has(control)) {
-      const element = createTileControlElement(control);
-      this._controlsElements.set(control, element);
+  private _getExtraElement(extra: LovelaceTileExtraConfig) {
+    if (!this._extrasElements.has(extra)) {
+      const element = createTileExtraElement(extra);
+      this._extrasElements.set(extra, element);
       return element;
     }
 
-    return this._controlsElements.get(control)!;
+    return this._extrasElements.get(extra)!;
   }
 
-  private renderControl(
-    controlConf: LovelaceTileControlConfig,
+  private renderExtra(
+    extraConf: LovelaceTileExtraConfig,
     stateObj: HassEntity
   ): TemplateResult {
-    const element = this._getControlElement(controlConf);
+    const element = this._getExtraElement(extraConf);
 
     if (this.hass) {
       element.hass = this.hass;
-      (element as LovelaceTileControl).stateObj = stateObj;
+      (element as LovelaceTileExtra).stateObj = stateObj;
     }
 
-    return html`<div class="control">${element}</div>`;
+    return html`<div class="extra">${element}</div>`;
   }
 
   static get styles(): CSSResultGroup {

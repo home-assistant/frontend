@@ -22,14 +22,14 @@ import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { TileCardConfig } from "../../cards/types";
-import { LovelaceTileControlConfig } from "../../tile-control/types";
+import { LovelaceTileExtraConfig } from "../../tile-extra/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-tile-card-controls-editor";
+import "./hui-tile-card-extras-editor";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -41,7 +41,7 @@ const cardConfigStruct = assign(
     show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     icon_tap_action: optional(actionConfigStruct),
-    controls: optional(array(any())),
+    extras: optional(array(any())),
   })
 );
 
@@ -184,13 +184,13 @@ export class HuiTileCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <hui-tile-card-controls-editor
+      <hui-tile-card-extras-editor
         .hass=${this.hass}
         .stateObj=${stateObj}
-        .controls=${this._config!.controls ?? []}
-        @controls-changed=${this._controlsChanged}
+        .extras=${this._config!.extras ?? []}
+        @extras-changed=${this._extrasChanged}
         @edit-detail-element=${this._editDetailElement}
-      ></hui-tile-card-controls-editor>
+      ></hui-tile-card-extras-editor>
     `;
   }
 
@@ -201,7 +201,7 @@ export class HuiTileCardEditor
     }
 
     const config: TileCardConfig = {
-      controls: this._config.controls,
+      extras: this._config.extras,
       ...ev.detail.value,
     };
     if (ev.detail.value.color === "default") {
@@ -210,20 +210,20 @@ export class HuiTileCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _controlsChanged(ev: CustomEvent) {
+  private _extrasChanged(ev: CustomEvent) {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
     }
 
-    const controls = ev.detail.controls as LovelaceTileControlConfig[];
+    const extras = ev.detail.extras as LovelaceTileExtraConfig[];
     const config: TileCardConfig = {
       ...this._config,
-      controls,
+      extras,
     };
 
-    if (controls.length === 0) {
-      delete config.controls;
+    if (extras.length === 0) {
+      delete config.extras;
     }
 
     fireEvent(this, "config-changed", { config });
@@ -237,15 +237,15 @@ export class HuiTileCardEditor
 
     const value = ev.detail.config;
 
-    const newConfigControls = this._config.controls!.concat();
+    const newConfigExtras = this._config.extras!.concat();
     if (!value) {
-      newConfigControls.splice(this._subElementEditorConfig!.index!, 1);
+      newConfigExtras.splice(this._subElementEditorConfig!.index!, 1);
       this._goBack();
     } else {
-      newConfigControls[this._subElementEditorConfig!.index!] = value;
+      newConfigExtras[this._subElementEditorConfig!.index!] = value;
     }
 
-    this._config = { ...this._config!, controls: newConfigControls };
+    this._config = { ...this._config!, extras: newConfigExtras };
 
     this._subElementEditorConfig = {
       ...this._subElementEditorConfig!,

@@ -1,15 +1,15 @@
 import { customElement } from "lit/decorators";
-import { getTileControlElementClass } from "../../create-element/create-tile-control-element";
-import { LovelaceTileControlConfig } from "../../tile-control/types";
-import type { LovelaceTileControlEditor } from "../../types";
+import { getTileExtraElementClass } from "../../create-element/create-tile-extra-element";
+import { LovelaceTileExtraConfig } from "../../tile-extra/types";
+import type { LovelaceTileExtraEditor } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
 @customElement("hui-tile-control-element-editor")
-export class HuiTileControlElementEditor extends HuiElementEditor<LovelaceTileControlConfig> {
+export class HuiTileControlElementEditor extends HuiElementEditor<LovelaceTileExtraConfig> {
   protected async getConfigElement(): Promise<
-    LovelaceTileControlEditor | undefined
+    LovelaceTileExtraEditor | undefined
   > {
-    const elClass = await getTileControlElementClass(this.configElementType!);
+    const elClass = await getTileExtraElementClass(this.configElementType!);
 
     // Check if a GUI editor exists
     if (elClass && elClass.getConfigElement) {

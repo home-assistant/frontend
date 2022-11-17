@@ -6,7 +6,7 @@ import {
 } from "../../../data/lovelace";
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { LovelaceTileControlConfig } from "../tile-control/types";
+import { LovelaceTileExtraConfig } from "../tile-extra/types";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -78,8 +78,8 @@ export interface SubElementEditorConfig {
   elementConfig?:
     | LovelaceRowConfig
     | LovelaceHeaderFooterConfig
-    | LovelaceTileControlConfig;
-  type: "header" | "footer" | "row" | "tile-control";
+    | LovelaceTileExtraConfig;
+  type: "header" | "footer" | "row" | "tile-extra";
 }
 
 export interface EditSubElementEvent {

@@ -22,38 +22,38 @@ import {
   SortableInstance,
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
-import { getTileControlElementClass } from "../../create-element/create-tile-control-element";
+import { getTileExtraElementClass } from "../../create-element/create-tile-extra-element";
 import {
-  isTileControlEditable,
-  supportsTileControl,
-} from "../../tile-control/tile-controls";
-import { LovelaceTileControlConfig } from "../../tile-control/types";
+  isTileExtraEditable,
+  supportsTileExtra,
+} from "../../tile-extra/tile-extras";
+import { LovelaceTileExtraConfig } from "../../tile-extra/types";
 
-const CONTROLS_TYPE: LovelaceTileControlConfig["type"][] = [
+const EXTRAS_TYPE: LovelaceTileExtraConfig["type"][] = [
   "cover-open-close",
   "cover-tilt",
 ];
 
 declare global {
   interface HASSDomEvents {
-    "controls-changed": {
-      controls: LovelaceTileControlConfig[];
+    "extras-changed": {
+      extras: LovelaceTileExtraConfig[];
     };
   }
 }
 
-@customElement("hui-tile-card-controls-editor")
-export class HuiTileCardControlsEditor extends LitElement {
+@customElement("hui-tile-card-extras-editor")
+export class HuiTileCardExtrasEditor extends LitElement {
   @property({ attribute: false }) protected hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ attribute: false })
-  protected controls?: LovelaceTileControlConfig[];
+  protected extras?: LovelaceTileExtraConfig[];
 
   @property() protected label?: string;
 
-  private _controlKeys = new WeakMap<LovelaceTileControlConfig, string>();
+  private _extraKeys = new WeakMap<LovelaceTileExtraConfig, string>();
 
   private _sortable?: SortableInstance;
 
@@ -61,24 +61,24 @@ export class HuiTileCardControlsEditor extends LitElement {
     this._destroySortable();
   }
 
-  private _getKey(control: LovelaceTileControlConfig) {
-    if (!this._controlKeys.has(control)) {
-      this._controlKeys.set(control, Math.random().toString());
+  private _getKey(extra: LovelaceTileExtraConfig) {
+    if (!this._extraKeys.has(extra)) {
+      this._extraKeys.set(extra, Math.random().toString());
     }
 
-    return this._controlKeys.get(control)!;
+    return this._extraKeys.get(extra)!;
   }
 
-  private get _supportedControlTypes() {
+  private get _supportedExtraTypes() {
     if (!this.stateObj) return [];
 
-    return CONTROLS_TYPE.filter((type) =>
-      supportsTileControl(this.stateObj!, type)
+    return EXTRAS_TYPE.filter((type) =>
+      supportsTileExtra(this.stateObj!, type)
     );
   }
 
   protected render(): TemplateResult {
-    if (!this.controls || !this.hass) {
+    if (!this.extras || !this.hass) {
       return html``;
     }
 
@@ -87,94 +87,93 @@ export class HuiTileCardControlsEditor extends LitElement {
         <h3 slot="header">
           <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
           ${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.tile.controls.name"
+            "ui.panel.lovelace.editor.card.tile.extras.name"
           )}
         </h3>
         <div class="content">
-          ${this._supportedControlTypes.length === 0 &&
-          this.controls.length === 0
+          ${this._supportedExtraTypes.length === 0 && this.extras.length === 0
             ? html`
                 <ha-alert type="info">
                   ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.card.tile.controls.no_compatible_available"
+                    "ui.panel.lovelace.editor.card.tile.extras.no_compatible_available"
                   )}
                 </ha-alert>
               `
             : null}
-          <div class="controls">
+          <div class="extras">
             ${repeat(
-              this.controls,
-              (controlConf) => this._getKey(controlConf),
-              (controlConf, index) => html`
-                <div class="control">
+              this.extras,
+              (extraConf) => this._getKey(extraConf),
+              (extraConf, index) => html`
+                <div class="extra">
                   <div class="handle">
                     <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                   </div>
-                  <div class="control-content">
+                  <div class="extra-content">
                     <div>
                       <span>
                         ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.tile.controls.types.${controlConf.type}.label`
+                          `ui.panel.lovelace.editor.card.tile.extras.types.${extraConf.type}.label`
                         )}
                       </span>
                       ${this.stateObj &&
-                      !supportsTileControl(this.stateObj, controlConf.type)
+                      !supportsTileExtra(this.stateObj, extraConf.type)
                         ? html`<span class="secondary">
                             ${this.hass!.localize(
-                              "ui.panel.lovelace.editor.card.tile.controls.not_compatible"
+                              "ui.panel.lovelace.editor.card.tile.extras.not_compatible"
                             )}
                           </span>`
                         : null}
                     </div>
                   </div>
-                  ${isTileControlEditable(controlConf.type)
+                  ${isTileExtraEditable(extraConf.type)
                     ? html`<ha-icon-button
                         .label=${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.tile.controls.edit`
+                          `ui.panel.lovelace.editor.card.tile.extras.edit`
                         )}
                         .path=${mdiPencil}
                         class="edit-icon"
                         .index=${index}
-                        @click=${this._editControl}
+                        @click=${this._editExtra}
                       ></ha-icon-button>`
                     : null}
                   <ha-icon-button
                     .label=${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.tile.controls.remove`
+                      `ui.panel.lovelace.editor.card.tile.extras.remove`
                     )}
                     .path=${mdiDelete}
                     class="remove-icon"
                     .index=${index}
-                    @click=${this._removeControl}
+                    @click=${this._removeExtra}
                   ></ha-icon-button>
                 </div>
               `
             )}
           </div>
-          ${this._supportedControlTypes.length > 0
+          ${this._supportedExtraTypes.length > 0
             ? html`
                 <ha-button-menu
                   fixed
-                  @action=${this._addControl}
+                  @action=${this._addExtra}
                   @closed=${stopPropagation}
                 >
                   <mwc-button
                     slot="trigger"
                     outlined
                     .label=${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.tile.controls.add`
+                      `ui.panel.lovelace.editor.card.tile.extras.add`
                     )}
                   >
                     <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
                   </mwc-button>
-                  ${this._supportedControlTypes.map(
-                    (controlType) => html` <mwc-list-item .value=${controlType}>
+                  ${this._supportedExtraTypes.map(
+                    (extraType) => html` <mwc-list-item .value=${extraType}>
                       <ha-svg-icon
                         slot="graphic"
                         .path=${mdiWindowShutter}
                       ></ha-svg-icon>
                       ${this.hass!.localize(
-                        `ui.panel.lovelace.editor.card.tile.controls.types.${controlType}.label`
+                        `ui.panel.lovelace.editor.card.tile.extras.types.${extraType}.label`
                       )}
                     </mwc-list-item>`
                   )}
@@ -192,27 +191,24 @@ export class HuiTileCardControlsEditor extends LitElement {
 
   private async _createSortable() {
     const Sortable = await loadSortable();
-    this._sortable = new Sortable(
-      this.shadowRoot!.querySelector(".controls")!,
-      {
-        animation: 150,
-        fallbackClass: "sortable-fallback",
-        handle: ".handle",
-        onChoose: (evt: SortableEvent) => {
-          (evt.item as any).placeholder =
-            document.createComment("sort-placeholder");
-          evt.item.after((evt.item as any).placeholder);
-        },
-        onEnd: (evt: SortableEvent) => {
-          // put back in original location
-          if ((evt.item as any).placeholder) {
-            (evt.item as any).placeholder.replaceWith(evt.item);
-            delete (evt.item as any).placeholder;
-          }
-          this._rowMoved(evt);
-        },
-      }
-    );
+    this._sortable = new Sortable(this.shadowRoot!.querySelector(".extras")!, {
+      animation: 150,
+      fallbackClass: "sortable-fallback",
+      handle: ".handle",
+      onChoose: (evt: SortableEvent) => {
+        (evt.item as any).placeholder =
+          document.createComment("sort-placeholder");
+        evt.item.after((evt.item as any).placeholder);
+      },
+      onEnd: (evt: SortableEvent) => {
+        // put back in original location
+        if ((evt.item as any).placeholder) {
+          (evt.item as any).placeholder.replaceWith(evt.item);
+          delete (evt.item as any).placeholder;
+        }
+        this._rowMoved(evt);
+      },
+    });
   }
 
   private _destroySortable() {
@@ -220,22 +216,22 @@ export class HuiTileCardControlsEditor extends LitElement {
     this._sortable = undefined;
   }
 
-  private async _addControl(ev: CustomEvent): Promise<void> {
+  private async _addExtra(ev: CustomEvent): Promise<void> {
     const index = ev.detail.index as number;
 
     if (index == null) return;
 
-    const value = this._supportedControlTypes[index];
-    const elClass = await getTileControlElementClass(value);
+    const value = this._supportedExtraTypes[index];
+    const elClass = await getTileExtraElementClass(value);
 
-    let newControl: LovelaceTileControlConfig;
+    let newExtra: LovelaceTileExtraConfig;
     if (elClass && elClass.getStubConfig) {
-      newControl = await elClass.getStubConfig(this.hass!);
+      newExtra = await elClass.getStubConfig(this.hass!);
     } else {
-      newControl = { type: value } as LovelaceTileControlConfig;
+      newExtra = { type: value } as LovelaceTileExtraConfig;
     }
-    const newConfigControls = this.controls!.concat(newControl);
-    fireEvent(this, "controls-changed", { controls: newConfigControls });
+    const newConfigExtra = this.extras!.concat(newExtra);
+    fireEvent(this, "extras-changed", { extras: newConfigExtra });
   }
 
   private _rowMoved(ev: SortableEvent): void {
@@ -243,29 +239,29 @@ export class HuiTileCardControlsEditor extends LitElement {
       return;
     }
 
-    const newControls = this.controls!.concat();
+    const newExtras = this.extras!.concat();
 
-    newControls.splice(ev.newIndex!, 0, newControls.splice(ev.oldIndex!, 1)[0]);
+    newExtras.splice(ev.newIndex!, 0, newExtras.splice(ev.oldIndex!, 1)[0]);
 
-    fireEvent(this, "controls-changed", { controls: newControls });
+    fireEvent(this, "extras-changed", { extras: newExtras });
   }
 
-  private _removeControl(ev: CustomEvent): void {
+  private _removeExtra(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
-    const newControls = this.controls!.concat();
+    const newExtras = this.extras!.concat();
 
-    newControls.splice(index, 1);
+    newExtras.splice(index, 1);
 
-    fireEvent(this, "controls-changed", { controls: newControls });
+    fireEvent(this, "extras-changed", { extras: newExtras });
   }
 
-  private _editControl(ev: CustomEvent): void {
+  private _editExtra(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
     fireEvent(this, "edit-detail-element", {
       subElementConfig: {
         index,
-        type: "tile-control",
-        elementConfig: this.controls![index],
+        type: "tile-extra",
+        elementConfig: this.extras![index],
       },
     });
   }
@@ -298,22 +294,22 @@ export class HuiTileCardControlsEditor extends LitElement {
         ha-button-menu {
           margin-top: 8px;
         }
-        .control {
+        .extra {
           display: flex;
           align-items: center;
         }
-        .control .handle {
+        .extra .handle {
           padding-right: 8px;
           cursor: move;
           padding-inline-end: 8px;
           padding-inline-start: initial;
           direction: var(--direction);
         }
-        .control .handle > * {
+        .extra .handle > * {
           pointer-events: none;
         }
 
-        .control-content {
+        .extra-content {
           height: 60px;
           font-size: 16px;
           display: flex;
@@ -322,7 +318,7 @@ export class HuiTileCardControlsEditor extends LitElement {
           flex-grow: 1;
         }
 
-        .control-content div {
+        .extra-content div {
           display: flex;
           flex-direction: column;
         }
@@ -344,6 +340,6 @@ export class HuiTileCardControlsEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-tile-card-controls-editor": HuiTileCardControlsEditor;
+    "hui-tile-card-extras-editor": HuiTileCardExtrasEditor;
   }
 }
