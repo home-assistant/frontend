@@ -5,11 +5,11 @@ import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/tile/ha-tile-button";
 import {
+  canCloseTilt,
+  canOpenTilt,
+  canStopTilt,
   CoverEntityFeature,
-  isFullyClosedTilt,
-  isFullyOpenTilt,
 } from "../../../data/cover";
-import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileExtra } from "../types";
 import { CoverTiltTileExtraConfig } from "./types";
@@ -56,26 +56,6 @@ class HuiCoverTiltTileExtra extends LitElement implements LovelaceTileExtra {
     });
   }
 
-  private _computeOpenDisabled(): boolean {
-    if (this.stateObj!.state === UNAVAILABLE) {
-      return true;
-    }
-    const assumedState = this.stateObj!.attributes.assumed_state === true;
-    return isFullyOpenTilt(this.stateObj!) && !assumedState;
-  }
-
-  private _computeClosedDisabled(): boolean {
-    if (this.stateObj!.state === UNAVAILABLE) {
-      return true;
-    }
-    const assumedState = this.stateObj!.attributes.assumed_state === true;
-    return isFullyClosedTilt(this.stateObj!) && !assumedState;
-  }
-
-  private _computeStopDisabled(): boolean {
-    return this.stateObj!.state === UNAVAILABLE;
-  }
-
   protected render(): TemplateResult {
     if (!this._config || !this.hass || !this.stateObj) {
       return html``;
@@ -90,7 +70,7 @@ class HuiCoverTiltTileExtra extends LitElement implements LovelaceTileExtra {
                   "ui.dialogs.more_info_control.cover.open_tilt_cover"
                 )}
                 @click=${this._onOpenTap}
-                .disabled=${this._computeOpenDisabled()}
+                .disabled=${!canOpenTilt(this.stateObj)}
               >
                 <ha-svg-icon .path=${mdiArrowTopRight}></ha-svg-icon>
               </ha-tile-button>
@@ -102,7 +82,7 @@ class HuiCoverTiltTileExtra extends LitElement implements LovelaceTileExtra {
                 "ui.dialogs.more_info_control.cover.stop_cover"
               )}
               @click=${this._onStopTap}
-              .disabled=${this._computeStopDisabled()}
+              .disabled=${!canStopTilt(this.stateObj)}
             >
               <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
             </ha-tile-button> `
@@ -114,7 +94,7 @@ class HuiCoverTiltTileExtra extends LitElement implements LovelaceTileExtra {
                   "ui.dialogs.more_info_control.cover.close_tilt_cover"
                 )}
                 @click=${this._onCloseTap}
-                .disabled=${this._computeClosedDisabled()}
+                .disabled=${!canCloseTilt(this.stateObj)}
               >
                 <ha-svg-icon .path=${mdiArrowBottomLeft}></ha-svg-icon>
               </ha-tile-button>

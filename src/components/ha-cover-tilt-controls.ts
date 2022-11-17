@@ -4,12 +4,12 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
+  canCloseTilt,
+  canOpenTilt,
+  canStopTilt,
   CoverEntity,
   CoverEntityFeature,
-  isFullyClosedTilt,
-  isFullyOpenTilt,
 } from "../data/cover";
-import { UNAVAILABLE } from "../data/entity";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
@@ -36,7 +36,7 @@ class HaCoverTiltControls extends LitElement {
         )}
         .path=${mdiArrowTopRight}
         @click=${this._onOpenTiltTap}
-        .disabled=${this._computeOpenDisabled()}
+        .disabled=${!canOpenTilt(this.stateObj)}
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
@@ -50,7 +50,7 @@ class HaCoverTiltControls extends LitElement {
         )}
         .path=${mdiStop}
         @click=${this._onStopTiltTap}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
+        .disabled=${!canStopTilt(this.stateObj)}
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
@@ -64,24 +64,8 @@ class HaCoverTiltControls extends LitElement {
         )}
         .path=${mdiArrowBottomLeft}
         @click=${this._onCloseTiltTap}
-        .disabled=${this._computeClosedDisabled()}
+        .disabled=${!canCloseTilt(this.stateObj)}
       ></ha-icon-button>`;
-  }
-
-  private _computeOpenDisabled(): boolean {
-    if (this.stateObj.state === UNAVAILABLE) {
-      return true;
-    }
-    const assumedState = this.stateObj.attributes.assumed_state === true;
-    return isFullyOpenTilt(this.stateObj) && !assumedState;
-  }
-
-  private _computeClosedDisabled(): boolean {
-    if (this.stateObj.state === UNAVAILABLE) {
-      return true;
-    }
-    const assumedState = this.stateObj.attributes.assumed_state === true;
-    return isFullyClosedTilt(this.stateObj) && !assumedState;
   }
 
   private _onOpenTiltTap(ev): void {

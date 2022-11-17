@@ -9,13 +9,11 @@ import {
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/tile/ha-tile-button";
 import {
+  canClose,
+  canOpen,
+  canStop,
   CoverEntityFeature,
-  isClosing,
-  isFullyClosed,
-  isFullyOpen,
-  isOpening,
 } from "../../../data/cover";
-import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileExtra } from "../types";
 import { CoverOpenCloseTileExtraConfig } from "./types";
@@ -65,32 +63,6 @@ class HuiCoverOpenCloseTileExtra
     });
   }
 
-  private _computeOpenDisabled(): boolean {
-    if (this.stateObj!.state === UNAVAILABLE) {
-      return true;
-    }
-    const assumedState = this.stateObj!.attributes.assumed_state === true;
-    return (
-      (isFullyOpen(this.stateObj!) || isOpening(this.stateObj!)) &&
-      !assumedState
-    );
-  }
-
-  private _computeClosedDisabled(): boolean {
-    if (this.stateObj!.state === UNAVAILABLE) {
-      return true;
-    }
-    const assumedState = this.stateObj!.attributes.assumed_state === true;
-    return (
-      (isFullyClosed(this.stateObj!) || isClosing(this.stateObj!)) &&
-      !assumedState
-    );
-  }
-
-  private _computeStopDisabled(): boolean {
-    return this.stateObj!.state === UNAVAILABLE;
-  }
-
   protected render(): TemplateResult {
     if (!this._config || !this.hass || !this.stateObj) {
       return html``;
@@ -105,7 +77,7 @@ class HuiCoverOpenCloseTileExtra
                   "ui.dialogs.more_info_control.cover.open_cover"
                 )}
                 @click=${this._onOpenTap}
-                .disabled=${this._computeOpenDisabled()}
+                .disabled=${!canOpen(this.stateObj)}
               >
                 <ha-svg-icon
                   .path=${computeOpenIcon(this.stateObj)}
@@ -119,7 +91,7 @@ class HuiCoverOpenCloseTileExtra
                 "ui.dialogs.more_info_control.cover.stop_cover"
               )}
               @click=${this._onStopTap}
-              .disabled=${this._computeStopDisabled()}
+              .disabled=${!canStop(this.stateObj)}
             >
               <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
             </ha-tile-button> `
@@ -131,7 +103,7 @@ class HuiCoverOpenCloseTileExtra
                   "ui.dialogs.more_info_control.cover.close_cover"
                 )}
                 @click=${this._onCloseTap}
-                .disabled=${this._computeClosedDisabled()}
+                .disabled=${!canClose(this.stateObj)}
               >
                 <ha-svg-icon
                   .path=${computeCloseIcon(this.stateObj)}
