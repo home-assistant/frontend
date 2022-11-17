@@ -4222,6 +4222,9 @@
                   "cover-open-close": {
                     "label": "Cover open/close"
                   },
+                  "cover-tilt": {
+                    "label": "Cover tilt"
+                  },
                   "cover-position": {
                     "label": "Cover position"
                   },
