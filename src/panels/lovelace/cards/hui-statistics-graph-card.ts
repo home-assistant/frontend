@@ -250,7 +250,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         undefined,
         this._entities,
         this._config!.period,
-        unitconfig
+        unitconfig,
+        this._config!.stat_types!
       );
     } catch (err) {
       this._statistics = undefined;
