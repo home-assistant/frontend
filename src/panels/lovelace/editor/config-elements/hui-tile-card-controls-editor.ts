@@ -1,5 +1,5 @@
 import {
-  mdiClose,
+  mdiDelete,
   mdiDrag,
   mdiListBox,
   mdiPencil,
@@ -23,7 +23,10 @@ import {
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
 import { getTileControlElementClass } from "../../create-element/create-tile-control-element";
-import { supportsTileControl } from "../../tile-control/supports_tile_controls";
+import {
+  isTileControlEditable,
+  supportsTileControl,
+} from "../../tile-control/tile-controls";
 import { LovelaceTileControlConfig } from "../../tile-control/types";
 
 const CONTROLS_TYPE: LovelaceTileControlConfig["type"][] = [
@@ -126,24 +129,25 @@ export class HuiTileCardControlsEditor extends LitElement {
                         : null}
                     </div>
                   </div>
-
+                  ${isTileControlEditable(controlConf.type)
+                    ? html`<ha-icon-button
+                        .label=${this.hass!.localize(
+                          `ui.panel.lovelace.editor.card.tile.controls.edit`
+                        )}
+                        .path=${mdiPencil}
+                        class="edit-icon"
+                        .index=${index}
+                        @click=${this._editControl}
+                      ></ha-icon-button>`
+                    : null}
                   <ha-icon-button
                     .label=${this.hass!.localize(
                       `ui.panel.lovelace.editor.card.tile.controls.remove`
                     )}
-                    .path=${mdiClose}
+                    .path=${mdiDelete}
                     class="remove-icon"
                     .index=${index}
                     @click=${this._removeControl}
-                  ></ha-icon-button>
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.tile.controls.edit`
-                    )}
-                    .path=${mdiPencil}
-                    class="edit-icon"
-                    .index=${index}
-                    @click=${this._editControl}
                   ></ha-icon-button>
                 </div>
               `

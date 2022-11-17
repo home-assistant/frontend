@@ -27,7 +27,7 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import "../components/hui-timestamp-display";
 import { createTileControlElement } from "../create-element/create-tile-control-element";
-import { supportsTileControl } from "../tile-control/supports_tile_controls";
+import { supportsTileControl } from "../tile-control/tile-controls";
 import { LovelaceTileControlConfig } from "../tile-control/types";
 import {
   LovelaceCard,
