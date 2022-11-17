@@ -1,6 +1,7 @@
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
 import { PolymerChangedEvent } from "../polymer-types";
@@ -12,8 +13,8 @@ type IconItem = {
   icon: string;
   keywords: string[];
 };
-let iconItems: IconItem[] = [];
-let iconLoaded = false;
+let ICONS: IconItem[] = [];
+let ICONS_LOADED = false;
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<mwc-list-item
@@ -50,30 +51,6 @@ export class HaIconPicker extends LitElement {
   @state() private _filterString = "";
 
   protected render(): TemplateResult {
-    const characterCount = this._filterString.length;
-    let filteredItems: IconItem[] = [];
-    if (characterCount >= 2) {
-      const filteredItemsByKeywords: IconItem[] = [];
-
-      iconItems.forEach((item) => {
-        if (item.icon.includes(this._filterString)) {
-          filteredItems.push(item);
-          return;
-        }
-        if (item.keywords.some((t) => t.includes(this._filterString))) {
-          filteredItemsByKeywords.push(item);
-        }
-      });
-
-      filteredItems.push(...filteredItemsByKeywords);
-
-      if (!filteredItems.length) {
-        filteredItems = [{ icon: this._filterString, keywords: [] }];
-      }
-    } else {
-      filteredItems = iconItems;
-    }
-
     return html`
       <ha-combo-box
         .hass=${this.hass}
@@ -81,7 +58,7 @@ export class HaIconPicker extends LitElement {
         item-label-path="icon"
         .value=${this._value}
         allow-custom-value
-        .filteredItems=${filteredItems}
+        .filteredItems=${this._filterIcons(this._filterString)}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
@@ -110,14 +87,35 @@ export class HaIconPicker extends LitElement {
     `;
   }
 
+  private _filterIcons = memoizeOne(
+    (filterString: string, iconItems = ICONS) => {
+      if (!filterString) {
+        return iconItems;
+      }
+      const filteredItems: IconItem[] = [];
+      const filteredItemsByKeywords: IconItem[] = [];
+
+      iconItems.forEach((item) => {
+        if (item.icon.includes(filterString)) {
+          filteredItems.push(item);
+        }
+        if (item.keywords.some((t) => t.includes(filterString))) {
+          filteredItemsByKeywords.push(item);
+        }
+      });
+      filteredItems.push(...filteredItemsByKeywords);
+      return filteredItems;
+    }
+  );
+
   private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
     this._opened = ev.detail.value;
-    if (this._opened && !iconLoaded) {
-      iconLoaded = true;
+    if (this._opened && !ICONS_LOADED) {
+      ICONS_LOADED = true;
 
       // Load icons and update element on first open
       const iconList = await import("../../build/mdi/iconList.json");
-      iconItems = iconList.default.map((icon) => ({
+      ICONS = iconList.default.map((icon) => ({
         icon: `mdi:${icon.name}`,
         keywords: icon.keywords,
       }));
@@ -129,7 +127,7 @@ export class HaIconPicker extends LitElement {
         customIconLoads.push(this._loadCustomIconItems(iconSet));
       });
       (await Promise.all(customIconLoads)).forEach((customIconItems) => {
-        iconItems.push(...customIconItems);
+        ICONS.push(...customIconItems);
       });
       this.requestUpdate();
     }
