@@ -1,9 +1,11 @@
+import { memoize } from "@fullcalendar/common";
 import { mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeRgbColor } from "../../../common/color/compute-color";
+import { hsv2rgb, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -16,14 +18,19 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
+import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
+import "../components/hui-timestamp-display";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { computeTileBadge } from "./tile/badges/tile-badge";
 import { ThermostatCardConfig, TileCardConfig } from "./types";
+
+const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
@@ -107,6 +114,38 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return imageUrl;
   }
 
+  private _computeStateColor = memoize((entity: HassEntity, color?: string) => {
+    if (!stateActive(entity)) {
+      return undefined;
+    }
+
+    if (color) {
+      return computeRgbColor(color);
+    }
+
+    let stateColor = stateColorCss(entity);
+
+    if (
+      computeDomain(entity.entity_id) === "light" &&
+      entity.attributes.rgb_color
+    ) {
+      const hsvColor = rgb2hsv(entity.attributes.rgb_color);
+
+      // Modify the real rgb color for better contrast
+      if (hsvColor[1] < 0.4) {
+        // Special case for very light color (e.g: white)
+        if (hsvColor[1] < 0.1) {
+          hsvColor[2] = 225;
+        } else {
+          hsvColor[1] = 0.4;
+        }
+      }
+      stateColor = hsv2rgb(hsvColor).join(",");
+    }
+
+    return stateColor;
+  });
+
   render() {
     if (!this._config || !this.hass) {
       return html``;
@@ -130,22 +169,30 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const domain = computeDomain(entity.entity_id);
+
     const icon = this._config.icon || entity.attributes.icon;
     const iconPath = stateIconPath(entity);
 
     const name = this._config.name || entity.attributes.friendly_name;
-    const stateDisplay = computeStateDisplay(
-      this.hass.localize,
-      entity,
-      this.hass.locale
-    );
+    const stateDisplay =
+      (entity.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
+        TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
+      !UNAVAILABLE_STATES.includes(entity.state)
+        ? html`
+            <hui-timestamp-display
+              .hass=${this.hass}
+              .ts=${new Date(entity.state)}
+              .format=${this._config.format}
+              capitalize
+            ></hui-timestamp-display>
+          `
+        : computeStateDisplay(this.hass!.localize, entity, this.hass.locale);
+
+    const color = this._computeStateColor(entity, this._config.color);
 
     const style = {
-      "--tile-color": this._config.color
-        ? stateActive(entity)
-          ? computeRgbColor(this._config.color)
-          : undefined
-        : stateColorCss(entity),
+      "--tile-color": color,
     };
 
     const imageUrl = this._config.show_entity_picture

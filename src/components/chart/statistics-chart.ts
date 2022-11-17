@@ -26,12 +26,13 @@ import {
   getStatisticMetadata,
   Statistics,
   statisticsHaveType,
+  StatisticsMetaData,
   StatisticType,
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
-export type ExtendedStatisticType = StatisticType | "state";
+export type ExtendedStatisticType = StatisticType | "state" | "change";
 
 export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
   mean: "mean",
@@ -39,12 +40,19 @@ export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
   max: "max",
   sum: "sum",
   state: "sum",
+  change: "sum",
 };
+
 @customElement("statistics-chart")
 class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public statisticsData!: Statistics;
+
+  @property({ attribute: false }) public metadata?: Record<
+    string,
+    StatisticsMetaData
+  >;
 
   @property() public names: boolean | Record<string, string> = false;
 
@@ -76,7 +84,7 @@ class StatisticsChart extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated) {
+    if (!this.hasUpdated || changedProps.has("unit")) {
       this._createOptions();
     }
     if (changedProps.has("statisticsData") || changedProps.has("statTypes")) {
@@ -120,7 +128,7 @@ class StatisticsChart extends LitElement {
     `;
   }
 
-  private _createOptions() {
+  private _createOptions(unit?: string) {
     this._chartOptions = {
       parsing: false,
       animation: false,
@@ -154,8 +162,8 @@ class StatisticsChart extends LitElement {
             maxTicksLimit: 7,
           },
           title: {
-            display: this.unit,
-            text: this.unit,
+            display: unit || this.unit,
+            text: unit || this.unit,
           },
         },
       },
@@ -220,9 +228,9 @@ class StatisticsChart extends LitElement {
       return;
     }
 
-    const statisticsMetaData = await this._getStatisticsMetaData(
-      Object.keys(this.statisticsData)
-    );
+    const statisticsMetaData =
+      this.metadata ||
+      (await this._getStatisticsMetaData(Object.keys(this.statisticsData)));
 
     let colorIndex = 0;
     const statisticsData = Object.values(this.statisticsData);
@@ -263,6 +271,7 @@ class StatisticsChart extends LitElement {
         if (unit === undefined) {
           unit = getDisplayUnit(this.hass, firstStat.statistic_id, meta);
         } else if (
+          unit !== null &&
           unit !== getDisplayUnit(this.hass, firstStat.statistic_id, meta)
         ) {
           // Clear unit if not all statistics have same unit
@@ -354,6 +363,7 @@ class StatisticsChart extends LitElement {
 
       let prevDate: Date | null = null;
       // Process chart data.
+      let firstSum: number | null = null;
       let prevSum: number | null = null;
       stats.forEach((stat) => {
         const date = new Date(stat.start);
@@ -365,12 +375,19 @@ class StatisticsChart extends LitElement {
         statTypes.forEach((type) => {
           let val: number | null;
           if (type === "sum") {
-            if (prevSum === null) {
+            if (firstSum === null) {
               val = 0;
-              prevSum = stat.sum;
+              firstSum = stat.sum;
             } else {
-              val = (stat.sum || 0) - prevSum;
+              val = (stat.sum || 0) - firstSum;
             }
+          } else if (type === "change") {
+            if (prevSum === null) {
+              prevSum = stat.sum;
+              return;
+            }
+            val = (stat.sum || 0) - prevSum;
+            prevSum = stat.sum;
           } else {
             val = stat[type];
           }
@@ -379,24 +396,12 @@ class StatisticsChart extends LitElement {
         pushData(date, dataValues);
       });
 
-      // Add an entry for final values
-      pushData(endTime, prevValues);
-
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);
     });
 
-    if (unit !== null) {
-      this._chartOptions = {
-        ...this._chartOptions,
-        scales: {
-          ...this._chartOptions!.scales,
-          y: {
-            ...(this._chartOptions!.scales!.y as Record<string, unknown>),
-            title: { display: unit, text: unit },
-          },
-        },
-      };
+    if (unit) {
+      this._createOptions(unit);
     }
 
     this._chartData = {

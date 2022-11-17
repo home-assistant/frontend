@@ -10,12 +10,12 @@ import { sensorColor } from "./color/sensor_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
-export const stateColorCss = (stateObj?: HassEntity) => {
-  if (!stateObj || !stateActive(stateObj)) {
+export const stateColorCss = (stateObj?: HassEntity, state?: string) => {
+  if (!stateObj || !stateActive(stateObj, state)) {
     return `var(--rgb-disabled-color)`;
   }
 
-  const color = stateColor(stateObj);
+  const color = stateColor(stateObj, state);
 
   if (color) {
     return `var(--rgb-state-${color}-color)`;
@@ -24,13 +24,13 @@ export const stateColorCss = (stateObj?: HassEntity) => {
   return `var(--rgb-primary-color)`;
 };
 
-export const stateColor = (stateObj: HassEntity) => {
-  const state = stateObj.state;
+export const stateColor = (stateObj: HassEntity, state?: string) => {
+  const compareState = state !== undefined ? state : stateObj?.state;
   const domain = computeDomain(stateObj.entity_id);
 
   switch (domain) {
     case "alarm_control_panel":
-      return alarmControlPanelColor(state);
+      return alarmControlPanelColor(compareState);
 
     case "binary_sensor":
       return binarySensorColor(stateObj);
@@ -39,10 +39,10 @@ export const stateColor = (stateObj: HassEntity) => {
       return coverColor(stateObj);
 
     case "climate":
-      return climateColor(state);
+      return climateColor(compareState);
 
     case "lock":
-      return lockColor(state);
+      return lockColor(compareState);
 
     case "light":
       return "light";
@@ -64,7 +64,7 @@ export const stateColor = (stateObj: HassEntity) => {
       return "vacuum";
 
     case "sun":
-      return state === "above_horizon" ? "sun-day" : "sun-night";
+      return compareState === "above_horizon" ? "sun-day" : "sun-night";
 
     case "update":
       return updateIsInstalling(stateObj as UpdateEntity)

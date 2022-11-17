@@ -1,35 +1,32 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { OFF_STATES } from "../../data/entity";
+import { OFF_STATES, UNAVAILABLE } from "../../data/entity";
 import { computeDomain } from "./compute_domain";
 
-const NORMAL_UNKNOWN_DOMAIN = ["button", "input_button", "scene"];
-const NORMAL_OFF_DOMAIN = ["script"];
-
-export function stateActive(stateObj: HassEntity): boolean {
+export function stateActive(stateObj: HassEntity, state?: string): boolean {
   const domain = computeDomain(stateObj.entity_id);
-  const state = stateObj.state;
+  const compareState = state !== undefined ? state : stateObj?.state;
 
-  if (
-    OFF_STATES.includes(state) &&
-    !(NORMAL_UNKNOWN_DOMAIN.includes(domain) && state === "unknown") &&
-    !(NORMAL_OFF_DOMAIN.includes(domain) && state === "script")
-  ) {
+  if (["button", "input_button", "scene"].includes(domain)) {
+    return compareState !== UNAVAILABLE;
+  }
+
+  if (OFF_STATES.includes(compareState)) {
     return false;
   }
 
   // Custom cases
   switch (domain) {
     case "cover":
-      return state === "open" || state === "opening";
+      return !["close", "closing"].includes(compareState);
     case "device_tracker":
     case "person":
-      return state !== "not_home";
-    case "media-player":
-      return state !== "idle" && state !== "standby";
+      return compareState !== "not_home";
+    case "media_player":
+      return compareState !== "standby";
     case "vacuum":
-      return state === "on" || state === "cleaning";
+      return !["idle", "docked", "paused"].includes(compareState);
     case "plant":
-      return state === "problem";
+      return compareState === "problem";
     default:
       return true;
   }

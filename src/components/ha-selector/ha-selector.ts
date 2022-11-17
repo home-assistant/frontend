@@ -10,8 +10,8 @@ const LOAD_ELEMENTS = {
   area: () => import("./ha-selector-area"),
   attribute: () => import("./ha-selector-attribute"),
   boolean: () => import("./ha-selector-boolean"),
-  "color-rgb": () => import("./ha-selector-color-rgb"),
-  "config-entry": () => import("./ha-selector-config-entry"),
+  color_rgb: () => import("./ha-selector-color-rgb"),
+  config_entry: () => import("./ha-selector-config-entry"),
   date: () => import("./ha-selector-date"),
   datetime: () => import("./ha-selector-datetime"),
   device: () => import("./ha-selector-device"),
@@ -32,7 +32,7 @@ const LOAD_ELEMENTS = {
   media: () => import("./ha-selector-media"),
   theme: () => import("./ha-selector-theme"),
   location: () => import("./ha-selector-location"),
-  "color-temp": () => import("./ha-selector-color-temp"),
+  color_temp: () => import("./ha-selector-color-temp"),
   "ui-action": () => import("./ha-selector-ui-action"),
 };
 
