@@ -8,29 +8,15 @@ import "../tile-control/hui-cover-tilt-tile-control";
 import "../tile-control/hui-cover-position-tile-control";
 import "../tile-control/hui-light-brightness-tile-control";
 
-const ALWAYS_LOADED_TYPES: Set<LovelaceTileControlConfig["type"]> = new Set([
+const TYPES: Set<LovelaceTileControlConfig["type"]> = new Set([
   "cover-open-close",
   "cover-tilt",
   "cover-position",
   "light-brightness",
 ]);
 
-const LAZY_LOAD_TYPES = {};
-
 export const createTileControlElement = (config: LovelaceTileControlConfig) =>
-  createLovelaceElement(
-    "tile-control",
-    config,
-    ALWAYS_LOADED_TYPES,
-    LAZY_LOAD_TYPES,
-    undefined,
-    undefined
-  );
+  createLovelaceElement("tile-control", config, TYPES);
 
 export const getTileControlElementClass = (type: string) =>
-  getLovelaceElementClass(
-    type,
-    "tile-control",
-    ALWAYS_LOADED_TYPES,
-    LAZY_LOAD_TYPES
-  );
+  getLovelaceElementClass(type, "tile-control", TYPES);
