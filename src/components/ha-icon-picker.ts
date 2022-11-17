@@ -1,5 +1,5 @@
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -150,14 +150,6 @@ export class HaIconPicker extends LitElement {
       console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
       return [];
     }
-  }
-
-  protected shouldUpdate(changedProps: PropertyValues) {
-    return (
-      !this._opened ||
-      changedProps.has("_opened") ||
-      changedProps.has("_filterString")
-    );
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {
