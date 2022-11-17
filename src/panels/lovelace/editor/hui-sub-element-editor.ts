@@ -10,7 +10,7 @@ import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import "./entity-row-editor/hui-row-element-editor";
 import "./header-footer-editor/hui-header-footer-element-editor";
 import type { HuiElementEditor } from "./hui-element-editor";
-import "./tile-control/hui-tile-control-element-editor";
+import "./tile-extra/hui-tile-extra-element-editor";
 import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
 
 declare global {
@@ -80,15 +80,15 @@ export class HuiSubElementEditor extends LitElement {
               @GUImode-changed=${this._handleGUIModeChanged}
             ></hui-headerfooter-element-editor>
           `
-        : this.config.type === "tile-control"
+        : this.config.type === "tile-extra"
         ? html`
-            <hui-tile-control-element-editor
+            <hui-tile-extra-element-editor
               class="editor"
               .hass=${this.hass}
               .value=${this.config.elementConfig}
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
-            ></hui-tile-control-element-editor>
+            ></hui-tile-extra-element-editor>
           `
         : ""}
     `;

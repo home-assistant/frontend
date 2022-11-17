@@ -4,8 +4,8 @@ import { LovelaceTileExtraConfig } from "../../tile-extra/types";
 import type { LovelaceTileExtraEditor } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
-@customElement("hui-tile-control-element-editor")
-export class HuiTileControlElementEditor extends HuiElementEditor<LovelaceTileExtraConfig> {
+@customElement("hui-tile-extra-element-editor")
+export class HuiTileExtraElementEditor extends HuiElementEditor<LovelaceTileExtraConfig> {
   protected async getConfigElement(): Promise<
     LovelaceTileExtraEditor | undefined
   > {
@@ -22,6 +22,6 @@ export class HuiTileControlElementEditor extends HuiElementEditor<LovelaceTileEx
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-tile-control-element-editor": HuiTileControlElementEditor;
+    "hui-tile-extra-element-editor": HuiTileExtraElementEditor;
   }
 }
