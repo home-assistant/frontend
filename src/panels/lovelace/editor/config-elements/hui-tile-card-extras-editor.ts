@@ -25,6 +25,7 @@ import { HomeAssistant } from "../../../../types";
 import { getTileExtraElementClass } from "../../create-element/create-tile-extra-element";
 import {
   isTileExtraEditable,
+  MAX_DISPLAYED_EXTRAS,
   supportsTileExtra,
 } from "../../tile-extra/tile-extras";
 import { LovelaceTileExtraConfig } from "../../tile-extra/types";
@@ -100,6 +101,16 @@ export class HuiTileCardExtrasEditor extends LitElement {
                 </ha-alert>
               `
             : null}
+          ${this.extras.length > MAX_DISPLAYED_EXTRAS
+            ? html`
+                <ha-alert type="info">
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.card.tile.extras.max_displayed_extra_reached",
+                    { count: MAX_DISPLAYED_EXTRAS }
+                  )}
+                </ha-alert>
+              `
+            : null}
           <div class="extras">
             ${repeat(
               this.extras,
@@ -150,7 +161,8 @@ export class HuiTileCardExtrasEditor extends LitElement {
               `
             )}
           </div>
-          ${this._supportedExtraTypes.length > 0
+          ${this._supportedExtraTypes.length > 0 &&
+          this.extras.length < MAX_DISPLAYED_EXTRAS
             ? html`
                 <ha-button-menu
                   fixed
