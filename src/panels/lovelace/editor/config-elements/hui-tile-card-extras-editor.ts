@@ -44,14 +44,14 @@ declare global {
 
 @customElement("hui-tile-card-extras-editor")
 export class HuiTileCardExtrasEditor extends LitElement {
-  @property({ attribute: false }) protected hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ attribute: false })
-  protected extras?: LovelaceTileExtraConfig[];
+  public extras?: LovelaceTileExtraConfig[];
 
-  @property() protected label?: string;
+  @property() public label?: string;
 
   private _extraKeys = new WeakMap<LovelaceTileExtraConfig, string>();
 
@@ -167,7 +167,7 @@ export class HuiTileCardExtrasEditor extends LitElement {
                     <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
                   </mwc-button>
                   ${this._supportedExtraTypes.map(
-                    (extraType) => html` <mwc-list-item .value=${extraType}>
+                    (extraType) => html`<mwc-list-item .value=${extraType}>
                       <ha-svg-icon
                         slot="graphic"
                         .path=${mdiWindowShutter}

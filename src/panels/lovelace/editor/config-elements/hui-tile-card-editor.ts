@@ -237,7 +237,10 @@ export class HuiTileCardEditor
 
     const value = ev.detail.config;
 
-    const newConfigExtras = this._config.extras!.concat();
+    const newConfigExtras = this._config!.extras
+      ? [...this._config!.extras]
+      : [];
+
     if (!value) {
       newConfigExtras.splice(this._subElementEditorConfig!.index!, 1);
       this._goBack();
