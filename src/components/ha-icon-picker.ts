@@ -113,19 +113,25 @@ export class HaIconPicker extends LitElement {
   private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
     this._opened = ev.detail.value;
     if (this._opened && !iconLoaded) {
+      iconLoaded = true;
+
+      // Load icons and update element on first open
       const iconList = await import("../../build/mdi/iconList.json");
       iconItems = iconList.default.map((icon) => ({
         icon: `mdi:${icon.name}`,
         keywords: icon.keywords,
       }));
-      iconLoaded = true;
       this.requestUpdate();
 
+      // Load and add custom icon sets and update again
+      const customIconLoads: Promise<IconItem[]>[] = [];
       Object.keys(customIcons).forEach((iconSet) => {
-        // This may cause clobbering of adding icons to the array since it is async
-        // Instead, have it return the icons, collect the promises, then await all
-        this._loadCustomIconItems(iconSet);
+        customIconLoads.push(this._loadCustomIconItems(iconSet));
       });
+      (await Promise.all(customIconLoads)).forEach((customIconItems) => {
+        iconItems.push(...customIconItems);
+      });
+      this.requestUpdate();
     }
   }
 
@@ -133,17 +139,18 @@ export class HaIconPicker extends LitElement {
     try {
       const getIconList = customIcons[iconsetPrefix].getIconList;
       if (typeof getIconList !== "function") {
-        return;
+        return [];
       }
       const iconList = await getIconList();
       const customIconItems = iconList.map((icon) => ({
         icon: `${iconsetPrefix}:${icon.name}`,
         keywords: icon.keywords ?? [],
       }));
-      iconItems.push(...customIconItems);
+      return customIconItems;
     } catch (e) {
       // eslint-disable-next-line
       console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
+      return [];
     }
   }
 
