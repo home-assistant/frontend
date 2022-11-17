@@ -47,9 +47,33 @@ export class HaIconPicker extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _filteredItems?: IconItem[];
+  @state() private _filterString = "";
 
   protected render(): TemplateResult {
+    const characterCount = this._filterString.length;
+    let filteredItems: IconItem[] = [];
+    if (characterCount >= 2) {
+      const filteredItemsByKeywords: IconItem[] = [];
+
+      iconItems.forEach((item) => {
+        if (item.icon.includes(this._filterString)) {
+          filteredItems.push(item);
+          return;
+        }
+        if (item.keywords.some((t) => t.includes(this._filterString))) {
+          filteredItemsByKeywords.push(item);
+        }
+      });
+
+      filteredItems.push(...filteredItemsByKeywords);
+
+      if (!filteredItems.length) {
+        filteredItems = [{ icon: this._filterString, keywords: [] }];
+      }
+    } else {
+      filteredItems = iconItems;
+    }
+
     return html`
       <ha-combo-box
         .hass=${this.hass}
@@ -57,7 +81,7 @@ export class HaIconPicker extends LitElement {
         item-label-path="icon"
         .value=${this._value}
         allow-custom-value
-        .filteredItems=${this._filteredItems ?? iconItems}
+        .filteredItems=${filteredItems}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
@@ -90,16 +114,16 @@ export class HaIconPicker extends LitElement {
     this._opened = ev.detail.value;
     if (this._opened && !iconLoaded) {
       const iconList = await import("../../build/mdi/iconList.json");
-
       iconItems = iconList.default.map((icon) => ({
         icon: `mdi:${icon.name}`,
         keywords: icon.keywords,
       }));
       iconLoaded = true;
-
-      this._filteredItems = iconItems;
+      this.requestUpdate();
 
       Object.keys(customIcons).forEach((iconSet) => {
+        // This may cause clobbering of adding icons to the array since it is async
+        // Instead, have it return the icons, collect the promises, then await all
         this._loadCustomIconItems(iconSet);
       });
     }
@@ -117,7 +141,6 @@ export class HaIconPicker extends LitElement {
         keywords: icon.keywords ?? [],
       }));
       iconItems.push(...customIconItems);
-      this._filteredItems = iconItems;
     } catch (e) {
       // eslint-disable-next-line
       console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
@@ -128,7 +151,7 @@ export class HaIconPicker extends LitElement {
     return (
       !this._opened ||
       changedProps.has("_opened") ||
-      changedProps.has("_filteredItems")
+      changedProps.has("_filterString")
     );
   }
 
@@ -151,35 +174,7 @@ export class HaIconPicker extends LitElement {
   }
 
   private _filterChanged(ev: CustomEvent): void {
-    const filterString = ev.detail.value.toLowerCase();
-    const characterCount = filterString.length;
-    if (characterCount >= 2) {
-      const filteredItems: IconItem[] = [];
-      const filteredItemsByKeywords: IconItem[] = [];
-
-      iconItems.forEach((item) => {
-        if (item.icon.includes(filterString)) {
-          filteredItems.push(item);
-          return;
-        }
-        if (item.keywords.some((t) => t.includes(filterString))) {
-          filteredItemsByKeywords.push(item);
-        }
-      });
-
-      filteredItems.push(...filteredItemsByKeywords);
-
-      if (filteredItems.length > 0) {
-        // Setting it sync cause browser freeze when user paste an icon text
-        setTimeout(() => {
-          this._filteredItems = filteredItems;
-        }, 1);
-      } else {
-        this._filteredItems = [{ icon: filterString, keywords: [] }];
-      }
-    } else {
-      this._filteredItems = iconItems;
-    }
+    this._filterString = ev.detail.value.toLowerCase();
   }
 
   private get _value() {
