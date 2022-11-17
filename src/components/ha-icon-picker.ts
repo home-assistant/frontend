@@ -1,9 +1,10 @@
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
 import { PolymerChangedEvent } from "../polymer-types";
+import { filterIconItems } from "../resources/filter-icon-items";
 import { HomeAssistant } from "../types";
 import "./ha-combo-box";
 import "./ha-icon";
@@ -150,35 +151,18 @@ export class HaIconPicker extends LitElement {
     );
   }
 
-  private _filterChanged(ev: CustomEvent): void {
+  private async _filterChanged(ev: CustomEvent): Promise<void> {
     const filterString = ev.detail.value.toLowerCase();
-    const characterCount = filterString.length;
-    if (characterCount >= 2) {
-      const filteredItems: IconItem[] = [];
-      const filteredItemsByKeywords: IconItem[] = [];
 
-      iconItems.forEach((item) => {
-        if (item.icon.includes(filterString)) {
-          filteredItems.push(item);
-          return;
-        }
-        if (item.keywords.some((t) => t.includes(filterString))) {
-          filteredItemsByKeywords.push(item);
-        }
-      });
+    const filteredItems: IconItem[] = await filterIconItems(
+      filterString,
+      iconItems
+    );
 
-      filteredItems.push(...filteredItemsByKeywords);
-
-      if (filteredItems.length > 0) {
-        // Setting it sync cause browser freeze when user paste an icon text
-        setTimeout(() => {
-          this._filteredItems = filteredItems;
-        }, 1);
-      } else {
-        this._filteredItems = [{ icon: filterString, keywords: [] }];
-      }
+    if (filteredItems.length > 0) {
+      this._filteredItems = filteredItems;
     } else {
-      this._filteredItems = iconItems;
+      this._filteredItems = [{ icon: filterString, keywords: [] }];
     }
   }
 
