@@ -1,6 +1,7 @@
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
@@ -58,7 +59,9 @@ export class HaIconPicker extends LitElement {
         item-label-path="icon"
         .value=${this._value}
         allow-custom-value
-        .filteredItems=${this._filterIcons(this._filterString, ICONS)}
+        .filteredItems=${guard([this._filterString, ICONS.length], () =>
+          this._filterIcons(this._filterString, ICONS)
+        )}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
