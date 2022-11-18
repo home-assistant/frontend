@@ -16,7 +16,7 @@ const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (
   <span>${item.name}</span>
   <span slot="secondary">${item.slug}</span>
   ${item.icon
-    ? html`<img slot="graphic" .src="/api/hassio/addons/${item.slug}/icon" />`
+    ? html`<img alt="" slot="graphic" .src="/api/hassio/addons/${item.slug}/icon" />`
     : ""}
 </mwc-list-item>`;
 
