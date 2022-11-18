@@ -65,6 +65,7 @@ class IntegrationsStartupTime extends LitElement {
               href=${docLink}
             >
               <img
+                alt=""
                 loading="lazy"
                 src=${brandsUrl({
                   domain: setup.domain,

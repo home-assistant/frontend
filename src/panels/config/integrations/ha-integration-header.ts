@@ -81,6 +81,7 @@ export class HaIntegrationHeader extends LitElement {
       <slot name="above-header"></slot>
       <div class="header">
         <img
+          alt=""
           src=${brandsUrl({
             domain: this.domain,
             type: "icon",
