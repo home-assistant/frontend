@@ -95,6 +95,7 @@ export class HaIconPicker extends LitElement {
       if (!filterString) {
         return iconItems;
       }
+      const startTime = Date.now();
       const filteredItems: IconItem[] = [];
       const filteredItemsByKeywords: IconItem[] = [];
 
@@ -107,6 +108,16 @@ export class HaIconPicker extends LitElement {
         }
       });
       filteredItems.push(...filteredItemsByKeywords);
+      if (__DEV__) {
+        // eslint-disable-next-line no-console
+        console.debug(
+          'Searched %i icons for "%s" in %i ms with %i results',
+          iconItems.length,
+          filterString,
+          Date.now() - startTime,
+          filteredItems.length
+        );
+      }
       return filteredItems;
     }
   );
