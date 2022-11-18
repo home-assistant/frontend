@@ -58,6 +58,8 @@ export class HuiImage extends LitElement {
 
   @property() public darkModeFilter?: string;
 
+  @property() public altText?: string;
+
   @state() private _imageVisible? = false;
 
   @state() private _loadState?: LoadState;
