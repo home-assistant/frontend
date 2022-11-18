@@ -2,9 +2,9 @@ import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { afterNextRender } from "../common/util/render-status";
 import { customIcons } from "../data/custom_icons";
 import { PolymerChangedEvent } from "../polymer-types";
-import { filterIconItems } from "../resources/filter-icon-items";
 import { HomeAssistant } from "../types";
 import "./ha-combo-box";
 import "./ha-icon";
@@ -13,8 +13,34 @@ type IconItem = {
   icon: string;
   keywords: string[];
 };
-let iconItems: IconItem[] = [];
-let iconLoaded = false;
+let ICONS_ITEMS: IconItem[] = [];
+let ICON_LOADED = false;
+
+const filterIconItems = (
+  filterString: string,
+  iconItems: IconItem[]
+): IconItem[] => {
+  if (filterString.length === 0) {
+    return iconItems;
+  }
+
+  const filteredItems: IconItem[] = [];
+  const filteredItemsByKeywords: IconItem[] = [];
+
+  iconItems.forEach((item) => {
+    if (item.icon.includes(filterString)) {
+      filteredItems.push(item);
+      return;
+    }
+    if (item.keywords.some((t) => t.includes(filterString))) {
+      filteredItemsByKeywords.push(item);
+    }
+  });
+
+  filteredItems.push(...filteredItemsByKeywords);
+
+  return filteredItems;
+};
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<mwc-list-item
@@ -58,7 +84,7 @@ export class HaIconPicker extends LitElement {
         item-label-path="icon"
         .value=${this._value}
         allow-custom-value
-        .filteredItems=${this._filteredItems ?? iconItems}
+        .filteredItems=${this._filteredItems ?? ICONS_ITEMS}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
@@ -89,16 +115,16 @@ export class HaIconPicker extends LitElement {
 
   private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
     this._opened = ev.detail.value;
-    if (this._opened && !iconLoaded) {
+    if (this._opened && !ICON_LOADED) {
       const iconList = await import("../../build/mdi/iconList.json");
 
-      iconItems = iconList.default.map((icon) => ({
+      ICONS_ITEMS = iconList.default.map((icon) => ({
         icon: `mdi:${icon.name}`,
         keywords: icon.keywords,
       }));
-      iconLoaded = true;
+      ICON_LOADED = true;
 
-      this._filteredItems = iconItems;
+      this._filteredItems = ICONS_ITEMS;
 
       Object.keys(customIcons).forEach((iconSet) => {
         this._loadCustomIconItems(iconSet);
@@ -117,8 +143,8 @@ export class HaIconPicker extends LitElement {
         icon: `${iconsetPrefix}:${icon.name}`,
         keywords: icon.keywords ?? [],
       }));
-      iconItems.push(...customIconItems);
-      this._filteredItems = iconItems;
+      ICONS_ITEMS.push(...customIconItems);
+      this._filteredItems = ICONS_ITEMS;
     } catch (e) {
       // eslint-disable-next-line
       console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
@@ -151,19 +177,21 @@ export class HaIconPicker extends LitElement {
     );
   }
 
-  private async _filterChanged(ev: CustomEvent): Promise<void> {
+  private _filterChanged(ev: CustomEvent): void {
     const filterString = ev.detail.value.toLowerCase();
 
-    const filteredItems: IconItem[] = await filterIconItems(
+    const filteredItems: IconItem[] = filterIconItems(
       filterString,
-      iconItems
+      ICONS_ITEMS
     );
 
-    if (filteredItems.length > 0) {
-      this._filteredItems = filteredItems;
-    } else {
-      this._filteredItems = [{ icon: filterString, keywords: [] }];
-    }
+    afterNextRender(() => {
+      if (filteredItems.length > 0) {
+        this._filteredItems = filteredItems;
+      } else {
+        this._filteredItems = [{ icon: filterString, keywords: [] }];
+      }
+    });
   }
 
   private get _value() {
