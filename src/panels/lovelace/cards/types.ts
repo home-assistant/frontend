@@ -329,6 +329,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   theme?: string;
+  alt_text?: string;
 }
 
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
@@ -361,6 +362,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   show_name?: boolean;
   show_state?: boolean;
   theme?: string;
+  alt_text?: string;
 }
 
 export interface PictureGlanceCardConfig extends LovelaceCardConfig {
