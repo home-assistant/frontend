@@ -96,21 +96,14 @@ export class HaIconPicker extends LitElement {
         return iconItems;
       }
       const startTime = Date.now();
-      const filteredItems: IconItem[] = [];
-      const filteredItemsByKeywords: IconItem[] = [];
-
-      iconItems.forEach((item) => {
-        if (item.icon.includes(filterString)) {
-          filteredItems.push(item);
-        }
-        if (item.keywords.some((t) => t.includes(filterString))) {
-          filteredItemsByKeywords.push(item);
-        }
-      });
-      filteredItems.push(...filteredItemsByKeywords);
+      const filteredItems = iconItems.filter(
+        (item) =>
+          item.icon.includes(filterString) ||
+          item.keywords.some((word) => word.includes(filterString))
+      );
       if (__DEV__) {
         // eslint-disable-next-line no-console
-        console.debug(
+        console.log(
           'Searched %i icons for "%s" in %i ms with %i results',
           iconItems.length,
           filterString,
