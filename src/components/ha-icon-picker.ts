@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { nextRender } from "../common/util/render-status";
 import { customIcons } from "../data/custom_icons";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
@@ -50,6 +51,11 @@ export class HaIconPicker extends LitElement {
   @state() private _opened = false;
 
   @state() private _filterString = "";
+
+  protected override async scheduleUpdate() {
+    await nextRender();
+    super.scheduleUpdate();
+  }
 
   protected render(): TemplateResult {
     return html`
