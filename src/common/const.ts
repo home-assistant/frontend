@@ -123,7 +123,6 @@ export const FIXED_DOMAIN_ICONS = {
 };
 
 export const FIXED_DEVICE_CLASS_ICONS = {
-  accumulated_precipitation: mdiWeatherRainy,
   apparent_power: mdiFlash,
   aqi: mdiAirFilter,
   // battery: mdiBattery, => not included by design since `sensorIcon()` will dynamically determine the icon
@@ -149,6 +148,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   pm25: mdiMolecule,
   power: mdiFlash,
   power_factor: mdiAngleAcute,
+  precipitation: mdiWeatherRainy,
   precipitation_intensity: mdiWeatherPouring,
   pressure: mdiGauge,
   reactive_power: mdiFlash,
