@@ -74,7 +74,7 @@ export class HaImagecropperDialog extends LitElement {
           round: Boolean(this._params?.options.round),
         })}"
       >
-        <img alt=""/>
+        <img alt="" />
       </div>
       <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
         ${this.hass.localize("ui.common.cancel")}

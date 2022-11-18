@@ -10,7 +10,9 @@ export class HaTileImage extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="image">
-        ${this.imageUrl ? html`<img alt=${this.alt} src=${this.imageUrl} />` : null}
+        ${this.imageUrl
+          ? html`<img alt=${this.alt} src=${this.imageUrl} />`
+          : null}
       </div>
     `;
   }

@@ -20,7 +20,7 @@ const cardConfigStruct = assign(
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     theme: optional(string()),
-    alt_text: optional(string())
+    alt_text: optional(string()),
   })
 );
 

@@ -656,7 +656,10 @@ export class HaConfigDevicePage extends LitElement {
                     integrations.length
                       ? html`
                           <img
-                            alt=${domainToName(this.hass.localize, integrations[0].domain)}
+                            alt=${domainToName(
+                              this.hass.localize,
+                              integrations[0].domain
+                            )}
                             src=${brandsUrl({
                               domain: integrations[0].domain,
                               type: "logo",
