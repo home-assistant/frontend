@@ -223,6 +223,7 @@ export class HuiImage extends LitElement {
           : html`
               <img
                 id="image"
+                alt=${this.altText || ""}
                 src=${imageSrc}
                 @error=${this._onImageError}
                 @load=${this._onImageLoad}

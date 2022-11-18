@@ -25,6 +25,7 @@ const cardConfigStruct = assign(
     show_name: optional(boolean()),
     show_state: optional(boolean()),
     theme: optional(string()),
+    alt_text: optional(string())
   })
 );
 
@@ -67,6 +68,7 @@ const SCHEMA = [
     name: "hold_action",
     selector: { "ui-action": {} },
   },
+  { name: "alt_text", selector: { text() {} } },
 ] as const;
 
 @customElement("hui-picture-entity-card-editor")
