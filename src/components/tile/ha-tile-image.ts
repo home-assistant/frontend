@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 @customElement("ha-tile-image")
 export class HaTileImage extends LitElement {
   @property() public imageUrl?: string;
+
   @property() public alt?: string;
 
   protected render(): TemplateResult {
