@@ -143,8 +143,12 @@ export class HaDeviceAction extends LitElement {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       localize(
+        `component.${this.action.domain}.device_automation.extra_fields.action.${schema.name}`
+      ) ||
+      localize(
         `ui.panel.config.automation.editor.actions.type.device_id.extra_fields.${schema.name}`
-      ) || schema.name;
+      ) ||
+      schema.name;
   }
 
   static styles = css`

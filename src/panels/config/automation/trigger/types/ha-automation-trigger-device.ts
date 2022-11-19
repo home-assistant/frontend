@@ -153,8 +153,12 @@ export class HaDeviceTrigger extends LitElement {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       localize(
+        `component.${this.trigger.domain}.device_automation.extra_fields.trigger.${schema.name}`
+      ) ||
+      localize(
         `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${schema.name}`
-      ) || schema.name;
+      ) ||
+      schema.name;
   }
 
   static styles = css`
