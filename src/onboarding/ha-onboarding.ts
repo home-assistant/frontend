@@ -174,6 +174,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       const response = await fetchInstallationType();
       this._supervisor = [
         "Home Assistant OS",
+        "Home Assistant Container",
         "Home Assistant Supervised",
       ].includes(response.installation_type);
       if (this._supervisor) {
