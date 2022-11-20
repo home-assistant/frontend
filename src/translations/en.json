@@ -2689,6 +2689,10 @@
           "download_diagnostics_integration": "Download {integration} diagnostics",
           "delete_device": "Delete",
           "delete_device_integration": "Remove device from {integration}",
+          "connected_devices": {
+            "heading": "Connected devices",
+            "show_more": "+{count} devices not shown"
+          },
           "type": {
             "device_heading": "Device",
             "device": "device",
