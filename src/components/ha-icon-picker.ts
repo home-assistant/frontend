@@ -19,6 +19,43 @@ type IconItem = {
 let ICONS: IconItem[] = [];
 let ICONS_LOADED = false;
 
+const loadIcons = async () => {
+  ICONS_LOADED = true;
+
+  const iconList = await import("../../build/mdi/iconList.json");
+  ICONS = iconList.default.map((icon) => ({
+    icon: `mdi:${icon.name}`,
+    keywords: icon.keywords,
+  }));
+
+  const customIconLoads: Promise<IconItem[]>[] = [];
+  Object.keys(customIcons).forEach((iconSet) => {
+    customIconLoads.push(loadCustomIconItems(iconSet));
+  });
+  (await Promise.all(customIconLoads)).forEach((customIconItems) => {
+    ICONS.push(...customIconItems);
+  });
+};
+
+const loadCustomIconItems = async (iconsetPrefix: string) => {
+  try {
+    const getIconList = customIcons[iconsetPrefix].getIconList;
+    if (typeof getIconList !== "function") {
+      return [];
+    }
+    const iconList = await getIconList();
+    const customIconItems = iconList.map((icon) => ({
+      icon: `${iconsetPrefix}:${icon.name}`,
+      keywords: icon.keywords ?? [],
+    }));
+    return customIconItems;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
+    return [];
+  }
+};
+
 const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<mwc-list-item
   graphic="avatar"
 >
@@ -122,43 +159,8 @@ export class HaIconPicker extends LitElement {
   private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
     const opened = ev.detail.value;
     if (opened && !ICONS_LOADED) {
-      ICONS_LOADED = true;
-
-      // Load icons and update element on first open
-      const iconList = await import("../../build/mdi/iconList.json");
-      ICONS = iconList.default.map((icon) => ({
-        icon: `mdi:${icon.name}`,
-        keywords: icon.keywords,
-      }));
-
-      // Load and add custom icon sets and update again
-      const customIconLoads: Promise<IconItem[]>[] = [];
-      Object.keys(customIcons).forEach((iconSet) => {
-        customIconLoads.push(this._loadCustomIconItems(iconSet));
-      });
-      (await Promise.all(customIconLoads)).forEach((customIconItems) => {
-        ICONS.push(...customIconItems);
-      });
+      await loadIcons();
       this.requestUpdate();
-    }
-  }
-
-  private async _loadCustomIconItems(iconsetPrefix: string) {
-    try {
-      const getIconList = customIcons[iconsetPrefix].getIconList;
-      if (typeof getIconList !== "function") {
-        return [];
-      }
-      const iconList = await getIconList();
-      const customIconItems = iconList.map((icon) => ({
-        icon: `${iconsetPrefix}:${icon.name}`,
-        keywords: icon.keywords ?? [],
-      }));
-      return customIconItems;
-    } catch (e) {
-      // eslint-disable-next-line
-      console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
-      return [];
     }
   }
 
