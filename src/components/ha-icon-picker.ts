@@ -15,10 +15,10 @@ type IconItem = {
   icon: string;
   keywords: string[];
 };
+
 let ICONS: IconItem[] = [];
 let ICONS_LOADED = false;
 
-// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<mwc-list-item
   graphic="avatar"
 >
@@ -47,8 +47,6 @@ export class HaIconPicker extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean }) public invalid = false;
-
-  @state() private _opened = false;
 
   @state() private _filterString = "";
 
@@ -122,8 +120,8 @@ export class HaIconPicker extends LitElement {
   );
 
   private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
-    if (this._opened && !ICONS_LOADED) {
+    const opened = ev.detail.value;
+    if (opened && !ICONS_LOADED) {
       ICONS_LOADED = true;
 
       // Load icons and update element on first open
@@ -132,7 +130,6 @@ export class HaIconPicker extends LitElement {
         icon: `mdi:${icon.name}`,
         keywords: icon.keywords,
       }));
-      this.requestUpdate();
 
       // Load and add custom icon sets and update again
       const customIconLoads: Promise<IconItem[]>[] = [];
