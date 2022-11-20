@@ -159,6 +159,11 @@ export class HaDeviceCondition extends LitElement {
       display: block;
       margin-bottom: 24px;
     }
+
+    ha-device-condition-picker {
+      display: block;
+      margin-bottom: 24px;
+    }
   `;
 }
 

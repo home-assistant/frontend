@@ -154,6 +154,7 @@ export class HaDeviceAction extends LitElement {
     }
     ha-device-action-picker {
       display: block;
+      margin-bottom: 16px;
     }
   `;
 }
