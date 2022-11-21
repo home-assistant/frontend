@@ -17,6 +17,7 @@ import {
   getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
+  StatisticsTypes,
 } from "../../../data/recorder";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -69,6 +70,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
+  private _statTypes?: StatisticsTypes;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._interval) {
@@ -117,15 +120,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     });
 
     if (typeof config.stat_types === "string") {
-      this._config = { ...config, stat_types: [config.stat_types] };
+      this._statTypes = [config.stat_types];
     } else if (!config.stat_types) {
-      this._config = {
-        ...config,
-        stat_types: ["state", "sum", "min", "max", "mean"],
-      };
+      this._statTypes = ["state", "sum", "min", "max", "mean"];
     } else {
-      this._config = config;
+      this._statTypes = config.stat_types;
     }
+    this._config = config;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -191,7 +192,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .statisticsData=${this._statistics}
             .metadata=${this._metadata}
             .chartType=${this._config.chart_type || "line"}
-            .statTypes=${this._config.stat_types!}
+            .statTypes=${this._statTypes!}
             .names=${this._names}
             .unit=${this._unit}
           ></statistics-chart>
@@ -250,7 +251,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         undefined,
         this._entities,
         this._config!.period,
-        unitconfig
+        unitconfig,
+        this._statTypes
       );
     } catch (err) {
       this._statistics = undefined;
