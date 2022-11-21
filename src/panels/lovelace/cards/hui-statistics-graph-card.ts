@@ -126,6 +126,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     } else {
       this._statTypes = config.stat_types;
     }
+    this._config = config;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {

@@ -247,7 +247,7 @@ class StatisticsChart extends LitElement {
       new Date(
         Math.max(
           ...statisticsData.map(([_, stats]) =>
-            new Date(stats[1][stats.length - 1].start).getTime()
+            new Date(stats[stats.length - 1].start).getTime()
           )
         )
       );
