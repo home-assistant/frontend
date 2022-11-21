@@ -233,7 +233,7 @@ class StatisticsChart extends LitElement {
       (await this._getStatisticsMetaData(Object.keys(this.statisticsData)));
 
     let colorIndex = 0;
-    const statisticsData = Object.values(this.statisticsData);
+    const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: ChartDataset<"line">[] = [];
     let endTime: Date;
 
@@ -246,7 +246,7 @@ class StatisticsChart extends LitElement {
       // Get the highest date from the last date of each statistic
       new Date(
         Math.max(
-          ...statisticsData.map((stats) =>
+          ...statisticsData.map(([_, stats]) =>
             new Date(stats[stats.length - 1].start).getTime()
           )
         )
@@ -259,20 +259,19 @@ class StatisticsChart extends LitElement {
     let unit: string | undefined | null;
 
     const names = this.names || {};
-    statisticsData.forEach((stats) => {
-      const firstStat = stats[0];
-      const meta = statisticsMetaData?.[firstStat.statistic_id];
-      let name = names[firstStat.statistic_id];
+    statisticsData.forEach(([statistic_id, stats]) => {
+      const meta = statisticsMetaData?.[statistic_id];
+      let name = names[statistic_id];
       if (name === undefined) {
-        name = getStatisticLabel(this.hass, firstStat.statistic_id, meta);
+        name = getStatisticLabel(this.hass, statistic_id, meta);
       }
 
       if (!this.unit) {
         if (unit === undefined) {
-          unit = getDisplayUnit(this.hass, firstStat.statistic_id, meta);
+          unit = getDisplayUnit(this.hass, statistic_id, meta);
         } else if (
           unit !== null &&
-          unit !== getDisplayUnit(this.hass, firstStat.statistic_id, meta)
+          unit !== getDisplayUnit(this.hass, statistic_id, meta)
         ) {
           // Clear unit if not all statistics have same unit
           unit = null;
@@ -363,8 +362,8 @@ class StatisticsChart extends LitElement {
 
       let prevDate: Date | null = null;
       // Process chart data.
-      let firstSum: number | null = null;
-      let prevSum: number | null = null;
+      let firstSum: number | null | undefined = null;
+      let prevSum: number | null | undefined = null;
       stats.forEach((stat) => {
         const date = new Date(stat.start);
         if (prevDate === date) {
@@ -373,16 +372,16 @@ class StatisticsChart extends LitElement {
         prevDate = date;
         const dataValues: Array<number | null> = [];
         statTypes.forEach((type) => {
-          let val: number | null;
+          let val: number | null | undefined;
           if (type === "sum") {
-            if (firstSum === null) {
+            if (firstSum === null || firstSum === undefined) {
               val = 0;
               firstSum = stat.sum;
             } else {
               val = (stat.sum || 0) - firstSum;
             }
           } else if (type === "change") {
-            if (prevSum === null) {
+            if (prevSum === null || prevSum === undefined) {
               prevSum = stat.sum;
               return;
             }
@@ -391,7 +390,11 @@ class StatisticsChart extends LitElement {
           } else {
             val = stat[type];
           }
-          dataValues.push(val !== null ? Math.round(val * 100) / 100 : null);
+          dataValues.push(
+            val !== null && val !== undefined
+              ? Math.round(val * 100) / 100
+              : null
+          );
         });
         pushData(date, dataValues);
       });

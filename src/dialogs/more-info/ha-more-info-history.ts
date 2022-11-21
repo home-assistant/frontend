@@ -11,6 +11,7 @@ import {
   fetchStatistics,
   getStatisticMetadata,
   Statistics,
+  StatisticsTypes,
 } from "../../data/recorder";
 import { HomeAssistant } from "../../types";
 import "../../components/chart/statistics-chart";
@@ -22,7 +23,7 @@ declare global {
   }
 }
 
-const statTypes = ["state", "min", "mean", "max"];
+const statTypes: StatisticsTypes = ["state", "min", "mean", "max"];
 
 @customElement("ha-more-info-history")
 export class MoreInfoHistory extends LitElement {
@@ -124,7 +125,9 @@ export class MoreInfoHistory extends LitElement {
           subHours(new Date(), 24),
           undefined,
           [this.entityId],
-          "5minute"
+          "5minute",
+          undefined,
+          statTypes
         );
         return;
       }
