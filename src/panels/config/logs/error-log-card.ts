@@ -16,6 +16,8 @@ import "../../../components/ha-ansi-to-html";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
+import "../../../components/ha-svg-icon";
+
 import { getSignedPath } from "../../../data/auth";
 
 import { fetchErrorLog, getErrorLogDownloadUrl } from "../../../data/error_log";
@@ -81,7 +83,8 @@ class ErrorLogCard extends LitElement {
               <mwc-button raised @click=${this._refreshLogs}>
                 ${this.hass.localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
-              <mwc-button raised @click=${this._downloadFullLog}>
+              <mwc-button outlined @click=${this._downloadFullLog}>
+                <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
                 ${this.hass.localize("ui.panel.config.logs.download_full_log")}
               </mwc-button>
             `
