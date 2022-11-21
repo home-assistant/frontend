@@ -9,7 +9,6 @@ if (__BUILD__ === "latest" && polyfillsLoaded) {
 
 const formatRelTimeMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    // @ts-expect-error
     new Intl.RelativeTimeFormat(locale.language, { numeric: "auto" })
 );
 
@@ -25,7 +24,6 @@ export const relativeTime = (
   }
   return Intl.NumberFormat(locale.language, {
     style: "unit",
-    // @ts-expect-error
     unit: diff.unit,
     unitDisplay: "long",
   }).format(Math.abs(diff.value));
