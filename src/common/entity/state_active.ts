@@ -17,7 +17,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
   // Custom cases
   switch (domain) {
     case "cover":
-      return !["close", "closing"].includes(compareState);
+      return !["closed", "closing"].includes(compareState);
     case "device_tracker":
     case "person":
       return compareState !== "not_home";
