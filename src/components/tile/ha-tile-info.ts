@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 export class HaTileInfo extends LitElement {
   @property() public primary?: string;
 
-  @property() public secondary?: string;
+  @property() public secondary?: string | TemplateResult<1>;
 
   protected render(): TemplateResult {
     return html`
