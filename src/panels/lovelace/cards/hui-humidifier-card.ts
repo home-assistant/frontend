@@ -110,7 +110,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
           ></round-slider>
         `;
 
-    const setValues = svg`
+    const setValues = html`
       <svg viewBox="0 0 24 20">
         <text
           x="50%"
@@ -134,7 +134,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         </text>
       </svg>
     `;
-    const currentMode = svg`
+    const currentMode = html`
       <svg viewBox="0 0 40 10" id="humidity">
         <text
           x="50%"
