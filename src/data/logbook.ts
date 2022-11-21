@@ -61,7 +61,9 @@ const triggerPhrases = {
 };
 
 const DATA_CACHE: {
-  [cacheKey: string]: { [entityId: string]: Promise<LogbookEntry[]> };
+  [cacheKey: string]: {
+    [entityId: string]: Promise<LogbookEntry[]> | undefined;
+  };
 } = {};
 
 export const getLogbookDataForContext = async (
@@ -115,11 +117,11 @@ const getLogbookDataCache = async (
   }
 
   if (entityIdKey in DATA_CACHE[cacheKey]) {
-    return DATA_CACHE[cacheKey][entityIdKey];
+    return DATA_CACHE[cacheKey][entityIdKey]!;
   }
 
   if (entityId && DATA_CACHE[cacheKey][ALL_ENTITIES]) {
-    const entities = await DATA_CACHE[cacheKey][ALL_ENTITIES];
+    const entities = await DATA_CACHE[cacheKey][ALL_ENTITIES]!;
     return entities.filter(
       (entity) => entity.entity_id && entityId.includes(entity.entity_id)
     );
@@ -131,7 +133,7 @@ const getLogbookDataCache = async (
     endDate,
     entityId
   );
-  return DATA_CACHE[cacheKey][entityIdKey];
+  return DATA_CACHE[cacheKey][entityIdKey]!;
 };
 
 const getLogbookDataFromServer = (
