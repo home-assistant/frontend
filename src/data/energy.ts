@@ -419,7 +419,8 @@ const getEnergyData = async (
       end,
       waterStatIds,
       period,
-      waterUnits.sum
+      waterUnits,
+      ["sum"]
     )),
   };
 
@@ -444,7 +445,8 @@ const getEnergyData = async (
         endCompare,
         energyStatIds,
         period,
-        energyUnits.sum
+        energyUnits,
+        ["sum"]
       )),
       ...(await fetchStatistics(
         hass!,
@@ -452,7 +454,8 @@ const getEnergyData = async (
         end,
         waterStatIds,
         period,
-        waterUnits.sum
+        waterUnits,
+        ["sum"]
       )),
     };
   }

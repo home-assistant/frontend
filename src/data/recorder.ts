@@ -259,17 +259,19 @@ export const statisticsMetaHasType = (
 export const adjustStatisticsSum = (
   hass: HomeAssistant,
   statistic_id: string,
-  start_time: string,
+  start_time: number,
   adjustment: number,
   adjustment_unit_of_measurement: string | null
-): Promise<void> =>
-  hass.callWS({
+): Promise<void> => {
+  const start_time_iso = new Date(start_time).toISOString();
+  return hass.callWS({
     type: "recorder/adjust_sum_statistics",
     statistic_id,
-    start_time,
+    start_time_iso,
     adjustment,
     adjustment_unit_of_measurement,
   });
+};
 
 export const getStatisticLabel = (
   hass: HomeAssistant,
