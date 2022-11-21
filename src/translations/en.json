@@ -4210,7 +4210,23 @@
               "actions": "Actions",
               "appearance": "Appearance",
               "default_color": "Default color (state)",
-              "show_entity_picture": "Show entity picture"
+              "show_entity_picture": "Show entity picture",
+              "extras": {
+                "name": "Extras",
+                "not_compatible": "Not compatible",
+                "no_compatible_available": "No compatible extras available for this entity",
+                "add": "Add extra",
+                "edit": "Edit extra",
+                "remove": "Remove extra",
+                "types": {
+                  "cover-open-close": {
+                    "label": "Cover open/close"
+                  },
+                  "cover-tilt": {
+                    "label": "Cover tilt"
+                  }
+                }
+              }
             },
             "vertical-stack": {
               "name": "Vertical Stack",

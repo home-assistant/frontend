@@ -65,9 +65,6 @@ export class HaBarSlider extends LitElement {
   @property({ type: Number })
   public max = 100;
 
-  @property()
-  public label?: string;
-
   private _mc?: HammerManager;
 
   @property({ type: Boolean, reflect: true })
