@@ -48,6 +48,7 @@ export interface IntegrationListItem {
   config_flow?: boolean;
   is_helper?: boolean;
   integrations?: string[];
+  domains?: string[];
   iot_standards?: string[];
   supported_by?: string;
   cloud?: boolean;
@@ -187,6 +188,9 @@ class AddIntegrationDialog extends LitElement {
               ? Object.entries(integration.integrations).map(
                   ([dom, val]) => val.name || domainToName(localize, dom)
                 )
+              : undefined,
+            domains: integration.integrations
+              ? Object.keys(integration.integrations || {})
               : undefined,
             is_built_in: integration.is_built_in !== false,
           });
@@ -494,7 +498,7 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (integration.integrations) {
-      let domains = integration.integrations;
+      let domains = integration.domains || [];
       if (integration.domain === "apple") {
         // we show discoverd homekit devices in their own brand section, dont show them at apple
         domains = domains.filter((domain) => domain !== "homekit_controller");
