@@ -16,15 +16,27 @@ const switches: {
   id: string;
   label: string;
   class?: string;
+  reversed?: boolean;
+  disabled?: boolean;
 }[] = [
   {
-    id: "switch-start",
+    id: "switch",
     label: "Switch",
+  },
+  {
+    id: "switch-reversed",
+    label: "Switch Reversed",
+    reversed: true,
   },
   {
     id: "switch-custom",
     label: "Switch and custom style",
     class: "custom",
+  },
+  {
+    id: "switch-disabled",
+    label: "Disabled Switch",
+    disabled: true,
   },
 ];
 
@@ -52,6 +64,8 @@ export class DemoHaBarSwitch extends LitElement {
                 .pathOn=${mdiLightbulb}
                 .pathOff=${mdiLightbulbOff}
                 aria-labelledby=${id}
+                disabled=${ifDefined(config.disabled)}
+                reversed=${ifDefined(config.reversed)}
               >
               </ha-bar-switch>
             </div>
@@ -73,6 +87,8 @@ export class DemoHaBarSwitch extends LitElement {
                   aria-label=${label}
                   .pathOn=${mdiGarageOpen}
                   .pathOff=${mdiGarage}
+                  disabled=${ifDefined(config.disabled)}
+                  reversed=${ifDefined(config.reversed)}
                 >
                 </ha-bar-switch>
               `;
@@ -100,7 +116,8 @@ export class DemoHaBarSwitch extends LitElement {
         font-weight: 600;
       }
       .custom {
-        --switch-bar-color: #ffcf4c;
+        --switch-bar-color-on: var(--rgb-green-color);
+        --switch-bar-color-off: var(--rgb-red-color);
         --switch-bar-thickness: 100px;
         --switch-bar-border-radius: 24px;
         --switch-bar-padding: 6px;
