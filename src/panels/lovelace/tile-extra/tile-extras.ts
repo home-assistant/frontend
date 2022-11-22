@@ -20,9 +20,11 @@ const TILE_EXTRAS_SUPPORT: Record<TileExtraType, SupportsTileExtra> = {
   "light-brightness": (stateObj) =>
     computeDomain(stateObj.entity_id) === "light" &&
     lightSupportsBrightness(stateObj),
+  "vacuum-commands": (stateObj) =>
+    computeDomain(stateObj.entity_id) === "vacuum",
 };
 
-const TILE_EXTRAS_EDITABLE: Set<TileExtraType> = new Set([]);
+const TILE_EXTRAS_EDITABLE: Set<TileExtraType> = new Set(["vacuum-commands"]);
 
 export const supportsTileExtra = (
   stateObj: HassEntity,

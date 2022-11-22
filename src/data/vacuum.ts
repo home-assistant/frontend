@@ -2,6 +2,7 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { UNAVAILABLE } from "./entity";
 
 export type VacuumEntityState =
   | "on"
@@ -38,4 +39,26 @@ interface VacuumEntityAttributes extends HassEntityAttributeBase {
 
 export interface VacuumEntity extends HassEntityBase {
   attributes: VacuumEntityAttributes;
+}
+
+export function isCleaning(stateObj: VacuumEntity): boolean {
+  return ["cleaning", "on"].includes(stateObj.state);
+}
+
+export function canStart(stateObj: VacuumEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  return !isCleaning(stateObj);
+}
+
+export function canStop(stateObj: VacuumEntity): boolean {
+  return !["docked", "off"].includes(stateObj.state);
+}
+
+export function canReturnHome(stateObj: VacuumEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  return stateObj.state !== "returning";
 }

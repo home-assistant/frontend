@@ -4237,6 +4237,18 @@
                   },
                   "light-brightness": {
                     "label": "Light brightness"
+                  },
+                  "vacuum-commands": {
+                    "label": "Vacuum commands",
+                    "commands": "Commands",
+                    "commands_helper": "Only compatible commands will be displayed on the card",
+                    "commands_list": {
+                      "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
+                      "stop": "[%key:ui::dialogs::more_info_control::vacuum::stop%]",
+                      "clean_spot": "[%key:ui::dialogs::more_info_control::vacuum::clean_spot%]",
+                      "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
+                      "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
+                    }
                   }
                 }
               }
