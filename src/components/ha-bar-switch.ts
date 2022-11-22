@@ -24,10 +24,10 @@ export class HaBarSwitch extends LitElement {
   @property({ type: Boolean, reflect: true })
   public checked?: boolean;
 
-  // SVG icon path (if you need a non SVG icon instead, use the provided on-icon slot to pass an <ha-icon> in)
+  // SVG icon path (if you need a non SVG icon instead, use the provided on icon slot to pass an <ha-icon slot="icon-on"> in)
   @property({ type: String }) pathOn?: string;
 
-  // SVG icon path (if you need a non SVG icon instead, use the provided off-icon slot to pass an <ha-icon> in)
+  // SVG icon path (if you need a non SVG icon instead, use the provided off icon slot to pass an <ha-icon slot="icon-off"> in)
   @property({ type: String }) pathOff?: string;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -75,12 +75,13 @@ export class HaBarSwitch extends LitElement {
     return html`
       <div class="switch">
         <div class="button" aria-hidden="true">
-          ${this.pathOn && this.checked
-            ? html`<ha-svg-icon .path=${this.pathOn}></ha-svg-icon>`
-            : html`<slot name="icon-on"></slot>`}
-          ${this.pathOff && !this.checked
+          ${this.checked
+            ? this.pathOn
+              ? html`<ha-svg-icon .path=${this.pathOn}></ha-svg-icon>`
+              : html`<slot name="icon-on"></slot>`
+            : this.pathOff
             ? html`<ha-svg-icon .path=${this.pathOff}></ha-svg-icon>`
-            : html`<slot name="icon-on"></slot>`}
+            : html`<slot name="icon-off"></slot>`}
         </div>
       </div>
     `;
