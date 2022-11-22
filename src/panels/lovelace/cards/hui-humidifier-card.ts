@@ -112,48 +112,33 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     const setValues = html`
       <svg viewBox="0 0 24 20">
-        <text
-          x="50%"
-          dx="1"
-          y="73%"
-          text-anchor="middle"
-          id="set-values"
-        >
-          ${
-            UNAVAILABLE_STATES.includes(stateObj.state) ||
-            this._setHum === undefined ||
-            this._setHum === null
-              ? ""
-              : svg`
+        <text x="50%" dx="1" y="73%" text-anchor="middle" id="set-values">
+          ${UNAVAILABLE_STATES.includes(stateObj.state) ||
+          this._setHum === undefined ||
+          this._setHum === null
+            ? ""
+            : svg`
                     ${this._setHum.toFixed()}
                     <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                       %
                     </tspan>
-                    `
-          }
+                    `}
         </text>
       </svg>
     `;
     const currentMode = html`
       <svg viewBox="0 0 40 10" id="humidity">
-        <text
-          x="50%"
-          y="50%"
-          text-anchor="middle"
-          id="set-mode"
-        >
+        <text x="50%" y="50%" text-anchor="middle" id="set-mode">
           ${this.hass!.localize(`state.default.${stateObj.state}`)}
-          ${
-            stateObj.attributes.mode &&
-            !UNAVAILABLE_STATES.includes(stateObj.state)
-              ? html`
-                  -
-                  ${this.hass!.localize(
-                    `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
-                  ) || stateObj.attributes.mode}
-                `
-              : ""
-          }
+          ${stateObj.attributes.mode &&
+          !UNAVAILABLE_STATES.includes(stateObj.state)
+            ? html`
+                -
+                ${this.hass!.localize(
+                  `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
+                ) || stateObj.attributes.mode}
+              `
+            : ""}
         </text>
       </svg>
     `;
