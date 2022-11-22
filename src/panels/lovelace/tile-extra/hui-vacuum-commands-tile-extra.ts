@@ -15,6 +15,7 @@ import "../../../components/tile/ha-tile-button";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   canReturnHome,
+  canStart,
   canStop,
   isCleaning,
   VacuumEntity,
@@ -22,82 +23,94 @@ import {
 } from "../../../data/vacuum";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileExtra, LovelaceTileExtraEditor } from "../types";
-import { VacuumCommand, VacuumCommandsTileExtraConfig } from "./types";
+import {
+  VacuumCommand,
+  VacuumCommandsTileExtraConfig,
+  VACUUM_COMMANDS,
+} from "./types";
 
 interface VacuumButton {
   translationKey: string;
   icon: string;
   serviceName: string;
-  isVisible: (entity: VacuumEntity, commands: VacuumCommand[]) => boolean;
-  isDisabled?: (entity: VacuumEntity) => boolean;
+  disabled?: boolean;
 }
 
-export const VACUUM_BUTTONS: VacuumButton[] = [
-  {
-    translationKey: "start",
-    icon: mdiPlay,
-    serviceName: "start",
-    isVisible: (entity, commands) =>
-      supportsFeature(entity, VacuumEntityFeature.START) &&
-      commands.includes("start_pause") &&
-      !isCleaning(entity),
+export const VACUUM_COMMANDS_FEATURES: Record<
+  VacuumCommand,
+  VacuumEntityFeature[]
+> = {
+  start_pause: [VacuumEntityFeature.PAUSE],
+  stop: [VacuumEntityFeature.STOP],
+  clean_spot: [VacuumEntityFeature.CLEAN_SPOT],
+  locate: [VacuumEntityFeature.LOCATE],
+  return_home: [VacuumEntityFeature.RETURN_HOME],
+};
+
+export const supportsVacuumCommand = (
+  stateObj: HassEntity,
+  command: VacuumCommand
+): boolean =>
+  VACUUM_COMMANDS_FEATURES[command].some((feature) =>
+    supportsFeature(stateObj, feature)
+  );
+
+export const VACUUM_COMMANDS_BUTTONS: Record<
+  VacuumCommand,
+  (stateObj: VacuumEntity) => VacuumButton
+> = {
+  start_pause: (stateObj) => {
+    const startPauseOnly =
+      !supportsFeature(stateObj, VacuumEntityFeature.START) &&
+      supportsFeature(stateObj, VacuumEntityFeature.PAUSE);
+
+    if (startPauseOnly) {
+      return {
+        translationKey: "start_pause",
+        icon: mdiPlayPause,
+        serviceName: "start_pause",
+      };
+    }
+    const canPause =
+      isCleaning(stateObj) &&
+      supportsFeature(stateObj, VacuumEntityFeature.PAUSE);
+
+    return canPause
+      ? {
+          translationKey: "pause",
+          icon: mdiPause,
+          serviceName: "pause",
+        }
+      : {
+          translationKey: "start",
+          icon: mdiPlay,
+          serviceName: "start",
+          disabled: canStart(stateObj),
+        };
   },
-  {
-    translationKey: "pause",
-    icon: mdiPause,
-    serviceName: "pause",
-    isVisible: (entity, commands) =>
-      // We need also to check if Start is supported because if not we show play-pause
-      supportsFeature(entity, VacuumEntityFeature.START) &&
-      supportsFeature(entity, VacuumEntityFeature.PAUSE) &&
-      commands.includes("start_pause") &&
-      isCleaning(entity),
-  },
-  {
-    translationKey: "start_pause",
-    icon: mdiPlayPause,
-    serviceName: "start_pause",
-    isVisible: (entity, commands) =>
-      // If start is supported, we don't show this button
-      !supportsFeature(entity, VacuumEntityFeature.START) &&
-      supportsFeature(entity, VacuumEntityFeature.PAUSE) &&
-      commands.includes("start_pause"),
-  },
-  {
+  stop: (stateObj) => ({
     translationKey: "stop",
     icon: mdiStop,
     serviceName: "stop",
-    isVisible: (entity, commands) =>
-      supportsFeature(entity, VacuumEntityFeature.STOP) &&
-      commands.includes("stop"),
-    isDisabled: (entity) => !canStop(entity),
-  },
-  {
+    disabled: !canStop(stateObj),
+  }),
+  clean_spot: () => ({
     translationKey: "clean_spot",
     icon: mdiTargetVariant,
     serviceName: "clean_spot",
-    isVisible: (entity, commands) =>
-      supportsFeature(entity, VacuumEntityFeature.CLEAN_SPOT) &&
-      commands.includes("clean_spot"),
-  },
-  {
+  }),
+  locate: () => ({
     translationKey: "locate",
     icon: mdiMapMarker,
     serviceName: "locate",
-    isVisible: (entity, commands) =>
-      supportsFeature(entity, VacuumEntityFeature.LOCATE) &&
-      commands.includes("locate"),
-    isDisabled: (entity) => !canReturnHome(entity),
-  },
-  {
+  }),
+  return_home: (stateObj) => ({
     translationKey: "return_home",
     icon: mdiHomeMapMarker,
     serviceName: "return_to_base",
-    isVisible: (entity, commands) =>
-      supportsFeature(entity, VacuumEntityFeature.RETURN_HOME) &&
-      commands.includes("return_home"),
-  },
-];
+    disabled: !canReturnHome(stateObj),
+  }),
+};
 
 @customElement("hui-vacuum-commands-tile-extra")
 class HuiVacuumCommandTileExtra
@@ -113,7 +126,7 @@ class HuiVacuumCommandTileExtra
   static getStubConfig(): VacuumCommandsTileExtraConfig {
     return {
       type: "vacuum-commands",
-      commands: [],
+      commands: ["start_pause", "locate", "return_home"],
     };
   }
 
@@ -148,10 +161,13 @@ class HuiVacuumCommandTileExtra
 
     return html`
       <div class="container">
-        ${VACUUM_BUTTONS.filter((button) =>
-          button.isVisible(stateObj, this._config?.commands || [])
-        ).map(
-          (button) => html`
+        ${VACUUM_COMMANDS.filter(
+          (command) =>
+            supportsVacuumCommand(stateObj, command) &&
+            this._config?.commands?.includes(command)
+        ).map((command) => {
+          const button = VACUUM_COMMANDS_BUTTONS[command](stateObj);
+          return html`
             <ha-tile-button
               .entry=${button}
               .label=${this.hass!.localize(
@@ -159,14 +175,12 @@ class HuiVacuumCommandTileExtra
                 `ui.dialogs.more_info_control.vacuum.${button.translationKey}`
               )}
               @click=${this._onCommandTap}
-              .disabled=${button.isDisabled
-                ? button.isDisabled(stateObj)
-                : stateObj.state === UNAVAILABLE}
+              .disabled=${button.disabled || stateObj.state === UNAVAILABLE}
             >
               <ha-svg-icon .path=${button.icon}></ha-svg-icon>
             </ha-tile-button>
-          `
-        )}
+          `;
+        })}
       </div>
     `;
   }
