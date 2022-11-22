@@ -74,7 +74,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeDomain(config.entity);
-    const supportToggle =
+    const supportsIconAction =
       DOMAINS_TOGGLE.has(domain) ||
       ["button", "input_button", "scene"].includes(domain);
 
@@ -83,7 +83,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         action: "more-info",
       },
       icon_tap_action: {
-        action: supportToggle ? "toggle" : "more-info",
+        action: supportsIconAction ? "toggle" : "more-info",
       },
       ...config,
     };
