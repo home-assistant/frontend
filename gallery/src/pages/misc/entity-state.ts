@@ -138,6 +138,22 @@ const ENTITIES: HassEntity[] = [
   createEntity("cover.shade", "open", "shade"),
   createEntity("cover.shutter", "open", "shutter"),
   createEntity("cover.window", "open", "window"),
+  // Device tracker/person
+  createEntity("device_tracker.home", "home"),
+  createEntity("device_tracker.not_home", "not_home"),
+  createEntity("device_tracker.work", "work"),
+  createEntity("person.home", "home"),
+  createEntity("person.not_home", "not_home"),
+  createEntity("person.work", "work"),
+  // Fan
+  createEntity("fan.on", "on"),
+  createEntity("fan.off", "off"),
+  // Humidifier
+  createEntity("humidifier.on", "on"),
+  createEntity("humidifier.off", "off"),
+  // Light
+  createEntity("light.on", "on"),
+  createEntity("light.off", "off"),
   // Locks
   createEntity("lock.locked", "locked"),
   createEntity("lock.unlocked", "unlocked"),
@@ -170,6 +186,9 @@ const ENTITIES: HassEntity[] = [
   ...[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) =>
     createEntity(`sensor.battery_${value}`, value.toString(), "battery")
   ),
+  // Siren
+  createEntity("siren.off", "off"),
+  createEntity("siren.on", "on"),
   // Switch
   createEntity("switch.off", "off"),
   createEntity("switch.on", "on"),
@@ -177,13 +196,45 @@ const ENTITIES: HassEntity[] = [
   createEntity("switch.outlet_on", "on", "outlet"),
   createEntity("switch.switch_off", "off", "switch"),
   createEntity("switch.switch_on", "on", "switch"),
+  // Vacuum
+  createEntity("vacuum.cleaning", "cleaning"),
+  createEntity("vacuum.docked", "docked"),
+  createEntity("vacuum.paused", "paused"),
+  createEntity("vacuum.idle", "idle"),
+  createEntity("vacuum.returning", "returning"),
+  createEntity("vacuum.error", "error"),
+  createEntity("vacuum.cleaning", "cleaning"),
+  createEntity("vacuum.off", "off"),
+  createEntity("vacuum.on", "on"),
+  // Update
+  createEntity("update.off", "off", undefined, {
+    installed_version: "1.0.0",
+    latest_version: "2.0.0",
+  }),
+  createEntity("update.on", "on", undefined, {
+    installed_version: "1.0.0",
+    latest_version: "2.0.0",
+  }),
+  createEntity("update.installing", "on", undefined, {
+    installed_version: "1.0.0",
+    latest_version: "2.0.0",
+    in_progress: true,
+  }),
+  createEntity("update.off", "off", "firmware", {
+    installed_version: "1.0.0",
+    latest_version: "2.0.0",
+  }),
+  createEntity("update.on", "on", "firmware", {
+    installed_version: "1.0.0",
+    latest_version: "2.0.0",
+  }),
 ];
 
 function createEntity(
   entity_id: string,
   state: string,
   device_class?: string,
-  attributes?: HassEntityAttributeBase
+  attributes?: HassEntityAttributeBase | HassEntity["attributes"]
 ): HassEntity {
   return {
     entity_id,
