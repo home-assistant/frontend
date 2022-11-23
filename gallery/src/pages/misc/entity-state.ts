@@ -7,6 +7,7 @@ import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../../src/common/entity/compute_domain";
+import { computeStateDisplay } from "../../../../src/common/entity/compute_state_display";
 import { stateColorCss } from "../../../../src/common/entity/state_color";
 import { stateIconPath } from "../../../../src/common/entity/state_icon_path";
 import "../../../../src/components/data-table/ha-data-table";
@@ -41,6 +42,7 @@ const SENSOR_DEVICE_CLASSES = [
   "pm25",
   "power_factor",
   "power",
+  "precipitation",
   "precipitation_intensity",
   "pressure",
   "reactive_power",
@@ -89,16 +91,31 @@ const BINARY_SENSOR_DEVICE_CLASSES = [
 ];
 
 const ENTITIES: HassEntity[] = [
-  // Sensor
-  ...SENSOR_DEVICE_CLASSES.map((dc) => createEntity(`sensor.${dc}`, "10", dc)),
-  ...[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) =>
-    createEntity(`sensor.battery_${value}`, value.toString(), "battery")
+  // Alarm control panel
+  createEntity("alarm_control_panel.disarmed", "disarmed"),
+  createEntity("alarm_control_panel.armed_home", "armed_home"),
+  createEntity("alarm_control_panel.armed_away", "armed_away"),
+  createEntity("alarm_control_panel.armed_night", "armed_night"),
+  createEntity("alarm_control_panel.armed_vacation", "armed_vacation"),
+  createEntity(
+    "alarm_control_panel.armed_custom_bypass",
+    "armed_custom_bypass"
   ),
+  createEntity("alarm_control_panel.pending", "pending"),
+  createEntity("alarm_control_panel.arming", "arming"),
+  createEntity("alarm_control_panel.disarming", "disarming"),
+  createEntity("alarm_control_panel.triggered", "triggered"),
   // Binary Sensor
   ...BINARY_SENSOR_DEVICE_CLASSES.map((dc) =>
     createEntity(`binary_sensor.${dc}`, "on", dc)
   ),
-  // Climates
+  // Button
+  createEntity("button.restart", "unknown", "restart"),
+  createEntity("button.update", "unknown", "update"),
+  // Calendar
+  createEntity("calendar.on", "on"),
+  createEntity("calendar.off", "off"),
+  // Climate
   createEntity("climate.off", "off"),
   createEntity("climate.heat", "heat"),
   createEntity("climate.cool", "cool"),
@@ -106,6 +123,21 @@ const ENTITIES: HassEntity[] = [
   createEntity("climate.auto", "auto"),
   createEntity("climate.dry", "dry"),
   createEntity("climate.fan_only", "fan_only"),
+  // Cover
+  createEntity("cover.opening", "opening"),
+  createEntity("cover.open", "open"),
+  createEntity("cover.closing", "closing"),
+  createEntity("cover.closed", "closed"),
+  createEntity("cover.awning", "open", "awning"),
+  createEntity("cover.blind", "open", "blind"),
+  createEntity("cover.curtain", "open", "curtain"),
+  createEntity("cover.damper", "open", "damper"),
+  createEntity("cover.door", "open", "door"),
+  createEntity("cover.garage", "open", "garage"),
+  createEntity("cover.gate", "open", "gate"),
+  createEntity("cover.shade", "open", "shade"),
+  createEntity("cover.shutter", "open", "shutter"),
+  createEntity("cover.window", "open", "window"),
   // Locks
   createEntity("lock.locked", "locked"),
   createEntity("lock.unlocked", "unlocked"),
@@ -132,6 +164,12 @@ const ENTITIES: HassEntity[] = [
   createEntity("media_player.speaker_playing", "playing", "speaker"),
   createEntity("media_player.speaker_paused", "paused", "speaker"),
   createEntity("media_player.speaker_standby", "standby", "speaker"),
+  // Sensor
+  ...SENSOR_DEVICE_CLASSES.map((dc) => createEntity(`sensor.${dc}`, "10", dc)),
+  // Battery sensor
+  ...[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) =>
+    createEntity(`sensor.battery_${value}`, value.toString(), "battery")
+  ),
   // Switch
   createEntity("switch.off", "off"),
   createEntity("switch.on", "on"),
@@ -186,52 +224,60 @@ function createRowData(stateObj: HassEntity): EntityRowData {
 export class DemoEntityState extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
 
-  private _columns = memoizeOne((): DataTableColumnContainer => {
-    const columns: DataTableColumnContainer<EntityRowData> = {
-      icon: {
-        title: "Icon",
-        template: (_, entry) => {
-          const cssColor = stateColorCss(entry.stateObj);
-          return html`
-            <ha-svg-icon
-              style=${styleMap({
-                color: `rgb(${cssColor})`,
-              })}
-              .path=${stateIconPath(entry.stateObj)}
-            >
-            </ha-svg-icon>
-          `;
+  private _columns = memoizeOne(
+    (hass: HomeAssistant): DataTableColumnContainer => {
+      const columns: DataTableColumnContainer<EntityRowData> = {
+        icon: {
+          title: "Icon",
+          template: (_, entry) => {
+            const cssColor = stateColorCss(entry.stateObj);
+            return html`
+              <ha-svg-icon
+                style=${styleMap({
+                  color: `rgb(${cssColor})`,
+                })}
+                .path=${stateIconPath(entry.stateObj)}
+              >
+              </ha-svg-icon>
+            `;
+          },
         },
-      },
-      entity_id: {
-        title: "Entity id",
-        width: "30%",
-        filterable: true,
-        sortable: true,
-      },
-      state: {
-        title: "State",
-        width: "20%",
-        sortable: true,
-      },
-      device_class: {
-        title: "Device class",
-        template: (dc) => html`${dc ?? "-"}`,
-        width: "20%",
-        filterable: true,
-        sortable: true,
-      },
-      domain: {
-        title: "Domain",
-        template: (_, entry) => html`${computeDomain(entry.entity_id)}`,
-        width: "20%",
-        filterable: true,
-        sortable: true,
-      },
-    };
+        entity_id: {
+          title: "Entity id",
+          width: "30%",
+          filterable: true,
+          sortable: true,
+        },
+        state: {
+          title: "State",
+          width: "20%",
+          sortable: true,
+          template: (_, entry) =>
+            html`${computeStateDisplay(
+              hass.localize,
+              entry.stateObj,
+              hass.locale
+            )}`,
+        },
+        device_class: {
+          title: "Device class",
+          template: (dc) => html`${dc ?? "-"}`,
+          width: "20%",
+          filterable: true,
+          sortable: true,
+        },
+        domain: {
+          title: "Domain",
+          template: (_, entry) => html`${computeDomain(entry.entity_id)}`,
+          width: "20%",
+          filterable: true,
+          sortable: true,
+        },
+      };
 
-    return columns;
-  });
+      return columns;
+    }
+  );
 
   private _rows = memoizeOne((): EntityRowData[] =>
     ENTITIES.map(createRowData)
@@ -252,7 +298,7 @@ export class DemoEntityState extends LitElement {
     return html`
       <ha-data-table
         .hass=${this.hass}
-        .columns=${this._columns()}
+        .columns=${this._columns(this.hass)}
         .data=${this._rows()}
         auto-height
       ></ha-data-table>
