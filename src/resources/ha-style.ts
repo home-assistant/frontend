@@ -145,6 +145,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-binary-sensor-danger-color: var(--rgb-red-color);
       --rgb-state-cover-color: var(--rgb-blue-color);
       --rgb-state-cover-secure-color: var(--rgb-red-color);
+      --rgb-state-fan-color: var(--rgb-teal-color);
       --rgb-state-humidifier-color: var(--rgb-blue-color);
       --rgb-state-light-color: var(--rgb-orange-color);
       --rgb-state-lock-jammed-color: var(--rgb-red-color);

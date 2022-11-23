@@ -41,6 +41,9 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
     case "climate":
       return climateColor(compareState);
 
+    case "fan":
+      return "fan";
+
     case "lock":
       return lockColor(compareState);
 
