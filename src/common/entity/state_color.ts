@@ -21,7 +21,7 @@ export const stateColorCss = (stateObj?: HassEntity, state?: string) => {
     return `var(--rgb-state-${color}-color)`;
   }
 
-  return `var(--rgb-primary-color)`;
+  return `var(--rgb-state-default-color)`;
 };
 
 export const stateColor = (stateObj: HassEntity, state?: string) => {
@@ -63,8 +63,14 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
     case "vacuum":
       return "vacuum";
 
+    case "siren":
+      return "siren";
+
     case "sun":
       return compareState === "above_horizon" ? "sun-day" : "sun-night";
+
+    case "switch":
+      return "switch";
 
     case "update":
       return updateIsInstalling(stateObj as UpdateEntity)
