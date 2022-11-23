@@ -145,7 +145,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-binary-sensor-danger-color: var(--rgb-red-color);
       --rgb-state-cover-color: var(--rgb-blue-color);
       --rgb-state-cover-secure-color: var(--rgb-red-color);
-      --rgb-state-fan-color: var(--rgb-teal-color);
+      --rgb-state-fan-color: var(--rgb-cyan-color);
       --rgb-state-humidifier-color: var(--rgb-blue-color);
       --rgb-state-light-color: var(--rgb-orange-color);
       --rgb-state-lock-jammed-color: var(--rgb-red-color);
@@ -170,7 +170,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-climate-auto-color: var(--rgb-green-color);
       --rgb-state-climate-cool-color: var(--rgb-blue-color);
       --rgb-state-climate-dry-color: var(--rgb-orange-color);
-      --rgb-state-climate-fan-only-color: var(--rgb-teal-color);
+      --rgb-state-climate-fan-only-color: var(--rgb-cyan-color);
       --rgb-state-climate-heat-color: var(--rgb-deep-orange-color);
       --rgb-state-climate-heat-cool-color: var(--rgb-green-color);
       --rgb-state-climate-idle-color: var(--rgb-disabled-color);
