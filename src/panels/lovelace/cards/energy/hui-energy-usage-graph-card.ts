@@ -484,7 +484,7 @@ export class HuiEnergyUsageGraphCard
         const set = {};
         let prevValue: number;
         stats.forEach((stat) => {
-          if (stat.sum === null) {
+          if (stat.sum === null || stat.sum === undefined) {
             return;
           }
           if (prevValue === undefined) {

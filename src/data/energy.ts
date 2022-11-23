@@ -410,7 +410,8 @@ const getEnergyData = async (
       end,
       energyStatIds,
       period,
-      energyUnits
+      energyUnits,
+      ["sum"]
     )),
     ...(await fetchStatistics(
       hass!,
@@ -418,7 +419,8 @@ const getEnergyData = async (
       end,
       waterStatIds,
       period,
-      waterUnits
+      waterUnits,
+      ["sum"]
     )),
   };
 
@@ -443,7 +445,8 @@ const getEnergyData = async (
         endCompare,
         energyStatIds,
         period,
-        energyUnits
+        energyUnits,
+        ["sum"]
       )),
       ...(await fetchStatistics(
         hass!,
@@ -451,7 +454,8 @@ const getEnergyData = async (
         end,
         waterStatIds,
         period,
-        waterUnits
+        waterUnits,
+        ["sum"]
       )),
     };
   }
@@ -485,8 +489,8 @@ const getEnergyData = async (
     if (stat.length && new Date(stat[0].start) > startMinHour) {
       stat.unshift({
         ...stat[0],
-        start: startMinHour.toISOString(),
-        end: startMinHour.toISOString(),
+        start: startMinHour.getTime(),
+        end: startMinHour.getTime(),
         sum: 0,
         state: 0,
       });

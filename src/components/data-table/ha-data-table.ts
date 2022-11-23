@@ -627,7 +627,7 @@ export class HaDataTable extends LitElement {
           border-top: 1px solid var(--divider-color);
         }
 
-        .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
+        .mdc-data-table__row.clickable:not(.mdc-data-table__row--selected):hover {
           background-color: rgba(var(--rgb-primary-text-color), 0.04);
         }
 
