@@ -47,7 +47,9 @@ export const showRepairsFlowDialog = (
 
       renderAbortDescription(hass, step) {
         const description = hass.localize(
-          `component.${issue.domain}.issues.abort.${step.reason}`,
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.abort.${step.reason}`,
           step.description_placeholders
         );
 
