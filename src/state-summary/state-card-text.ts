@@ -28,7 +28,7 @@ class StateCardText extends LitElement {
         .type=${this.stateObj.attributes.mode}
         @change=${this._valueChanged}
         @click=${stopPropagation}
-        placeholder="(empty value)"
+        placeholder=${this.hass.localize("ui.card.text.emtpy_value")}
       ></ha-textfield>
     `;
   }

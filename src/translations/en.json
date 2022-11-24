@@ -235,6 +235,9 @@
         "installing_with_progress": "Installing ({progress}%)",
         "up_to_date": "Up-to-date"
       },
+      "text": {
+        "emtpy_value": "(empty value)"
+      },
       "timer": {
         "actions": {
           "start": "start",

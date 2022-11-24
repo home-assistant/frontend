@@ -60,7 +60,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
           .pattern=${stateObj.attributes.pattern}
           .type=${stateObj.attributes.mode}
           @change=${this._valueChanged}
-          placeholder="(empty value)"
+          placeholder=${this.hass!.localize("ui.card.text.emtpy_value")}
         ></ha-textfield>
       </hui-generic-entity-row>
     `;
