@@ -1481,19 +1481,19 @@
               "energy_out_of_battery": "Energy coming out of the battery (kWh)"
             }
           },
-          "gas": {
-            "title": "Gas Consumption",
-            "sub": "Let Home Assistant monitor your gas usage.",
+          "heating": {
+            "title": "Consumption for Heating",
+            "sub": "Let Home Assistant monitor your energy usage for heating.",
             "learn_more": "More information on how to get started.",
-            "gas_consumption": "Gas consumption",
-            "edit_gas_source": "Edit gas source",
-            "delete_gas_source": "Delete gas source",
-            "add_gas_source": "Add gas source",
+            "heating_consumption": "Heating consumption",
+            "edit_heating_source": "Edit heating source",
+            "delete_heating_source": "Delete heating source",
+            "add_heating_source": "Add heating source",
             "dialog": {
-              "header": "Configure gas consumption",
-              "paragraph": "Gas consumption is the volume of gas that flows to your home.",
+              "header": "Configure heating consumption",
+              "paragraph": "Heating consumption is the volume of gas or energy that you use to heat your home.",
               "energy_stat": "Consumed Energy (m³)",
-              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
+              "cost_para": "Select how Home Assistant should keep track of the costs of heating.",
               "no_cost": "Do not track costs",
               "cost_stat": "Use an entity tracking the total costs",
               "cost_stat_input": "Total Costs Entity",
@@ -1501,7 +1501,7 @@
               "cost_entity_input": "Entity with the current price per {unit}",
               "cost_number": "Use a static price",
               "cost_number_input": "Price per {unit}",
-              "gas_usage": "Gas usage",
+              "heating_usage": "Heating usage",
               "m3_or_kWh": "ft³, m³, Wh, kWh, MWh or GJ"
             }
           },
@@ -1515,7 +1515,7 @@
             "add_water_source": "Add water source",
             "dialog": {
               "header": "Configure water consumption",
-              "paragraph": "Gas consumption is the volume of water that flows to your home.",
+              "paragraph": "Water consumption is the volume of water that flows to your home.",
               "energy_stat": "Consumed water (m³ or gl)",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
               "no_cost": "Do not track costs",
@@ -1570,7 +1570,7 @@
               },
               "entity_unexpected_unit_gas": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ' for an energy sensor or 'm³' or 'ft³' for a gas sensor:"
+                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ' for an energy sensor or 'm³' or 'ft³' for a heating sensor:"
               },
               "entity_unexpected_unit_water": {
                 "title": "Unexpected unit of measurement",
@@ -3727,7 +3727,7 @@
             },
             "energy_sources_table": {
               "grid_total": "Grid total",
-              "gas_total": "Gas total",
+              "heating_total": "Heating total",
               "water_total": "Water total",
               "source": "Source",
               "energy": "Energy",
@@ -3758,7 +3758,7 @@
             "energy_distribution": {
               "title_today": "Energy distribution today",
               "grid": "Grid",
-              "gas": "Gas",
+              "heating": "Heating",
               "water": "Water",
               "solar": "Solar",
               "low_carbon": "Low-carbon",
@@ -4861,7 +4861,7 @@
         "cards": {
           "energy_usage_graph_title": "Energy usage",
           "energy_solar_graph_title": "Solar production",
-          "energy_gas_graph_title": "Gas consumption",
+          "energy_heating_graph_title": "Consumption for heating",
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",

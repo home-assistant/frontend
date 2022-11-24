@@ -823,7 +823,7 @@ export class HuiEnergySourcesTableCard
                     <td class="mdc-data-table__cell"></td>
                     <th class="mdc-data-table__cell" scope="row">
                       ${this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_sources_table.gas_total"
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.heating_total"
                       )}
                     </th>
                     ${compare

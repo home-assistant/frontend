@@ -90,7 +90,9 @@ export class EnergyStrategy {
     // Only include if we have a gas source.
     if (hasGas) {
       view.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_heating_graph_title"
+        ),
         type: "energy-gas-graph",
         collection_key: "energy_dashboard",
       });

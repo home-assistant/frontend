@@ -320,7 +320,7 @@ class HuiEnergyDistrubutionCard
                   ? html`<div class="circle-container gas">
                       <span class="label"
                         >${this.hass.localize(
-                          "ui.panel.lovelace.cards.energy.energy_distribution.gas"
+                          "ui.panel.lovelace.cards.energy.energy_distribution.heating"
                         )}</span
                       >
                       <div class="circle">

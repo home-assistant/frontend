@@ -60,17 +60,19 @@ export class EnergyGasSettings extends LitElement {
       <ha-card outlined>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.gas.title")}
+          ${this.hass.localize("ui.panel.config.energy.heating.title")}
         </h1>
 
         <div class="card-content">
           <p>
-            ${this.hass.localize("ui.panel.config.energy.gas.sub")}
+            ${this.hass.localize("ui.panel.config.energy.heating.sub")}
             <a
               target="_blank"
               rel="noopener noreferrer"
               href=${documentationUrl(this.hass, "/docs/energy/gas/")}
-              >${this.hass.localize("ui.panel.config.energy.gas.learn_more")}</a
+              >${this.hass.localize(
+                "ui.panel.config.energy.heating.learn_more"
+              )}</a
             >
           </p>
           ${gasValidation.map(
@@ -83,7 +85,9 @@ export class EnergyGasSettings extends LitElement {
               `
           )}
           <h3>
-            ${this.hass.localize("ui.panel.config.energy.gas.gas_consumption")}
+            ${this.hass.localize(
+              "ui.panel.config.energy.heating.heating_consumption"
+            )}
           </h3>
           ${gasSources.map((source) => {
             const entityState = this.hass.states[source.stat_energy_from];
@@ -103,14 +107,14 @@ export class EnergyGasSettings extends LitElement {
                 >
                 <ha-icon-button
                   .label=${this.hass.localize(
-                    "ui.panel.config.energy.gas.edit_gas_source"
+                    "ui.panel.config.energy.heating.edit_heating_source"
                   )}
                   @click=${this._editSource}
                   .path=${mdiPencil}
                 ></ha-icon-button>
                 <ha-icon-button
                   .label=${this.hass.localize(
-                    "ui.panel.config.energy.gas.delete_gas_source"
+                    "ui.panel.config.energy.heating.delete_heating_source"
                   )}
                   @click=${this._deleteSource}
                   .path=${mdiDelete}
@@ -122,7 +126,7 @@ export class EnergyGasSettings extends LitElement {
             <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
             <mwc-button @click=${this._addSource}
               >${this.hass.localize(
-                "ui.panel.config.energy.gas.add_gas_source"
+                "ui.panel.config.energy.heating.add_heating_source"
               )}</mwc-button
             >
           </div>
