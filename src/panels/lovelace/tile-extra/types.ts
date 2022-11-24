@@ -6,6 +6,11 @@ export interface CoverTiltTileExtraConfig {
   type: "cover-tilt";
 }
 
+export interface LightBrightnessTileExtraConfig {
+  type: "light-brightness";
+}
+
 export type LovelaceTileExtraConfig =
   | CoverOpenCloseTileExtraConfig
-  | CoverTiltTileExtraConfig;
+  | CoverTiltTileExtraConfig
+  | LightBrightnessTileExtraConfig;
