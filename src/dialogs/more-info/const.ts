@@ -50,8 +50,9 @@ export const DOMAINS_HIDE_DEFAULT_MORE_INFO = [
   "input_text",
   "number",
   "scene",
-  "update",
   "select",
+  "text",
+  "update",
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */
