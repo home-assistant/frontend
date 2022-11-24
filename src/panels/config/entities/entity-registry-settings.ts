@@ -1223,4 +1223,7 @@ declare global {
   interface HTMLElementTagNameMap {
     "entity-registry-settings": EntityRegistrySettings;
   }
+  interface HASSDomEvents {
+    "entity-entry-updated": ExtEntityRegistryEntry;
+  }
 }
