@@ -11,7 +11,7 @@ import {
   boolean,
   object,
   optional,
-  string
+  string,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
