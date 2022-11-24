@@ -163,9 +163,8 @@ export class HaDeviceTrigger extends LitElement {
       margin-bottom: 24px;
     }
 
-    ha-device-trigger-picker {
-      display: block;
-      margin-bottom: 24px;
+    ha-form {
+      margin-top: 24px;
     }
   `;
 }
