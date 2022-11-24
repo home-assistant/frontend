@@ -197,6 +197,7 @@ class StatisticsChart extends LitElement {
       elements: {
         line: {
           tension: 0.4,
+          cubicInterpolationMode: "monotone",
           borderWidth: 1.5,
         },
         bar: { borderWidth: 1.5, borderRadius: 4 },
@@ -280,33 +281,38 @@ class StatisticsChart extends LitElement {
 
       // array containing [value1, value2, etc]
       let prevValues: Array<number | null> | null = null;
+      let prevEndTime: Date | undefined;
 
       // The datasets for the current statistic
       const statDataSets: ChartDataset<"line">[] = [];
 
       const pushData = (
-        timestamp: Date,
+        start: Date,
+        end: Date,
         dataValues: Array<number | null> | null
       ) => {
         if (!dataValues) return;
-        if (timestamp > endTime) {
+        if (start > end) {
           // Drop data points that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
         }
         statDataSets.forEach((d, i) => {
-          if (dataValues[i] === null && prevValues && prevValues[i] !== null) {
-            // null data values show up as gaps in the chart.
-            // If the current value for the dataset is null and the previous
-            // value of the data set is not null, then add an 'end' point
-            // to the chart for the previous value. Otherwise the gap will
-            // be too big. It will go from the start of the previous data
-            // value until the start of the next data value.
-            d.data.push({ x: timestamp.getTime(), y: prevValues[i]! });
+          if (
+            prevEndTime &&
+            prevValues &&
+            prevEndTime.getTime() !== start.getTime()
+          ) {
+            // if the end of the previous data doesn't match the start of the current data,
+            // we have to draw a gap so add a value at the end time, and then an empty value.
+            d.data.push({ x: prevEndTime.getTime(), y: prevValues[i]! });
+            // @ts-expect-error
+            d.data.push({ x: prevEndTime.getTime(), y: null });
           }
-          d.data.push({ x: timestamp.getTime(), y: dataValues[i]! });
+          d.data.push({ x: start.getTime(), y: dataValues[i]! });
         });
         prevValues = dataValues;
+        prevEndTime = end;
       };
 
       const color = getGraphColorByIndex(colorIndex, this._computedStyle!);
@@ -365,11 +371,11 @@ class StatisticsChart extends LitElement {
       let firstSum: number | null | undefined = null;
       let prevSum: number | null | undefined = null;
       stats.forEach((stat) => {
-        const date = new Date(stat.start);
-        if (prevDate === date) {
+        const startDate = new Date(stat.start);
+        if (prevDate === startDate) {
           return;
         }
-        prevDate = date;
+        prevDate = startDate;
         const dataValues: Array<number | null> = [];
         statTypes.forEach((type) => {
           let val: number | null | undefined;
@@ -396,7 +402,7 @@ class StatisticsChart extends LitElement {
               : null
           );
         });
-        pushData(date, dataValues);
+        pushData(startDate, new Date(stat.end), dataValues);
       });
 
       // Concat two arrays
