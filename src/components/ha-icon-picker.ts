@@ -1,7 +1,10 @@
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import {
+  ComboBoxDataProviderCallback,
+  ComboBoxDataProviderParams,
+} from "@vaadin/combo-box/vaadin-combo-box-light";
 import { css, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { guard } from "lit/directives/guard";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
@@ -85,8 +88,6 @@ export class HaIconPicker extends LitElement {
 
   @property({ type: Boolean }) public invalid = false;
 
-  @state() private _filterString = "";
-
   protected override async scheduleUpdate() {
     await nextRender();
     super.scheduleUpdate();
@@ -100,9 +101,7 @@ export class HaIconPicker extends LitElement {
         item-label-path="icon"
         .value=${this._value}
         allow-custom-value
-        .filteredItems=${guard([this._filterString, ICONS.length], () =>
-          this._filterIcons(this._filterString, ICONS)
-        )}
+        .dataProvider=${ICONS_LOADED ? this._iconProvider : undefined}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
@@ -114,7 +113,6 @@ export class HaIconPicker extends LitElement {
         icon
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
-        @filter-changed=${this._filterChanged}
       >
         ${this._value || this.placeholder
           ? html`
@@ -132,7 +130,7 @@ export class HaIconPicker extends LitElement {
   }
 
   private _filterIcons = memoizeOne(
-    (filterString: string, iconItems = ICONS) => {
+    (filterString: string, iconItems: IconItem[] = ICONS) => {
       if (!filterString) {
         return iconItems;
       }
@@ -155,6 +153,16 @@ export class HaIconPicker extends LitElement {
       return filteredItems;
     }
   );
+
+  private _iconProvider = (
+    params: ComboBoxDataProviderParams,
+    callback: ComboBoxDataProviderCallback<IconItem>
+  ) => {
+    const filteredItems = this._filterIcons(params.filter.toLowerCase(), ICONS);
+    const iStart = params.page * params.pageSize;
+    const iEnd = iStart + params.pageSize;
+    callback(filteredItems.slice(iStart, iEnd), filteredItems.length);
+  };
 
   private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
     const opened = ev.detail.value;
@@ -180,10 +188,6 @@ export class HaIconPicker extends LitElement {
         composed: false,
       }
     );
-  }
-
-  private _filterChanged(ev: CustomEvent): void {
-    this._filterString = ev.detail.value.toLowerCase();
   }
 
   private get _value() {

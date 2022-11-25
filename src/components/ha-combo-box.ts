@@ -3,6 +3,7 @@ import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "@vaadin/combo-box/lit";
 import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
 import type {
+  ComboBoxDataProvider,
   ComboBoxLight,
   ComboBoxLightFilterChangedEvent,
   ComboBoxLightOpenedChangedEvent,
@@ -89,6 +90,9 @@ export class HaComboBox extends LitElement {
 
   @property({ attribute: false }) public filteredItems?: any[];
 
+  @property({ attribute: false })
+  public dataProvider?: ComboBoxDataProvider<any>;
+
   @property({ attribute: "allow-custom-value", type: Boolean })
   public allowCustomValue = false;
 
@@ -149,6 +153,7 @@ export class HaComboBox extends LitElement {
         .items=${this.items}
         .value=${this.value || ""}
         .filteredItems=${this.filteredItems}
+        .dataProvider=${this.dataProvider}
         .allowCustomValue=${this.allowCustomValue}
         .disabled=${this.disabled}
         .required=${this.required}
