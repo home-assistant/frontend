@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import { mdiPalette } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -29,6 +28,13 @@ import {
   lightSupportsBrightness,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
+import "../components/ha-more-info-bar-slider";
+import "../components/ha-more-info-light-brightness";
+import "../components/ha-more-info-light-color-temp";
+import "../components/ha-more-info-light-color";
+
+const LIGHT_CONTROL_MODES = ["brightness", "color_temp", "color"] as const;
+type LightControlMode = typeof LIGHT_CONTROL_MODES[number];
 
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
@@ -56,7 +62,7 @@ class MoreInfoLight extends LitElement {
 
   @state() private _colorPickerColor?: [number, number, number];
 
-  @state() private _mode?: "color" | LightColorMode;
+  @state() private _mode?: LightControlMode = "brightness";
 
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
@@ -82,73 +88,45 @@ class MoreInfoLight extends LitElement {
       !supportsRgbww &&
       lightSupportsColorMode(this.stateObj, LightColorMode.RGBW);
 
+    const supportsBrightness = lightSupportsBrightness(this.stateObj);
+
     const supportsColor =
       supportsRgbww || supportsRgbw || lightSupportsColor(this.stateObj);
 
     return html`
       <div class="content">
-        ${lightSupportsBrightness(this.stateObj)
+        ${supportsBrightness && this._mode === LightColorMode.BRIGHTNESS
           ? html`
-              <ha-labeled-slider
-                caption=${this.hass.localize("ui.card.light.brightness")}
-                icon="hass:brightness-5"
-                min="1"
-                max="100"
-                value=${this._brightnessSliderValue}
-                @change=${this._brightnessSliderChanged}
-                pin
-              ></ha-labeled-slider>
+              <ha-more-info-light-brightness
+                .stateObj=${this.stateObj}
+                .hass=${this.hass}
+              >
+              </ha-more-info-light-brightness>
+            `
+          : ""}
+        ${supportsTemp && this._mode === LightColorMode.COLOR_TEMP
+          ? html`
+              <ha-more-info-light-color-temp
+                .stateObj=${this.stateObj}
+                .hass=${this.hass}
+              >
+              </ha-more-info-light-color-temp>
+            `
+          : ""}
+        ${supportsTemp && this._mode === "color"
+          ? html`
+              <ha-more-info-light-color
+                .stateObj=${this.stateObj}
+                .hass=${this.hass}
+              >
+              </ha-more-info-light-color>
             `
           : ""}
         ${this.stateObj.state === "on"
           ? html`
-              ${supportsTemp || supportsColor ? html`<hr />` : ""}
-              ${supportsColor && (supportsTemp || supportsWhite)
-                ? html`<ha-button-toggle-group
-                    fullWidth
-                    .buttons=${this._toggleButtons(supportsTemp, supportsWhite)}
-                    .active=${this._mode}
-                    @value-changed=${this._modeChanged}
-                  ></ha-button-toggle-group>`
-                : ""}
-              ${supportsTemp &&
-              ((!supportsColor && !supportsWhite) ||
-                this._mode === LightColorMode.COLOR_TEMP)
-                ? html`
-                    <ha-labeled-slider
-                      class="color_temp"
-                      caption=${this.hass.localize(
-                        "ui.card.light.color_temperature"
-                      )}
-                      icon="hass:thermometer"
-                      .min=${this.stateObj.attributes.min_color_temp_kelvin}
-                      .max=${this.stateObj.attributes.max_color_temp_kelvin}
-                      .value=${this._ctSliderValue}
-                      @change=${this._ctSliderChanged}
-                      pin
-                    ></ha-labeled-slider>
-                  `
-                : ""}
               ${supportsColor &&
               ((!supportsTemp && !supportsWhite) || this._mode === "color")
                 ? html`
-                    <div class="segmentationContainer">
-                      <ha-color-picker
-                        class="color"
-                        @colorselected=${this._colorPicked}
-                        .desiredRgbColor=${this._colorPickerColor}
-                        throttle="500"
-                        .hueSegments=${this._hueSegments}
-                        .saturationSegments=${this._saturationSegments}
-                      >
-                      </ha-color-picker>
-                      <ha-icon-button
-                        .path=${mdiPalette}
-                        @click=${this._segmentClick}
-                        class="segmentationButton"
-                      ></ha-icon-button>
-                    </div>
-
                     ${supportsRgbw || supportsRgbww
                       ? html`<ha-labeled-slider
                           .caption=${this.hass.localize(
@@ -204,6 +182,12 @@ class MoreInfoLight extends LitElement {
                       : ""}
                   `
                 : ""}
+              <ha-button-toggle-group
+                fullWidth
+                .buttons=${this._toggleButtons()}
+                .active=${this._mode}
+                @value-changed=${this._modeChanged}
+              ></ha-button-toggle-group>
               ${supportsFeature(this.stateObj, LightEntityFeature.EFFECT) &&
               this.stateObj!.attributes.effect_list?.length
                 ? html`
@@ -239,6 +223,8 @@ class MoreInfoLight extends LitElement {
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
+
+    return;
 
     if (!changedProps.has("stateObj")) {
       return;
@@ -303,17 +289,8 @@ class MoreInfoLight extends LitElement {
     }
   }
 
-  private _toggleButtons = memoizeOne(
-    (supportsTemp: boolean, supportsWhite: boolean) => {
-      const modes = [{ label: "Color", value: "color" }];
-      if (supportsTemp) {
-        modes.push({ label: "Temperature", value: LightColorMode.COLOR_TEMP });
-      }
-      if (supportsWhite) {
-        modes.push({ label: "White", value: LightColorMode.WHITE });
-      }
-      return modes;
-    }
+  private _toggleButtons = memoizeOne(() =>
+    LIGHT_CONTROL_MODES.map((mode) => ({ label: mode, value: mode }))
   );
 
   private _modeChanged(ev: CustomEvent) {
@@ -458,16 +435,6 @@ class MoreInfoLight extends LitElement {
     );
   }
 
-  private _segmentClick() {
-    if (this._hueSegments === 24 && this._saturationSegments === 8) {
-      this._hueSegments = 0;
-      this._saturationSegments = 0;
-    } else {
-      this._hueSegments = 24;
-      this._saturationSegments = 8;
-    }
-  }
-
   private _adjustColorBrightness(
     rgbColor: [number, number, number],
     value?: number,
@@ -503,64 +470,6 @@ class MoreInfoLight extends LitElement {
       this.hass.callService("light", "turn_on", {
         entity_id: this.stateObj!.entity_id,
         rgbw_color: rgbColor.concat(rgbw_color.slice(3)),
-      });
-    }
-  }
-
-  /**
-   * Called when a new color has been picked.
-   * should be throttled with the 'throttle=' attribute of the color picker
-   */
-  private _colorPicked(
-    ev: CustomEvent<{
-      hs: { h: number; s: number };
-      rgb: { r: number; g: number; b: number };
-    }>
-  ) {
-    this._colorPickerColor = [
-      ev.detail.rgb.r,
-      ev.detail.rgb.g,
-      ev.detail.rgb.b,
-    ];
-
-    if (
-      lightSupportsColorMode(this.stateObj!, LightColorMode.RGBWW) ||
-      lightSupportsColorMode(this.stateObj!, LightColorMode.RGBW)
-    ) {
-      this._setRgbWColor(
-        this._colorBrightnessSliderValue
-          ? this._adjustColorBrightness(
-              [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b],
-              (this._colorBrightnessSliderValue * 255) / 100
-            )
-          : [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b]
-      );
-    } else if (lightSupportsColorMode(this.stateObj!, LightColorMode.RGB)) {
-      const rgb_color: [number, number, number] = [
-        ev.detail.rgb.r,
-        ev.detail.rgb.g,
-        ev.detail.rgb.b,
-      ];
-      if (this._brightnessAdjusted) {
-        this.hass.callService("light", "turn_on", {
-          entity_id: this.stateObj!.entity_id,
-          brightness_pct: this._brightnessSliderValue,
-          rgb_color: this._adjustColorBrightness(
-            rgb_color,
-            this._brightnessAdjusted,
-            true
-          ),
-        });
-      } else {
-        this.hass.callService("light", "turn_on", {
-          entity_id: this.stateObj!.entity_id,
-          rgb_color,
-        });
-      }
-    } else {
-      this.hass.callService("light", "turn_on", {
-        entity_id: this.stateObj!.entity_id,
-        hs_color: [ev.detail.hs.h, ev.detail.hs.s * 100],
       });
     }
   }
