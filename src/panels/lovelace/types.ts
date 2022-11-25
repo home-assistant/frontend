@@ -106,7 +106,10 @@ export interface LovelaceTileExtra extends HTMLElement {
 export interface LovelaceTileExtraConstructor
   extends Constructor<LovelaceTileExtra> {
   getConfigElement?: () => LovelaceTileExtraEditor;
-  getStubConfig?: (hass: HomeAssistant) => LovelaceTileExtraConfig;
+  getStubConfig?: (
+    hass: HomeAssistant,
+    stateObj?: HassEntity
+  ) => LovelaceTileExtraConfig;
 }
 
 export interface LovelaceTileExtraEditor extends LovelaceGenericElementEditor {

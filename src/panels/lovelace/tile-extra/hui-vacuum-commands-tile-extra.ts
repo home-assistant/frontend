@@ -123,10 +123,17 @@ class HuiVacuumCommandTileExtra
 
   @state() private _config?: VacuumCommandsTileExtraConfig;
 
-  static getStubConfig(): VacuumCommandsTileExtraConfig {
+  static getStubConfig(
+    _,
+    stateObj?: HassEntity
+  ): VacuumCommandsTileExtraConfig {
     return {
       type: "vacuum-commands",
-      commands: ["start_pause", "locate", "return_home"],
+      commands: stateObj
+        ? VACUUM_COMMANDS.filter((c) =>
+            supportsVacuumCommand(stateObj, c)
+          ).slice(0, 3)
+        : [],
     };
   }
 
