@@ -98,7 +98,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
-  private _filter?: string;
+  private _suggestion?: string;
 
   private _init = false;
 
@@ -336,27 +336,29 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
   );
 
   private _filterChanged(ev: CustomEvent): void {
-    this._filter = ev.detail.value;
-    if (!this._filter) {
+    const filter = ev.detail.value;
+    if (!filter) {
       this.comboBox.filteredItems = this.comboBox.items;
       return;
     }
-    // @ts-ignore
-    if (!this.noAdd && this.comboBox._comboBox.filteredItems?.length === 0) {
+
+    const filteredItems = this.comboBox.items?.filter((item) =>
+      item.name.toLowerCase().includes(filter!.toLowerCase())
+    );
+    if (!this.noAdd && filteredItems?.length === 0) {
+      this._suggestion = filter;
       this.comboBox.filteredItems = [
         {
           area_id: "add_new_suggestion",
           name: this.hass.localize(
             "ui.components.area-picker.add_new_sugestion",
-            { name: this._filter }
+            { name: this._suggestion }
           ),
           picture: null,
         },
       ];
     } else {
-      this.comboBox.filteredItems = this.comboBox.items?.filter((item) =>
-        item.name.toLowerCase().includes(this._filter!.toLowerCase())
-      );
+      this.comboBox.filteredItems = filteredItems;
     }
   }
 
@@ -394,7 +396,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         "ui.components.area-picker.add_dialog.name"
       ),
       defaultValue:
-        newValue === "add_new_suggestion" ? this._filter : undefined,
+        newValue === "add_new_suggestion" ? this._suggestion : undefined,
       confirm: async (name) => {
         if (!name) {
           return;
@@ -427,10 +429,14 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           });
         }
       },
+      cancel: () => {
+        this._setValue(undefined);
+        this._suggestion = undefined;
+      },
     });
   }
 
-  private _setValue(value: string) {
+  private _setValue(value?: string) {
     this.value = value;
     setTimeout(() => {
       fireEvent(this, "value-changed", { value });
