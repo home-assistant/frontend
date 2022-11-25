@@ -88,6 +88,8 @@ export class HaIconPicker extends LitElement {
 
   @property({ type: Boolean }) public invalid = false;
 
+  // Filter can take a significant chunk of frame (up to 3-4 ms),
+  // so slow down updates to save resources and prevent any jank
   protected override async scheduleUpdate() {
     await nextRender();
     super.scheduleUpdate();
