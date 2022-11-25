@@ -10,6 +10,8 @@ type TileFeatureType = LovelaceTileFeatureConfig["type"];
 export type SupportsTileFeature = (stateObj: HassEntity) => boolean;
 
 const TILE_FEATURES_SUPPORT: Record<TileFeatureType, SupportsTileFeature> = {
+  "alarm-commands": (stateObj) =>
+    computeDomain(stateObj.entity_id) === "alarm_control_panel",
   "cover-open-close": (stateObj) =>
     computeDomain(stateObj.entity_id) === "cover" &&
     (supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
@@ -27,6 +29,7 @@ const TILE_FEATURES_SUPPORT: Record<TileFeatureType, SupportsTileFeature> = {
 };
 
 const TILE_FEATURE_EDITABLE: Set<TileFeatureType> = new Set([
+  "alarm-commands",
   "vacuum-commands",
 ]);
 

@@ -25,7 +25,24 @@ export interface VacuumCommandsTileFeatureConfig {
   commands?: VacuumCommand[];
 }
 
+export const ALARM_COMMANDS = [
+  "alarm_arm_away",
+  "alarm_arm_home",
+  "alarm_arm_night",
+  "alarm_arm_vacation",
+  "alarm_arm_custom_bypass",
+  "alarm_disarm",
+] as const;
+
+export type AlarmCommand = typeof ALARM_COMMANDS[number];
+
+export interface AlarmCommandsTileFeatureConfig {
+  type: "alarm-commands";
+  commands?: AlarmCommand[];
+}
+
 export type LovelaceTileFeatureConfig =
+  | AlarmCommandsTileFeatureConfig
   | CoverOpenCloseTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | LightBrightnessTileFeatureConfig

@@ -4304,6 +4304,19 @@
                 "edit": "Edit feature",
                 "remove": "Remove feature",
                 "types": {
+                  "alarm-commands": {
+                    "label": "Alarm commands",
+                    "commands": "Commands",
+                    "commands_helper": "Only compatible commands will be displayed on the card",
+                    "commands_list": {
+                      "arm_away": "[%key:ui::card::alarm_control_panel::arm_away%]",
+                      "arm_home": "[%key:ui::card::alarm_control_panel::arm_home%]",
+                      "arm_night": "[%key:ui::card::alarm_control_panel::arm_night%]",
+                      "arm_vacation": "[%key:ui::card::alarm_control_panel::arm_vacation%]",
+                      "arm_custom_bypass": "[%key:ui::card::alarm_control_panel::arm_custom_bypass%]",
+                      "disarm": "[%key:ui::card::alarm_control_panel::disarm%]"
+                    }
+                  },
                   "cover-open-close": {
                     "label": "Cover open/close"
                   },
