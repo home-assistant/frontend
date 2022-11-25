@@ -4241,7 +4241,6 @@
                   "vacuum-commands": {
                     "label": "Vacuum commands",
                     "commands": "Commands",
-                    "not_compatible": "not compatible",
                     "commands_list": {
                       "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
                       "stop": "[%key:ui::dialogs::more_info_control::vacuum::stop%]",
