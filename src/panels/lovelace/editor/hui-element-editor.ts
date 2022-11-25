@@ -57,10 +57,7 @@ export interface UIConfigChangedEvent extends Event {
   };
 }
 
-export abstract class HuiElementEditor<
-  T,
-  C extends any = any
-> extends LitElement {
+export abstract class HuiElementEditor<T, C = any> extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;

@@ -9,7 +9,6 @@ import type { HomeAssistant } from "../../../../types";
 import { supportsVacuumCommand } from "../../tile-extra/hui-vacuum-commands-tile-extra";
 import {
   LovelaceTileExtraContext,
-  VacuumCommand,
   VacuumCommandsTileExtraConfig,
   VACUUM_COMMANDS,
 } from "../../tile-extra/types";
@@ -31,34 +30,22 @@ export class HuiVacuumCommandsTileExtraEditor
   }
 
   private _schema = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      stateObj?: HassEntity,
-      selectedCommands?: VacuumCommand[]
-    ) =>
+    (localize: LocalizeFunc, stateObj?: HassEntity) =>
       [
         {
           name: "commands",
           selector: {
             select: {
               multiple: true,
-              options: VACUUM_COMMANDS.map((command) => {
-                const supported =
-                  !stateObj || supportsVacuumCommand(stateObj, command);
-                return {
-                  value: command,
-                  disabled: !supported && !selectedCommands?.includes(command),
-                  label: `${localize(
-                    `ui.panel.lovelace.editor.card.tile.extras.types.vacuum-commands.commands_list.${command}`
-                  )}${
-                    !supported
-                      ? ` (${localize(
-                          `ui.panel.lovelace.editor.card.tile.extras.types.vacuum-commands.not_compatible`
-                        )})`
-                      : ""
-                  }`,
-                };
-              }),
+              options: VACUUM_COMMANDS.filter(
+                (command) =>
+                  stateObj && supportsVacuumCommand(stateObj, command)
+              ).map((command) => ({
+                value: command,
+                label: `${localize(
+                  `ui.panel.lovelace.editor.card.tile.extras.types.vacuum-commands.commands_list.${command}`
+                )}`,
+              })),
             },
           },
         },
@@ -74,11 +61,7 @@ export class HuiVacuumCommandsTileExtraEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const schema = this._schema(
-      this.hass.localize,
-      stateObj,
-      this._config.commands
-    );
+    const schema = this._schema(this.hass.localize, stateObj);
 
     return html`
       <ha-form
