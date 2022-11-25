@@ -136,22 +136,11 @@ export class HaIconPicker extends LitElement {
       if (!filterString) {
         return iconItems;
       }
-      const startTime = performance.now();
       const filteredItems = iconItems.filter(
         (item) =>
           item.icon.includes(filterString) ||
           item.keywords.some((word) => word.includes(filterString))
       );
-      if (__DEV__) {
-        // eslint-disable-next-line no-console
-        console.log(
-          'Searched %i icons for "%s" in %s ms with %i results',
-          iconItems.length,
-          filterString,
-          (performance.now() - startTime).toFixed(1),
-          filteredItems.length
-        );
-      }
       return filteredItems;
     }
   );
