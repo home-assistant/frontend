@@ -30,3 +30,7 @@ export type LovelaceTileExtraConfig =
   | CoverTiltTileExtraConfig
   | LightBrightnessTileExtraConfig
   | VacuumCommandsTileExtraConfig;
+
+export type LovelaceTileExtraContext = {
+  entity_id?: string;
+};

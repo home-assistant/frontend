@@ -1,12 +1,15 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import { supportsVacuumCommand } from "../../tile-extra/hui-vacuum-commands-tile-extra";
 import {
+  LovelaceTileExtraContext,
+  VacuumCommand,
   VacuumCommandsTileExtraConfig,
   VACUUM_COMMANDS,
 } from "../../tile-extra/types";
@@ -19,6 +22,8 @@ export class HuiVacuumCommandsTileExtraEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public context?: LovelaceTileExtraContext;
+
   @state() private _config?: VacuumCommandsTileExtraConfig;
 
   public setConfig(config: VacuumCommandsTileExtraConfig): void {
@@ -26,19 +31,34 @@ export class HuiVacuumCommandsTileExtraEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (
+      localize: LocalizeFunc,
+      stateObj?: HassEntity,
+      selectedCommands?: VacuumCommand[]
+    ) =>
       [
         {
           name: "commands",
           selector: {
             select: {
               multiple: true,
-              options: VACUUM_COMMANDS.map((command) => ({
-                value: command,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.tile.extras.types.vacuum-commands.commands_list.${command}`
-                ),
-              })),
+              options: VACUUM_COMMANDS.map((command) => {
+                const supported =
+                  !stateObj || supportsVacuumCommand(stateObj, command);
+                return {
+                  value: command,
+                  disabled: !supported && !selectedCommands?.includes(command),
+                  label: `${localize(
+                    `ui.panel.lovelace.editor.card.tile.extras.types.vacuum-commands.commands_list.${command}`
+                  )}${
+                    !supported
+                      ? ` (${localize(
+                          `ui.panel.lovelace.editor.card.tile.extras.types.vacuum-commands.not_compatible`
+                        )})`
+                      : ""
+                  }`,
+                };
+              }),
             },
           },
         },
@@ -50,7 +70,15 @@ export class HuiVacuumCommandsTileExtraEditor
       return html``;
     }
 
-    const schema = this._schema(this.hass.localize);
+    const stateObj = this.context?.entity_id
+      ? this.hass.states[this.context?.entity_id]
+      : undefined;
+
+    const schema = this._schema(
+      this.hass.localize,
+      stateObj,
+      this._config.commands
+    );
 
     return html`
       <ha-form
@@ -58,7 +86,6 @@ export class HuiVacuumCommandsTileExtraEditor
         .data=${this._config}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
-        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -80,19 +107,6 @@ export class HuiVacuumCommandsTileExtraEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
-    }
-  };
-
-  private _computeHelperCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
-    switch (schema.name) {
-      case "commands":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.extras.types.vacuum-commands.${schema.name}_helper`
-        );
-      default:
-        return "";
     }
   };
 }

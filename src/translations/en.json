@@ -4242,6 +4242,7 @@
                     "label": "Vacuum commands",
                     "commands": "Commands",
                     "commands_helper": "Only compatible commands will be displayed on the card",
+                    "not_compatible": "not compatible",
                     "commands_list": {
                       "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
                       "stop": "[%key:ui::dialogs::more_info_control::vacuum::stop%]",

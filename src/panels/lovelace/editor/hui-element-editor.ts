@@ -57,10 +57,15 @@ export interface UIConfigChangedEvent extends Event {
   };
 }
 
-export abstract class HuiElementEditor<T> extends LitElement {
+export abstract class HuiElementEditor<
+  T,
+  C extends any = any
+> extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
+
+  @property({ attribute: false }) public context?: C;
 
   @state() private _yaml?: string;
 
@@ -275,6 +280,9 @@ export abstract class HuiElementEditor<T> extends LitElement {
     ) {
       this._configElement.lovelace = this.lovelace;
     }
+    if (this._configElement && changedProperties.has("context")) {
+      this._configElement.context = this.context;
+    }
   }
 
   private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
@@ -328,6 +336,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
           if ("lovelace" in configElement) {
             configElement.lovelace = this.lovelace;
           }
+          configElement.context = this.context;
           configElement.addEventListener("config-changed", (ev) =>
             this._handleUIConfigChanged(ev as UIConfigChangedEvent)
           );

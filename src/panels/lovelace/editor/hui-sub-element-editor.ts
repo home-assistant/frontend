@@ -25,6 +25,8 @@ export class HuiSubElementEditor extends LitElement {
 
   @property({ attribute: false }) public config!: SubElementEditorConfig;
 
+  @property({ attribute: false }) public context?: any;
+
   @state() private _guiModeAvailable = true;
 
   @state() private _guiMode = true;
@@ -66,6 +68,7 @@ export class HuiSubElementEditor extends LitElement {
               class="editor"
               .hass=${this.hass}
               .value=${this.config.elementConfig}
+              .context=${this.context}
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
             ></hui-row-element-editor>
@@ -76,6 +79,7 @@ export class HuiSubElementEditor extends LitElement {
               class="editor"
               .hass=${this.hass}
               .value=${this.config.elementConfig}
+              .context=${this.context}
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
             ></hui-headerfooter-element-editor>
@@ -86,6 +90,7 @@ export class HuiSubElementEditor extends LitElement {
               class="editor"
               .hass=${this.hass}
               .value=${this.config.elementConfig}
+              .context=${this.context}
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
             ></hui-tile-extra-element-editor>
