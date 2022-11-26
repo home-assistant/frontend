@@ -38,6 +38,9 @@ class DialogRepairsIssue extends LitElement {
       return html``;
     }
 
+    const learnMoreUrlIsHomeAssistant =
+      this._issue.learn_more_url?.startsWith("homeassistant://") || false;
+
     return html`
       <ha-dialog
         open
@@ -103,8 +106,10 @@ class DialogRepairsIssue extends LitElement {
         ${this._issue.learn_more_url
           ? html`
               <a
-                href=${this._issue.learn_more_url}
-                target="_blank"
+                href=${learnMoreUrlIsHomeAssistant
+                  ? this._issue.learn_more_url.replace("homeassistant://", "/")
+                  : this._issue.learn_more_url}
+                target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
                 slot="primaryAction"
                 rel="noopener noreferrer"
               >
