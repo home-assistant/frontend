@@ -114,6 +114,9 @@ class DialogRepairsIssue extends LitElement {
                 rel="noopener noreferrer"
               >
                 <mwc-button
+                  @click=${learnMoreUrlIsHomeAssistant
+                    ? this.closeDialog
+                    : undefined}
                   .label=${this.hass!.localize(
                     "ui.panel.config.repairs.dialog.learn"
                   )}
