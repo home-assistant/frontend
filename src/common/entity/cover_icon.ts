@@ -86,9 +86,9 @@ export const coverIcon = (state?: string, stateObj?: HassEntity): string => {
         case "closing":
           return mdiArrowDownBox;
         case "closed":
-          return mdiBlinds;
+          return mdiRollerShadeClosed;
         default:
-          return mdiBlindsOpen;
+          return mdiRollerShade;
       }
     case "window":
       switch (state) {
