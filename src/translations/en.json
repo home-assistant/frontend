@@ -235,6 +235,9 @@
         "installing_with_progress": "Installing ({progress}%)",
         "up_to_date": "Up-to-date"
       },
+      "text": {
+        "emtpy_value": "(empty value)"
+      },
       "timer": {
         "actions": {
           "start": "start",
@@ -242,6 +245,9 @@
           "cancel": "cancel",
           "finish": "finish"
         }
+      },
+      "tile": {
+        "not_found": "Entity not found"
       },
       "vacuum": {
         "actions": {
@@ -374,6 +380,9 @@
           "is_closing": "is closing",
           "was_unlocked": "was unlocked",
           "was_locked": "was locked",
+          "is_unlocking": "is unlocking",
+          "is_locking": "is locking",
+          "is_jammed": "is jammed",
           "was_plugged_in": "was plugged in",
           "was_unplugged": "was unplugged",
           "was_at_home": "was detected at home",
@@ -385,6 +394,7 @@
           "turned_on": "turned on",
           "changed_to_state": "changed to {state}",
           "became_unavailable": "became unavailable",
+          "became_unknown": "became unknown",
           "detected_tampering": "detected tampering",
           "cleared_tampering": "cleared tampering"
         }
@@ -518,7 +528,8 @@
           "max": "max",
           "mean": "mean",
           "state": "state",
-          "sum": "sum"
+          "sum": "sum",
+          "change": "change"
         }
       },
       "service-picker": {
@@ -1021,7 +1032,7 @@
           "clusters": "Clusters",
           "bindings": "Bindings",
           "signature": "Signature",
-          "children": "Children"
+          "neighbors": "Neighbors"
         }
       },
       "zha_device_info": {
@@ -1494,7 +1505,30 @@
               "cost_number": "Use a static price",
               "cost_number_input": "Price per {unit}",
               "gas_usage": "Gas usage",
-              "m3_or_kWh": "ft³, m³, Wh, kWh or MWh"
+              "m3_or_kWh": "ft³, m³, Wh, kWh, MWh or GJ"
+            }
+          },
+          "water": {
+            "title": "Water Consumption",
+            "sub": "Let Home Assistant monitor your water usage.",
+            "learn_more": "More information on how to get started.",
+            "water_consumption": "Water consumption",
+            "edit_water_source": "Edit water source",
+            "delete_water_source": "Delete water source",
+            "add_water_source": "Add water source",
+            "dialog": {
+              "header": "Configure water consumption",
+              "paragraph": "Gas consumption is the volume of water that flows to your home.",
+              "energy_stat": "Consumed water (m³ or gl)",
+              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
+              "no_cost": "Do not track costs",
+              "cost_stat": "Use an entity tracking the total costs",
+              "cost_stat_input": "Total Costs Entity",
+              "cost_entity": "Use an entity with current price",
+              "cost_entity_input": "Entity with the current price per m³ or gl",
+              "cost_number": "Use a static price",
+              "cost_number_input": "Price per m³ or gl",
+              "water_usage": "Water usage (m³ or gl)"
             }
           },
           "device_consumption": {
@@ -1535,19 +1569,27 @@
               },
               "entity_unexpected_unit_energy": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh' or 'MWh':"
+                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ':"
               },
               "entity_unexpected_unit_gas": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh' or 'MWh' for an energy sensor or 'm³' or 'ft³' for a gas sensor:"
+                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ' for an energy sensor or 'm³' or 'ft³' for a gas sensor:"
+              },
+              "entity_unexpected_unit_water": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement 'm³' or 'ft³' for a water sensor:"
               },
               "entity_unexpected_unit_energy_price": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'' or ''{currency}/MWh'':"
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'' or ''{currency}/GJ'':"
               },
               "entity_unexpected_unit_gas_price": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'', ''{currency}/m³'' or ''{currency}/ft³'':"
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'', ''{currency}/GJ'', ''{currency}/m³'' or ''{currency}/ft³'':"
+              },
+              "entity_unexpected_unit_water_price": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement ''{currency}/m³'' or ''{currency}/ft³'':"
               },
               "entity_unexpected_state_class": {
                 "title": "Unexpected state class",
@@ -1611,9 +1653,9 @@
                 "elevation_meters": "meters",
                 "time_zone": "Time Zone",
                 "unit_system": "Unit System",
-                "unit_system_imperial": "Imperial",
+                "unit_system_us_customary": "US customary",
                 "unit_system_metric": "Metric",
-                "imperial_example": "Fahrenheit, pounds",
+                "us_customary_example": "Fahrenheit, pounds",
                 "metric_example": "Celsius, kilograms",
                 "find_currency_value": "Find my value",
                 "save_button": "Save",
@@ -1834,7 +1876,8 @@
               "toggle": "Enable/disable",
               "name": "Name",
               "trigger": "Trigger",
-              "actions": "Actions"
+              "actions": "Actions",
+              "state": "State"
             }
           },
           "dialog_new": {
@@ -1858,6 +1901,7 @@
             "disabled": "Automation is disabled",
             "read_only": "This automation can not be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
             "migrate": "Migrate",
+            "duplicate": "[%key:ui::common::duplicate%]",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
             "show_trace": "Traces",
@@ -1879,7 +1923,9 @@
             "re_order": "Re-order",
             "re_order_mode": {
               "title": "Re-order mode",
-              "description": "You are in re-order mode, you can re-order your triggers, conditions and actions.",
+              "description_triggers": "You are in re-order mode, you can re-order your triggers.",
+              "description_conditions": "You are in re-order mode, you can re-order your conditions.",
+              "description_actions": "You are in re-order mode, you can re-order your actions.",
               "exit": "Exit"
             },
             "description": {
@@ -1917,6 +1963,7 @@
               "id": "Trigger ID",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
+              "re_order": "Re-order",
               "rename": "Rename",
               "change_alias": "Rename trigger",
               "alias": "Trigger name",
@@ -1965,7 +2012,7 @@
                   "label": "State",
                   "attribute": "Attribute (optional)",
                   "from": "From (optional)",
-                  "for": "For (optional)",
+                  "for": "For",
                   "to": "To (optional)"
                 },
                 "homeassistant": {
@@ -1983,7 +2030,7 @@
                   "label": "Numeric state",
                   "above": "Above",
                   "below": "Below",
-                  "value_template": "Value template (optional)"
+                  "value_template": "Value template"
                 },
                 "sun": {
                   "label": "Sun",
@@ -2038,6 +2085,7 @@
               "invalid_condition": "Invalid condition configuration",
               "test_failed": "Error occurred while testing condition",
               "duplicate": "[%key:ui::common::duplicate%]",
+              "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
               "change_alias": "Rename condition",
               "alias": "Condition name",
@@ -2130,6 +2178,7 @@
               "run_action_error": "Error running action",
               "run_action_success": "Action run successfully",
               "duplicate": "[%key:ui::common::duplicate%]",
+              "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
               "change_alias": "Rename action",
               "alias": "Action name",
@@ -2334,7 +2383,7 @@
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
             "read_only": "This script can not be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "migrate": "Migrate",
-            "duplicate": "Duplicate",
+            "duplicate": "[%key:ui::common::duplicate%]",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
@@ -2359,7 +2408,9 @@
             "sequence_sentence": "The sequence of actions of this script.",
             "link_available_actions": "Learn more about available actions."
           },
-          "trace": { "edit_script": "Edit script" }
+          "trace": {
+            "edit_script": "Edit script"
+          }
         },
         "scene": {
           "caption": "Scenes",
@@ -2641,6 +2692,10 @@
           "download_diagnostics_integration": "Download {integration} diagnostics",
           "delete_device": "Delete",
           "delete_device_integration": "Remove device from {integration}",
+          "connected_devices": {
+            "heading": "Connected devices",
+            "show_more": "+{count} devices not shown"
+          },
           "type": {
             "device_heading": "Device",
             "device": "device",
@@ -2823,7 +2878,7 @@
         "zone": {
           "caption": "Zones",
           "description": "Manage the zones you want to track people in",
-          "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
+          "introduction": "Zones allow you to specify certain regions on Earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not added any zones yet.",
           "create_zone": "Add Zone",
           "add_zone": "Add Zone",
@@ -2918,7 +2973,7 @@
             "known_issues": "Known issues",
             "delete": "Delete",
             "delete_confirm_title": "Delete {title}?",
-            "delete_confirm_text": "Its devices and entities will be permantly deleted.",
+            "delete_confirm_text": "Its devices and entities will be permanently deleted.",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
@@ -2993,7 +3048,8 @@
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
-            "missing_zwave_zigbee": "To add a {integration} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
+            "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
+            "missing_zwave_zigbee_title": "{integration} is not setup",
             "supported_hardware": "supported hardware",
             "proceed": "Proceed"
           }
@@ -3203,6 +3259,12 @@
             "unbind_button_label": "Unbind Group",
             "bind_button_help": "Bind the selected group to the selected device clusters.",
             "unbind_button_help": "Unbind the selected group from the selected device clusters."
+          },
+          "neighbors": {
+            "name": "Name",
+            "lqi": "LQI",
+            "relationship": "Relationship",
+            "depth": "Depth"
           }
         },
         "zwave_js": {
@@ -3669,6 +3731,7 @@
             "energy_sources_table": {
               "grid_total": "Grid total",
               "gas_total": "Gas total",
+              "water_total": "Water total",
               "source": "Source",
               "energy": "Energy",
               "cost": "Cost",
@@ -3699,6 +3762,7 @@
               "title_today": "Energy distribution today",
               "grid": "Grid",
               "gas": "Gas",
+              "water": "Water",
               "solar": "Solar",
               "low_carbon": "Low-carbon",
               "home": "Home",
@@ -4000,23 +4064,48 @@
               "name": "Statistics Graph",
               "description": "The Statistics Graph card allows you to display a graph of the statistics for each of the entities listed.",
               "period": "Period",
+              "unit": "Unit",
               "stat_types": "Show stat types",
               "stat_type_labels": {
                 "mean": "Mean",
                 "min": "Min",
                 "max": "Max",
                 "state": "State",
-                "sum": "Sum (change during period)"
+                "sum": "Sum",
+                "change": "Change"
               },
               "chart_type": "Chart type",
               "periods": {
                 "hour": "Hour",
                 "day": "Day",
                 "month": "Month",
+                "week": "Week",
                 "5minute": "5 Minutes"
               },
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic"
+            },
+            "statistic": {
+              "name": "Statistic",
+              "description": "The Statistic card allows you to display a statistical value of an entity of a certain period.",
+              "period": "Period",
+              "stat_types": "Show stat",
+              "stat_type_labels": {
+                "mean": "Mean",
+                "min": "Min",
+                "max": "Max",
+                "change": "Change"
+              },
+              "periods": {
+                "today": "Today",
+                "yesterday": "Yesterday",
+                "this_week": "This week",
+                "last_week": "Last week",
+                "this_month": "This month",
+                "last_month": "Last month",
+                "this_year": "This year",
+                "last_year": "Last year"
+              }
             },
             "horizontal-stack": {
               "name": "Horizontal Stack",
@@ -4119,6 +4208,32 @@
             "thermostat": {
               "name": "Thermostat",
               "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity."
+            },
+            "tile": {
+              "name": "Tile",
+              "description": "The tile card gives you a quick overview of your entity. The card allow you to toggle the entity, show the more info dialog or custom actions.",
+              "color": "Color",
+              "icon_tap_action": "Icon tap action",
+              "actions": "Actions",
+              "appearance": "Appearance",
+              "default_color": "Default color (state)",
+              "show_entity_picture": "Show entity picture",
+              "extras": {
+                "name": "Extras",
+                "not_compatible": "Not compatible",
+                "no_compatible_available": "No compatible extras available for this entity",
+                "add": "Add extra",
+                "edit": "Edit extra",
+                "remove": "Remove extra",
+                "types": {
+                  "cover-open-close": {
+                    "label": "Cover open/close"
+                  },
+                  "cover-tilt": {
+                    "label": "Cover tilt"
+                  }
+                }
+              }
             },
             "vertical-stack": {
               "name": "Vertical Stack",
@@ -4750,6 +4865,7 @@
           "energy_usage_graph_title": "Energy usage",
           "energy_solar_graph_title": "Solar production",
           "energy_gas_graph_title": "Gas consumption",
+          "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Monitor individual devices"

@@ -107,16 +107,14 @@ export class HaEntityPicker extends LitElement {
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
-  public open() {
-    this.updateComplete.then(() => {
-      this.comboBox?.open();
-    });
+  public async open() {
+    await this.updateComplete;
+    await this.comboBox?.open();
   }
 
-  public focus() {
-    this.updateComplete.then(() => {
-      this.comboBox?.focus();
-    });
+  public async focus() {
+    await this.updateComplete;
+    await this.comboBox?.focus();
   }
 
   private _initedStates = false;

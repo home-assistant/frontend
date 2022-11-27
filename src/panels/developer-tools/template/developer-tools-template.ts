@@ -257,6 +257,9 @@ class HaPanelDevTemplate extends LitElement {
 
         .edit-pane {
           margin-right: 16px;
+          margin-inline-start: initial;
+          margin-inline-end: 16px;
+          direction: var(--direction);
         }
 
         .edit-pane a {

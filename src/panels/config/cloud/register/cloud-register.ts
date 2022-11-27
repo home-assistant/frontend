@@ -132,6 +132,7 @@ export class CloudRegister extends LitElement {
                 <ha-textfield
                   autofocus
                   id="email"
+                  name="email"
                   .label=${this.hass.localize(
                     "ui.panel.config.cloud.register.email_address"
                   )}
@@ -146,6 +147,7 @@ export class CloudRegister extends LitElement {
                 ></ha-textfield>
                 <ha-textfield
                   id="password"
+                  name="password"
                   label="Password"
                   .value=${this._password}
                   type="password"

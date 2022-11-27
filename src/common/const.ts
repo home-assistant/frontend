@@ -13,6 +13,7 @@ import {
   mdiBullhorn,
   mdiCalendar,
   mdiCalendarClock,
+  mdiCarCoolantLevel,
   mdiCash,
   mdiClock,
   mdiCloudUpload,
@@ -55,8 +56,12 @@ import {
   mdiThermostat,
   mdiTimerOutline,
   mdiVideo,
+  mdiWater,
   mdiWaterPercent,
   mdiWeatherCloudy,
+  mdiWeatherPouring,
+  mdiWeatherRainy,
+  mdiWeatherWindy,
   mdiWeight,
   mdiWhiteBalanceSunny,
   mdiWifi,
@@ -109,6 +114,7 @@ export const FIXED_DOMAIN_ICONS = {
   siren: mdiBullhorn,
   simple_alarm: mdiBell,
   sun: mdiWhiteBalanceSunny,
+  text: mdiFormTextbox,
   timer: mdiTimerOutline,
   updater: mdiCloudUpload,
   vacuum: mdiRobotVacuum,
@@ -143,6 +149,8 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   pm25: mdiMolecule,
   power: mdiFlash,
   power_factor: mdiAngleAcute,
+  precipitation: mdiWeatherRainy,
+  precipitation_intensity: mdiWeatherPouring,
   pressure: mdiGauge,
   reactive_power: mdiFlash,
   signal_strength: mdiWifi,
@@ -152,8 +160,10 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   timestamp: mdiClock,
   volatile_organic_compounds: mdiMolecule,
   voltage: mdiSineWave,
-  // volume: TBD, => no well matching icon found
+  volume: mdiCarCoolantLevel,
+  water: mdiWater,
   weight: mdiWeight,
+  wind_speed: mdiWeatherWindy,
 };
 
 /** Domains that have a state card. */
@@ -173,6 +183,7 @@ export const DOMAINS_WITH_CARD = [
   "script",
   "select",
   "timer",
+  "text",
   "vacuum",
   "water_heater",
 ];
@@ -205,6 +216,7 @@ export const DOMAINS_INPUT_ROW = [
   "script",
   "select",
   "switch",
+  "text",
   "vacuum",
 ];
 

@@ -116,11 +116,16 @@ const OVERRIDE_NUMBER_UNITS = {
 
 const OVERRIDE_SENSOR_UNITS = {
   distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
+  gas: ["ft³", "m³"],
+  precipitation: ["in", "mm"],
+  precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
-  speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mph"],
+  speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mm/h", "mph"],
   temperature: ["°C", "°F", "K"],
   volume: ["fl. oz.", "ft³", "gal", "L", "mL", "m³"],
+  water: ["ft³", "gal", "L", "m³"],
   weight: ["g", "kg", "lb", "mg", "oz", "µg"],
+  wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
 };
 
 const OVERRIDE_WEATHER_UNITS = {
@@ -128,7 +133,7 @@ const OVERRIDE_WEATHER_UNITS = {
   pressure: ["hPa", "mbar", "mmHg", "inHg"],
   temperature: ["°C", "°F"],
   visibility: ["km", "mi"],
-  wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
+  wind_speed: ["ft/s", "km/h", "kn", "m/s", "mph"],
 };
 
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
@@ -201,7 +206,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     super.firstUpdated(changedProps);
     if (this.entry.config_entry_id) {
       getConfigEntries(this.hass, {
-        type: "helper",
+        type: ["helper"],
         domain: this.entry.platform,
       }).then((entries) => {
         this._helperConfigEntry = entries.find(

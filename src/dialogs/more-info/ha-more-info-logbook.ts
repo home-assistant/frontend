@@ -45,6 +45,7 @@ export class MoreInfoLogbook extends LitElement {
         narrow
         no-icon
         no-name
+        show-indicator
         relative-time
       ></ha-logbook>
     `;

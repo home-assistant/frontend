@@ -9,6 +9,7 @@ import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import "../ha-chip";
 import "../ha-chip-set";
+import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-formfield";
 import "../ha-radio";
@@ -36,12 +37,13 @@ export class HaSelectSelector extends LitElement {
   private _filter = "";
 
   protected render() {
-    const options = this.selector.select.options.map((option) =>
-      typeof option === "object" ? option : { value: option, label: option }
-    );
+    const options =
+      this.selector.select?.options.map((option) =>
+        typeof option === "object" ? option : { value: option, label: option }
+      ) || [];
 
-    if (!this.selector.select.custom_value && this._mode === "list") {
-      if (!this.selector.select.multiple) {
+    if (!this.selector.select?.custom_value && this._mode === "list") {
+      if (!this.selector.select?.multiple) {
         return html`
           <div>
             ${this.label}
@@ -82,28 +84,30 @@ export class HaSelectSelector extends LitElement {
       `;
     }
 
-    if (this.selector.select.multiple) {
+    if (this.selector.select?.multiple) {
       const value =
         !this.value || this.value === "" ? [] : (this.value as string[]);
 
       return html`
-        <ha-chip-set>
-          ${value?.map(
-            (item, idx) =>
-              html`
-                <ha-chip hasTrailingIcon>
-                  ${options.find((option) => option.value === item)?.label ||
-                  item}
-                  <ha-svg-icon
-                    slot="trailing-icon"
-                    .path=${mdiClose}
-                    .idx=${idx}
-                    @click=${this._removeItem}
-                  ></ha-svg-icon>
-                </ha-chip>
-              `
-          )}
-        </ha-chip-set>
+        ${value?.length
+          ? html`<ha-chip-set>
+              ${value.map(
+                (item, idx) =>
+                  html`
+                    <ha-chip hasTrailingIcon>
+                      ${options.find((option) => option.value === item)
+                        ?.label || item}
+                      <ha-svg-icon
+                        slot="trailing-icon"
+                        .path=${mdiClose}
+                        .idx=${idx}
+                        @click=${this._removeItem}
+                      ></ha-svg-icon>
+                    </ha-chip>
+                  `
+              )}
+            </ha-chip-set>`
+          : ""}
 
         <ha-combo-box
           item-value-path="value"
@@ -114,7 +118,7 @@ export class HaSelectSelector extends LitElement {
           .disabled=${this.disabled}
           .required=${this.required && !value.length}
           .value=${this._filter}
-          .items=${options.filter(
+          .filteredItems=${options.filter(
             (option) => !option.disabled && !value?.includes(option.value)
           )}
           @filter-changed=${this._filterChanged}
@@ -123,7 +127,7 @@ export class HaSelectSelector extends LitElement {
       `;
     }
 
-    if (this.selector.select.custom_value) {
+    if (this.selector.select?.custom_value) {
       if (
         this.value !== undefined &&
         !options.find((option) => option.value === this.value)
@@ -178,8 +182,8 @@ export class HaSelectSelector extends LitElement {
 
   private get _mode(): "list" | "dropdown" {
     return (
-      this.selector.select.mode ||
-      (this.selector.select.options.length < 6 ? "list" : "dropdown")
+      this.selector.select?.mode ||
+      ((this.selector.select?.options?.length || 0) < 6 ? "list" : "dropdown")
     );
   }
 
@@ -243,7 +247,7 @@ export class HaSelectSelector extends LitElement {
       return;
     }
 
-    if (!this.selector.select.multiple) {
+    if (!this.selector.select?.multiple) {
       fireEvent(this, "value-changed", {
         value: newValue,
       });
@@ -271,14 +275,14 @@ export class HaSelectSelector extends LitElement {
     this._filter = ev?.detail.value || "";
 
     const filteredItems = this.comboBox.items?.filter((item) => {
-      if (this.selector.select.multiple && this.value?.includes(item.value)) {
+      if (this.selector.select?.multiple && this.value?.includes(item.value)) {
         return false;
       }
       const label = item.label || item.value;
       return label.toLowerCase().includes(this._filter?.toLowerCase());
     });
 
-    if (this._filter && this.selector.select.custom_value) {
+    if (this._filter && this.selector.select?.custom_value) {
       filteredItems?.unshift({ label: this._filter, value: this._filter });
     }
 

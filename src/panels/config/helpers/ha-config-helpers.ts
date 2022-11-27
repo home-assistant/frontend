@@ -249,13 +249,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       });
       return;
     }
-    const handlers = await getConfigFlowHandlers(this.hass, "helper");
+    const handlers = await getConfigFlowHandlers(this.hass, ["helper"]);
 
     if (!handlers.includes(domain)) {
-      const integrations = await getConfigFlowHandlers(
-        this.hass,
-        "integration"
-      );
+      const integrations = await getConfigFlowHandlers(this.hass, [
+        "device",
+        "hub",
+        "service",
+      ]);
       if (integrations.includes(domain)) {
         navigate(`/config/integrations/add?domain=${domain}`, {
           replace: true,
@@ -350,7 +351,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private async _getConfigEntries() {
     this._configEntries = groupByOne(
-      await getConfigEntries(this.hass, { type: "helper" }),
+      await getConfigEntries(this.hass, { type: ["helper"] }),
       (entry) => entry.entry_id
     );
   }

@@ -1,5 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "@vaadin/combo-box/lit";
 import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
 import type {
   ComboBoxLight,
@@ -16,13 +17,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { ComboBoxLitRenderer, comboBoxRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-textfield";
+import type { HaTextField } from "./ha-textfield";
 
 registerStyles(
   "vaadin-combo-box-item",
@@ -108,18 +109,19 @@ export class HaComboBox extends LitElement {
 
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
+  @query("ha-textfield", true) private _inputElement!: HaTextField;
+
   private _overlayMutationObserver?: MutationObserver;
 
-  public open() {
-    this.updateComplete.then(() => {
-      this._comboBox?.open();
-    });
+  public async open() {
+    await this.updateComplete;
+    this._comboBox?.open();
   }
 
-  public focus() {
-    this.updateComplete.then(() => {
-      this._comboBox?.inputElement?.focus();
-    });
+  public async focus() {
+    await this.updateComplete;
+    await this._inputElement?.updateComplete;
+    this._inputElement?.focus();
   }
 
   public disconnectedCallback() {
@@ -255,7 +257,6 @@ export class HaComboBox extends LitElement {
           ) {
             this._overlayMutationObserver?.disconnect();
             this._overlayMutationObserver = undefined;
-            // @ts-expect-error
             overlay.inert = false;
           } else if (mutation.type === "childList") {
             mutation.removedNodes.forEach((node) => {

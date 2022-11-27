@@ -1,6 +1,11 @@
 import { assert } from "chai";
+import { HassEntity } from "home-assistant-js-websocket";
 
-import { formatNumber } from "../../../src/common/number/format_number";
+import {
+  formatNumber,
+  getDefaultFormatOptions,
+  getNumberFormatOptions,
+} from "../../../src/common/number/format_number";
 import {
   FrontendLocaleData,
   NumberFormat,
@@ -61,6 +66,82 @@ describe("formatNumber", () => {
         minimumFractionDigits: 2,
       }),
       "1,234.50"
+    );
+  });
+
+  it("Sets only the maximumFractionDigits format option when none are provided for a number value", () => {
+    assert.deepEqual(getDefaultFormatOptions(1234.5), {
+      maximumFractionDigits: 2,
+    });
+  });
+
+  it("Sets minimumFractionDigits and maximumFractionDigits to '2' when none are provided for a string numeric value with two decimal places", () => {
+    assert.deepEqual(getDefaultFormatOptions("1234.50"), {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  });
+
+  it("Merges default format options (minimumFractionDigits and maximumFractionDigits) and non-default format options for a string numeric value with two decimal places", () => {
+    assert.deepEqual(getDefaultFormatOptions("1234.50", { currency: "USD" }), {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      currency: "USD",
+    });
+  });
+
+  it("Sets maximumFractionDigits when that is the only format option provided", () => {
+    assert.deepEqual(
+      getDefaultFormatOptions("1234.50", { maximumFractionDigits: 0 }),
+      {
+        maximumFractionDigits: 0,
+      }
+    );
+  });
+
+  it("Sets maximumFractionDigits to '2' and minimumFractionDigits to the provided value when only minimumFractionDigits is provided", () => {
+    assert.deepEqual(
+      getDefaultFormatOptions("1234.50", { minimumFractionDigits: 1 }),
+      {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 2,
+      }
+    );
+  });
+
+  it("Sets maximumFractionDigits to '0' when the state value and step are integers", () => {
+    assert.deepEqual(
+      getNumberFormatOptions({
+        state: "3.0",
+        attributes: { step: 1 },
+      } as unknown as HassEntity),
+      {
+        maximumFractionDigits: 0,
+      }
+    );
+  });
+
+  it("Does not set any Intl.NumberFormatOptions when the step is not an integer", () => {
+    assert.strictEqual(
+      getNumberFormatOptions({
+        state: "3.0",
+        attributes: { step: 0.5 },
+      } as unknown as HassEntity),
+      undefined
+    );
+  });
+
+  it("Does not set any Intl.NumberFormatOptions when the state value is not an integer", () => {
+    assert.strictEqual(
+      getNumberFormatOptions({ state: "3.5" } as unknown as HassEntity),
+      undefined
+    );
+  });
+
+  it("Does not set any Intl.NumberFormatOptions when there is no step attribute", () => {
+    assert.strictEqual(
+      getNumberFormatOptions({ state: "3.0" } as unknown as HassEntity),
+      undefined
     );
   });
 });

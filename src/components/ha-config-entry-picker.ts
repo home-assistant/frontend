@@ -105,7 +105,7 @@ class HaConfigEntryPicker extends LitElement {
 
   private async _getConfigEntries() {
     getConfigEntries(this.hass, {
-      type: "integration",
+      type: ["device", "hub", "service"],
       domain: this.integration,
     }).then((configEntries) => {
       this._configEntries = configEntries

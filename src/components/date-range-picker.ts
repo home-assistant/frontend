@@ -111,14 +111,14 @@ class DateRangePickerElement extends WrappedElement {
           .daterangepicker {
             left: 0px !important;
             top: auto;
+            box-shadow: var(--ha-card-box-shadow, none);
             background-color: var(--card-background-color);
-            border: none;
-            border-radius: var(--ha-card-border-radius, 4px);
-            box-shadow: var(
-              --ha-card-box-shadow,
-              0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-              0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-              0px 1px 3px 0px rgba(0, 0, 0, 0.12)
+            border-radius: var(--ha-card-border-radius, 12px);
+            border-width: var(--ha-card-border-width, 1px);
+            border-style: solid;
+            border-color: var(
+              --ha-card-border-color,
+              var(--divider-color, #e0e0e0)
             );
             color: var(--primary-text-color);
             min-width: initial !important;

@@ -31,7 +31,12 @@ class FirstWeekdayRow extends LitElement {
           .value=${this.hass.locale.first_weekday}
           @selected=${this._handleFormatSelection}
         >
-          ${Object.values(FirstWeekday).map((day) => {
+          ${[
+            FirstWeekday.language,
+            FirstWeekday.monday,
+            FirstWeekday.saturday,
+            FirstWeekday.sunday,
+          ].map((day) => {
             const value = this.hass.localize(
               `ui.panel.profile.first_weekday.values.${day}`
             );

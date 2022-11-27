@@ -25,6 +25,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 const FIX_ISSUES_ORDER = {
   no_state: 0,
@@ -74,6 +75,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         width: "10%",
+        forceLTR: true,
       },
       source: {
         title: "Source",
@@ -143,6 +145,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         id="statistic_id"
         clickable
         @row-click=${this._rowClicked}
+        .dir=${computeRTLDirection(this.hass)}
       ></ha-data-table>
     `;
   }

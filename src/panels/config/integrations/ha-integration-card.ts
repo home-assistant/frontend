@@ -90,7 +90,7 @@ export class HaIntegrationCard extends LitElement {
 
   @property() public selectedConfigEntryId?: string;
 
-  @property({ type: Boolean }) public disabled = false;
+  @property({ type: Boolean }) public entryDisabled = false;
 
   @property({ type: Boolean }) public supportsDiagnostics = false;
 
@@ -114,7 +114,7 @@ export class HaIntegrationCard extends LitElement {
           single: hasItem,
           group: !hasItem,
           hasMultiple: this.items.length > 1,
-          disabled: this.disabled,
+          disabled: this.entryDisabled,
           "state-not-loaded": hasItem && item!.state === "not_loaded",
           "state-failed-unload": hasItem && item!.state === "failed_unload",
           "state-setup": hasItem && item!.state === "setup_in_progress",
@@ -124,7 +124,7 @@ export class HaIntegrationCard extends LitElement {
       >
         <ha-integration-header
           .hass=${this.hass}
-          .banner=${this.disabled
+          .banner=${this.entryDisabled
             ? this.hass.localize(
                 "ui.panel.config.integrations.config_entry.disable.disabled"
               )
@@ -875,6 +875,8 @@ export class HaIntegrationCard extends LitElement {
           --mdc-icon-button-size: 32px;
           transition: height 0.1s;
           overflow: hidden;
+          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: var(--ha-card-border-radius, 12px);
         }
         .hasMultiple.single .back-btn {
           height: 24px;
@@ -928,6 +930,10 @@ export class HaIntegrationCard extends LitElement {
         ha-button-menu {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;
+        }
+        paper-listbox {
+          border-radius: 0 0 var(--ha-card-border-radius, 16px)
+            var(--ha-card-border-radius, 16px);
         }
         @media (min-width: 563px) {
           ha-card.group {

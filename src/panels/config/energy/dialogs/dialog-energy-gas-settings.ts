@@ -24,6 +24,9 @@ import {
   isExternalStatistic,
 } from "../../../../data/recorder";
 
+const gasDeviceClasses = ["gas", "energy"];
+const gasUnitClasses = ["volume", "energy"];
+
 @customElement("dialog-energy-gas-settings")
 export class DialogEnergyGasSettings
   extends LitElement
@@ -81,9 +84,9 @@ export class DialogEnergyGasSettings
     const pickableUnit =
       this._pickableUnit ||
       (this._params.allowedGasUnitClass === undefined
-        ? "ft³, m³, Wh, kWh or MWh"
+        ? "ft³, m³, Wh, kWh, MWh or GJ"
         : this._params.allowedGasUnitClass === "energy"
-        ? "Wh, kWh or MWh"
+        ? "Wh, kWh, MWh or GJ"
         : "ft³ or m³");
 
     const externalSource =
@@ -103,10 +106,9 @@ export class DialogEnergyGasSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitClass=${this._params.allowedGasUnitClass || [
-            "volume",
-            "energy",
-          ]}
+          .includeUnitClass=${this._params.allowedGasUnitClass ||
+          gasUnitClasses}
+          .includeDeviceClass=${gasDeviceClasses}
           .value=${this._source.stat_energy_from}
           .label=${`${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.gas_usage"
