@@ -225,11 +225,15 @@ export class HaComboBox extends LitElement {
   }
 
   private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
-    this.opened = ev.detail.value;
+    const opened = ev.detail.value;
+    // delay this so we can handle click event for toggle button before setting _opened
+    setTimeout(() => {
+      this.opened = opened;
+    }, 0);
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail);
 
-    if (this.opened) {
+    if (opened) {
       const overlay = document.querySelector<HTMLElement>(
         "vaadin-combo-box-overlay"
       );
