@@ -109,11 +109,10 @@ export class StateBadge extends LitElement {
         this._showIcon = false;
       } else if (stateActive(stateObj) && this._stateColor) {
         const iconColor = stateColor(stateObj);
-        if (iconColor) {
-          iconStyle.color = `rgb(var(--rgb-state-${iconColor}-color))`;
-        }
         if (stateObj.attributes.rgb_color) {
           iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+        } else if (iconColor) {
+          iconStyle.color = `rgb(var(--rgb-state-${iconColor}-color))`;
         }
         if (stateObj.attributes.brightness) {
           const brightness = stateObj.attributes.brightness;
