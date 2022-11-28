@@ -980,7 +980,7 @@ export class HuiEnergySourcesTableCard
                             class="mdc-data-table__cell mdc-data-table__cell--numeric"
                           >
                             ${formatNumber(totalWaterCompare, this.hass.locale)}
-                            ${gasUnit}
+                            ${waterUnit}
                           </td>
                           ${showCosts
                             ? html`<td
