@@ -33,7 +33,8 @@ export type Selector =
   | TemplateSelector
   | ThemeSelector
   | TimeSelector
-  | UiActionSelector;
+  | UiActionSelector
+  | UiColorSelector;
 
 export interface ActionSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -271,6 +272,11 @@ export interface UiActionSelector {
   "ui-action": {
     actions?: UiAction[];
   } | null;
+}
+
+export interface UiColorSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  "ui-color": {} | null;
 }
 
 export const filterSelectorDevices = (

@@ -4,7 +4,6 @@ import { UpdateEntity, updateIsInstalling } from "../../data/update";
 import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
 import { binarySensorColor } from "./color/binary_sensor_color";
 import { climateColor } from "./color/climate_color";
-import { coverColor } from "./color/cover_color";
 import { lockColor } from "./color/lock_color";
 import { sensorColor } from "./color/sensor_color";
 import { computeDomain } from "./compute_domain";
@@ -21,7 +20,7 @@ export const stateColorCss = (stateObj?: HassEntity, state?: string) => {
     return `var(--rgb-state-${color}-color)`;
   }
 
-  return `var(--rgb-primary-color)`;
+  return `var(--rgb-state-default-color)`;
 };
 
 export const stateColor = (stateObj: HassEntity, state?: string) => {
@@ -36,10 +35,13 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
       return binarySensorColor(stateObj);
 
     case "cover":
-      return coverColor(stateObj);
+      return "cover";
 
     case "climate":
       return climateColor(compareState);
+
+    case "fan":
+      return "fan";
 
     case "lock":
       return lockColor(compareState);
@@ -53,18 +55,20 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
     case "media_player":
       return "media-player";
 
-    case "person":
-    case "device_tracker":
-      return "person";
-
     case "sensor":
       return sensorColor(stateObj);
 
     case "vacuum":
       return "vacuum";
 
+    case "siren":
+      return "siren";
+
     case "sun":
       return compareState === "above_horizon" ? "sun-day" : "sun-night";
+
+    case "switch":
+      return "switch";
 
     case "update":
       return updateIsInstalling(stateObj as UpdateEntity)

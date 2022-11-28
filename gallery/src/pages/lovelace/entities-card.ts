@@ -98,6 +98,9 @@ const ENTITIES = [
     minimum: 0,
     maximum: 10,
   }),
+  getEntity("text", "message", "Hello!", {
+    friendly_name: "Message",
+  }),
 
   getEntity("light", "unavailable", "unavailable", {
     friendly_name: "Bed Light",
@@ -129,6 +132,9 @@ const ENTITIES = [
     friendly_name: "Who cooks",
     icon: "mdi:cheff",
   }),
+  getEntity("text", "unavailable", "unavailable", {
+    friendly_name: "Message",
+  }),
 ];
 
 const CONFIGS = [
@@ -147,6 +153,7 @@ const CONFIGS = [
     - climate.ecobee
     - input_number.number
     - sensor.humidity
+    - text.message
     `,
   },
   {
@@ -219,6 +226,7 @@ const CONFIGS = [
     - climate.unavailable
     - input_number.unavailable
     - input_select.unavailable
+    - text.unavailable
     `,
   },
   {

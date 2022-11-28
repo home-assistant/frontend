@@ -21,9 +21,9 @@ let colorIndex = 0;
 
 export const getStateColorToken = (
   stateString: string,
-  entityState: HassEntity
+  entityState?: HassEntity
 ) => {
-  if (!stateActive(entityState, stateString)) {
+  if (!entityState || !stateActive(entityState, stateString)) {
     return `disabled`;
   }
   const color = stateColor(entityState, stateString);
@@ -35,8 +35,8 @@ export const getStateColorToken = (
 
 const getColor = (
   stateString: string,
-  entityState: HassEntity,
-  computedStyles: CSSStyleDeclaration
+  computedStyles: CSSStyleDeclaration,
+  entityState?: HassEntity
 ) => {
   const stateColorToken = getStateColorToken(stateString, entityState);
 
@@ -273,8 +273,8 @@ export class StateHistoryChartTimeline extends LitElement {
             label: locState,
             color: getColor(
               prevState,
-              this.hass.states[stateInfo.entity_id],
-              computedStyles
+              computedStyles,
+              this.hass.states[stateInfo.entity_id]
             ),
           });
 
@@ -291,8 +291,8 @@ export class StateHistoryChartTimeline extends LitElement {
           label: locState,
           color: getColor(
             prevState,
-            this.hass.states[stateInfo.entity_id],
-            computedStyles
+            computedStyles,
+            this.hass.states[stateInfo.entity_id]
           ),
         });
       }

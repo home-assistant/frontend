@@ -174,6 +174,15 @@ class HaDomainIntegrations extends LitElement {
             ? html`<mwc-list-item
                 .domain=${this.domain}
                 @request-selected=${this._integrationPicked}
+                .integration=${{
+                  ...this.integration,
+                  domain: this.domain,
+                  name:
+                    this.integration.name ||
+                    domainToName(this.hass.localize, this.domain),
+                  is_built_in: this.integration.is_built_in !== false,
+                  cloud: this.integration.iot_class?.startsWith("cloud_"),
+                }}
                 hasMeta
               >
                 ${this.hass.localize("ui.panel.config.integrations.new_flow", {
@@ -241,7 +250,8 @@ class HaDomainIntegrations extends LitElement {
             (!this.integration!.integrations ||
               !(domain in this.integration!.integrations))))) ||
       // config_flow being undefined means its false
-      !(this.integration as Brand)!.integrations?.[domain]?.config_flow
+      (!("integration_type" in this.integration!) &&
+        !this.integration!.integrations?.[domain]?.config_flow)
     ) {
       const manifest = await fetchIntegrationManifest(this.hass, domain);
       showYamlIntegrationDialog(this, { manifest });

@@ -299,20 +299,35 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     return html`
       ${!stateObj
         ? html`
-            <div class="container warning">
-              ${this.hass!.localize(
-                "ui.dialogs.entity_registry.editor.unavailable"
-              )}
+            <ha-alert alert-type="warning">
               ${this._device?.disabled_by
-                ? html`<br />${this.hass!.localize(
+                ? html`${this.hass!.localize(
                       "ui.dialogs.entity_registry.editor.device_disabled"
-                    )}<br /><mwc-button @click=${this._openDeviceSettings}>
+                    )}<mwc-button
+                      @click=${this._openDeviceSettings}
+                      slot="action"
+                    >
                       ${this.hass!.localize(
                         "ui.dialogs.entity_registry.editor.open_device_settings"
                       )}
                     </mwc-button>`
-                : ""}
-            </div>
+                : this.entry.disabled_by
+                ? html`${this.hass!.localize(
+                    "ui.dialogs.entity_registry.editor.entity_disabled"
+                  )}${["user", "integration"].includes(this._disabledBy!)
+                    ? html`<mwc-button
+                        slot="action"
+                        @click=${this._enableEntry}
+                      >
+                        ${this.hass!.localize(
+                          "ui.dialogs.entity_registry.editor.enable_entity"
+                        )}</mwc-button
+                      >`
+                    : ""}`
+                : this.hass!.localize(
+                    "ui.dialogs.entity_registry.editor.unavailable"
+                  )}
+            </ha-alert>
           `
         : ""}
       ${this._error
@@ -922,6 +937,39 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     });
   }
 
+  private async _enableEntry() {
+    this._error = undefined;
+    this._submitting = true;
+    try {
+      const result = await updateEntityRegistryEntry(
+        this.hass!,
+        this._origEntityId,
+        { disabled_by: null }
+      );
+      fireEvent(this, "entity-entry-updated", result.entity_entry);
+      if (result.require_restart) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.dialogs.entity_registry.editor.enabled_restart_confirm"
+          ),
+        });
+      }
+      if (result.reload_delay) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.dialogs.entity_registry.editor.enabled_delay_confirm",
+            "delay",
+            result.reload_delay
+          ),
+        });
+      }
+    } catch (err: any) {
+      this._error = err.message;
+    } finally {
+      this._submitting = false;
+    }
+  }
+
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
 
@@ -1163,6 +1211,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         li[divider] {
           border-bottom-color: var(--divider-color);
         }
+        ha-alert mwc-button {
+          width: max-content;
+        }
       `,
     ];
   }
@@ -1171,5 +1222,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "entity-registry-settings": EntityRegistrySettings;
+  }
+  interface HASSDomEvents {
+    "entity-entry-updated": ExtEntityRegistryEntry;
   }
 }

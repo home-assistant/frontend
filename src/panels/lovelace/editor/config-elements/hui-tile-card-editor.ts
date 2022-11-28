@@ -13,11 +13,9 @@ import {
   optional,
   string,
 } from "superstruct";
-import { THEME_COLORS } from "../../../../common/color/compute-color";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
-import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -93,20 +91,7 @@ export class HuiTileCardEditor
                 {
                   name: "color",
                   selector: {
-                    select: {
-                      options: [
-                        {
-                          label: this.hass!.localize(
-                            `ui.panel.lovelace.editor.card.tile.default_color`
-                          ),
-                          value: "default",
-                        },
-                        ...Array.from(THEME_COLORS).map((color) => ({
-                          label: capitalizeFirstLetter(color),
-                          value: color,
-                        })),
-                      ],
-                    },
+                    "ui-color": {},
                   },
                 },
                 {
@@ -159,11 +144,6 @@ export class HuiTileCardEditor
       stateObj
     );
 
-    const data = {
-      color: "default",
-      ...this._config,
-    };
-
     if (this._subElementEditorConfig) {
       return html`
         <hui-sub-element-editor
@@ -179,7 +159,7 @@ export class HuiTileCardEditor
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${data}
+        .data=${this._config}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -204,9 +184,6 @@ export class HuiTileCardEditor
       extras: this._config.extras,
       ...ev.detail.value,
     };
-    if (ev.detail.value.color === "default") {
-      config.color = undefined;
-    }
     fireEvent(this, "config-changed", { config });
   }
 

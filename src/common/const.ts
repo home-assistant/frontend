@@ -114,6 +114,7 @@ export const FIXED_DOMAIN_ICONS = {
   siren: mdiBullhorn,
   simple_alarm: mdiBell,
   sun: mdiWhiteBalanceSunny,
+  text: mdiFormTextbox,
   timer: mdiTimerOutline,
   updater: mdiCloudUpload,
   vacuum: mdiRobotVacuum,
@@ -182,6 +183,7 @@ export const DOMAINS_WITH_CARD = [
   "script",
   "select",
   "timer",
+  "text",
   "vacuum",
   "water_heater",
 ];
@@ -214,6 +216,7 @@ export const DOMAINS_INPUT_ROW = [
   "script",
   "select",
   "switch",
+  "text",
   "vacuum",
 ];
 

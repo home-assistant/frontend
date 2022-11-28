@@ -85,13 +85,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     if (!this.hasUpdated) {
       return;
     }
-    this._getStatistics();
-    // statistics are created every hour
-    clearInterval(this._interval);
-    this._interval = window.setInterval(
-      () => this._getStatistics(),
-      this._intervalTimeout
-    );
+    this._setFetchStatisticsTimer();
   }
 
   public getCardSize(): number {
@@ -138,10 +132,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (
-      !this._config ||
-      (!changedProps.has("_config") && !changedProps.has("_metadata"))
-    ) {
+    if (!this._config || !changedProps.has("_config")) {
       return;
     }
 
@@ -153,25 +144,31 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       changedProps.has("_config") &&
       oldConfig?.entities !== this._config.entities
     ) {
-      this._getStatisticsMetaData(this._entities);
+      this._getStatisticsMetaData(this._entities).then(() => {
+        this._setFetchStatisticsTimer();
+      });
+      return;
     }
 
     if (
-      changedProps.has("_metadata") ||
-      (changedProps.has("_config") &&
-        (oldConfig?.entities !== this._config.entities ||
-          oldConfig?.days_to_show !== this._config.days_to_show ||
-          oldConfig?.period !== this._config.period ||
-          oldConfig?.unit !== this._config.unit))
+      changedProps.has("_config") &&
+      (oldConfig?.entities !== this._config.entities ||
+        oldConfig?.days_to_show !== this._config.days_to_show ||
+        oldConfig?.period !== this._config.period ||
+        oldConfig?.unit !== this._config.unit)
     ) {
-      this._getStatistics();
-      // statistics are created every hour
-      clearInterval(this._interval);
-      this._interval = window.setInterval(
-        () => this._getStatistics(),
-        this._intervalTimeout
-      );
+      this._setFetchStatisticsTimer();
     }
+  }
+
+  private _setFetchStatisticsTimer() {
+    this._getStatistics();
+    // statistics are created every hour
+    clearInterval(this._interval);
+    this._interval = window.setInterval(
+      () => this._getStatistics(),
+      this._intervalTimeout
+    );
   }
 
   protected render(): TemplateResult {
