@@ -450,7 +450,7 @@ const getEnergyData = async (
       )),
       ...(await fetchStatistics(
         hass!,
-        startMinHour,
+        compareStartMinHour,
         end,
         waterStatIds,
         period,
