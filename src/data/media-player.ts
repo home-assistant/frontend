@@ -384,7 +384,7 @@ export const computeMediaControls = (
 };
 
 export const formatMediaTime = (seconds: number | undefined): string => {
-  if (seconds === undefined || seconds === Infinity) {
+  if (seconds === undefined || seconds === Infinity || isNaN(seconds)) {
     return "";
   }
 
