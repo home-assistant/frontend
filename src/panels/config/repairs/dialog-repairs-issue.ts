@@ -106,10 +106,10 @@ class DialogRepairsIssue extends LitElement {
         ${this._issue.learn_more_url
           ? html`
               <a
-                href=${learnMoreUrlIsHomeAssistant
+                .href=${learnMoreUrlIsHomeAssistant
                   ? this._issue.learn_more_url.replace("homeassistant://", "/")
                   : this._issue.learn_more_url}
-                target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
+                .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
                 slot="primaryAction"
                 rel="noopener noreferrer"
               >
