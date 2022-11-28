@@ -4255,6 +4255,36 @@
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },
+          "color-picker": {
+            "default_color": "Default color (state)",
+            "colors": {
+              "primary": "Primary",
+              "accent": "Accent",
+              "disabled": "Disabled",
+              "red": "Red",
+              "pink": "Pink",
+              "purple": "Purple",
+              "deep-purple": "Deep purple",
+              "indigo": "Indigo",
+              "blue": "Blue",
+              "light-blue": "Light blue",
+              "cyan": "Cyan",
+              "teal": "Teal",
+              "green": "Green",
+              "light-green": "Light Green",
+              "lime": "Lime",
+              "yellow": "Yellow",
+              "amber": "Amber",
+              "orange": "Orange",
+              "deep-orange": "Deep orange",
+              "brown": "Brown",
+              "grey": "Grey",
+              "blue-grey": "Blue grey",
+              "black": "Black",
+              "white": "White"
+            }
+          },
+
           "cardpicker": {
             "no_description": "No description available.",
             "custom_card": "Custom",
