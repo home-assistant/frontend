@@ -293,7 +293,7 @@ export class HaAreaPicker extends LitElement {
           ? this.hass.localize("ui.components.area-picker.area")
           : this.label}
         .placeholder=${this.placeholder
-          ? this._area(this.placeholder)?.name
+          ? this.hass.areas[this.placeholder]?.name
           : undefined}
         .renderer=${rowRenderer}
         @filter-changed=${this._filterChanged}
@@ -303,10 +303,6 @@ export class HaAreaPicker extends LitElement {
       </ha-combo-box>
     `;
   }
-
-  private _area = memoizeOne(
-    (areaId: string): AreaRegistryEntry | undefined => this.hass.areas[areaId]
-  );
 
   private _filterChanged(ev: CustomEvent): void {
     const filter = ev.detail.value;
