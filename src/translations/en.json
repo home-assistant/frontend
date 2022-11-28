@@ -4234,6 +4234,9 @@
                   },
                   "cover-tilt": {
                     "label": "Cover tilt"
+                  },
+                  "light-brightness": {
+                    "label": "Light brightness"
                   }
                 }
               }

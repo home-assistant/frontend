@@ -2,6 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntityFeature } from "../../../data/cover";
+import { lightSupportsBrightness } from "../../../data/light";
 import { LovelaceTileExtraConfig } from "./types";
 
 type TileExtraType = LovelaceTileExtraConfig["type"];
@@ -16,6 +17,9 @@ const TILE_EXTRAS_SUPPORT: Record<TileExtraType, SupportsTileExtra> = {
     computeDomain(stateObj.entity_id) === "cover" &&
     (supportsFeature(stateObj, CoverEntityFeature.OPEN_TILT) ||
       supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT)),
+  "light-brightness": (stateObj) =>
+    computeDomain(stateObj.entity_id) === "light" &&
+    lightSupportsBrightness(stateObj),
 };
 
 const TILE_EXTRAS_EDITABLE: Set<TileExtraType> = new Set([]);
