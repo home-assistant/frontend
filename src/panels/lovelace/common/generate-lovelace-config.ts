@@ -80,12 +80,14 @@ const splitByAreaDevice = (
       delete allEntities[entity.entity_id];
     }
   }
-  Object.entries(devicesWithEntities).forEach(([deviceId, deviceEntities]) => {
+  for (const [deviceId, deviceEntities] of Object.entries(
+    devicesWithEntities
+  )) {
     if (deviceEntities.length === 1) {
       allEntities[deviceEntities[0].entity_id] = deviceEntities[0];
       delete devicesWithEntities[deviceId];
     }
-  });
+  }
   return {
     areasWithEntities,
     devicesWithEntities,
