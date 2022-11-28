@@ -190,7 +190,7 @@ class AddIntegrationDialog extends LitElement {
                 )
               : undefined,
             domains: integration.integrations
-              ? Object.keys(integration.integrations || {})
+              ? Object.keys(integration.integrations)
               : undefined,
             is_built_in: integration.is_built_in !== false,
           });
