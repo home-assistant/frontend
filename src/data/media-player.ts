@@ -402,7 +402,13 @@ export const cleanupMediaTitle = (title?: string): string | undefined => {
   }
 
   const index = title.indexOf("?authSig=");
-  return index > 0 ? title.slice(0, index) : title;
+  title = index > 0 ? title.slice(0, index) : title;
+
+  if (title.startsWith("http")) {
+    title = decodeURIComponent(title.split("/").pop()!);
+  }
+
+  return title;
 };
 
 /**
