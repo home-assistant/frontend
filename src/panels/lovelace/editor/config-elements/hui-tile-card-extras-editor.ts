@@ -32,6 +32,7 @@ import { LovelaceTileExtraConfig } from "../../tile-extra/types";
 const EXTRAS_TYPE: LovelaceTileExtraConfig["type"][] = [
   "cover-open-close",
   "cover-tilt",
+  "light-brightness",
 ];
 
 declare global {
