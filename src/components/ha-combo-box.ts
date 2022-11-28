@@ -9,14 +9,7 @@ import type {
   ComboBoxLightValueChangedEvent,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
@@ -113,6 +106,8 @@ export class HaComboBox extends LitElement {
 
   private _overlayMutationObserver?: MutationObserver;
 
+  private _bodyMutationObserver?: MutationObserver;
+
   public async open() {
     await this.updateComplete;
     this._comboBox?.open();
@@ -129,6 +124,10 @@ export class HaComboBox extends LitElement {
     if (this._overlayMutationObserver) {
       this._overlayMutationObserver.disconnect();
       this._overlayMutationObserver = undefined;
+    }
+    if (this._bodyMutationObserver) {
+      this._bodyMutationObserver.disconnect();
+      this._bodyMutationObserver = undefined;
     }
   }
 
@@ -227,7 +226,7 @@ export class HaComboBox extends LitElement {
 
   private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
     const opened = ev.detail.value;
-    // delay this so we can handle click event before setting _opened
+    // delay this so we can handle click event for toggle button before setting _opened
     setTimeout(() => {
       this.opened = opened;
     }, 0);
@@ -235,36 +234,61 @@ export class HaComboBox extends LitElement {
     fireEvent(this, ev.type, ev.detail);
 
     if (opened) {
-      this.removeInertOnOverlay();
-    }
-  }
-
-  private removeInertOnOverlay() {
-    if ("MutationObserver" in window && !this._overlayMutationObserver) {
       const overlay = document.querySelector<HTMLElement>(
         "vaadin-combo-box-overlay"
       );
 
-      if (!overlay) {
-        return;
+      if (overlay) {
+        this._removeInert(overlay);
       }
+      this._observeBody();
+    } else {
+      this._bodyMutationObserver?.disconnect();
+      this._bodyMutationObserver = undefined;
+    }
+  }
 
+  private _observeBody() {
+    if ("MutationObserver" in window && !this._bodyMutationObserver) {
+      this._bodyMutationObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeName === "VAADIN-COMBO-BOX-OVERLAY") {
+              this._removeInert(node as HTMLElement);
+            }
+          });
+          mutation.removedNodes.forEach((node) => {
+            if (node.nodeName === "VAADIN-COMBO-BOX-OVERLAY") {
+              this._overlayMutationObserver?.disconnect();
+              this._overlayMutationObserver = undefined;
+            }
+          });
+        });
+      });
+
+      this._bodyMutationObserver.observe(document.body, {
+        childList: true,
+      });
+    }
+  }
+
+  private _removeInert(overlay: HTMLElement) {
+    if (overlay.inert) {
+      overlay.inert = false;
+      this._overlayMutationObserver?.disconnect();
+      this._overlayMutationObserver = undefined;
+      return;
+    }
+    if ("MutationObserver" in window && !this._overlayMutationObserver) {
       this._overlayMutationObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-          if (
-            mutation.type === "attributes" &&
-            mutation.attributeName === "inert"
-          ) {
-            this._overlayMutationObserver?.disconnect();
-            this._overlayMutationObserver = undefined;
-            overlay.inert = false;
-          } else if (mutation.type === "childList") {
-            mutation.removedNodes.forEach((node) => {
-              if (node.nodeName === "VAADIN-COMBO-BOX-OVERLAY") {
-                this._overlayMutationObserver?.disconnect();
-                this._overlayMutationObserver = undefined;
-              }
-            });
+          if (mutation.attributeName === "inert") {
+            const target = mutation.target as HTMLElement;
+            if (target.inert) {
+              this._overlayMutationObserver?.disconnect();
+              this._overlayMutationObserver = undefined;
+              target.inert = false;
+            }
           }
         });
       });
@@ -272,19 +296,6 @@ export class HaComboBox extends LitElement {
       this._overlayMutationObserver.observe(overlay, {
         attributes: true,
       });
-      this._overlayMutationObserver.observe(document.body, {
-        childList: true,
-      });
-    }
-  }
-
-  updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (
-      changedProps.has("filteredItems") ||
-      (changedProps.has("items") && this.opened)
-    ) {
-      this.removeInertOnOverlay();
     }
   }
 
