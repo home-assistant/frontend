@@ -21,6 +21,10 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
     case "device_tracker":
     case "person":
       return compareState !== "not_home";
+    case "alarm_control_panel":
+      return compareState !== "disarmed";
+    case "lock":
+      return compareState !== "unlocked";
     case "media_player":
       return compareState !== "standby";
     case "vacuum":
