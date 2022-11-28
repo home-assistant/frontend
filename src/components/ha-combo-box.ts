@@ -9,13 +9,7 @@ import type {
   ComboBoxLightValueChangedEvent,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
@@ -231,15 +225,11 @@ export class HaComboBox extends LitElement {
   }
 
   private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
-    const opened = ev.detail.value;
-    // delay this so we can handle click event before setting _opened
-    setTimeout(() => {
-      this.opened = opened;
-    }, 0);
+    this.opened = ev.detail.value;
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail);
 
-    if (opened) {
+    if (this.opened) {
       const overlay = document.querySelector<HTMLElement>(
         "vaadin-combo-box-overlay"
       );
