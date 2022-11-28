@@ -248,7 +248,7 @@ export class HaBarSlider extends LitElement {
           ? html`
               <div
                 class=${classMap({
-                  "slider-track-indicator": true,
+                  "slider-track-cursor": true,
                   vertical: this.vertical,
                 })}
               ></div>
@@ -391,7 +391,7 @@ export class HaBarSlider extends LitElement {
         bottom: var(--handle-margin);
       }
 
-      .slider .slider-track-indicator:after {
+      .slider .slider-track-cursor:after {
         display: block;
         content: "";
         background-color: rgb(var(--rgb-secondary-text-color));
@@ -404,7 +404,7 @@ export class HaBarSlider extends LitElement {
         border-radius: var(--handle-size);
       }
 
-      .slider .slider-track-indicator {
+      .slider .slider-track-cursor {
         --cursor-size: calc(var(--slider-bar-thickness) / 4);
         --handle-size: 4px;
         position: absolute;
@@ -416,12 +416,12 @@ export class HaBarSlider extends LitElement {
         left: calc(var(--value, 0) * (100% - var(--cursor-size)));
         width: var(--cursor-size);
       }
-      .slider .slider-track-indicator:after {
+      .slider .slider-track-cursor:after {
         height: 50%;
         width: var(--handle-size);
       }
 
-      .slider .slider-track-indicator.vertical {
+      .slider .slider-track-cursor.vertical {
         top: initial;
         right: 0;
         left: 0;
@@ -429,13 +429,13 @@ export class HaBarSlider extends LitElement {
         height: var(--cursor-size);
         width: 100%;
       }
-      .slider .slider-track-indicator.vertical:after {
+      .slider .slider-track-cursor.vertical:after {
         height: var(--handle-size);
         width: 50%;
       }
 
       :host([pressed]) .slider-track-bar,
-      :host([pressed]) .slider-track-indicator {
+      :host([pressed]) .slider-track-cursor {
         transition: none;
       }
     `;
