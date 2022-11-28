@@ -893,6 +893,8 @@
           "hidden_label": "Hidden",
           "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
+          "entity_disabled": "This entity is disabled.",
+          "enable_entity": "Enable",
           "open_device_settings": "Open device settings",
           "switch_as_x_confirm": "This switch will be hidden and a new {domain} will be added. Your existing configurations using the switch will continue to work.",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
