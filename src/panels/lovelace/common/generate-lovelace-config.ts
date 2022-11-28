@@ -255,7 +255,7 @@ const computeDefaultViewStates = (
       .map((entry) => entry.entity_id)
   );
 
-  Object.keys(entities).forEach((entityId) => {
+  for (const entityId of Object.keys(entities)) {
     const stateObj = entities[entityId];
     if (
       !HIDE_DOMAIN.has(computeStateDomain(stateObj)) &&
@@ -263,7 +263,7 @@ const computeDefaultViewStates = (
     ) {
       states[entityId] = entities[entityId];
     }
-  });
+  }
   return states;
 };
 
@@ -283,7 +283,7 @@ export const generateViewConfig = (
   const ungroupedEntitites: { [domain: string]: string[] } = {};
 
   // Organize ungrouped entities in ungrouped things
-  Object.keys(splitted.ungrouped).forEach((entityId) => {
+  for (const entityId of Object.keys(splitted.ungrouped)) {
     const state = splitted.ungrouped[entityId];
     const domain = computeStateDomain(state);
 
@@ -292,7 +292,7 @@ export const generateViewConfig = (
     }
 
     ungroupedEntitites[domain].push(state.entity_id);
-  });
+  }
 
   const cards: LovelaceCardConfig[] = [];
 
@@ -352,7 +352,7 @@ export const generateViewConfig = (
     delete ungroupedEntitites.person;
   }
 
-  splitted.groups.forEach((groupEntity) => {
+  for (const groupEntity of splitted.groups) {
     cards.push(
       ...computeCards(
         groupEntity.attributes.entity_id.map(
@@ -364,7 +364,7 @@ export const generateViewConfig = (
         }
       )
     );
-  });
+  }
 
   // Group helper entities in a single card
   const helperEntities: string[] = [];
@@ -444,12 +444,12 @@ export const generateDefaultViewConfig = (
 
   // In the case of a default view, we want to use the group order attribute
   const groupOrders = {};
-  Object.keys(states).forEach((entityId) => {
+  for (const entityId of Object.keys(states)) {
     const stateObj = states[entityId];
     if (stateObj.attributes.order) {
       groupOrders[entityId] = stateObj.attributes.order;
     }
-  });
+  }
 
   const splittedByAreaDevice = splitByAreaDevice(
     deviceEntries,
@@ -468,45 +468,41 @@ export const generateDefaultViewConfig = (
 
   const splittedCards: LovelaceCardConfig[] = [];
 
-  Object.entries(splittedByAreaDevice.areasWithEntities).forEach(
-    ([areaId, areaEntities]) => {
-      const area = areaEntries[areaId];
-      splittedCards.push(
-        ...computeCards(
-          areaEntities.map((entity) => [entity.entity_id, entity]),
-          {
-            title: area.name,
-          }
-        )
-      );
-    }
-  );
-
-  Object.entries(splittedByAreaDevice.devicesWithEntities).forEach(
-    ([deviceId, deviceEntities]) => {
-      const device = deviceEntries[deviceId];
-      splittedCards.push(
-        ...computeCards(
-          deviceEntities.map((entity) => [entity.entity_id, entity]),
-          {
-            title:
-              device.name_by_user ||
-              device.name ||
+  for (const [areaId, areaEntities] of Object.entries(
+    splittedByAreaDevice.areasWithEntities
+  )) {
+    const area = areaEntries[areaId];
+    splittedCards.push(
+      ...computeCards(
+        areaEntities.map((entity) => [entity.entity_id, entity]),
+        {
+          title: area.name,
+        }
+      )
+    );
+  }
+  for (const [deviceId, deviceEntities] of Object.entries(
+    splittedByAreaDevice.devicesWithEntities
+  )) {
+    const device = deviceEntries[deviceId];
+    splittedCards.push(
+      ...computeCards(
+        deviceEntities.map((entity) => [entity.entity_id, entity]),
+        {
+          title:
+            device.name_by_user ||
+            device.name ||
+            localize(
+              "ui.panel.config.devices.unnamed_device",
+              "type",
               localize(
-                "ui.panel.config.devices.unnamed_device",
-                "type",
-                localize(
-                  `ui.panel.config.devices.type.${
-                    device.entry_type || "device"
-                  }`
-                )
-              ),
-          }
-        )
-      );
-    }
-  );
-
+                `ui.panel.config.devices.type.${device.entry_type || "device"}`
+              )
+            ),
+        }
+      )
+    );
+  }
   if (energyPrefs) {
     // Distribution card requires the grid to be configured
     const grid = energyPrefs.energy_sources.find(
