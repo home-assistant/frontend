@@ -1,4 +1,3 @@
-import "@material/mwc-switch";
 import {
   mdiGarage,
   mdiGarageOpen,
