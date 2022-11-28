@@ -26,7 +26,9 @@ export interface HardwareInfo {
 }
 
 export interface HardwareInfoEntry {
-  board: HardwareInfoBoardInfo;
+  board: HardwareInfoBoardInfo | null;
+  dongle: HardwareInfoDongleInfo | null;
+  config_entries: string[];
   name: string;
   url?: string;
 }
@@ -36,6 +38,14 @@ export interface HardwareInfoBoardInfo {
   model?: string;
   revision?: string;
   hassio_board_id?: string;
+}
+
+export interface HardwareInfoDongleInfo {
+  manufacturer: string;
+  description: string;
+  pid?: string;
+  vid?: string;
+  serial_number?: string;
 }
 
 export interface SystemStatusStreamMessage {
