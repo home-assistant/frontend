@@ -9,7 +9,10 @@ export class HaTileSlider extends LitElement {
   public disabled = false;
 
   @property()
-  public mode?: "start" | "end" | "indicator" = "start";
+  public mode?: "start" | "end" | "cursor" = "start";
+
+  @property({ type: Boolean, attribute: "visible-min" })
+  public visibleMin = false;
 
   @property({ type: Number })
   public value?: number;
@@ -35,6 +38,7 @@ export class HaTileSlider extends LitElement {
         .min=${this.min}
         .max=${this.max}
         aria-label=${ifDefined(this.label)}
+        .visibleMin=${this.visibleMin}
       >
       </ha-bar-slider>
     `;

@@ -1,6 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/tile/ha-tile-slider";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
@@ -50,6 +51,7 @@ class HuiLightBrightnessTileFeature
           .value=${position}
           min="1"
           max="100"
+          .visibleMin=${stateActive(this.stateObj)}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
           @value-changed=${this._valueChanged}
           .label=${this.hass.localize("ui.card.light.brightness")}
