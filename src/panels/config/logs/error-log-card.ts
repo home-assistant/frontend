@@ -57,7 +57,7 @@ class ErrorLogCard extends LitElement {
               <ha-card outlined>
                 <div class="header">
                   <h2>
-                    ${this.hass.localize("ui.panel.config.logs.full_logs")}
+                    ${this.hass.localize("ui.panel.config.logs.show_full_logs")}
                   </h2>
                   <div>
                     <ha-icon-button
