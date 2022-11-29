@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const webpack = require("webpack");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -103,7 +102,6 @@ const createWebpackConfig = ({
               ? path.resolve(context, resource)
               : require.resolve(resource);
           } catch (err) {
-            // eslint-disable-next-line no-console
             console.error(
               "Error in Home Assistant ignore plugin",
               resource,

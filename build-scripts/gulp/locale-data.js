@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 const del = require("del");
 const path = require("path");
 const gulp = require("gulp");

@@ -3,7 +3,12 @@ import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
 
-export type IntegrationType = "device" | "helper" | "hub" | "service";
+export type IntegrationType =
+  | "device"
+  | "helper"
+  | "hub"
+  | "service"
+  | "hardware";
 
 export interface IntegrationManifest {
   is_built_in: boolean;

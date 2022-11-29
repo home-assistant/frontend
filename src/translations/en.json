@@ -235,6 +235,9 @@
         "installing_with_progress": "Installing ({progress}%)",
         "up_to_date": "Up-to-date"
       },
+      "text": {
+        "emtpy_value": "(empty value)"
+      },
       "timer": {
         "actions": {
           "start": "start",
@@ -890,6 +893,8 @@
           "hidden_label": "Hidden",
           "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
+          "entity_disabled": "This entity is disabled.",
+          "enable_entity": "Enable",
           "open_device_settings": "Open device settings",
           "switch_as_x_confirm": "This switch will be hidden and a new {domain} will be added. Your existing configurations using the switch will continue to work.",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
@@ -1515,7 +1520,7 @@
             "add_water_source": "Add water source",
             "dialog": {
               "header": "Configure water consumption",
-              "paragraph": "Gas consumption is the volume of water that flows to your home.",
+              "paragraph": "Water consumption is the volume of water that flows to your home.",
               "energy_stat": "Consumed water (m³ or gl)",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
               "no_cost": "Do not track costs",
@@ -1705,6 +1710,7 @@
           "failed_to_shutdown_host": "Failed to shutdown system",
           "board": "Board",
           "documentation": "Documentation",
+          "configure": "Configure",
           "documentation_description": "Find extra information about your device"
         },
         "info": {
@@ -1766,7 +1772,8 @@
           },
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
-          "full_logs": "Full logs"
+          "show_full_logs": "Show full logs",
+          "download_full_log": "Download full log"
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -2689,6 +2696,10 @@
           "download_diagnostics_integration": "Download {integration} diagnostics",
           "delete_device": "Delete",
           "delete_device_integration": "Remove device from {integration}",
+          "connected_devices": {
+            "heading": "Connected devices",
+            "show_more": "+{count} devices not shown"
+          },
           "type": {
             "device_heading": "Device",
             "device": "device",
@@ -4213,7 +4224,37 @@
               "actions": "Actions",
               "appearance": "Appearance",
               "default_color": "Default color (state)",
-              "show_entity_picture": "Show entity picture"
+              "show_entity_picture": "Show entity picture",
+              "extras": {
+                "name": "Extras",
+                "not_compatible": "Not compatible",
+                "no_compatible_available": "No compatible extras available for this entity",
+                "add": "Add extra",
+                "edit": "Edit extra",
+                "remove": "Remove extra",
+                "types": {
+                  "cover-open-close": {
+                    "label": "Cover open/close"
+                  },
+                  "cover-tilt": {
+                    "label": "Cover tilt"
+                  },
+                  "light-brightness": {
+                    "label": "Light brightness"
+                  },
+                  "vacuum-commands": {
+                    "label": "Vacuum commands",
+                    "commands": "Commands",
+                    "commands_list": {
+                      "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
+                      "stop": "[%key:ui::dialogs::more_info_control::vacuum::stop%]",
+                      "clean_spot": "[%key:ui::dialogs::more_info_control::vacuum::clean_spot%]",
+                      "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
+                      "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
+                    }
+                  }
+                }
+              }
             },
             "vertical-stack": {
               "name": "Vertical Stack",
@@ -4233,6 +4274,36 @@
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },
+          "color-picker": {
+            "default_color": "Default color (state)",
+            "colors": {
+              "primary": "Primary",
+              "accent": "Accent",
+              "disabled": "Disabled",
+              "red": "Red",
+              "pink": "Pink",
+              "purple": "Purple",
+              "deep-purple": "Deep purple",
+              "indigo": "Indigo",
+              "blue": "Blue",
+              "light-blue": "Light blue",
+              "cyan": "Cyan",
+              "teal": "Teal",
+              "green": "Green",
+              "light-green": "Light Green",
+              "lime": "Lime",
+              "yellow": "Yellow",
+              "amber": "Amber",
+              "orange": "Orange",
+              "deep-orange": "Deep orange",
+              "brown": "Brown",
+              "grey": "Grey",
+              "blue-grey": "Blue grey",
+              "black": "Black",
+              "white": "White"
+            }
+          },
+
           "cardpicker": {
             "no_description": "No description available.",
             "custom_card": "Custom",

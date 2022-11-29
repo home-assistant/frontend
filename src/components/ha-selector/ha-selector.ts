@@ -34,6 +34,7 @@ const LOAD_ELEMENTS = {
   location: () => import("./ha-selector-location"),
   color_temp: () => import("./ha-selector-color-temp"),
   "ui-action": () => import("./ha-selector-ui-action"),
+  "ui-color": () => import("./ha-selector-ui-color"),
 };
 
 @customElement("ha-selector")

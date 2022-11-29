@@ -17,6 +17,7 @@ import {
   getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
+  StatisticsTypes,
 } from "../../../data/recorder";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -69,6 +70,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
+  private _statTypes?: StatisticsTypes;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._interval) {
@@ -82,13 +85,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     if (!this.hasUpdated) {
       return;
     }
-    this._getStatistics();
-    // statistics are created every hour
-    clearInterval(this._interval);
-    this._interval = window.setInterval(
-      () => this._getStatistics(),
-      this._intervalTimeout
-    );
+    this._setFetchStatisticsTimer();
   }
 
   public getCardSize(): number {
@@ -117,15 +114,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     });
 
     if (typeof config.stat_types === "string") {
-      this._config = { ...config, stat_types: [config.stat_types] };
+      this._statTypes = [config.stat_types];
     } else if (!config.stat_types) {
-      this._config = {
-        ...config,
-        stat_types: ["state", "sum", "min", "max", "mean"],
-      };
+      this._statTypes = ["state", "sum", "min", "max", "mean"];
     } else {
-      this._config = config;
+      this._statTypes = config.stat_types;
     }
+    this._config = config;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -137,10 +132,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (
-      !this._config ||
-      (!changedProps.has("_config") && !changedProps.has("_metadata"))
-    ) {
+    if (!this._config || !changedProps.has("_config")) {
       return;
     }
 
@@ -152,25 +144,31 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       changedProps.has("_config") &&
       oldConfig?.entities !== this._config.entities
     ) {
-      this._getStatisticsMetaData(this._entities);
+      this._getStatisticsMetaData(this._entities).then(() => {
+        this._setFetchStatisticsTimer();
+      });
+      return;
     }
 
     if (
-      changedProps.has("_metadata") ||
-      (changedProps.has("_config") &&
-        (oldConfig?.entities !== this._config.entities ||
-          oldConfig?.days_to_show !== this._config.days_to_show ||
-          oldConfig?.period !== this._config.period ||
-          oldConfig?.unit !== this._config.unit))
+      changedProps.has("_config") &&
+      (oldConfig?.entities !== this._config.entities ||
+        oldConfig?.days_to_show !== this._config.days_to_show ||
+        oldConfig?.period !== this._config.period ||
+        oldConfig?.unit !== this._config.unit)
     ) {
-      this._getStatistics();
-      // statistics are created every hour
-      clearInterval(this._interval);
-      this._interval = window.setInterval(
-        () => this._getStatistics(),
-        this._intervalTimeout
-      );
+      this._setFetchStatisticsTimer();
     }
+  }
+
+  private _setFetchStatisticsTimer() {
+    this._getStatistics();
+    // statistics are created every hour
+    clearInterval(this._interval);
+    this._interval = window.setInterval(
+      () => this._getStatistics(),
+      this._intervalTimeout
+    );
   }
 
   protected render(): TemplateResult {
@@ -191,7 +189,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .statisticsData=${this._statistics}
             .metadata=${this._metadata}
             .chartType=${this._config.chart_type || "line"}
-            .statTypes=${this._config.stat_types!}
+            .statTypes=${this._statTypes!}
             .names=${this._names}
             .unit=${this._unit}
           ></statistics-chart>
@@ -250,7 +248,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         undefined,
         this._entities,
         this._config!.period,
-        unitconfig
+        unitconfig,
+        this._statTypes
       );
     } catch (err) {
       this._statistics = undefined;
