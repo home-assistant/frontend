@@ -160,6 +160,12 @@ export class HaIconPicker extends LitElement {
           addIcon(item.icon, 4);
         }
       }
+
+      // Allow preview for custom icon not in list
+      if (filteredItems.length === 0) {
+        addIcon(filter, 0);
+      }
+
       return filteredItems.sort((itemA, itemB) => itemA.rank - itemB.rank);
     }
   );
