@@ -18,7 +18,10 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { CoverEntity } from "../../../data/cover";
+import { ON, UNAVAILABLE_STATES } from "../../../data/entity";
+import { FanEntity } from "../../../data/fan";
+import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
@@ -152,6 +155,52 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return stateColor;
   });
 
+  private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
+    const domain = computeDomain(stateObj.entity_id);
+
+    if (
+      (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
+        TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
+      !UNAVAILABLE_STATES.includes(stateObj.state)
+    ) {
+      return html`
+        <hui-timestamp-display
+          .hass=${this.hass}
+          .ts=${new Date(stateObj.state)}
+          format="relative"
+          capitalize
+        ></hui-timestamp-display>
+      `;
+    }
+
+    if (domain === "light" && stateObj.state === ON) {
+      const brightness = (stateObj as LightEntity).attributes.brightness;
+      if (brightness) {
+        return `${Math.round((brightness * 100) / 255)}%`;
+      }
+    }
+
+    if (domain === "cover" && stateObj.state === "open") {
+      const position = (stateObj as CoverEntity).attributes.current_position;
+      if (position) {
+        return `${Math.round(position)}%`;
+      }
+    }
+
+    if (domain === "fan" && stateObj.state === ON) {
+      const speed = (stateObj as FanEntity).attributes.percentage;
+      if (speed) {
+        return `${Math.round(speed)}%`;
+      }
+    }
+
+    return computeStateDisplay(
+      this.hass!.localize,
+      stateObj,
+      this.hass!.locale
+    );
+  }
+
   protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
@@ -175,25 +224,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const domain = computeDomain(stateObj.entity_id);
-
     const icon = this._config.icon || stateObj.attributes.icon;
     const iconPath = stateIconPath(stateObj);
 
     const name = this._config.name || stateObj.attributes.friendly_name;
-    const stateDisplay =
-      (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
-        TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
-      !UNAVAILABLE_STATES.includes(stateObj.state)
-        ? html`
-            <hui-timestamp-display
-              .hass=${this.hass}
-              .ts=${new Date(stateObj.state)}
-              .format=${this._config.format}
-              capitalize
-            ></hui-timestamp-display>
-          `
-        : computeStateDisplay(this.hass!.localize, stateObj, this.hass.locale);
+
+    const stateDisplay = this._computeStateDisplay(stateObj);
 
     const color = this._computeStateColor(stateObj, this._config.color);
 
