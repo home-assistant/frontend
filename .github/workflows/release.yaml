@@ -52,7 +52,7 @@ jobs:
           python3 -m pip install twine build
           export TWINE_USERNAME="__token__"
           export TWINE_PASSWORD="${{ secrets.TWINE_TOKEN }}"
-
+          export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/release
 
       - name: Upload release assets

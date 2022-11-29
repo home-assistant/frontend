@@ -26,6 +26,8 @@ jobs:
           CI: true
       - name: Build Demo
         run: ./node_modules/.bin/gulp build-demo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy to Netlify
         run: npx netlify-cli deploy --dir=demo/dist --prod
         env:
