@@ -45,7 +45,7 @@ class HaConfigSectionGeneral extends LitElement {
 
   @state() private _language?: string;
 
-  @state() private _country?: string;
+  @state() private _country?: string | null;
 
   @state() private _name?: string;
 
