@@ -49,6 +49,7 @@ import {
   ERROR_STATES,
   RECOVERABLE_STATES,
 } from "../../../data/config_entries";
+import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -555,6 +556,10 @@ export class HaIntegrationCard extends LitElement {
       LogSeverity[LogSeverity.NOTSET],
       "once"
     );
+    const timeString = new Date().toISOString().replace(/:/g, "-");
+    const logFileName = `home-assistant_${integration}_${timeString}.log`;
+    const signedUrl = await getSignedPath(this.hass, getErrorLogDownloadUrl);
+    fileDownload(signedUrl.path, logFileName);
   }
 
   private get _selectededConfigEntry(): ConfigEntryExtended | undefined {
