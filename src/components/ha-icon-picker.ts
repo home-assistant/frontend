@@ -7,7 +7,6 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import { nextRender } from "../common/util/render-status";
 import { customIcons } from "../data/custom_icons";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
@@ -95,13 +94,6 @@ export class HaIconPicker extends LitElement {
 
   @property({ type: Boolean }) public invalid = false;
 
-  // Filter can take a significant chunk of frame (up to 3-4 ms),
-  // so slow down updates to save resources and prevent any jank
-  protected override async scheduleUpdate() {
-    await nextRender();
-    super.scheduleUpdate();
-  }
-
   protected render(): TemplateResult {
     return html`
       <ha-combo-box
@@ -138,6 +130,7 @@ export class HaIconPicker extends LitElement {
     `;
   }
 
+  // Filter can take a significant chunk of frame (up to 3-5 ms)
   private _filterIcons = memoizeOne(
     (filter: string, iconItems: IconItem[] = ICONS) => {
       if (!filter) {
