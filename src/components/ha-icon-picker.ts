@@ -16,7 +16,13 @@ import "./ha-icon";
 
 type IconItem = {
   icon: string;
+  parts: Set<string>;
   keywords: string[];
+};
+
+type RankedIcon = {
+  icon: string;
+  rank: number;
 };
 
 let ICONS: IconItem[] = [];
@@ -28,6 +34,7 @@ const loadIcons = async () => {
   const iconList = await import("../../build/mdi/iconList.json");
   ICONS = iconList.default.map((icon) => ({
     icon: `mdi:${icon.name}`,
+    parts: new Set(icon.name.split("-")),
     keywords: icon.keywords,
   }));
 
@@ -49,6 +56,7 @@ const loadCustomIconItems = async (iconsetPrefix: string) => {
     const iconList = await getIconList();
     const customIconItems = iconList.map((icon) => ({
       icon: `${iconsetPrefix}:${icon.name}`,
+      parts: new Set(icon.name.split("-")),
       keywords: icon.keywords ?? [],
     }));
     return customIconItems;
@@ -59,12 +67,11 @@ const loadCustomIconItems = async (iconsetPrefix: string) => {
   }
 };
 
-const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<mwc-list-item
-  graphic="avatar"
->
-  <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
-  ${item.icon}
-</mwc-list-item>`;
+const rowRenderer: ComboBoxLitRenderer<IconItem | RankedIcon> = (item) =>
+  html`<mwc-list-item graphic="avatar">
+    <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
+    ${item.icon}
+  </mwc-list-item>`;
 
 @customElement("ha-icon-picker")
 export class HaIconPicker extends LitElement {
@@ -132,22 +139,34 @@ export class HaIconPicker extends LitElement {
   }
 
   private _filterIcons = memoizeOne(
-    (filterString: string, iconItems: IconItem[] = ICONS) => {
-      if (!filterString) {
+    (filter: string, iconItems: IconItem[] = ICONS) => {
+      if (!filter) {
         return iconItems;
       }
-      const filteredItems = iconItems.filter(
-        (item) =>
-          item.icon.includes(filterString) ||
-          item.keywords.some((word) => word.includes(filterString))
-      );
-      return filteredItems;
+
+      const filteredItems: RankedIcon[] = [];
+      const addIcon = (icon: string, rank: number) =>
+        filteredItems.push({ icon, rank });
+
+      // Filter and rank such that exact matches rank higher, and prefer icon name matches over keywords
+      for (const item of iconItems) {
+        if (item.parts.has(filter)) {
+          addIcon(item.icon, 1);
+        } else if (item.keywords.includes(filter)) {
+          addIcon(item.icon, 2);
+        } else if (item.icon.includes(filter)) {
+          addIcon(item.icon, 3);
+        } else if (item.keywords.some((word) => word.includes(filter))) {
+          addIcon(item.icon, 4);
+        }
+      }
+      return filteredItems.sort((itemA, itemB) => itemA.rank - itemB.rank);
     }
   );
 
   private _iconProvider = (
     params: ComboBoxDataProviderParams,
-    callback: ComboBoxDataProviderCallback<IconItem>
+    callback: ComboBoxDataProviderCallback<IconItem | RankedIcon>
   ) => {
     const filteredItems = this._filterIcons(params.filter.toLowerCase(), ICONS);
     const iStart = params.page * params.pageSize;
