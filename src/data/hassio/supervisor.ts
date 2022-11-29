@@ -183,6 +183,11 @@ export const fetchHassioLogs = async (hass: HomeAssistant, provider: string) =>
     `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`
   );
 
+export const getHassioLogDownloadUrl = (provider: string) =>
+  `/api/hassio/${
+    provider.includes("_") ? `addons/${provider}` : provider
+  }/logs`;
+
 export const setSupervisorOption = async (
   hass: HomeAssistant,
   data: SupervisorOptions

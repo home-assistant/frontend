@@ -1772,7 +1772,8 @@
           },
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
-          "full_logs": "Full logs"
+          "show_full_logs": "Show full logs",
+          "download_full_log": "Download full log"
         },
         "lovelace": {
           "caption": "Dashboards",
