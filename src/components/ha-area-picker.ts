@@ -1,6 +1,5 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -9,22 +8,16 @@ import { computeDomain } from "../common/entity/compute_domain";
 import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
-  subscribeAreaRegistry,
 } from "../data/area_registry";
 import {
   DeviceEntityLookup,
   DeviceRegistryEntry,
-  subscribeDeviceRegistry,
 } from "../data/device_registry";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../data/entity_registry";
+import { EntityRegistryEntry } from "../data/entity_registry";
 import {
   showAlertDialog,
   showPromptDialog,
 } from "../dialogs/generic/show-dialog-box";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
@@ -42,7 +35,7 @@ const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (
 </mwc-list-item>`;
 
 @customElement("ha-area-picker")
-export class HaAreaPicker extends SubscribeMixin(LitElement) {
+export class HaAreaPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
@@ -88,33 +81,13 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required?: boolean;
 
-  @state() private _areas?: AreaRegistryEntry[];
-
-  @state() private _devices?: DeviceRegistryEntry[];
-
-  @state() private _entities?: EntityRegistryEntry[];
-
   @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
-  private _filter?: string;
+  private _suggestion?: string;
 
   private _init = false;
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeAreaRegistry(this.hass.connection!, (areas) => {
-        this._areas = areas;
-      }),
-      subscribeDeviceRegistry(this.hass.connection!, (devices) => {
-        this._devices = devices;
-      }),
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities;
-      }),
-    ];
-  }
 
   public async open() {
     await this.updateComplete;
@@ -287,14 +260,14 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     if (
-      (!this._init && this._devices && this._areas && this._entities) ||
+      (!this._init && this.hass) ||
       (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
       (this.comboBox as any).items = this._getAreas(
-        this._areas!,
-        this._devices!,
-        this._entities!,
+        Object.values(this.hass.areas),
+        Object.values(this.hass.devices),
+        Object.values(this.hass.entities),
         this.includeDomains,
         this.excludeDomains,
         this.includeDeviceClasses,
@@ -320,7 +293,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           ? this.hass.localize("ui.components.area-picker.area")
           : this.label}
         .placeholder=${this.placeholder
-          ? this._area(this.placeholder)?.name
+          ? this.hass.areas[this.placeholder]?.name
           : undefined}
         .renderer=${rowRenderer}
         @filter-changed=${this._filterChanged}
@@ -331,32 +304,30 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _area = memoizeOne((areaId: string): AreaRegistryEntry | undefined =>
-    this._areas?.find((area) => area.area_id === areaId)
-  );
-
   private _filterChanged(ev: CustomEvent): void {
-    this._filter = ev.detail.value;
-    if (!this._filter) {
+    const filter = ev.detail.value;
+    if (!filter) {
       this.comboBox.filteredItems = this.comboBox.items;
       return;
     }
-    // @ts-ignore
-    if (!this.noAdd && this.comboBox._comboBox.filteredItems?.length === 0) {
+
+    const filteredItems = this.comboBox.items?.filter((item) =>
+      item.name.toLowerCase().includes(filter!.toLowerCase())
+    );
+    if (!this.noAdd && filteredItems?.length === 0) {
+      this._suggestion = filter;
       this.comboBox.filteredItems = [
         {
           area_id: "add_new_suggestion",
           name: this.hass.localize(
             "ui.components.area-picker.add_new_sugestion",
-            { name: this._filter }
+            { name: this._suggestion }
           ),
           picture: null,
         },
       ];
     } else {
-      this.comboBox.filteredItems = this.comboBox.items?.filter((item) =>
-        item.name.toLowerCase().includes(this._filter!.toLowerCase())
-      );
+      this.comboBox.filteredItems = filteredItems;
     }
   }
 
@@ -394,7 +365,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         "ui.components.area-picker.add_dialog.name"
       ),
       defaultValue:
-        newValue === "add_new_suggestion" ? this._filter : undefined,
+        newValue === "add_new_suggestion" ? this._suggestion : undefined,
       confirm: async (name) => {
         if (!name) {
           return;
@@ -403,11 +374,11 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           const area = await createAreaRegistryEntry(this.hass, {
             name,
           });
-          this._areas = [...this._areas!, area];
+          const areas = [...Object.values(this.hass.areas), area];
           (this.comboBox as any).filteredItems = this._getAreas(
-            this._areas!,
-            this._devices!,
-            this._entities!,
+            areas,
+            Object.values(this.hass.devices)!,
+            Object.values(this.hass.entities)!,
             this.includeDomains,
             this.excludeDomains,
             this.includeDeviceClasses,
@@ -427,10 +398,14 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           });
         }
       },
+      cancel: () => {
+        this._setValue(undefined);
+        this._suggestion = undefined;
+      },
     });
   }
 
-  private _setValue(value: string) {
+  private _setValue(value?: string) {
     this.value = value;
     setTimeout(() => {
       fireEvent(this, "value-changed", { value });
