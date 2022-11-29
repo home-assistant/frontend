@@ -81,13 +81,13 @@ module.exports = function (opts = {}) {
         opts.workerRegexp.flags
       );
       if (!workerRegexp.test(code)) {
-        return;
+        return undefined;
       }
 
       const ms = new MagicString(code);
       // Reset the regexp
       workerRegexp.lastIndex = 0;
-      while (true) {
+      for (;;) {
         const match = workerRegexp.exec(code);
         if (!match) {
           break;
@@ -98,6 +98,7 @@ module.exports = function (opts = {}) {
         // Parse the optional options object
         if (match[3] && match[3].length > 0) {
           // FIXME: ooooof!
+          // eslint-disable-next-line @typescript-eslint/no-implied-eval
           optionsObject = new Function(`return ${match[3].slice(1)};`)();
         }
         delete optionsObject.type;
@@ -110,12 +111,14 @@ module.exports = function (opts = {}) {
         }
 
         // Find worker file and store it as a chunk with ID prefixed for our loader
+        // eslint-disable-next-line no-await-in-loop
         const resolvedWorkerFile = (await this.resolve(workerFile, id)).id;
         let chunkRefId;
         if (resolvedWorkerFile in refIds) {
           chunkRefId = refIds[resolvedWorkerFile];
         } else {
           this.addWatchFile(resolvedWorkerFile);
+          // eslint-disable-next-line no-await-in-loop
           const source = await getBundledWorker(
             resolvedWorkerFile,
             rollupOptions
