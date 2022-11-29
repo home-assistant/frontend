@@ -80,12 +80,12 @@ class ErrorLogCard extends LitElement {
           : ""}
         ${!this._logHTML
           ? html`
-              <mwc-button raised @click=${this._refreshLogs}>
-                ${this.hass.localize("ui.panel.config.logs.load_logs")}
-              </mwc-button>
               <mwc-button outlined @click=${this._downloadFullLog}>
                 <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
                 ${this.hass.localize("ui.panel.config.logs.download_full_log")}
+              </mwc-button>
+              <mwc-button raised @click=${this._refreshLogs}>
+                ${this.hass.localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
             `
           : ""}
