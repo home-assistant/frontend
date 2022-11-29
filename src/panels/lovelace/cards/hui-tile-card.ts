@@ -19,7 +19,7 @@ import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import { CoverEntity } from "../../../data/cover";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { ON, UNAVAILABLE_STATES } from "../../../data/entity";
 import { FanEntity } from "../../../data/fan";
 import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -157,7 +157,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
     const domain = computeDomain(stateObj.entity_id);
-    const active = stateActive(stateObj);
 
     if (
       (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
@@ -174,21 +173,21 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    if (domain === "light" && active) {
+    if (domain === "light" && stateObj.state === ON) {
       const brightness = (stateObj as LightEntity).attributes.brightness;
       if (brightness) {
         return `${Math.round((brightness * 100) / 255)}%`;
       }
     }
 
-    if (domain === "cover" && active) {
+    if (domain === "cover" && stateObj.state === "open") {
       const position = (stateObj as CoverEntity).attributes.current_position;
       if (position) {
         return `${Math.round(position)}%`;
       }
     }
 
-    if (domain === "fan" && active) {
+    if (domain === "fan" && stateObj.state === ON) {
       const speed = (stateObj as FanEntity).attributes.percentage;
       if (speed) {
         return `${Math.round(speed)}%`;
