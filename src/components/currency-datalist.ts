@@ -158,13 +158,23 @@ export const currencies = [
   "ZWL",
 ];
 
+export const currencyDisplayNames =
+  Intl && "DisplayNames" in Intl
+    ? new Intl.DisplayNames(undefined, {
+        type: "currency",
+        fallback: "code",
+      })
+    : undefined;
+
 export const createCurrencyListEl = () => {
   const list = document.createElement("datalist");
   list.id = "currencies";
   for (const currency of currencies) {
     const option = document.createElement("option");
     option.value = currency;
-    option.innerHTML = currency;
+    option.innerText = currencyDisplayNames
+      ? currencyDisplayNames.of(currency)!
+      : currency;
     list.appendChild(option);
   }
   return list;
