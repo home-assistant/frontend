@@ -1654,6 +1654,8 @@
                 "elevation": "Elevation",
                 "elevation_meters": "meters",
                 "time_zone": "Time Zone",
+                "language": "Language",
+                "country": "Country",
                 "unit_system": "Unit System",
                 "unit_system_us_customary": "US customary",
                 "unit_system_metric": "Metric",

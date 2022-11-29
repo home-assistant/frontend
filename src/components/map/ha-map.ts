@@ -133,11 +133,11 @@ export class HaMap extends ReactiveElement {
     if (
       !changedProps.has("darkMode") &&
       (!changedProps.has("hass") ||
-        (oldHass && oldHass.themes.darkMode === this.hass.themes.darkMode))
+        (oldHass && oldHass.themes?.darkMode === this.hass.themes?.darkMode))
     ) {
       return;
     }
-    const darkMode = this.darkMode ?? this.hass.themes.darkMode;
+    const darkMode = this.darkMode ?? this.hass.themes?.darkMode;
     this.shadowRoot!.getElementById("map")!.classList.toggle("dark", darkMode);
   }
 

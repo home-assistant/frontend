@@ -1,6 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -25,6 +23,11 @@ import type { HomeAssistant } from "../types";
 import "../components/ha-radio";
 import "../components/ha-formfield";
 import type { HaRadio } from "../components/ha-radio";
+import type { HaTextField } from "../components/ha-textfield";
+import "../components/ha-textfield";
+import { getLocalLanguage } from "../util/common-translation";
+import { createCountryListEl } from "../components/country-datalist";
+import { createLanguageListEl } from "../components/language-datalist";
 
 const amsterdam: [number, number] = [52.3731339, 4.8903147];
 const mql = matchMedia("(prefers-color-scheme: dark)");
@@ -50,6 +53,10 @@ class OnboardingCoreConfig extends LitElement {
 
   @state() private _timeZone?: string;
 
+  @state() private _language?: ConfigUpdateValues["language"];
+
+  @state() private _country?: ConfigUpdateValues["country"];
+
   @query("ha-locations-editor", true) private map!: HaLocationsEditor;
 
   protected render(): TemplateResult {
@@ -62,15 +69,15 @@ class OnboardingCoreConfig extends LitElement {
         )}
       </p>
 
-      <paper-input
+      <ha-textfield
         .label=${this.onboardingLocalize(
           "ui.panel.page-onboarding.core-config.location_name"
         )}
         name="name"
         .disabled=${this._working}
         .value=${this._nameValue}
-        @value-changed=${this._handleChange}
-      ></paper-input>
+        @change=${this._handleChange}
+      ></ha-textfield>
 
       <div class="middle-text">
         <p>
@@ -105,19 +112,42 @@ class OnboardingCoreConfig extends LitElement {
       </div>
 
       <div class="row">
-        <paper-input
+        <ha-textfield
+          class="flex"
+          .label=${this.hass.localize(
+            "ui.panel.config.core.section.core.core_config.country"
+          )}
+          name="country"
+          .disabled=${this._working}
+          .value=${this._countryValue}
+          @change=${this._handleChange}
+        ></ha-textfield>
+
+        <ha-textfield
+          class="flex"
+          .label=${this.hass.localize(
+            "ui.panel.config.core.section.core.core_config.language"
+          )}
+          name="language"
+          .disabled=${this._working}
+          .value=${this._languageValue}
+          @change=${this._handleChange}
+        ></ha-textfield>
+      </div>
+
+      <div class="row">
+        <ha-textfield
           class="flex"
           .label=${this.hass.localize(
             "ui.panel.config.core.section.core.core_config.time_zone"
           )}
           name="timeZone"
-          list="timezones"
           .disabled=${this._working}
           .value=${this._timeZoneValue}
-          @value-changed=${this._handleChange}
-        ></paper-input>
+          @change=${this._handleChange}
+        ></ha-textfield>
 
-        <paper-input
+        <ha-textfield
           class="flex"
           .label=${this.hass.localize(
             "ui.panel.config.core.section.core.core_config.elevation"
@@ -126,14 +156,14 @@ class OnboardingCoreConfig extends LitElement {
           type="number"
           .disabled=${this._working}
           .value=${this._elevationValue}
-          @value-changed=${this._handleChange}
+          @change=${this._handleChange}
         >
           <span slot="suffix">
             ${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.elevation_meters"
             )}
           </span>
-        </paper-input>
+        </ha-textfield>
       </div>
 
       <div class="row">
@@ -197,17 +227,16 @@ class OnboardingCoreConfig extends LitElement {
               >
             </div>
 
-            <paper-input
+            <ha-textfield
               class="flex"
               .label=${this.hass.localize(
                 "ui.panel.config.core.section.core.core_config.currency"
               )}
               name="currency"
-              list="currencies"
               .disabled=${this._working}
               .value=${this._currencyValue}
-              @value-changed=${this._handleChange}
-            ></paper-input>
+              @change=${this._handleChange}
+            ></ha-textfield>
           </div>
         </div>
 
@@ -224,7 +253,7 @@ class OnboardingCoreConfig extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     setTimeout(
-      () => this.shadowRoot!.querySelector("paper-input")!.focus(),
+      () => this.shadowRoot!.querySelector("ha-textfield")!.focus(),
       100
     );
     this.addEventListener("keypress", (ev) => {
@@ -234,13 +263,35 @@ class OnboardingCoreConfig extends LitElement {
     });
     const tzInput = this.shadowRoot!.querySelector(
       "[name=timeZone]"
-    ) as PaperInputElement;
-    tzInput.inputElement.appendChild(createTimezoneListEl());
+    ) as HaTextField;
+    tzInput.updateComplete.then(() => {
+      tzInput.shadowRoot!.appendChild(createTimezoneListEl());
+      tzInput.formElement.setAttribute("list", "timezones");
+    });
 
-    const cInput = this.shadowRoot!.querySelector(
+    const curInput = this.shadowRoot!.querySelector(
       "[name=currency]"
-    ) as PaperInputElement;
-    cInput.inputElement.appendChild(createCurrencyListEl());
+    ) as HaTextField;
+    curInput.updateComplete.then(() => {
+      curInput.shadowRoot!.appendChild(createCurrencyListEl());
+      curInput.formElement.setAttribute("list", "currencies");
+    });
+
+    const countryInput = this.shadowRoot!.querySelector(
+      "[name=country]"
+    ) as HaTextField;
+    countryInput.updateComplete.then(() => {
+      countryInput.shadowRoot!.appendChild(createCountryListEl());
+      countryInput.formElement.setAttribute("list", "countries");
+    });
+
+    const langInput = this.shadowRoot!.querySelector(
+      "[name=language]"
+    ) as HaTextField;
+    langInput.updateComplete.then(() => {
+      langInput.shadowRoot!.appendChild(createLanguageListEl(this.hass));
+      langInput.formElement.setAttribute("list", "languages");
+    });
   }
 
   private get _nameValue() {
@@ -260,7 +311,15 @@ class OnboardingCoreConfig extends LitElement {
   }
 
   private get _timeZoneValue() {
-    return this._timeZone;
+    return this._timeZone || "";
+  }
+
+  private get _languageValue() {
+    return this._language || "";
+  }
+
+  private get _countryValue() {
+    return this._country || "";
   }
 
   private get _unitSystemValue() {
@@ -283,7 +342,7 @@ class OnboardingCoreConfig extends LitElement {
   );
 
   private _handleChange(ev: PolymerChangedEvent<string>) {
-    const target = ev.currentTarget as PaperInputElement;
+    const target = ev.currentTarget as HaTextField;
 
     let value = target.value;
 
@@ -335,6 +394,10 @@ class OnboardingCoreConfig extends LitElement {
       if (values.currency) {
         this._currency = values.currency;
       }
+      if (values.country) {
+        this._country = values.country;
+      }
+      this._language = getLocalLanguage();
     } catch (err: any) {
       alert(`Failed to detect location information: ${err.message}`);
     } finally {
@@ -355,6 +418,8 @@ class OnboardingCoreConfig extends LitElement {
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue || "UTC",
         currency: this._currencyValue || "EUR",
+        country: this._countryValue,
+        language: this._languageValue,
       });
       const result = await onboardCoreConfigStep(this.hass);
       fireEvent(this, "onboarding-step", {
@@ -380,6 +445,10 @@ class OnboardingCoreConfig extends LitElement {
         color: var(--secondary-text-color);
       }
 
+      ha-textfield {
+        display: block;
+      }
+
       ha-locations-editor {
         height: 200px;
       }
@@ -389,7 +458,11 @@ class OnboardingCoreConfig extends LitElement {
       }
 
       .middle-text {
-        margin: 24px 0;
+        margin: 16px 0;
+      }
+
+      .row {
+        margin-top: 16px;
       }
 
       .row > * {
