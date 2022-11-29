@@ -19,6 +19,7 @@ import { AuthProvider, autocompleteLoginFields } from "../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
+  DataEntryFlowStepExternal,
 } from "../data/data_entry_flow";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import "./ha-password-manager-polyfill";
@@ -112,6 +113,11 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     super.updated(changedProps);
     if (changedProps.has("authProvider")) {
       this._providerChanged(this.authProvider);
+    }
+
+    if (changedProps.has("_step") && this._step?.type === "external") {
+      this._externalStep(this._step);
+      return;
     }
 
     if (!changedProps.has("_step") || this._step?.type !== "form") {
@@ -226,6 +232,14 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
               `
             : ""}
         `;
+      case "external":
+        return html` ${this._computeStepDescription(step)
+          ? html`
+              <ha-markdown
+                .content=${this._computeStepDescription(step)}
+              ></ha-markdown>
+            `
+          : html``}`;
       default:
         return html``;
     }
@@ -288,6 +302,57 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
+  private _externalStep(step: DataEntryFlowStepExternal) {
+    const external = window.open(step.url);
+    if (external) {
+      window.addEventListener(
+        "message",
+        async (message: MessageEvent) => {
+          if (
+            message.data.type === "externalCallback" &&
+            message.source === external
+          ) {
+            const postData = { ...this._stepData, client_id: this.clientId };
+
+            try {
+              const response = await fetch(`/auth/login_flow/${step.flow_id}`, {
+                method: "POST",
+                credentials: "same-origin",
+                body: JSON.stringify(postData),
+              });
+
+              const newStep = await response.json();
+
+              if (response.status === 403) {
+                this._state = "error";
+                this._errorMessage = newStep.message;
+                return;
+              }
+
+              if (newStep.type === "create_entry") {
+                this._redirect(newStep.result);
+                return;
+              }
+              this._step = newStep;
+              this._state = "step";
+            } catch (err) {
+              // eslint-disable-next-line no-console
+              console.error("Error handling external flow", err);
+              this._state = "error";
+              this._errorMessage = this._unknownError();
+            }
+          }
+        },
+        {
+          once: true,
+        }
+      );
+    } else {
+      this._state = "error";
+      this._errorMessage = "Login window was blocked, please allow popups.";
+    }
+  }
+
   private _redirect(authCode: string) {
     // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
     let url = this.redirectUri!;
@@ -313,7 +378,9 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     this._stepData = ev.detail.value;
   }
 
-  private _computeStepDescription(step: DataEntryFlowStepForm) {
+  private _computeStepDescription(
+    step: DataEntryFlowStepForm | DataEntryFlowStepExternal
+  ) {
     const resourceKey =
       `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description` as const;
     const args: string[] = [];
