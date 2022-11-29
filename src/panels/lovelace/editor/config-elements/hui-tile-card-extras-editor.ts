@@ -33,6 +33,7 @@ const EXTRAS_TYPE: LovelaceTileExtraConfig["type"][] = [
   "cover-open-close",
   "cover-tilt",
   "light-brightness",
+  "vacuum-commands",
 ];
 
 declare global {
@@ -227,7 +228,7 @@ export class HuiTileCardExtrasEditor extends LitElement {
 
     let newExtra: LovelaceTileExtraConfig;
     if (elClass && elClass.getStubConfig) {
-      newExtra = await elClass.getStubConfig(this.hass!);
+      newExtra = await elClass.getStubConfig(this.hass!, this.stateObj);
     } else {
       newExtra = { type: value } as LovelaceTileExtraConfig;
     }
