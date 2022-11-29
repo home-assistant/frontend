@@ -352,7 +352,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             ? domainIcon(computeDomain(stateObj.entity_id), {
                 ...stateObj,
                 attributes: {
-                  ...stateObj,
+                  ...stateObj.attributes,
                   device_class: this._deviceClass,
                 },
               })
