@@ -25,11 +25,16 @@ export interface VacuumCommandsTileExtraConfig {
   commands?: VacuumCommand[];
 }
 
+export interface FanSpeedTileExtraConfig {
+  type: "fan-speed";
+}
+
 export type LovelaceTileExtraConfig =
   | CoverOpenCloseTileExtraConfig
   | CoverTiltTileExtraConfig
   | LightBrightnessTileExtraConfig
-  | VacuumCommandsTileExtraConfig;
+  | VacuumCommandsTileExtraConfig
+  | FanSpeedTileExtraConfig;
 
 export type LovelaceTileExtraContext = {
   entity_id?: string;

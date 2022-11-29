@@ -2,6 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntityFeature } from "../../../data/cover";
+import { FanEntityFeature } from "../../../data/fan";
 import { lightSupportsBrightness } from "../../../data/light";
 import { supportsVacuumCommand } from "./hui-vacuum-commands-tile-extra";
 import { LovelaceTileExtraConfig, VACUUM_COMMANDS } from "./types";
@@ -24,6 +25,9 @@ const TILE_EXTRAS_SUPPORT: Record<TileExtraType, SupportsTileExtra> = {
   "vacuum-commands": (stateObj) =>
     computeDomain(stateObj.entity_id) === "vacuum" &&
     VACUUM_COMMANDS.some((c) => supportsVacuumCommand(stateObj, c)),
+  "fan-speed": (stateObj) =>
+    computeDomain(stateObj.entity_id) === "fan" &&
+    supportsFeature(stateObj, FanEntityFeature.SET_SPEED),
 };
 
 const TILE_EXTRAS_EDITABLE: Set<TileExtraType> = new Set(["vacuum-commands"]);

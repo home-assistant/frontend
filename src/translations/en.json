@@ -4248,6 +4248,9 @@
                       "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
                       "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
                     }
+                  },
+                  "fan-speed": {
+                    "label": "Fan speed"
                   }
                 }
               }

@@ -34,6 +34,7 @@ const EXTRAS_TYPE: LovelaceTileExtraConfig["type"][] = [
   "cover-tilt",
   "light-brightness",
   "vacuum-commands",
+  "fan-speed",
 ];
 
 declare global {
