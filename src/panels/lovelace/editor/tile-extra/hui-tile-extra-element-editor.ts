@@ -1,11 +1,17 @@
 import { customElement } from "lit/decorators";
 import { getTileExtraElementClass } from "../../create-element/create-tile-extra-element";
-import { LovelaceTileExtraConfig } from "../../tile-extra/types";
+import {
+  LovelaceTileExtraConfig,
+  LovelaceTileExtraContext,
+} from "../../tile-extra/types";
 import type { LovelaceTileExtraEditor } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
 @customElement("hui-tile-extra-element-editor")
-export class HuiTileExtraElementEditor extends HuiElementEditor<LovelaceTileExtraConfig> {
+export class HuiTileExtraElementEditor extends HuiElementEditor<
+  LovelaceTileExtraConfig,
+  LovelaceTileExtraContext
+> {
   protected async getConfigElement(): Promise<
     LovelaceTileExtraEditor | undefined
   > {

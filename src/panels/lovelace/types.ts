@@ -88,9 +88,10 @@ export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceRowConfig): void;
 }
 
-export interface LovelaceGenericElementEditor extends HTMLElement {
+export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: LovelaceConfig;
+  context?: C;
   setConfig(config: any): void;
   focusYamlEditor?: () => void;
 }
@@ -104,7 +105,10 @@ export interface LovelaceTileExtra extends HTMLElement {
 export interface LovelaceTileExtraConstructor
   extends Constructor<LovelaceTileExtra> {
   getConfigElement?: () => LovelaceTileExtraEditor;
-  getStubConfig?: (hass: HomeAssistant) => LovelaceTileExtraConfig;
+  getStubConfig?: (
+    hass: HomeAssistant,
+    stateObj?: HassEntity
+  ) => LovelaceTileExtraConfig;
 }
 
 export interface LovelaceTileExtraEditor extends LovelaceGenericElementEditor {
