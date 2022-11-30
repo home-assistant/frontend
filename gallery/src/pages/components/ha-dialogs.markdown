@@ -1,5 +1,5 @@
 ---
-title: Dialogs
+title: Dialog
 subtitle: Dialogs provide important prompts in a user flow.
 ---
 

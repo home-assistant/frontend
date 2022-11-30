@@ -1,3 +1,3 @@
 ---
-title: Bar Switches
+title: Bar Switch
 ---
