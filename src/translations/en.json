@@ -637,7 +637,11 @@
         "event": {
           "add": "Add Event",
           "delete": "Delete Event",
+          "edit": "Edit Event",
+          "save": "Save Event",
           "all_day": "All Day",
+          "start": "Start",
+          "end": "End",
           "confirm_delete": {
             "delete": "Delete Event",
             "delete_this": "Delete Only This Event",

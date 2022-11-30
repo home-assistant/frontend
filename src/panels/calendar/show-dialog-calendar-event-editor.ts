@@ -1,25 +1,24 @@
 import { fireEvent } from "../../common/dom/fire_event";
 import { Calendar, CalendarEventData } from "../../data/calendar";
 
-export interface CalendarEventDetailDialogParams {
+export interface CalendarEventEditDialogParams {
   calendars: Calendar[]; // When creating new events, is the list of events that support creation
   calendarId?: string;
   entry?: CalendarEventData;
   canDelete?: boolean;
-  canEdit?: boolean;
   updated: () => void;
 }
 
-export const loadCalendarEventDetailDialog = () =>
-  import("./dialog-calendar-event-detail");
+export const loadCalendarEventEditDialog = () =>
+  import("./dialog-calendar-event-editor");
 
-export const showCalendarEventDetailDialog = (
+export const showCalendarEventEditDialog = (
   element: HTMLElement,
-  detailParams: CalendarEventDetailDialogParams
+  detailParams: CalendarEventEditDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-calendar-event-detail",
-    dialogImport: loadCalendarEventDetailDialog,
+    dialogTag: "dialog-calendar-event-editor",
+    dialogImport: loadCalendarEventEditDialog,
     dialogParams: detailParams,
   });
 };

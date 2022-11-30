@@ -51,6 +51,7 @@ import type {
   CalendarEvent,
 } from "../../data/calendar";
 import { CalendarEntityFeature } from "../../data/calendar";
+import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -195,18 +196,17 @@ export class HAFullCalendar extends LitElement {
           `
         : ""}
 
-      <div id="calendar">
-        ${this._mutableCalendars.length > 0
-          ? html`<ha-fab
-              slot="fab"
-              .label=${this.hass.localize("ui.components.calendar.event.add")}
-              extended
-              @click=${this._createEvent}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-fab>`
-          : html``}
-      </div>
+      <div id="calendar"></div>
+      ${this._mutableCalendars.length > 0
+        ? html`<ha-fab
+            slot="fab"
+            .label=${this.hass.localize("ui.components.calendar.event.add")}
+            extended
+            @click=${this._createEvent}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          </ha-fab>`
+        : html``}
     `;
   }
 
@@ -276,7 +276,7 @@ export class HAFullCalendar extends LitElement {
   }
 
   private _createEvent(_info) {
-    showCalendarEventDetailDialog(this, {
+    showCalendarEventEditDialog(this, {
       calendars: this._mutableCalendars,
       updated: () => {
         this._fireViewChanged();
@@ -404,6 +404,13 @@ export class HAFullCalendar extends LitElement {
 
         ha-button-toggle-group {
           color: var(--primary-color);
+        }
+
+        ha-fab {
+          position: absolute;
+          bottom: 32px;
+          right: 32px;
+          z-index: 1;
         }
 
         #calendar {

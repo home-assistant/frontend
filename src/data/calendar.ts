@@ -143,6 +143,17 @@ export const createCalendarEvent = (
     event: event,
   });
 
+export const updateCalendarEvent = (
+  hass: HomeAssistant,
+  entityId: string,
+  event: CalendarEventMutableParams
+) =>
+  hass.callWS<void>({
+    type: "calendar/event/update",
+    entity_id: entityId,
+    event: event,
+  });
+
 export const deleteCalendarEvent = (
   hass: HomeAssistant,
   entityId: string,
