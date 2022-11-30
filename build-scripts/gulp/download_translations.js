@@ -1,5 +1,5 @@
 const gulp = require("gulp");
-const fs = require("fs");
+const fs = require("fs/promises");
 const mapStream = require("map-stream");
 
 const inDirFrontend = "translations/frontend";
@@ -46,18 +46,21 @@ gulp.task("check-translations-html", function () {
   return gulp.src([`${inDirFrontend}/*.json`]).pipe(checkHtml());
 });
 
-gulp.task("check-all-files-exist", function () {
-  const file = fs.readFileSync(srcMeta, { encoding });
+gulp.task("check-all-files-exist", async function () {
+  const file = await fs.readFile(srcMeta, { encoding });
   const meta = JSON.parse(file);
+  const writings = [];
   Object.keys(meta).forEach((lang) => {
-    if (!fs.existsSync(`${inDirFrontend}/${lang}.json`)) {
-      fs.writeFileSync(`${inDirFrontend}/${lang}.json`, JSON.stringify({}));
-    }
-    if (!fs.existsSync(`${inDirBackend}/${lang}.json`)) {
-      fs.writeFileSync(`${inDirBackend}/${lang}.json`, JSON.stringify({}));
-    }
+    writings.push(
+      fs.writeFile(`${inDirFrontend}/${lang}.json`, JSON.stringify({}), {
+        flag: "wx",
+      }),
+      fs.writeFile(`${inDirBackend}/${lang}.json`, JSON.stringify({}), {
+        flag: "wx",
+      })
+    );
   });
-  return Promise.resolve();
+  await Promise.allSettled(writings);
 });
 
 gulp.task(
