@@ -51,6 +51,8 @@ export class HaTileSlider extends LitElement {
           --tile-slider-bar-background,
           rgba(var(--rgb-disabled-color), 0.2)
         );
+        --slider-bar-thickness: 40px;
+        --slider-bar-border-radius: 10px;
       }
     `;
   }
