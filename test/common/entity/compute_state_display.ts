@@ -378,4 +378,22 @@ describe("computeStateDisplay", () => {
       "My Custom State"
     );
   });
+
+  it("Localizes using translation key", () => {
+    const stateObj: any = {
+      entity_id: "sensor.test",
+      state: "custom_state",
+      attributes: {},
+    };
+    const entities: any = {
+      "sensor.test": {
+        translation_key: "custom_translation",
+        platform: "custom_integration",
+      },
+    };
+    assert.strictEqual(
+      computeStateDisplay(localize, stateObj, localeData, entities),
+      "component.custom_integration.entity.sensor.custom_translation.state.custom_state"
+    );
+  });
 });
