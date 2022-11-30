@@ -270,7 +270,7 @@ export class HaBarSlider extends LitElement {
         --slider-bar-color: rgb(var(--rgb-primary-color));
         --slider-bar-background: rgba(var(--rgb-disabled-color), 0.2);
         --slider-bar-thickness: 40px;
-        --slider-bar-border-radius: 12px;
+        --slider-bar-border-radius: 10px;
         height: var(--slider-bar-thickness);
         width: 100%;
       }
@@ -299,7 +299,7 @@ export class HaBarSlider extends LitElement {
         background: var(--slider-bar-background);
       }
       .slider .slider-track-bar {
-        --border-radius: calc(var(--slider-bar-border-radius) / 2);
+        --border-radius: var(--slider-bar-border-radius);
         --handle-size: 4px;
         --handle-margin: calc(var(--slider-bar-thickness) / 8);
         position: absolute;

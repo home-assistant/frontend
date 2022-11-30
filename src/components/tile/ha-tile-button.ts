@@ -95,7 +95,7 @@ export class HaTileButton extends LitElement {
         justify-content: center;
         width: 100%;
         height: 100%;
-        border-radius: 12px;
+        border-radius: 10px;
         border: none;
         background-color: var(--bg-color);
         transition: background-color 280ms ease-in-out, transform 180ms ease-out;
