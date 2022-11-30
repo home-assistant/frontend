@@ -6,7 +6,8 @@ import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
 
 const DEFAULT_BASE_URL = "/static/translations";
-const STORAGE = window.localStorage || {};
+const STORAGE =
+  (typeof window !== "undefined" && window.localStorage) || ({} as Storage);
 
 // Store loaded translations in memory so translations are available immediately
 // when DOM is created in Polymer. Even a cache lookup creates noticeable latency.
