@@ -83,7 +83,12 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
         )}
       >
         ${this._config.prefix}${!this._config.attribute
-          ? computeStateDisplay(this.hass.localize, stateObj, this.hass.locale)
+          ? computeStateDisplay(
+              this.hass.localize,
+              stateObj,
+              this.hass.locale,
+              this.hass.entities
+            )
           : stateObj.attributes[this._config.attribute]}${this._config.suffix}
       </div>
     `;

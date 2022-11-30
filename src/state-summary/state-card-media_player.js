@@ -85,7 +85,12 @@ class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
   computePrimaryText(localize, playerObj) {
     return (
       playerObj.primaryTitle ||
-      computeStateDisplay(localize, playerObj.stateObj, this.hass.locale)
+      computeStateDisplay(
+        localize,
+        playerObj.stateObj,
+        this.hass.locale,
+        this.hass.entities
+      )
     );
   }
 }

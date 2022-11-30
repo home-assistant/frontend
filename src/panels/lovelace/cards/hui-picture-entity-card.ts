@@ -121,7 +121,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     const entityState = computeStateDisplay(
       this.hass!.localize,
       stateObj,
-      this.hass.locale
+      this.hass.locale,
+      this.hass.entities
     );
 
     let footer: TemplateResult | string = "";

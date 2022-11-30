@@ -307,7 +307,9 @@ export const provideHass = (
         true
       );
     },
-
+    areas: {},
+    devices: {},
+    entities: {},
     ...overrideData,
   };
 

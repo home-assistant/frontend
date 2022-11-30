@@ -55,6 +55,7 @@ class HaEntityStatePicker extends LitElement {
                     this.hass.localize,
                     state,
                     this.hass.locale,
+                    this.hass.entities,
                     key
                   )
                 : formatAttributeValue(this.hass, key),
