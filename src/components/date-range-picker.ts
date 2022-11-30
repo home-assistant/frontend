@@ -9,6 +9,10 @@ import { Constructor } from "../types";
 
 const Component = Vue.extend({
   props: {
+    timePicker: {
+      type: Boolean,
+      default: true,
+    },
     twentyfourHours: {
       type: Boolean,
       default: true,
@@ -37,13 +41,19 @@ const Component = Vue.extend({
       type: Number,
       default: 1,
     },
+    autoApply: {
+      type: Boolean,
+      default: false,
+    },
   },
   render(createElement) {
     // @ts-ignore
     return createElement(DateRangePicker, {
       props: {
-        "time-picker": true,
-        "auto-apply": false,
+        // @ts-ignore
+        "time-picker": this.timePicker,
+        // @ts-ignore
+        "auto-apply": this.autoApply,
         opens: "right",
         "show-dropdowns": false,
         // @ts-ignore
