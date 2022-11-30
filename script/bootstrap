@@ -8,3 +8,4 @@ cd "$(dirname "$0")/.."
 
 # Install node modules
 yarn install
+script/setup_translations
