@@ -10,7 +10,7 @@ import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 import "../../../../../components/ha-duration-input";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { TimeChangedEvent } from "../../../../../components/ha-base-time-input";
-import { ensureArray } from "../../../../../common/ensure-array";
+import { ensureArray } from "../../../../../common/array/ensure-array";
 
 @customElement("ha-automation-action-wait_for_trigger")
 export class HaWaitForTriggerAction
