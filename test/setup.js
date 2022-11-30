@@ -4,6 +4,8 @@ const path = require("path");
 process.env.TZ = "Etc/UTC";
 process.env.IS_TEST = "true";
 
+global.window = {};
+
 const MDI_OUTPUT_DIR = path.resolve(__dirname, "../build/mdi");
 
 if (!fs.existsSync(MDI_OUTPUT_DIR)) {
