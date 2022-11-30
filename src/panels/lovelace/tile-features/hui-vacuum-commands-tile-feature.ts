@@ -22,10 +22,10 @@ import {
   VacuumEntityFeature,
 } from "../../../data/vacuum";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileExtra, LovelaceTileExtraEditor } from "../types";
+import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
 import {
   VacuumCommand,
-  VacuumCommandsTileExtraConfig,
+  VacuumCommandsTileFeatureConfig,
   VACUUM_COMMANDS,
 } from "./types";
 
@@ -112,21 +112,21 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
   }),
 };
 
-@customElement("hui-vacuum-commands-tile-extra")
-class HuiVacuumCommandTileExtra
+@customElement("hui-vacuum-commands-tile-feature")
+class HuiVacuumCommandTileFeature
   extends LitElement
-  implements LovelaceTileExtra
+  implements LovelaceTileFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: VacuumCommandsTileExtraConfig;
+  @state() private _config?: VacuumCommandsTileFeatureConfig;
 
   static getStubConfig(
     _,
     stateObj?: HassEntity
-  ): VacuumCommandsTileExtraConfig {
+  ): VacuumCommandsTileFeatureConfig {
     return {
       type: "vacuum-commands",
       commands: stateObj
@@ -137,14 +137,14 @@ class HuiVacuumCommandTileExtra
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceTileExtraEditor> {
+  public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
     await import(
-      "../editor/config-elements/hui-vacuum-commands-tile-extra-editor"
+      "../editor/config-elements/hui-vacuum-commands-tile-feature-editor"
     );
-    return document.createElement("hui-vacuum-commands-tile-extra-editor");
+    return document.createElement("hui-vacuum-commands-tile-feature-editor");
   }
 
-  public setConfig(config: VacuumCommandsTileExtraConfig): void {
+  public setConfig(config: VacuumCommandsTileFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -215,6 +215,6 @@ class HuiVacuumCommandTileExtra
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-vacuum-commands-tile-extra": HuiVacuumCommandTileExtra;
+    "hui-vacuum-commands-tile-feature": HuiVacuumCommandTileFeature;
   }
 }

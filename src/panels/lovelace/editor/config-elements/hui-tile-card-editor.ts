@@ -21,16 +21,16 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { TileCardConfig } from "../../cards/types";
 import {
-  LovelaceTileExtraConfig,
-  LovelaceTileExtraContext,
-} from "../../tile-extra/types";
+  LovelaceTileFeatureConfig,
+  LovelaceTileFeatureContext,
+} from "../../tile-features/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditSubElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-tile-card-extras-editor";
+import "./hui-tile-card-features-editor";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -42,7 +42,7 @@ const cardConfigStruct = assign(
     show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     icon_tap_action: optional(actionConfigStruct),
-    extras: optional(array(any())),
+    features: optional(array(any())),
   })
 );
 
@@ -133,7 +133,7 @@ export class HuiTileCardEditor
   );
 
   private _context = memoizeOne(
-    (entity_id?: string): LovelaceTileExtraContext => ({ entity_id })
+    (entity_id?: string): LovelaceTileFeatureContext => ({ entity_id })
   );
 
   protected render(): TemplateResult {
@@ -172,13 +172,13 @@ export class HuiTileCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <hui-tile-card-extras-editor
+      <hui-tile-card-features-editor
         .hass=${this.hass}
         .stateObj=${stateObj}
-        .extras=${this._config!.extras ?? []}
-        @extras-changed=${this._extrasChanged}
+        .features=${this._config!.features ?? []}
+        @features-changed=${this._featuresChanged}
         @edit-detail-element=${this._editDetailElement}
-      ></hui-tile-card-extras-editor>
+      ></hui-tile-card-features-editor>
     `;
   }
 
@@ -189,26 +189,26 @@ export class HuiTileCardEditor
     }
 
     const config: TileCardConfig = {
-      extras: this._config.extras,
+      features: this._config.features,
       ...ev.detail.value,
     };
     fireEvent(this, "config-changed", { config });
   }
 
-  private _extrasChanged(ev: CustomEvent) {
+  private _featuresChanged(ev: CustomEvent) {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
     }
 
-    const extras = ev.detail.extras as LovelaceTileExtraConfig[];
+    const features = ev.detail.features as LovelaceTileFeatureConfig[];
     const config: TileCardConfig = {
       ...this._config,
-      extras,
+      features,
     };
 
-    if (extras.length === 0) {
-      delete config.extras;
+    if (features.length === 0) {
+      delete config.features;
     }
 
     fireEvent(this, "config-changed", { config });
@@ -222,18 +222,18 @@ export class HuiTileCardEditor
 
     const value = ev.detail.config;
 
-    const newConfigExtras = this._config!.extras
-      ? [...this._config!.extras]
+    const newConfigFeatures = this._config!.features
+      ? [...this._config!.features]
       : [];
 
     if (!value) {
-      newConfigExtras.splice(this._subElementEditorConfig!.index!, 1);
+      newConfigFeatures.splice(this._subElementEditorConfig!.index!, 1);
       this._goBack();
     } else {
-      newConfigExtras[this._subElementEditorConfig!.index!] = value;
+      newConfigFeatures[this._subElementEditorConfig!.index!] = value;
     }
 
-    this._config = { ...this._config!, extras: newConfigExtras };
+    this._config = { ...this._config!, features: newConfigFeatures };
 
     this._subElementEditorConfig = {
       ...this._subElementEditorConfig!,

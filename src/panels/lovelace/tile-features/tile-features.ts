@@ -3,13 +3,13 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntityFeature } from "../../../data/cover";
 import { lightSupportsBrightness } from "../../../data/light";
-import { supportsVacuumCommand } from "./hui-vacuum-commands-tile-extra";
-import { LovelaceTileExtraConfig, VACUUM_COMMANDS } from "./types";
+import { supportsVacuumCommand } from "./hui-vacuum-commands-tile-feature";
+import { LovelaceTileFeatureConfig, VACUUM_COMMANDS } from "./types";
 
-type TileExtraType = LovelaceTileExtraConfig["type"];
-export type SupportsTileExtra = (stateObj: HassEntity) => boolean;
+type TileFeatureType = LovelaceTileFeatureConfig["type"];
+export type SupportsTileFeature = (stateObj: HassEntity) => boolean;
 
-const TILE_EXTRAS_SUPPORT: Record<TileExtraType, SupportsTileExtra> = {
+const TILE_FEATURES_SUPPORT: Record<TileFeatureType, SupportsTileFeature> = {
   "cover-open-close": (stateObj) =>
     computeDomain(stateObj.entity_id) === "cover" &&
     (supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
@@ -26,17 +26,19 @@ const TILE_EXTRAS_SUPPORT: Record<TileExtraType, SupportsTileExtra> = {
     VACUUM_COMMANDS.some((c) => supportsVacuumCommand(stateObj, c)),
 };
 
-const TILE_EXTRAS_EDITABLE: Set<TileExtraType> = new Set(["vacuum-commands"]);
+const TILE_FEATURE_EDITABLE: Set<TileFeatureType> = new Set([
+  "vacuum-commands",
+]);
 
-export const supportsTileExtra = (
+export const supportsTileFeature = (
   stateObj: HassEntity,
-  extra: TileExtraType
+  feature: TileFeatureType
 ): boolean => {
-  const supportFunction = TILE_EXTRAS_SUPPORT[extra] as
-    | SupportsTileExtra
+  const supportFunction = TILE_FEATURES_SUPPORT[feature] as
+    | SupportsTileFeature
     | undefined;
   return !supportFunction || supportFunction(stateObj);
 };
 
-export const isTileExtraEditable = (extra: TileExtraType): boolean =>
-  TILE_EXTRAS_EDITABLE.has(extra);
+export const isTileFeatureEditable = (feature: TileFeatureType): boolean =>
+  TILE_FEATURE_EDITABLE.has(feature);
