@@ -5,6 +5,7 @@ process.env.TZ = "Etc/UTC";
 process.env.IS_TEST = "true";
 
 global.window = {};
+global.navigator = {};
 
 const MDI_OUTPUT_DIR = path.resolve(__dirname, "../build/mdi");
 
