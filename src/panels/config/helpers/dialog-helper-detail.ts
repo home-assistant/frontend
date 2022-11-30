@@ -25,7 +25,7 @@ import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-c
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { Helper } from "./const";
+import { Helper, HelperDomain } from "./const";
 import "./forms/ha-counter-form";
 import "./forms/ha-input_boolean-form";
 import "./forms/ha-input_button-form";
@@ -57,7 +57,7 @@ export class DialogHelperDetail extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _domain?: string;
+  @state() private _domain?: HelperDomain;
 
   @state() private _error?: string;
 
@@ -127,7 +127,7 @@ export class DialogHelperDetail extends LitElement {
     } else {
       const items: [string, string][] = [];
 
-      for (const helper of Object.keys(HELPERS)) {
+      for (const helper of Object.keys(HELPERS) as (keyof typeof HELPERS)[]) {
         items.push([
           helper,
           this.hass.localize(`ui.panel.config.helpers.types.${helper}`) ||

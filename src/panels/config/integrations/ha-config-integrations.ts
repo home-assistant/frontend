@@ -68,7 +68,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import { HELPER_DOMAINS } from "../helpers/const";
+import { isHelperDomain } from "../helpers/const";
 import "./ha-config-flow-card";
 import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
@@ -771,7 +771,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     }
 
     // If not an integration or supported brand, try helper else show alert
-    if (HELPER_DOMAINS.includes(domain)) {
+    if (isHelperDomain(domain)) {
       navigate(`/config/helpers/add?domain=${domain}`, {
         replace: true,
       });
