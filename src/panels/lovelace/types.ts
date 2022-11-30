@@ -8,7 +8,7 @@ import { FrontendLocaleData } from "../../data/translation";
 import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
-import { LovelaceTileExtraConfig } from "./tile-extra/types";
+import { LovelaceTileFeatureConfig } from "./tile-features/types";
 
 declare global {
   // eslint-disable-next-line
@@ -96,21 +96,22 @@ export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
   focusYamlEditor?: () => void;
 }
 
-export interface LovelaceTileExtra extends HTMLElement {
+export interface LovelaceTileFeature extends HTMLElement {
   hass?: HomeAssistant;
   stateObj?: HassEntity;
-  setConfig(config: LovelaceTileExtraConfig);
+  setConfig(config: LovelaceTileFeatureConfig);
 }
 
-export interface LovelaceTileExtraConstructor
-  extends Constructor<LovelaceTileExtra> {
-  getConfigElement?: () => LovelaceTileExtraEditor;
+export interface LovelaceTileFeatureConstructor
+  extends Constructor<LovelaceTileFeature> {
+  getConfigElement?: () => LovelaceTileFeatureEditor;
   getStubConfig?: (
     hass: HomeAssistant,
     stateObj?: HassEntity
-  ) => LovelaceTileExtraConfig;
+  ) => LovelaceTileFeatureConfig;
 }
 
-export interface LovelaceTileExtraEditor extends LovelaceGenericElementEditor {
-  setConfig(config: LovelaceTileExtraConfig): void;
+export interface LovelaceTileFeatureEditor
+  extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceTileFeatureConfig): void;
 }

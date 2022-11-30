@@ -6,26 +6,26 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import { supportsVacuumCommand } from "../../tile-extra/hui-vacuum-commands-tile-extra";
+import { supportsVacuumCommand } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import {
-  LovelaceTileExtraContext,
-  VacuumCommandsTileExtraConfig,
+  LovelaceTileFeatureContext,
+  VacuumCommandsTileFeatureConfig,
   VACUUM_COMMANDS,
-} from "../../tile-extra/types";
-import type { LovelaceTileExtraEditor } from "../../types";
+} from "../../tile-features/types";
+import type { LovelaceTileFeatureEditor } from "../../types";
 
-@customElement("hui-vacuum-commands-tile-extra-editor")
-export class HuiVacuumCommandsTileExtraEditor
+@customElement("hui-vacuum-commands-tile-feature-editor")
+export class HuiVacuumCommandsTileFeatureEditor
   extends LitElement
-  implements LovelaceTileExtraEditor
+  implements LovelaceTileFeatureEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context?: LovelaceTileExtraContext;
+  @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
 
-  @state() private _config?: VacuumCommandsTileExtraConfig;
+  @state() private _config?: VacuumCommandsTileFeatureConfig;
 
-  public setConfig(config: VacuumCommandsTileExtraConfig): void {
+  public setConfig(config: VacuumCommandsTileFeatureConfig): void {
     this._config = config;
   }
 
@@ -43,7 +43,7 @@ export class HuiVacuumCommandsTileExtraEditor
               ).map((command) => ({
                 value: command,
                 label: `${localize(
-                  `ui.panel.lovelace.editor.card.tile.extras.types.vacuum-commands.commands_list.${command}`
+                  `ui.panel.lovelace.editor.card.tile.features.types.vacuum-commands.commands_list.${command}`
                 )}`,
               })),
             },
@@ -84,7 +84,7 @@ export class HuiVacuumCommandsTileExtraEditor
     switch (schema.name) {
       case "commands":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.extras.types.vacuum-commands.${schema.name}`
+          `ui.panel.lovelace.editor.card.tile.features.types.vacuum-commands.${schema.name}`
         );
       default:
         return this.hass!.localize(
@@ -96,6 +96,6 @@ export class HuiVacuumCommandsTileExtraEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-vacuum-commands-tile-extra-editor": HuiVacuumCommandsTileExtraEditor;
+    "hui-vacuum-commands-tile-feature-editor": HuiVacuumCommandsTileFeatureEditor;
   }
 }
