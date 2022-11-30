@@ -15,27 +15,27 @@ import {
   CoverEntityFeature,
 } from "../../../data/cover";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileExtra } from "../types";
-import { CoverOpenCloseTileExtraConfig } from "./types";
+import { LovelaceTileFeature } from "../types";
+import { CoverOpenCloseTileFeatureConfig } from "./types";
 
-@customElement("hui-cover-open-close-tile-extra")
-class HuiCoverOpenCloseTileExtra
+@customElement("hui-cover-open-close-tile-feature")
+class HuiCoverOpenCloseTileFeature
   extends LitElement
-  implements LovelaceTileExtra
+  implements LovelaceTileFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: CoverOpenCloseTileExtraConfig;
+  @state() private _config?: CoverOpenCloseTileFeatureConfig;
 
-  static getStubConfig(): CoverOpenCloseTileExtraConfig {
+  static getStubConfig(): CoverOpenCloseTileFeatureConfig {
     return {
       type: "cover-open-close",
     };
   }
 
-  public setConfig(config: CoverOpenCloseTileExtraConfig): void {
+  public setConfig(config: CoverOpenCloseTileFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -138,6 +138,6 @@ class HuiCoverOpenCloseTileExtra
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-cover-open-close-tile-extra": HuiCoverOpenCloseTileExtra;
+    "hui-cover-open-close-tile-feature": HuiCoverOpenCloseTileFeature;
   }
 }

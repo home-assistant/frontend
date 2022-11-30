@@ -4,27 +4,27 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../components/tile/ha-tile-slider";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileExtra } from "../types";
-import { LightBrightnessTileExtraConfig } from "./types";
+import { LovelaceTileFeature } from "../types";
+import { LightBrightnessTileFeatureConfig } from "./types";
 
-@customElement("hui-light-brightness-tile-extra")
-class HuiLightBrightnessTileExtra
+@customElement("hui-light-brightness-tile-feature")
+class HuiLightBrightnessTileFeature
   extends LitElement
-  implements LovelaceTileExtra
+  implements LovelaceTileFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _config?: LightBrightnessTileExtraConfig;
+  @state() private _config?: LightBrightnessTileFeatureConfig;
 
-  static getStubConfig(): LightBrightnessTileExtraConfig {
+  static getStubConfig(): LightBrightnessTileFeatureConfig {
     return {
       type: "light-brightness",
     };
   }
 
-  public setConfig(config: LightBrightnessTileExtraConfig): void {
+  public setConfig(config: LightBrightnessTileFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -84,6 +84,6 @@ class HuiLightBrightnessTileExtra
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-light-brightness-tile-extra": HuiLightBrightnessTileExtra;
+    "hui-light-brightness-tile-feature": HuiLightBrightnessTileFeature;
   }
 }

@@ -4224,13 +4224,13 @@
               "appearance": "Appearance",
               "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
-              "extras": {
-                "name": "Extras",
+              "features": {
+                "name": "Features",
                 "not_compatible": "Not compatible",
-                "no_compatible_available": "No compatible extras available for this entity",
-                "add": "Add extra",
-                "edit": "Edit extra",
-                "remove": "Remove extra",
+                "no_compatible_available": "No compatible features available for this entity",
+                "add": "Add feature",
+                "edit": "Edit feature",
+                "remove": "Remove feature",
                 "types": {
                   "cover-open-close": {
                     "label": "Cover open/close"
