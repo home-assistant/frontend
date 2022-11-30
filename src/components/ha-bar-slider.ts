@@ -48,10 +48,13 @@ export class HaBarSlider extends LitElement {
   public disabled = false;
 
   @property()
-  public mode?: "start" | "end" | "indicator" = "start";
+  public mode?: "start" | "end" | "cursor" = "start";
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   public vertical = false;
+
+  @property({ type: Boolean, attribute: "show-handle" })
+  public showHandle = false;
 
   @property({ type: Number })
   public value?: number;
@@ -71,7 +74,7 @@ export class HaBarSlider extends LitElement {
   public pressed = false;
 
   valueToPercentage(value: number) {
-    return (value - this.min) / (this.max - this.min);
+    return (this.boundedValue(value) - this.min) / (this.max - this.min);
   }
 
   percentageToValue(value: number) {
@@ -241,11 +244,11 @@ export class HaBarSlider extends LitElement {
         })}
       >
         <div class="slider-track-background"></div>
-        ${this.mode === "indicator"
+        ${this.mode === "cursor"
           ? html`
               <div
                 class=${classMap({
-                  "slider-track-indicator": true,
+                  "slider-track-cursor": true,
                   vertical: this.vertical,
                 })}
               ></div>
@@ -256,6 +259,7 @@ export class HaBarSlider extends LitElement {
                   "slider-track-bar": true,
                   vertical: this.vertical,
                   [this.mode ?? "start"]: true,
+                  "show-handle": this.showHandle,
                 })}
               ></div>
             `}
@@ -302,11 +306,17 @@ export class HaBarSlider extends LitElement {
         --border-radius: var(--slider-bar-border-radius);
         --handle-size: 4px;
         --handle-margin: calc(var(--slider-bar-thickness) / 8);
+        --slider-size: 100%;
         position: absolute;
         height: 100%;
         width: 100%;
         background-color: var(--slider-bar-color);
         transition: transform 180ms ease-in-out;
+      }
+      .slider .slider-track-bar.show-handle {
+        --slider-size: calc(
+          100% - 2 * var(--handle-margin) - var(--handle-size)
+        );
       }
       .slider .slider-track-bar::after {
         display: block;
@@ -319,7 +329,11 @@ export class HaBarSlider extends LitElement {
       .slider .slider-track-bar {
         top: 0;
         left: 0;
-        transform: translate3d(calc((var(--value, 0) - 1) * 100%), 0, 0);
+        transform: translate3d(
+          calc((var(--value, 0) - 1) * var(--slider-size)),
+          0,
+          0
+        );
         border-radius: 0 var(--border-radius) var(--border-radius) 0;
       }
       .slider .slider-track-bar:after {
@@ -332,7 +346,11 @@ export class HaBarSlider extends LitElement {
       .slider .slider-track-bar.end {
         right: 0;
         left: initial;
-        transform: translate3d(calc(var(--value, 0) * 100%), 0, 0);
+        transform: translate3d(
+          calc(var(--value, 0) * var(--slider-size)),
+          0,
+          0
+        );
         border-radius: var(--border-radius) 0 0 var(--border-radius);
       }
       .slider .slider-track-bar.end::after {
@@ -343,7 +361,11 @@ export class HaBarSlider extends LitElement {
       .slider .slider-track-bar.vertical {
         bottom: 0;
         left: 0;
-        transform: translate3d(0, calc((1 - var(--value, 0)) * 100%), 0);
+        transform: translate3d(
+          0,
+          calc((1 - var(--value, 0)) * var(--slider-size)),
+          0
+        );
         border-radius: var(--border-radius) var(--border-radius) 0 0;
       }
       .slider .slider-track-bar.vertical:after {
@@ -357,7 +379,11 @@ export class HaBarSlider extends LitElement {
       .slider .slider-track-bar.vertical.end {
         top: 0;
         bottom: initial;
-        transform: translate3d(0, calc((0 - var(--value, 0)) * 100%), 0);
+        transform: translate3d(
+          0,
+          calc((0 - var(--value, 0)) * var(--slider-size)),
+          0
+        );
         border-radius: 0 0 var(--border-radius) var(--border-radius);
       }
       .slider .slider-track-bar.vertical.end::after {
@@ -365,7 +391,7 @@ export class HaBarSlider extends LitElement {
         bottom: var(--handle-margin);
       }
 
-      .slider .slider-track-indicator:after {
+      .slider .slider-track-cursor:after {
         display: block;
         content: "";
         background-color: rgb(var(--rgb-secondary-text-color));
@@ -378,8 +404,8 @@ export class HaBarSlider extends LitElement {
         border-radius: var(--handle-size);
       }
 
-      .slider .slider-track-indicator {
-        --indicator-size: calc(var(--slider-bar-thickness) / 4);
+      .slider .slider-track-cursor {
+        --cursor-size: calc(var(--slider-bar-thickness) / 4);
         --handle-size: 4px;
         position: absolute;
         background-color: white;
@@ -387,29 +413,29 @@ export class HaBarSlider extends LitElement {
         transition: left 180ms ease-in-out, bottom 180ms ease-in-out;
         top: 0;
         bottom: 0;
-        left: calc(var(--value, 0) * (100% - var(--indicator-size)));
-        width: var(--indicator-size);
+        left: calc(var(--value, 0) * (100% - var(--cursor-size)));
+        width: var(--cursor-size);
       }
-      .slider .slider-track-indicator:after {
+      .slider .slider-track-cursor:after {
         height: 50%;
         width: var(--handle-size);
       }
 
-      .slider .slider-track-indicator.vertical {
+      .slider .slider-track-cursor.vertical {
         top: initial;
         right: 0;
         left: 0;
-        bottom: calc(var(--value, 0) * (100% - var(--indicator-size)));
-        height: var(--indicator-size);
+        bottom: calc(var(--value, 0) * (100% - var(--cursor-size)));
+        height: var(--cursor-size);
         width: 100%;
       }
-      .slider .slider-track-indicator.vertical:after {
+      .slider .slider-track-cursor.vertical:after {
         height: var(--handle-size);
         width: 50%;
       }
 
       :host([pressed]) .slider-track-bar,
-      :host([pressed]) .slider-track-indicator {
+      :host([pressed]) .slider-track-cursor {
         transition: none;
       }
     `;
