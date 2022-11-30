@@ -42,7 +42,7 @@ export class MatterConfigPanel extends LitElement {
               >
 
               You can add Matter devices by commissing them if they are not
-              setup yet, or share them from the current controller and enter the
+              setup yet, or share them from another controller and enter the
               share code.
             </div>
             <div class="card-actions">
