@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { ColorTempSelector } from "../../data/selector";
+import { ColorTempSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-labeled-slider";
 
@@ -22,14 +22,18 @@ export class HaColorTempSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   protected render() {
+    // Kelvin is the new default
+    const unit = this.selector.color_temp?.unit || "Kelvin";
+
     return html`
       <ha-labeled-slider
         pin
         icon="hass:thermometer"
         .caption=${this.label || ""}
-        .min=${this.selector.color_temp?.min_mireds ?? 153}
-        .max=${this.selector.color_temp?.max_mireds ?? 500}
+        .min=${this.selector.color_temp?.min ?? unit === "Kelvin" ? 2700 : 153}
+        .max=${this.selector.color_temp?.max ?? unit === "Kelvin" ? 6000 : 500}
         .value=${this.value}
+        .step=${unit === "Kelvin" ? 100 : 1}
         .disabled=${this.disabled}
         .helper=${this.helper}
         .required=${this.required}

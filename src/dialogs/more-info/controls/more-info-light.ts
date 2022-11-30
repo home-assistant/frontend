@@ -124,6 +124,7 @@ class MoreInfoLight extends LitElement {
                       .min=${this.stateObj.attributes.min_color_temp_kelvin}
                       .max=${this.stateObj.attributes.max_color_temp_kelvin}
                       .value=${this._ctSliderValue}
+                      step="100"
                       @change=${this._ctSliderChanged}
                       pin
                     ></ha-labeled-slider>

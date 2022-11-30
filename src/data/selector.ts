@@ -87,8 +87,9 @@ export interface ColorRGBSelector {
 
 export interface ColorTempSelector {
   color_temp: {
-    min_mireds?: number;
-    max_mireds?: number;
+    unit: "Kelvin" | "Mired";
+    min?: number;
+    max?: number;
   } | null;
 }
 
