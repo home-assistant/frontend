@@ -235,6 +235,9 @@
         "installing_with_progress": "Installing ({progress}%)",
         "up_to_date": "Up-to-date"
       },
+      "text": {
+        "emtpy_value": "(empty value)"
+      },
       "timer": {
         "actions": {
           "start": "start",
@@ -377,6 +380,9 @@
           "is_closing": "is closing",
           "was_unlocked": "was unlocked",
           "was_locked": "was locked",
+          "is_unlocking": "is unlocking",
+          "is_locking": "is locking",
+          "is_jammed": "is jammed",
           "was_plugged_in": "was plugged in",
           "was_unplugged": "was unplugged",
           "was_at_home": "was detected at home",
@@ -388,6 +394,7 @@
           "turned_on": "turned on",
           "changed_to_state": "changed to {state}",
           "became_unavailable": "became unavailable",
+          "became_unknown": "became unknown",
           "detected_tampering": "detected tampering",
           "cleared_tampering": "cleared tampering"
         }
@@ -521,7 +528,8 @@
           "max": "max",
           "mean": "mean",
           "state": "state",
-          "sum": "sum"
+          "sum": "sum",
+          "change": "change"
         }
       },
       "service-picker": {
@@ -623,8 +631,43 @@
         "media_player_unavailable": "The selected media player is unavailable."
       },
       "calendar": {
+        "label": "Calendar",
         "my_calendars": "My Calendars",
-        "today": "Today"
+        "today": "Today",
+        "event": {
+          "add": "Add Event",
+          "delete": "Delete Event",
+          "edit": "Edit Event",
+          "save": "Save Event",
+          "all_day": "All Day",
+          "start": "Start",
+          "end": "End",
+          "confirm_delete": {
+            "delete": "Delete Event",
+            "delete_this": "Delete Only This Event",
+            "delete_future": "Delete All Future Events",
+            "prompt": "Do you want to delete this event?",
+            "recurring_prompt": "Do you want to delete only this event, or this and all future occurrences of the event?"
+          },
+          "repeat": {
+            "label": "Repeat",
+            "freq": {
+              "none": "No repeat",
+              "label": "Repeat",
+              "yearly": "Yearly",
+              "monthly": "Monthly",
+              "weekly": "Weekly",
+              "daily": "Daily"
+            },
+            "interval": {
+              "label": "Repeat interval",
+              "monthly": "months",
+              "weekly": "weeks",
+              "daily": "days"
+            }
+          },
+          "summary": "Summary"
+        }
       },
       "attributes": {
         "expansion_header": "Attributes"
@@ -885,6 +928,8 @@
           "hidden_label": "Hidden",
           "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
+          "entity_disabled": "This entity is disabled.",
+          "enable_entity": "Enable",
           "open_device_settings": "Open device settings",
           "switch_as_x_confirm": "This switch will be hidden and a new {domain} will be added. Your existing configurations using the switch will continue to work.",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
@@ -1510,7 +1555,7 @@
             "add_water_source": "Add water source",
             "dialog": {
               "header": "Configure water consumption",
-              "paragraph": "Gas consumption is the volume of water that flows to your home.",
+              "paragraph": "Water consumption is the volume of water that flows to your home.",
               "energy_stat": "Consumed water (m³ or gl)",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
               "no_cost": "Do not track costs",
@@ -1644,6 +1689,8 @@
                 "elevation": "Elevation",
                 "elevation_meters": "meters",
                 "time_zone": "Time Zone",
+                "language": "Language",
+                "country": "Country",
                 "unit_system": "Unit System",
                 "unit_system_us_customary": "US customary",
                 "unit_system_metric": "Metric",
@@ -1700,6 +1747,7 @@
           "failed_to_shutdown_host": "Failed to shutdown system",
           "board": "Board",
           "documentation": "Documentation",
+          "configure": "Configure",
           "documentation_description": "Find extra information about your device"
         },
         "info": {
@@ -1761,7 +1809,8 @@
           },
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
-          "full_logs": "Full logs"
+          "show_full_logs": "Show full logs",
+          "download_full_log": "Download full log"
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -2684,6 +2733,10 @@
           "download_diagnostics_integration": "Download {integration} diagnostics",
           "delete_device": "Delete",
           "delete_device_integration": "Remove device from {integration}",
+          "connected_devices": {
+            "heading": "Connected devices",
+            "show_more": "+{count} devices not shown"
+          },
           "type": {
             "device_heading": "Device",
             "device": "device",
@@ -2866,7 +2919,7 @@
         "zone": {
           "caption": "Zones",
           "description": "Manage the zones you want to track people in",
-          "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
+          "introduction": "Zones allow you to specify certain regions on Earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not added any zones yet.",
           "create_zone": "Add Zone",
           "add_zone": "Add Zone",
@@ -4052,13 +4105,15 @@
               "name": "Statistics Graph",
               "description": "The Statistics Graph card allows you to display a graph of the statistics for each of the entities listed.",
               "period": "Period",
+              "unit": "Unit",
               "stat_types": "Show stat types",
               "stat_type_labels": {
                 "mean": "Mean",
                 "min": "Min",
                 "max": "Max",
                 "state": "State",
-                "sum": "Sum (change during period)"
+                "sum": "Sum",
+                "change": "Change"
               },
               "chart_type": "Chart type",
               "periods": {
@@ -4203,7 +4258,37 @@
               "actions": "Actions",
               "appearance": "Appearance",
               "default_color": "Default color (state)",
-              "show_entity_picture": "Show entity picture"
+              "show_entity_picture": "Show entity picture",
+              "features": {
+                "name": "Features",
+                "not_compatible": "Not compatible",
+                "no_compatible_available": "No compatible features available for this entity",
+                "add": "Add feature",
+                "edit": "Edit feature",
+                "remove": "Remove feature",
+                "types": {
+                  "cover-open-close": {
+                    "label": "Cover open/close"
+                  },
+                  "cover-tilt": {
+                    "label": "Cover tilt"
+                  },
+                  "light-brightness": {
+                    "label": "Light brightness"
+                  },
+                  "vacuum-commands": {
+                    "label": "Vacuum commands",
+                    "commands": "Commands",
+                    "commands_list": {
+                      "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
+                      "stop": "[%key:ui::dialogs::more_info_control::vacuum::stop%]",
+                      "clean_spot": "[%key:ui::dialogs::more_info_control::vacuum::clean_spot%]",
+                      "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
+                      "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
+                    }
+                  }
+                }
+              }
             },
             "vertical-stack": {
               "name": "Vertical Stack",
@@ -4223,6 +4308,36 @@
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },
+          "color-picker": {
+            "default_color": "Default color (state)",
+            "colors": {
+              "primary": "Primary",
+              "accent": "Accent",
+              "disabled": "Disabled",
+              "red": "Red",
+              "pink": "Pink",
+              "purple": "Purple",
+              "deep-purple": "Deep purple",
+              "indigo": "Indigo",
+              "blue": "Blue",
+              "light-blue": "Light blue",
+              "cyan": "Cyan",
+              "teal": "Teal",
+              "green": "Green",
+              "light-green": "Light Green",
+              "lime": "Lime",
+              "yellow": "Yellow",
+              "amber": "Amber",
+              "orange": "Orange",
+              "deep-orange": "Deep orange",
+              "brown": "Brown",
+              "grey": "Grey",
+              "blue-grey": "Blue grey",
+              "black": "Black",
+              "white": "White"
+            }
+          },
+
           "cardpicker": {
             "no_description": "No description available.",
             "custom_card": "Custom",

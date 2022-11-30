@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 const crypto = require("crypto");
 const del = require("del");
 const path = require("path");
@@ -15,6 +13,8 @@ const { mapFiles } = require("../util");
 const env = require("../env");
 const paths = require("../paths");
 
+require("./fetch-nightly_translations");
+
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";
 const workDir = "build/translations";
@@ -23,10 +23,13 @@ const coreDir = workDir + "/core";
 const outDir = workDir + "/output";
 let mergeBackend = false;
 
-gulp.task("translations-enable-merge-backend", (done) => {
-  mergeBackend = true;
-  done();
-});
+gulp.task(
+  "translations-enable-merge-backend",
+  gulp.parallel((done) => {
+    mergeBackend = true;
+    done();
+  }, "allow-setup-fetch-nightly-translations")
+);
 
 // Panel translations which should be split from the core translations.
 const TRANSLATION_FRAGMENTS = Object.keys(
@@ -170,17 +173,24 @@ gulp.task("build-master-translation", () => {
     .pipe(transform((data, file) => lokaliseTransform(data, data, file)))
     .pipe(
       merge({
-        fileName: "translationMaster.json",
+        fileName: "en.json",
       })
     )
-    .pipe(gulp.dest(workDir));
+    .pipe(gulp.dest(fullDir));
 });
 
 gulp.task("build-merged-translations", () =>
   gulp
-    .src([inFrontendDir + "/*.json", workDir + "/test.json"], {
-      allowEmpty: true,
-    })
+    .src(
+      [
+        inFrontendDir + "/*.json",
+        "!" + inFrontendDir + "/en.json",
+        workDir + "/test.json",
+      ],
+      {
+        allowEmpty: true,
+      }
+    )
     .pipe(transform((data, file) => lokaliseTransform(data, data, file)))
     .pipe(
       flatmap((stream, file) => {
@@ -193,7 +203,7 @@ gulp.task("build-merged-translations", () =>
         //       than a base translation + region.
         const tr = path.basename(file.history[0], ".json");
         const subtags = tr.split("-");
-        const src = [workDir + "/translationMaster.json"];
+        const src = [fullDir + "/en.json"];
         for (let i = 1; i <= subtags.length; i++) {
           const lang = subtags.slice(0, i).join("-");
           if (lang === "test") {
@@ -378,7 +388,6 @@ gulp.task("build-translation-write-metadata", () =>
           if (value.nativeName) {
             newData[key] = value;
           } else {
-            // eslint-disable-next-line no-console
             console.warn(
               `Skipping language ${key}. Native name was not translated.`
             );
@@ -411,8 +420,10 @@ gulp.task(
 gulp.task(
   "build-translations",
   gulp.series(
-    "clean-translations",
-    "ensure-translations-build-dir",
+    gulp.parallel(
+      "fetch-nightly-translations",
+      gulp.series("clean-translations", "ensure-translations-build-dir")
+    ),
     "create-translations",
     "build-translation-fingerprints",
     "build-translation-write-metadata"
@@ -422,8 +433,10 @@ gulp.task(
 gulp.task(
   "build-supervisor-translations",
   gulp.series(
-    "clean-translations",
-    "ensure-translations-build-dir",
+    gulp.parallel(
+      "fetch-nightly-translations",
+      gulp.series("clean-translations", "ensure-translations-build-dir")
+    ),
     "build-master-translation",
     "build-merged-translations",
     "build-translation-fragment-supervisor",

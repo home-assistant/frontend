@@ -13,6 +13,7 @@ import {
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../common/datetime/format_date_time";
+import { formatDate } from "../common/datetime/format_date";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { computeRTLDirection } from "../common/util/compute_rtl";
@@ -35,6 +36,10 @@ export class HaDateRangePicker extends LitElement {
 
   @property() public ranges?: DateRangePickerRanges;
 
+  @property() public autoApply = false;
+
+  @property() public timePicker = true;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) private _hour24format = false;
@@ -55,6 +60,8 @@ export class HaDateRangePicker extends LitElement {
     return html`
       <date-range-picker
         ?disabled=${this.disabled}
+        ?auto-apply=${this.autoApply}
+        ?time-picker=${this.timePicker}
         twentyfour-hours=${this._hour24format}
         start-date=${this.startDate}
         end-date=${this.endDate}
@@ -64,7 +71,9 @@ export class HaDateRangePicker extends LitElement {
         <div slot="input" class="date-range-inputs">
           <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
           <ha-textfield
-            .value=${formatDateTime(this.startDate, this.hass.locale)}
+            .value=${this.timePicker
+              ? formatDateTime(this.startDate, this.hass.locale)
+              : formatDate(this.startDate, this.hass.locale)}
             .label=${this.hass.localize(
               "ui.components.date-range-picker.start_date"
             )}
@@ -73,7 +82,9 @@ export class HaDateRangePicker extends LitElement {
             readonly
           ></ha-textfield>
           <ha-textfield
-            .value=${formatDateTime(this.endDate, this.hass.locale)}
+            .value=${this.timePicker
+              ? formatDateTime(this.endDate, this.hass.locale)
+              : formatDate(this.endDate, this.hass.locale)}
             .label=${this.hass.localize(
               "ui.components.date-range-picker.end_date"
             )}

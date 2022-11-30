@@ -11,6 +11,7 @@ import type { ErrorCardConfig } from "../cards/types";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { LovelaceTileFeatureConfig } from "../tile-features/types";
 import {
   LovelaceBadge,
   LovelaceCard,
@@ -18,6 +19,8 @@ import {
   LovelaceHeaderFooter,
   LovelaceHeaderFooterConstructor,
   LovelaceRowConstructor,
+  LovelaceTileFeature,
+  LovelaceTileFeatureConstructor,
 } from "../types";
 
 const TIMEOUT = 2000;
@@ -52,6 +55,11 @@ interface CreateElementConfigTypes {
     config: LovelaceViewConfig;
     element: LovelaceViewElement;
     constructor: unknown;
+  };
+  "tile-feature": {
+    config: LovelaceTileFeatureConfig;
+    element: LovelaceTileFeature;
+    constructor: LovelaceTileFeatureConstructor;
   };
 }
 

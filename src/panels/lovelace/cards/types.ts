@@ -11,6 +11,7 @@ import {
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { HaDurationData } from "../../../components/ha-duration-input";
+import { LovelaceTileFeatureConfig } from "../tile-features/types";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -304,6 +305,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
 export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   title?: string;
   entities: Array<EntityConfig | string>;
+  unit?: string;
   days_to_show?: number;
   period?: "5minute" | "hour" | "day" | "month";
   stat_types?: StatisticType | StatisticType[];
@@ -500,4 +502,5 @@ export interface TileCardConfig extends LovelaceCardConfig {
   show_entity_picture?: string;
   tap_action?: ActionConfig;
   icon_tap_action?: ActionConfig;
+  features?: LovelaceTileFeatureConfig[];
 }

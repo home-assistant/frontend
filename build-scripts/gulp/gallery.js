@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Run demo develop mode
 const gulp = require("gulp");
 const fs = require("fs");
@@ -41,7 +40,7 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
     }
     processed.add(pageId);
 
-    const [category, name] = pageId.split("/", 2);
+    const [category] = pageId.split("/", 2);
 
     const demoFile = path.resolve(pageDir, `${pageId}.ts`);
     const descriptionFile = path.resolve(pageDir, `${pageId}.markdown`);

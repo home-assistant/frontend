@@ -1,3 +1,3 @@
 ---
-title: Bar Sliders
+title: Bar Slider
 ---

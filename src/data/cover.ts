@@ -3,6 +3,7 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { UNAVAILABLE } from "./entity";
 
 export const enum CoverEntityFeature {
   OPEN = 1,
@@ -55,6 +56,46 @@ export function isTiltOnly(stateObj: CoverEntity) {
     supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT) ||
     supportsFeature(stateObj, CoverEntityFeature.STOP_TILT);
   return supportsTilt && !supportsCover;
+}
+
+export function canOpen(stateObj: CoverEntity) {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return (!isFullyOpen(stateObj) && !isOpening(stateObj)) || assumedState;
+}
+
+export function canClose(stateObj: CoverEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return (!isFullyClosed(stateObj) && !isClosing(stateObj)) || assumedState;
+}
+
+export function canStop(stateObj: CoverEntity): boolean {
+  return stateObj.state !== UNAVAILABLE;
+}
+
+export function canOpenTilt(stateObj: CoverEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return !isFullyOpenTilt(stateObj) || assumedState;
+}
+
+export function canCloseTilt(stateObj: CoverEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return !isFullyClosedTilt(stateObj) || assumedState;
+}
+
+export function canStopTilt(stateObj: CoverEntity): boolean {
+  return stateObj.state !== UNAVAILABLE;
 }
 
 interface CoverEntityAttributes extends HassEntityAttributeBase {

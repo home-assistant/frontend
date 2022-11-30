@@ -1,4 +1,3 @@
-import "../../../../components/ha-form/ha-form";
 import {
   css,
   CSSResultGroup,
@@ -21,28 +20,34 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { ensureArray } from "../../../../common/ensure-array";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { deepEqual } from "../../../../common/util/deep-equal";
+import {
+  ExtendedStatisticType,
+  statTypeMap,
+} from "../../../../components/chart/statistics-chart";
 import "../../../../components/entity/ha-statistics-picker";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import "../../../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
+import {
+  getDisplayUnit,
+  getStatisticMetadata,
+  isExternalStatistic,
+  StatisticsMetaData,
+  statisticsMetaHasType,
+} from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import type { StatisticsGraphCardConfig } from "../../cards/types";
 import { processConfigEntities } from "../../common/process-config-entities";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
-import {
-  getStatisticMetadata,
-  isExternalStatistic,
-  StatisticsMetaData,
-  statisticsMetaHasType,
-} from "../../../../data/recorder";
-import { deepEqual } from "../../../../common/util/deep-equal";
-import { statTypeMap } from "../../../../components/chart/statistics-chart";
-import { ensureArray } from "../../../../common/ensure-array";
 
 const statTypeStruct = union([
   literal("state"),
   literal("sum"),
+  literal("change"),
   literal("min"),
   literal("max"),
   literal("mean"),
@@ -65,11 +70,19 @@ const cardConfigStruct = assign(
     ),
     chart_type: optional(union([literal("bar"), literal("line")])),
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
+    unit: optional(string()),
   })
 );
 
 const periods = ["5minute", "hour", "day", "week", "month"] as const;
-const stat_types = ["mean", "min", "max", "sum", "state"] as const;
+const stat_types = [
+  "mean",
+  "min",
+  "max",
+  "sum",
+  "state",
+  "change",
+] as ExtendedStatisticType[];
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor
@@ -114,8 +127,19 @@ export class HuiStatisticsGraphCardEditor
       localize: LocalizeFunc,
       statisticIds: string[] | undefined,
       metaDatas: StatisticsMetaData[] | undefined
-    ) =>
-      [
+    ) => {
+      const units = new Set<string>();
+      metaDatas?.forEach((metaData) => {
+        const unit = getDisplayUnit(
+          this.hass!,
+          metaData.statistic_id,
+          metaData
+        );
+        if (unit) {
+          units.add(unit);
+        }
+      });
+      const schema: HaFormSchema[] = [
         { name: "title", selector: { text: {} } },
         {
           name: "",
@@ -152,6 +176,7 @@ export class HuiStatisticsGraphCardEditor
               selector: {
                 select: {
                   multiple: true,
+                  mode: "list",
                   options: stat_types.map((stat_type) => ({
                     value: stat_type,
                     label: localize(
@@ -159,7 +184,7 @@ export class HuiStatisticsGraphCardEditor
                     ),
                     disabled:
                       !metaDatas ||
-                      !metaDatas?.every((metaData) =>
+                      !metaDatas.every((metaData) =>
                         statisticsMetaHasType(metaData, statTypeMap[stat_type])
                       ),
                   })),
@@ -177,7 +202,25 @@ export class HuiStatisticsGraphCardEditor
             },
           ],
         },
-      ] as const
+      ];
+
+      if (units.size > 1) {
+        (schema[1] as any).schema.push({
+          name: "unit",
+          required: false,
+          selector: {
+            select: {
+              options: Array.from(units).map((unit) => ({
+                value: unit,
+                label: unit,
+              })),
+            },
+          },
+        });
+      }
+
+      return schema;
+    }
   );
 
   protected render(): TemplateResult {
@@ -191,13 +234,13 @@ export class HuiStatisticsGraphCardEditor
       this._metaDatas
     );
     const configured_stat_types = this._config!.stat_types
-      ? Array.isArray(this._config!.stat_types)
-        ? this._config!.stat_types
-        : [this._config!.stat_types]
-      : stat_types.filter((stat_type) =>
-          this._metaDatas?.every((metaData) =>
-            statisticsMetaHasType(metaData, statTypeMap[stat_type])
-          )
+      ? ensureArray(this._config.stat_types)
+      : stat_types.filter(
+          (stat_type) =>
+            stat_type !== "change" &&
+            this._metaDatas?.every((metaData) =>
+              statisticsMetaHasType(metaData, statTypeMap[stat_type])
+            )
         );
     const data = {
       chart_type: "line",
@@ -207,6 +250,9 @@ export class HuiStatisticsGraphCardEditor
       stat_types: configured_stat_types,
     };
     const unitClass = this._metaDatas?.[0]?.unit_class;
+    const statisticsUnit = unitClass
+      ? undefined
+      : this._metaDatas?.[0]?.statistics_unit_of_measurement;
 
     return html`
       <ha-form
@@ -224,6 +270,7 @@ export class HuiStatisticsGraphCardEditor
           .pickedStatisticLabel=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.statistics-graph.picked_statistic"
           )}
+          .includeStatisticsUnitOfMeasurement=${statisticsUnit}
           .includeUnitClass=${unitClass}
           .ignoreRestrictionsOnFirstStatistic=${true}
           .value=${this._configEntities}
@@ -248,10 +295,13 @@ export class HuiStatisticsGraphCardEditor
     ) {
       delete config.period;
     }
+    const metadata =
+      config.stat_types || config.unit
+        ? await getStatisticMetadata(this.hass!, config.entities)
+        : undefined;
     if (config.stat_types && config.entities.length) {
-      const metadata = await getStatisticMetadata(this.hass!, config.entities);
       config.stat_types = ensureArray(config.stat_types).filter((stat_type) =>
-        metadata.every((metaData) =>
+        metadata!.every((metaData) =>
           statisticsMetaHasType(metaData, statTypeMap[stat_type])
         )
       );
@@ -259,18 +309,27 @@ export class HuiStatisticsGraphCardEditor
         delete config.stat_types;
       }
     }
+    if (
+      config.unit &&
+      !metadata!.some(
+        (metaData) =>
+          getDisplayUnit(this.hass!, metaData?.statistic_id, metaData) ===
+          config.unit
+      )
+    ) {
+      delete config.unit;
+    }
     fireEvent(this, "config-changed", {
       config,
     });
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
+  private _computeLabelCallback = (schema) => {
     switch (schema.name) {
       case "chart_type":
       case "stat_types":
       case "period":
+      case "unit":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`
         );

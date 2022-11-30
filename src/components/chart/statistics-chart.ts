@@ -26,12 +26,13 @@ import {
   getStatisticMetadata,
   Statistics,
   statisticsHaveType,
+  StatisticsMetaData,
   StatisticType,
 } from "../../data/recorder";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
-export type ExtendedStatisticType = StatisticType | "state";
+export type ExtendedStatisticType = StatisticType | "state" | "change";
 
 export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
   mean: "mean",
@@ -39,12 +40,19 @@ export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
   max: "max",
   sum: "sum",
   state: "sum",
+  change: "sum",
 };
+
 @customElement("statistics-chart")
 class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public statisticsData!: Statistics;
+
+  @property({ attribute: false }) public metadata?: Record<
+    string,
+    StatisticsMetaData
+  >;
 
   @property() public names: boolean | Record<string, string> = false;
 
@@ -76,7 +84,7 @@ class StatisticsChart extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated) {
+    if (!this.hasUpdated || changedProps.has("unit")) {
       this._createOptions();
     }
     if (changedProps.has("statisticsData") || changedProps.has("statTypes")) {
@@ -120,7 +128,7 @@ class StatisticsChart extends LitElement {
     `;
   }
 
-  private _createOptions() {
+  private _createOptions(unit?: string) {
     this._chartOptions = {
       parsing: false,
       animation: false,
@@ -154,8 +162,8 @@ class StatisticsChart extends LitElement {
             maxTicksLimit: 7,
           },
           title: {
-            display: this.unit,
-            text: this.unit,
+            display: unit || this.unit,
+            text: unit || this.unit,
           },
         },
       },
@@ -189,6 +197,7 @@ class StatisticsChart extends LitElement {
       elements: {
         line: {
           tension: 0.4,
+          cubicInterpolationMode: "monotone",
           borderWidth: 1.5,
         },
         bar: { borderWidth: 1.5, borderRadius: 4 },
@@ -220,12 +229,12 @@ class StatisticsChart extends LitElement {
       return;
     }
 
-    const statisticsMetaData = await this._getStatisticsMetaData(
-      Object.keys(this.statisticsData)
-    );
+    const statisticsMetaData =
+      this.metadata ||
+      (await this._getStatisticsMetaData(Object.keys(this.statisticsData)));
 
     let colorIndex = 0;
-    const statisticsData = Object.values(this.statisticsData);
+    const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: ChartDataset<"line">[] = [];
     let endTime: Date;
 
@@ -238,7 +247,7 @@ class StatisticsChart extends LitElement {
       // Get the highest date from the last date of each statistic
       new Date(
         Math.max(
-          ...statisticsData.map((stats) =>
+          ...statisticsData.map(([_, stats]) =>
             new Date(stats[stats.length - 1].start).getTime()
           )
         )
@@ -251,19 +260,19 @@ class StatisticsChart extends LitElement {
     let unit: string | undefined | null;
 
     const names = this.names || {};
-    statisticsData.forEach((stats) => {
-      const firstStat = stats[0];
-      const meta = statisticsMetaData?.[firstStat.statistic_id];
-      let name = names[firstStat.statistic_id];
+    statisticsData.forEach(([statistic_id, stats]) => {
+      const meta = statisticsMetaData?.[statistic_id];
+      let name = names[statistic_id];
       if (name === undefined) {
-        name = getStatisticLabel(this.hass, firstStat.statistic_id, meta);
+        name = getStatisticLabel(this.hass, statistic_id, meta);
       }
 
       if (!this.unit) {
         if (unit === undefined) {
-          unit = getDisplayUnit(this.hass, firstStat.statistic_id, meta);
+          unit = getDisplayUnit(this.hass, statistic_id, meta);
         } else if (
-          unit !== getDisplayUnit(this.hass, firstStat.statistic_id, meta)
+          unit !== null &&
+          unit !== getDisplayUnit(this.hass, statistic_id, meta)
         ) {
           // Clear unit if not all statistics have same unit
           unit = null;
@@ -272,33 +281,38 @@ class StatisticsChart extends LitElement {
 
       // array containing [value1, value2, etc]
       let prevValues: Array<number | null> | null = null;
+      let prevEndTime: Date | undefined;
 
       // The datasets for the current statistic
       const statDataSets: ChartDataset<"line">[] = [];
 
       const pushData = (
-        timestamp: Date,
+        start: Date,
+        end: Date,
         dataValues: Array<number | null> | null
       ) => {
         if (!dataValues) return;
-        if (timestamp > endTime) {
+        if (start > end) {
           // Drop data points that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
         }
         statDataSets.forEach((d, i) => {
-          if (dataValues[i] === null && prevValues && prevValues[i] !== null) {
-            // null data values show up as gaps in the chart.
-            // If the current value for the dataset is null and the previous
-            // value of the data set is not null, then add an 'end' point
-            // to the chart for the previous value. Otherwise the gap will
-            // be too big. It will go from the start of the previous data
-            // value until the start of the next data value.
-            d.data.push({ x: timestamp.getTime(), y: prevValues[i]! });
+          if (
+            prevEndTime &&
+            prevValues &&
+            prevEndTime.getTime() !== start.getTime()
+          ) {
+            // if the end of the previous data doesn't match the start of the current data,
+            // we have to draw a gap so add a value at the end time, and then an empty value.
+            d.data.push({ x: prevEndTime.getTime(), y: prevValues[i]! });
+            // @ts-expect-error
+            d.data.push({ x: prevEndTime.getTime(), y: null });
           }
-          d.data.push({ x: timestamp.getTime(), y: dataValues[i]! });
+          d.data.push({ x: start.getTime(), y: dataValues[i]! });
         });
         prevValues = dataValues;
+        prevEndTime = end;
       };
 
       const color = getGraphColorByIndex(colorIndex, this._computedStyle!);
@@ -354,49 +368,49 @@ class StatisticsChart extends LitElement {
 
       let prevDate: Date | null = null;
       // Process chart data.
-      let prevSum: number | null = null;
+      let firstSum: number | null | undefined = null;
+      let prevSum: number | null | undefined = null;
       stats.forEach((stat) => {
-        const date = new Date(stat.start);
-        if (prevDate === date) {
+        const startDate = new Date(stat.start);
+        if (prevDate === startDate) {
           return;
         }
-        prevDate = date;
+        prevDate = startDate;
         const dataValues: Array<number | null> = [];
         statTypes.forEach((type) => {
-          let val: number | null;
+          let val: number | null | undefined;
           if (type === "sum") {
-            if (prevSum === null) {
+            if (firstSum === null || firstSum === undefined) {
               val = 0;
-              prevSum = stat.sum;
+              firstSum = stat.sum;
             } else {
-              val = (stat.sum || 0) - prevSum;
+              val = (stat.sum || 0) - firstSum;
             }
+          } else if (type === "change") {
+            if (prevSum === null || prevSum === undefined) {
+              prevSum = stat.sum;
+              return;
+            }
+            val = (stat.sum || 0) - prevSum;
+            prevSum = stat.sum;
           } else {
             val = stat[type];
           }
-          dataValues.push(val !== null ? Math.round(val * 100) / 100 : null);
+          dataValues.push(
+            val !== null && val !== undefined
+              ? Math.round(val * 100) / 100
+              : null
+          );
         });
-        pushData(date, dataValues);
+        pushData(startDate, new Date(stat.end), dataValues);
       });
-
-      // Add an entry for final values
-      pushData(endTime, prevValues);
 
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);
     });
 
-    if (unit !== null) {
-      this._chartOptions = {
-        ...this._chartOptions,
-        scales: {
-          ...this._chartOptions!.scales,
-          y: {
-            ...(this._chartOptions!.scales!.y as Record<string, unknown>),
-            title: { display: unit, text: unit },
-          },
-        },
-      };
+    if (unit) {
+      this._createOptions(unit);
     }
 
     this._chartData = {

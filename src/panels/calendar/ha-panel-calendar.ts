@@ -20,16 +20,13 @@ import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import {
   Calendar,
+  CalendarEvent,
   fetchCalendarEvents,
   getCalendars,
 } from "../../data/calendar";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
-import type {
-  CalendarEvent,
-  CalendarViewChanged,
-  HomeAssistant,
-} from "../../types";
+import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
 
 @customElement("ha-panel-calendar")
@@ -101,6 +98,7 @@ class PanelCalendar extends LitElement {
           </div>
           <ha-full-calendar
             .events=${this._events}
+            .calendars=${this._calendars}
             .narrow=${this.narrow}
             .hass=${this.hass}
             @view-changed=${this._handleViewChanged}

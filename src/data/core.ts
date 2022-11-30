@@ -11,6 +11,8 @@ export interface ConfigUpdateValues {
   external_url?: string | null;
   internal_url?: string | null;
   currency?: string | null;
+  country?: string | null;
+  language?: string | null;
 }
 
 export interface CheckConfigResult {

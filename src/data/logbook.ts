@@ -10,7 +10,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../types";
-import { UNAVAILABLE_STATES } from "./entity";
+import { UNAVAILABLE, UNKNOWN } from "./entity";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["counter", "proximity", "sensor", "zone"];
@@ -61,7 +61,9 @@ const triggerPhrases = {
 };
 
 const DATA_CACHE: {
-  [cacheKey: string]: { [entityId: string]: Promise<LogbookEntry[]> };
+  [cacheKey: string]: {
+    [entityId: string]: Promise<LogbookEntry[]> | undefined;
+  };
 } = {};
 
 export const getLogbookDataForContext = async (
@@ -115,11 +117,11 @@ const getLogbookDataCache = async (
   }
 
   if (entityIdKey in DATA_CACHE[cacheKey]) {
-    return DATA_CACHE[cacheKey][entityIdKey];
+    return DATA_CACHE[cacheKey][entityIdKey]!;
   }
 
   if (entityId && DATA_CACHE[cacheKey][ALL_ENTITIES]) {
-    const entities = await DATA_CACHE[cacheKey][ALL_ENTITIES];
+    const entities = await DATA_CACHE[cacheKey][ALL_ENTITIES]!;
     return entities.filter(
       (entity) => entity.entity_id && entityId.includes(entity.entity_id)
     );
@@ -131,7 +133,7 @@ const getLogbookDataCache = async (
     endDate,
     entityId
   );
-  return DATA_CACHE[cacheKey][entityIdKey];
+  return DATA_CACHE[cacheKey][entityIdKey]!;
 };
 
 const getLogbookDataFromServer = (
@@ -398,11 +400,17 @@ export const localizeStateMessage = (
       break;
 
     case "lock":
-      if (state === "unlocked") {
-        return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
-      }
-      if (state === "locked") {
-        return localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
+      switch (state) {
+        case "unlocked":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
+        case "locking":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_locking`);
+        case "unlocking":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_unlocking`);
+        case "locked":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
+        case "jammed":
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_jammed`);
       }
       break;
   }
@@ -415,7 +423,11 @@ export const localizeStateMessage = (
     return localize(`${LOGBOOK_LOCALIZE_PATH}.turned_off`);
   }
 
-  if (UNAVAILABLE_STATES.includes(state)) {
+  if (state === UNKNOWN) {
+    return localize(`${LOGBOOK_LOCALIZE_PATH}.became_unknown`);
+  }
+
+  if (state === UNAVAILABLE) {
     return localize(`${LOGBOOK_LOCALIZE_PATH}.became_unavailable`);
   }
 
