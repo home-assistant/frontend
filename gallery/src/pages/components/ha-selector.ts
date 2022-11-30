@@ -262,7 +262,7 @@ const SCHEMAS: {
       },
       color_temp: {
         name: "Color Temperature",
-        selector: { color_temp: {} },
+        selector: { color_temp: { unit: "Kelvin" } },
       },
       color_rgb: { name: "Color", selector: { color_rgb: {} } },
     },
