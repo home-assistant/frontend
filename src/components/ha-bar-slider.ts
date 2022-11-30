@@ -53,8 +53,8 @@ export class HaBarSlider extends LitElement {
   @property({ type: Boolean, reflect: true })
   public vertical = false;
 
-  @property({ type: Boolean, attribute: "visible-min" })
-  public visibleMin = false;
+  @property({ type: Boolean, attribute: "show-handle" })
+  public showHandle = false;
 
   @property({ type: Number })
   public value?: number;
@@ -259,7 +259,7 @@ export class HaBarSlider extends LitElement {
                   "slider-track-bar": true,
                   vertical: this.vertical,
                   [this.mode ?? "start"]: true,
-                  "visible-min": this.visibleMin,
+                  "show-handle": this.showHandle,
                 })}
               ></div>
             `}
@@ -313,7 +313,7 @@ export class HaBarSlider extends LitElement {
         background-color: var(--slider-bar-color);
         transition: transform 180ms ease-in-out;
       }
-      .slider .slider-track-bar.visible-min {
+      .slider .slider-track-bar.show-handle {
         --slider-size: calc(
           100% - 2 * var(--handle-margin) - var(--handle-size)
         );
