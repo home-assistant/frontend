@@ -11,6 +11,7 @@ import {
   fetchStatistics,
   getStatisticMetadata,
   Statistics,
+  StatisticsTypes,
 } from "../../data/recorder";
 import { HomeAssistant } from "../../types";
 import "../../components/chart/statistics-chart";
@@ -22,7 +23,7 @@ declare global {
   }
 }
 
-const statTypes = ["state", "min", "mean", "max"];
+const statTypes: StatisticsTypes = ["state", "min", "mean", "max"];
 
 @customElement("ha-more-info-history")
 export class MoreInfoHistory extends LitElement {
@@ -47,7 +48,7 @@ export class MoreInfoHistory extends LitElement {
       return html``;
     }
 
-    return html`${isComponentLoaded(this.hass, "history")
+    return html` ${isComponentLoaded(this.hass, "history")
       ? html`<div class="header">
             <div class="title">
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
@@ -124,7 +125,9 @@ export class MoreInfoHistory extends LitElement {
           subHours(new Date(), 24),
           undefined,
           [this.entityId],
-          "5minute"
+          "5minute",
+          undefined,
+          statTypes
         );
         return;
       }
@@ -148,33 +151,27 @@ export class MoreInfoHistory extends LitElement {
     setTimeout(() => fireEvent(this, "close-dialog"), 500);
   }
 
-  static get styles() {
-    return [
-      css`
-        .header {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 8px;
-        }
-        .header > a,
-        a:visited {
-          color: var(--primary-color);
-        }
-        .title {
-          font-family: var(--paper-font-title_-_font-family);
-          -webkit-font-smoothing: var(
-            --paper-font-title_-_-webkit-font-smoothing
-          );
-          font-size: var(--paper-font-subhead_-_font-size);
-          font-weight: var(--paper-font-title_-_font-weight);
-          letter-spacing: var(--paper-font-title_-_letter-spacing);
-          line-height: var(--paper-font-title_-_line-height);
-        }
-      `,
-    ];
-  }
+  static styles = css`
+    .header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .header > a,
+    a:visited {
+      color: var(--primary-color);
+    }
+    .title {
+      font-family: var(--paper-font-title_-_font-family);
+      -webkit-font-smoothing: var(--paper-font-title_-_-webkit-font-smoothing);
+      font-size: var(--paper-font-subhead_-_font-size);
+      font-weight: var(--paper-font-title_-_font-weight);
+      letter-spacing: var(--paper-font-title_-_letter-spacing);
+      line-height: var(--paper-font-title_-_line-height);
+    }
+  `;
 }
 
 declare global {

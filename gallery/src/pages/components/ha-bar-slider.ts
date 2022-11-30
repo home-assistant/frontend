@@ -8,7 +8,7 @@ import "../../../../src/components/ha-card";
 const sliders: {
   id: string;
   label: string;
-  mode?: "start" | "end" | "indicator";
+  mode?: "start" | "end" | "cursor";
   class?: string;
 }[] = [
   {
@@ -22,9 +22,9 @@ const sliders: {
     mode: "end",
   },
   {
-    id: "slider-indicator",
-    label: "Slider (indicator mode)",
-    mode: "indicator",
+    id: "slider-cursor",
+    label: "Slider (cursor mode)",
+    mode: "cursor",
   },
   {
     id: "slider-start-custom",
@@ -39,9 +39,9 @@ const sliders: {
     class: "custom",
   },
   {
-    id: "slider-indicator-custom",
-    label: "Slider (indicator mode) and custom style",
-    mode: "indicator",
+    id: "slider-cursor-custom",
+    label: "Slider (cursor mode) and custom style",
+    mode: "cursor",
     class: "custom",
   },
 ];

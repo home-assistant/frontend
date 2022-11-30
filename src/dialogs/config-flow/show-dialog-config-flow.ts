@@ -87,9 +87,11 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormStepFieldError(hass, step, error) {
-      return hass.localize(
-        `component.${step.handler}.config.error.${error}`,
-        step.description_placeholders
+      return (
+        hass.localize(
+          `component.${step.handler}.config.error.${error}`,
+          step.description_placeholders
+        ) || error
       );
     },
 

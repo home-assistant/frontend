@@ -4,45 +4,47 @@ import { UpdateEntity, updateIsInstalling } from "../../data/update";
 import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
 import { binarySensorColor } from "./color/binary_sensor_color";
 import { climateColor } from "./color/climate_color";
-import { coverColor } from "./color/cover_color";
 import { lockColor } from "./color/lock_color";
 import { sensorColor } from "./color/sensor_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
-export const stateColorCss = (stateObj?: HassEntity) => {
-  if (!stateObj || !stateActive(stateObj)) {
+export const stateColorCss = (stateObj?: HassEntity, state?: string) => {
+  if (!stateObj || !stateActive(stateObj, state)) {
     return `var(--rgb-disabled-color)`;
   }
 
-  const color = stateColor(stateObj);
+  const color = stateColor(stateObj, state);
 
   if (color) {
     return `var(--rgb-state-${color}-color)`;
   }
 
-  return `var(--rgb-primary-color)`;
+  return `var(--rgb-state-default-color)`;
 };
 
-export const stateColor = (stateObj: HassEntity) => {
-  const state = stateObj.state;
+export const stateColor = (stateObj: HassEntity, state?: string) => {
+  const compareState = state !== undefined ? state : stateObj?.state;
   const domain = computeDomain(stateObj.entity_id);
 
   switch (domain) {
     case "alarm_control_panel":
-      return alarmControlPanelColor(state);
+      return alarmControlPanelColor(compareState);
 
     case "binary_sensor":
       return binarySensorColor(stateObj);
 
     case "cover":
-      return coverColor(stateObj);
+      return "cover";
 
     case "climate":
-      return climateColor(state);
+      return climateColor(compareState);
+
+    case "fan":
+      return "fan";
 
     case "lock":
-      return lockColor(state);
+      return lockColor(compareState);
 
     case "light":
       return "light";
@@ -53,18 +55,20 @@ export const stateColor = (stateObj: HassEntity) => {
     case "media_player":
       return "media-player";
 
-    case "person":
-    case "device_tracker":
-      return "person";
-
     case "sensor":
       return sensorColor(stateObj);
 
     case "vacuum":
       return "vacuum";
 
+    case "siren":
+      return "siren";
+
     case "sun":
-      return state === "above_horizon" ? "sun-day" : "sun-night";
+      return compareState === "above_horizon" ? "sun-day" : "sun-night";
+
+    case "switch":
+      return "switch";
 
     case "update":
       return updateIsInstalling(stateObj as UpdateEntity)

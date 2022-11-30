@@ -478,6 +478,13 @@ class HaPanelConfig extends HassRouterPage {
             "./integrations/integration-panels/zwave_js/zwave_js-config-router"
           ),
       },
+      matter: {
+        tag: "matter-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/matter/matter-config-panel"
+          ),
+      },
       application_credentials: {
         tag: "ha-config-application-credentials",
         load: () =>

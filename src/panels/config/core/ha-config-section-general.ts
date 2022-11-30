@@ -8,7 +8,14 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { navigate } from "../../../common/navigate";
 import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
-import { currencies } from "../../../components/currency-datalist";
+import {
+  countries,
+  countryDisplayNames,
+} from "../../../components/country-datalist";
+import {
+  currencies,
+  currencyDisplayNames,
+} from "../../../components/currency-datalist";
 import "../../../components/ha-card";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
@@ -35,6 +42,10 @@ class HaConfigSectionGeneral extends LitElement {
   @state() private _unitSystem?: ConfigUpdateValues["unit_system"];
 
   @state() private _currency?: string;
+
+  @state() private _language?: string;
+
+  @state() private _country?: string | null;
 
   @state() private _name?: string;
 
@@ -179,7 +190,9 @@ class HaConfigSectionGeneral extends LitElement {
                   ${currencies.map(
                     (currency) =>
                       html`<mwc-list-item .value=${currency}
-                        >${currency}</mwc-list-item
+                        >${currencyDisplayNames
+                          ? currencyDisplayNames.of(currency)
+                          : currency}</mwc-list-item
                       >`
                   )}</ha-select
                 >
@@ -193,6 +206,48 @@ class HaConfigSectionGeneral extends LitElement {
                   )}</a
                 >
               </div>
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.country"
+                )}
+                name="country"
+                fixedMenuPosition
+                naturalMenuWidth
+                .disabled=${disabled}
+                .value=${this._country}
+                @closed=${stopPropagation}
+                @change=${this._handleChange}
+              >
+                ${countries.map(
+                  (country) =>
+                    html`<mwc-list-item .value=${country}
+                      >${countryDisplayNames
+                        ? countryDisplayNames.of(country)
+                        : country}</mwc-list-item
+                    >`
+                )}</ha-select
+              >
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.language"
+                )}
+                name="language"
+                fixedMenuPosition
+                naturalMenuWidth
+                .disabled=${disabled}
+                .value=${this._language}
+                @closed=${stopPropagation}
+                @change=${this._handleChange}
+              >
+                ${Object.entries(
+                  this.hass.translationMetadata.translations
+                ).map(
+                  ([code, metadata]) =>
+                    html`<mwc-list-item .value=${code}
+                      >${metadata.nativeName}</mwc-list-item
+                    >`
+                )}</ha-select
+              >
             </div>
             ${this.narrow
               ? html`
@@ -240,6 +295,8 @@ class HaConfigSectionGeneral extends LitElement {
         ? "metric"
         : "us_customary";
     this._currency = this.hass.config.currency;
+    this._country = this.hass.config.country;
+    this._language = this.hass.config.language;
     this._elevation = this.hass.config.elevation;
     this._timeZone = this.hass.config.time_zone;
     this._name = this.hass.config.location_name;
@@ -291,6 +348,8 @@ class HaConfigSectionGeneral extends LitElement {
         unit_system: this._unitSystem,
         time_zone: this._timeZone,
         location_name: this._name,
+        language: this._language,
+        country: this._country,
         ...locationConfig,
       });
       button.actionSuccess();

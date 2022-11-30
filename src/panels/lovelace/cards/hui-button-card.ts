@@ -21,11 +21,12 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeActiveState } from "../../../common/entity/compute_active_state";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateActive } from "../../../common/entity/state_active";
+import { stateColor } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
@@ -145,6 +146,13 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     const name = this._config.show_name
       ? this._config.name || (stateObj ? computeStateName(stateObj) : "")
       : "";
+    const domain = stateObj ? computeStateDomain(stateObj) : undefined;
+
+    const active =
+      (this._config.state_color ||
+        (domain === "light" && this._config.state_color !== false)) &&
+      stateObj &&
+      stateActive(stateObj);
 
     return html`
       <ha-card
@@ -171,19 +179,17 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           ? html`
               <ha-state-icon
                 tabindex="-1"
+                ?data-active=${active}
                 data-domain=${ifDefined(
-                  this._config.state_color && stateObj
-                    ? computeStateDomain(stateObj)
-                    : undefined
+                  stateObj ? computeStateDomain(stateObj) : undefined
                 )}
-                data-state=${ifDefined(
-                  stateObj ? computeActiveState(stateObj) : undefined
-                )}
+                data-state=${ifDefined(stateObj?.state)}
                 .icon=${this._config.icon}
                 .state=${stateObj}
                 style=${styleMap({
-                  filter: stateObj ? this._computeBrightness(stateObj) : "",
-                  color: stateObj ? this._computeColor(stateObj) : "",
+                  color: stateObj && active ? this._computeColor(stateObj) : "",
+                  filter:
+                    stateObj && active ? this._computeBrightness(stateObj) : "",
                   height: this._config.icon_height
                     ? this._config.icon_height
                     : "",
@@ -298,16 +304,20 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _computeBrightness(stateObj: HassEntity | LightEntity): string {
-    if (!stateObj.attributes.brightness || !this._config?.state_color) {
-      return "";
+    if (!stateObj.attributes.brightness) {
+      const brightness = stateObj.attributes.brightness;
+      return `brightness(${(brightness + 245) / 5}%)`;
     }
-    const brightness = stateObj.attributes.brightness;
-    return `brightness(${(brightness + 245) / 5}%)`;
+    return "";
   }
 
   private _computeColor(stateObj: HassEntity | LightEntity): string {
-    if (this._config?.state_color && stateObj.attributes.rgb_color) {
+    if (stateObj.attributes.rgb_color) {
       return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+    }
+    const iconColor = stateColor(stateObj);
+    if (iconColor) {
+      return `rgb(var(--rgb-state-${iconColor}-color))`;
     }
     return "";
   }

@@ -72,7 +72,7 @@ describe("formatTimeWeekday", () => {
         time_format: TimeFormat.am_pm,
         first_weekday: FirstWeekday.language,
       }),
-      "Wednesday 11:12 PM"
+      "Saturday 11:12 PM"
     );
     assert.strictEqual(
       formatTimeWeekday(dateObj, {
@@ -81,7 +81,7 @@ describe("formatTimeWeekday", () => {
         time_format: TimeFormat.twenty_four,
         first_weekday: FirstWeekday.language,
       }),
-      "Wednesday 23:12"
+      "Saturday 23:12"
     );
   });
 });

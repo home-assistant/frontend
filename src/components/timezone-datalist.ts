@@ -6,7 +6,7 @@ export const createTimezoneListEl = () => {
   Object.keys(timezones).forEach((key) => {
     const option = document.createElement("option");
     option.value = key;
-    option.innerHTML = timezones[key];
+    option.innerText = timezones[key];
     list.appendChild(option);
   });
   return list;

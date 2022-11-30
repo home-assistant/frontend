@@ -1,3 +1,4 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -8,12 +9,14 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeActiveState } from "../../../common/entity/compute_active_state";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateActive } from "../../../common/entity/state_active";
+import { stateColor } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import {
   formatNumber,
@@ -25,6 +28,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { formatAttributeValue } from "../../../data/entity_attributes";
+import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
@@ -120,6 +124,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name || computeStateName(stateObj);
 
+    const active =
+      (this._config.state_color ||
+        (domain === "light" && this._config.state_color !== false)) &&
+      stateActive(stateObj);
+
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
         <div class="header">
@@ -128,13 +137,15 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
             <ha-state-icon
               .icon=${this._config.icon}
               .state=${stateObj}
-              data-domain=${ifDefined(
-                this._config.state_color ||
-                  (domain === "light" && this._config.state_color !== false)
-                  ? domain
-                  : undefined
-              )}
-              data-state=${stateObj ? computeActiveState(stateObj) : ""}
+              ?data-active=${active}
+              data-domain=${ifDefined(domain)}
+              data-state=${stateObj.state}
+              style=${styleMap({
+                color: active ? this._computeColor(stateObj) : "",
+                height: this._config.icon_height
+                  ? this._config.icon_height
+                  : "",
+              })}
             ></ha-state-icon>
           </div>
         </div>
@@ -172,6 +183,24 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         ${this._footerElement}
       </ha-card>
     `;
+  }
+
+  private _computeColor(stateObj: HassEntity | LightEntity): string {
+    const domain = computeStateDomain(stateObj);
+    if (
+      !(
+        this._config?.state_color ||
+        (domain === "light" && this._config?.state_color !== false)
+      ) ||
+      !stateActive(stateObj)
+    ) {
+      return "";
+    }
+    const iconColor = stateColor(stateObj);
+    if (iconColor) {
+      return `rgb(var(--rgb-state-${iconColor}-color))`;
+    }
+    return "";
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {

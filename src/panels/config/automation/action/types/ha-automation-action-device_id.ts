@@ -70,7 +70,7 @@ export class HaDeviceAction extends LitElement {
           "ui.panel.config.automation.editor.actions.type.device_id.action"
         )}
       ></ha-device-action-picker>
-      ${this._capabilities?.extra_fields
+      ${this._capabilities?.extra_fields?.length
         ? html`
             <ha-form
               .hass=${this.hass}
@@ -150,10 +150,15 @@ export class HaDeviceAction extends LitElement {
   static styles = css`
     ha-device-picker {
       display: block;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
     }
+
     ha-device-action-picker {
       display: block;
+    }
+
+    ha-form {
+      margin-top: 24px;
     }
   `;
 }

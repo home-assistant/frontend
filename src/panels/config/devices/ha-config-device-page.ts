@@ -7,6 +7,7 @@ import {
   mdiPencil,
   mdiPlusCircle,
 } from "@mdi/js";
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -67,6 +68,7 @@ import "../../logbook/ha-logbook";
 import "../ha-config-section";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
+import "./device-detail/ha-device-via-devices-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
 import {
   loadDeviceRegistryDetailDialog,
@@ -825,6 +827,10 @@ export class HaConfigDevicePage extends LitElement {
                     `
                   : ""
             )}
+            <ha-device-via-devices-card
+              .hass=${this.hass}
+              .deviceId=${this.deviceId}
+            ></ha-device-via-devices-card>
           </div>
           <div class="column">
             ${this.narrow ? [automationCard, sceneCard, scriptCard] : ""}

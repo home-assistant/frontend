@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
@@ -45,16 +44,16 @@ class HaPanelDevMqtt extends LitElement {
             </div>
           </ha-card>
           <ha-card
-            header=${this.hass.localize(
+            .header=${this.hass.localize(
               "ui.panel.config.mqtt.description_publish"
             )}
           >
             <div class="card-content">
-              <paper-input
-                label=${this.hass.localize("ui.panel.config.mqtt.topic")}
+              <ha-textfield
+                .label=${this.hass.localize("ui.panel.config.mqtt.topic")}
                 .value=${this.topic}
-                @value-changed=${this._handleTopic}
-              ></paper-input>
+                @change=${this._handleTopic}
+              ></ha-textfield>
 
               <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor

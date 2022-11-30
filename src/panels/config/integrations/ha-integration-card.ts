@@ -70,6 +70,7 @@ const integrationsWithPanel = {
   mqtt: "/config/mqtt",
   zha: "/config/zha/dashboard",
   zwave_js: "/config/zwave_js/dashboard",
+  matter: "/config/matter",
 };
 
 @customElement("ha-integration-card")

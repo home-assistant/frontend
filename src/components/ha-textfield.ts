@@ -1,7 +1,7 @@
 import { TextFieldBase } from "@material/mwc-textfield/mwc-textfield-base";
 import { styles } from "@material/mwc-textfield/mwc-textfield.css";
 import { TemplateResult, html, PropertyValues, css } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 
 @customElement("ha-textfield")
 export class HaTextField extends TextFieldBase {
@@ -16,6 +16,8 @@ export class HaTextField extends TextFieldBase {
   @property({ type: Boolean }) public iconTrailing?: boolean;
 
   @property() public autocomplete?: string;
+
+  @query("input") public formElement!: HTMLInputElement;
 
   override updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);

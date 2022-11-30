@@ -448,20 +448,20 @@ export class HuiEnergyUsageGraphCard
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
     const combinedData: {
-      to_grid?: { [statId: string]: { [start: string]: number } };
-      to_battery?: { [statId: string]: { [start: string]: number } };
-      from_grid?: { [statId: string]: { [start: string]: number } };
-      used_grid?: { [statId: string]: { [start: string]: number } };
-      used_solar?: { [statId: string]: { [start: string]: number } };
-      used_battery?: { [statId: string]: { [start: string]: number } };
+      to_grid?: { [statId: string]: { [start: number]: number } };
+      to_battery?: { [statId: string]: { [start: number]: number } };
+      from_grid?: { [statId: string]: { [start: number]: number } };
+      used_grid?: { [statId: string]: { [start: number]: number } };
+      used_solar?: { [statId: string]: { [start: number]: number } };
+      used_battery?: { [statId: string]: { [start: number]: number } };
     } = {};
 
     const summedData: {
-      to_grid?: { [start: string]: number };
-      from_grid?: { [start: string]: number };
-      to_battery?: { [start: string]: number };
-      from_battery?: { [start: string]: number };
-      solar?: { [start: string]: number };
+      to_grid?: { [start: number]: number };
+      from_grid?: { [start: number]: number };
+      to_battery?: { [start: number]: number };
+      from_battery?: { [start: number]: number };
+      solar?: { [start: number]: number };
     } = {};
 
     Object.entries(statIdsByCat).forEach(([key, statIds]) => {
@@ -473,8 +473,8 @@ export class HuiEnergyUsageGraphCard
         "from_battery",
       ].includes(key);
       const add = !["solar", "from_battery"].includes(key);
-      const totalStats: { [start: string]: number } = {};
-      const sets: { [statId: string]: { [start: string]: number } } = {};
+      const totalStats: { [start: number]: number } = {};
+      const sets: { [statId: string]: { [start: number]: number } } = {};
       statIds!.forEach((id) => {
         const stats = statistics[id];
         if (!stats) {
@@ -484,7 +484,7 @@ export class HuiEnergyUsageGraphCard
         const set = {};
         let prevValue: number;
         stats.forEach((stat) => {
-          if (stat.sum === null) {
+          if (stat.sum === null || stat.sum === undefined) {
             return;
           }
           if (prevValue === undefined) {
@@ -606,9 +606,8 @@ export class HuiEnergyUsageGraphCard
         // Process chart data.
         for (const key of uniqueKeys) {
           const value = source[key] || 0;
-          const date = new Date(key);
           points.push({
-            x: date.getTime(),
+            x: Number(key),
             y:
               value && ["to_grid", "to_battery"].includes(type)
                 ? -1 * value

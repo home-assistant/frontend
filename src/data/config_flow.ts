@@ -9,6 +9,7 @@ export const DISCOVERY_SOURCES = [
   "bluetooth",
   "dhcp",
   "discovery",
+  "hardware",
   "hassio",
   "homekit",
   "integration_discovery",

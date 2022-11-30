@@ -159,6 +159,10 @@ export class HaDeviceCondition extends LitElement {
       display: block;
       margin-bottom: 24px;
     }
+
+    ha-form {
+      margin-top: 24px;
+    }
   `;
 }
 
