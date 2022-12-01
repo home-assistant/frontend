@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { mdiCalendarClock, mdiClose } from "@mdi/js";
-import { isSameDay } from "date-fns/esm";
+import { addDays, isSameDay } from "date-fns/esm";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { RRule } from "rrule";
@@ -134,7 +134,10 @@ class DialogCalendarEventDetail extends LitElement {
 
   private _formatDateRange() {
     const start = new Date(this._data!.dtstart);
-    const end = new Date(this._data!.dtend);
+    // All day events should be displayed as a day earlier
+    const end = isDate(this._data.dtend)
+      ? addDays(new Date(this._data!.dtend), -1)
+      : new Date(this._data!.dtend);
     // The range can be shortened when the start and end are on the same day.
     if (isSameDay(start, end)) {
       if (isDate(this._data.dtstart)) {
