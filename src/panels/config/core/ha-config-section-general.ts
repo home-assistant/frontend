@@ -50,6 +50,8 @@ class HaConfigSectionGeneral extends LitElement {
 
   @state() private _location?: [number, number];
 
+  @state() private _languages?: { value: string; label: string }[];
+
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
       this.hass.config.config_source
@@ -182,7 +184,7 @@ class HaConfigSectionGeneral extends LitElement {
                   @closed=${stopPropagation}
                   @change=${this._handleChange}
                 >
-                  ${getCurrencyOptions().map(
+                  ${getCurrencyOptions(this.hass.locale.language).map(
                     ({ value, label }) =>
                       html`<mwc-list-item .value=${value}>
                         ${label}
@@ -211,7 +213,7 @@ class HaConfigSectionGeneral extends LitElement {
                 @closed=${stopPropagation}
                 @change=${this._handleChange}
               >
-                ${getCountryOptions().map(
+                ${getCountryOptions(this.hass.locale.language).map(
                   ({ value, label }) =>
                     html`<mwc-list-item .value=${value}>
                       ${label}
@@ -230,19 +232,12 @@ class HaConfigSectionGeneral extends LitElement {
                 @closed=${stopPropagation}
                 @change=${this._handleChange}
               >
-                ${Object.entries(this.hass.translationMetadata.translations)
-                  .sort((a, b) =>
-                    caseInsensitiveStringCompare(
-                      a[1].nativeName,
-                      b[1].nativeName
-                    )
-                  )
-                  .map(
-                    ([code, metadata]) =>
-                      html`<mwc-list-item .value=${code}
-                        >${metadata.nativeName}</mwc-list-item
-                      >`
-                  )}</ha-select
+                ${this._languages?.map(
+                  ({ value, label }) =>
+                    html`<mwc-list-item .value=${value}
+                      >${label}</mwc-list-item
+                    >`
+                )}</ha-select
               >
             </div>
             ${this.narrow
@@ -296,6 +291,21 @@ class HaConfigSectionGeneral extends LitElement {
     this._elevation = this.hass.config.elevation;
     this._timeZone = this.hass.config.time_zone;
     this._name = this.hass.config.location_name;
+    this._computeLanguages();
+  }
+
+  private _computeLanguages() {
+    if (!this.hass.translationMetadata?.translations) {
+      return;
+    }
+    this._languages = Object.entries(this.hass.translationMetadata.translations)
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(a[1].nativeName, b[1].nativeName)
+      )
+      .map(([value, metaData]) => ({
+        value,
+        label: metaData.nativeName,
+      }));
   }
 
   private _handleChange(ev) {

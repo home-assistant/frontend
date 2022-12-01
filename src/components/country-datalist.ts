@@ -1,6 +1,7 @@
+import memoizeOne from "memoize-one";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 
-export const countries = [
+export const COUNTRIES = [
   "AD",
   "AE",
   "AF",
@@ -252,22 +253,22 @@ export const countries = [
   "ZW",
 ];
 
-export const countryDisplayNames =
-  Intl && "DisplayNames" in Intl
-    ? new Intl.DisplayNames(undefined, {
-        type: "region",
-        fallback: "code",
-      })
-    : undefined;
+export const getCountryOptions = memoizeOne((language?: string) => {
+  const countryDisplayNames =
+    Intl && "DisplayNames" in Intl
+      ? new Intl.DisplayNames(language, {
+          type: "region",
+          fallback: "code",
+        })
+      : undefined;
 
-export const getCountryOptions = () => {
-  const options = countries.map((country) => ({
+  const options = COUNTRIES.map((country) => ({
     value: country,
     label: countryDisplayNames ? countryDisplayNames.of(country)! : country,
   }));
   options.sort((a, b) => caseInsensitiveStringCompare(a.label, b.label));
   return options;
-};
+});
 
 export const createCountryListEl = () => {
   const list = document.createElement("datalist");

@@ -1,6 +1,7 @@
+import memoizeOne from "memoize-one";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 
-export const currencies = [
+export const CURRENCIES = [
   "AED",
   "AFN",
   "ALL",
@@ -160,22 +161,21 @@ export const currencies = [
   "ZWL",
 ];
 
-export const currencyDisplayNames =
-  Intl && "DisplayNames" in Intl
-    ? new Intl.DisplayNames(undefined, {
-        type: "currency",
-        fallback: "code",
-      })
-    : undefined;
-
-export const getCurrencyOptions = () => {
-  const options = currencies.map((currency) => ({
+export const getCurrencyOptions = memoizeOne((language?: string) => {
+  const currencyDisplayNames =
+    Intl && "DisplayNames" in Intl
+      ? new Intl.DisplayNames(language, {
+          type: "currency",
+          fallback: "code",
+        })
+      : undefined;
+  const options = CURRENCIES.map((currency) => ({
     value: currency,
     label: currencyDisplayNames ? currencyDisplayNames.of(currency)! : currency,
   }));
   options.sort((a, b) => caseInsensitiveStringCompare(a.label, b.label));
   return options;
-};
+});
 
 export const createCurrencyListEl = () => {
   const list = document.createElement("datalist");
