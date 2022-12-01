@@ -234,7 +234,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       category: Parameters<typeof getHassTranslations>[2],
       integration?: Parameters<typeof getHassTranslations>[3],
       configFlow?: Parameters<typeof getHassTranslations>[4],
-      force = true
+      force = false
     ): Promise<LocalizeFunc> {
       if (
         __BACKWARDS_COMPAT__ &&
