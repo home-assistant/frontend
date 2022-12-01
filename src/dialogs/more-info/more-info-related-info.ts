@@ -5,6 +5,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
+import { stateActive } from "../../common/entity/state_active";
 import { stateColor } from "../../common/entity/state_color";
 import { stateIconPath } from "../../common/entity/state_icon_path";
 import "../../components/ha-chip";
@@ -24,17 +25,15 @@ class MoreInfoContent extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  private _relatedEntities = memoizeOne((entityId: string) => {
-    const deviceId = this.hass!.entities[entityId].device_id;
-
+  private _deviceEntityEntries = memoizeOne((deviceId: string) => {
     if (!deviceId) return [];
 
     return Object.values(this.hass!.entities).filter(
       (entity) =>
         entity.device_id === deviceId &&
-        entity.entity_id !== entityId &&
         !entity.hidden_by &&
-        !entity.disabled_by
+        !entity.disabled_by &&
+        !entity.entity_category
     );
   });
 
@@ -47,22 +46,47 @@ class MoreInfoContent extends LitElement {
     if (!this.hass || !this.stateObj) {
       return null;
     }
+    const deviceId = this.hass!.entities[this.stateObj.entity_id].device_id;
 
-    const relatedEntities = this._relatedEntities(this.stateObj.entity_id);
+    if (!deviceId) {
+      return null;
+    }
+
+    const deviceEntityEntries = this._deviceEntityEntries(deviceId);
+
+    const deviceEntities = deviceEntityEntries
+      .map((entry) => this.hass!.states[entry.entity_id])
+      .filter(Boolean);
+
+    const displayedEntities = deviceEntities.filter(
+      (entity) => entity.entity_id !== this.stateObj!.entity_id
+    );
+
+    // Do not display device entities if the current entity is not inside
+    if (displayedEntities.length === deviceEntities.length) {
+      return null;
+    }
 
     return html`
       <div class="container">
-        ${relatedEntities.map((entry) => {
-          const entity = this.hass!.states[entry.entity_id];
-
+        ${displayedEntities.map((entity) => {
           const icon = entity.attributes.icon;
           const iconPath = stateIconPath(entity);
           const state = computeStateDisplay(
             this.hass!.localize,
             entity,
-            this.hass!.locale
+            this.hass!.locale,
+            this.hass!.entities
           );
           const color = stateColor(entity);
+          const active = stateActive(entity);
+
+          const iconStyle = styleMap({
+            "--icon-color":
+              color && active
+                ? `rgb(var(--rgb-state-${color}-color))`
+                : undefined,
+          });
 
           return html`
             <button
@@ -71,16 +95,12 @@ class MoreInfoContent extends LitElement {
               @click=${this._handleChipClick}
               .entityId=${entity.entity_id}
               .title=${entity.attributes.friendly_name}
-              style=${styleMap({
-                "--icon-color": color
-                  ? `rgb(var(--rgb-state-${color}-color))`
-                  : undefined,
-              })}
+              style=${iconStyle}
             >
               ${icon
-                ? html`<ha-icon slot="icon" icon=${icon}></ha-icon>`
+                ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
                 : html`
-                    <ha-svg-icon slot="icon" path=${iconPath}></ha-svg-icon>
+                    <ha-svg-icon slot="icon" .path=${iconPath}></ha-svg-icon>
                   `}
               ${state}
             </button>
