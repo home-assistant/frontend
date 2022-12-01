@@ -148,10 +148,15 @@ class DialogCalendarEventDetail extends LitElement {
       )} - ${formatTime(end, this.hass.locale)}`;
     }
     // An event across multiple dates, optionally with a time range
-    return `${formatDateTime(start, this.hass.locale)} - ${formatDateTime(
-      end,
-      this.hass.locale
-    )}`;
+    return `${
+      isDate(this._data.dtstart)
+        ? formatDate(start, this.hass.locale)
+        : formatDateTime(start, this.hass.locale)
+    } - ${
+      isDate(this._data.dtend)
+        ? formatDate(end, this.hass.locale)
+        : formatDateTime(end, this.hass.locale)
+    }`;
   }
 
   private async _editEvent() {
