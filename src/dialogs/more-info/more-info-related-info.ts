@@ -1,9 +1,11 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
+import { stateColor } from "../../common/entity/state_color";
 import { stateIconPath } from "../../common/entity/state_icon_path";
 import "../../components/ha-chip";
 import "../../components/ha-chip-set";
@@ -60,6 +62,7 @@ class MoreInfoContent extends LitElement {
             entity,
             this.hass!.locale
           );
+          const color = stateColor(entity);
 
           return html`
             <button
@@ -67,6 +70,11 @@ class MoreInfoContent extends LitElement {
               class="chip"
               @click=${this._handleChipClick}
               .entityId=${entry.entity_id}
+              style=${styleMap({
+                "--icon-color": color
+                  ? `rgb(var(--rgb-state-${color}-color))`
+                  : undefined,
+              })}
             >
               ${icon
                 ? html`<ha-icon slot="icon" icon=${icon}></ha-icon>`
@@ -104,12 +112,14 @@ class MoreInfoContent extends LitElement {
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;
+        --icon-color: rgb(var(--rgb-state-default-color));
       }
       .chip ha-icon,
       .chip ha-svg-icon {
+        color: var(--icon-color);
         pointer-events: none;
         --mdc-icon-size: 18px;
-        color: rgb(var(--rgb-primary-color));
+        color: var(--icon-color);
       }
     `;
   }
