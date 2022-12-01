@@ -44,7 +44,7 @@ export class HaTileInfo extends LitElement {
         font-size: 12px;
         line-height: 16px;
         letter-spacing: 0.4px;
-        color: var(--secondary-text-color);
+        color: var(--primary-text-color);
       }
     `;
   }
