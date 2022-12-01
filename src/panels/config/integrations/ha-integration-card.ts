@@ -5,6 +5,8 @@ import {
   mdiAlertCircle,
   mdiBookshelf,
   mdiBug,
+  mdiBugPlay,
+  mdiBugStop,
   mdiChevronLeft,
   mdiCog,
   mdiDelete,
@@ -47,11 +49,17 @@ import {
   ERROR_STATES,
   RECOVERABLE_STATES,
 } from "../../../data/config_entries";
+import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
-import { integrationIssuesUrl } from "../../../data/integration";
+import {
+  integrationIssuesUrl,
+  IntegrationLogInfo,
+  LogSeverity,
+  setIntegrationLogLevel,
+} from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
@@ -95,6 +103,8 @@ export class HaIntegrationCard extends LitElement {
 
   @property({ type: Boolean }) public supportsDiagnostics = false;
 
+  @property() public logInfo?: IntegrationLogInfo;
+
   protected render(): TemplateResult {
     let item = this._selectededConfigEntry;
 
@@ -137,6 +147,8 @@ export class HaIntegrationCard extends LitElement {
           .localizedDomainName=${item ? item.localized_domain_name : undefined}
           .manifest=${this.manifest}
           .configEntry=${item}
+          .debugLoggingEnabled=${this.logInfo &&
+          this.logInfo.level === LogSeverity.DEBUG}
         >
           ${this.items.length > 1
             ? html`
@@ -398,6 +410,28 @@ export class HaIntegrationCard extends LitElement {
                 </mwc-list-item>
               </a>`
             : ""}
+          ${this.logInfo
+            ? html`<mwc-list-item
+                @request-selected=${this.logInfo.level === LogSeverity.DEBUG
+                  ? this._handleDisableDebugLogging
+                  : this._handleEnableDebugLogging}
+                graphic="icon"
+              >
+                ${this.logInfo.level === LogSeverity.DEBUG
+                  ? this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.disable_debug_logging"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.enable_debug_logging"
+                    )}
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${this.logInfo.level === LogSeverity.DEBUG
+                    ? mdiBugStop
+                    : mdiBugPlay}
+                ></ha-svg-icon>
+              </mwc-list-item>`
+            : ""}
           ${this.manifest &&
           (this.manifest.is_built_in ||
             this.manifest.issue_tracker ||
@@ -499,6 +533,34 @@ export class HaIntegrationCard extends LitElement {
         </ha-button-menu>
       </div>
     `;
+  }
+
+  private async _handleEnableDebugLogging(ev: MouseEvent) {
+    const configEntry = ((ev.target as HTMLElement).closest("ha-card") as any)
+      .configEntry;
+    const integration = configEntry.domain;
+    await setIntegrationLogLevel(
+      this.hass,
+      integration,
+      LogSeverity[LogSeverity.DEBUG],
+      "once"
+    );
+  }
+
+  private async _handleDisableDebugLogging(ev: MouseEvent) {
+    const configEntry = ((ev.target as HTMLElement).closest("ha-card") as any)
+      .configEntry;
+    const integration = configEntry.domain;
+    await setIntegrationLogLevel(
+      this.hass,
+      integration,
+      LogSeverity[LogSeverity.NOTSET],
+      "once"
+    );
+    const timeString = new Date().toISOString().replace(/:/g, "-");
+    const logFileName = `home-assistant_${integration}_${timeString}.log`;
+    const signedUrl = await getSignedPath(this.hass, getErrorLogDownloadUrl);
+    fileDownload(signedUrl.path, logFileName);
   }
 
   private get _selectededConfigEntry(): ConfigEntryExtended | undefined {
