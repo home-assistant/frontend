@@ -54,6 +54,7 @@ export class HaDateInput extends LitElement {
       .disabled=${this.disabled}
       iconTrailing
       helperPersistent
+      readonly
       @click=${this._openDialog}
       .value=${this.value
         ? formatDateNumeric(new Date(this.value), this.locale)

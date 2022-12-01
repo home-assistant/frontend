@@ -184,6 +184,7 @@ const equalState = (obj1: LineChartState, obj2: LineChartState) =>
 const processTimelineEntity = (
   localize: LocalizeFunc,
   language: FrontendLocaleData,
+  entities: HomeAssistant["entities"],
   entityId: string,
   states: EntityHistoryState[],
   current_state: HassEntity | undefined
@@ -198,6 +199,7 @@ const processTimelineEntity = (
       state_localize: computeStateDisplayFromEntityAttributes(
         localize,
         language,
+        entities,
         entityId,
         state.a || first.a,
         state.s
@@ -344,6 +346,7 @@ export const computeHistory = (
         processTimelineEntity(
           localize,
           hass.locale,
+          hass.entities,
           entityId,
           stateInfo,
           currentState

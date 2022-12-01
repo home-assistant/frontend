@@ -3,6 +3,7 @@ import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "@vaadin/combo-box/lit";
 import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
 import type {
+  ComboBoxDataProvider,
   ComboBoxLight,
   ComboBoxLightFilterChangedEvent,
   ComboBoxLightOpenedChangedEvent,
@@ -82,6 +83,9 @@ export class HaComboBox extends LitElement {
 
   @property({ attribute: false }) public filteredItems?: any[];
 
+  @property({ attribute: false })
+  public dataProvider?: ComboBoxDataProvider<any>;
+
   @property({ attribute: "allow-custom-value", type: Boolean })
   public allowCustomValue = false;
 
@@ -148,6 +152,7 @@ export class HaComboBox extends LitElement {
         .items=${this.items}
         .value=${this.value || ""}
         .filteredItems=${this.filteredItems}
+        .dataProvider=${this.dataProvider}
         .allowCustomValue=${this.allowCustomValue}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -225,13 +230,13 @@ export class HaComboBox extends LitElement {
   }
 
   private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
+    ev.stopPropagation();
     const opened = ev.detail.value;
     // delay this so we can handle click event for toggle button before setting _opened
     setTimeout(() => {
       this.opened = opened;
     }, 0);
-    // @ts-ignore
-    fireEvent(this, ev.type, ev.detail);
+    fireEvent(this, "opened-changed", { value: ev.detail.value });
 
     if (opened) {
       const overlay = document.querySelector<HTMLElement>(
@@ -300,8 +305,8 @@ export class HaComboBox extends LitElement {
   }
 
   private _filterChanged(ev: ComboBoxLightFilterChangedEvent) {
-    // @ts-ignore
-    fireEvent(this, ev.type, ev.detail, { composed: false });
+    ev.stopPropagation();
+    fireEvent(this, "filter-changed", { value: ev.detail.value });
   }
 
   private _valueChanged(ev: ComboBoxLightValueChangedEvent) {
@@ -361,5 +366,12 @@ export class HaComboBox extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-combo-box": HaComboBox;
+  }
+}
+
+declare global {
+  interface HASSDomEvents {
+    "filter-changed": { value: string };
+    "opened-changed": { value: boolean };
   }
 }

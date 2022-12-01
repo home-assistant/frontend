@@ -1,4 +1,4 @@
-import { mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
+import { mdiBugPlay, mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -23,6 +23,8 @@ export class HaIntegrationHeader extends LitElement {
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   @property({ attribute: false }) public configEntry?: ConfigEntry;
+
+  @property({ attribute: false }) public debugLoggingEnabled?: boolean;
 
   protected render(): TemplateResult {
     let primary: string;
@@ -74,6 +76,15 @@ export class HaIntegrationHeader extends LitElement {
           ),
         ]);
       }
+    }
+
+    if (this.debugLoggingEnabled) {
+      icons.push([
+        mdiBugPlay,
+        this.hass.localize(
+          "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+        ),
+      ]);
     }
 
     return html`

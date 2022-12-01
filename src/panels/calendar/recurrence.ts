@@ -2,6 +2,7 @@
 // and the values defined by rrule.js.
 import { RRule, Frequency, Weekday } from "rrule";
 import type { WeekdayStr } from "rrule";
+import { addDays, addMonths, addWeeks, addYears } from "date-fns";
 
 export type RepeatFrequency =
   | "none"
@@ -35,14 +36,14 @@ export function untilValue(freq: RepeatFrequency): Date {
   const increment = DEFAULT_COUNT[freq];
   switch (freq) {
     case "yearly":
-      return new Date(new Date().setFullYear(today.getFullYear() + increment));
+      return addYears(today, increment);
     case "monthly":
-      return new Date(new Date().setMonth(today.getMonth() + increment));
+      return addMonths(today, increment);
     case "weekly":
-      return new Date(new Date().setDate(today.getDate() + 7 * increment));
+      return addWeeks(today, increment);
     case "daily":
     default:
-      return new Date(new Date().setDate(today.getDate() + increment));
+      return addDays(today, increment);
   }
 }
 

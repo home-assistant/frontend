@@ -100,6 +100,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                     this.hass.localize,
                     stateObj,
                     this.hass.locale,
+                    this.hass.entities,
                     stateObj.state
                   )}
                 </span>

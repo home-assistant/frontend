@@ -1,10 +1,12 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { EntityRegistryEntry } from "../../data/entity_registry";
 import { FrontendLocaleData } from "../../data/translation";
 import {
   updateIsInstallingFromAttributes,
   UPDATE_SUPPORT_PROGRESS,
 } from "../../data/update";
+import { HomeAssistant } from "../../types";
 import { formatDuration, UNIT_TO_SECOND_CONVERT } from "../datetime/duration";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
@@ -23,11 +25,13 @@ export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
+  entities: HomeAssistant["entities"],
   state?: string
 ): string =>
   computeStateDisplayFromEntityAttributes(
     localize,
     locale,
+    entities,
     stateObj.entity_id,
     stateObj.attributes,
     state !== undefined ? state : stateObj.state
@@ -36,6 +40,7 @@ export const computeStateDisplay = (
 export const computeStateDisplayFromEntityAttributes = (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
+  entities: HomeAssistant["entities"],
   entityId: string,
   attributes: any,
   state: string
@@ -194,7 +199,13 @@ export const computeStateDisplayFromEntityAttributes = (
       : localize("ui.card.update.up_to_date");
   }
 
+  const entity = entities[entityId] as EntityRegistryEntry | undefined;
+
   return (
+    (entity?.translation_key &&
+      localize(
+        `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${state}`
+      )) ||
     // Return device class translation
     (attributes.device_class &&
       localize(
