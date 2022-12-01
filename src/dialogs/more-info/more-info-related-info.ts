@@ -69,7 +69,8 @@ class MoreInfoContent extends LitElement {
               type="button"
               class="chip"
               @click=${this._handleChipClick}
-              .entityId=${entry.entity_id}
+              .entityId=${entity.entity_id}
+              .title=${entity.attributes.friendly_name}
               style=${styleMap({
                 "--icon-color": color
                   ? `rgb(var(--rgb-state-${color}-color))`
