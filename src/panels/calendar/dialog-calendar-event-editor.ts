@@ -4,6 +4,7 @@ import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { addDays, addHours, startOfHour } from "date-fns/esm";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isDate } from "../../common/string/is_date";
 import "../../components/ha-date-input";
 import "../../components/ha-time-input";
@@ -39,7 +40,9 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _calendarId?: string;
 
-  @state() private _data?: CalendarEventMutableParams;
+  @state() private _summary = "";
+
+  @state() private _rrule?: string;
 
   @state() private _allDay = false;
 
@@ -49,40 +52,30 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _submitting = false;
 
-  public async showDialog(
-    params: CalendarEventEditDialogParams
-  ): Promise<void> {
+  public showDialog(params: CalendarEventEditDialogParams): void {
     this._error = undefined;
     this._params = params;
     this._calendars = params.calendars;
     this._calendarId = params.calendarId || this._calendars[0].entity_id;
     if (params.entry) {
       const entry = params.entry!;
-      this._data = entry;
       this._allDay = isDate(entry.dtstart);
+      this._summary = entry.summary;
+      this._rrule = entry.rrule;
       if (this._allDay) {
         this._dtstart = new Date(entry.dtstart);
         // Calendar event end dates are exclusive, but not shown that way in the UI. The
         // reverse happens when persisting the event.
-        this._dtend = new Date(entry.dtend);
-        this._dtend.setDate(this._dtend.getDate() - 1);
+        this._dtend = addDays(new Date(entry.dtend), -1);
       } else {
         this._dtstart = new Date(entry.dtstart);
         this._dtend = new Date(entry.dtend);
       }
     } else {
-      this._data = {
-        summary: "",
-        // Dates are set in _dateChanged()
-        dtstart: "",
-        dtend: "",
-      };
       this._allDay = false;
       this._dtstart = startOfHour(new Date());
       this._dtend = addHours(this._dtstart, 1);
-      this._dateChanged();
     }
-    await this.updateComplete;
   }
 
   protected render(): TemplateResult {
@@ -90,6 +83,12 @@ class DialogCalendarEventEditor extends LitElement {
       return html``;
     }
     const isCreate = this._params.entry === undefined;
+
+    const { startDate, startTime, endDate, endTime } = this._getLocaleStrings(
+      this._dtstart,
+      this._dtend
+    );
+
     return html`
       <ha-dialog
         open
@@ -100,7 +99,7 @@ class DialogCalendarEventEditor extends LitElement {
           <div class="header_title">
             ${isCreate
               ? this.hass.localize("ui.components.calendar.event.add")
-              : this._data!.summary}
+              : this._summary}
           </div>
           <ha-icon-button
             .label=${this.hass.localize("ui.dialogs.generic.close")}
@@ -155,13 +154,13 @@ class DialogCalendarEventEditor extends LitElement {
             >
             <div class="flex">
               <ha-date-input
-                .value=${this._data!.dtstart}
+                .value=${startDate}
                 .locale=${this.hass.locale}
                 @value-changed=${this._startDateChanged}
               ></ha-date-input>
               ${!this._allDay
                 ? html`<ha-time-input
-                    .value=${this._data!.dtstart.split("T")[1]}
+                    .value=${startTime}
                     .locale=${this.hass.locale}
                     @value-changed=${this._startTimeChanged}
                   ></ha-time-input>`
@@ -174,14 +173,14 @@ class DialogCalendarEventEditor extends LitElement {
             >
             <div class="flex">
               <ha-date-input
-                .value=${this._data!.dtend}
-                .min=${this._data!.dtstart}
+                .value=${endDate}
+                .min=${startDate}
                 .locale=${this.hass.locale}
                 @value-changed=${this._endDateChanged}
               ></ha-date-input>
               ${!this._allDay
                 ? html`<ha-time-input
-                    .value=${this._data!.dtend.split("T")[1]}
+                    .value=${endTime}
                     .locale=${this.hass.locale}
                     @value-changed=${this._endTimeChanged}
                   ></ha-time-input>`
@@ -190,7 +189,7 @@ class DialogCalendarEventEditor extends LitElement {
           </div>
           <ha-recurrence-rule-editor
             .locale=${this.hass.locale}
-            .value=${this._data!.rrule || ""}
+            .value=${this._rrule || ""}
             @value-changed=${this._handleRRuleChanged}
           >
           </ha-recurrence-rule-editor>
@@ -230,57 +229,78 @@ class DialogCalendarEventEditor extends LitElement {
     `;
   }
 
+  private _getLocaleStrings = memoizeOne((startDate?: Date, endDate?: Date) =>
+    // en-CA locale used for date format YYYY-MM-DD
+    // en-GB locale used for 24h time format HH:MM:SS
+    {
+      const timeZone = this.hass.config.time_zone;
+      return {
+        startDate: startDate?.toLocaleDateString("en-CA", { timeZone }),
+        startTime: startDate?.toLocaleTimeString("en-GB", { timeZone }),
+        endDate: endDate?.toLocaleDateString("en-CA", { timeZone }),
+        endTime: endDate?.toLocaleTimeString("en-GB", { timeZone }),
+      };
+    }
+  );
+
   private _handleSummaryChanged(ev) {
-    this._data!.summary = ev.target.value;
+    this._summary = ev.target.value;
   }
 
   private _handleRRuleChanged(ev) {
-    this._data!.rrule = ev.detail.value;
-    this.requestUpdate();
+    this._rrule = ev.detail.value;
   }
 
   private _allDayToggleChanged(ev) {
     this._allDay = ev.target.checked;
-    this._dateChanged();
   }
 
   private _startDateChanged(ev: CustomEvent) {
     this._dtstart = new Date(
       ev.detail.value + "T" + this._dtstart!.toISOString().split("T")[1]
     );
-    this._dateChanged();
   }
 
   private _endDateChanged(ev: CustomEvent) {
     this._dtend = new Date(
       ev.detail.value + "T" + this._dtend!.toISOString().split("T")[1]
     );
-    this._dateChanged();
   }
 
   private _startTimeChanged(ev: CustomEvent) {
     this._dtstart = new Date(
       this._dtstart!.toISOString().split("T")[0] + "T" + ev.detail.value
     );
-    this._dateChanged();
   }
 
   private _endTimeChanged(ev: CustomEvent) {
     this._dtend = new Date(
       this._dtend!.toISOString().split("T")[0] + "T" + ev.detail.value
     );
-    this._dateChanged();
   }
 
-  private _dateChanged() {
+  private _calculateData() {
+    const { startDate, startTime, endDate, endTime } = this._getLocaleStrings(
+      this._dtstart,
+      this._dtend
+    );
+    const data: CalendarEventMutableParams = {
+      summary: this._summary,
+      rrule: this._rrule,
+      dtstart: "",
+      dtend: "",
+    };
     if (this._allDay) {
-      this._data!.dtstart = this._dtstart!.toISOString();
+      data.dtstart = startDate!;
       // End date/time is exclusive when persisted
-      this._data!.dtend = addDays(new Date(this._dtend!), 1).toISOString();
+      data.dtend = addDays(new Date(this._dtend!), 1).toLocaleDateString(
+        "en-CA"
+      );
     } else {
-      this._data!.dtstart = this._dtstart!.toISOString();
-      this._data!.dtend = this._dtend!.toISOString();
+      data.dtstart = `${startDate}T${startTime}`;
+      data.dtend = `${endDate}T${endTime}`;
     }
+    return data;
   }
 
   private _handleCalendarChanged(ev: CustomEvent) {
@@ -290,7 +310,11 @@ class DialogCalendarEventEditor extends LitElement {
   private async _createEvent() {
     this._submitting = true;
     try {
-      await createCalendarEvent(this.hass!, this._calendarId!, this._data!);
+      await createCalendarEvent(
+        this.hass!,
+        this._calendarId!,
+        this._calculateData()
+      );
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
     } finally {
@@ -358,9 +382,10 @@ class DialogCalendarEventEditor extends LitElement {
     this._calendars = [];
     this._calendarId = undefined;
     this._params = undefined;
-    this._data = undefined;
     this._dtstart = undefined;
     this._dtend = undefined;
+    this._summary = "";
+    this._rrule = undefined;
   }
 
   static get styles(): CSSResultGroup {
