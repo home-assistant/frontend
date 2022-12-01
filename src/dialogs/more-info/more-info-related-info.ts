@@ -52,11 +52,9 @@ class MoreInfoContent extends LitElement {
       return null;
     }
 
-    const deviceEntityEntries = this._deviceEntityEntries(deviceId);
-
-    const deviceEntities = deviceEntityEntries
-      .map((entry) => this.hass!.states[entry.entity_id])
-      .filter(Boolean);
+    const deviceEntities = this._deviceEntityEntries(deviceId).filter(
+      (entry) => this.hass!.states[entry.entity_id]
+    );
 
     const displayedEntities = deviceEntities.filter(
       (entity) => entity.entity_id !== this.stateObj!.entity_id
@@ -69,17 +67,19 @@ class MoreInfoContent extends LitElement {
 
     return html`
       <div class="container">
-        ${displayedEntities.map((entity) => {
-          const icon = entity.attributes.icon;
-          const iconPath = stateIconPath(entity);
+        ${displayedEntities.map((entry) => {
+          const stateObj = this.hass!.states[entry.entity_id];
+
+          const icon = stateObj.attributes.icon;
+          const iconPath = stateIconPath(stateObj);
           const state = computeStateDisplay(
             this.hass!.localize,
-            entity,
+            stateObj,
             this.hass!.locale,
             this.hass!.entities
           );
-          const color = stateColor(entity);
-          const active = stateActive(entity);
+          const color = stateColor(stateObj);
+          const active = stateActive(stateObj);
 
           const iconStyle = styleMap({
             "--icon-color":
@@ -88,13 +88,16 @@ class MoreInfoContent extends LitElement {
                 : undefined,
           });
 
+          const name = stateObj.attributes.friendly_name ?? "";
+
           return html`
             <button
               type="button"
               class="chip"
               @click=${this._handleChipClick}
-              .entityId=${entity.entity_id}
-              .title=${entity.attributes.friendly_name}
+              .entityId=${stateObj.entity_id}
+              aria-label=${name}
+              .title=${name}
               style=${iconStyle}
             >
               ${icon
