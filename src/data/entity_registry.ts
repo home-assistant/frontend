@@ -21,6 +21,7 @@ export interface EntityRegistryEntry {
   has_entity_name: boolean;
   original_name?: string;
   unique_id: string;
+  translation_key?: string;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {

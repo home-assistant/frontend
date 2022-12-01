@@ -160,7 +160,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                     ${computeStateDisplay(
                       this.hass.localize,
                       stateObj,
-                      this.hass.locale
+                      this.hass.locale,
+                      this.hass.entities
                     )}
                   </div>
                 `

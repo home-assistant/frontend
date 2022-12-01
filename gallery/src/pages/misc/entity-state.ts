@@ -307,7 +307,8 @@ export class DemoEntityState extends LitElement {
             html`${computeStateDisplay(
               hass.localize,
               entry.stateObj,
-              hass.locale
+              hass.locale,
+              hass.entities
             )}`,
         },
         device_class: {
