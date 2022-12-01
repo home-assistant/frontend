@@ -6,16 +6,11 @@ import memoizeOne from "memoize-one";
 import { UNIT_C } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { navigate } from "../../../common/navigate";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
-import {
-  countries,
-  countryDisplayNames,
-} from "../../../components/country-datalist";
-import {
-  currencies,
-  currencyDisplayNames,
-} from "../../../components/currency-datalist";
+import { getCountryOptions } from "../../../components/country-datalist";
+import { getCurrencyOptions } from "../../../components/currency-datalist";
 import "../../../components/ha-card";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
@@ -187,13 +182,11 @@ class HaConfigSectionGeneral extends LitElement {
                   @closed=${stopPropagation}
                   @change=${this._handleChange}
                 >
-                  ${currencies.map(
-                    (currency) =>
-                      html`<mwc-list-item .value=${currency}
-                        >${currencyDisplayNames
-                          ? currencyDisplayNames.of(currency)
-                          : currency}</mwc-list-item
-                      >`
+                  ${getCurrencyOptions().map(
+                    ({ value, label }) =>
+                      html`<mwc-list-item .value=${value}>
+                        ${label}
+                      </mwc-list-item>`
                   )}</ha-select
                 >
                 <a
@@ -218,13 +211,11 @@ class HaConfigSectionGeneral extends LitElement {
                 @closed=${stopPropagation}
                 @change=${this._handleChange}
               >
-                ${countries.map(
-                  (country) =>
-                    html`<mwc-list-item .value=${country}
-                      >${countryDisplayNames
-                        ? countryDisplayNames.of(country)
-                        : country}</mwc-list-item
-                    >`
+                ${getCountryOptions().map(
+                  ({ value, label }) =>
+                    html`<mwc-list-item .value=${value}>
+                      ${label}
+                    </mwc-list-item>`
                 )}</ha-select
               >
               <ha-select
@@ -239,14 +230,19 @@ class HaConfigSectionGeneral extends LitElement {
                 @closed=${stopPropagation}
                 @change=${this._handleChange}
               >
-                ${Object.entries(
-                  this.hass.translationMetadata.translations
-                ).map(
-                  ([code, metadata]) =>
-                    html`<mwc-list-item .value=${code}
-                      >${metadata.nativeName}</mwc-list-item
-                    >`
-                )}</ha-select
+                ${Object.entries(this.hass.translationMetadata.translations)
+                  .sort((a, b) =>
+                    caseInsensitiveStringCompare(
+                      a[1].nativeName,
+                      b[1].nativeName
+                    )
+                  )
+                  .map(
+                    ([code, metadata]) =>
+                      html`<mwc-list-item .value=${code}
+                        >${metadata.nativeName}</mwc-list-item
+                      >`
+                  )}</ha-select
               >
             </div>
             ${this.narrow

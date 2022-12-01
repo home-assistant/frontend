@@ -1,3 +1,5 @@
+import { caseInsensitiveStringCompare } from "../common/string/compare";
+
 export const currencies = [
   "AED",
   "AFN",
@@ -166,15 +168,22 @@ export const currencyDisplayNames =
       })
     : undefined;
 
+export const getCurrencyOptions = () => {
+  const options = currencies.map((currency) => ({
+    value: currency,
+    label: currencyDisplayNames ? currencyDisplayNames.of(currency)! : currency,
+  }));
+  options.sort((a, b) => caseInsensitiveStringCompare(a.label, b.label));
+  return options;
+};
+
 export const createCurrencyListEl = () => {
   const list = document.createElement("datalist");
   list.id = "currencies";
-  for (const currency of currencies) {
+  for (const currency of getCurrencyOptions()) {
     const option = document.createElement("option");
-    option.value = currency;
-    option.innerText = currencyDisplayNames
-      ? currencyDisplayNames.of(currency)!
-      : currency;
+    option.value = currency.value;
+    option.innerText = currency.label;
     list.appendChild(option);
   }
   return list;

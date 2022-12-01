@@ -1,3 +1,5 @@
+import { caseInsensitiveStringCompare } from "../common/string/compare";
+
 export const countries = [
   "AD",
   "AE",
@@ -258,15 +260,23 @@ export const countryDisplayNames =
       })
     : undefined;
 
+export const getCountryOptions = () => {
+  const options = countries.map((country) => ({
+    value: country,
+    label: countryDisplayNames ? countryDisplayNames.of(country)! : country,
+  }));
+  options.sort((a, b) => caseInsensitiveStringCompare(a.label, b.label));
+  return options;
+};
+
 export const createCountryListEl = () => {
   const list = document.createElement("datalist");
   list.id = "countries";
-  for (const country of countries) {
+  const options = getCountryOptions();
+  for (const country of options) {
     const option = document.createElement("option");
-    option.value = country;
-    option.innerText = countryDisplayNames
-      ? countryDisplayNames.of(country)!
-      : country;
+    option.value = country.value;
+    option.innerText = country.label;
     list.appendChild(option);
   }
   return list;
