@@ -203,6 +203,7 @@ export const computeStateDisplayFromEntityAttributes = (
 
   return (
     (entity &&
+      entity.translation_key &&
       localize(
         `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${state}`
       )) ||
