@@ -165,6 +165,7 @@ class StateCardInputNumber extends mixinBehaviors(
         this.hass.localize,
         newVal,
         this.hass.locale,
+        this.hass.entities,
         newVal.state
       ),
       mode: String(newVal.attributes.mode),

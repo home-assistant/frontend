@@ -49,7 +49,12 @@ class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${computeStateDisplay(this.hass!.localize, stateObj, this.hass.locale)}
+        ${computeStateDisplay(
+          this.hass!.localize,
+          stateObj,
+          this.hass.locale,
+          this.hass.entities
+        )}
       </hui-generic-entity-row>
     `;
   }
