@@ -262,7 +262,7 @@ export const getStates = (
       }
       break;
     case "sensor":
-      if (!attribute && state.attributes.options) {
+      if (!attribute && state.attributes.device_class === "enum") {
         result.push(...state.attributes.options);
       }
       break;
