@@ -435,7 +435,13 @@ export const localizeStateMessage = (
     `${LOGBOOK_LOCALIZE_PATH}.changed_to_state`,
     "state",
     stateObj
-      ? computeStateDisplay(localize, stateObj, hass.locale, state)
+      ? computeStateDisplay(
+          localize,
+          stateObj,
+          hass.locale,
+          hass.entities,
+          state
+        )
       : state
   );
 };

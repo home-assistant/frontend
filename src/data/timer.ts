@@ -90,7 +90,12 @@ export const computeDisplayTimer = (
   }
 
   if (stateObj.state === "idle" || timeRemaining === 0) {
-    return computeStateDisplay(hass.localize, stateObj, hass.locale);
+    return computeStateDisplay(
+      hass.localize,
+      stateObj,
+      hass.locale,
+      hass.entities
+    );
   }
 
   let display = secondsToDuration(timeRemaining || 0);
@@ -99,7 +104,8 @@ export const computeDisplayTimer = (
     display = `${display} (${computeStateDisplay(
       hass.localize,
       stateObj,
-      hass.locale
+      hass.locale,
+      hass.entities
     )})`;
   }
 

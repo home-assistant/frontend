@@ -52,7 +52,8 @@ export class StateCardDisplay extends LitElement {
             : computeStateDisplay(
                 this.hass!.localize,
                 this.stateObj,
-                this.hass.locale
+                this.hass.locale,
+                this.hass.entities
               )}
         </div>
       </div>
