@@ -62,7 +62,7 @@ export class MoreInfoDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private _relatedEntityClicked(ev: CustomEvent) {
+  private _entityShortcutClicked(ev: CustomEvent) {
     ev.stopPropagation();
     this._entityId = ev.detail.entityId;
   }
@@ -165,7 +165,7 @@ export class MoreInfoDialog extends LitElement {
                   <ha-more-info-info
                     .hass=${this.hass}
                     .entityId=${this._entityId}
-                    @related-entity=${this._relatedEntityClicked}
+                    @shortcut-clicked=${this._entityShortcutClicked}
                   ></ha-more-info-info>
                 `
               : this._currTab === "history"

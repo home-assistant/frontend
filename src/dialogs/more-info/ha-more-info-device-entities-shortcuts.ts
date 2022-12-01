@@ -11,16 +11,17 @@ import { stateIconPath } from "../../common/entity/state_icon_path";
 import "../../components/ha-chip";
 import "../../components/ha-chip-set";
 import "../../components/ha-icon";
+import "../../components/ha-svg-icon";
 import { HomeAssistant } from "../../types";
 
 declare global {
   interface HASSDomEvents {
-    "related-entity": { entityId: string };
+    "shortcut-clicked": { entityId: string };
   }
 }
 
-@customElement("more-info-related-info")
-class MoreInfoContent extends LitElement {
+@customElement("ha-more-info-device-entities-shortcuts")
+class MoreInfoDevicesEntitiesShortcuts extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
@@ -37,9 +38,15 @@ class MoreInfoContent extends LitElement {
     );
   });
 
-  private _handleChipClick(ev: Event) {
+  private _handleChipClick(ev) {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
     const entityId = (ev.target as any).entityId as string;
-    fireEvent(this, "related-entity", { entityId });
+    fireEvent(this, "shortcut-clicked", { entityId });
   }
 
   protected render(): TemplateResult | null {
@@ -72,6 +79,7 @@ class MoreInfoContent extends LitElement {
 
           const icon = stateObj.attributes.icon;
           const iconPath = stateIconPath(stateObj);
+
           const state = computeStateDisplay(
             this.hass!.localize,
             stateObj,
@@ -82,7 +90,7 @@ class MoreInfoContent extends LitElement {
           const active = stateActive(stateObj);
 
           const iconStyle = styleMap({
-            "--icon-color":
+            "--ha-chip-icon-color":
               color && active
                 ? `rgb(var(--rgb-state-${color}-color))`
                 : undefined,
@@ -91,14 +99,17 @@ class MoreInfoContent extends LitElement {
           const name = stateObj.attributes.friendly_name ?? "";
 
           return html`
-            <button
+            <ha-chip
+              outline
+              role="button"
               type="button"
-              class="chip"
               @click=${this._handleChipClick}
+              @keydown=${this._handleChipClick}
               .entityId=${stateObj.entity_id}
               aria-label=${name}
               .title=${name}
               style=${iconStyle}
+              hasIcon
             >
               ${icon
                 ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
@@ -106,7 +117,7 @@ class MoreInfoContent extends LitElement {
                     <ha-svg-icon slot="icon" .path=${iconPath}></ha-svg-icon>
                   `}
               ${state}
-            </button>
+            </ha-chip>
           `;
         })}
       </div>
@@ -126,24 +137,13 @@ class MoreInfoContent extends LitElement {
       .container > * {
         margin: 4px;
       }
-      .chip {
-        border: 1px solid var(--secondary-text-color);
-        border-radius: 8px;
+      ha-chip {
         cursor: pointer;
-        background: none;
-        color: var(--primary-text-color);
-        padding: 6px 16px 6px 8px;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        --icon-color: rgb(var(--rgb-state-default-color));
+        --ha-chip-icon-color: rgb(var(--rgb-state-default-color));
       }
-      .chip ha-icon,
-      .chip ha-svg-icon {
-        color: var(--icon-color);
+      ha-chip ha-icon,
+      ha-chip ha-svg-icon {
         pointer-events: none;
-        --mdc-icon-size: 18px;
-        color: var(--icon-color);
       }
     `;
   }
@@ -151,6 +151,6 @@ class MoreInfoContent extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "more-info-related-info": MoreInfoContent;
+    "ha-more-info-device-entities-shortcuts": MoreInfoDevicesEntitiesShortcuts;
   }
 }

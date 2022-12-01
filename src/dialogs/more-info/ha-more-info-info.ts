@@ -13,9 +13,9 @@ import {
   DOMAINS_NO_INFO,
   DOMAINS_WITH_MORE_INFO,
 } from "./const";
+import "./ha-more-info-device-entities-shortcuts";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
-import "./more-info-related-info";
 
 @customElement("ha-more-info-info")
 export class MoreInfoInfo extends LitElement {
@@ -71,10 +71,10 @@ export class MoreInfoInfo extends LitElement {
             .hass=${this.hass}
             .entityId=${this.entityId}
           ></ha-more-info-logbook>`}
-      <more-info-content
+      <ha-more-info-device-entities-shortcuts
         .stateObj=${stateObj}
         .hass=${this.hass}
-      ></more-info-content>
+      ></ha-more-info-device-entities-shortcuts>
       <more-info-related-info .stateObj=${stateObj} .hass=${this.hass}>
       </more-info-related-info>
     `;

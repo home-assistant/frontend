@@ -9,6 +9,7 @@ import {
   unsafeCSS,
 } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 
 @customElement("ha-chip")
 export class HaChip extends LitElement {
@@ -18,9 +19,17 @@ export class HaChip extends LitElement {
 
   @property({ type: Boolean }) public noText = false;
 
+  @property({ type: Boolean }) public outline = false;
+
   protected render(): TemplateResult {
     return html`
-      <div class="mdc-chip ${this.noText ? "no-text" : ""}">
+      <div
+        class=${classMap({
+          "mdc-chip": true,
+          "no-text": this.noText,
+          outline: this.outline,
+        })}
+      >
         ${this.hasIcon
           ? html`<div class="mdc-chip__icon mdc-chip__icon--leading">
               <slot name="icon"></slot>
@@ -80,6 +89,11 @@ export class HaChip extends LitElement {
 
       :host {
         outline: none;
+      }
+
+      .mdc-chip.outline {
+        background: none;
+        border: 1px solid rgba(var(--rgb-primary-text-color), 0.5);
       }
     `;
   }
