@@ -62,6 +62,11 @@ export class MoreInfoDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  private _relatedEntityClicked(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._entityId = ev.detail.entityId;
+  }
+
   protected shouldShowEditIcon(
     domain: string,
     stateObj: HassEntity | undefined
@@ -160,6 +165,7 @@ export class MoreInfoDialog extends LitElement {
                   <ha-more-info-info
                     .hass=${this.hass}
                     .entityId=${this._entityId}
+                    @related-entity=${this._relatedEntityClicked}
                   ></ha-more-info-info>
                 `
               : this._currTab === "history"

@@ -94,7 +94,7 @@ export class MoreInfoHistory extends LitElement {
         this.entityId
       }&start_date=${startOfYesterday().toISOString()}`;
 
-      this._throttleGetStateHistory();
+      this._getStateHistory();
       return;
     }
 

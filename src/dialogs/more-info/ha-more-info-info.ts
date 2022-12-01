@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { subscribeOne } from "../../common/util/subscribe-one";
@@ -15,6 +15,7 @@ import {
 } from "./const";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
+import "./more-info-related-info";
 
 @customElement("ha-more-info-info")
 export class MoreInfoInfo extends LitElement {
@@ -74,6 +75,8 @@ export class MoreInfoInfo extends LitElement {
         .stateObj=${stateObj}
         .hass=${this.hass}
       ></more-info-content>
+      <more-info-related-info .stateObj=${stateObj} .hass=${this.hass}>
+      </more-info-related-info>
     `;
   }
 
