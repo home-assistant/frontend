@@ -37,7 +37,18 @@ import "./forms/ha-schedule-form";
 import "./forms/ha-timer-form";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
-const HELPERS = {
+type HelperCreators = {
+  [domain in HelperDomain]: (
+    hass: HomeAssistant,
+    // Not properly typed because there is currently a mismatch for this._item between:
+    // 1. Type passed to form should be Helper
+    // 2. Type received by creator should be MutableParams version
+    // The two are not compatible.
+    params: any
+  ) => Promise<Helper>;
+};
+
+const HELPERS: HelperCreators = {
   input_boolean: createInputBoolean,
   input_button: createInputButton,
   input_text: createInputText,
