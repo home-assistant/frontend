@@ -71,7 +71,15 @@ export const fetchCalendarEvents = async (
     );
   });
 
-  const results = await Promise.all(promises);
+  let results;
+  try {
+    results = await Promise.all(promises);
+  } catch (err) {
+    // In case there are invalid calendar entities, we get an HTTP 400 back from the attempted
+    // API fetch call. This should however not stop the frontend (e.g. switching the
+    // selected calendar week or day).
+    return calEvents;
+  }
 
   results.forEach((result, idx) => {
     const cal = calendars[idx];
