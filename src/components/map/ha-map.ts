@@ -23,8 +23,12 @@ import "./ha-entity-marker";
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
 
+export interface HaMapPathPoint {
+  point: LatLngTuple;
+  tooltip: string;
+}
 export interface HaMapPaths {
-  points: LatLngTuple[];
+  points: HaMapPathPoint[];
   color?: string;
   gradualOpacity?: number;
 }
@@ -247,19 +251,21 @@ export class HaMap extends ReactiveElement {
 
         // DRAW point
         this._mapPaths.push(
-          Leaflet!.circleMarker(path.points[pointIndex], {
-            radius: 3,
-            color: path.color || darkPrimaryColor,
-            opacity,
-            fillOpacity: opacity,
-            interactive: false,
-          })
+          Leaflet!
+            .circleMarker(path.points[pointIndex].point, {
+              radius: 3,
+              color: path.color || darkPrimaryColor,
+              opacity,
+              fillOpacity: opacity,
+              interactive: true,
+            })
+            .bindPopup(path.points[pointIndex].tooltip)
         );
 
         // DRAW line between this and next point
         this._mapPaths.push(
           Leaflet!.polyline(
-            [path.points[pointIndex], path.points[pointIndex + 1]],
+            [path.points[pointIndex].point, path.points[pointIndex + 1].point],
             {
               color: path.color || darkPrimaryColor,
               opacity,
@@ -275,13 +281,15 @@ export class HaMap extends ReactiveElement {
           : undefined;
         // DRAW end path point
         this._mapPaths.push(
-          Leaflet!.circleMarker(path.points[pointIndex], {
-            radius: 3,
-            color: path.color || darkPrimaryColor,
-            opacity,
-            fillOpacity: opacity,
-            interactive: false,
-          })
+          Leaflet!
+            .circleMarker(path.points[pointIndex].point, {
+              radius: 3,
+              color: path.color || darkPrimaryColor,
+              opacity,
+              fillOpacity: opacity,
+              interactive: true,
+            })
+            .bindPopup(path.points[pointIndex].tooltip)
         );
       }
       this._mapPaths.forEach((marker) => map.addLayer(marker));

@@ -22,9 +22,13 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
-import "../../../components/map/ha-map";
+import { HaMapPathPoint } from "../../../components/map/ha-map";
 import type { HaMap, HaMapPaths } from "../../../components/map/ha-map";
 import { getColorByIndex } from "../../../common/color/colors";
+import {
+  formatTime,
+  formatTimeWeekday,
+} from "../../../common/datetime/format_time";
 
 const MINUTE = 60000;
 
@@ -268,22 +272,32 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
       const paths: HaMapPaths[] = [];
 
+      const todayString = new Date().toDateString();
+
       for (const entityStates of history) {
         if (entityStates?.length <= 1) {
           continue;
         }
         // filter location data from states and remove all invalid locations
         const points = entityStates.reduce(
-          (accumulator: LatLngTuple[], entityState) => {
+          (accumulator: HaMapPathPoint[], entityState) => {
             const latitude = entityState.attributes.latitude;
             const longitude = entityState.attributes.longitude;
             if (latitude && longitude) {
-              accumulator.push([latitude, longitude] as LatLngTuple);
+              const p = {} as HaMapPathPoint;
+              p.point = [latitude, longitude] as LatLngTuple;
+              const t = new Date(entityState.last_updated);
+              if (todayString === t.toDateString()) {
+                p.tooltip = formatTime(t, this.hass.locale);
+              } else {
+                p.tooltip = formatTimeWeekday(t, this.hass.locale);
+              }
+              accumulator.push(p);
             }
             return accumulator;
           },
           []
-        ) as LatLngTuple[];
+        ) as HaMapPathPoint[];
 
         paths.push({
           points,
