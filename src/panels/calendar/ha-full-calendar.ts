@@ -278,6 +278,10 @@ export class HAFullCalendar extends LitElement {
   private _createEvent(_info) {
     showCalendarEventEditDialog(this, {
       calendars: this._mutableCalendars,
+      selectedDate:
+        this._activeView === "dayGridWeek" || this._activeView === "dayGridDay"
+          ? this.calendar!.view.activeStart
+          : undefined,
       updated: () => {
         this._fireViewChanged();
       },

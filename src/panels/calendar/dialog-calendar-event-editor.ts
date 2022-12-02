@@ -73,7 +73,15 @@ class DialogCalendarEventEditor extends LitElement {
       }
     } else {
       this._allDay = false;
-      this._dtstart = startOfHour(new Date());
+      // If we have been provided a selected date (e.g. based on the currently displayed
+      // day in a calendar view), use that as the starting value.
+      if (params.selectedDate) {
+        const startingDate = params.selectedDate;
+        startingDate.setHours(startOfHour(new Date()).getHours());
+        this._dtstart = startingDate;
+      } else {
+        this._dtstart = startOfHour(new Date());
+      }
       this._dtend = addHours(this._dtstart, 1);
     }
   }
