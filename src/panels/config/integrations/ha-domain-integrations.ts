@@ -121,7 +121,8 @@ class HaDomainIntegrations extends LitElement {
               }
               return caseInsensitiveStringCompare(
                 a[1].name || domainToName(this.hass.localize, a[0]),
-                b[1].name || domainToName(this.hass.localize, b[0])
+                b[1].name || domainToName(this.hass.localize, b[0]),
+                this.hass.locale.language
               );
             })
             .map(

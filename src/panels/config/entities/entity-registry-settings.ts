@@ -1143,7 +1143,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           domain: entry,
           label: domainToName(localize, entry),
         }))
-        .sort((a, b) => stringCompare(a.label, b.label))
+        .sort((a, b) =>
+          stringCompare(a.label, b.label, this.hass.locale.language)
+        )
   );
 
   private _deviceClassesSorted = memoizeOne(
@@ -1155,7 +1157,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             `ui.dialogs.entity_registry.editor.device_classes.${domain}.${entry}`
           ),
         }))
-        .sort((a, b) => stringCompare(a.label, b.label))
+        .sort((a, b) =>
+          stringCompare(a.label, b.label, this.hass.locale.language)
+        )
   );
 
   static get styles(): CSSResultGroup {

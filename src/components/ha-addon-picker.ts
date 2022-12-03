@@ -80,7 +80,9 @@ class HaAddonPicker extends LitElement {
         const addonsInfo = await fetchHassioAddonsInfo(this.hass);
         this._addons = addonsInfo.addons
           .filter((addon) => addon.version)
-          .sort((a, b) => stringCompare(a.name, b.name));
+          .sort((a, b) =>
+            stringCompare(a.name, b.name, this.hass.locale.language)
+          );
       } else {
         showAlertDialog(this, {
           title: this.hass.localize(

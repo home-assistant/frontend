@@ -273,7 +273,9 @@ class OnboardingCoreConfig extends LitElement {
       "[name=currency]"
     ) as HaTextField;
     curInput.updateComplete.then(() => {
-      curInput.shadowRoot!.appendChild(createCurrencyListEl());
+      curInput.shadowRoot!.appendChild(
+        createCurrencyListEl(this.hass.locale.language)
+      );
       curInput.formElement.setAttribute("list", "currencies");
     });
 
@@ -281,7 +283,9 @@ class OnboardingCoreConfig extends LitElement {
       "[name=country]"
     ) as HaTextField;
     countryInput.updateComplete.then(() => {
-      countryInput.shadowRoot!.appendChild(createCountryListEl());
+      countryInput.shadowRoot!.appendChild(
+        createCountryListEl(this.hass.locale.language)
+      );
       countryInput.formElement.setAttribute("list", "countries");
     });
 
