@@ -1,8 +1,7 @@
-import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatNumber } from "../common/number/format_number";
-import { CLIMATE_PRESET_NONE } from "../data/climate";
+import { ClimateEntity, CLIMATE_PRESET_NONE } from "../data/climate";
 import { isUnavailableState } from "../data/entity";
 import type { HomeAssistant } from "../types";
 
@@ -10,7 +9,7 @@ import type { HomeAssistant } from "../types";
 class HaClimateState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj!: HassEntity;
+  @property({ attribute: false }) public stateObj!: ClimateEntity;
 
   protected render(): TemplateResult {
     const currentStatus = this._computeCurrentStatus();

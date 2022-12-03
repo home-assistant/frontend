@@ -2,6 +2,7 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { TranslationDict } from "../types";
 
 export type HvacMode =
   | "off"
@@ -14,7 +15,12 @@ export type HvacMode =
 
 export const CLIMATE_PRESET_NONE = "none";
 
-export type HvacAction = "off" | "heating" | "cooling" | "drying" | "idle";
+type ClimateAttributes = TranslationDict["state_attributes"]["climate"];
+export type HvacAction = keyof ClimateAttributes["hvac_action"];
+export type FanMode = keyof ClimateAttributes["fan_mode"];
+export type PresetMode =
+  | keyof ClimateAttributes["preset_mode"]
+  | typeof CLIMATE_PRESET_NONE;
 
 export type ClimateEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
@@ -34,10 +40,10 @@ export type ClimateEntity = HassEntityBase & {
     target_humidity_high?: number;
     min_humidity?: number;
     max_humidity?: number;
-    fan_mode?: string;
-    fan_modes?: string[];
-    preset_mode?: string;
-    preset_modes?: string[];
+    fan_mode?: FanMode;
+    fan_modes?: FanMode[];
+    preset_mode?: PresetMode;
+    preset_modes?: PresetMode[];
     swing_mode?: string;
     swing_modes?: string[];
     aux_heat?: "on" | "off";
