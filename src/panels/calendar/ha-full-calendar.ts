@@ -380,7 +380,7 @@ export class HAFullCalendar extends LitElement {
         }
 
         a {
-          color: var(--primary-text-color);
+          color: var(--primary-color);
         }
 
         .controls {
@@ -449,9 +449,10 @@ export class HAFullCalendar extends LitElement {
         }
 
         th.fc-col-header-cell.fc-day {
-          color: var(--secondary-text-color);
+          background-color: var(--table-header-background-color);
+          color: var(--primary-text-color);
           font-size: 11px;
-          font-weight: 400;
+          font-weight: bold;
           text-transform: uppercase;
         }
 
