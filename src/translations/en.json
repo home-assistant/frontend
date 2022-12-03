@@ -666,7 +666,8 @@
               "daily": "days"
             }
           },
-          "summary": "Summary"
+          "summary": "Summary",
+          "description": "Description"
         }
       },
       "attributes": {
