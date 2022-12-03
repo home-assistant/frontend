@@ -216,8 +216,11 @@ class HaScheduleForm extends LitElement {
       }
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
-        // Add 7 to 0 because we start the calendar on Monday
-        const distance = i - baseDay + (i === 0 ? 7 : 0);
+        // Add 7 to 0 because we start the calendar on Monday, except when the locale says otherwise (firstWeekdayIndex() != 1)
+        const distance =
+          i -
+          baseDay +
+          (i === 0 && firstWeekdayIndex(this.hass.locale) === 1 ? 7 : 0);
 
         const start = new Date();
         start.setDate(start.getDate() + distance);
