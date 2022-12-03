@@ -1,5 +1,6 @@
 import {
   mdiClockOutline,
+  mdiFan,
   mdiFire,
   mdiPower,
   mdiSnowflake,
@@ -11,6 +12,7 @@ import { ComputeBadgeFunction } from "./tile-badge";
 export const CLIMATE_HVAC_ACTION_COLORS: Record<HvacAction, string> = {
   cooling: "var(--rgb-state-climate-cool-color)",
   drying: "var(--rgb-state-climate-dry-color)",
+  fan: "var(--rgb-state-climate-fan-only-color)",
   heating: "var(--rgb-state-climate-heat-color)",
   idle: "var(--rgb-state-climate-idle-color)",
   off: "var(--rgb-state-climate-off-color)",
@@ -19,6 +21,7 @@ export const CLIMATE_HVAC_ACTION_COLORS: Record<HvacAction, string> = {
 export const CLIMATE_HVAC_ACTION_ICONS: Record<HvacAction, string> = {
   cooling: mdiSnowflake,
   drying: mdiWaterPercent,
+  fan: mdiFan,
   heating: mdiFire,
   idle: mdiClockOutline,
   off: mdiPower,
