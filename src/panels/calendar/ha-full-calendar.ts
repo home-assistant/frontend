@@ -442,6 +442,7 @@ export class HAFullCalendar extends LitElement {
 
         .fc-theme-standard .fc-scrollgrid {
           border: 1px solid var(--divider-color);
+          border-radius: 4px;
         }
 
         .fc-scrollgrid-section-header td {
