@@ -28,7 +28,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { getSignedPath } from "../../data/auth";
-import { UNAVAILABLE_STATES } from "../../data/entity";
+import { isUnavailableState } from "../../data/entity";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseMediaPlayer,
@@ -248,7 +248,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           });
         } else if (
           err.code === "entity_not_found" &&
-          UNAVAILABLE_STATES.includes(this.hass.states[this.entityId]?.state)
+          isUnavailableState(this.hass.states[this.entityId]?.state)
         ) {
           this._setError({
             message: this.hass.localize(

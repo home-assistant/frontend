@@ -13,7 +13,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/entity/state-badge";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import {
   getSecondaryWeatherAttribute,
@@ -114,7 +114,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
       >
         <div>
-          ${UNAVAILABLE_STATES.includes(stateObj.state) ||
+          ${isUnavailableState(stateObj.state) ||
           stateObj.attributes.temperature === undefined ||
           stateObj.attributes.temperature === null
             ? computeStateDisplay(
