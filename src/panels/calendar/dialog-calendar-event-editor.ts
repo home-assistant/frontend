@@ -16,6 +16,7 @@ import {
 } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import { showToast } from "../../util/toast";
 import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
@@ -259,6 +260,11 @@ class DialogCalendarEventEditor extends LitElement {
     this._dtstart = new Date(
       ev.detail.value + "T" + this._dtstart!.toISOString().split("T")[1]
     );
+
+    // Prevent that the end date can be before the start date
+    if (this._dtend < this._dtstart) {
+      this._endDateChanged(ev);
+    }
   }
 
   private _endDateChanged(ev: CustomEvent) {
@@ -268,9 +274,23 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private _startTimeChanged(ev: CustomEvent) {
+    // Store previous event duration
+    const durationMinutes = (this._dtend - this._dtstart) / (60 * 1000);
+    const durationHours = durationMinutes / 60;
+
     this._dtstart = new Date(
       this._dtstart!.toISOString().split("T")[0] + "T" + ev.detail.value
     );
+
+    // Prevent that the end time can be before the start time. Try to keep the
+    // duration the same.
+    if (this._dtend <= this._dtstart) {
+      const newEnd = new Date(this._dtstart);
+      newEnd.setHours(newEnd.getHours() + durationHours);
+      newEnd.setMinutes(newEnd.getMinutes() + (durationMinutes % 60));
+      ev.detail.value = newEnd.toTimeString().substring(0, 8);
+      this._endTimeChanged(ev);
+    }
   }
 
   private _endTimeChanged(ev: CustomEvent) {
@@ -308,6 +328,24 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private async _createEvent() {
+    if (!this._summary || !this._calendarId) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.components.calendar.event.not_all_required_fields"
+        ),
+      });
+      return;
+    }
+
+    if (this._dtend <= this._dtstart) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.components.calendar.event.invalid_duration"
+        ),
+      });
+      return;
+    }
+
     this._submitting = true;
     try {
       await createCalendarEvent(
