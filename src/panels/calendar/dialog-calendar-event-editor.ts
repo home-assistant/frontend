@@ -262,7 +262,7 @@ class DialogCalendarEventEditor extends LitElement {
     );
 
     // Prevent that the end date can be before the start date
-    if (this._dtend < this._dtstart) {
+    if (this._dtend! < this._dtstart!) {
       this._endDateChanged(ev);
     }
   }
@@ -275,8 +275,9 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _startTimeChanged(ev: CustomEvent) {
     // Store previous event duration
-    const durationMinutes = (this._dtend - this._dtstart) / (60 * 1000);
-    const durationHours = durationMinutes / 60;
+    const durationMinutes =
+      this._dtend!.getMinutes() - this._dtstart!.getMinutes();
+    const durationHours = this._dtend!.getHours() - this._dtstart!.getHours();
 
     this._dtstart = new Date(
       this._dtstart!.toISOString().split("T")[0] + "T" + ev.detail.value
@@ -284,7 +285,7 @@ class DialogCalendarEventEditor extends LitElement {
 
     // Prevent that the end time can be before the start time. Try to keep the
     // duration the same.
-    if (this._dtend <= this._dtstart) {
+    if (this._dtend! <= this._dtstart!) {
       const newEnd = new Date(this._dtstart);
       newEnd.setHours(newEnd.getHours() + durationHours);
       newEnd.setMinutes(newEnd.getMinutes() + (durationMinutes % 60));
@@ -337,7 +338,7 @@ class DialogCalendarEventEditor extends LitElement {
       return;
     }
 
-    if (this._dtend <= this._dtstart) {
+    if (this._dtend! <= this._dtstart!) {
       showToast(this, {
         message: this.hass.localize(
           "ui.components.calendar.event.invalid_duration"
