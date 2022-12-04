@@ -129,6 +129,8 @@ class DialogCalendarEventDetail extends LitElement {
 
   private _renderRruleAsText(value: string) {
     try {
+      // From the backend we get "BY_WEEKDAY" section, which however cannot be read in via RRule.fromString().
+      // So we first convert it to an RFC 5545 "BYDAY" value, which then works fine.
       const badWeekdayPartExp = new RegExp("BY_WEEKDAY(.*)[;+|\\S]");
       const badWeekdayPartRes = value.match(badWeekdayPartExp);
 
@@ -158,7 +160,7 @@ class DialogCalendarEventDetail extends LitElement {
         return html`<div id="text">${readableText}</div>`;
       }
 
-      return html`<div id="text">Cannot convert rule</div>`;
+      return html`<div id="text">Cannot convert recurrence rule</div>`;
     } catch (e) {
       return "Error while processing the rule";
     }
