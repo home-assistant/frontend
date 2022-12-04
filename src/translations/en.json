@@ -685,7 +685,8 @@
             "or": "or",
             "at": "at",
             "last": "last",
-            "timers": "times"
+            "time": "time",
+            "times": "times"
           },
           "summary": "Summary"
         }
