@@ -83,7 +83,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property() public identifier?: string;
 
-  @property({ type: Boolean }) public isSingleDevice = false;
+  @property({ type: Boolean }) public showNames = true;
 
   @property({ type: Boolean }) public chunked = false;
 
@@ -175,8 +175,7 @@ export class StateHistoryChartTimeline extends LitElement {
             drawTicks: false,
           },
           ticks: {
-            display:
-              this.chunked || !this.isSingleDevice || this.data.length !== 1,
+            display: this.chunked || this.showNames,
           },
           afterSetDimensions: (y) => {
             y.maxWidth = y.chart.width * 0.18;
