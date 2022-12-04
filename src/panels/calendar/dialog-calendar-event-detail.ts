@@ -3,8 +3,13 @@ import { mdiCalendarClock, mdiClose } from "@mdi/js";
 import { addDays, isSameDay } from "date-fns/esm";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
-import { RRule } from "rrule";
-import { formatDate } from "../../common/datetime/format_date";
+import memoizeOne from "memoize-one";
+import { RRule, Weekday } from "rrule";
+import {
+  formatDate,
+  formatDateMonth,
+  formatDateWeekday,
+} from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -16,6 +21,7 @@ import {
   CalendarEventMutableParams,
   deleteCalendarEvent,
 } from "../../data/calendar";
+import { FrontendLocaleData } from "../../data/translation";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
@@ -122,15 +128,80 @@ class DialogCalendarEventDetail extends LitElement {
   }
 
   private _renderRruleAsText(value: string) {
-    // TODO: Make sure this handles translations
     try {
-      const readableText =
-        value === "" ? "" : RRule.fromString(`RRULE:${value}`).toText();
-      return html`<div id="text">${readableText}</div>`;
+      const badWeekdayPartExp = new RegExp("BY_WEEKDAY(.*)[;+|\\S]");
+      const badWeekdayPartRes = value.match(badWeekdayPartExp);
+
+      if (badWeekdayPartRes) {
+        const weekdaysExp = new RegExp("'([A-Z]+)'", "g");
+        const days = badWeekdayPartRes[0].match(weekdaysExp);
+        value = value.replace(
+          badWeekdayPartRes[0],
+          `BYDAY=${days?.toString().replaceAll("'", "")}`
+        );
+      }
+
+      const rule = RRule.fromString(`RRULE:${value}`);
+      if (rule.isFullyConvertibleToText()) {
+        const readableText =
+          value === ""
+            ? ""
+            : RRule.fromString(`RRULE:${value}`).toText(
+                this._translateRruleElement.bind(this),
+                {
+                  dayNames: this._getDayNames(this.hass.locale),
+                  monthNames: this._getMonthNames(this.hass.locale),
+                  tokens: {},
+                },
+                this._formatDate.bind(this)
+              );
+        return html`<div id="text">${readableText}</div>`;
+      }
+
+      return html`<div id="text">Cannot convert rule</div>`;
     } catch (e) {
-      return "";
+      return "Error while processing the rule";
     }
   }
+
+  private _translateRruleElement(id: string | number | Weekday): string {
+    if (typeof id === "string") {
+      return this.hass.localize(`ui.components.calendar.event.rrule.${id}`);
+    }
+
+    return "";
+  }
+
+  private _formatDate(year: number, month: string, day: number): string {
+    if (!year || !month || !day) {
+      return "";
+    }
+
+    // Build date so we can then format it
+    const date = new Date();
+    date.setFullYear(year);
+    // As input we already get the localized month name, so we now unfortuantely
+    // need to convert it back to something Date can work with.
+    date.setMonth(
+      new Date(
+        Date.UTC(2012, this._getMonthNames(this.hass.locale).indexOf(month))
+      ).getMonth()
+    );
+    date.setDate(day);
+    return formatDate(date, this.hass.locale);
+  }
+
+  private _getDayNames = memoizeOne((locale: FrontendLocaleData): string[] =>
+    [...Array(7).keys()].map((d) =>
+      formatDateWeekday(new Date(Date.UTC(2023, 0, d + 1)), locale)
+    )
+  );
+
+  private _getMonthNames = memoizeOne((locale: FrontendLocaleData): string[] =>
+    [...Array(12).keys()].map((m) =>
+      formatDateMonth(new Date(Date.UTC(2021, m)), locale)
+    )
+  );
 
   private _formatDateRange() {
     const start = new Date(this._data!.dtstart);
