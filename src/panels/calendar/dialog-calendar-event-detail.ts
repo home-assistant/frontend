@@ -129,20 +129,6 @@ class DialogCalendarEventDetail extends LitElement {
 
   private _renderRruleAsText(value: string) {
     try {
-      // From the backend we get "BY_WEEKDAY" section, which however cannot be read in via RRule.fromString().
-      // So we first convert it to an RFC 5545 "BYDAY" value, which then works fine.
-      const badWeekdayPartExp = new RegExp("BY_WEEKDAY(.*)[;+|\\S]");
-      const badWeekdayPartRes = value.match(badWeekdayPartExp);
-
-      if (badWeekdayPartRes) {
-        const weekdaysExp = new RegExp("'([A-Z]+)'", "g");
-        const days = badWeekdayPartRes[0].match(weekdaysExp);
-        value = value.replace(
-          badWeekdayPartRes[0],
-          `BYDAY=${days?.toString().replace(/'/g, "")}`
-        );
-      }
-
       const rule = RRule.fromString(`RRULE:${value}`);
       if (rule.isFullyConvertibleToText()) {
         const readableText =
