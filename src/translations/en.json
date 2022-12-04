@@ -668,30 +668,6 @@
               "daily": "days"
             }
           },
-          "rrule": {
-            "every": "every",
-            "years": "years",
-            "year": "year",
-            "months": "months",
-            "month": "month",
-            "weeks": "weeks",
-            "week": "week",
-            "weekdays": "weekdays",
-            "weekday": "weekday",
-            "days": "days",
-            "day": "day",
-            "until": "until",
-            "for": "for",
-            "in": "in",
-            "on": "on",
-            "on the": "on the",
-            "and": "and",
-            "or": "or",
-            "at": "at",
-            "last": "last",
-            "time": "time",
-            "times": "times"
-          },
           "summary": "Summary"
         }
       },
