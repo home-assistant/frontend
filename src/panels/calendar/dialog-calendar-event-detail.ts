@@ -139,7 +139,7 @@ class DialogCalendarEventDetail extends LitElement {
         const days = badWeekdayPartRes[0].match(weekdaysExp);
         value = value.replace(
           badWeekdayPartRes[0],
-          `BYDAY=${days?.toString().replaceAll("'", "")}`
+          `BYDAY=${days?.toString().replace(/'/g, "")}`
         );
       }
 
