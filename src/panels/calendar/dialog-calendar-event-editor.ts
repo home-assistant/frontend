@@ -257,13 +257,27 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private _startDateChanged(ev: CustomEvent) {
+    // Store previous event duration
+    const durationDays = this._dtend!.getDay() - this._dtstart!.getDay();
+    const durationMinutes =
+      this._dtend!.getMinutes() - this._dtstart!.getMinutes();
+    const durationHours = this._dtend!.getHours() - this._dtstart!.getHours();
+
     this._dtstart = new Date(
       ev.detail.value + "T" + this._dtstart!.toISOString().split("T")[1]
     );
 
-    // Prevent that the end date can be before the start date
-    if (this._dtend! < this._dtstart!) {
+    // Prevent that the end time can be before the start time. Try to keep the
+    // duration the same.
+    if (this._dtend! <= this._dtstart!) {
+      const newEnd = new Date(this._dtstart);
+      newEnd.setDate(newEnd.getDate() + durationDays);
+      newEnd.setHours(newEnd.getHours() + durationHours);
+      newEnd.setMinutes(newEnd.getMinutes() + (durationMinutes % 60));
+      ev.detail.value = newEnd.toISOString().split("T")[0];
       this._endDateChanged(ev);
+      ev.detail.value = newEnd.toISOString().split("T")[1];
+      this._endTimeChanged(ev);
     }
   }
 
@@ -289,7 +303,9 @@ class DialogCalendarEventEditor extends LitElement {
       const newEnd = new Date(this._dtstart);
       newEnd.setHours(newEnd.getHours() + durationHours);
       newEnd.setMinutes(newEnd.getMinutes() + (durationMinutes % 60));
-      ev.detail.value = newEnd.toTimeString().substring(0, 8);
+      ev.detail.value = newEnd.toISOString().split("T")[0];
+      this._endDateChanged(ev);
+      ev.detail.value = newEnd.toISOString().split("T")[1];
       this._endTimeChanged(ev);
     }
   }
