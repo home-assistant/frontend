@@ -308,6 +308,10 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private async _createEvent() {
+    if (!this._summary || !this._calendarId) {
+      return;
+    }
+
     this._submitting = true;
     try {
       await createCalendarEvent(
