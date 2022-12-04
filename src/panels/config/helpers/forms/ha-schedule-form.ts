@@ -208,7 +208,10 @@ class HaScheduleForm extends LitElement {
   private get _events() {
     const events: any[] = [];
     const currentDay = new Date().getDay();
-    const baseDay = currentDay === 0 ? 7 : currentDay;
+    const baseDay =
+      currentDay === 0 && firstWeekdayIndex(this.hass.locale) === 1
+        ? 7
+        : currentDay;
 
     for (const [i, day] of weekdays.entries()) {
       if (!this[`_${day}`].length) {
