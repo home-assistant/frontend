@@ -668,6 +668,8 @@
           },
           "rrule": {
             "every": "every",
+            "years": "years",
+            "year": "year",
             "months": "months",
             "month": "month",
             "weeks": "weeks",
