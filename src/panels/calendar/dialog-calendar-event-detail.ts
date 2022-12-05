@@ -3,18 +3,17 @@ import { mdiCalendarClock, mdiClose } from "@mdi/js";
 import { addDays, isSameDay } from "date-fns/esm";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { RRule, Weekday } from "rrule";
 import {
   formatDate,
-  formatDateMonth,
-  formatDateWeekday,
 } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { isDate } from "../../common/string/is_date";
+import { dayNames } from "../../common/translations/day_names";
+import { monthNames } from "../../common/translations/month_names";
 import "../../components/entity/state-info";
 import "../../components/ha-date-input";
 import "../../components/ha-time-input";
@@ -22,7 +21,6 @@ import {
   CalendarEventMutableParams,
   deleteCalendarEvent,
 } from "../../data/calendar";
-import { FrontendLocaleData } from "../../data/translation";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
@@ -146,8 +144,8 @@ class DialogCalendarEventDetail extends LitElement {
             rule.toText(
               this._translateRRuleElement,
               {
-                dayNames: this._getDayNames(this.hass.locale),
-                monthNames: this._getMonthNames(this.hass.locale),
+                dayNames: dayNames(this.hass.locale),
+                monthNames: monthNames(this.hass.locale),
                 tokens: {},
               },
               this._formatDate
@@ -184,24 +182,12 @@ class DialogCalendarEventDetail extends LitElement {
     // mean we get undefined months input in this method here).
     date.setMonth(
       new Date(
-        Date.UTC(2012, this._getMonthNames(this.hass.locale).indexOf(month))
+        Date.UTC(2012, monthNames(this.hass.locale).indexOf(month))
       ).getMonth()
     );
     date.setDate(day);
     return formatDate(date, this.hass.locale);
   };
-
-  private _getDayNames = memoizeOne((locale: FrontendLocaleData): string[] =>
-    [...Array(7).keys()].map((d) =>
-      formatDateWeekday(new Date(Date.UTC(2023, 0, d + 1)), locale)
-    )
-  );
-
-  private _getMonthNames = memoizeOne((locale: FrontendLocaleData): string[] =>
-    [...Array(12).keys()].map((m) =>
-      formatDateMonth(new Date(Date.UTC(2021, m)), locale)
-    )
-  );
 
   private _formatDateRange() {
     const start = new Date(this._data!.dtstart);
