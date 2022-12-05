@@ -2,16 +2,22 @@ import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatTime } from "../../../../../common/datetime/format_time";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-select";
+import { formatTime } from "../../../../../common/datetime/format_time";
 import { MQTTMessage, subscribeMQTTTopic } from "../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../types";
+import "@material/mwc-list/mwc-list-item";
+
+const qosLevel = ["0", "1", "2"];
 
 @customElement("mqtt-subscribe-card")
 class MqttSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _topic = "";
+
+  @state() private _qos = "0";
 
   @state() private _subscribed?: () => void;
 
@@ -46,6 +52,15 @@ class MqttSubscribeCard extends LitElement {
             .value=${this._topic}
             @value-changed=${this._valueChanged}
           ></paper-input>
+          <ha-select
+            .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
+            .disabled=${this._subscribed !== undefined}
+            .value=${this._qos}
+            @selected=${this._handleQos}
+            >${qosLevel.map(
+              (qos) => html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
+            )}
+          </ha-select>
           <mwc-button
             .disabled=${this._topic === ""}
             @click=${this._handleSubmit}
@@ -86,6 +101,13 @@ class MqttSubscribeCard extends LitElement {
     this._topic = ev.detail.value;
   }
 
+  private _handleQos(ev: CustomEvent): void {
+    const newValue = (ev.target! as any).value;
+    if (newValue >= 0 && newValue !== this._qos) {
+      this._qos = newValue;
+    }
+  }
+
   private async _handleSubmit(): Promise<void> {
     if (this._subscribed) {
       this._subscribed();
@@ -94,6 +116,7 @@ class MqttSubscribeCard extends LitElement {
       this._subscribed = await subscribeMQTTTopic(
         this.hass!,
         this._topic,
+        parseInt(this._qos),
         (message) => this._handleMessage(message)
       );
     }
