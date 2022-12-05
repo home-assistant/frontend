@@ -1,21 +1,12 @@
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { any, assert, object, optional, string } from "superstruct";
+import { assert } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
-import { entityIdOrAll } from "../../../../../common/structs/is-entity-id";
 import "../../../../../components/ha-service-control";
-import { ServiceAction } from "../../../../../data/script";
+import { ServiceAction, serviceActionStruct } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
-
-const actionStruct = object({
-  alias: optional(string()),
-  service: optional(string()),
-  entity_id: optional(entityIdOrAll()),
-  target: optional(any()),
-  data: optional(any()),
-});
 
 @customElement("ha-automation-action-service")
 export class HaServiceAction extends LitElement implements ActionElement {
@@ -38,7 +29,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
       return;
     }
     try {
-      assert(this.action, actionStruct);
+      assert(this.action, serviceActionStruct);
     } catch (err: any) {
       fireEvent(this, "ui-mode-not-available", err);
       return;
