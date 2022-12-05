@@ -5,7 +5,7 @@
 build
 hass_frontend/*
 dist
-translations
+translations/*
 
 # yarn
 .yarn/*
