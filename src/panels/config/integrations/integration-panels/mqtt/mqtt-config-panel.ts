@@ -7,9 +7,10 @@ import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import { HomeAssistant } from "../../../../../types";
 import "./mqtt-subscribe-card";
+
+const qosLevel = ["0", "1", "2"];
 
 @customElement("mqtt-config-panel")
 class HaPanelDevMqtt extends LitElement {
@@ -64,10 +65,7 @@ class HaPanelDevMqtt extends LitElement {
                 .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
                 .value=${this.qos}
                 @selected=${this._handleQos}
-                @closed=${stopPropagation}
-                fixedMenuPosition
-                naturalMenuWidth
-                >${["0", "1", "2"].map(
+                >${qosLevel.map(
                   (qos) =>
                     html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
                 )}
