@@ -155,9 +155,6 @@ const ENTITIES: HassEntity[] = [
   // Fan
   createEntity("fan.off", "off"),
   createEntity("fan.on", "on"),
-  // Timer
-  createEntity("timer.off", "off"),
-  createEntity("timer.on", "on"),
   // Humidifier
   createEntity("humidifier.off", "off"),
   createEntity("humidifier.on", "on"),
