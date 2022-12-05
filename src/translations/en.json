@@ -2579,8 +2579,6 @@
               "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
               "default_language": "Default language to use",
               "default_gender": "Default gender to use",
-              "male": "Male",
-              "female": "Female",
               "try": "Try",
               "dialog": {
                 "header": "Try Text to Speech",
