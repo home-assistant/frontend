@@ -405,7 +405,13 @@ export const cleanupMediaTitle = (title?: string): string | undefined => {
   }
 
   const index = title.indexOf("?authSig=");
-  return index > 0 ? title.slice(0, index) : title;
+  let cleanTitle = index > 0 ? title.slice(0, index) : title;
+
+  if (cleanTitle.startsWith("http")) {
+    cleanTitle = decodeURIComponent(cleanTitle.split("/").pop()!);
+  }
+
+  return cleanTitle;
 };
 
 /**
