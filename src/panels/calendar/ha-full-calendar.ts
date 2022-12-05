@@ -29,28 +29,29 @@ import {
 } from "lit";
 import { property, state } from "lit/decorators";
 import memoize from "memoize-one";
+import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import { LocalizeFunc } from "../../common/translations/localize";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-button-toggle-group";
 import "../../components/ha-fab";
-import "../../components/ha-icon-button-prev";
 import "../../components/ha-icon-button-next";
+import "../../components/ha-icon-button-prev";
+import type {
+  Calendar as CalendarData,
+  CalendarEvent,
+} from "../../data/calendar";
+import { CalendarEntityFeature } from "../../data/calendar";
 import { haStyle } from "../../resources/styles";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 import type {
   CalendarViewChanged,
   FullCalendarView,
   HomeAssistant,
   ToggleButton,
 } from "../../types";
-import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
-import { supportsFeature } from "../../common/entity/supports-feature";
 import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
-import type {
-  Calendar as CalendarData,
-  CalendarEvent,
-} from "../../data/calendar";
-import { CalendarEntityFeature } from "../../data/calendar";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
 
 declare global {
@@ -107,7 +108,10 @@ export class HAFullCalendar extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const viewToggleButtons = this._viewToggleButtons(this.views);
+    const viewToggleButtons = this._viewToggleButtons(
+      this.views,
+      this.hass.localize
+    );
 
     return html`
       ${this.calendar
@@ -326,32 +330,32 @@ export class HAFullCalendar extends LitElement {
     });
   }
 
-  private _viewToggleButtons = memoize((views) => {
+  private _viewToggleButtons = memoize((views, localize: LocalizeFunc) => {
     if (!this._viewButtons) {
       this._viewButtons = [
         {
-          label: this.hass.localize(
+          label: localize(
             "ui.panel.lovelace.editor.card.calendar.views.dayGridMonth"
           ),
           value: "dayGridMonth",
           iconPath: mdiViewModule,
         },
         {
-          label: this.hass.localize(
+          label: localize(
             "ui.panel.lovelace.editor.card.calendar.views.dayGridWeek"
           ),
           value: "dayGridWeek",
           iconPath: mdiViewWeek,
         },
         {
-          label: this.hass.localize(
+          label: localize(
             "ui.panel.lovelace.editor.card.calendar.views.dayGridDay"
           ),
           value: "dayGridDay",
           iconPath: mdiViewDay,
         },
         {
-          label: this.hass.localize(
+          label: localize(
             "ui.panel.lovelace.editor.card.calendar.views.listWeek"
           ),
           value: "listWeek",
