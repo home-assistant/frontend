@@ -240,6 +240,9 @@ export class HaMap extends ReactiveElement {
         baseOpacity = 1 - path.gradualOpacity;
       }
 
+      const tooltipOptions = {
+        direction: "top",
+      };
       for (
         let pointIndex = 0;
         pointIndex < path.points.length - 1;
@@ -259,7 +262,7 @@ export class HaMap extends ReactiveElement {
               fillOpacity: opacity,
               interactive: true,
             })
-            .bindPopup(path.points[pointIndex].tooltip)
+            .bindTooltip(path.points[pointIndex].tooltip, tooltipOptions)
         );
 
         // DRAW line between this and next point
@@ -289,7 +292,7 @@ export class HaMap extends ReactiveElement {
               fillOpacity: opacity,
               interactive: true,
             })
-            .bindPopup(path.points[pointIndex].tooltip)
+            .bindTooltip(path.points[pointIndex].tooltip, tooltipOptions)
         );
       }
       this._mapPaths.forEach((marker) => map.addLayer(marker));
@@ -498,6 +501,14 @@ export class HaMap extends ReactiveElement {
       .leaflet-top,
       .leaflet-bottom {
         z-index: 1 !important;
+      }
+      .leaflet-tooltip {
+        padding: 8px;
+        font-size: 90%;
+        background: rgba(80, 80, 80, 0.9) !important;
+        color: white !important;
+        border-radius: 4px;
+        box-shadow: none !important;
       }
     `;
   }
