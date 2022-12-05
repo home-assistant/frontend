@@ -442,12 +442,12 @@ export class HAFullCalendar extends LitElement {
 
         .fc-theme-standard .fc-scrollgrid {
           border: 1px solid var(--divider-color);
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(--mdc-shape-small, 4px);
         }
 
         .fc-theme-standard td {
-          border-bottom-left-radius: var(--ha-card-border-radius, 12px);
-          border-bottom-right-radius: var(--ha-card-border-radius, 12px);
+          border-bottom-left-radius: var(--mdc-shape-small, 4px);
+          border-bottom-right-radius: var(--mdc-shape-small, 4px);
         }
 
         .fc-scrollgrid-section-header td {
