@@ -29,6 +29,9 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
   const domain = computeDomain(stateObj.entity_id);
 
   switch (domain) {
+    case "automation":
+      return "automation";
+
     case "alarm_control_panel":
       return alarmControlPanelColor(compareState);
 
@@ -73,13 +76,12 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
       return compareState === "above_horizon" ? "sun-day" : "sun-night";
 
     case "switch":
+    case "input_boolean":
       return "switch";
 
     case "alert":
       return "alert";
 
-    case "input_boolean":
-    case "automation":
     case "calendar":
     case "camera":
     case "remote":

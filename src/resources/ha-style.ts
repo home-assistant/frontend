@@ -137,12 +137,13 @@ documentContainer.innerHTML = `<custom-style>
 
       /* rgb state color */
       --rgb-state-default-color: 68, 115, 158;
-      --rgb-state-active-color: var(--rgb-amber-color);
+      --rgb-state-active-color: var(--rgb-primary-color);
       --rgb-state-alarm-armed-color: var(--rgb-red-color);
       --rgb-state-alarm-pending-color: var(--rgb-orange-color);
       --rgb-state-alarm-arming-color: var(--rgb-orange-color);
       --rgb-state-alarm-triggered-color: var(--rgb-red-color);
       --rgb-state-alert-color: var(--rgb-red-color);
+      --rgb-state-automation-color: var(--rgb-amber-color);
       --rgb-state-binary-sensor-color: var(--rgb-primary-color);
       --rgb-state-binary-sensor-alerting-color: var(--rgb-red-color);
       --rgb-state-cover-color: var(--rgb-purple-color);
