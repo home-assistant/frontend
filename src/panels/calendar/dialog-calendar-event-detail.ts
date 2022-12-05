@@ -130,12 +130,13 @@ class DialogCalendarEventDetail extends LitElement {
 
   private _renderRruleAsText(value: string) {
     // TODO: Make sure this handles translations
+    if (!value) {
+      return "";
+    }
     try {
-      const readableText =
-        value === ""
-          ? ""
-          : capitalizeFirstLetter(RRule.fromString(`RRULE:${value}`).toText());
-      return html`<div id="text">${readableText}</div>`;
+      return html`<div id="text">
+        ${capitalizeFirstLetter(RRule.fromString(`RRULE:${value}`).toText())}
+      </div>`;
     } catch (e) {
       return "";
     }
