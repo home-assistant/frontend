@@ -13,6 +13,7 @@ import {
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/state-info";
 import "../../components/ha-date-input";
@@ -92,6 +93,11 @@ class DialogCalendarEventDetail extends LitElement {
               ${this._data!.rrule
                 ? this._renderRruleAsText(this._data.rrule)
                 : ""}
+              ${this._data.description
+                ? html`<br />
+                    <div class="description">${this._data.description}</div>
+                    <br />`
+                : html``}
             </div>
           </div>
 
@@ -114,7 +120,8 @@ class DialogCalendarEventDetail extends LitElement {
                 ${this.hass.localize("ui.components.calendar.event.delete")}
               </mwc-button>
             `
-          : ""}${this._params.canEdit
+          : ""}
+        ${this._params.canEdit
           ? html`<mwc-button
               slot="primaryAction"
               @click=${this._editEvent}
@@ -128,22 +135,26 @@ class DialogCalendarEventDetail extends LitElement {
   }
 
   private _renderRruleAsText(value: string) {
+    // TODO: Make sure this handles translations
+    if (!value) {
+      return "";
+    }
     try {
       const rule = RRule.fromString(`RRULE:${value}`);
       if (rule.isFullyConvertibleToText()) {
-        const readableText =
-          value === ""
-            ? ""
-            : RRule.fromString(`RRULE:${value}`).toText(
-                this._translateRruleElement.bind(this),
-                {
-                  dayNames: this._getDayNames(this.hass.locale),
-                  monthNames: this._getMonthNames(this.hass.locale),
-                  tokens: {},
-                },
-                this._formatDate.bind(this)
-              );
-        return html`<div id="text">${readableText}</div>`;
+        return html`<div id="text">
+          ${capitalizeFirstLetter(
+            rule.toText(
+              this._translateRruleElement,
+              {
+                dayNames: this._getDayNames(this.hass.locale),
+                monthNames: this._getMonthNames(this.hass.locale),
+                tokens: {},
+              },
+              this._formatDate
+            )
+          )}
+        </div>`;
       }
 
       return html`<div id="text">Cannot convert recurrence rule</div>`;
@@ -152,13 +163,13 @@ class DialogCalendarEventDetail extends LitElement {
     }
   }
 
-  private _translateRruleElement = (id: string | number | Weekday) :string => {
+  private _translateRruleElement = (id: string | number | Weekday): string => {
     if (typeof id === "string") {
       return this.hass.localize(`ui.components.calendar.event.rrule.${id}`);
     }
 
     return "";
-  }
+  };
 
   private _formatDate = (year: number, month: string, day: number): string => {
     if (!year || !month || !day) {
@@ -177,7 +188,7 @@ class DialogCalendarEventDetail extends LitElement {
     );
     date.setDate(day);
     return formatDate(date, this.hass.locale);
-  }
+  };
 
   private _getDayNames = memoizeOne((locale: FrontendLocaleData): string[] =>
     [...Array(7).keys()].map((d) =>
@@ -286,13 +297,18 @@ class DialogCalendarEventDetail extends LitElement {
         ha-svg-icon {
           width: 40px;
           margin-right: 8px;
-          margin-inline-end: 8px;
+          margin-inline-end: 16px;
           margin-inline-start: initial;
           direction: var(--direction);
           vertical-align: top;
         }
         .field {
           display: flex;
+        }
+        .description {
+          color: var(--secondary-text-color);
+          max-width: 300px;
+          overflow-wrap: break-word;
         }
       `,
     ];

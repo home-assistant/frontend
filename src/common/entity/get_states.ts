@@ -261,6 +261,11 @@ export const getStates = (
         result.push(...state.attributes.activity_list);
       }
       break;
+    case "sensor":
+      if (!attribute && state.attributes.device_class === "enum") {
+        result.push(...state.attributes.options);
+      }
+      break;
     case "vacuum":
       if (attribute === "fan_speed") {
         result.push(...state.attributes.fan_speed_list);

@@ -15,6 +15,7 @@ import {
   Describe,
   boolean,
 } from "superstruct";
+import { arrayLiteralIncludes } from "../common/array/literal-includes";
 import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
 import {
@@ -28,11 +29,7 @@ import { BlueprintInput } from "./blueprint";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
-
-export const isMaxMode = (
-  mode: typeof MODES[number]
-): mode is typeof MODES_MAX[number] =>
-  MODES_MAX.includes(mode as typeof MODES_MAX[number]);
+export const isMaxMode = arrayLiteralIncludes(MODES_MAX);
 
 export const baseActionStruct = object({
   alias: optional(string()),

@@ -276,8 +276,19 @@ export class HAFullCalendar extends LitElement {
   }
 
   private _createEvent(_info) {
+    // Logic for selectedDate: In week and day view, use the start of the week or the selected day.
+    // If we are in month view, we only use the start of the month, if we are not showing the
+    // current actual month, as for that one the current day is automatically highlighted and
+    // defaulting to a different day in the event creation dialog would be weird.
     showCalendarEventEditDialog(this, {
       calendars: this._mutableCalendars,
+      selectedDate:
+        this._activeView === "dayGridWeek" ||
+        this._activeView === "dayGridDay" ||
+        (this._activeView === "dayGridMonth" &&
+          this.calendar!.view.currentStart.getMonth() !== new Date().getMonth())
+          ? this.calendar!.view.currentStart
+          : undefined,
       updated: () => {
         this._fireViewChanged();
       },

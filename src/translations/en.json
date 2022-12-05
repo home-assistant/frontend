@@ -690,7 +690,8 @@
             "time": "time",
             "times": "times"
           },
-          "summary": "Summary"
+          "summary": "Summary",
+          "description": "Description"
         }
       },
       "attributes": {
