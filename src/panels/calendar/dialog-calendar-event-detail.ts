@@ -91,7 +91,7 @@ class DialogCalendarEventDetail extends LitElement {
             <div class="value">
               ${this._formatDateRange()}<br />
               ${this._data!.rrule
-                ? this._renderRruleAsText(this._data.rrule)
+                ? this._renderRRuleAsText(this._data.rrule)
                 : ""}
               ${this._data.description
                 ? html`<br />
@@ -134,8 +134,7 @@ class DialogCalendarEventDetail extends LitElement {
     `;
   }
 
-  private _renderRruleAsText(value: string) {
-    // TODO: Make sure this handles translations
+  private _renderRRuleAsText(value: string) {
     if (!value) {
       return "";
     }
@@ -145,7 +144,7 @@ class DialogCalendarEventDetail extends LitElement {
         return html`<div id="text">
           ${capitalizeFirstLetter(
             rule.toText(
-              this._translateRruleElement,
+              this._translateRRuleElement,
               {
                 dayNames: this._getDayNames(this.hass.locale),
                 monthNames: this._getMonthNames(this.hass.locale),
@@ -163,7 +162,7 @@ class DialogCalendarEventDetail extends LitElement {
     }
   }
 
-  private _translateRruleElement = (id: string | number | Weekday): string => {
+  private _translateRRuleElement = (id: string | number | Weekday): string => {
     if (typeof id === "string") {
       return this.hass.localize(`ui.components.calendar.event.rrule.${id}`);
     }
@@ -180,7 +179,9 @@ class DialogCalendarEventDetail extends LitElement {
     const date = new Date();
     date.setFullYear(year);
     // As input we already get the localized month name, so we now unfortuantely
-    // need to convert it back to something Date can work with.
+    // need to convert it back to something Date can work with. The already localized
+    // months names are a must in the RRule.Language structure (an empty string[] would
+    // mean we get undefined months input in this method here).
     date.setMonth(
       new Date(
         Date.UTC(2012, this._getMonthNames(this.hass.locale).indexOf(month))
