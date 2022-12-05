@@ -642,6 +642,7 @@
           "all_day": "All Day",
           "start": "Start",
           "end": "End",
+          "not_all_required_fields": "Not all required fields are filled in.",
           "confirm_delete": {
             "delete": "Delete Event",
             "delete_this": "Delete Only This Event",

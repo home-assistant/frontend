@@ -4,9 +4,7 @@ import { addDays, isSameDay } from "date-fns/esm";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { RRule, Weekday } from "rrule";
-import {
-  formatDate,
-} from "../../common/datetime/format_date";
+import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -176,15 +174,11 @@ class DialogCalendarEventDetail extends LitElement {
     // Build date so we can then format it
     const date = new Date();
     date.setFullYear(year);
-    // As input we already get the localized month name, so we now unfortuantely
+    // As input we already get the localized month name, so we now unfortunately
     // need to convert it back to something Date can work with. The already localized
     // months names are a must in the RRule.Language structure (an empty string[] would
     // mean we get undefined months input in this method here).
-    date.setMonth(
-      new Date(
-        Date.UTC(2012, monthNames(this.hass.locale).indexOf(month))
-      ).getMonth()
-    );
+    date.setMonth(monthNames(this.hass.locale).indexOf(month));
     date.setDate(day);
     return formatDate(date, this.hass.locale);
   };
