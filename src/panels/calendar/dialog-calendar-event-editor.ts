@@ -330,6 +330,13 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private async _createEvent() {
+    if (!this._summary || !this._calendarId) {
+      this._error = this.hass.localize(
+        "ui.components.calendar.event.not_all_required_fields"
+      );
+      return;
+    }
+
     this._submitting = true;
     try {
       await createCalendarEvent(
@@ -417,6 +424,10 @@ class DialogCalendarEventEditor extends LitElement {
       css`
         state-info {
           line-height: 40px;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
         }
         ha-textfield,
         ha-textarea {
