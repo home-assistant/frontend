@@ -4,7 +4,7 @@ import { FrontendLocaleData } from "../../data/translation";
 import { formatDateMonth } from "../datetime/format_date";
 
 export const monthNames = memoizeOne((locale: FrontendLocaleData): string[] =>
-  [...Array(12).keys()].map((m) =>
+  Array.from({ length: 12 }, (_, m) => m =>
     formatDateMonth(addMonths(startOfYear(new Date()), m), locale)
   )
 );
