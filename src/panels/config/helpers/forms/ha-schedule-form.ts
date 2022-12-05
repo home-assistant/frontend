@@ -211,6 +211,8 @@ class HaScheduleForm extends LitElement {
     const baseDay =
       currentDay === 0 && firstWeekdayIndex(this.hass.locale) === 1
         ? 7
+        : currentDay === 6 && firstWeekdayIndex(this.hass.locale) === 6
+        ? -1
         : currentDay;
 
     for (const [i, day] of weekdays.entries()) {
@@ -219,11 +221,57 @@ class HaScheduleForm extends LitElement {
       }
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
-        // Add 7 to 0 because we start the calendar on Monday, except when the locale says otherwise (firstWeekdayIndex() != 1)
+        //-----------------------------------------------------------------------------------
+        // Tricky logic, so let's try to explain step by step:
+        //-----------------------------------------------------------------------------------
+        // Simple case: Today is Tuesday and we want to draw an event for Friday
+        // => i is 5 (= Friday) and baseDay is 2 (= Tuesday) => 5 - 2 = 3
+        // => delta is 3, which makes sense since from today's Tuesday's date we need to
+        // move 3 days further to get the date for which to draw our Friday event.
+        //-----------------------------------------------------------------------------------
+        // Simple inverted case: Today is Friday and we want to draw an event for Tuesday
+        // => i is 2 and baseDay is 5 => 2 - 5 = -3 => move 3 days back from today to
+        // reach the previous Tuesday.
+        //-----------------------------------------------------------------------------------
+        // This simple logic works as long as Sunday (= week day 0 in JS) is the week start.
+        // If however we use a different week start (so either Monday or Saturday) things
+        // get more tricky. For now, let's look at the Monday week start. For now also ignore
+        // the situation if today were actually Sunday (so for now we can ignore the logic
+        // some lines above that changes the baseDay value; we will come to that in a bit).
+        //-----------------------------------------------------------------------------------
+        // For this scenario, almost all is the same as before, but the exception is that
+        // when we process an event to be drawn for Sunday (i === 0), but our week start
+        // is set to Monday (firstWeekdayIndex() === 1), we need to move by 6 days to reach
+        // the date of the Sunday after today's Monday. That is where the additional 7 day
+        // distance in the formula come from: 0 - 1 + 7 = 6 days. Without the additional 7
+        // we would end up with the Sunday before (to the "left") of todays' Monday which
+        // is not visible to the user since our rendered week starts on Monday and from
+        // there goes to Sunday at the other end.
+        //-----------------------------------------------------------------------------------
+        // Last final complexity comes when our week is set to start on Monday and today
+        // is Sunday (so the day that we need to shift around). If we wanted to now add
+        // an scheduler event for Sunday and would just use the so far described approach,
+        // we would end up with: 0 - 0 + 7 = 7, so our event would not actually be on the
+        // Sunday rendered in the scheduler, but instead a week off. That is why for that
+        // case, baseDay gets set to 7, so that the formula resolves to: 0 - (-7) + 7 = 0,
+        // so the event stays on the rendered Sunday.
+        //-----------------------------------------------------------------------------------
+        // For the case of the week start being set to Saturday, overall the same logic
+        // applies, but with different values. If we assume that today is Saturday and we
+        // want to add a scheduler event to Saturday, that means for the formula:
+        // 6 - (-1) + (-7) = 0 which is correct since we do not want to move away from
+        // today's date. If today were instead Wednesday and we want to add an event for
+        // Saturday, we would end up with: 6 - 3 + (-7) = -4, which is correct to move
+        // "left" from today's Wednesday to the Saturday rendered as the beginning of the week.
+        //-----------------------------------------------------------------------------------
         const distance =
           i -
           baseDay +
-          (i === 0 && firstWeekdayIndex(this.hass.locale) === 1 ? 7 : 0);
+          (i === 0 && firstWeekdayIndex(this.hass.locale) === 1
+            ? 7
+            : i === 6 && firstWeekdayIndex(this.hass.locale) === 6
+            ? -7
+            : 0);
 
         const start = new Date();
         start.setDate(start.getDate() + distance);
