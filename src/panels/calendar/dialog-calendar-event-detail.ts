@@ -3,13 +3,15 @@ import { mdiCalendarClock, mdiClose } from "@mdi/js";
 import { addDays, isSameDay } from "date-fns/esm";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
-import { RRule } from "rrule";
+import { RRule, Weekday } from "rrule";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { isDate } from "../../common/string/is_date";
+import { dayNames } from "../../common/translations/day_names";
+import { monthNames } from "../../common/translations/month_names";
 import "../../components/entity/state-info";
 import "../../components/ha-date-input";
 import "../../components/ha-time-input";
@@ -85,7 +87,7 @@ class DialogCalendarEventDetail extends LitElement {
             <div class="value">
               ${this._formatDateRange()}<br />
               ${this._data!.rrule
-                ? this._renderRruleAsText(this._data.rrule)
+                ? this._renderRRuleAsText(this._data.rrule)
                 : ""}
               ${this._data.description
                 ? html`<br />
@@ -128,19 +130,58 @@ class DialogCalendarEventDetail extends LitElement {
     `;
   }
 
-  private _renderRruleAsText(value: string) {
-    // TODO: Make sure this handles translations
+  private _renderRRuleAsText(value: string) {
     if (!value) {
       return "";
     }
     try {
-      return html`<div id="text">
-        ${capitalizeFirstLetter(RRule.fromString(`RRULE:${value}`).toText())}
-      </div>`;
+      const rule = RRule.fromString(`RRULE:${value}`);
+      if (rule.isFullyConvertibleToText()) {
+        return html`<div id="text">
+          ${capitalizeFirstLetter(
+            rule.toText(
+              this._translateRRuleElement,
+              {
+                dayNames: dayNames(this.hass.locale),
+                monthNames: monthNames(this.hass.locale),
+                tokens: {},
+              },
+              this._formatDate
+            )
+          )}
+        </div>`;
+      }
+
+      return html`<div id="text">Cannot convert recurrence rule</div>`;
     } catch (e) {
-      return "";
+      return "Error while processing the rule";
     }
   }
+
+  private _translateRRuleElement = (id: string | number | Weekday): string => {
+    if (typeof id === "string") {
+      return this.hass.localize(`ui.components.calendar.event.rrule.${id}`);
+    }
+
+    return "";
+  };
+
+  private _formatDate = (year: number, month: string, day: number): string => {
+    if (!year || !month || !day) {
+      return "";
+    }
+
+    // Build date so we can then format it
+    const date = new Date();
+    date.setFullYear(year);
+    // As input we already get the localized month name, so we now unfortunately
+    // need to convert it back to something Date can work with. The already localized
+    // months names are a must in the RRule.Language structure (an empty string[] would
+    // mean we get undefined months input in this method here).
+    date.setMonth(monthNames(this.hass.locale).indexOf(month));
+    date.setDate(day);
+    return formatDate(date, this.hass.locale);
+  };
 
   private _formatDateRange() {
     const start = new Date(this._data!.dtstart);
