@@ -8,6 +8,7 @@ import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/state-info";
 import "../../components/ha-date-input";
@@ -108,7 +109,8 @@ class DialogCalendarEventDetail extends LitElement {
                 ${this.hass.localize("ui.components.calendar.event.delete")}
               </mwc-button>
             `
-          : ""}${this._params.canEdit
+          : ""}
+        ${this._params.canEdit
           ? html`<mwc-button
               slot="primaryAction"
               @click=${this._editEvent}
@@ -125,7 +127,9 @@ class DialogCalendarEventDetail extends LitElement {
     // TODO: Make sure this handles translations
     try {
       const readableText =
-        value === "" ? "" : RRule.fromString(`RRULE:${value}`).toText();
+        value === ""
+          ? ""
+          : capitalizeFirstLetter(RRule.fromString(`RRULE:${value}`).toText());
       return html`<div id="text">${readableText}</div>`;
     } catch (e) {
       return "";
@@ -227,7 +231,7 @@ class DialogCalendarEventDetail extends LitElement {
         ha-svg-icon {
           width: 40px;
           margin-right: 8px;
-          margin-inline-end: 8px;
+          margin-inline-end: 16px;
           margin-inline-start: initial;
           direction: var(--direction);
           vertical-align: top;
