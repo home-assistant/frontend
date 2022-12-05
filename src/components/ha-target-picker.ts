@@ -18,7 +18,7 @@ import { css, CSSResultGroup, html, LitElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
-import { ensureArray } from "../common/ensure-array";
+import { ensureArray } from "../common/array/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import {
