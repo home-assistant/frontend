@@ -394,12 +394,26 @@ class HaScheduleForm extends LitElement {
           -webkit-user-select: none;
           -ms-user-select: none;
           user-select: none;
+          --fc-border-color: var(--divider-color);
+          --fc-event-border-color: var(--divider-color);
         }
         .fc-scroller {
           overflow-x: visible !important;
         }
         .fc-v-event .fc-event-time {
           white-space: inherit;
+        }
+
+        a {
+          color: inherit !important;
+        }
+
+        th.fc-col-header-cell.fc-day {
+          background-color: var(--table-header-background-color);
+          color: var(--primary-text-color);
+          font-size: 11px;
+          font-weight: bold;
+          text-transform: uppercase;
         }
       `,
     ];
