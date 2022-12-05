@@ -10,12 +10,13 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-alert";
 import "../../components/ha-circular-progress";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
-import type { HaFormSchema } from "../../components/ha-form/types";
 import "../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../components/ha-form/types";
 import "../../components/ha-markdown";
-import "../../components/ha-alert";
+import { autocompleteLoginFields } from "../../data/auth";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
@@ -47,12 +48,14 @@ class StepFlowForm extends LitElement {
           ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
           : ""}
         <ha-form
+          .hass=${this.hass}
           .data=${stepData}
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
-          .schema=${step.data_schema}
+          .schema=${autocompleteLoginFields(step.data_schema)}
           .error=${step.errors}
           .computeLabel=${this._labelCallback}
+          .computeHelper=${this._helperCallback}
           .computeError=${this._errorCallback}
         ></ha-form>
       </div>
@@ -103,12 +106,13 @@ class StepFlowForm extends LitElement {
     const allRequiredInfoFilledIn =
       stepData === undefined
         ? // If no data filled in, just check that any field is required
-          this.step.data_schema.find((field) => !field.optional) === undefined
+          this.step.data_schema.find((field) => field.required) === undefined
         : // If data is filled in, make sure all required fields are
           stepData &&
           this.step.data_schema.every(
             (field) =>
-              field.optional || !["", undefined].includes(stepData![field.name])
+              !field.required ||
+              !["", undefined].includes(stepData![field.name])
           );
 
     if (!allRequiredInfoFilledIn) {
@@ -164,6 +168,9 @@ class StepFlowForm extends LitElement {
   private _labelCallback = (field: HaFormSchema): string =>
     this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, field);
 
+  private _helperCallback = (field: HaFormSchema): string | TemplateResult =>
+    this.flowConfig.renderShowFormStepFieldHelper(this.hass, this.step, field);
+
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);
 
@@ -183,6 +190,11 @@ class StepFlowForm extends LitElement {
         ha-form {
           margin-top: 24px;
           display: block;
+        }
+        h2 {
+          word-break: break-word;
+          padding-inline-end: 72px;
+          direction: var(--direction);
         }
       `,
     ];

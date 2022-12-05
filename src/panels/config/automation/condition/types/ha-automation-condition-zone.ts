@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
@@ -18,7 +18,9 @@ const includeDomains = ["zone"];
 export class HaZoneCondition extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: ZoneCondition;
+  @property({ attribute: false }) public condition!: ZoneCondition;
+
+  @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig() {
     return {
@@ -37,6 +39,7 @@ export class HaZoneCondition extends LitElement {
         .value=${entity_id}
         @value-changed=${this._entityPicked}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         allow-custom-entity
         .entityFilter=${zoneAndLocationFilter}
       ></ha-entity-picker>
@@ -47,6 +50,7 @@ export class HaZoneCondition extends LitElement {
         .value=${zone}
         @value-changed=${this._zonePicked}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         allow-custom-entity
         .includeDomains=${includeDomains}
       ></ha-entity-picker>
@@ -71,6 +75,13 @@ export class HaZoneCondition extends LitElement {
       value: { ...this.condition, zone: ev.detail.value },
     });
   }
+
+  static styles = css`
+    ha-entity-picker:first-child {
+      display: block;
+      margin-bottom: 24px;
+    }
+  `;
 }
 
 declare global {

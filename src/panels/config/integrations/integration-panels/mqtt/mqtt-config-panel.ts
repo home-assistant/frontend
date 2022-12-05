@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
@@ -45,22 +44,26 @@ class HaPanelDevMqtt extends LitElement {
             </div>
           </ha-card>
           <ha-card
-            header=${this.hass.localize(
+            .header=${this.hass.localize(
               "ui.panel.config.mqtt.description_publish"
             )}
           >
             <div class="card-content">
-              <paper-input
-                label=${this.hass.localize("ui.panel.config.mqtt.topic")}
+              <ha-textfield
+                .label=${this.hass.localize("ui.panel.config.mqtt.topic")}
                 .value=${this.topic}
-                @value-changed=${this._handleTopic}
-              ></paper-input>
+                @change=${this._handleTopic}
+              ></ha-textfield>
 
               <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor
                 mode="jinja2"
+                autocomplete-entities
+                autocomplete-icons
+                .hass=${this.hass}
                 .value=${this.payload}
                 @value-changed=${this._handlePayload}
+                dir="ltr"
               ></ha-code-editor>
             </div>
             <div class="card-actions">
@@ -108,7 +111,9 @@ class HaPanelDevMqtt extends LitElement {
       return;
     }
     const configEntryId = searchParams.get("config_entry") as string;
-    const configEntries = await getConfigEntries(this.hass);
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "mqtt",
+    });
     const configEntry = configEntries.find(
       (entry) => entry.entry_id === configEntryId
     );

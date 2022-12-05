@@ -1,12 +1,13 @@
-import { HassEntity } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import {
   computeHistory,
-  fetchRecent,
+  HistoryStates,
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
+  entityIdHistoryNeedsAttributes,
+  fetchRecentWS,
 } from "./history";
 
 export interface CacheConfig {
@@ -33,7 +34,7 @@ const RECENT_THRESHOLD = 60000; // 1 minute
 const RECENT_CACHE: { [cacheKey: string]: RecentCacheResults } = {};
 const stateHistoryCache: { [cacheKey: string]: CachedResults } = {};
 
-// Cached type 1 unction. Without cache config.
+// Cached type 1 function. Without cache config.
 export const getRecent = (
   hass: HomeAssistant,
   entityId: string,
@@ -53,7 +54,17 @@ export const getRecent = (
     return cache.data;
   }
 
-  const prom = fetchRecent(hass, entityId, startTime, endTime).then(
+  const noAttributes = !entityIdHistoryNeedsAttributes(hass, entityId);
+  const prom = fetchRecentWS(
+    hass,
+    entityId,
+    startTime,
+    endTime,
+    false,
+    undefined,
+    true,
+    noAttributes
+  ).then(
     (stateHistory) => computeHistory(hass, stateHistory, localize),
     (err) => {
       delete RECENT_CACHE[entityId];
@@ -92,13 +103,14 @@ export const getRecentWithCache = (
   language: string
 ) => {
   const cacheKey = cacheConfig.cacheKey;
+  const fullCacheKey = cacheKey + `_${cacheConfig.hoursToShow}`;
   const endTime = new Date();
   const startTime = new Date(endTime);
   startTime.setHours(startTime.getHours() - cacheConfig.hoursToShow);
   let toFetchStartTime = startTime;
   let appendingToCache = false;
 
-  let cache = stateHistoryCache[cacheKey + `_${cacheConfig.hoursToShow}`];
+  let cache = stateHistoryCache[fullCacheKey];
   if (
     cache &&
     toFetchStartTime >= cache.startTime &&
@@ -112,7 +124,7 @@ export const getRecentWithCache = (
       return cache.prom;
     }
   } else {
-    cache = stateHistoryCache[cacheKey] = getEmptyCache(
+    cache = stateHistoryCache[fullCacheKey] = getEmptyCache(
       language,
       startTime,
       endTime
@@ -120,30 +132,40 @@ export const getRecentWithCache = (
   }
 
   const curCacheProm = cache.prom;
+  const noAttributes = !entityIdHistoryNeedsAttributes(hass, entityId);
 
   const genProm = async () => {
-    let fetchedHistory: HassEntity[][];
+    let fetchedHistory: HistoryStates;
 
     try {
       const results = await Promise.all([
         curCacheProm,
-        fetchRecent(
+        fetchRecentWS(
           hass,
           entityId,
           toFetchStartTime,
           endTime,
-          appendingToCache
+          appendingToCache,
+          undefined,
+          true,
+          noAttributes
         ),
       ]);
       fetchedHistory = results[1];
     } catch (err: any) {
-      delete stateHistoryCache[cacheKey];
+      delete stateHistoryCache[fullCacheKey];
       throw err;
     }
     const stateHistory = computeHistory(hass, fetchedHistory, localize);
     if (appendingToCache) {
-      mergeLine(stateHistory.line, cache.data.line);
-      mergeTimeline(stateHistory.timeline, cache.data.timeline);
+      if (stateHistory.line.length) {
+        mergeLine(stateHistory.line, cache.data.line);
+      }
+      if (stateHistory.timeline.length) {
+        mergeTimeline(stateHistory.timeline, cache.data.timeline);
+        // Replace the timeline array to force an update
+        cache.data.timeline = [...cache.data.timeline];
+      }
       pruneStartTime(startTime, cache.data);
     } else {
       cache.data = stateHistory;
@@ -175,6 +197,8 @@ const mergeLine = (
           oldLine.data.push(entity);
         }
       });
+      // Replace the cached line data to force an update
+      oldLine.data = [...oldLine.data];
     } else {
       cacheLines.push(line);
     }

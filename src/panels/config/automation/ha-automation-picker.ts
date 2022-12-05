@@ -1,34 +1,49 @@
 import {
+  mdiCancel,
+  mdiContentDuplicate,
+  mdiDelete,
   mdiHelpCircle,
-  mdiHistory,
   mdiInformationOutline,
-  mdiPencil,
-  mdiPencilOff,
+  mdiPlay,
   mdiPlayCircleOutline,
   mdiPlus,
+  mdiStopCircleOutline,
+  mdiTransitConnection,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { differenceInDays } from "date-fns/esm";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { relativeTime } from "../../../common/datetime/relative_time";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-entity-toggle";
+import type {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-related-filter-menu";
+import "../../../components/ha-chip";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-svg-icon";
 import {
   AutomationEntity,
+  deleteAutomation,
+  duplicateAutomation,
+  fetchAutomationFileConfig,
+  getAutomationStateConfig,
+  showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -72,6 +87,7 @@ class HaAutomationPicker extends LitElement {
         ...automation,
         name: computeStateName(automation),
         last_triggered: automation.attributes.last_triggered || undefined,
+        disabled: automation.state === "off",
       }));
     }
   );
@@ -79,39 +95,41 @@ class HaAutomationPicker extends LitElement {
   private _columns = memoizeOne(
     (narrow: boolean, _locale): DataTableColumnContainer => {
       const columns: DataTableColumnContainer = {
-        toggle: {
+        icon: {
           title: "",
+          label: this.hass.localize(
+            "ui.panel.config.automation.picker.headers.state"
+          ),
           type: "icon",
-          template: (_toggle, automation: any) =>
-            html`
-              <ha-entity-toggle
-                .hass=${this.hass}
-                .stateObj=${automation}
-              ></ha-entity-toggle>
-            `,
+          template: (_, automation) =>
+            html`<ha-state-icon .state=${automation}></ha-state-icon>`,
         },
         name: {
           title: this.hass.localize(
             "ui.panel.config.automation.picker.headers.name"
           ),
+          main: true,
           sortable: true,
           filterable: true,
           direction: "asc",
           grows: true,
           template: narrow
-            ? (name, automation: any) =>
-                html`
+            ? (name, automation: any) => {
+                const date = new Date(automation.attributes.last_triggered);
+                const now = new Date();
+                const dayDifference = differenceInDays(now, date);
+                return html`
                   ${name}
                   <div class="secondary">
                     ${this.hass.localize("ui.card.automation.last_triggered")}:
                     ${automation.attributes.last_triggered
-                      ? formatDateTime(
-                          new Date(automation.attributes.last_triggered),
-                          this.hass.locale
-                        )
+                      ? dayDifference > 3
+                        ? formatShortDateTime(date, this.hass.locale)
+                        : relativeTime(date, this.hass.locale)
                       : this.hass.localize("ui.components.relative_time.never")}
                   </div>
-                `
+                `;
+              }
             : undefined,
         },
       };
@@ -120,98 +138,122 @@ class HaAutomationPicker extends LitElement {
           sortable: true,
           width: "20%",
           title: this.hass.localize("ui.card.automation.last_triggered"),
-          template: (last_triggered) => html`
-            ${last_triggered
-              ? formatDateTime(new Date(last_triggered), this.hass.locale)
-              : this.hass.localize("ui.components.relative_time.never")}
-          `,
-        };
-        columns.trigger = {
-          title: html`
-            <mwc-button style="visibility: hidden">
-              ${this.hass.localize("ui.card.automation.trigger")}
-            </mwc-button>
-          `,
-          width: "20%",
-          template: (_info, automation: any) => html`
-            <mwc-button
-              .automation=${automation}
-              @click=${this._triggerRunActions}
-              .disabled=${UNAVAILABLE_STATES.includes(automation.state)}
-            >
-              ${this.hass.localize("ui.card.automation.trigger")}
-            </mwc-button>
-          `,
+          template: (last_triggered) => {
+            const date = new Date(last_triggered);
+            const now = new Date();
+            const dayDifference = differenceInDays(now, date);
+            return html`
+              ${last_triggered
+                ? dayDifference > 3
+                  ? formatShortDateTime(date, this.hass.locale)
+                  : relativeTime(date, this.hass.locale)
+                : this.hass.localize("ui.components.relative_time.never")}
+            `;
+          },
         };
       }
+
+      columns.disabled = this.narrow
+        ? {
+            title: "",
+            template: (disabled: boolean) =>
+              disabled
+                ? html`
+                    <paper-tooltip animation-delay="0" position="left">
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.picker.disabled"
+                      )}
+                    </paper-tooltip>
+                    <ha-svg-icon
+                      .path=${mdiCancel}
+                      style="color: var(--secondary-text-color)"
+                    ></ha-svg-icon>
+                  `
+                : "",
+          }
+        : {
+            width: "20%",
+            title: "",
+            template: (disabled: boolean) =>
+              disabled
+                ? html`
+                    <ha-chip>
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.picker.disabled"
+                      )}
+                    </ha-chip>
+                  `
+                : "",
+          };
+
       columns.actions = {
         title: "",
+        width: this.narrow ? undefined : "10%",
         type: "overflow-menu",
-        template: (_info, automation: any) => html`
-          <ha-icon-overflow-menu
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-            .items=${[
-              // Info Button
-              {
-                path: mdiInformationOutline,
-                label: this.hass.localize(
-                  "ui.panel.config.automation.picker.show_info_automation"
-                ),
-                action: () => this._showInfo(automation),
-              },
-              // Trigger Button
-              {
-                path: mdiPlayCircleOutline,
-                label: this.hass.localize("ui.card.automation.trigger"),
-                narrowOnly: true,
-                action: () => this._runActions(automation),
-              },
-              // Trace Button
-              {
-                path: mdiHistory,
-                disabled: !automation.attributes.id,
-                label: this.hass.localize(
-                  "ui.panel.config.automation.picker.dev_automation"
-                ),
-                tooltip: !automation.attributes.id
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.picker.dev_only_editable"
-                    )
-                  : "",
-                action: () => {
-                  if (automation.attributes.id) {
-                    navigate(
-                      `/config/automation/trace/${automation.attributes.id}`
-                    );
-                  }
+        template: (_: string, automation: any) =>
+          html`
+            <ha-icon-overflow-menu
+              .hass=${this.hass}
+              narrow
+              .items=${[
+                {
+                  path: mdiInformationOutline,
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.editor.show_info"
+                  ),
+                  action: () => this._showInfo(automation),
                 },
-              },
-              // Edit Button
-              {
-                path: automation.attributes.id ? mdiPencil : mdiPencilOff,
-                disabled: !automation.attributes.id,
-                label: this.hass.localize(
-                  "ui.panel.config.automation.picker.edit_automation"
-                ),
-                tooltip: !automation.attributes.id
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.picker.dev_only_editable"
-                    )
-                  : "",
-                action: () => {
-                  if (automation.attributes.id) {
-                    navigate(
-                      `/config/automation/edit/${automation.attributes.id}`
-                    );
-                  }
+                {
+                  path: mdiPlay,
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.editor.run"
+                  ),
+                  action: () => this._runActions(automation),
                 },
-              },
-            ]}
-            style="color: var(--secondary-text-color)"
-          >
-          </ha-icon-overflow-menu>
-        `,
+                {
+                  path: mdiTransitConnection,
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.editor.show_trace"
+                  ),
+                  action: () => this._showTrace(automation),
+                },
+                {
+                  divider: true,
+                },
+                {
+                  path: mdiContentDuplicate,
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.picker.duplicate"
+                  ),
+                  action: () => this.duplicate(automation),
+                },
+                {
+                  path:
+                    automation.state === "off"
+                      ? mdiPlayCircleOutline
+                      : mdiStopCircleOutline,
+                  label:
+                    automation.state === "off"
+                      ? this.hass.localize(
+                          "ui.panel.config.automation.editor.enable"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.automation.editor.disable"
+                        ),
+                  action: () => this._toggle(automation),
+                },
+                {
+                  label: this.hass.localize(
+                    "ui.panel.config.automation.picker.delete"
+                  ),
+                  path: mdiDelete,
+                  action: () => this._deleteConfirm(automation),
+                  warning: true,
+                },
+              ]}
+            >
+            </ha-icon-overflow-menu>
+          `,
       };
       return columns;
     }
@@ -229,11 +271,13 @@ class HaAutomationPicker extends LitElement {
         .activeFilters=${this._activeFilters}
         .columns=${this._columns(this.narrow, this.hass.locale)}
         .data=${this._automations(this.automations, this._filteredAutomations)}
+        @row-click=${this._handleRowClicked}
         .noDataText=${this.hass.localize(
           "ui.panel.config.automation.picker.no_automations"
         )}
         @clear-filter=${this._clearFilter}
         hasFab
+        clickable
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -281,9 +325,92 @@ class HaAutomationPicker extends LitElement {
     this._filterValue = undefined;
   }
 
-  private _showInfo(automation: AutomationEntity) {
-    const entityId = automation.entity_id;
-    fireEvent(this, "hass-more-info", { entityId });
+  private _showInfo(automation: any) {
+    fireEvent(this, "hass-more-info", { entityId: automation.entity_id });
+  }
+
+  private _runActions(automation: any) {
+    triggerAutomationActions(this.hass, automation.entity_id);
+  }
+
+  private _showTrace(automation: any) {
+    if (!automation.attributes.id) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.automation.picker.traces_not_available"
+        ),
+      });
+      return;
+    }
+    navigate(`/config/automation/trace/${automation.attributes.id}`);
+  }
+
+  private async _toggle(automation): Promise<void> {
+    const service = automation.state === "off" ? "turn_on" : "turn_off";
+    await this.hass.callService("automation", service, {
+      entity_id: automation.entity_id,
+    });
+  }
+
+  private async _deleteConfirm(automation) {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.picker.delete_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.automation.picker.delete_confirm_text",
+        { name: automation.name }
+      ),
+      confirmText: this.hass!.localize("ui.common.delete"),
+      dismissText: this.hass!.localize("ui.common.cancel"),
+      confirm: () => this._delete(automation),
+      destructive: true,
+    });
+  }
+
+  private async _delete(automation) {
+    try {
+      await deleteAutomation(this.hass, automation.attributes.id);
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        text:
+          err.status_code === 400
+            ? this.hass.localize(
+                "ui.panel.config.automation.editor.load_error_not_deletable"
+              )
+            : this.hass.localize(
+                "ui.panel.config.automation.editor.load_error_unknown",
+                "err_no",
+                err.status_code
+              ),
+      });
+    }
+  }
+
+  private async duplicate(automation) {
+    try {
+      const config = await fetchAutomationFileConfig(
+        this.hass,
+        automation.attributes.id
+      );
+      duplicateAutomation(config);
+    } catch (err: any) {
+      if (err.status_code === 404) {
+        const response = await getAutomationStateConfig(
+          this.hass,
+          automation.entity_id
+        );
+        showAutomationEditor({ ...response.config, id: undefined });
+        return;
+      }
+      await showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.automation.editor.load_error_unknown",
+          "err_no",
+          err.status_code
+        ),
+      });
+    }
   }
 
   private _showHelp() {
@@ -306,13 +433,17 @@ class HaAutomationPicker extends LitElement {
     });
   }
 
-  private _triggerRunActions = (ev) => {
-    this._runActions(ev.currentTarget.automation);
-  };
+  private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
+    const automation = this.automations.find(
+      (a) => a.entity_id === ev.detail.id
+    );
 
-  private _runActions = (automation: AutomationEntity) => {
-    triggerAutomationActions(this.hass, automation.entity_id);
-  };
+    if (automation?.attributes.id) {
+      navigate(`/config/automation/edit/${automation.attributes.id}`);
+    } else {
+      navigate(`/config/automation/show/${ev.detail.id}`);
+    }
+  }
 
   private _createNew() {
     if (isComponentLoaded(this.hass, "blueprint")) {

@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { PolymerChangedEvent } from "../../polymer-types";
@@ -22,10 +22,58 @@ class HaStatisticsPicker extends LitElement {
   @property({ attribute: "pick-statistic-label" })
   public pickStatisticLabel?: string;
 
+  /**
+   * Show only statistics natively stored with these units of measurements.
+   * @attr include-statistics-unit-of-measurement
+   */
+  @property({
+    attribute: "include-statistics-unit-of-measurement",
+  })
+  public includeStatisticsUnitOfMeasurement?: string[] | string;
+
+  /**
+   * Show only statistics with these unit classes.
+   * @attr include-unit-class
+   */
+  @property({ attribute: "include-unit-class" })
+  public includeUnitClass?: string | string[];
+
+  /**
+   * Show only statistics with these device classes.
+   * @attr include-device-class
+   */
+  @property({ attribute: "include-device-class" })
+  public includeDeviceClass?: string | string[];
+
+  /**
+   * Ignore filtering of statistics type and units when only a single statistic is selected.
+   * @type {boolean}
+   * @attr ignore-restrictions-on-first-statistic
+   */
+  @property({
+    type: Boolean,
+    attribute: "ignore-restrictions-on-first-statistic",
+  })
+  public ignoreRestrictionsOnFirstStatistic = false;
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
+
+    const ignoreRestriction =
+      this.ignoreRestrictionsOnFirstStatistic &&
+      this._currentStatistics.length <= 1;
+
+    const includeStatisticsUnitCurrent = ignoreRestriction
+      ? undefined
+      : this.includeStatisticsUnitOfMeasurement;
+    const includeUnitClassCurrent = ignoreRestriction
+      ? undefined
+      : this.includeUnitClass;
+    const includeStatisticTypesCurrent = ignoreRestriction
+      ? undefined
+      : this.statisticTypes;
 
     return html`
       ${this._currentStatistics.map(
@@ -34,8 +82,10 @@ class HaStatisticsPicker extends LitElement {
             <ha-statistic-picker
               .curValue=${statisticId}
               .hass=${this.hass}
+              .includeStatisticsUnitOfMeasurement=${includeStatisticsUnitCurrent}
+              .includeUnitClass=${includeUnitClassCurrent}
               .value=${statisticId}
-              .statisticTypes=${this.statisticTypes}
+              .statisticTypes=${includeStatisticTypesCurrent}
               .statisticIds=${this.statisticIds}
               .label=${this.pickedStatisticLabel}
               @value-changed=${this._statisticChanged}
@@ -46,6 +96,10 @@ class HaStatisticsPicker extends LitElement {
       <div>
         <ha-statistic-picker
           .hass=${this.hass}
+          .includeStatisticsUnitOfMeasurement=${this
+            .includeStatisticsUnitOfMeasurement}
+          .includeUnitClass=${this.includeUnitClass}
+          .includeDeviceClass=${this.includeDeviceClass}
           .statisticTypes=${this.statisticTypes}
           .statisticIds=${this.statisticIds}
           .label=${this.pickStatisticLabel}
@@ -102,6 +156,20 @@ class HaStatisticsPicker extends LitElement {
     }
 
     this._updateStatistics([...currentEntities, toAdd]);
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      :host {
+        width: 200px;
+        display: block;
+      }
+      ha-statistic-picker {
+        display: block;
+        width: 100%;
+        margin-top: 8px;
+      }
+    `;
   }
 }
 

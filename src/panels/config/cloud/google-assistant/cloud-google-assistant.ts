@@ -5,7 +5,11 @@ import {
   mdiCheckboxMultipleMarked,
   mdiCloseBox,
   mdiCloseBoxMultiple,
+  mdiDotsVertical,
+  mdiFormatListChecks,
+  mdiSync,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -36,12 +40,18 @@ import {
   updateCloudPref,
 } from "../../../../data/cloud";
 import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../../data/entity_registry";
+import {
   fetchCloudGoogleEntities,
   GoogleEntity,
 } from "../../../../data/google_assistant";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
@@ -49,7 +59,7 @@ import { showToast } from "../../../../util/toast";
 const DEFAULT_CONFIG_EXPOSE = true;
 
 @customElement("cloud-google-assistant")
-class CloudGoogleAssistant extends LitElement {
+class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public cloudStatus!: CloudStatusLoggedIn;
@@ -58,8 +68,16 @@ class CloudGoogleAssistant extends LitElement {
 
   @state() private _entities?: GoogleEntity[];
 
-  @property()
+  @state() private _syncing = false;
+
+  @state()
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
+
+  @state()
+  private _entityCategories?: Record<
+    string,
+    EntityRegistryEntry["entity_category"]
+  >;
 
   private _popstateSyncAttached = false;
 
@@ -77,7 +95,7 @@ class CloudGoogleAssistant extends LitElement {
   );
 
   protected render(): TemplateResult {
-    if (this._entities === undefined) {
+    if (this._entities === undefined || this._entityCategories === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
     const emptyFilter = isEmptyFilter(this.cloudStatus.google_entities);
@@ -105,10 +123,17 @@ class CloudGoogleAssistant extends LitElement {
         should_expose: null,
       };
       const isExposed = emptyFilter
-        ? this._configIsExposed(entity.entity_id, config)
+        ? this._configIsExposed(
+            entity.entity_id,
+            config,
+            this._entityCategories![entity.entity_id]
+          )
         : filterFunc(entity.entity_id);
       const isDomainExposed = emptyFilter
-        ? this._configIsDomainExposed(entity.entity_id)
+        ? this._configIsDomainExposed(
+            entity.entity_id,
+            this._entityCategories![entity.entity_id]
+          )
         : filterFunc(entity.entity_id);
       if (isExposed) {
         selected++;
@@ -140,7 +165,7 @@ class CloudGoogleAssistant extends LitElement {
       ></ha-icon-button>`;
 
       target.push(html`
-        <ha-card>
+        <ha-card outlined>
           <div class="card-content">
             <div class="top-line">
               <state-info
@@ -230,19 +255,39 @@ class CloudGoogleAssistant extends LitElement {
         .hass=${this.hass}
         .header=${this.hass!.localize("ui.panel.config.cloud.google.title")}
         .narrow=${this.narrow}>
-        ${
-          emptyFilter
-            ? html`
-                <mwc-button
-                  slot="toolbar-icon"
-                  @click=${this._openDomainToggler}
-                  >${this.hass!.localize(
-                    "ui.panel.config.cloud.google.manage_domains"
-                  )}</mwc-button
-                >
-              `
-            : ""
-        }
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!emptyFilter}
+            @click=${this._openDomainToggler}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.cloud.google.manage_defaults"
+            )}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiFormatListChecks}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${this._syncing}
+            @click=${this._handleSync}
+          >
+          ${this.hass.localize("ui.panel.config.cloud.google.sync_entities")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiSync}
+            ></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
         ${
           !emptyFilter
             ? html`
@@ -311,15 +356,43 @@ class CloudGoogleAssistant extends LitElement {
     }
   }
 
-  private _configIsDomainExposed(entityId: string) {
+  protected override hassSubscribe(): (
+    | UnsubscribeFunc
+    | Promise<UnsubscribeFunc>
+  )[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection, (entries) => {
+        const categories = {};
+
+        for (const entry of entries) {
+          categories[entry.entity_id] = entry.entity_category;
+        }
+
+        this._entityCategories = categories;
+      }),
+    ];
+  }
+
+  private _configIsDomainExposed(
+    entityId: string,
+    entityCategory: EntityRegistryEntry["entity_category"] | undefined
+  ) {
     const domain = computeDomain(entityId);
     return this.cloudStatus.prefs.google_default_expose
-      ? this.cloudStatus.prefs.google_default_expose.includes(domain)
+      ? !entityCategory &&
+          this.cloudStatus.prefs.google_default_expose.includes(domain)
       : DEFAULT_CONFIG_EXPOSE;
   }
 
-  private _configIsExposed(entityId: string, config: GoogleEntityConfig) {
-    return config.should_expose ?? this._configIsDomainExposed(entityId);
+  private _configIsExposed(
+    entityId: string,
+    config: GoogleEntityConfig,
+    entityCategory: EntityRegistryEntry["entity_category"] | undefined
+  ) {
+    return (
+      config.should_expose ??
+      this._configIsDomainExposed(entityId, entityCategory)
+    );
   }
 
   private async _fetchData() {
@@ -395,6 +468,12 @@ class CloudGoogleAssistant extends LitElement {
 
   private _openDomainToggler() {
     showDomainTogglerDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.config.cloud.google.manage_defaults"
+      ),
+      description: this.hass!.localize(
+        "ui.panel.config.cloud.google.manage_defaults_dialog_description"
+      ),
       domains: this._entities!.map((entity) =>
         computeDomain(entity.entity_id)
       ).filter((value, idx, self) => self.indexOf(value) === idx),
@@ -451,6 +530,31 @@ class CloudGoogleAssistant extends LitElement {
       () => fireEvent(parent, "ha-refresh-cloud-status"),
       { once: true }
     );
+  }
+
+  private async _handleSync() {
+    this._syncing = true;
+    try {
+      await cloudSyncGoogleAssistant(this.hass!);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          `ui.panel.config.cloud.google.${
+            err.status_code === 404
+              ? "not_configured_title"
+              : "sync_failed_title"
+          }`
+        ),
+        text: this.hass.localize(
+          `ui.panel.config.cloud.google.${
+            err.status_code === 404 ? "not_configured_text" : "sync_failed_text"
+          }`
+        ),
+      });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } finally {
+      this._syncing = false;
+    }
   }
 
   private _ensureEntitySync() {

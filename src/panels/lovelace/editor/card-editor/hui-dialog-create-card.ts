@@ -65,28 +65,26 @@ export class HuiCreateDialogCard
       return html``;
     }
 
+    const title = this._viewConfig.title
+      ? this.hass!.localize(
+          "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
+          "name",
+          `"${this._viewConfig.title}"`
+        )
+      : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
+
     return html`
       <ha-dialog
         open
         scrimClickAction
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
-        .heading=${true}
+        .heading=${title}
         class=${classMap({ table: this._currTabIndex === 1 })}
       >
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title">
-              ${this._viewConfig.title
-                ? this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-                    "name",
-                    `"${this._viewConfig.title}"`
-                  )
-                : this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_card.pick_card"
-                  )}
-            </span>
+            <span slot="title"> ${title} </span>
           </ha-header-bar>
           <mwc-tab-bar
             .activeIndex=${this._currTabIndex}
@@ -96,6 +94,7 @@ export class HuiCreateDialogCard
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.cardpicker.by_card"
               )}
+              dialogInitialFocus
             ></mwc-tab>
             <mwc-tab
               .label=${this.hass!.localize(
@@ -197,9 +196,14 @@ export class HuiCreateDialogCard
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
+        hui-card-picker {
+          --card-picker-search-shape: 0;
+          --card-picker-search-margin: -2px -24px 0;
+        }
         hui-entity-picker-table {
           display: block;
           height: calc(100vh - 198px);
+          --mdc-shape-small: 0;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           hui-entity-picker-table {

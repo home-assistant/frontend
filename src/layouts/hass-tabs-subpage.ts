@@ -82,6 +82,16 @@ class HassTabsSubpage extends LitElement {
           (!page.advancedOnly || showAdvanced)
       );
 
+      if (shownTabs.length < 2) {
+        if (shownTabs.length === 1) {
+          const page = shownTabs[0];
+          return [
+            page.translationKey ? localizeFunc(page.translationKey) : page.name,
+          ];
+        }
+        return [""];
+      }
+
       return shownTabs.map(
         (page) =>
           html`
@@ -134,7 +144,7 @@ class HassTabsSubpage extends LitElement {
       this.narrow,
       this.localizeFunc || this.hass.localize
     );
-    const showTabs = tabs.length > 1 || !this.narrow;
+    const showTabs = tabs.length > 1;
     return html`
       <div class="toolbar">
         ${this.mainPage || (!this.backPath && history.state?.root)
@@ -159,8 +169,10 @@ class HassTabsSubpage extends LitElement {
                 @click=${this._backTapped}
               ></ha-icon-button-arrow-prev>
             `}
-        ${this.narrow
-          ? html`<div class="main-title"><slot name="header"></slot></div>`
+        ${this.narrow || !showTabs
+          ? html`<div class="main-title">
+              <slot name="header">${!showTabs ? tabs[0] : ""}</slot>
+            </div>`
           : ""}
         ${showTabs
           ? html`
@@ -272,6 +284,7 @@ class HassTabsSubpage extends LitElement {
       ha-menu-button,
       ha-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
+        display: flex;
         flex-shrink: 0;
         pointer-events: auto;
         color: var(--sidebar-icon-color);
@@ -282,6 +295,7 @@ class HassTabsSubpage extends LitElement {
         max-height: var(--header-height);
         line-height: 20px;
         color: var(--sidebar-text-color);
+        margin: var(--main-title-margin, 0 0 0 24px);
       }
 
       .content {

@@ -1,45 +1,60 @@
-import { Layout1d, scroll } from "@lit-labs/virtualizer";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { customElement, eventOptions, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../../common/const";
-import { formatDate } from "../../common/datetime/format_date";
-import { formatTimeWithSeconds } from "../../common/datetime/format_time";
-import { restoreScroll } from "../../common/decorators/restore-scroll";
-import { fireEvent } from "../../common/dom/fire_event";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
-import "../../components/entity/state-badge";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { ensureArray } from "../../common/ensure-array";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
-import "../../components/ha-relative-time";
-import { LogbookEntry } from "../../data/logbook";
-import { TraceContexts } from "../../data/trace";
-import { haStyle, haStyleScrollbar } from "../../resources/styles";
+import {
+  clearLogbookCache,
+  LogbookEntry,
+  LogbookStreamMessage,
+  subscribeLogbook,
+} from "../../data/logbook";
+import { loadTraceContexts, TraceContexts } from "../../data/trace";
+import { fetchUsers } from "../../data/user";
 import { HomeAssistant } from "../../types";
+import "./ha-logbook-renderer";
+
+interface LogbookTimePeriod {
+  now: Date;
+  startTime: Date;
+  endTime: Date;
+  purgeBeforePythonTime: number | undefined;
+}
+
+const findStartOfRecentTime = (now: Date, recentTime: number) =>
+  new Date(now.getTime() - recentTime * 1000).getTime() / 1000;
+
+const idsChanged = (oldIds?: string[], newIds?: string[]) => {
+  if (oldIds === undefined && newIds === undefined) {
+    return false;
+  }
+  return (
+    !oldIds ||
+    !newIds ||
+    oldIds.length !== newIds.length ||
+    !oldIds.every((val) => newIds.includes(val))
+  );
+};
 
 @customElement("ha-logbook")
-class HaLogbook extends LitElement {
+export class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public userIdToName = {};
+  @property() public time!:
+    | { range: [Date, Date] }
+    | {
+        // Seconds
+        recent: number;
+      };
 
-  @property({ attribute: false })
-  public traceContexts: TraceContexts = {};
+  @property() public entityIds?: string[];
 
-  @property({ attribute: false }) public entries: LogbookEntry[] = [];
+  @property() public deviceIds?: string[];
 
   @property({ type: Boolean, attribute: "narrow" })
   public narrow = false;
-
-  @property({ attribute: "rtl", type: Boolean })
-  private _rtl = false;
 
   @property({ type: Boolean, attribute: "virtualize", reflect: true })
   public virtualize = false;
@@ -50,325 +65,406 @@ class HaLogbook extends LitElement {
   @property({ type: Boolean, attribute: "no-name" })
   public noName = false;
 
+  @property({ type: Boolean, attribute: "show-indicator" })
+  public showIndicator = false;
+
   @property({ type: Boolean, attribute: "relative-time" })
   public relativeTime = false;
 
-  // @ts-ignore
-  @restoreScroll(".container") private _savedScrollPos?: number;
+  @property({ type: Boolean }) public showMoreLink = true;
 
-  protected shouldUpdate(changedProps: PropertyValues<this>) {
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const languageChanged =
-      oldHass === undefined || oldHass.locale !== this.hass.locale;
+  @state() private _logbookEntries?: LogbookEntry[];
 
-    return (
-      changedProps.has("entries") ||
-      changedProps.has("traceContexts") ||
-      languageChanged
-    );
-  }
+  @state() private _traceContexts: TraceContexts = {};
 
-  protected updated(_changedProps: PropertyValues) {
-    const oldHass = _changedProps.get("hass") as HomeAssistant | undefined;
+  @state() private _userIdToName = {};
 
-    if (oldHass === undefined || oldHass.language !== this.hass.language) {
-      this._rtl = computeRTL(this.hass);
-    }
-  }
+  @state() private _error?: string;
+
+  private _subscribed?: Promise<(() => Promise<void>) | void>;
+
+  private _liveUpdatesEnabled = true;
+
+  private _pendingStreamMessages: LogbookStreamMessage[] = [];
+
+  private _throttleGetLogbookEntries = throttle(
+    () => this._getLogBookData(),
+    1000
+  );
 
   protected render(): TemplateResult {
-    if (!this.entries?.length) {
+    if (!isComponentLoaded(this.hass, "logbook")) {
+      return html``;
+    }
+
+    if (this._error) {
+      return html`<div class="no-entries">
+        ${`${this.hass.localize("ui.components.logbook.retrieval_error")}: ${
+          this._error
+        }`}
+      </div>`;
+    }
+
+    if (this._logbookEntries === undefined) {
       return html`
-        <div class="container no-entries" .dir=${emitRTLDirection(this._rtl)}>
-          ${this.hass.localize("ui.components.logbook.entries_not_found")}
+        <div class="progress-wrapper">
+          <ha-circular-progress
+            active
+            alt=${this.hass.localize("ui.common.loading")}
+          ></ha-circular-progress>
         </div>
       `;
     }
 
-    return html`
-      <div
-        class="container ha-scrollbar ${classMap({
-          narrow: this.narrow,
-          rtl: this._rtl,
-          "no-name": this.noName,
-          "no-icon": this.noIcon,
-        })}"
-        @scroll=${this._saveScrollPos}
-      >
-        ${this.virtualize
-          ? scroll({
-              items: this.entries,
-              layout: Layout1d,
-              renderItem: (item: LogbookEntry, index) =>
-                this._renderLogbookItem(item, index),
-            })
-          : this.entries.map((item, index) =>
-              this._renderLogbookItem(item, index)
-            )}
-      </div>
-    `;
-  }
-
-  private _renderLogbookItem(
-    item: LogbookEntry,
-    index?: number
-  ): TemplateResult {
-    if (index === undefined) {
-      return html``;
+    if (this._logbookEntries.length === 0) {
+      return html`<div class="no-entries">
+        ${this.hass.localize("ui.components.logbook.entries_not_found")}
+      </div>`;
     }
 
-    const previous = this.entries[index - 1];
-    const stateObj = item.entity_id
-      ? this.hass.states[item.entity_id]
-      : undefined;
-    const item_username =
-      item.context_user_id && this.userIdToName[item.context_user_id];
-    const domain = item.entity_id
-      ? computeDomain(item.entity_id)
-      : // Domain is there if there is no entity ID.
-        item.domain!;
-
     return html`
-      <div class="entry-container">
-        ${index === 0 ||
-        (item?.when &&
-          previous?.when &&
-          new Date(item.when).toDateString() !==
-            new Date(previous.when).toDateString())
-          ? html`
-              <h4 class="date">
-                ${formatDate(new Date(item.when), this.hass.locale)}
-              </h4>
-            `
-          : html``}
-
-        <div class="entry ${classMap({ "no-entity": !item.entity_id })}">
-          <div class="icon-message">
-            ${!this.noIcon
-              ? // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
-                // as they would present a false state in the log (played media right now vs actual historic data).
-                html`
-                  <state-badge
-                    .hass=${this.hass}
-                    .overrideIcon=${item.icon}
-                    .overrideImage=${DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
-                      ? ""
-                      : stateObj?.attributes.entity_picture_local ||
-                        stateObj?.attributes.entity_picture}
-                    .stateObj=${stateObj}
-                    .stateColor=${false}
-                  ></state-badge>
-                `
-              : ""}
-            <div class="message-relative_time">
-              <div class="message">
-                ${!this.noName
-                  ? html`<a
-                      href="#"
-                      @click=${this._entityClicked}
-                      .entityId=${item.entity_id}
-                      ><span class="name">${item.name}</span></a
-                    >`
-                  : ""}
-                ${item.message}
-                ${item_username
-                  ? ` ${this.hass.localize(
-                      "ui.components.logbook.by"
-                    )} ${item_username}`
-                  : !item.context_event_type
-                  ? ""
-                  : item.context_event_type === "call_service"
-                  ? // Service Call
-                    ` ${this.hass.localize("ui.components.logbook.by_service")}
-                  ${item.context_domain}.${item.context_service}`
-                  : item.context_entity_id === item.entity_id
-                  ? // HomeKit or something that self references
-                    ` ${this.hass.localize("ui.components.logbook.by")}
-                  ${
-                    item.context_name
-                      ? item.context_name
-                      : item.context_event_type
-                  }`
-                  : // Another entity such as an automation or script
-                    html` ${this.hass.localize("ui.components.logbook.by")}
-                      <a
-                        href="#"
-                        @click=${this._entityClicked}
-                        .entityId=${item.context_entity_id}
-                        class="name"
-                        >${item.context_entity_id_name}</a
-                      >`}
-              </div>
-              <div class="secondary">
-                <span
-                  >${formatTimeWithSeconds(
-                    new Date(item.when),
-                    this.hass.locale
-                  )}</span
-                >
-                -
-                <ha-relative-time
-                  .hass=${this.hass}
-                  .datetime=${item.when}
-                  capitalize
-                ></ha-relative-time>
-                ${item.domain === "automation" &&
-                item.context_id! in this.traceContexts
-                  ? html`
-                      -
-                      <a
-                        href=${`/config/automation/trace/${
-                          this.traceContexts[item.context_id!].item_id
-                        }?run_id=${
-                          this.traceContexts[item.context_id!].run_id
-                        }`}
-                        @click=${this._close}
-                        >${this.hass.localize(
-                          "ui.components.logbook.show_trace"
-                        )}</a
-                      >
-                    `
-                  : ""}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ha-logbook-renderer
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .virtualize=${this.virtualize}
+        .noIcon=${this.noIcon}
+        .noName=${this.noName}
+        .showIndicator=${this.showIndicator}
+        .relativeTime=${this.relativeTime}
+        .entries=${this._logbookEntries}
+        .traceContexts=${this._traceContexts}
+        .userIdToName=${this._userIdToName}
+        @hass-logbook-live=${this._handleLogbookLive}
+      ></ha-logbook-renderer>
     `;
   }
 
-  @eventOptions({ passive: true })
-  private _saveScrollPos(e: Event) {
-    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
-  }
-
-  private _entityClicked(ev: Event) {
-    const entityId = (ev.currentTarget as any).entityId;
-    if (!entityId) {
+  public async refresh(force = false) {
+    if (!force && (this._subscribed || this._logbookEntries === undefined)) {
       return;
     }
 
-    ev.preventDefault();
-    ev.stopPropagation();
-    fireEvent(this, "hass-more-info", {
-      entityId: entityId,
+    this._unsubscribeSetLoading();
+    this._throttleGetLogbookEntries.cancel();
+    this._updateTraceContexts.cancel();
+    this._updateUsers.cancel();
+
+    if ("range" in this.time) {
+      clearLogbookCache(
+        this.time.range[0].toISOString(),
+        this.time.range[1].toISOString()
+      );
+    }
+
+    this._throttleGetLogbookEntries();
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size !== 1 || !changedProps.has("hass")) {
+      return true;
+    }
+    // We only respond to hass changes if the translations changed
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    return !oldHass || oldHass.localize !== this.hass.localize;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    let changed = changedProps.has("time");
+
+    for (const key of ["entityIds", "deviceIds"]) {
+      if (!changedProps.has(key)) {
+        continue;
+      }
+
+      const oldValue = changedProps.get(key) as string[] | undefined;
+      const curValue = this[key] as string[] | undefined;
+
+      // If they make the filter more specific we want
+      // to change the subscription since it will reduce
+      // the overhead on the backend as the event stream
+      // can be a firehose for all state events.
+      if (idsChanged(oldValue, curValue)) {
+        changed = true;
+        break;
+      }
+    }
+
+    if (changed) {
+      this.refresh(true);
+    }
+  }
+
+  private _handleLogbookLive(ev: CustomEvent) {
+    if (ev.detail.enable && !this._liveUpdatesEnabled) {
+      // Process everything we queued up while we were scrolled down
+      this._pendingStreamMessages.forEach((msg) =>
+        this._processStreamMessage(msg)
+      );
+      this._pendingStreamMessages = [];
+    }
+    this._liveUpdatesEnabled = ev.detail.enable;
+  }
+
+  private get _filterAlwaysEmptyResults(): boolean {
+    const entityIds = ensureArray(this.entityIds);
+    const deviceIds = ensureArray(this.deviceIds);
+
+    // If all specified filters are empty lists, we can return an empty list.
+    return (
+      (entityIds || deviceIds) &&
+      (!entityIds || entityIds.length === 0) &&
+      (!deviceIds || deviceIds.length === 0)
+    );
+  }
+
+  private _unsubscribe(): void {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) =>
+        unsub
+          ? unsub().catch(() => {
+              // The backend will cancel the subscription if
+              // we subscribe to entities that will all be
+              // filtered away
+            })
+          : undefined
+      );
+      this._subscribed = undefined;
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeSetLoading();
+  }
+
+  /** Unsubscribe because we are unloading
+   * or about to resubscribe.
+   * Setting this._logbookEntries to undefined
+   * will put the page in a loading state.
+   */
+  private _unsubscribeSetLoading() {
+    this._logbookEntries = undefined;
+    this._unsubscribe();
+  }
+
+  /** Unsubscribe because there are no results.
+   * Setting this._logbookEntries to an empty
+   * list will show a no results message.
+   */
+  private _unsubscribeNoResults() {
+    this._logbookEntries = [];
+    this._unsubscribe();
+  }
+
+  private _calculateLogbookPeriod() {
+    const now = new Date();
+    if ("range" in this.time) {
+      return <LogbookTimePeriod>{
+        now: now,
+        startTime: this.time.range[0],
+        endTime: this.time.range[1],
+        purgeBeforePythonTime: undefined,
+      };
+    }
+    if ("recent" in this.time) {
+      const purgeBeforePythonTime = findStartOfRecentTime(
+        now,
+        this.time.recent
+      );
+      return <LogbookTimePeriod>{
+        now: now,
+        startTime: new Date(purgeBeforePythonTime * 1000),
+        // end streaming one year from now
+        endTime: new Date(now.getTime() + 86400 * 365 * 1000),
+        purgeBeforePythonTime: findStartOfRecentTime(now, this.time.recent),
+      };
+    }
+    throw new Error("Unexpected time specified");
+  }
+
+  private _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
+    if (this._subscribed) {
+      return true;
+    }
+    this._subscribed = subscribeLogbook(
+      this.hass,
+      (streamMessage) => {
+        // "recent" means start time is a sliding window
+        // so we need to calculate an expireTime to
+        // purge old events
+        if (!this._subscribed) {
+          // Message came in before we had a chance to unload
+          return;
+        }
+        this._processOrQueueStreamMessage(streamMessage);
+      },
+      logbookPeriod.startTime.toISOString(),
+      logbookPeriod.endTime.toISOString(),
+      ensureArray(this.entityIds),
+      ensureArray(this.deviceIds)
+    ).catch((err) => {
+      this._subscribed = undefined;
+      this._error = err;
     });
+    return true;
   }
 
-  private _close(): void {
-    setTimeout(() => fireEvent(this, "closed"), 500);
+  private async _getLogBookData() {
+    this._error = undefined;
+
+    if (this._filterAlwaysEmptyResults) {
+      this._unsubscribeNoResults();
+      return;
+    }
+
+    const logbookPeriod = this._calculateLogbookPeriod();
+
+    if (logbookPeriod.startTime > logbookPeriod.now) {
+      // Time Travel not yet invented
+      this._unsubscribeNoResults();
+      return;
+    }
+
+    this._updateUsers();
+    if (this.hass.user?.is_admin) {
+      this._updateTraceContexts();
+    }
+
+    this._subscribeLogbookPeriod(logbookPeriod);
   }
 
-  static get styles(): CSSResultGroup {
+  private _nonExpiredRecords = (purgeBeforePythonTime: number | undefined) =>
+    !this._logbookEntries
+      ? []
+      : purgeBeforePythonTime
+      ? this._logbookEntries.filter(
+          (entry) => entry.when > purgeBeforePythonTime!
+        )
+      : this._logbookEntries;
+
+  private _processOrQueueStreamMessage = (
+    streamMessage: LogbookStreamMessage
+  ) => {
+    if (this._liveUpdatesEnabled) {
+      this._processStreamMessage(streamMessage);
+      return;
+    }
+    this._pendingStreamMessages.push(streamMessage);
+  };
+
+  private _processStreamMessage = (streamMessage: LogbookStreamMessage) => {
+    const purgeBeforePythonTime =
+      "recent" in this.time
+        ? findStartOfRecentTime(new Date(), this.time.recent)
+        : undefined;
+    // Put newest ones on top. Reverse works in-place so
+    // make a copy first.
+    const newEntries = [...streamMessage.events].reverse();
+    if (!this._logbookEntries || !this._logbookEntries.length) {
+      this._logbookEntries = newEntries;
+      return;
+    }
+    if (!newEntries.length) {
+      // Empty messages are still sent to
+      // indicate no more historical events
+      return;
+    }
+    const nonExpiredRecords = this._nonExpiredRecords(purgeBeforePythonTime);
+
+    // Entries are sorted in descending order with newest first.
+    if (!nonExpiredRecords.length) {
+      // We have no records left, so we can just replace the list
+      this._logbookEntries = newEntries;
+    } else if (
+      newEntries[newEntries.length - 1].when > // oldest new entry
+      nonExpiredRecords[0].when // newest old entry
+    ) {
+      // The new records are newer than the old records
+      // append the old records to the end of the new records
+      this._logbookEntries = newEntries.concat(nonExpiredRecords);
+    } else if (
+      nonExpiredRecords[nonExpiredRecords.length - 1].when > // oldest old entry
+      newEntries[0].when // newest new entry
+    ) {
+      // The new records are older than the old records
+      // append the new records to the end of the old records
+      this._logbookEntries = nonExpiredRecords.concat(newEntries);
+    } else {
+      // The new records are in the middle of the old records
+      // so we need to re-sort them
+      this._logbookEntries = nonExpiredRecords
+        .concat(newEntries)
+        .sort((a, b) => b.when - a.when);
+    }
+  };
+
+  private _updateTraceContexts = throttle(async () => {
+    this._traceContexts = await loadTraceContexts(this.hass);
+  }, 60000);
+
+  private _updateUsers = throttle(async () => {
+    const userIdToName = {};
+
+    // Start loading users
+    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
+
+    // Process persons
+    for (const entity of Object.values(this.hass.states)) {
+      if (
+        entity.attributes.user_id &&
+        computeStateDomain(entity) === "person"
+      ) {
+        userIdToName[entity.attributes.user_id] =
+          entity.attributes.friendly_name;
+      }
+    }
+
+    // Process users
+    if (userProm) {
+      const users = await userProm;
+      for (const user of users) {
+        if (!(user.id in userIdToName)) {
+          userIdToName[user.id] = user.name;
+        }
+      }
+    }
+
+    this._userIdToName = userIdToName;
+  }, 60000);
+
+  static get styles() {
     return [
-      haStyle,
-      haStyleScrollbar,
       css`
-        :host([virtualize]) {
+        :host {
           display: block;
+        }
+
+        :host([virtualize]) {
           height: 100%;
-        }
-
-        .rtl {
-          direction: ltr;
-        }
-
-        .entry-container {
-          width: 100%;
-        }
-
-        .entry {
-          display: flex;
-          width: 100%;
-          line-height: 2em;
-          padding: 8px 16px;
-          box-sizing: border-box;
-          border-top: 1px solid var(--divider-color);
-        }
-
-        .entry.no-entity,
-        .no-name .entry {
-          cursor: default;
-        }
-
-        .entry:hover {
-          background-color: rgba(var(--rgb-primary-text-color), 0.04);
-        }
-
-        .narrow:not(.no-icon) .time {
-          margin-left: 32px;
-        }
-
-        .message-relative_time {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .secondary {
-          font-size: 12px;
-          line-height: 1.7;
-        }
-
-        .secondary a {
-          color: var(--secondary-text-color);
-        }
-
-        .date {
-          margin: 8px 0;
-          padding: 0 16px;
-        }
-
-        .narrow .date {
-          padding: 0 8px;
-        }
-
-        .rtl .date {
-          direction: rtl;
-        }
-
-        .icon-message {
-          display: flex;
-          align-items: center;
         }
 
         .no-entries {
           text-align: center;
+          padding: 16px;
           color: var(--secondary-text-color);
         }
 
-        state-badge {
-          margin-right: 16px;
-          flex-shrink: 0;
-          color: var(--state-icon-color);
-        }
-
-        .message {
-          color: var(--primary-text-color);
-        }
-
-        .no-name .message:first-letter {
-          text-transform: capitalize;
-        }
-
-        a {
-          color: var(--primary-color);
-        }
-
-        .container {
-          max-height: var(--logbook-max-height);
-        }
-
-        :host([virtualize]) .container {
+        .progress-wrapper {
+          display: flex;
+          justify-content: center;
           height: 100%;
-        }
-
-        .narrow .entry {
-          line-height: 1.5;
-          padding: 8px;
-        }
-
-        .narrow .icon-message state-badge {
-          margin-left: 0;
+          align-items: center;
         }
       `,
     ];

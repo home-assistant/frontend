@@ -1,5 +1,3 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
@@ -42,6 +40,7 @@ export class CloudWebhooks extends LitElement {
   protected render() {
     return html`
       <ha-card
+        outlined
         header=${this.hass!.localize(
           "ui.panel.config.cloud.account.webhooks.title"
         )}

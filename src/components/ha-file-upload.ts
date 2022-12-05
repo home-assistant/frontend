@@ -1,6 +1,5 @@
+import { styles } from "@material/mwc-textfield/mwc-textfield.css";
 import { mdiClose } from "@mdi/js";
-import "@polymer/iron-input/iron-input";
-import "@polymer/paper-input/paper-input-container";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -21,7 +20,7 @@ export class HaFileUpload extends LitElement {
 
   @property() public accept!: string;
 
-  @property() public icon!: string;
+  @property() public icon?: string;
 
   @property() public label!: string;
 
@@ -39,15 +38,7 @@ export class HaFileUpload extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     if (this.autoOpenFileDialog) {
-      this._input?.click();
-    }
-  }
-
-  protected updated(changedProperties: PropertyValues) {
-    if (changedProperties.has("_drag") && !this.uploading) {
-      (
-        this.shadowRoot!.querySelector("paper-input-container") as any
-      )._setFocused(this._drag);
+      this._openFilePicker();
     }
   }
 
@@ -60,49 +51,73 @@ export class HaFileUpload extends LitElement {
             active
           ></ha-circular-progress>`
         : html`
-            <label for="input">
-              <paper-input-container
-                .alwaysFloatLabel=${Boolean(this.value)}
-                @drop=${this._handleDrop}
-                @dragenter=${this._handleDragStart}
-                @dragover=${this._handleDragStart}
-                @dragleave=${this._handleDragEnd}
-                @dragend=${this._handleDragEnd}
-                class=${classMap({
-                  dragged: this._drag,
-                })}
+            <label
+              for="input"
+              class="mdc-text-field mdc-text-field--filled ${classMap({
+                "mdc-text-field--focused": this._drag,
+                "mdc-text-field--with-leading-icon": Boolean(this.icon),
+                "mdc-text-field--with-trailing-icon": Boolean(this.value),
+              })}"
+              @drop=${this._handleDrop}
+              @dragenter=${this._handleDragStart}
+              @dragover=${this._handleDragStart}
+              @dragleave=${this._handleDragEnd}
+              @dragend=${this._handleDragEnd}
+            >
+              <span class="mdc-text-field__ripple"></span>
+              <span
+                class="mdc-floating-label ${this.value || this._drag
+                  ? "mdc-floating-label--float-above"
+                  : ""}"
+                id="label"
+                >${this.label}</span
               >
-                <label for="input" slot="label"> ${this.label} </label>
-                <iron-input slot="input">
-                  <input
-                    id="input"
-                    type="file"
-                    class="file"
-                    accept=${this.accept}
-                    @change=${this._handleFilePicked}
-                  />
-                  ${this.value}
-                </iron-input>
-                ${this.value
-                  ? html`
-                      <ha-icon-button
-                        slot="suffix"
-                        @click=${this._clearValue}
-                        .label=${this.hass?.localize("ui.common.close") ||
-                        "close"}
-                        .path=${mdiClose}
-                      ></ha-icon-button>
-                    `
-                  : html`
-                      <ha-icon-button
-                        slot="suffix"
-                        .path=${this.icon}
-                      ></ha-icon-button>
-                    `}
-              </paper-input-container>
+              ${this.icon
+                ? html`<span
+                    class="mdc-text-field__icon mdc-text-field__icon--leading"
+                    tabindex="-1"
+                  >
+                    <ha-icon-button
+                      @click=${this._openFilePicker}
+                      .path=${this.icon}
+                    ></ha-icon-button>
+                  </span>`
+                : ""}
+              <div class="value">${this.value}</div>
+              <input
+                id="input"
+                type="file"
+                class="mdc-text-field__input file"
+                accept=${this.accept}
+                @change=${this._handleFilePicked}
+                aria-labelledby="label"
+              />
+              ${this.value
+                ? html`<span
+                    class="mdc-text-field__icon mdc-text-field__icon--trailing"
+                    tabindex="1"
+                  >
+                    <ha-icon-button
+                      slot="suffix"
+                      @click=${this._clearValue}
+                      .label=${this.hass?.localize("ui.common.close") ||
+                      "close"}
+                      .path=${mdiClose}
+                    ></ha-icon-button>
+                  </span>`
+                : ""}
+              <span
+                class="mdc-line-ripple ${this._drag
+                  ? "mdc-line-ripple--active"
+                  : ""}"
+              ></span>
             </label>
           `}
     `;
+  }
+
+  private _openFilePicker() {
+    this._input?.click();
   }
 
   private _handleDrop(ev: DragEvent) {
@@ -137,40 +152,79 @@ export class HaFileUpload extends LitElement {
   }
 
   static get styles() {
-    return css`
-      paper-input-container {
-        position: relative;
-        padding: 8px;
-        margin: 0 -8px;
-      }
-      paper-input-container.dragged:before {
-        position: var(--layout-fit_-_position);
-        top: var(--layout-fit_-_top);
-        right: var(--layout-fit_-_right);
-        bottom: var(--layout-fit_-_bottom);
-        left: var(--layout-fit_-_left);
-        background: currentColor;
-        content: "";
-        opacity: var(--dark-divider-opacity);
-        pointer-events: none;
-        border-radius: 4px;
-      }
-      input.file {
-        display: none;
-      }
-      img {
-        max-width: 125px;
-        max-height: 125px;
-      }
-      ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        --mdc-icon-size: 20px;
-      }
-      ha-circular-progress {
-        display: block;
-        text-align-last: center;
-      }
-    `;
+    return [
+      styles,
+      css`
+        :host {
+          display: block;
+        }
+        .mdc-text-field--filled {
+          height: auto;
+          padding-top: 16px;
+          cursor: pointer;
+        }
+        .mdc-text-field--filled.mdc-text-field--with-trailing-icon {
+          padding-top: 28px;
+        }
+        .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__icon {
+          color: var(--secondary-text-color);
+        }
+        .mdc-text-field--filled.mdc-text-field--with-trailing-icon
+          .mdc-text-field__icon {
+          align-self: flex-end;
+        }
+        .mdc-text-field__icon--leading {
+          margin-bottom: 12px;
+          inset-inline-start: initial;
+          inset-inline-end: 0px;
+          direction: var(--direction);
+        }
+        .mdc-text-field--filled .mdc-floating-label--float-above {
+          transform: scale(0.75);
+          top: 8px;
+        }
+        .mdc-floating-label {
+          inset-inline-start: 16px !important;
+          inset-inline-end: initial !important;
+          direction: var(--direction);
+        }
+        .mdc-text-field--filled .mdc-floating-label {
+          inset-inline-start: 48px !important;
+          inset-inline-end: initial !important;
+          direction: var(--direction);
+        }
+        .dragged:before {
+          position: var(--layout-fit_-_position);
+          top: var(--layout-fit_-_top);
+          right: var(--layout-fit_-_right);
+          bottom: var(--layout-fit_-_bottom);
+          left: var(--layout-fit_-_left);
+          background: currentColor;
+          content: "";
+          opacity: var(--dark-divider-opacity);
+          pointer-events: none;
+          border-radius: 4px;
+        }
+        .value {
+          width: 100%;
+        }
+        input.file {
+          display: none;
+        }
+        img {
+          max-width: 100%;
+          max-height: 125px;
+        }
+        ha-icon-button {
+          --mdc-icon-button-size: 24px;
+          --mdc-icon-size: 20px;
+        }
+        ha-circular-progress {
+          display: block;
+          text-align-last: center;
+        }
+      `,
+    ];
   }
 }
 

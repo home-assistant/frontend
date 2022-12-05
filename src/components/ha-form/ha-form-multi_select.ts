@@ -1,25 +1,27 @@
 import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import "@material/mwc-textfield";
-import "@material/mwc-formfield";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-button-menu";
+import "../ha-check-list-item";
+import type { HaCheckListItem } from "../ha-check-list-item";
+import "../ha-checkbox";
+import type { HaCheckbox } from "../ha-checkbox";
+import "../ha-formfield";
 import "../ha-svg-icon";
+import "../ha-textfield";
 import {
   HaFormElement,
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,
 } from "./types";
-import "../ha-checkbox";
-import type { HaCheckbox } from "../ha-checkbox";
 
 function optionValue(item: string | string[]): string {
   return Array.isArray(item) ? item[0] : item;
@@ -57,23 +59,23 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       : Object.entries(this.schema.options);
     const data = this.data || [];
 
-    const renderedOptions = options.map((item: string | [string, string]) => {
-      const value = optionValue(item);
-      return html`
-        <mwc-formfield .label=${optionLabel(item)}>
-          <ha-checkbox
-            .checked=${data.includes(value)}
-            .value=${value}
-            .disabled=${this.disabled}
-            @change=${this._valueChanged}
-          ></ha-checkbox>
-        </mwc-formfield>
-      `;
-    });
-
     // We will just render all checkboxes.
     if (options.length < SHOW_ALL_ENTRIES_LIMIT) {
-      return html`<div>${this.label}${renderedOptions}</div> `;
+      return html`<div>
+        ${this.label}${options.map((item: string | [string, string]) => {
+          const value = optionValue(item);
+          return html`
+            <ha-formfield .label=${optionLabel(item)}>
+              <ha-checkbox
+                .checked=${data.includes(value)}
+                .value=${value}
+                .disabled=${this.disabled}
+                @change=${this._valueChanged}
+              ></ha-checkbox>
+            </ha-formfield>
+          `;
+        })}
+      </div> `;
     }
 
     return html`
@@ -83,8 +85,10 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         corner="BOTTOM_START"
         @opened=${this._handleOpen}
         @closed=${this._handleClose}
+        multi
+        activatable
       >
-        <mwc-textfield
+        <ha-textfield
           slot="trigger"
           .label=${this.label}
           .value=${data
@@ -92,12 +96,25 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
             .join(", ")}
           .disabled=${this.disabled}
           tabindex="-1"
-        ></mwc-textfield>
+        ></ha-textfield>
         <ha-svg-icon
           slot="trigger"
           .path=${this._opened ? mdiMenuUp : mdiMenuDown}
         ></ha-svg-icon>
-        ${renderedOptions}
+        ${options.map((item: string | [string, string]) => {
+          const value = optionValue(item);
+          const selected = data.includes(value);
+          return html`<ha-check-list-item
+            left
+            .selected=${selected}
+            .activated=${selected}
+            @request-selected=${this._selectedChanged}
+            .value=${value}
+            .disabled=${this.disabled}
+          >
+            ${optionLabel(item)}
+          </ha-check-list-item>`;
+        })}
       </ha-button-menu>
     `;
   }
@@ -105,7 +122,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   protected firstUpdated() {
     this.updateComplete.then(() => {
       const { formElement, mdcRoot } =
-        this.shadowRoot?.querySelector("mwc-textfield") || ({} as any);
+        this.shadowRoot?.querySelector("ha-textfield") || ({} as any);
       if (formElement) {
         formElement.style.textOverflow = "ellipsis";
       }
@@ -125,9 +142,23 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     }
   }
 
+  private _selectedChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (ev.detail.source === "property") {
+      return;
+    }
+    this._handleValueChanged(
+      (ev.target as HaCheckListItem).value,
+      ev.detail.selected
+    );
+  }
+
   private _valueChanged(ev: CustomEvent): void {
     const { value, checked } = ev.target as HaCheckbox;
+    this._handleValueChanged(value, checked);
+  }
 
+  private _handleValueChanged(value, checked: boolean): void {
     let newValue: string[];
 
     if (checked) {
@@ -171,11 +202,14 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         display: block;
         cursor: pointer;
       }
-      mwc-formfield {
+      ha-formfield {
         display: block;
         padding-right: 16px;
+        padding-inline-end: 16px;
+        padding-inline-start: initial;
+        direction: var(--direction);
       }
-      mwc-textfield {
+      ha-textfield {
         display: block;
         pointer-events: none;
       }
@@ -185,6 +219,9 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         right: 1em;
         top: 1em;
         cursor: pointer;
+        inset-inline-end: 1em;
+        inset-inline-start: initial;
+        direction: var(--direction);
       }
       :host([opened]) ha-svg-icon {
         color: var(--primary-color);

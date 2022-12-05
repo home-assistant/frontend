@@ -9,7 +9,6 @@ import {
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import {
@@ -28,6 +27,10 @@ import {
   GridSourceTypeEnergyPreference,
   saveEnergyPreferences,
 } from "../../../../data/energy";
+import {
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/recorder";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import {
   showAlertDialog,
@@ -52,9 +55,12 @@ export class EnergyGridSettings extends LitElement {
   public preferences!: EnergyPreferences;
 
   @property({ attribute: false })
+  public statsMetadata?: Record<string, StatisticsMetaData>;
+
+  @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
 
-  @state() private _configEntries?: ConfigEntry[];
+  @state() private _co2ConfigEntry?: ConfigEntry;
 
   protected firstUpdated() {
     this._fetchCO2SignalConfigEntries();
@@ -80,7 +86,7 @@ export class EnergyGridSettings extends LitElement {
     }
 
     return html`
-      <ha-card>
+      <ha-card outlined>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.energy.grid.title")}
@@ -127,15 +133,23 @@ export class EnergyGridSettings extends LitElement {
                       .path=${mdiHomeImportOutline}
                     ></ha-svg-icon>`}
                 <span class="content"
-                  >${entityState
-                    ? computeStateName(entityState)
-                    : flow.stat_energy_from}</span
+                  >${getStatisticLabel(
+                    this.hass,
+                    flow.stat_energy_from,
+                    this.statsMetadata?.[flow.stat_energy_from]
+                  )}</span
                 >
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.edit_consumption"
+                  )}
                   @click=${this._editFromSource}
                   .path=${mdiPencil}
                 ></ha-icon-button>
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.delete_consumption"
+                  )}
                   @click=${this._deleteFromSource}
                   .path=${mdiDelete}
                 ></ha-icon-button>
@@ -166,15 +180,23 @@ export class EnergyGridSettings extends LitElement {
                       .path=${mdiHomeExportOutline}
                     ></ha-svg-icon>`}
                 <span class="content"
-                  >${entityState
-                    ? computeStateName(entityState)
-                    : flow.stat_energy_to}</span
+                  >${getStatisticLabel(
+                    this.hass,
+                    flow.stat_energy_to,
+                    this.statsMetadata?.[flow.stat_energy_to]
+                  )}</span
                 >
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.edit_return"
+                  )}
                   @click=${this._editToSource}
                   .path=${mdiPencil}
                 ></ha-icon-button>
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.delete_return"
+                  )}
                   @click=${this._deleteToSource}
                   .path=${mdiDelete}
                 ></ha-icon-button>
@@ -195,28 +217,31 @@ export class EnergyGridSettings extends LitElement {
               "ui.panel.config.energy.grid.grid_carbon_footprint"
             )}
           </h3>
-          ${this._configEntries?.map(
-            (entry) => html`<div class="row" .entry=${entry}>
-              <img
-                referrerpolicy="no-referrer"
-                src=${brandsUrl({
-                  domain: "co2signal",
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-              />
-              <span class="content">${entry.title}</span>
-              <a href=${`/config/integrations#config_entry=${entry.entry_id}`}>
-                <ha-icon-button .path=${mdiPencil}></ha-icon-button>
-              </a>
-              <ha-icon-button
-                @click=${this._removeCO2Sensor}
-                .path=${mdiDelete}
-              ></ha-icon-button>
-            </div>`
-          )}
-          ${this._configEntries?.length === 0
-            ? html`
+          ${this._co2ConfigEntry
+            ? html`<div class="row" .entry=${this._co2ConfigEntry}>
+                <img
+                  referrerpolicy="no-referrer"
+                  src=${brandsUrl({
+                    domain: "co2signal",
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                />
+                <span class="content">${this._co2ConfigEntry.title}</span>
+                <a
+                  href=${`/config/integrations#config_entry=${this._co2ConfigEntry.entry_id}`}
+                >
+                  <ha-icon-button .path=${mdiPencil}></ha-icon-button>
+                </a>
+                <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.remove_co2_signal"
+                  )}
+                  @click=${this._removeCO2Sensor}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
+              </div>`
+            : html`
                 <div class="row border-bottom">
                   <img
                     referrerpolicy="no-referrer"
@@ -232,17 +257,15 @@ export class EnergyGridSettings extends LitElement {
                     )}
                   </mwc-button>
                 </div>
-              `
-            : ""}
+              `}
         </div>
       </ha-card>
     `;
   }
 
   private async _fetchCO2SignalConfigEntries() {
-    this._configEntries = (await getConfigEntries(this.hass)).filter(
-      (entry) => entry.domain === "co2signal"
-    );
+    const entries = await getConfigEntries(this.hass, { domain: "co2signal" });
+    this._co2ConfigEntry = entries.length ? entries[0] : undefined;
   }
 
   private _addCO2Sensor() {

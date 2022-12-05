@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -93,6 +93,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                   <ha-switch
                     .checked=${this._emptyConfig}
                     @change=${this._emptyConfigChanged}
+                    dialogInitialFocus
                   ></ha-switch
                 ></ha-formfield>
               `
@@ -113,7 +114,9 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                   )}
                 </p>
                 <ha-yaml-editor
+                  .hass=${this.hass}
                   .defaultValue=${this._params!.lovelace.config}
+                  dialogInitialFocus
                 ></ha-yaml-editor>
               `}
         </div>
@@ -194,14 +197,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyleDialog,
-      css`
-        ha-switch {
-          padding-bottom: 16px;
-        }
-      `,
-    ];
+    return [haStyleDialog];
   }
 }
 

@@ -2,21 +2,23 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import { fireEvent } from "../common/dom/fire_event";
-import "./paper-time-input";
 import { FrontendLocaleData } from "../data/translation";
+import "./ha-base-time-input";
+import type { TimeChangedEvent } from "./ha-base-time-input";
 
 @customElement("ha-time-input")
 export class HaTimeInput extends LitElement {
-  @property() public locale!: FrontendLocaleData;
+  @property({ attribute: false }) public locale!: FrontendLocaleData;
 
   @property() public value?: string;
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean, attribute: "hide-label" }) public hideLabel =
-    false;
+  @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, attribute: "enable-second" })
   public enableSecond = false;
@@ -35,40 +37,46 @@ export class HaTimeInput extends LitElement {
     }
 
     return html`
-      <paper-time-input
+      <ha-base-time-input
         .label=${this.label}
-        .hour=${hours}
-        .min=${parts[1]}
-        .sec=${parts[2]}
+        .hours=${Number(hours)}
+        .minutes=${Number(parts[1])}
+        .seconds=${Number(parts[2])}
         .format=${useAMPM ? 12 : 24}
-        .amPm=${useAMPM && (numberHours >= 12 ? "PM" : "AM")}
+        .amPm=${useAMPM && numberHours >= 12 ? "PM" : "AM"}
         .disabled=${this.disabled}
-        @change=${this._timeChanged}
-        @am-pm-changed=${this._timeChanged}
-        .hideLabel=${this.hideLabel}
+        @value-changed=${this._timeChanged}
         .enableSecond=${this.enableSecond}
-      ></paper-time-input>
+        .required=${this.required}
+        .helper=${this.helper}
+      ></ha-base-time-input>
     `;
   }
 
-  private _timeChanged(ev) {
-    let value = ev.target.value;
+  private _timeChanged(ev: CustomEvent<{ value: TimeChangedEvent }>) {
+    ev.stopPropagation();
+    const eventValue = ev.detail.value;
+
     const useAMPM = useAmPm(this.locale);
-    let hours = Number(ev.target.hour || 0);
-    if (value && useAMPM) {
-      if (ev.target.amPm === "PM" && hours < 12) {
+    let hours = eventValue.hours || 0;
+    if (eventValue && useAMPM) {
+      if (eventValue.amPm === "PM" && hours < 12) {
         hours += 12;
       }
-      if (ev.target.amPm === "AM" && hours === 12) {
+      if (eventValue.amPm === "AM" && hours === 12) {
         hours = 0;
       }
-      value = `${hours.toString().padStart(2, "0")}:${ev.target.min || "00"}:${
-        ev.target.sec || "00"
-      }`;
     }
+    const value = `${hours.toString().padStart(2, "0")}:${
+      eventValue.minutes ? eventValue.minutes.toString().padStart(2, "0") : "00"
+    }:${
+      eventValue.seconds ? eventValue.seconds.toString().padStart(2, "0") : "00"
+    }`;
+
     if (value === this.value) {
       return;
     }
+
     this.value = value;
     fireEvent(this, "change");
     fireEvent(this, "value-changed", {

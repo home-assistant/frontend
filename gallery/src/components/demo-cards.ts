@@ -78,6 +78,9 @@ class DemoCards extends LitElement {
     ha-formfield {
       margin-right: 16px;
     }
+    #container {
+      background-color: var(--primary-background-color);
+    }
   `;
 }
 

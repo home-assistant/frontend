@@ -7,10 +7,11 @@ import {
 import {
   addHours,
   differenceInDays,
+  differenceInHours,
   endOfToday,
   isToday,
   startOfToday,
-} from "date-fns";
+} from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -23,8 +24,8 @@ import {
   rgb2lab,
 } from "../../../../common/color/convert-color";
 import { labBrighten, labDarken } from "../../../../common/color/lab";
+import { formatDateShort } from "../../../../common/datetime/format_date";
 import { formatTime } from "../../../../common/datetime/format_time";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -38,6 +39,11 @@ import {
   getEnergySolarForecasts,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
+import {
+  Statistics,
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -60,6 +66,12 @@ export class HuiEnergySolarGraphCard
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
+
+  @state() private _compareStart?: Date;
+
+  @state() private _compareEnd?: Date;
+
+  protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -97,7 +109,9 @@ export class HuiEnergySolarGraphCard
             .options=${this._createOptions(
               this._start,
               this._end,
-              this.hass.locale
+              this.hass.locale,
+              this._compareStart,
+              this._compareEnd
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -116,9 +130,27 @@ export class HuiEnergySolarGraphCard
   }
 
   private _createOptions = memoizeOne(
-    (start: Date, end: Date, locale: FrontendLocaleData): ChartOptions => {
+    (
+      start: Date,
+      end: Date,
+      locale: FrontendLocaleData,
+      compareStart?: Date,
+      compareEnd?: Date
+    ): ChartOptions => {
       const dayDifference = differenceInDays(end, start);
-      return {
+      const compare = compareStart !== undefined && compareEnd !== undefined;
+      if (compare) {
+        const difference = differenceInHours(end, start);
+        const differenceCompare = differenceInHours(compareEnd!, compareStart!);
+        // If the compare period doesn't match the main period, adjust them to match
+        if (differenceCompare > difference) {
+          end = addHours(end, differenceCompare - difference);
+        } else if (difference > differenceCompare) {
+          compareEnd = addHours(compareEnd!, difference - differenceCompare);
+        }
+      }
+
+      const options: ChartOptions = {
         parsing: false,
         animation: false,
         scales: {
@@ -161,7 +193,6 @@ export class HuiEnergySolarGraphCard
                   ? "day"
                   : "hour",
             },
-            offset: true,
           },
           y: {
             stacked: true,
@@ -184,7 +215,9 @@ export class HuiEnergySolarGraphCard
                   return datasets[0].label;
                 }
                 const date = new Date(datasets[0].parsed.x);
-                return `${formatTime(date, locale)} - ${formatTime(
+                return `${
+                  compare ? `${formatDateShort(date, locale)}: ` : ""
+                }${formatTime(date, locale)} – ${formatTime(
                   addHours(date, 1),
                   locale
                 )}`;
@@ -222,6 +255,15 @@ export class HuiEnergySolarGraphCard
         // @ts-expect-error
         locale: numberFormatToLocale(locale),
       };
+      if (compare) {
+        options.scales!.xAxisCompare = {
+          ...(options.scales!.x as Record<string, any>),
+          suggestedMin: compareStart!.getTime(),
+          suggestedMax: compareEnd!.getTime(),
+          display: false,
+        };
+      }
+      return options;
     }
   );
 
@@ -242,22 +284,79 @@ export class HuiEnergySolarGraphCard
       }
     }
 
-    const datasets: ChartDataset<"bar">[] = [];
+    const datasets: ChartDataset<"bar" | "line">[] = [];
 
     const computedStyles = getComputedStyle(this);
     const solarColor = computedStyles
       .getPropertyValue("--energy-solar-color")
       .trim();
 
-    const dayDifference = differenceInDays(
-      energyData.end || new Date(),
-      energyData.start
+    datasets.push(
+      ...this._processDataSet(
+        energyData.stats,
+        energyData.statsMetadata,
+        solarSources,
+        solarColor
+      )
     );
 
-    solarSources.forEach((source, idx) => {
-      const data: ChartDataset<"bar" | "line">[] = [];
-      const entity = this.hass.states[source.stat_energy_from];
+    if (energyData.statsCompare) {
+      // Add empty dataset to align the bars
+      datasets.push({
+        order: 0,
+        data: [],
+      });
+      datasets.push({
+        order: 999,
+        data: [],
+        xAxisID: "xAxisCompare",
+      });
 
+      datasets.push(
+        ...this._processDataSet(
+          energyData.statsCompare,
+          energyData.statsMetadata,
+          solarSources,
+          solarColor,
+          true
+        )
+      );
+    }
+
+    if (forecasts) {
+      datasets.push(
+        ...this._processForecast(
+          energyData.statsMetadata,
+          forecasts,
+          solarSources,
+          computedStyles.getPropertyValue("--primary-text-color"),
+          energyData.start,
+          energyData.end
+        )
+      );
+    }
+
+    this._start = energyData.start;
+    this._end = energyData.end || endOfToday();
+
+    this._compareStart = energyData.startCompare;
+    this._compareEnd = energyData.endCompare;
+
+    this._chartData = {
+      datasets,
+    };
+  }
+
+  private _processDataSet(
+    statistics: Statistics,
+    statisticsMetaData: Record<string, StatisticsMetaData>,
+    solarSources: SolarSourceTypeEnergyPreference[],
+    solarColor: string,
+    compare = false
+  ) {
+    const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
+
+    solarSources.forEach((source, idx) => {
       const modifiedColor =
         idx > 0
           ? this.hass.themes.darkMode
@@ -269,19 +368,19 @@ export class HuiEnergySolarGraphCard
         : solarColor;
 
       let prevValue: number | null = null;
-      let prevStart: string | null = null;
+      let prevStart: number | null = null;
 
       const solarProductionData: ScatterDataPoint[] = [];
 
       // Process solar production data.
-      if (source.stat_energy_from in energyData.stats) {
-        const stats = energyData.stats[source.stat_energy_from];
+      if (source.stat_energy_from in statistics) {
+        const stats = statistics[source.stat_energy_from];
 
         for (const point of stats) {
-          if (point.sum === null) {
+          if (point.sum === null || point.sum === undefined) {
             continue;
           }
-          if (prevValue === null) {
+          if (prevValue === null || prevValue === undefined) {
             prevValue = point.sum;
             continue;
           }
@@ -299,23 +398,44 @@ export class HuiEnergySolarGraphCard
         }
       }
 
-      if (solarProductionData.length) {
-        data.push({
-          label: this.hass.localize(
-            "ui.panel.lovelace.cards.energy.energy_solar_graph.production",
-            {
-              name: entity ? computeStateName(entity) : source.stat_energy_from,
-            }
-          ),
-          borderColor,
-          backgroundColor: borderColor + "7F",
-          data: solarProductionData,
-          stack: "solar",
-        });
-      }
+      data.push({
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_solar_graph.production",
+          {
+            name: getStatisticLabel(
+              this.hass,
+              source.stat_energy_from,
+              statisticsMetaData[source.stat_energy_from]
+            ),
+          }
+        ),
+        borderColor: compare ? borderColor + "7F" : borderColor,
+        backgroundColor: compare ? borderColor + "32" : borderColor + "7F",
+        data: solarProductionData,
+        order: 1,
+        stack: "solar",
+        xAxisID: compare ? "xAxisCompare" : undefined,
+      });
+    });
 
-      // Process solar forecast data.
-      if (forecasts && source.config_entry_solar_forecast) {
+    return data;
+  }
+
+  private _processForecast(
+    statisticsMetaData: Record<string, StatisticsMetaData>,
+    forecasts: EnergySolarForecasts,
+    solarSources: SolarSourceTypeEnergyPreference[],
+    borderColor: string,
+    start: Date,
+    end?: Date
+  ) {
+    const data: ChartDataset<"line">[] = [];
+
+    const dayDifference = differenceInDays(end || new Date(), start);
+
+    // Process solar forecast data.
+    solarSources.forEach((source) => {
+      if (source.config_entry_solar_forecast) {
         const forecastsData: Record<string, number> | undefined = {};
         source.config_entry_solar_forecast.forEach((configEntryId) => {
           if (!forecasts![configEntryId]) {
@@ -324,10 +444,7 @@ export class HuiEnergySolarGraphCard
           Object.entries(forecasts![configEntryId].wh_hours).forEach(
             ([date, value]) => {
               const dateObj = new Date(date);
-              if (
-                dateObj < energyData.start ||
-                (energyData.end && dateObj > energyData.end)
-              ) {
+              if (dateObj < start || (end && dateObj > end)) {
                 return;
               }
               if (dayDifference > 35) {
@@ -363,16 +480,16 @@ export class HuiEnergySolarGraphCard
               label: this.hass.localize(
                 "ui.panel.lovelace.cards.energy.energy_solar_graph.forecast",
                 {
-                  name: entity
-                    ? computeStateName(entity)
-                    : source.stat_energy_from,
+                  name: getStatisticLabel(
+                    this.hass,
+                    source.stat_energy_from,
+                    statisticsMetaData[source.stat_energy_from]
+                  ),
                 }
               ),
               fill: false,
               stepped: false,
-              borderColor: computedStyles.getPropertyValue(
-                "--primary-text-color"
-              ),
+              borderColor,
               borderDash: [7, 5],
               pointRadius: 0,
               data: solarForecastData,
@@ -380,17 +497,9 @@ export class HuiEnergySolarGraphCard
           }
         }
       }
-
-      // Concat two arrays
-      Array.prototype.push.apply(datasets, data);
     });
 
-    this._start = energyData.start;
-    this._end = energyData.end || endOfToday();
-
-    this._chartData = {
-      datasets,
-    };
+    return data;
   }
 
   static get styles(): CSSResultGroup {

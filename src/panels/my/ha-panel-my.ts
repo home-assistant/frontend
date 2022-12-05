@@ -2,6 +2,7 @@ import { sanitizeUrl } from "@braintree/sanitize-url";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { protocolIntegrationPicked } from "../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -12,7 +13,10 @@ import "../../layouts/hass-error-screen";
 import { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
-const REDIRECTS: Redirects = {
+export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
+  application_credentials: {
+    redirect: "/config/application_credentials",
+  },
   developer_states: {
     redirect: "/developer-tools/state",
   },
@@ -34,21 +38,30 @@ const REDIRECTS: Redirects = {
   developer_statistics: {
     redirect: "/developer-tools/statistics",
   },
+  server_controls: {
+    redirect: "/developer-tools/yaml",
+  },
   config: {
-    redirect: "/config",
+    redirect: "/config/dashboard",
   },
   cloud: {
     component: "cloud",
     redirect: "/config/cloud",
-  },
-  integrations: {
-    redirect: "/config/integrations",
   },
   config_flow_start: {
     redirect: "/config/integrations/add",
     params: {
       domain: "string",
     },
+  },
+  brand: {
+    redirect: "/config/integrations/add",
+    params: {
+      brand: "string",
+    },
+  },
+  integrations: {
+    redirect: "/config/integrations",
   },
   config_mqtt: {
     component: "mqtt",
@@ -61,6 +74,14 @@ const REDIRECTS: Redirects = {
   config_zwave_js: {
     component: "zwave_js",
     redirect: "/config/zwave_js/dashboard",
+  },
+  add_zigbee_device: {
+    component: "zha",
+    redirect: "/config/zha/add",
+  },
+  add_zwave_device: {
+    component: "zwave_js",
+    redirect: "/config/zwave_js/add",
   },
   config_energy: {
     component: "energy",
@@ -79,16 +100,16 @@ const REDIRECTS: Redirects = {
   areas: {
     redirect: "/config/areas/dashboard",
   },
-  blueprints: {
-    component: "blueprint",
-    redirect: "/config/blueprint/dashboard",
-  },
   blueprint_import: {
     component: "blueprint",
     redirect: "/config/blueprint/dashboard/import",
     params: {
       blueprint_url: "url",
     },
+  },
+  blueprints: {
+    component: "blueprint",
+    redirect: "/config/blueprint/dashboard",
   },
   automations: {
     component: "automation",
@@ -117,6 +138,15 @@ const REDIRECTS: Redirects = {
     component: "lovelace",
     redirect: "/config/lovelace/resources",
   },
+  oauth: {
+    redirect: "/auth/external/callback",
+    navigate_outside_spa: true,
+    params: {
+      error: "string?",
+      code: "string?",
+      state: "string",
+    },
+  },
   people: {
     component: "person",
     redirect: "/config/person",
@@ -129,23 +159,45 @@ const REDIRECTS: Redirects = {
     redirect: "/config/users",
   },
   general: {
-    redirect: "/config/core",
-  },
-  server_controls: {
-    redirect: "/config/server_control",
+    redirect: "/config/general",
   },
   logs: {
     redirect: "/config/logs",
   },
+  repairs: {
+    component: "repairs",
+    redirect: "/config/repairs",
+  },
   info: {
     redirect: "/config/info",
+  },
+  system_health: {
+    redirect: "/config/repairs?dialog=system-health",
+  },
+  hardware: {
+    redirect: "/config/hardware",
+  },
+  storage: {
+    redirect: "/config/storage",
+  },
+  network: {
+    redirect: "/config/network",
+  },
+  analytics: {
+    redirect: "/config/analytics",
+  },
+  updates: {
+    redirect: "/config/updates",
+  },
+  system_dashboard: {
+    redirect: "/config/system",
   },
   customize: {
     // customize was removed in 2021.12, fallback to dashboard
     redirect: "/config/dashboard",
   },
   profile: {
-    redirect: "/profile/dashboard",
+    redirect: "/profile",
   },
   logbook: {
     component: "logbook",
@@ -155,15 +207,62 @@ const REDIRECTS: Redirects = {
     component: "history",
     redirect: "/history",
   },
-};
+  media_browser: {
+    component: "media_source",
+    redirect: "/media-browser",
+  },
+  backup: {
+    component: hasSupervisor ? "hassio" : "backup",
+    redirect: hasSupervisor ? "/hassio/backups" : "/config/backup",
+  },
+  supervisor_snapshots: {
+    component: hasSupervisor ? "hassio" : "backup",
+    redirect: hasSupervisor ? "/hassio/backups" : "/config/backup",
+  },
+  supervisor_backups: {
+    component: hasSupervisor ? "hassio" : "backup",
+    redirect: hasSupervisor ? "/hassio/backups" : "/config/backup",
+  },
+  supervisor_system: {
+    // Moved from Supervisor panel in 2022.5
+    redirect: "/config/system",
+  },
+  supervisor_logs: {
+    // Moved from Supervisor panel in 2022.5
+    redirect: "/config/logs",
+  },
+  supervisor_info: {
+    // Moved from Supervisor panel in 2022.5
+    redirect: "/config/info",
+  },
+  hacs_repository: {
+    component: "hacs",
+    redirect: "/hacs/_my_redirect/hacs_repository",
+    params: {
+      owner: "string",
+      repository: "string",
+      category: "string?",
+    },
+  },
+});
 
-export type ParamType = "url" | "string";
+const getRedirect = (
+  path: string,
+  hasSupervisor: boolean
+): Redirect | undefined => getMyRedirects(hasSupervisor)?.[path];
+
+export type ParamType = "url" | "string" | "string?";
 
 export type Redirects = { [key: string]: Redirect };
 export interface Redirect {
   redirect: string;
+  // Set to True to use browser redirect instead of frontend navigation
+  navigate_outside_spa?: boolean;
   component?: string;
   params?: {
+    [key: string]: ParamType;
+  };
+  optional_params?: {
     [key: string]: ParamType;
   };
 }
@@ -176,12 +275,17 @@ class HaPanelMy extends LitElement {
 
   @state() public _error?: string;
 
+  private _redirect?: Redirect;
+
   connectedCallback() {
     super.connectedCallback();
-    const path = this.route.path.substr(1);
+    const path = this.route.path.substring(1);
+    const hasSupervisor = isComponentLoaded(this.hass, "hassio");
 
-    if (path.startsWith("supervisor")) {
-      if (!isComponentLoaded(this.hass, "hassio")) {
+    this._redirect = getRedirect(path, hasSupervisor);
+
+    if (path.startsWith("supervisor") && this._redirect === undefined) {
+      if (!hasSupervisor) {
         this._error = "no_supervisor";
         return;
       }
@@ -191,30 +295,46 @@ class HaPanelMy extends LitElement {
       return;
     }
 
-    const redirect = REDIRECTS[path];
-
-    if (!redirect) {
+    if (!this._redirect) {
       this._error = "not_supported";
       return;
     }
 
     if (
-      redirect.component &&
-      !isComponentLoaded(this.hass, redirect.component)
+      this._redirect.component &&
+      !isComponentLoaded(this.hass, this._redirect.component)
     ) {
+      this.hass.loadBackendTranslation("title", this._redirect.component);
       this._error = "no_component";
+      if (["add_zwave_device", "add_zigbee_device"].includes(path)) {
+        const params = extractSearchParamsObject();
+        const component = this._redirect.component;
+        this.hass
+          .loadFragmentTranslation("config")
+          .then()
+          .then(() => {
+            protocolIntegrationPicked(this, this.hass, component, {
+              domain: params.domain,
+              brand: params.brand,
+            });
+          });
+      }
       return;
     }
 
     let url: string;
     try {
-      url = this._createRedirectUrl(redirect);
+      url = this._createRedirectUrl();
     } catch (err: any) {
       this._error = "url_error";
       return;
     }
 
-    navigate(url, { replace: true });
+    if (this._redirect.navigate_outside_spa) {
+      location.assign(url);
+    } else {
+      navigate(url, { replace: true });
+    }
   }
 
   protected render() {
@@ -239,10 +359,18 @@ class HaPanelMy extends LitElement {
             this.hass.localize(
               "ui.panel.my.component_not_loaded",
               "integration",
-              domainToName(
-                this.hass.localize,
-                REDIRECTS[this.route.path.substr(1)].component!
-              )
+              html`<a
+                target="_blank"
+                rel="noreferrer noopener"
+                href=${documentationUrl(
+                  this.hass,
+                  `/integrations/${this._redirect!.component!}`
+                )}
+                >${domainToName(
+                  this.hass.localize,
+                  this._redirect!.component!
+                )}</a
+              >`
             ) || "This redirect is not supported.";
           break;
         case "no_supervisor":
@@ -260,33 +388,39 @@ class HaPanelMy extends LitElement {
         default:
           error = this.hass.localize("ui.panel.my.error") || "Unknown error";
       }
-      return html`<hass-error-screen .error=${error}></hass-error-screen>`;
+      return html`<hass-error-screen
+        .error=${error}
+        .hass=${this.hass}
+      ></hass-error-screen>`;
     }
     return html``;
   }
 
-  private _createRedirectUrl(redirect: Redirect): string {
-    const params = this._createRedirectParams(redirect);
-    return `${redirect.redirect}${params}`;
+  private _createRedirectUrl(): string {
+    const params = this._createRedirectParams();
+    return `${this._redirect!.redirect}${params}`;
   }
 
-  private _createRedirectParams(redirect: Redirect): string {
+  private _createRedirectParams(): string {
     const params = extractSearchParamsObject();
-    if (!redirect.params && !Object.keys(params).length) {
+    if (!this._redirect!.params && !Object.keys(params).length) {
       return "";
     }
     const resultParams = {};
-    Object.entries(redirect.params || {}).forEach(([key, type]) => {
+    for (const [key, type] of Object.entries(this._redirect!.params || {})) {
+      if (!params[key] && type.endsWith("?")) {
+        continue;
+      }
       if (!params[key] || !this._checkParamType(type, params[key])) {
         throw Error();
       }
       resultParams[key] = params[key];
-    });
+    }
     return `?${createSearchParam(resultParams)}`;
   }
 
   private _checkParamType(type: ParamType, value: string) {
-    if (type === "string") {
+    if (type === "string" || type === "string?") {
       return true;
     }
     if (type === "url") {

@@ -1,53 +1,13 @@
-import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import { formatAttributeName } from "../../data/entity_attributes";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import { formatAttributeName } from "../../util/hass-attributes-util";
-import "../ha-icon-button";
-import "../ha-svg-icon";
-import "./state-badge";
+import "../ha-combo-box";
+import type { HaComboBox } from "../ha-combo-box";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
-
-// eslint-disable-next-line lit/prefer-static-styles
-const rowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
-    paper-item {
-      padding: 0;
-      margin: -10px;
-      margin-left: 0;
-    }
-    #content {
-      display: flex;
-      align-items: center;
-    }
-    ha-svg-icon {
-      padding-left: 2px;
-      margin-right: -2px;
-      color: var(--secondary-text-color);
-    }
-    :host(:not([selected])) ha-svg-icon {
-      display: none;
-    }
-    :host([selected]) paper-item {
-      margin-left: 10px;
-    }
-  </style>
-  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-  <paper-item>${formatAttributeName(item)}</paper-item>`;
 
 @customElement("ha-entity-attribute-picker")
 class HaEntityAttributePicker extends LitElement {
@@ -55,9 +15,19 @@ class HaEntityAttributePicker extends LitElement {
 
   @property() public entityId?: string;
 
+  /**
+   * List of attributes to be hidden.
+   * @type {Array}
+   * @attr hide-attributes
+   */
+  @property({ type: Array, attribute: "hide-attributes" })
+  public hideAttributes?: string[];
+
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
@@ -66,9 +36,11 @@ class HaEntityAttributePicker extends LitElement {
 
   @property() public value?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) private _opened = false;
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+  @query("ha-combo-box", true) private _comboBox!: HaComboBox;
 
   protected shouldUpdate(changedProps: PropertyValues) {
     return !(!changedProps.has("_opened") && this._opened);
@@ -79,6 +51,11 @@ class HaEntityAttributePicker extends LitElement {
       const state = this.entityId ? this.hass.states[this.entityId] : undefined;
       (this._comboBox as any).items = state
         ? Object.keys(state.attributes)
+            .filter((key) => !this.hideAttributes?.includes(key))
+            .map((key) => ({
+              value: key,
+              label: formatAttributeName(key),
+            }))
         : [];
     }
   }
@@ -89,65 +66,25 @@ class HaEntityAttributePicker extends LitElement {
     }
 
     return html`
-      <vaadin-combo-box-light
-        .value=${this._value}
+      <ha-combo-box
+        .hass=${this.hass}
+        .value=${this.value ? formatAttributeName(this.value) : ""}
+        .autofocus=${this.autofocus}
+        .label=${this.label ??
+        this.hass.localize(
+          "ui.components.entity.entity-attribute-picker.attribute"
+        )}
+        .disabled=${this.disabled || !this.entityId}
+        .required=${this.required}
+        .helper=${this.helper}
         .allowCustomValue=${this.allowCustomValue}
-        attr-for-value="bind-value"
-        ${comboBoxRenderer(rowRenderer)}
+        item-value-path="value"
+        item-label-path="label"
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
       >
-        <paper-input
-          .autofocus=${this.autofocus}
-          .label=${this.label ??
-          this.hass.localize(
-            "ui.components.entity.entity-attribute-picker.attribute"
-          )}
-          .value=${this._value ? formatAttributeName(this._value) : ""}
-          .disabled=${this.disabled || !this.entityId}
-          class="input"
-          autocapitalize="none"
-          autocomplete="off"
-          autocorrect="off"
-          spellcheck="false"
-        >
-          <div class="suffix" slot="suffix">
-            ${this.value
-              ? html`
-                  <ha-icon-button
-                    .label=${this.hass.localize(
-                      "ui.components.entity.entity-picker.clear"
-                    )}
-                    .path=${mdiClose}
-                    class="clear-button"
-                    tabindex="-1"
-                    @click=${this._clearValue}
-                    no-ripple
-                  ></ha-icon-button>
-                `
-              : ""}
-
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.components.entity.entity-attribute-picker.show_attributes"
-              )}
-              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-              class="toggle-button"
-              tabindex="-1"
-            ></ha-icon-button>
-          </div>
-        </paper-input>
-      </vaadin-combo-box-light>
+      </ha-combo-box>
     `;
-  }
-
-  private _clearValue(ev: Event) {
-    ev.stopPropagation();
-    this._setValue("");
-  }
-
-  private get _value() {
-    return this.value;
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>) {
@@ -155,34 +92,7 @@ class HaEntityAttributePicker extends LitElement {
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {
-    const newValue = ev.detail.value;
-    if (newValue !== this._value) {
-      this._setValue(newValue);
-    }
-  }
-
-  private _setValue(value: string) {
-    this.value = value;
-    setTimeout(() => {
-      fireEvent(this, "value-changed", { value });
-      fireEvent(this, "change");
-    }, 0);
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      .suffix {
-        display: flex;
-      }
-      ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        padding: 0px 2px;
-        color: var(--secondary-text-color);
-      }
-      [hidden] {
-        display: none;
-      }
-    `;
+    this.value = ev.detail.value;
   }
 }
 

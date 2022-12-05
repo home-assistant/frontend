@@ -17,6 +17,7 @@ import {
 import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
+import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-icon-button";
 import "./ha-selector/ha-selector";
@@ -54,11 +55,13 @@ export class HaServiceControl extends LitElement {
     data?: Record<string, any>;
   };
 
-  @state() private _value!: this["value"];
+  @property({ type: Boolean }) public disabled = false;
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
   @property({ type: Boolean }) public showAdvanced?: boolean;
+
+  @state() private _value!: this["value"];
 
   @state() private _checkedKeys = new Set();
 
@@ -66,7 +69,7 @@ export class HaServiceControl extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
-  protected updated(changedProperties: PropertyValues<this>) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("value")) {
       return;
     }
@@ -128,6 +131,35 @@ export class HaServiceControl extends LitElement {
       delete this._value.data!.area_id;
     } else {
       this._value = this.value;
+    }
+
+    if (oldValue?.service !== this.value?.service) {
+      let updatedDefaultValue = false;
+      if (this._value && serviceData) {
+        // Set mandatory bools without a default value to false
+        if (!this._value.data) {
+          this._value.data = {};
+        }
+        serviceData.fields.forEach((field) => {
+          if (
+            field.selector &&
+            field.required &&
+            field.default === undefined &&
+            "boolean" in field.selector &&
+            this._value!.data![field.key] === undefined
+          ) {
+            updatedDefaultValue = true;
+            this._value!.data![field.key] = false;
+          }
+        });
+      }
+      if (updatedDefaultValue) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this._value,
+          },
+        });
+      }
     }
 
     if (this._value?.data) {
@@ -197,13 +229,21 @@ export class HaServiceControl extends LitElement {
     return html`<ha-service-picker
         .hass=${this.hass}
         .value=${this._value?.service}
+        .disabled=${this.disabled}
         @value-changed=${this._serviceChanged}
       ></ha-service-picker>
       <div class="description">
-        <p>${serviceData?.description}</p>
+        ${serviceData?.description
+          ? html`<p>${serviceData?.description}</p>`
+          : ""}
         ${this._manifest
           ? html` <a
-              href=${this._manifest.documentation}
+              href=${this._manifest.is_built_in
+                ? documentationUrl(
+                    this.hass,
+                    `/integrations/${this._manifest.domain}`
+                  )
+                : this._manifest.documentation}
               title=${this.hass.localize(
                 "ui.components.service-control.integration_doc"
               )}
@@ -236,6 +276,7 @@ export class HaServiceControl extends LitElement {
               .selector=${serviceData.target
                 ? { target: serviceData.target }
                 : { target: {} }}
+              .disabled=${this.disabled}
               @value-changed=${this._targetChanged}
               .value=${this._value?.target}
             ></ha-selector
@@ -243,6 +284,7 @@ export class HaServiceControl extends LitElement {
         : entityId
         ? html`<ha-entity-picker
             .hass=${this.hass}
+            .disabled=${this.disabled}
             .value=${this._value?.data?.entity_id}
             .label=${entityId.description}
             @value-changed=${this._entityPicked}
@@ -251,10 +293,10 @@ export class HaServiceControl extends LitElement {
         : ""}
       ${shouldRenderServiceDataYaml
         ? html`<ha-yaml-editor
-            .label=${this.hass.localize(
-              "ui.components.service-control.service_data"
-            )}
+            .hass=${this.hass}
+            .label=${this.hass.localize("ui.components.service-control.data")}
             .name=${"data"}
+            .readOnly=${this.disabled}
             .defaultValue=${this._value?.data}
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
@@ -275,16 +317,18 @@ export class HaServiceControl extends LitElement {
                         .checked=${this._checkedKeys.has(dataField.key) ||
                         (this._value?.data &&
                           this._value.data[dataField.key] !== undefined)}
+                        .disabled=${this.disabled}
                         @change=${this._checkboxChanged}
                         slot="prefix"
                       ></ha-checkbox>`}
                   <span slot="heading">${dataField.name || dataField.key}</span>
                   <span slot="description">${dataField?.description}</span>
                   <ha-selector
-                    .disabled=${showOptional &&
-                    !this._checkedKeys.has(dataField.key) &&
-                    (!this._value?.data ||
-                      this._value.data[dataField.key] === undefined)}
+                    .disabled=${this.disabled ||
+                    (showOptional &&
+                      !this._checkedKeys.has(dataField.key) &&
+                      (!this._value?.data ||
+                        this._value.data[dataField.key] === undefined))}
                     .hass=${this.hass}
                     .selector=${dataField.selector}
                     .key=${dataField.key}
@@ -435,6 +479,8 @@ export class HaServiceControl extends LitElement {
       }
       ha-settings-row {
         --paper-time-input-justify-content: flex-end;
+        --settings-row-content-width: 100%;
+        --settings-row-prefix-display: contents;
         border-top: var(
           --service-control-items-border-top,
           1px solid var(--divider-color)
@@ -452,12 +498,6 @@ export class HaServiceControl extends LitElement {
       p {
         margin: var(--service-control-padding, 0 16px);
         padding: 16px 0;
-      }
-      :host(:not([narrow])) ha-settings-row paper-input {
-        width: 60%;
-      }
-      :host(:not([narrow])) ha-settings-row ha-selector {
-        width: 60%;
       }
       .checkbox-spacer {
         width: 32px;

@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import { HomeAssistant } from "../types";
+import "../components/ha-alert";
 
 @customElement("hass-error-screen")
 class HassErrorScreen extends LitElement {
@@ -37,10 +38,10 @@ class HassErrorScreen extends LitElement {
           </div>`
         : ""}
       <div class="content">
-        <h3>${this.error}</h3>
+        <ha-alert alert-type="error">${this.error}</ha-alert>
         <slot>
           <mwc-button @click=${this._handleBack}>
-            ${this.hass?.localize("ui.panel.error.go_back") || "go back"}
+            ${this.hass?.localize("ui.common.back")}
           </mwc-button>
         </slot>
       </div>
@@ -83,9 +84,13 @@ class HassErrorScreen extends LitElement {
           align-items: center;
           justify-content: center;
           flex-direction: column;
+          box-sizing: border-box;
         }
         a {
           color: var(--primary-color);
+        }
+        ha-alert {
+          margin-bottom: 16px;
         }
       `,
     ];

@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
+import { mdiBackupRestore, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -98,9 +98,8 @@ export class HassioBackups extends LitElement {
     if (backup.content.addons.length !== 0) {
       for (const addon of backup.content.addons) {
         content.push(
-          this.supervisor.supervisor.addons.find(
-            (entry) => entry.slug === addon
-          )?.name || addon
+          this.supervisor.addon.addons.find((entry) => entry.slug === addon)
+            ?.name || addon
         );
       }
     }
@@ -119,7 +118,8 @@ export class HassioBackups extends LitElement {
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer => ({
       name: {
-        title: this.supervisor?.localize("backup.name") || "",
+        title: this.supervisor.localize("backup.name"),
+        main: true,
         sortable: true,
         filterable: true,
         grows: true,
@@ -127,8 +127,16 @@ export class HassioBackups extends LitElement {
           html`${entry || backup.slug}
             <div class="secondary">${backup.secondary}</div>`,
       },
+      size: {
+        title: this.supervisor.localize("backup.size"),
+        width: "15%",
+        hidden: narrow,
+        filterable: true,
+        sortable: true,
+        template: (entry: number) => Math.ceil(entry * 10) / 10 + " MB",
+      },
       date: {
-        title: this.supervisor?.localize("backup.created") || "",
+        title: this.supervisor.localize("backup.created"),
         width: "15%",
         direction: "desc",
         hidden: narrow,
@@ -158,10 +166,18 @@ export class HassioBackups extends LitElement {
     }
     return html`
       <hass-tabs-subpage-data-table
-        .tabs=${supervisorTabs(this.hass)}
+        .tabs=${atLeastVersion(this.hass.config.version, 2022, 5)
+          ? [
+              {
+                translationKey: "panel.backups",
+                path: `/hassio/backups`,
+                iconPath: mdiBackupRestore,
+              },
+            ]
+          : supervisorTabs(this.hass)}
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
-        .searchLabel=${this.supervisor.localize("search")}
+        .searchLabel=${this.supervisor.localize("backup.search")}
         .noDataText=${this.supervisor.localize("backup.no_backups")}
         .narrow=${this.narrow}
         .route=${this.route}
@@ -174,7 +190,9 @@ export class HassioBackups extends LitElement {
         selectable
         hasFab
         .mainPage=${!atLeastVersion(this.hass.config.version, 2021, 12)}
-        back-path="/config"
+        back-path=${atLeastVersion(this.hass.config.version, 2022, 5)
+          ? "/config/system"
+          : "/config"}
         supervisor
       >
         <ha-button-menu
@@ -183,16 +201,16 @@ export class HassioBackups extends LitElement {
           @action=${this._handleAction}
         >
           <ha-icon-button
-            .label=${this.hass.localize("common.menu")}
+            .label=${this.supervisor?.localize("common.menu")}
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>
           <mwc-list-item>
-            ${this.supervisor?.localize("common.reload")}
+            ${this.supervisor.localize("common.reload")}
           </mwc-list-item>
           ${atLeastVersion(this.hass.config.version, 0, 116)
             ? html`<mwc-list-item>
-                ${this.supervisor?.localize("backup.upload_backup")}
+                ${this.supervisor.localize("backup.upload_backup")}
               </mwc-list-item>`
             : ""}
         </ha-button-menu>
@@ -223,7 +241,7 @@ export class HassioBackups extends LitElement {
                   : html`
                       <ha-icon-button
                         .label=${this.supervisor.localize(
-                          "snapshot.delete_selected"
+                          "backup.delete_selected"
                         )}
                         .path=${mdiDelete}
                         id="delete-btn"

@@ -80,6 +80,8 @@ class HaAppLayout extends customElements.get("app-header-layout") {
           transform: translate(0);
           margin-left: env(safe-area-inset-left);
           margin-right: env(safe-area-inset-right);
+          padding-top: env(safe-area-inset-top);
+          padding-bottom: env(safe-area-inset-bottom);
         }
 
         @media print {

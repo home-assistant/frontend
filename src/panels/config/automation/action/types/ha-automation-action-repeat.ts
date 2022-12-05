@@ -1,7 +1,4 @@
-import "@polymer/paper-input/paper-input";
-import type { PaperListboxElement } from "@polymer/paper-listbox";
-import "@polymer/paper-listbox/paper-listbox";
-import { CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import {
@@ -12,12 +9,13 @@ import {
   WhileRepeat,
 } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
-import { Condition } from "../../../../lovelace/common/validate-condition";
+import type { HomeAssistant } from "../../../../../types";
+import type { Condition } from "../../../../lovelace/common/validate-condition";
 import "../ha-automation-action";
-import { ActionElement } from "../ha-automation-action-row";
+import "../../../../../components/ha-textfield";
+import type { ActionElement } from "../ha-automation-action-row";
 
-const OPTIONS = ["count", "while", "until"];
+const OPTIONS = ["count", "while", "until"] as const;
 
 const getType = (action) => OPTIONS.find((option) => option in action);
 
@@ -25,7 +23,11 @@ const getType = (action) => OPTIONS.find((option) => option in action);
 export class HaRepeatAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property({ attribute: false }) public action!: RepeatAction;
+
+  @property({ type: Boolean }) public reOrderMode = false;
 
   public static get defaultConfig() {
     return { repeat: { count: 2, sequence: [] } };
@@ -35,81 +37,85 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const action = this.action.repeat;
 
     const type = getType(action);
-    const selected = type ? OPTIONS.indexOf(type) : -1;
 
     return html`
-      <paper-dropdown-menu-light
+      <ha-select
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.repeat.type_select"
         )}
-        no-animations
+        .value=${type}
+        .disabled=${this.disabled}
+        @selected=${this._typeChanged}
       >
-        <paper-listbox
-          slot="dropdown-content"
-          .selected=${selected}
-          @iron-select=${this._typeChanged}
-        >
-          ${OPTIONS.map(
-            (opt) => html`
-              <paper-item .action=${opt}>
-                ${this.hass.localize(
-                  `ui.panel.config.automation.editor.actions.type.repeat.type.${opt}.label`
+        ${OPTIONS.map(
+          (opt) => html`
+            <mwc-list-item .value=${opt}>
+              ${this.hass.localize(
+                `ui.panel.config.automation.editor.actions.type.repeat.type.${opt}.label`
+              )}
+            </mwc-list-item>
+          `
+        )}
+      </ha-select>
+      <div>
+        ${type === "count"
+          ? html`
+              <ha-textfield
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
                 )}
-              </paper-item>
+                name="count"
+                .value=${(action as CountRepeat).count || "0"}
+                .disabled=${this.disabled}
+                @change=${this._countChanged}
+              ></ha-textfield>
             `
-          )}
-        </paper-listbox>
-      </paper-dropdown-menu-light>
-      ${type === "count"
-        ? html`<paper-input
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
-            )}
-            name="count"
-            .value=${(action as CountRepeat).count || "0"}
-            @value-changed=${this._countChanged}
-          ></paper-input>`
-        : ""}
-      ${type === "while"
-        ? html` <h3>
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.actions.type.repeat.type.while.conditions`
-              )}:
-            </h3>
-            <ha-automation-condition
-              .conditions=${(action as WhileRepeat).while || []}
-              .hass=${this.hass}
-              @value-changed=${this._conditionChanged}
-            ></ha-automation-condition>`
-        : ""}
-      ${type === "until"
-        ? html` <h3>
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.actions.type.repeat.type.until.conditions`
-              )}:
-            </h3>
-            <ha-automation-condition
-              .conditions=${(action as UntilRepeat).until || []}
-              .hass=${this.hass}
-              @value-changed=${this._conditionChanged}
-            ></ha-automation-condition>`
-        : ""}
+          : type === "while"
+          ? html` <h3>
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.actions.type.repeat.type.while.conditions`
+                )}:
+              </h3>
+              <ha-automation-condition
+                nested
+                .conditions=${(action as WhileRepeat).while || []}
+                .hass=${this.hass}
+                .disabled=${this.disabled}
+                @value-changed=${this._conditionChanged}
+              ></ha-automation-condition>`
+          : type === "until"
+          ? html` <h3>
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.actions.type.repeat.type.until.conditions`
+                )}:
+              </h3>
+              <ha-automation-condition
+                nested
+                .conditions=${(action as UntilRepeat).until || []}
+                .hass=${this.hass}
+                .disabled=${this.disabled}
+                @value-changed=${this._conditionChanged}
+              ></ha-automation-condition>`
+          : ""}
+      </div>
       <h3>
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.repeat.sequence"
         )}:
       </h3>
       <ha-automation-action
+        nested
         .actions=${action.sequence}
+        .reOrderMode=${this.reOrderMode}
+        .disabled=${this.disabled}
         @value-changed=${this._actionChanged}
         .hass=${this.hass}
       ></ha-automation-action>
     `;
   }
 
-  private _typeChanged(ev: CustomEvent) {
-    const type = ((ev.target as PaperListboxElement)?.selectedItem as any)
-      ?.action;
+  private _typeChanged(ev) {
+    const type = ev.target.value;
 
     if (!type || type === getType(this.action.repeat)) {
       return;
@@ -119,6 +125,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         repeat: { [type]: value, sequence: this.action.repeat.sequence },
       },
     });
@@ -129,6 +136,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const value = ev.detail.value as Condition[];
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         repeat: {
           ...this.action.repeat,
           [getType(this.action.repeat)!]: value,
@@ -142,6 +150,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const value = ev.detail.value as Action[];
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         repeat: {
           ...this.action.repeat,
           sequence: value,
@@ -151,12 +160,13 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   }
 
   private _countChanged(ev: CustomEvent): void {
-    const newVal = ev.detail.value;
+    const newVal = (ev.target as any).value;
     if ((this.action.repeat as CountRepeat).count === newVal) {
       return;
     }
     fireEvent(this, "value-changed", {
       value: {
+        ...this.action,
         repeat: {
           ...this.action.repeat,
           count: newVal,
@@ -166,7 +176,14 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   }
 
   static get styles(): CSSResultGroup {
-    return haStyle;
+    return [
+      haStyle,
+      css`
+        ha-textfield {
+          margin-top: 16px;
+        }
+      `,
+    ];
   }
 }
 

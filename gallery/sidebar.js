@@ -8,7 +8,7 @@ module.exports = [
   {
     category: "lovelace",
     // Label for in the sidebar
-    header: "Lovelace",
+    header: "Dashboards",
     // Specify order of pages. Any pages in the category folder but not listed here will
     // automatically be added after the pages listed here.
     pages: ["introduction"],
@@ -34,10 +34,19 @@ module.exports = [
   },
   {
     category: "misc",
-    header: "Miscelaneous",
+    header: "Miscellaneous",
+  },
+  {
+    category: "brand",
+    header: "Brand",
+  },
+  {
+    category: "user-test",
+    header: "Users",
+    pages: ["user-types", "configuration-menu"],
   },
   {
     category: "design.home-assistant.io",
-    header: "Design Documentation",
+    header: "About",
   },
 ];

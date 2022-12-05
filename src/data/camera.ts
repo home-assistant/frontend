@@ -2,10 +2,11 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
+import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-promise-func";
 import { HomeAssistant } from "../types";
 import { getSignedPath } from "./auth";
 
+export const CAMERA_ORIENTATIONS = [1, 2, 3, 4, 6, 8];
 export const CAMERA_SUPPORT_ON_OFF = 1;
 export const CAMERA_SUPPORT_STREAM = 2;
 
@@ -26,6 +27,7 @@ export interface CameraEntity extends HassEntityBase {
 
 export interface CameraPreferences {
   preload_stream: boolean;
+  orientation: number;
 }
 
 export interface CameraThumbnail {
@@ -41,6 +43,12 @@ export interface WebRtcAnswer {
   answer: string;
 }
 
+export const cameraUrlWithWidthHeight = (
+  base_url: string,
+  width: number,
+  height: number
+) => `${base_url}&width=${width}&height=${height}`;
+
 export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
   `/api/camera_proxy_stream/${entity.entity_id}?token=${entity.attributes.access_token}`;
 
@@ -50,14 +58,14 @@ export const fetchThumbnailUrlWithCache = async (
   width: number,
   height: number
 ) => {
-  const base_url = await timeCachePromiseFunc(
+  const base_url = await timeCacheEntityPromiseFunc(
     "_cameraTmbUrl",
     9000,
     fetchThumbnailUrl,
     hass,
     entityId
   );
-  return `${base_url}&width=${width}&height=${height}`;
+  return cameraUrlWithWidthHeight(base_url, width, height);
 };
 
 export const fetchThumbnailUrl = async (
@@ -103,11 +111,13 @@ export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>
     entity_id: entityId,
   });
 
+type ValueOf<T extends any[]> = T[number];
 export const updateCameraPrefs = (
   hass: HomeAssistant,
   entityId: string,
   prefs: {
     preload_stream?: boolean;
+    orientation?: ValueOf<typeof CAMERA_ORIENTATIONS>;
   }
 ) =>
   hass.callWS<CameraPreferences>({
@@ -115,3 +125,11 @@ export const updateCameraPrefs = (
     entity_id: entityId,
     ...prefs,
   });
+
+const CAMERA_MEDIA_SOURCE_PREFIX = "media-source://camera/";
+
+export const isCameraMediaSource = (mediaContentId: string) =>
+  mediaContentId.startsWith(CAMERA_MEDIA_SOURCE_PREFIX);
+
+export const getEntityIdFromCameraMediaSource = (mediaContentId: string) =>
+  mediaContentId.substring(CAMERA_MEDIA_SOURCE_PREFIX.length);

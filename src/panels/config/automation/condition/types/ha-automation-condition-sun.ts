@@ -1,16 +1,13 @@
-import "@polymer/paper-input/paper-input";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SunCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import {
-  ConditionElement,
-  handleChangeEvent,
-} from "../ha-automation-condition-row";
-import "../../../../../components/ha-radio";
-import "../../../../../components/ha-formfield";
-import type { HaRadio } from "../../../../../components/ha-radio";
+import type { ConditionElement } from "../ha-automation-condition-row";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-condition-sun")
 export class HaSunCondition extends LitElement implements ConditionElement {
@@ -18,115 +15,84 @@ export class HaSunCondition extends LitElement implements ConditionElement {
 
   @property({ attribute: false }) public condition!: SunCondition;
 
+  @property({ type: Boolean }) public disabled = false;
+
   public static get defaultConfig() {
     return {};
   }
 
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        {
+          name: "before",
+          type: "select",
+          required: true,
+          options: [
+            [
+              "sunrise",
+              localize(
+                "ui.panel.config.automation.editor.conditions.type.sun.sunrise"
+              ),
+            ],
+            [
+              "sunset",
+              localize(
+                "ui.panel.config.automation.editor.conditions.type.sun.sunset"
+              ),
+            ],
+          ],
+        },
+        { name: "before_offset", selector: { text: {} } },
+        {
+          name: "after",
+          type: "select",
+          required: true,
+          options: [
+            [
+              "sunrise",
+              localize(
+                "ui.panel.config.automation.editor.conditions.type.sun.sunrise"
+              ),
+            ],
+            [
+              "sunset",
+              localize(
+                "ui.panel.config.automation.editor.conditions.type.sun.sunset"
+              ),
+            ],
+          ],
+        },
+        { name: "after_offset", selector: { text: {} } },
+      ] as const
+  );
+
   protected render() {
-    const { after, after_offset, before, before_offset } = this.condition;
+    const schema = this._schema(this.hass.localize);
     return html`
-      <label>
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type.sun.before"
-        )}
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.type.sun.sunrise"
-          )}
-        >
-          <ha-radio
-            name="before"
-            value="sunrise"
-            .checked=${before === "sunrise"}
-            @change=${this._radioGroupPicked}
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.type.sun.sunset"
-          )}
-        >
-          <ha-radio
-            name="before"
-            value="sunset"
-            .checked=${before === "sunset"}
-            @change=${this._radioGroupPicked}
-          ></ha-radio>
-        </ha-formfield>
-      </label>
-
-      <paper-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type.sun.before_offset"
-        )}
-        name="before_offset"
-        .value=${before_offset}
+      <ha-form
+        .schema=${schema}
+        .data=${this.condition}
+        .hass=${this.hass}
+        .disabled=${this.disabled}
+        .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
-      ></paper-input>
-
-      <label>
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type.sun.after"
-        )}
-
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.type.sun.sunrise"
-          )}
-        >
-          <ha-radio
-            name="after"
-            value="sunrise"
-            .checked=${after === "sunrise"}
-            @change=${this._radioGroupPicked}
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.type.sun.sunset"
-          )}
-        >
-          <ha-radio
-            name="after"
-            value="sunset"
-            .checked=${after === "sunset"}
-            @change=${this._radioGroupPicked}
-          ></ha-radio>
-        </ha-formfield>
-      </label>
-
-      <paper-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type.sun.after_offset"
-        )}
-        name="after_offset"
-        .value=${after_offset}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
+      ></ha-form>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
-  }
-
-  private _radioGroupPicked(ev: CustomEvent) {
-    const key = (ev.target as HaRadio).name;
     ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.condition,
-        [key]: (ev.target as HaRadio).value,
-      },
-    });
+    const newTrigger = ev.detail.value;
+    fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  static styles = css`
-    label {
-      display: flex;
-      align-items: center;
-    }
-  `;
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
+    this.hass.localize(
+      `ui.panel.config.automation.editor.conditions.type.sun.${schema.name}`
+    );
 }
 
 declare global {

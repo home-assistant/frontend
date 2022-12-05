@@ -1,15 +1,13 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-entities-picker";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
-import { adminChangePassword } from "../../../data/auth";
+import "../../../components/ha-textfield";
 import { PersonMutableParams } from "../../../data/person";
 import {
   deleteUser,
@@ -21,7 +19,6 @@ import {
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -29,6 +26,7 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
+import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
 
 const includeDomains = ["device_tracker"];
@@ -120,17 +118,17 @@ class DialogPersonDetail extends LitElement {
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
-            <paper-input
+            <ha-textfield
               dialogInitialFocus
               .value=${this._name}
-              @value-changed=${this._nameChanged}
+              @input=${this._nameChanged}
               label=${this.hass!.localize("ui.panel.config.person.detail.name")}
               error-message=${this.hass!.localize(
                 "ui.panel.config.person.detail.name_error_msg"
               )}
               required
               auto-validate
-            ></paper-input>
+            ></ha-textfield>
             <ha-picture-upload
               .hass=${this.hass}
               .value=${this._picture}
@@ -159,7 +157,6 @@ class DialogPersonDetail extends LitElement {
                     .label=${this.hass.localize(
                       "ui.panel.config.person.detail.local_only"
                     )}
-                    .dir=${computeRTLDirection(this.hass)}
                   >
                     <ha-switch
                       .checked=${this._localOnly}
@@ -171,7 +168,6 @@ class DialogPersonDetail extends LitElement {
                     .label=${this.hass.localize(
                       "ui.panel.config.person.detail.admin"
                     )}
-                    .dir=${computeRTLDirection(this.hass)}
                   >
                     <ha-switch
                       .disabled=${this._user.system_generated ||
@@ -277,9 +273,9 @@ class DialogPersonDetail extends LitElement {
     this._params = undefined;
   }
 
-  private _nameChanged(ev: PolymerChangedEvent<string>) {
+  private _nameChanged(ev) {
     this._error = undefined;
-    this._name = ev.detail.value;
+    this._name = ev.target.value;
   }
 
   private _adminChanged(ev): void {
@@ -353,40 +349,7 @@ class DialogPersonDetail extends LitElement {
       });
       return;
     }
-    const newPassword = await showPromptDialog(this, {
-      title: this.hass.localize("ui.panel.config.users.editor.change_password"),
-      inputType: "password",
-      inputLabel: this.hass.localize(
-        "ui.panel.config.users.editor.new_password"
-      ),
-    });
-    if (!newPassword) {
-      return;
-    }
-    const confirmPassword = await showPromptDialog(this, {
-      title: this.hass.localize("ui.panel.config.users.editor.change_password"),
-      inputType: "password",
-      inputLabel: this.hass.localize(
-        "ui.panel.config.users.add_user.password_confirm"
-      ),
-    });
-    if (!confirmPassword) {
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.users.add_user.password_not_match"
-        ),
-      });
-      return;
-    }
-    await adminChangePassword(this.hass, this._user.id, newPassword);
-    showAlertDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.users.editor.password_changed"
-      ),
-    });
+    showAdminChangePasswordDialog(this, { userId: this._user.id });
   }
 
   private async _updateEntry() {
@@ -457,11 +420,12 @@ class DialogPersonDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        .form {
-          padding-bottom: 24px;
+        ha-picture-upload,
+        ha-textfield {
+          display: block;
         }
         ha-picture-upload {
-          display: block;
+          margin-top: 16px;
         }
         ha-formfield {
           display: block;

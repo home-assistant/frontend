@@ -2,12 +2,12 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { Analytics, AnalyticsPreferences } from "../data/analytics";
+import type { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
-import "./ha-checkbox";
-import type { HaCheckbox } from "./ha-checkbox";
+import type { HomeAssistant } from "../types";
 import "./ha-settings-row";
+import "./ha-switch";
+import type { HaSwitch } from "./ha-switch";
 
 const ADDITIONAL_PREFERENCES = [
   {
@@ -40,62 +40,62 @@ export class HaAnalytics extends LitElement {
 
     return html`
       <ha-settings-row>
-        <span slot="prefix">
-          <ha-checkbox
-            @change=${this._handleRowCheckboxClick}
-            .checked=${baseEnabled}
-            .preference=${"base"}
-            .disabled=${loading}
-            name="base"
-          >
-          </ha-checkbox>
-        </span>
         <span slot="heading" data-for="base"> Basic analytics </span>
         <span slot="description" data-for="base">
           This includes information about your system.
         </span>
+        <ha-switch
+          @change=${this._handleRowClick}
+          .checked=${baseEnabled}
+          .preference=${"base"}
+          .disabled=${loading}
+          name="base"
+        >
+        </ha-switch>
       </ha-settings-row>
       ${ADDITIONAL_PREFERENCES.map(
         (preference) =>
-          html`<ha-settings-row>
-            <span slot="prefix">
-              <ha-checkbox
-                @change=${this._handleRowCheckboxClick}
-                .checked=${this.analytics?.preferences[preference.key]}
-                .preference=${preference.key}
-                name=${preference.key}
-              >
-              </ha-checkbox>
-              ${!baseEnabled
-                ? html`<paper-tooltip animation-delay="0" position="right">
-                    You need to enable basic analytics for this option to be
-                    available
-                  </paper-tooltip>`
-                : ""}
-            </span>
-            <span slot="heading" data-for=${preference.key}>
-              ${preference.title}
-            </span>
-            <span slot="description" data-for=${preference.key}>
-              ${preference.description}
-            </span>
-          </ha-settings-row>`
+          html`
+            <ha-settings-row>
+              <span slot="heading" data-for=${preference.key}>
+                ${preference.title}
+              </span>
+              <span slot="description" data-for=${preference.key}>
+                ${preference.description}
+              </span>
+              <span>
+                <ha-switch
+                  @change=${this._handleRowClick}
+                  .checked=${this.analytics?.preferences[preference.key]}
+                  .preference=${preference.key}
+                  name=${preference.key}
+                >
+                </ha-switch>
+                ${!baseEnabled
+                  ? html`
+                      <paper-tooltip animation-delay="0" position="right">
+                        You need to enable basic analytics for this option to be
+                        available
+                      </paper-tooltip>
+                    `
+                  : ""}
+              </span>
+            </ha-settings-row>
+          `
       )}
       <ha-settings-row>
-        <span slot="prefix">
-          <ha-checkbox
-            @change=${this._handleRowCheckboxClick}
-            .checked=${this.analytics?.preferences.diagnostics}
-            .preference=${"diagnostics"}
-            .disabled=${loading}
-            name="diagnostics"
-          >
-          </ha-checkbox>
-        </span>
         <span slot="heading" data-for="diagnostics"> Diagnostics </span>
         <span slot="description" data-for="diagnostics">
           Share crash reports when unexpected errors occur.
         </span>
+        <ha-switch
+          @change=${this._handleRowClick}
+          .checked=${this.analytics?.preferences.diagnostics}
+          .preference=${"diagnostics"}
+          .disabled=${loading}
+          name="diagnostics"
+        >
+        </ha-switch>
       </ha-settings-row>
     `;
   }
@@ -120,23 +120,23 @@ export class HaAnalytics extends LitElement {
     });
   }
 
-  private _handleRowCheckboxClick(ev: Event) {
-    const checkbox = ev.currentTarget as HaCheckbox;
-    const preference = (checkbox as any).preference;
+  private _handleRowClick(ev: Event) {
+    const target = ev.currentTarget as HaSwitch;
+    const preference = (target as any).preference;
     const preferences = this.analytics ? { ...this.analytics.preferences } : {};
 
-    if (preferences[preference] === checkbox.checked) {
+    if (preferences[preference] === target.checked) {
       return;
     }
 
-    preferences[preference] = checkbox.checked;
+    preferences[preference] = target.checked;
 
     if (
       ADDITIONAL_PREFERENCES.some((entry) => entry.key === preference) &&
-      checkbox.checked
+      target.checked
     ) {
       preferences.base = true;
-    } else if (preference === "base" && !checkbox.checked) {
+    } else if (preference === "base" && !target.checked) {
       preferences.usage = false;
       preferences.statistics = false;
     }

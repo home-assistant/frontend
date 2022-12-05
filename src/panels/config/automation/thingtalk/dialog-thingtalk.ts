@@ -1,10 +1,11 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-textfield";
+import type { HaTextField } from "../../../../components/ha-textfield";
 import type { AutomationConfig } from "../../../../data/automation";
 import { convertThingTalk } from "../../../../data/cloud";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
@@ -12,7 +13,6 @@ import type { HomeAssistant } from "../../../../types";
 import "./ha-thingtalk-placeholders";
 import type { PlaceholderValues } from "./ha-thingtalk-placeholders";
 import type { ThingtalkDialogParams } from "./show-dialog-thingtalk";
-import "../../../../components/ha-dialog";
 
 export interface Placeholder {
   name: string;
@@ -38,7 +38,7 @@ class DialogThingtalk extends LitElement {
 
   @state() private _placeholders?: PlaceholderContainer;
 
-  @query("#input") private _input?: PaperInputElement;
+  @query("#input") private _input?: HaTextField;
 
   private _value?: string;
 
@@ -58,7 +58,7 @@ class DialogThingtalk extends LitElement {
     this._placeholders = undefined;
     this._params = undefined;
     if (this._input) {
-      this._input.value = null;
+      this._input.value = "";
     }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -127,13 +127,13 @@ class DialogThingtalk extends LitElement {
               </button>
             </li>
           </ul>
-          <paper-input
+          <ha-textfield
             id="input"
             label="What should this automation do?"
             .value=${this._value}
             autofocus
             @keyup=${this._handleKeyUp}
-          ></paper-input>
+          ></ha-textfield>
           <a
             href="https://almond.stanford.edu/"
             target="_blank"

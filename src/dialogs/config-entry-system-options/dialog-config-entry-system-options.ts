@@ -83,6 +83,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
             .checked=${!this._disableNewEntities}
             @change=${this._disableNewEntitiesChanged}
             .disabled=${this._submitting}
+            dialogInitialFocus
           ></ha-switch>
         </ha-formfield>
         ${this._allowUpdatePolling()
@@ -169,7 +170,6 @@ class DialogConfigEntrySystemOptions extends LitElement {
           ),
         });
       }
-      this._params!.entryUpdated(result.config_entry);
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message || "Unknown error";

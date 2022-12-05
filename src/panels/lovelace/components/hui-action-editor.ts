@@ -1,13 +1,8 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-input/paper-textarea";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-service-control";
 import {
@@ -19,6 +14,18 @@ import {
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
+import "../../../components/ha-navigation-picker";
+
+export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
+
+const DEFAULT_ACTIONS: UiAction[] = [
+  "more-info",
+  "toggle",
+  "navigate",
+  "url",
+  "call-service",
+  "none",
+];
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -26,7 +33,7 @@ export class HuiActionEditor extends LitElement {
 
   @property() public label?: string;
 
-  @property() public actions?: string[];
+  @property() public actions?: UiAction[];
 
   @property() public tooltipText?: string;
 
@@ -50,44 +57,44 @@ export class HuiActionEditor extends LitElement {
   private _serviceAction = memoizeOne(
     (config: CallServiceActionConfig): ServiceAction => ({
       service: this._service,
-      data: config.service_data,
+      data: config.data ?? config.service_data,
       target: config.target,
     })
   );
 
   protected render(): TemplateResult {
-    if (!this.hass || !this.actions) {
+    if (!this.hass) {
       return html``;
     }
 
+    const actions = this.actions ?? DEFAULT_ACTIONS;
+
     return html`
       <div class="dropdown">
-        <paper-dropdown-menu
+        <ha-select
           .label=${this.label}
           .configValue=${"action"}
-          @iron-select=${this._actionPicked}
+          @selected=${this._actionPicked}
+          .value=${this.config?.action ?? "default"}
+          @closed=${stopPropagation}
+          fixedMenuPosition
+          naturalMenuWidt
         >
-          <paper-listbox
-            slot="dropdown-content"
-            attr-for-selected="value"
-            .selected=${this.config?.action ?? "default"}
-          >
-            <paper-item .value=${"default"}
-              >${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.actions.default_action"
-              )}</paper-item
-            >
-            ${this.actions.map(
-              (action) => html`
-                <paper-item .value=${action}
-                  >${this.hass!.localize(
-                    `ui.panel.lovelace.editor.action-editor.actions.${action}`
-                  )}</paper-item
-                >
-              `
+          <mwc-list-item value="default">
+            ${this.hass!.localize(
+              "ui.panel.lovelace.editor.action-editor.actions.default_action"
             )}
-          </paper-listbox>
-        </paper-dropdown-menu>
+          </mwc-list-item>
+          ${actions.map(
+            (action) => html`
+              <mwc-list-item .value=${action}>
+                ${this.hass!.localize(
+                  `ui.panel.lovelace.editor.action-editor.actions.${action}`
+                )}
+              </mwc-list-item>
+            `
+          )}
+        </ha-select>
         ${this.tooltipText
           ? html`
               <ha-help-tooltip .label=${this.tooltipText}></ha-help-tooltip>
@@ -96,26 +103,26 @@ export class HuiActionEditor extends LitElement {
       </div>
       ${this.config?.action === "navigate"
         ? html`
-            <paper-input
-              label=${this.hass!.localize(
+            <ha-navigation-picker
+              .hass=${this.hass}
+              .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.action-editor.navigation_path"
               )}
               .value=${this._navigation_path}
-              .configValue=${"navigation_path"}
-              @value-changed=${this._valueChanged}
-            ></paper-input>
+              @value-changed=${this._navigateValueChanged}
+            ></ha-navigation-picker>
           `
         : ""}
       ${this.config?.action === "url"
         ? html`
-            <paper-input
-              label=${this.hass!.localize(
+            <ha-textfield
+              .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.action-editor.url_path"
               )}
               .value=${this._url_path}
               .configValue=${"url_path"}
-              @value-changed=${this._valueChanged}
-            ></paper-input>
+              @input=${this._valueChanged}
+            ></ha-textfield>
           `
         : ""}
       ${this.config?.action === "call-service"
@@ -132,23 +139,17 @@ export class HuiActionEditor extends LitElement {
     `;
   }
 
-  private _actionPicked(ev: CustomEvent): void {
+  private _actionPicked(ev): void {
     ev.stopPropagation();
     if (!this.hass) {
       return;
     }
-    const item = ev.detail.item;
-    const value = item.value;
+    const value = ev.target.value;
     if (this.config?.action === value) {
       return;
     }
     if (value === "default") {
       fireEvent(this, "value-changed", { value: undefined });
-      if (this.config?.action) {
-        (
-          this.shadowRoot!.querySelector("paper-listbox") as PaperListboxElement
-        ).select(this.config.action);
-      }
       return;
     }
 
@@ -173,13 +174,13 @@ export class HuiActionEditor extends LitElement {
     });
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev): void {
     ev.stopPropagation();
     if (!this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
-    const value = ev.detail.value;
+    const value = ev.target.value;
     if (this[`_${target.configValue}`] === value) {
       return;
     }
@@ -192,20 +193,55 @@ export class HuiActionEditor extends LitElement {
 
   private _serviceValueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.config!,
-        service: ev.detail.value.service || "",
-        service_data: ev.detail.value.data || {},
-        target: ev.detail.value.target || {},
-      },
-    });
+    const value = {
+      ...this.config!,
+      service: ev.detail.value.service || "",
+      data: ev.detail.value.data || {},
+      target: ev.detail.value.target || {},
+    };
+    // "service_data" is allowed for backwards compatibility but replaced with "data" on write
+    if ("service_data" in value) {
+      delete value.service_data;
+    }
+
+    fireEvent(this, "value-changed", { value });
+  }
+
+  private _navigateValueChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const value = {
+      ...this.config!,
+      navigation_path: ev.detail.value,
+    };
+
+    fireEvent(this, "value-changed", { value });
   }
 
   static get styles(): CSSResultGroup {
     return css`
       .dropdown {
-        display: flex;
+        position: relative;
+      }
+      ha-help-tooltip {
+        position: absolute;
+        right: 40px;
+        top: 16px;
+        inset-inline-start: initial;
+        inset-inline-end: 40px;
+        direction: var(--direction);
+      }
+      ha-select,
+      ha-textfield {
+        width: 100%;
+      }
+      ha-service-control,
+      ha-navigation-picker {
+        display: block;
+      }
+      ha-textfield,
+      ha-service-control,
+      ha-navigation-picker {
+        margin-top: 8px;
       }
       ha-service-control {
         --service-control-padding: 0;

@@ -1,7 +1,10 @@
 import { Connection, getCollection } from "home-assistant-js-websocket";
 import { Store } from "home-assistant-js-websocket/dist/store";
-import { LocalizeFunc } from "../../common/translations/localize";
-import { HomeAssistant } from "../../types";
+import {
+  FlattenObjectKeys,
+  LocalizeFunc,
+} from "../../common/translations/localize";
+import { HomeAssistant, TranslationDict } from "../../types";
 import { HassioAddonsInfo } from "../hassio/addon";
 import { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
 import { NetworkInfo } from "../hassio/network";
@@ -57,6 +60,8 @@ export interface SupervisorEvent {
   [key: string]: any;
 }
 
+export type SupervisorKeys = FlattenObjectKeys<TranslationDict["supervisor"]>;
+
 export interface Supervisor {
   host: HassioHostInfo;
   supervisor: HassioSupervisorInfo;
@@ -67,45 +72,9 @@ export interface Supervisor {
   os: HassioHassOSInfo;
   addon: HassioAddonsInfo;
   store: SupervisorStore;
-  localize: LocalizeFunc;
+  localize: LocalizeFunc<SupervisorKeys>;
 }
 
-interface SupervisorBaseAvailableUpdates {
-  panel_path?: string;
-  update_type?: string;
-  version_latest?: string;
-}
-
-interface SupervisorAddonAvailableUpdates
-  extends SupervisorBaseAvailableUpdates {
-  update_type?: "addon";
-  icon?: string;
-  name?: string;
-}
-
-interface SupervisorCoreAvailableUpdates
-  extends SupervisorBaseAvailableUpdates {
-  update_type?: "core";
-}
-
-interface SupervisorOsAvailableUpdates extends SupervisorBaseAvailableUpdates {
-  update_type?: "os";
-}
-
-interface SupervisorSupervisorAvailableUpdates
-  extends SupervisorBaseAvailableUpdates {
-  update_type?: "supervisor";
-}
-
-export type SupervisorAvailableUpdates =
-  | SupervisorAddonAvailableUpdates
-  | SupervisorCoreAvailableUpdates
-  | SupervisorOsAvailableUpdates
-  | SupervisorSupervisorAvailableUpdates;
-
-export interface SupervisorAvailableUpdatesResponse {
-  available_updates: SupervisorAvailableUpdates[];
-}
 export const supervisorApiWsRequest = <T>(
   conn: Connection,
   request: supervisorApiRequest
@@ -118,7 +87,7 @@ async function processEvent(
   event: SupervisorEvent,
   key: string
 ) {
-  if (event.event !== "supervisor-update" || event.update_key !== key) {
+  if (event.event !== "supervisor_update" || event.update_key !== key) {
     return;
   }
 
@@ -175,14 +144,3 @@ export const subscribeSupervisorEvents = (
   getSupervisorEventCollection(hass.connection, key, endpoint).subscribe(
     onChange
   );
-
-export const fetchSupervisorAvailableUpdates = async (
-  hass: HomeAssistant
-): Promise<SupervisorAvailableUpdates[]> =>
-  (
-    await hass.callWS<SupervisorAvailableUpdatesResponse>({
-      type: "supervisor/api",
-      endpoint: "/supervisor/available_updates",
-      method: "get",
-    })
-  ).available_updates;

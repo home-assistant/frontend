@@ -1,7 +1,7 @@
-import { atLeastVersion } from "../../common/config/version";
 import { HomeAssistant } from "../../types";
-import { AddonRepository, AddonStage } from "../hassio/addon";
-import { hassioApiResultExtractor, HassioResponse } from "../hassio/common";
+import { AddonRole, AddonStage } from "../hassio/addon";
+import { supervisorApiCall } from "./common";
+import { SupervisorArch } from "./supervisor";
 
 export interface StoreAddon {
   advanced: boolean;
@@ -13,14 +13,34 @@ export interface StoreAddon {
   installed: boolean;
   logo: boolean;
   name: string;
-  repository: AddonRepository;
+  repository: string;
   slug: string;
   stage: AddonStage;
   update_available: boolean;
   url: string;
-  version: string | null;
   version_latest: string;
+  version: null;
 }
+
+export interface StoreAddonDetails extends StoreAddon {
+  apparmor: boolean;
+  arch: SupervisorArch[];
+  auth_api: boolean;
+  detached: boolean;
+  docker_api: boolean;
+  documentation: boolean;
+  full_access: boolean;
+  hassio_api: boolean;
+  hassio_role: AddonRole;
+  homeassistant_api: boolean;
+  host_network: boolean;
+  host_pid: boolean;
+  ingress: boolean;
+  long_description: string;
+  rating: number;
+  signed: boolean;
+}
+
 interface StoreRepository {
   maintainer: string;
   name: string;
@@ -36,16 +56,25 @@ export interface SupervisorStore {
 
 export const fetchSupervisorStore = async (
   hass: HomeAssistant
-): Promise<SupervisorStore> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/store",
-      method: "get",
-    });
-  }
+): Promise<SupervisorStore> => supervisorApiCall(hass, "/store");
 
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<SupervisorStore>>("GET", `hassio/store`)
-  );
-};
+export const fetchStoreRepositories = async (
+  hass: HomeAssistant
+): Promise<StoreRepository[]> => supervisorApiCall(hass, "/store/repositories");
+
+export const addStoreRepository = async (
+  hass: HomeAssistant,
+  repository: string
+): Promise<void> =>
+  supervisorApiCall(hass, "/store/repositories", {
+    method: "post",
+    data: { repository },
+  });
+
+export const removeStoreRepository = async (
+  hass: HomeAssistant,
+  repository: string
+): Promise<void> =>
+  supervisorApiCall(hass, `/store/repositories/${repository}`, {
+    method: "delete",
+  });

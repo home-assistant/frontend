@@ -24,9 +24,9 @@ class HassioAddons extends LitElement {
           ? html` <h1>${this.supervisor.localize("dashboard.addons")}</h1> `
           : ""}
         <div class="card-group">
-          ${!this.supervisor.supervisor.addons?.length
+          ${!this.supervisor.addon.addons.length
             ? html`
-                <ha-card>
+                <ha-card outlined>
                   <div class="card-content">
                     <button class="link" @click=${this._openStore}>
                       ${this.supervisor.localize("dashboard.no_addons")}
@@ -34,11 +34,15 @@ class HassioAddons extends LitElement {
                   </div>
                 </ha-card>
               `
-            : this.supervisor.supervisor.addons
+            : this.supervisor.addon.addons
                 .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
                 .map(
                   (addon) => html`
-                    <ha-card .addon=${addon} @click=${this._addonTapped}>
+                    <ha-card
+                      outlined
+                      .addon=${addon}
+                      @click=${this._addonTapped}
+                    >
                       <div class="card-content">
                         <hassio-card-content
                           .hass=${this.hass}

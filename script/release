@@ -11,6 +11,6 @@ yarn install
 
 script/build_frontend
 
-rm -rf dist
-python3 setup.py -q sdist
-python3 -m twine upload dist/* --skip-existing
+rm -rf dist home_assistant_frontend.egg-info
+python3 -m build
+python3 -m twine upload dist/*.whl --skip-existing

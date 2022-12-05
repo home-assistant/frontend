@@ -3,9 +3,9 @@ import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/ha-theme-picker";
 import { HomeAssistant } from "../../../../types";
 import { MediaControlCardConfig } from "../../cards/types";
-import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
@@ -50,24 +50,28 @@ export class HuiMediaControlCardEditor
     return html`
       <div class="card-config">
         <ha-entity-picker
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.required"
-          )})"
+          )}
           .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
+          .required=${true}
           @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
-        <hui-theme-select-editor
+        <ha-theme-picker
+          .label=${`${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.theme"
+          )} (${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})`}
           .hass=${this.hass}
           .value=${this._theme}
           .configValue=${"theme"}
           @value-changed=${this._valueChanged}
-        ></hui-theme-select-editor>
+        ></ha-theme-picker>
       </div>
     `;
   }

@@ -39,7 +39,14 @@ import type { HomeAssistant } from "../../../../src/types";
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
 
-const SUPPORTED_UI_TYPES = ["string", "select", "boolean", "integer", "float"];
+const SUPPORTED_UI_TYPES = [
+  "string",
+  "select",
+  "boolean",
+  "integer",
+  "float",
+  "schema",
+];
 
 const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
   new Type("!secret", {
@@ -47,6 +54,8 @@ const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
     construct: (data) => `!secret ${data}`,
   }),
 ]);
+
+const MASKED_FIELDS = ["password", "secret", "token"];
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
@@ -75,19 +84,66 @@ class HassioAddonConfig extends LitElement {
   public computeLabel = (entry: HaFormSchema): string =>
     this.addon.translations[this.hass.language]?.configuration?.[entry.name]
       ?.name ||
-    this.addon.translations.en?.configuration?.[entry.name].name ||
+    this.addon.translations.en?.configuration?.[entry.name]?.name ||
     entry.name;
 
-  private _schema = memoizeOne((schema: HaFormSchema[]): HaFormSchema[] =>
-    // @ts-expect-error supervisor does not implement [string, string] for select.options[]
-    schema.map((entry) =>
-      entry.type === "select"
-        ? {
-            ...entry,
-            options: entry.options.map((option) => [option, option]),
-          }
-        : entry
-    )
+  public computeHelper = (entry: HaFormSchema): string =>
+    this.addon.translations[this.hass.language]?.configuration?.[entry.name]
+      ?.description ||
+    this.addon.translations.en?.configuration?.[entry.name]?.description ||
+    "";
+
+  private _convertSchema = memoizeOne(
+    // Convert supervisor schema to selectors
+    (schema: Record<string, any>): HaFormSchema[] =>
+      schema.map((entry) =>
+        entry.type === "select"
+          ? {
+              name: entry.name,
+              required: entry.required,
+              selector: { select: { options: entry.options } },
+            }
+          : entry.type === "string"
+          ? entry.multiple
+            ? {
+                name: entry.name,
+                required: entry.required,
+                selector: {
+                  select: { options: [], multiple: true, custom_value: true },
+                },
+              }
+            : {
+                name: entry.name,
+                required: entry.required,
+                selector: {
+                  text: {
+                    type:
+                      entry.format || MASKED_FIELDS.includes(entry.name)
+                        ? "password"
+                        : "text",
+                  },
+                },
+              }
+          : entry.type === "boolean"
+          ? {
+              name: entry.name,
+              required: entry.required,
+              selector: { boolean: {} },
+            }
+          : entry.type === "schema"
+          ? {
+              name: entry.name,
+              required: entry.required,
+              selector: { object: {} },
+            }
+          : entry.type === "float" || entry.type === "integer"
+          ? {
+              name: entry.name,
+              required: entry.required,
+              selector: { number: { mode: "box" } },
+            }
+          : entry
+      )
   );
 
   private _filteredShchema = memoizeOne(
@@ -106,7 +162,7 @@ class HassioAddonConfig extends LitElement {
         );
     return html`
       <h1>${this.addon.name}</h1>
-      <ha-card>
+      <ha-card outlined>
         <div class="header">
           <h2>
             ${this.supervisor.localize("addon.configuration.options.header")}
@@ -114,7 +170,7 @@ class HassioAddonConfig extends LitElement {
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <ha-icon-button
-                .label=${this.hass.localize("common.menu")}
+                .label=${this.supervisor.localize("common.menu")}
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
@@ -140,7 +196,8 @@ class HassioAddonConfig extends LitElement {
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
                 .computeLabel=${this.computeLabel}
-                .schema=${this._schema(
+                .computeHelper=${this.computeHelper}
+                .schema=${this._convertSchema(
                   this._showOptional
                     ? this.addon.schema!
                     : this._filteredShchema(
@@ -197,8 +254,9 @@ class HassioAddonConfig extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._canShowSchema = !this.addon.schema!.find(
-      // @ts-ignore
-      (entry) => !SUPPORTED_UI_TYPES.includes(entry.type) || entry.multiple
+      (entry) =>
+        // @ts-ignore
+        !SUPPORTED_UI_TYPES.includes(entry.type)
     );
     this._yamlMode = !this._canShowSchema;
   }
@@ -278,7 +336,7 @@ class HassioAddonConfig extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
       this._error = this.supervisor.localize(
-        "addon.common.update_available",
+        "addon.failed_to_reset",
         "error",
         extractApiErrorMessage(err)
       );

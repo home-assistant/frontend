@@ -1,9 +1,5 @@
-import "@material/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResultGroup,
@@ -12,11 +8,12 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-service-description";
+import "../../../../../components/ha-select";
+import "../../../../../components/buttons/ha-progress-button";
 import {
   Attribute,
   Cluster,
@@ -27,7 +24,7 @@ import {
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import "../../../ha-config-section";
+import { forwardHaptic } from "../../../../../data/haptics";
 import { formatAsPaddedHex } from "./functions";
 import {
   ChangeEvent,
@@ -35,101 +32,68 @@ import {
   SetAttributeServiceData,
 } from "./types";
 
+@customElement("zha-cluster-attributes")
 export class ZHAClusterAttributes extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public isWide?: boolean;
-
-  @property() public showHelp = false;
-
-  @property() public selectedNode?: ZHADevice;
+  @property() public device?: ZHADevice;
 
   @property() public selectedCluster?: Cluster;
 
-  @state() private _attributes: Attribute[] = [];
+  @state() private _attributes: Attribute[] | undefined;
 
-  @state() private _selectedAttributeIndex = -1;
+  @state() private _selectedAttributeId?: number;
 
   @state() private _attributeValue?: any = "";
 
   @state() private _manufacturerCodeOverride?: string | number;
+
+  @state() private _readingAttribute = false;
 
   @state()
   private _setAttributeServiceData?: SetAttributeServiceData;
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {
-      this._attributes = [];
-      this._selectedAttributeIndex = -1;
+      this._attributes = undefined;
+      this._selectedAttributeId = undefined;
       this._attributeValue = "";
       this._fetchAttributesForCluster();
     }
-    super.update(changedProperties);
+    super.updated(changedProperties);
   }
 
   protected render(): TemplateResult {
+    if (!this.device || !this.selectedCluster || !this._attributes) {
+      return html``;
+    }
     return html`
-      <ha-config-section .isWide=${this.isWide}>
-        <div class="header" slot="header">
-          <span>
-            ${this.hass!.localize(
-              "ui.panel.config.zha.cluster_attributes.header"
+      <ha-card class="content">
+        <div class="attribute-picker">
+          <ha-select
+            .label=${this.hass!.localize(
+              "ui.panel.config.zha.cluster_attributes.attributes_of_cluster"
             )}
-          </span>
-          <ha-icon-button
-            class="toggle-help-icon"
-            @click=${this._onHelpTap}
-            .path=${mdiHelpCircle}
-            .label=${this.hass!.localize("ui.common.help")}
+            class="menu"
+            .value=${String(this._selectedAttributeId)}
+            @selected=${this._selectedAttributeChanged}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
           >
-          </ha-icon-button>
-        </div>
-        <span slot="introduction">
-          ${this.hass!.localize(
-            "ui.panel.config.zha.cluster_attributes.introduction"
-          )}
-        </span>
-
-        <ha-card class="content">
-          <div class="attribute-picker">
-            <paper-dropdown-menu
-              label=${this.hass!.localize(
-                "ui.panel.config.zha.cluster_attributes.attributes_of_cluster"
-              )}
-              class="menu"
-            >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${this._selectedAttributeIndex}
-                @iron-select=${this._selectedAttributeChanged}
-              >
-                ${this._attributes.map(
-                  (entry) => html`
-                    <paper-item
-                      >${entry.name +
-                      " (id: " +
-                      formatAsPaddedHex(entry.id) +
-                      ")"}</paper-item
-                    >
-                  `
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu>
-          </div>
-          ${this.showHelp
-            ? html`
-                <div class="help-text">
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.cluster_attributes.help_attribute_dropdown"
-                  )}
-                </div>
+            ${this._attributes.map(
+              (entry) => html`
+                <mwc-list-item .value=${String(entry.id)}>
+                  ${`${entry.name} (id: ${formatAsPaddedHex(entry.id)})`}
+                </mwc-list-item>
               `
-            : ""}
-          ${this._selectedAttributeIndex !== -1
-            ? this._renderAttributeInteractions()
-            : ""}
-        </ha-card>
-      </ha-config-section>
+            )}
+          </ha-select>
+        </div>
+        ${this._selectedAttributeId !== undefined
+          ? this._renderAttributeInteractions()
+          : ""}
+      </ha-card>
     `;
   }
 
@@ -156,20 +120,15 @@ export class ZHAClusterAttributes extends LitElement {
         ></paper-input>
       </div>
       <div class="card-actions">
-        <mwc-button @click=${this._onGetZigbeeAttributeClick}>
+        <ha-progress-button
+          @click=${this._onGetZigbeeAttributeClick}
+          .progress=${this._readingAttribute}
+          .disabled=${this._readingAttribute}
+        >
           ${this.hass!.localize(
-            "ui.panel.config.zha.cluster_attributes.get_zigbee_attribute"
+            "ui.panel.config.zha.cluster_attributes.read_zigbee_attribute"
           )}
-        </mwc-button>
-        ${this.showHelp
-          ? html`
-              <div class="help-text2">
-                ${this.hass!.localize(
-                  "ui.panel.config.zha.cluster_attributes.help_get_zigbee_attribute"
-                )}
-              </div>
-            `
-          : ""}
+        </ha-progress-button>
         <ha-call-service-button
           .hass=${this.hass}
           domain="zha"
@@ -177,48 +136,41 @@ export class ZHAClusterAttributes extends LitElement {
           .serviceData=${this._setAttributeServiceData}
         >
           ${this.hass!.localize(
-            "ui.panel.config.zha.cluster_attributes.set_zigbee_attribute"
+            "ui.panel.config.zha.cluster_attributes.write_zigbee_attribute"
           )}
         </ha-call-service-button>
-        ${this.showHelp
-          ? html`
-              <ha-service-description
-                .hass=${this.hass}
-                domain="zha"
-                service="set_zigbee_cluster_attribute"
-                class="help-text2"
-              ></ha-service-description>
-            `
-          : ""}
       </div>
     `;
   }
 
   private async _fetchAttributesForCluster(): Promise<void> {
-    if (this.selectedNode && this.selectedCluster && this.hass) {
+    if (this.device && this.selectedCluster && this.hass) {
       this._attributes = await fetchAttributesForCluster(
         this.hass,
-        this.selectedNode!.ieee,
+        this.device!.ieee,
         this.selectedCluster!.endpoint_id,
         this.selectedCluster!.id,
         this.selectedCluster!.type
       );
       this._attributes.sort((a, b) => a.name.localeCompare(b.name));
+      if (this._attributes.length > 0) {
+        this._selectedAttributeId = this._attributes[0].id;
+      }
     }
   }
 
   private _computeReadAttributeServiceData():
     | ReadAttributeServiceData
     | undefined {
-    if (!this.selectedCluster || !this.selectedNode) {
+    if (!this.selectedCluster || !this.device) {
       return undefined;
     }
     return {
-      ieee: this.selectedNode!.ieee,
+      ieee: this.device!.ieee,
       endpoint_id: this.selectedCluster!.endpoint_id,
       cluster_id: this.selectedCluster!.id,
       cluster_type: this.selectedCluster!.type,
-      attribute: this._attributes[this._selectedAttributeIndex].id,
+      attribute: this._selectedAttributeId!,
       manufacturer: this._manufacturerCodeOverride
         ? parseInt(this._manufacturerCodeOverride as string, 10)
         : undefined,
@@ -228,15 +180,15 @@ export class ZHAClusterAttributes extends LitElement {
   private _computeSetAttributeServiceData():
     | SetAttributeServiceData
     | undefined {
-    if (!this.selectedCluster || !this.selectedNode) {
+    if (!this.selectedCluster || !this.device) {
       return undefined;
     }
     return {
-      ieee: this.selectedNode!.ieee,
+      ieee: this.device!.ieee,
       endpoint_id: this.selectedCluster!.endpoint_id,
       cluster_id: this.selectedCluster!.id,
       cluster_type: this.selectedCluster!.type,
-      attribute: this._attributes[this._selectedAttributeIndex].id,
+      attribute: this._selectedAttributeId!,
       value: this._attributeValue,
       manufacturer: this._manufacturerCodeOverride
         ? parseInt(this._manufacturerCodeOverride as string, 10)
@@ -254,19 +206,26 @@ export class ZHAClusterAttributes extends LitElement {
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
-  private async _onGetZigbeeAttributeClick(): Promise<void> {
+  private async _onGetZigbeeAttributeClick(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
     const data = this._computeReadAttributeServiceData();
     if (data && this.hass) {
-      this._attributeValue = await readAttributeValue(this.hass, data);
+      this._readingAttribute = true;
+      try {
+        this._attributeValue = await readAttributeValue(this.hass, data);
+        forwardHaptic("success");
+        button.actionSuccess();
+      } catch (err: any) {
+        forwardHaptic("failure");
+        button.actionError();
+      } finally {
+        this._readingAttribute = false;
+      }
     }
   }
 
-  private _onHelpTap(): void {
-    this.showHelp = !this.showHelp;
-  }
-
   private _selectedAttributeChanged(event: ItemSelectedEvent): void {
-    this._selectedAttributeIndex = event.target!.selected;
+    this._selectedAttributeId = Number(event.target!.value);
     this._attributeValue = "";
   }
 
@@ -274,16 +233,12 @@ export class ZHAClusterAttributes extends LitElement {
     return [
       haStyle,
       css`
+        ha-select {
+          margin-top: 16px;
+        }
+
         .menu {
           width: 100%;
-        }
-
-        .content {
-          margin-top: 24px;
-        }
-
-        ha-card {
-          max-width: 680px;
         }
 
         .card-actions.warning ha-call-service-button {
@@ -306,33 +261,6 @@ export class ZHAClusterAttributes extends LitElement {
         .header {
           flex-grow: 1;
         }
-
-        .toggle-help-icon {
-          float: right;
-          top: -6px;
-          right: 0;
-          padding-right: 0px;
-          color: var(--primary-color);
-        }
-
-        ha-service-description {
-          display: block;
-          color: grey;
-        }
-
-        [hidden] {
-          display: none;
-        }
-        .help-text {
-          color: grey;
-          padding-left: 28px;
-          padding-right: 28px;
-          padding-bottom: 16px;
-        }
-        .help-text2 {
-          color: grey;
-          padding: 16px;
-        }
       `,
     ];
   }
@@ -343,5 +271,3 @@ declare global {
     "zha-cluster-attributes": ZHAClusterAttributes;
   }
 }
-
-customElements.define("zha-cluster-attributes", ZHAClusterAttributes);

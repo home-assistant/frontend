@@ -1,21 +1,17 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-input/paper-textarea";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
-import {
-  BlueprintAutomationConfig,
-  triggerAutomationActions,
-} from "../../../data/automation";
+import "../../../components/ha-textfield";
+import "../../../components/ha-alert";
+import { BlueprintAutomationConfig } from "../../../data/automation";
 import {
   BlueprintOrError,
   Blueprints,
@@ -30,6 +26,8 @@ export class HaBlueprintAutomationEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public isWide!: boolean;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
@@ -54,72 +52,33 @@ export class HaBlueprintAutomationEditor extends LitElement {
   protected render() {
     const blueprint = this._blueprint;
     return html`
-      <ha-config-section vertical .isWide=${this.isWide}>
-        ${!this.narrow
-          ? html` <span slot="header">${this.config.alias}</span> `
-          : ""}
-        <span slot="introduction">
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.introduction"
-          )}
-        </span>
-        <ha-card>
-          <div class="card-content">
-            <paper-input
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.alias"
+      ${this.disabled
+        ? html`<ha-alert alert-type="warning">
+            ${this.hass.localize("ui.panel.config.automation.editor.read_only")}
+            <mwc-button slot="action" @click=${this._duplicate}>
+              ${this.hass.localize("ui.panel.config.automation.editor.migrate")}
+            </mwc-button>
+          </ha-alert>`
+        : ""}
+      ${this.stateObj?.state === "off"
+        ? html`
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.disabled"
               )}
-              name="alias"
-              .value=${this.config.alias}
-              @value-changed=${this._valueChanged}
-            >
-            </paper-input>
-            <paper-textarea
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.description.label"
-              )}
-              .placeholder=${this.hass.localize(
-                "ui.panel.config.automation.editor.description.placeholder"
-              )}
-              name="description"
-              .value=${this.config.description}
-              @value-changed=${this._valueChanged}
-            ></paper-textarea>
-          </div>
-          ${this.stateObj
-            ? html`
-                <div class="card-actions layout horizontal justified center">
-                  <div class="layout horizontal center">
-                    <ha-entity-toggle
-                      .hass=${this.hass}
-                      .stateObj=${this.stateObj!}
-                    ></ha-entity-toggle>
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.enable_disable"
-                    )}
-                  </div>
-                  <div>
-                    <a href="/config/automation/trace/${this.config.id}">
-                      <mwc-button>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.show_trace"
-                        )}
-                      </mwc-button>
-                    </a>
-                    <mwc-button
-                      @click=${this._runActions}
-                      .stateObj=${this.stateObj}
-                    >
-                      ${this.hass.localize("ui.card.automation.trigger")}
-                    </mwc-button>
-                  </div>
-                </div>
-              `
-            : ""}
-        </ha-card>
-      </ha-config-section>
-
+              <mwc-button slot="action" @click=${this._enable}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.enable"
+                )}
+              </mwc-button>
+            </ha-alert>
+          `
+        : ""}
+      ${this.config.description
+        ? html`<p class="description">${this.config.description}</p>`
+        : ""}
       <ha-card
+        outlined
         class="blueprint"
         .header=${this.hass.localize(
           "ui.panel.config.automation.editor.blueprint.header"
@@ -136,6 +95,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
                     )}
                     .blueprints=${this._blueprints}
                     .value=${this.config.use_blueprint.path}
+                    .disabled=${this.disabled}
                     @value-changed=${this._blueprintChanged}
                   ></ha-blueprint-picker>
                 `
@@ -163,7 +123,12 @@ export class HaBlueprintAutomationEditor extends LitElement {
                     ([key, value]) =>
                       html`<ha-settings-row .narrow=${this.narrow}>
                         <span slot="heading">${value?.name || key}</span>
-                        <span slot="description">${value?.description}</span>
+                        <ha-markdown
+                          slot="description"
+                          class="card-content"
+                          breaks
+                          .content=${value?.description}
+                        ></ha-markdown>
                         ${value?.selector
                           ? html`<ha-selector
                               .hass=${this.hass}
@@ -172,17 +137,18 @@ export class HaBlueprintAutomationEditor extends LitElement {
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
                               value?.default}
+                              .disabled=${this.disabled}
                               @value-changed=${this._inputChanged}
                             ></ha-selector>`
-                          : html`<paper-input
+                          : html`<ha-textfield
                               .key=${key}
                               required
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
                               value?.default}
-                              @value-changed=${this._inputChanged}
-                              no-label-float
-                            ></paper-input>`}
+                              .disabled=${this.disabled}
+                              @input=${this._inputChanged}
+                            ></ha-textfield>`}
                       </ha-settings-row>`
                   )
                 : html`<p class="padding">
@@ -197,10 +163,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
 
   private async _getBlueprints() {
     this._blueprints = await fetchBlueprints(this.hass, "automation");
-  }
-
-  private _runActions(ev: Event) {
-    triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
   }
 
   private _blueprintChanged(ev) {
@@ -222,7 +184,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
     ev.stopPropagation();
     const target = ev.target as any;
     const key = target.key;
-    const value = ev.detail.value;
+    const value = ev.detail?.value ?? target.value;
     if (
       (this.config.use_blueprint.input &&
         this.config.use_blueprint.input[key] === value) ||
@@ -247,57 +209,67 @@ export class HaBlueprintAutomationEditor extends LitElement {
     });
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const target = ev.target as any;
-    const name = target.name;
-    if (!name) {
+  private async _enable(): Promise<void> {
+    if (!this.hass || !this.stateObj) {
       return;
     }
-    const newVal = ev.detail.value;
-    if ((this.config![name] || "") === newVal) {
-      return;
-    }
-    fireEvent(this, "value-changed", {
-      value: { ...this.config!, [name]: newVal },
+    await this.hass.callService("automation", "turn_on", {
+      entity_id: this.stateObj.entity_id,
     });
+  }
+
+  private _duplicate() {
+    fireEvent(this, "duplicate");
   }
 
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+        }
         ha-card.blueprint {
-          max-width: 1040px;
-          margin: 24px auto;
+          margin: 0 auto;
         }
         .padding {
           padding: 16px;
         }
+        .link-button-row {
+          padding: 14px;
+        }
         .blueprint-picker-container {
           padding: 0 16px 16px;
+        }
+        ha-textfield,
+        ha-blueprint-picker {
+          display: block;
         }
         h3 {
           margin: 16px;
         }
-        span[slot="introduction"] a {
+        .introduction {
+          margin-top: 0;
+          margin-bottom: 12px;
+        }
+        .introduction a {
           color: var(--primary-color);
         }
         p {
           margin-bottom: 0;
         }
-        ha-entity-toggle {
-          margin-right: 8px;
+        .description {
+          margin-bottom: 16px;
         }
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
+          --settings-row-content-width: 100%;
+          --settings-row-prefix-display: contents;
           border-top: 1px solid var(--divider-color);
         }
-        :host(:not([narrow])) ha-settings-row paper-input {
-          width: 60%;
-        }
-        :host(:not([narrow])) ha-settings-row ha-selector {
-          width: 60%;
+        ha-alert {
+          margin-bottom: 16px;
+          display: block;
         }
       `,
     ];

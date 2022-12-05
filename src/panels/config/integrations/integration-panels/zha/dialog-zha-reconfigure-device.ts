@@ -12,7 +12,7 @@ import {
   Cluster,
   ClusterConfigurationEvent,
   ClusterConfigurationStatus,
-  fetchClustersForZhaNode,
+  fetchClustersForZhaDevice,
   reconfigureNode,
   ZHA_CHANNEL_CFG_DONE,
   ZHA_CHANNEL_MSG_BIND,
@@ -55,6 +55,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     this._status = undefined;
     this._stages = undefined;
     this._clusterConfigurationStatuses = undefined;
+    this._showDetails = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -225,10 +226,10 @@ class DialogZHAReconfigureDevice extends LitElement {
                   )}
                 </h2>
 
-                ${this._clusterConfigurationStatuses!.size > 0
+                ${this._clusterConfigurationStatuses?.size
                   ? html`
                       ${Array.from(
-                        this._clusterConfigurationStatuses!.values()
+                        this._clusterConfigurationStatuses.values()
                       ).map(
                         (clusterStatus) => html`
                           <div class="grid-item">
@@ -320,16 +321,16 @@ class DialogZHAReconfigureDevice extends LitElement {
       return;
     }
     this._clusterConfigurationStatuses = new Map(
-      (await fetchClustersForZhaNode(this.hass, this._params.device.ieee)).map(
-        (cluster: Cluster) => [
-          cluster.id,
-          {
-            cluster: cluster,
-            bindSuccess: undefined,
-            attributes: new Map<number, AttributeConfigurationStatus>(),
-          },
-        ]
-      )
+      (
+        await fetchClustersForZhaDevice(this.hass, this._params.device.ieee)
+      ).map((cluster: Cluster) => [
+        cluster.id,
+        {
+          cluster: cluster,
+          bindSuccess: undefined,
+          attributes: new Map<number, AttributeConfigurationStatus>(),
+        },
+      ])
     );
     this._subscribe(this._params);
     this._status = "started";

@@ -1,14 +1,14 @@
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-radio";
+import "../../../../components/ha-textfield";
+import type { HaRadio } from "../../../../components/ha-radio";
 import { InputDateTime } from "../../../../data/input_datetime";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-radio";
-import type { HaRadio } from "../../../../components/ha-radio";
 
 @customElement("ha-input_datetime-form")
 class HaInputDateTimeForm extends LitElement {
@@ -35,6 +35,8 @@ class HaInputDateTimeForm extends LitElement {
           : item.has_time
           ? "time"
           : "date";
+      this._item.has_date =
+        !item.has_date && !item.has_time ? true : item.has_date;
     } else {
       this._name = "";
       this._icon = "";
@@ -58,10 +60,10 @@ class HaInputDateTimeForm extends LitElement {
 
     return html`
       <div class="form">
-        <paper-input
+        <ha-textfield
           .value=${this._name}
           .configValue=${"name"}
-          @value-changed=${this._valueChanged}
+          @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
@@ -70,8 +72,9 @@ class HaInputDateTimeForm extends LitElement {
           )}
           .invalid=${nameInvalid}
           dialogInitialFocus
-        ></paper-input>
+        ></ha-textfield>
         <ha-icon-picker
+          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
@@ -140,7 +143,7 @@ class HaInputDateTimeForm extends LitElement {
     }
     ev.stopPropagation();
     const configValue = (ev.target as any).configValue;
-    const value = ev.detail.value;
+    const value = ev.detail?.value || (ev.target as any).value;
     if (this[`_${configValue}`] === value) {
       return;
     }
@@ -148,7 +151,7 @@ class HaInputDateTimeForm extends LitElement {
     if (!value) {
       delete newValue[configValue];
     } else {
-      newValue[configValue] = ev.detail.value;
+      newValue[configValue] = value;
     }
     fireEvent(this, "value-changed", {
       value: newValue,
@@ -164,6 +167,10 @@ class HaInputDateTimeForm extends LitElement {
         }
         .row {
           padding: 16px 0;
+        }
+        ha-textfield {
+          display: block;
+          margin: 8px 0;
         }
       `,
     ];

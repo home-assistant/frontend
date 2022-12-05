@@ -56,15 +56,20 @@ export class HuiCreateDialogHeaderFooter
       >
         <div class="elements">
           ${headerFooterElements.map(
-            (headerFooter) =>
+            (headerFooter, index) =>
               html`
                 <ha-card
+                  role="button"
+                  tabindex="0"
+                  aria-labeledby=${"card-name-" + index}
                   outlined
                   .type=${headerFooter.type}
                   @click=${this._handleHeaderFooterPicked}
+                  @keyDown=${this._handleHeaderFooterPicked}
+                  dialogInitialFocus
                 >
                   <ha-svg-icon .path=${headerFooter.icon}></ha-svg-icon>
-                  <div>
+                  <div .id=${"card-name-" + index} role="none presentation">
                     ${this.hass!.localize(
                       `ui.panel.lovelace.editor.header-footer.types.${headerFooter.type}.name`
                     )}
@@ -83,6 +88,15 @@ export class HuiCreateDialogHeaderFooter
   }
 
   private async _handleHeaderFooterPicked(ev: CustomEvent): Promise<void> {
+    if (
+      ev instanceof KeyboardEvent &&
+      ev.key !== "Enter" &&
+      ev.key !== " " &&
+      ev.key !== "Spacebar"
+    ) {
+      return;
+    }
+
     const type = (ev.currentTarget as any).type;
     let config: LovelaceHeaderFooterConfig = { type };
 

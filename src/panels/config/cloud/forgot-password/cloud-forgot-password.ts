@@ -1,11 +1,11 @@
-import "@material/mwc-textfield/mwc-textfield";
-import type { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import "../../../../components/ha-textfield";
 import { cloudForgotPassword } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
@@ -23,7 +23,7 @@ export class CloudForgotPassword extends LitElement {
 
   @state() private _error?: string;
 
-  @query("#email", true) private _emailField!: TextField;
+  @query("#email", true) private _emailField!: HaTextField;
 
   protected render(): TemplateResult {
     return html`
@@ -36,6 +36,7 @@ export class CloudForgotPassword extends LitElement {
       >
         <div class="content">
           <ha-card
+            outlined
             .header=${this.hass.localize(
               "ui.panel.config.cloud.forgot_password.subtitle"
             )}
@@ -49,7 +50,7 @@ export class CloudForgotPassword extends LitElement {
               ${this._error
                 ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
                 : ""}
-              <mwc-textfield
+              <ha-textfield
                 autofocus
                 id="email"
                 label=${this.hass.localize(
@@ -62,7 +63,7 @@ export class CloudForgotPassword extends LitElement {
                 .validationMessage=${this.hass.localize(
                   "ui.panel.config.cloud.forgot_password.email_error_msg"
                 )}
-              ></mwc-textfield>
+              ></ha-textfield>
             </div>
             <div class="card-actions">
               <ha-progress-button
@@ -133,7 +134,7 @@ export class CloudForgotPassword extends LitElement {
         h1 {
           margin: 0;
         }
-        mwc-textfield {
+        ha-textfield {
           width: 100%;
         }
         .card-actions {

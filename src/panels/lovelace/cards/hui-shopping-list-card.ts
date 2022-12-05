@@ -1,5 +1,4 @@
 import { mdiDrag, mdiNotificationClearAll, mdiPlus, mdiSort } from "@mdi/js";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -17,6 +16,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-textfield";
 import {
   addItem,
   clearItems,
@@ -29,8 +29,11 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
-
-let Sortable;
+import type { HaTextField } from "../../../components/ha-textfield";
+import {
+  loadSortable,
+  SortableInstance,
+} from "../../../resources/sortable.ondemand";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard
@@ -58,7 +61,7 @@ class HuiShoppingListCard
 
   @state() private _renderEmptySortable = false;
 
-  private _sortable?;
+  private _sortable?: SortableInstance;
 
   @query("#sortable") private _sortableEl?: HTMLElement;
 
@@ -123,14 +126,13 @@ class HuiShoppingListCard
             @click=${this._addItem}
           >
           </ha-svg-icon>
-          <paper-input
-            no-label-float
+          <ha-textfield
             class="addBox"
-            placeholder=${this.hass!.localize(
+            .placeholder=${this.hass!.localize(
               "ui.panel.lovelace.cards.shopping-list.add_item"
             )}
             @keydown=${this._addKeyPress}
-          ></paper-input>
+          ></ha-textfield>
           <ha-svg-icon
             class="reorderButton"
             .path=${mdiSort}
@@ -184,12 +186,12 @@ class HuiShoppingListCard
                         .itemId=${item.id}
                         @change=${this._completeItem}
                       ></ha-checkbox>
-                      <paper-input
-                        no-label-float
+                      <ha-textfield
+                        class="item"
                         .value=${item.name}
                         .itemId=${item.id}
                         @change=${this._saveEdit}
-                      ></paper-input>
+                      ></ha-textfield>
                     </div>
                   `
               )}
@@ -213,12 +215,12 @@ class HuiShoppingListCard
                 .itemId=${item.id}
                 @change=${this._completeItem}
               ></ha-checkbox>
-              <paper-input
-                no-label-float
+              <ha-textfield
+                class="item"
                 .value=${item.name}
                 .itemId=${item.id}
                 @change=${this._saveEdit}
-              ></paper-input>
+              ></ha-textfield>
               ${this._reordering
                 ? html`
                     <ha-svg-icon
@@ -275,8 +277,8 @@ class HuiShoppingListCard
     }
   }
 
-  private get _newItem(): PaperInputElement {
-    return this.shadowRoot!.querySelector(".addBox") as PaperInputElement;
+  private get _newItem(): HaTextField {
+    return this.shadowRoot!.querySelector(".addBox") as HaTextField;
   }
 
   private _addItem(ev): void {
@@ -299,12 +301,6 @@ class HuiShoppingListCard
   }
 
   private async _toggleReorder() {
-    if (!Sortable) {
-      const sortableImport = await import(
-        "sortablejs/modular/sortable.core.esm"
-      );
-      Sortable = sortableImport.Sortable;
-    }
     this._reordering = !this._reordering;
     await this.updateComplete;
     if (this._reordering) {
@@ -315,18 +311,22 @@ class HuiShoppingListCard
     }
   }
 
-  private _createSortable() {
+  private async _createSortable() {
+    const Sortable = await loadSortable();
     const sortableEl = this._sortableEl;
-    this._sortable = new Sortable(sortableEl, {
+    this._sortable = new Sortable(sortableEl!, {
       animation: 150,
       fallbackClass: "sortable-fallback",
       dataIdAttr: "item-id",
       handle: "ha-svg-icon",
       onEnd: async (evt) => {
+        if (evt.newIndex === undefined || evt.oldIndex === undefined) {
+          return;
+        }
         // Since this is `onEnd` event, it's possible that
         // an item wa dragged away and was put back to its original position.
         if (evt.oldIndex !== evt.newIndex) {
-          reorderItems(this.hass!, this._sortable.toArray()).catch(() =>
+          reorderItems(this.hass!, this._sortable!.toArray()).catch(() =>
             this._fetchData()
           );
           // Move the shopping list item in memory.
@@ -366,21 +366,31 @@ class HuiShoppingListCard
         align-items: center;
       }
 
+      .item {
+        margin-top: 8px;
+      }
+
       .addButton {
         padding-right: 16px;
+        padding-inline-end: 16px;
         cursor: pointer;
+        direction: var(--direction);
       }
 
       .reorderButton {
         padding-left: 16px;
+        padding-inline-start: 16px;
         cursor: pointer;
+        direction: var(--direction);
       }
 
       ha-checkbox {
         margin-left: -12px;
+        margin-inline-start: -12px;
+        direction: var(--direction);
       }
 
-      paper-input {
+      ha-textfield {
         flex-grow: 1;
       }
 

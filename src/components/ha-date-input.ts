@@ -1,142 +1,99 @@
 import { mdiCalendar } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
-import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker-light";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { formatDateNumeric } from "../common/datetime/format_date";
+import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { fireEvent } from "../common/dom/fire_event";
+import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
+import "./ha-textfield";
 
-const i18n = {
-  monthNames: [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ],
-  weekdays: [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ],
-  weekdaysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  firstDayOfWeek: 0,
-  week: "Week",
-  calendar: "Calendar",
-  clear: "Clear",
-  today: "Today",
-  cancel: "Cancel",
-  formatTitle: (monthName, fullYear) => monthName + " " + fullYear,
-  formatDate: (d: { day: number; month: number; year: number }) =>
-    [
-      ("0000" + String(d.year)).slice(-4),
-      ("0" + String(d.month + 1)).slice(-2),
-      ("0" + String(d.day)).slice(-2),
-    ].join("-"),
-  parseDate: (text: string) => {
-    const parts = text.split("-");
-    const today = new Date();
-    let date;
-    let month = today.getMonth();
-    let year = today.getFullYear();
-    if (parts.length === 3) {
-      year = parseInt(parts[0]);
-      if (parts[0].length < 3 && year >= 0) {
-        year += year < 50 ? 2000 : 1900;
-      }
-      month = parseInt(parts[1]) - 1;
-      date = parseInt(parts[2]);
-    } else if (parts.length === 2) {
-      month = parseInt(parts[0]) - 1;
-      date = parseInt(parts[1]);
-    } else if (parts.length === 1) {
-      date = parseInt(parts[0]);
-    }
+const loadDatePickerDialog = () => import("./ha-dialog-date-picker");
 
-    if (date !== undefined) {
-      return { day: date, month, year };
-    }
-    return undefined;
-  },
+export interface datePickerDialogParams {
+  value?: string;
+  min?: string;
+  max?: string;
+  locale?: string;
+  firstWeekday?: number;
+  onChange: (value: string) => void;
+}
+
+const showDatePickerDialog = (
+  element: HTMLElement,
+  dialogParams: datePickerDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "ha-dialog-date-picker",
+    dialogImport: loadDatePickerDialog,
+    dialogParams,
+  });
 };
 @customElement("ha-date-input")
 export class HaDateInput extends LitElement {
+  @property({ attribute: false }) public locale!: HomeAssistant["locale"];
+
   @property() public value?: string;
+
+  @property() public min?: string;
+
+  @property() public max?: string;
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = false;
+
   @property() public label?: string;
 
-  @query("vaadin-date-picker-light", true) private _datePicker;
-
-  private _inited = false;
-
-  updated(changedProps: PropertyValues) {
-    if (changedProps.has("value")) {
-      this._datePicker.value = this.value;
-      this._inited = true;
-    }
-  }
+  @property() public helper?: string;
 
   render() {
-    return html`<vaadin-date-picker-light
+    return html`<ha-textfield
+      .label=${this.label}
+      .helper=${this.helper}
       .disabled=${this.disabled}
-      @value-changed=${this._valueChanged}
-      attr-for-value="value"
-      .i18n=${i18n}
+      iconTrailing
+      helperPersistent
+      readonly
+      @click=${this._openDialog}
+      .value=${this.value
+        ? formatDateNumeric(new Date(this.value), this.locale)
+        : ""}
+      .required=${this.required}
     >
-      <paper-input
-        .label=${this.label}
-        .disabled=${this.disabled}
-        no-label-float
-      >
-        <ha-svg-icon slot="suffix" .path=${mdiCalendar}></ha-svg-icon>
-      </paper-input>
-    </vaadin-date-picker-light>`;
+      <ha-svg-icon slot="trailingIcon" .path=${mdiCalendar}></ha-svg-icon>
+    </ha-textfield>`;
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    if (
-      !this.value ||
-      (this._inited && !this._compareStringDates(ev.detail.value, this.value))
-    ) {
-      this.value = ev.detail.value;
+  private _openDialog() {
+    if (this.disabled) {
+      return;
+    }
+    showDatePickerDialog(this, {
+      min: this.min || "1970-01-01",
+      max: this.max,
+      value: this.value,
+      onChange: (value) => this._valueChanged(value),
+      locale: this.locale.language,
+      firstWeekday: firstWeekdayIndex(this.locale),
+    });
+  }
+
+  private _valueChanged(value: string) {
+    if (this.value !== value) {
+      this.value = value;
       fireEvent(this, "change");
-      fireEvent(this, "value-changed", { value: ev.detail.value });
+      fireEvent(this, "value-changed", { value });
     }
-  }
-
-  private _compareStringDates(a: string, b: string): boolean {
-    const aParts = a.split("-");
-    const bParts = b.split("-");
-    let i = 0;
-    for (const aPart of aParts) {
-      if (Number(aPart) !== Number(bParts[i])) {
-        return false;
-      }
-      i++;
-    }
-    return true;
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-input {
-        width: 110px;
-      }
       ha-svg-icon {
         color: var(--secondary-text-color);
+      }
+      ha-textfield {
+        display: block;
       }
     `;
   }

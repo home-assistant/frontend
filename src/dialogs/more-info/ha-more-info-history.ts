@@ -1,4 +1,4 @@
-import { startOfYesterday } from "date-fns";
+import { startOfYesterday, subHours } from "date-fns/esm";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -7,13 +7,23 @@ import { throttle } from "../../common/util/throttle";
 import "../../components/chart/state-history-charts";
 import { getRecentWithCache } from "../../data/cached-history";
 import { HistoryResult } from "../../data/history";
+import {
+  fetchStatistics,
+  getStatisticMetadata,
+  Statistics,
+  StatisticsTypes,
+} from "../../data/recorder";
 import { HomeAssistant } from "../../types";
+import "../../components/chart/statistics-chart";
+import { computeDomain } from "../../common/entity/compute_domain";
 
 declare global {
   interface HASSDomEvents {
     closed: undefined;
   }
 }
+
+const statTypes: StatisticsTypes = ["state", "min", "mean", "max"];
 
 @customElement("ha-more-info-history")
 export class MoreInfoHistory extends LitElement {
@@ -23,7 +33,11 @@ export class MoreInfoHistory extends LitElement {
 
   @state() private _stateHistory?: HistoryResult;
 
+  @state() private _statistics?: Statistics;
+
   private _showMoreHref = "";
+
+  private _statNames?: Record<string, string>;
 
   private _throttleGetStateHistory = throttle(() => {
     this._getStateHistory();
@@ -34,8 +48,8 @@ export class MoreInfoHistory extends LitElement {
       return html``;
     }
 
-    return html`${isComponentLoaded(this.hass, "history")
-      ? html` <div class="header">
+    return html` ${isComponentLoaded(this.hass, "history")
+      ? html`<div class="header">
             <div class="title">
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
             </div>
@@ -45,12 +59,21 @@ export class MoreInfoHistory extends LitElement {
               )}</a
             >
           </div>
-          <state-history-charts
-            up-to-now
-            .hass=${this.hass}
-            .historyData=${this._stateHistory}
-            .isLoadingData=${!this._stateHistory}
-          ></state-history-charts>`
+          ${this._statistics
+            ? html`<statistics-chart
+                .hass=${this.hass}
+                .isLoadingData=${!this._statistics}
+                .statisticsData=${this._statistics}
+                .statTypes=${statTypes}
+                .names=${this._statNames}
+                hideLegend
+              ></statistics-chart>`
+            : html`<state-history-charts
+                up-to-now
+                .hass=${this.hass}
+                .historyData=${this._stateHistory}
+                .isLoadingData=${!this._stateHistory}
+              ></state-history-charts>`}`
       : ""}`;
   }
 
@@ -59,6 +82,7 @@ export class MoreInfoHistory extends LitElement {
 
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;
+      this._statistics = undefined;
 
       if (!this.entityId) {
         return;
@@ -72,7 +96,8 @@ export class MoreInfoHistory extends LitElement {
       return;
     }
 
-    if (!this.entityId || !changedProps.has("hass")) {
+    if (this._statistics || !this.entityId || !changedProps.has("hass")) {
+      // Don't update statistics on a state update, as they only update every 5 minutes.
       return;
     }
 
@@ -88,6 +113,25 @@ export class MoreInfoHistory extends LitElement {
   }
 
   private async _getStateHistory(): Promise<void> {
+    if (
+      isComponentLoaded(this.hass, "recorder") &&
+      computeDomain(this.entityId) === "sensor"
+    ) {
+      const metadata = await getStatisticMetadata(this.hass, [this.entityId]);
+      this._statNames = { [this.entityId]: "" };
+      if (metadata.length) {
+        this._statistics = await fetchStatistics(
+          this.hass!,
+          subHours(new Date(), 24),
+          undefined,
+          [this.entityId],
+          "5minute",
+          undefined,
+          statTypes
+        );
+        return;
+      }
+    }
     if (!isComponentLoaded(this.hass, "history")) {
       return;
     }
@@ -104,36 +148,30 @@ export class MoreInfoHistory extends LitElement {
   }
 
   private _close(): void {
-    setTimeout(() => fireEvent(this, "closed"), 500);
+    setTimeout(() => fireEvent(this, "close-dialog"), 500);
   }
 
-  static get styles() {
-    return [
-      css`
-        .header {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 8px;
-        }
-        .header > a,
-        a:visited {
-          color: var(--primary-color);
-        }
-        .title {
-          font-family: var(--paper-font-title_-_font-family);
-          -webkit-font-smoothing: var(
-            --paper-font-title_-_-webkit-font-smoothing
-          );
-          font-size: var(--paper-font-subhead_-_font-size);
-          font-weight: var(--paper-font-title_-_font-weight);
-          letter-spacing: var(--paper-font-title_-_letter-spacing);
-          line-height: var(--paper-font-title_-_line-height);
-        }
-      `,
-    ];
-  }
+  static styles = css`
+    .header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .header > a,
+    a:visited {
+      color: var(--primary-color);
+    }
+    .title {
+      font-family: var(--paper-font-title_-_font-family);
+      -webkit-font-smoothing: var(--paper-font-title_-_-webkit-font-smoothing);
+      font-size: var(--paper-font-subhead_-_font-size);
+      font-weight: var(--paper-font-title_-_font-weight);
+      letter-spacing: var(--paper-font-title_-_letter-spacing);
+      line-height: var(--paper-font-title_-_line-height);
+    }
+  `;
 }
 
 declare global {

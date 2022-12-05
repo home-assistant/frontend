@@ -15,7 +15,7 @@ import { computeInitialHaFormData } from "../components/ha-form/compute-initial-
 import "../components/ha-form/ha-form";
 import "../components/ha-formfield";
 import "../components/ha-markdown";
-import { AuthProvider } from "../data/auth";
+import { AuthProvider, autocompleteLoginFields } from "../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
@@ -162,6 +162,11 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
               this._errorMessage
             )}
           </ha-alert>
+          <div class="action">
+            <mwc-button raised @click=${this._startOver}>
+              ${this.localize("ui.panel.page-authorize.form.start_over")}
+            </mwc-button>
+          </div>
         `;
       case "loading":
         return html`
@@ -199,7 +204,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             : html``}
           <ha-form
             .data=${this._stepData}
-            .schema=${step.data_schema}
+            .schema=${autocompleteLoginFields(step.data_schema)}
             .error=${step.errors}
             .disabled=${this._submitting}
             .computeLabel=${this._computeLabelCallback(step)}
@@ -309,7 +314,8 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   }
 
   private _computeStepDescription(step: DataEntryFlowStepForm) {
-    const resourceKey = `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description`;
+    const resourceKey =
+      `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description` as const;
     const args: string[] = [];
     const placeholders = step.description_placeholders || {};
     Object.keys(placeholders).forEach((key) => {
@@ -339,6 +345,10 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     return this.localize("ui.panel.page-authorize.form.unknown_error");
   }
 
+  private _startOver() {
+    this._providerChanged(this.authProvider);
+  }
+
   private async _handleSubmit(ev: Event) {
     ev.preventDefault();
     if (this._step == null) {
@@ -360,6 +370,12 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       });
 
       const newStep = await response.json();
+
+      if (response.status === 403) {
+        this._state = "error";
+        this._errorMessage = newStep.message;
+        return;
+      }
 
       if (newStep.type === "create_entry") {
         this._redirect(newStep.result);

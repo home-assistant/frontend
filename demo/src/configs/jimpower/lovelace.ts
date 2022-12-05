@@ -194,7 +194,7 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
                     type: "state-icon",
                     tap_action: {
                       action: "call-service",
-                      service_data: {
+                      data: {
                         entity_id: "group.downstairs_lights",
                       },
                       service: "homeassistant.toggle",
@@ -1196,7 +1196,7 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
                       left: "15%",
                     },
                     type: "state-icon",
-                    entity: "binary_sensor.water_leak_sensor_158d0002338651",
+                    entity: "binary_sensor.water_leak_sensor_158d00026e26dc",
                   },
                   {
                     prefix: "Kitchen: ",
@@ -1206,7 +1206,7 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
                       top: "89%",
                       left: "32%",
                     },
-                    entity: "binary_sensor.water_leak_sensor_158d0002338651",
+                    entity: "binary_sensor.water_leak_sensor_158d00026e26dc",
                   },
                   {
                     style: {
@@ -1215,7 +1215,7 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
                       left: "60%",
                     },
                     type: "state-icon",
-                    entity: "binary_sensor.water_leak_sensor_158d00026e26dc",
+                    entity: "binary_sensor.water_leak_sensor_158d0002338651",
                   },
                   {
                     prefix: "Bathroom: ",
@@ -1225,7 +1225,7 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
                       top: "89%",
                       left: "77%",
                     },
-                    entity: "binary_sensor.water_leak_sensor_158d00026e26dc",
+                    entity: "binary_sensor.water_leak_sensor_158d0002338651",
                   },
                 ],
                 type: "picture-elements",

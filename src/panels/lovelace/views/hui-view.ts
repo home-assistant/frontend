@@ -10,10 +10,18 @@ import type {
   LovelaceViewElement,
 } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
+import {
+  createErrorBadgeConfig,
+  createErrorBadgeElement,
+} from "../badges/hui-error-badge";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
+import {
+  createErrorCardConfig,
+  createErrorCardElement,
+} from "../create-element/create-element-base";
 import { createViewElement } from "../create-element/create-view-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -54,7 +62,13 @@ export class HUIView extends ReactiveElement {
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
     const element = createCardElement(cardConfig) as LovelaceCard;
-    element.hass = this.hass;
+    try {
+      element.hass = this.hass;
+    } catch (e: any) {
+      return createErrorCardElement(
+        createErrorCardConfig(e.message, cardConfig)
+      );
+    }
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
@@ -71,7 +85,11 @@ export class HUIView extends ReactiveElement {
 
   public createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
     const element = createBadgeElement(badgeConfig) as LovelaceBadge;
-    element.hass = this.hass;
+    try {
+      element.hass = this.hass;
+    } catch (e: any) {
+      return createErrorBadgeElement(createErrorBadgeConfig(e.message));
+    }
     element.addEventListener(
       "ll-badge-rebuild",
       () => {
@@ -121,11 +139,19 @@ export class HUIView extends ReactiveElement {
       // Config has not changed. Just props
       if (changedProperties.has("hass")) {
         this._badges.forEach((badge) => {
-          badge.hass = this.hass;
+          try {
+            badge.hass = this.hass;
+          } catch (e: any) {
+            this._rebuildBadge(badge, createErrorBadgeConfig(e.message));
+          }
         });
 
         this._cards.forEach((element) => {
-          element.hass = this.hass;
+          try {
+            element.hass = this.hass;
+          } catch (e: any) {
+            this._rebuildCard(element, createErrorCardConfig(e.message, null));
+          }
         });
 
         this._layoutElement.hass = this.hass;
@@ -238,7 +264,11 @@ export class HUIView extends ReactiveElement {
     const badges = processConfigEntities(config.badges as any);
     this._badges = badges.map((badge) => {
       const element = createBadgeElement(badge);
-      element.hass = this.hass;
+      try {
+        element.hass = this.hass;
+      } catch (e: any) {
+        return createErrorBadgeElement(createErrorBadgeConfig(e.message));
+      }
       return element;
     });
   }
@@ -251,7 +281,13 @@ export class HUIView extends ReactiveElement {
 
     this._cards = config.cards.map((cardConfig) => {
       const element = this.createCardElement(cardConfig);
-      element.hass = this.hass;
+      try {
+        element.hass = this.hass;
+      } catch (e: any) {
+        return createErrorCardElement(
+          createErrorCardConfig(e.message, cardConfig)
+        );
+      }
       return element;
     });
   }
@@ -260,8 +296,14 @@ export class HUIView extends ReactiveElement {
     cardElToReplace: LovelaceCard,
     config: LovelaceCardConfig
   ): void {
-    const newCardEl = this.createCardElement(config);
-    newCardEl.hass = this.hass;
+    let newCardEl = this.createCardElement(config);
+    try {
+      newCardEl.hass = this.hass;
+    } catch (e: any) {
+      newCardEl = createErrorCardElement(
+        createErrorCardConfig(e.message, config)
+      );
+    }
     if (cardElToReplace.parentElement) {
       cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
     }
@@ -274,8 +316,12 @@ export class HUIView extends ReactiveElement {
     badgeElToReplace: LovelaceBadge,
     config: LovelaceBadgeConfig
   ): void {
-    const newBadgeEl = this.createBadgeElement(config);
-    newBadgeEl.hass = this.hass;
+    let newBadgeEl = this.createBadgeElement(config);
+    try {
+      newBadgeEl.hass = this.hass;
+    } catch (e: any) {
+      newBadgeEl = createErrorBadgeElement(createErrorBadgeConfig(e.message));
+    }
     if (badgeElToReplace.parentElement) {
       badgeElToReplace.parentElement!.replaceChild(
         newBadgeEl,

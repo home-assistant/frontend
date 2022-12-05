@@ -17,6 +17,13 @@ export const turnOnOffEntity = (
     case "cover":
       service = turnOn ? "open_cover" : "close_cover";
       break;
+    case "button":
+    case "input_button":
+      service = "press";
+      break;
+    case "scene":
+      service = "turn_on";
+      break;
     default:
       service = turnOn ? "turn_on" : "turn_off";
   }

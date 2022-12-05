@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -16,6 +16,8 @@ import { HomeAssistant } from "../../../../../types";
 @customElement("ha-automation-action-device_id")
 export class HaDeviceAction extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Object }) public action!: DeviceAction;
 
@@ -51,6 +53,7 @@ export class HaDeviceAction extends LitElement {
     return html`
       <ha-device-picker
         .value=${deviceId}
+        .disabled=${this.disabled}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}
         label=${this.hass.localize(
@@ -60,17 +63,20 @@ export class HaDeviceAction extends LitElement {
       <ha-device-action-picker
         .value=${this.action}
         .deviceId=${deviceId}
+        .disabled=${this.disabled}
         @value-changed=${this._deviceActionPicked}
         .hass=${this.hass}
         label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.device_id.action"
         )}
       ></ha-device-action-picker>
-      ${this._capabilities?.extra_fields
+      ${this._capabilities?.extra_fields?.length
         ? html`
             <ha-form
+              .hass=${this.hass}
               .data=${this._extraFieldsData(this.action, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
+              .disabled=${this.disabled}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
                 this.hass.localize
               )}
@@ -107,6 +113,11 @@ export class HaDeviceAction extends LitElement {
   private _devicePicked(ev) {
     ev.stopPropagation();
     this._deviceId = ev.target.value;
+    if (this._deviceId === undefined) {
+      fireEvent(this, "value-changed", {
+        value: HaDeviceAction.defaultConfig,
+      });
+    }
   }
 
   private _deviceActionPicked(ev) {
@@ -135,6 +146,21 @@ export class HaDeviceAction extends LitElement {
         `ui.panel.config.automation.editor.actions.type.device_id.extra_fields.${schema.name}`
       ) || schema.name;
   }
+
+  static styles = css`
+    ha-device-picker {
+      display: block;
+      margin-bottom: 24px;
+    }
+
+    ha-device-action-picker {
+      display: block;
+    }
+
+    ha-form {
+      margin-top: 24px;
+    }
+  `;
 }
 
 declare global {

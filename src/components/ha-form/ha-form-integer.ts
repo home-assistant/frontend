@@ -1,31 +1,33 @@
-import "@material/mwc-textfield";
-import type { TextField } from "@material/mwc-textfield";
-import "@material/mwc-slider";
-import type { Slider } from "@material/mwc-slider";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaCheckbox } from "../ha-checkbox";
+import "../ha-slider";
+import { HaTextField } from "../ha-textfield";
 import { HaFormElement, HaFormIntegerData, HaFormIntegerSchema } from "./types";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
-  @property() public schema!: HaFormIntegerSchema;
+  @property({ attribute: false }) public schema!: HaFormIntegerSchema;
 
-  @property() public data?: HaFormIntegerData;
+  @property({ attribute: false }) public data?: HaFormIntegerData;
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
-  @query("paper-input ha-slider") private _input?: HTMLElement;
+  @query("ha-textfield ha-slider") private _input?:
+    | HaTextField
+    | HTMLInputElement;
 
   private _lastValue?: HaFormIntegerData;
 
@@ -45,7 +47,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         <div>
           ${this.label}
           <div class="flex">
-            ${this.schema.optional
+            ${!this.schema.required
               ? html`
                   <ha-checkbox
                     @change=${this._handleCheckboxChange}
@@ -54,25 +56,28 @@ export class HaFormInteger extends LitElement implements HaFormElement {
                   ></ha-checkbox>
                 `
               : ""}
-            <mwc-slider
-              discrete
+            <ha-slider
+              pin
+              ignore-bar-touch
               .value=${this._value}
               .min=${this.schema.valueMin}
               .max=${this.schema.valueMax}
               .disabled=${this.disabled ||
-              (this.data === undefined && this.schema.optional)}
+              (this.data === undefined && !this.schema.required)}
               @change=${this._valueChanged}
-            ></mwc-slider>
+            ></ha-slider>
           </div>
         </div>
       `;
     }
 
     return html`
-      <mwc-textfield
+      <ha-textfield
         type="number"
         inputMode="numeric"
         .label=${this.label}
+        .helper=${this.helper}
+        helperPersistent
         .value=${this.data !== undefined ? this.data : ""}
         .disabled=${this.disabled}
         .required=${this.schema.required}
@@ -80,7 +85,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         .suffix=${this.schema.description?.suffix}
         .validationMessage=${this.schema.required ? "Required" : undefined}
         @input=${this._valueChanged}
-      ></mwc-textfield>
+      ></ha-textfield>
     `;
   }
 
@@ -99,12 +104,13 @@ export class HaFormInteger extends LitElement implements HaFormElement {
       return this.data;
     }
 
-    if (this.schema.optional) {
+    if (!this.schema.required) {
       return this.schema.valueMin || 0;
     }
 
     return (
-      this.schema.description?.suggested_value ||
+      (this.schema.description?.suggested_value !== undefined &&
+        this.schema.description?.suggested_value !== null) ||
       this.schema.default ||
       this.schema.valueMin ||
       0
@@ -137,7 +143,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: Event) {
-    const source = ev.target as TextField | Slider;
+    const source = ev.target as HaTextField | HTMLInputElement;
     const rawValue = source.value;
 
     let value: number | undefined;
@@ -168,10 +174,10 @@ export class HaFormInteger extends LitElement implements HaFormElement {
       .flex {
         display: flex;
       }
-      mwc-slider {
+      ha-slider {
         flex: 1;
       }
-      mwc-textfield {
+      ha-textfield {
         display: block;
       }
     `;

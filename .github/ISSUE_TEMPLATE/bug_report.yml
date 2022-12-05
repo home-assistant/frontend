@@ -1,4 +1,4 @@
-name: Report a bug with the UI, Frontend or Lovelace
+name: Report a bug with the UI / Dashboards
 description: Report an issue related to the Home Assistant frontend.
 labels: bug
 body:
@@ -9,7 +9,7 @@ body:
 
         If you have a feature or enhancement request for the frontend, please [start an discussion][fr] instead of creating an issue.
 
-        **Please not not report issues for custom Lovelace cards.**
+        **Please not not report issues for custom cards.**
 
         [fr]: https://github.com/home-assistant/frontend/discussions
         [releases]: https://github.com/home-assistant/home-assistant/releases
@@ -64,7 +64,7 @@ body:
       label: What version of Home Assistant Core has the issue?
       placeholder: core-
       description: >
-        Can be found in the Configuration panel -> Info.
+        Can be found in: [Settings -> About](https://my.home-assistant.io/redirect/info/).
   - type: input
     attributes:
       label: What was the last working version of Home Assistant Core?

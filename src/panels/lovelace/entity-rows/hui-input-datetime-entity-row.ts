@@ -9,13 +9,17 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import { UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
-import { setInputDateTimeValue } from "../../../data/input_datetime";
+import {
+  setInputDateTimeValue,
+  stateToIsoDateString,
+} from "../../../data/input_datetime";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { EntityConfig, LovelaceRow } from "./types";
 import "../../../components/ha-time-input";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 @customElement("hui-input-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
@@ -49,13 +53,22 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const name = this._config.name || computeStateName(stateObj);
+
     return html`
-      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        .hideName=${stateObj.attributes.has_date &&
+        stateObj.attributes.has_time}
+      >
         ${stateObj.attributes.has_date
           ? html`
               <ha-date-input
+                .label=${stateObj.attributes.has_time ? name : undefined}
+                .locale=${this.hass.locale}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-                .value=${`${stateObj.attributes.year}-${stateObj.attributes.month}-${stateObj.attributes.day}`}
+                .value=${stateToIsoDateString(stateObj)}
                 @value-changed=${this._dateChanged}
               >
               </ha-date-input>
@@ -71,7 +84,6 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                   : stateObj.state}
                 .locale=${this.hass.locale}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-                hide-label
                 @value-changed=${this._timeChanged}
                 @click=${this._stopEventPropagation}
               ></ha-time-input>
@@ -85,7 +97,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     ev.stopPropagation();
   }
 
-  private _timeChanged(ev): void {
+  private _timeChanged(ev: CustomEvent<{ value: string }>): void {
     const stateObj = this.hass!.states[this._config!.entity];
     setInputDateTimeValue(
       this.hass!,
@@ -93,10 +105,9 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
       ev.detail.value,
       stateObj.attributes.has_date ? stateObj.state.split(" ")[0] : undefined
     );
-    ev.target.blur();
   }
 
-  private _dateChanged(ev): void {
+  private _dateChanged(ev: CustomEvent<{ value: string }>): void {
     const stateObj = this.hass!.states[this._config!.entity];
 
     setInputDateTimeValue(
@@ -105,14 +116,15 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
       stateObj.attributes.has_time ? stateObj.state.split(" ")[1] : undefined,
       ev.detail.value
     );
-
-    ev.target.blur();
   }
 
   static get styles(): CSSResultGroup {
     return css`
       ha-date-input + ha-time-input {
         margin-left: 4px;
+        margin-inline-start: 4px;
+        margin-inline-end: initial;
+        direction: var(--direction);
       }
     `;
   }

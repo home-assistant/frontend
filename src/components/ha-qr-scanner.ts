@@ -1,7 +1,5 @@
+import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
-import "@material/mwc-textfield/mwc-textfield";
-import type { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { mdiCamera } from "@mdi/js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -11,7 +9,8 @@ import { stopPropagation } from "../common/dom/stop_propagation";
 import { LocalizeFunc } from "../common/translations/localize";
 import "./ha-alert";
 import "./ha-button-menu";
-import "@material/mwc-button/mwc-button";
+import "./ha-textfield";
+import type { HaTextField } from "./ha-textfield";
 
 @customElement("ha-qr-scanner")
 class HaQrScanner extends LitElement {
@@ -29,7 +28,7 @@ class HaQrScanner extends LitElement {
 
   @query("#canvas-container", true) private _canvasContainer!: HTMLDivElement;
 
-  @query("mwc-textfield") private _manualInput?: TextField;
+  @query("ha-textfield") private _manualInput?: HaTextField;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -102,11 +101,11 @@ class HaQrScanner extends LitElement {
           </ha-alert>
           <p>${this.localize("ui.components.qr-scanner.manual_input")}</p>
           <div class="row">
-            <mwc-textfield
+            <ha-textfield
               .label=${this.localize("ui.components.qr-scanner.enter_qr_code")}
               @keyup=${this._manualKeyup}
               @paste=${this._manualPaste}
-            ></mwc-textfield>
+            ></ha-textfield>
             <mwc-button @click=${this._manualSubmit}
               >${this.localize("ui.common.submit")}</mwc-button
             >
@@ -161,7 +160,7 @@ class HaQrScanner extends LitElement {
 
   private _manualKeyup(ev: KeyboardEvent) {
     if (ev.key === "Enter") {
-      this._qrCodeScanned((ev.target as TextField).value);
+      this._qrCodeScanned((ev.target as HaTextField).value);
     }
   }
 
@@ -199,7 +198,7 @@ class HaQrScanner extends LitElement {
       display: flex;
       align-items: center;
     }
-    mwc-textfield {
+    ha-textfield {
       flex: 1;
       margin-right: 8px;
     }

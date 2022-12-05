@@ -1,0 +1,9 @@
+#!/bin/sh
+# Setup translation fetching during development
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+./node_modules/.bin/gulp setup-and-fetch-nightly-translations

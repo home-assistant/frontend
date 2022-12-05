@@ -1,7 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -11,10 +9,11 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "web-animations-js/web-animations-next-lite.min";
+import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-select";
 import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
@@ -51,55 +50,51 @@ class HassioAddonAudio extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card
+        outlined
         .header=${this.supervisor.localize("addon.configuration.audio.header")}
       >
         <div class="card-content">
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
-
-          <paper-dropdown-menu
+          ${this._inputDevices &&
+          html`<ha-select
             .label=${this.supervisor.localize(
               "addon.configuration.audio.input"
             )}
-            @iron-select=${this._setInputDevice}
+            @selected=${this._setInputDevice}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
+            .value=${this._selectedInput!}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              attr-for-selected="device"
-              .selected=${this._selectedInput!}
-            >
-              ${this._inputDevices &&
-              this._inputDevices.map(
-                (item) => html`
-                  <paper-item device=${item.device || ""}>
-                    ${item.name}
-                  </paper-item>
-                `
-              )}
-            </paper-listbox>
-          </paper-dropdown-menu>
-          <paper-dropdown-menu
+            ${this._inputDevices.map(
+              (item) => html`
+                <mwc-list-item .value=${item.device || ""}>
+                  ${item.name}
+                </mwc-list-item>
+              `
+            )}
+          </ha-select>`}
+          ${this._outputDevices &&
+          html`<ha-select
             .label=${this.supervisor.localize(
               "addon.configuration.audio.output"
             )}
-            @iron-select=${this._setOutputDevice}
+            @selected=${this._setOutputDevice}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
+            .value=${this._selectedOutput!}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              attr-for-selected="device"
-              .selected=${this._selectedOutput!}
-            >
-              ${this._outputDevices &&
-              this._outputDevices.map(
-                (item) => html`
-                  <paper-item device=${item.device || ""}
-                    >${item.name}</paper-item
-                  >
-                `
-              )}
-            </paper-listbox>
-          </paper-dropdown-menu>
+            ${this._outputDevices.map(
+              (item) => html`
+                <mwc-list-item .value=${item.device || ""}
+                  >${item.name}</mwc-list-item
+                >
+              `
+            )}
+          </ha-select>`}
         </div>
         <div class="card-actions">
           <ha-progress-button @click=${this._saveSettings}>
@@ -116,8 +111,7 @@ class HassioAddonAudio extends LitElement {
       hassioStyle,
       css`
         :host,
-        ha-card,
-        paper-dropdown-menu {
+        ha-card {
           display: block;
         }
         paper-item {
@@ -126,24 +120,30 @@ class HassioAddonAudio extends LitElement {
         .card-actions {
           text-align: right;
         }
+        ha-select {
+          width: 100%;
+        }
+        ha-select:last-child {
+          margin-top: 8px;
+        }
       `,
     ];
   }
 
-  protected update(changedProperties: PropertyValues): void {
-    super.update(changedProperties);
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
     if (changedProperties.has("addon")) {
       this._addonChanged();
     }
   }
 
   private _setInputDevice(ev): void {
-    const device = ev.detail.item.getAttribute("device");
+    const device = ev.target.value;
     this._selectedInput = device;
   }
 
   private _setOutputDevice(ev): void {
-    const device = ev.detail.item.getAttribute("device");
+    const device = ev.target.value;
     this._selectedOutput = device;
   }
 

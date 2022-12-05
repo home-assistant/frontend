@@ -1,24 +1,16 @@
-import { mdiCheck } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../common/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { stringCompare } from "../../common/string/compare";
-import { getStatisticIds, StatisticsMetaData } from "../../data/history";
+import {
+  getStatisticIds,
+  getStatisticLabel,
+  StatisticsMetaData,
+} from "../../data/recorder";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -43,20 +35,29 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Boolean }) public disabled?: boolean;
 
   /**
-   * Show only statistics with these unit of measuments.
+   * Show only statistics natively stored with these units of measurements.
    * @type {Array}
-   * @attr include-unit-of-measurement
+   * @attr include-statistics-unit-of-measurement
    */
-  @property({ type: Array, attribute: "include-unit-of-measurement" })
-  public includeUnitOfMeasurement?: string[];
+  @property({
+    type: Array,
+    attribute: "include-statistics-unit-of-measurement",
+  })
+  public includeStatisticsUnitOfMeasurement?: string | string[];
+
+  /**
+   * Show only statistics with these unit classes.
+   * @attr include-unit-class
+   */
+  @property({ attribute: "include-unit-class" })
+  public includeUnitClass?: string | string[];
 
   /**
    * Show only statistics with these device classes.
-   * @type {Array}
-   * @attr include-device-classes
+   * @attr include-device-class
    */
-  @property({ type: Array, attribute: "include-device-classes" })
-  public includeDeviceClasses?: string[];
+  @property({ attribute: "include-device-class" })
+  public includeDeviceClass?: string | string[];
 
   /**
    * Show only statistics on entities.
@@ -76,60 +77,31 @@ export class HaStatisticPicker extends LitElement {
     id: string;
     name: string;
     state?: HassEntity;
-    // eslint-disable-next-line lit/prefer-static-styles
-  }> = (item) => html`<style>
-      paper-icon-item {
-        padding: 0;
-        margin: -8px;
-      }
-      #content {
-        display: flex;
-        align-items: center;
-      }
-      ha-svg-icon {
-        padding-left: 2px;
-        color: var(--secondary-text-color);
-      }
-      :host(:not([selected])) ha-svg-icon {
-        display: none;
-      }
-      :host([selected]) paper-icon-item {
-        margin-left: 0;
-      }
-      a {
-        color: var(--primary-color);
-      }
-    </style>
-    <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-    <paper-icon-item>
-      ${item.state
-        ? html`<state-badge
-            slot="item-icon"
-            .stateObj=${item.state}
-          ></state-badge>`
-        : ""}
-      <paper-item-body two-line="">
-        ${item.name}
-        <span secondary
-          >${item.id === "" || item.id === "__missing"
-            ? html`<a
-                target="_blank"
-                rel="noopener noreferrer"
-                href=${documentationUrl(this.hass, "/more-info/statistics/")}
-                >${this.hass.localize(
-                  "ui.components.statistic-picker.learn_more"
-                )}</a
-              >`
-            : item.id}</span
-        >
-      </paper-item-body>
-    </paper-icon-item>`;
+  }> = (item) => html`<mwc-list-item graphic="avatar" twoline>
+    ${item.state
+      ? html`<state-badge slot="graphic" .stateObj=${item.state}></state-badge>`
+      : ""}
+    <span>${item.name}</span>
+    <span slot="secondary"
+      >${item.id === "" || item.id === "__missing"
+        ? html`<a
+            target="_blank"
+            rel="noopener noreferrer"
+            href=${documentationUrl(this.hass, "/more-info/statistics/")}
+            >${this.hass.localize(
+              "ui.components.statistic-picker.learn_more"
+            )}</a
+          >`
+        : item.id}</span
+    >
+  </mwc-list-item>`;
 
   private _getStatistics = memoizeOne(
     (
       statisticIds: StatisticsMetaData[],
-      includeUnitOfMeasurement?: string[],
-      includeDeviceClasses?: string[],
+      includeStatisticsUnitOfMeasurement?: string | string[],
+      includeUnitClass?: string | string[],
+      includeDeviceClass?: string | string[],
       entitiesOnly?: boolean
     ): Array<{ id: string; name: string; state?: HassEntity }> => {
       if (!statisticIds.length) {
@@ -143,10 +115,33 @@ export class HaStatisticPicker extends LitElement {
         ];
       }
 
-      if (includeUnitOfMeasurement) {
-        statisticIds = statisticIds.filter((meta) =>
-          includeUnitOfMeasurement.includes(meta.unit_of_measurement)
+      if (includeStatisticsUnitOfMeasurement) {
+        const includeUnits: (string | null)[] = ensureArray(
+          includeStatisticsUnitOfMeasurement
         );
+        statisticIds = statisticIds.filter((meta) =>
+          includeUnits.includes(meta.statistics_unit_of_measurement)
+        );
+      }
+      if (includeUnitClass) {
+        const includeUnitClasses: (string | null)[] =
+          ensureArray(includeUnitClass);
+        statisticIds = statisticIds.filter((meta) =>
+          includeUnitClasses.includes(meta.unit_class)
+        );
+      }
+      if (includeDeviceClass) {
+        const includeDeviceClasses: (string | null)[] =
+          ensureArray(includeDeviceClass);
+        statisticIds = statisticIds.filter((meta) => {
+          const stateObj = this.hass.states[meta.statistic_id];
+          if (!stateObj) {
+            return true;
+          }
+          return includeDeviceClasses.includes(
+            stateObj.attributes.device_class || ""
+          );
+        });
       }
 
       const output: Array<{
@@ -160,23 +155,16 @@ export class HaStatisticPicker extends LitElement {
           if (!entitiesOnly) {
             output.push({
               id: meta.statistic_id,
-              name: meta.name || meta.statistic_id,
+              name: getStatisticLabel(this.hass, meta.statistic_id, meta),
             });
           }
           return;
         }
-        if (
-          !includeDeviceClasses ||
-          includeDeviceClasses.includes(
-            entityState!.attributes.device_class || ""
-          )
-        ) {
-          output.push({
-            id: meta.statistic_id,
-            name: computeStateName(entityState),
-            state: entityState,
-          });
-        }
+        output.push({
+          id: meta.statistic_id,
+          name: getStatisticLabel(this.hass, meta.statistic_id, meta),
+          state: entityState,
+        });
       });
 
       if (!output.length) {
@@ -226,16 +214,18 @@ export class HaStatisticPicker extends LitElement {
       if (this.hasUpdated) {
         (this.comboBox as any).items = this._getStatistics(
           this.statisticIds!,
-          this.includeUnitOfMeasurement,
-          this.includeDeviceClasses,
+          this.includeStatisticsUnitOfMeasurement,
+          this.includeUnitClass,
+          this.includeDeviceClass,
           this.entitiesOnly
         );
       } else {
         this.updateComplete.then(() => {
           (this.comboBox as any).items = this._getStatistics(
             this.statisticIds!,
-            this.includeUnitOfMeasurement,
-            this.includeDeviceClasses,
+            this.includeStatisticsUnitOfMeasurement,
+            this.includeUnitClass,
+            this.includeDeviceClass,
             this.entitiesOnly
           );
         });
@@ -292,19 +282,6 @@ export class HaStatisticPicker extends LitElement {
       fireEvent(this, "value-changed", { value });
       fireEvent(this, "change");
     }, 0);
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      paper-input > ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        padding: 2px;
-        color: var(--secondary-text-color);
-      }
-      [hidden] {
-        display: none;
-      }
-    `;
   }
 }
 

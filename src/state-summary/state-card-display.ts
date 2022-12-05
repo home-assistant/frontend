@@ -52,7 +52,8 @@ export class StateCardDisplay extends LitElement {
             : computeStateDisplay(
                 this.hass!.localize,
                 this.stateObj,
-                this.hass.locale
+                this.hass.locale,
+                this.hass.entities
               )}
         </div>
       </div>
@@ -75,28 +76,21 @@ export class StateCardDisplay extends LitElement {
     return [
       haStyle,
       css`
-        :host([rtl]) {
-          direction: rtl;
-          text-align: right;
-        }
-
         state-info {
           flex: 1 1 auto;
           min-width: 0;
         }
         .state {
           color: var(--primary-text-color);
-          margin-left: 16px;
-          text-align: right;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
+          text-align: var(--float-end, right);
           flex: 0 0 auto;
           overflow-wrap: break-word;
+          display: flex;
+          align-items: center;
+          direction: ltr;
         }
-        :host([rtl]) .state {
-          margin-right: 16px;
-          margin-left: 0;
-          text-align: left;
-        }
-
         .state.has-unit_of_measurement {
           white-space: nowrap;
         }

@@ -1,99 +1,118 @@
 import "@material/mwc-button";
+import { mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { property, state } from "lit/decorators";
+import { property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
+import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
-import { syncCloudAlexaEntities } from "../../../../data/alexa";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 
 export class CloudAlexaPref extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
-
-  @state() private _syncing = false;
 
   protected render(): TemplateResult {
     if (!this.cloudStatus) {
       return html``;
     }
 
+    const alexa_registered = this.cloudStatus.alexa_registered;
     const { alexa_enabled, alexa_report_state } = this.cloudStatus!.prefs;
 
     return html`
       <ha-card
+        outlined
         header=${this.hass!.localize(
           "ui.panel.config.cloud.account.alexa.title"
         )}
       >
-        <div class="switch">
+        <div class="header-actions">
+          <a
+            href="https://www.nabucasa.com/config/amazon_alexa/"
+            target="_blank"
+            rel="noreferrer"
+            class="icon-link"
+          >
+            <ha-icon-button
+              .label=${this.hass.localize(
+                "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
+              )}
+              .path=${mdiHelpCircle}
+            ></ha-icon-button>
+          </a>
           <ha-switch
             .checked=${alexa_enabled}
             @change=${this._enabledToggleChanged}
           ></ha-switch>
         </div>
         <div class="card-content">
-          ${this.hass!.localize("ui.panel.config.cloud.account.alexa.info")}
-          <ul>
-            <li>
-              <a
-                href="https://skills-store.amazon.com/deeplink/dp/B0772J1QKB?deviceType=app"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass!.localize(
-                  "ui.panel.config.cloud.account.alexa.enable_ha_skill"
-                )}
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.nabucasa.com/config/amazon_alexa/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass!.localize(
-                  "ui.panel.config.cloud.account.alexa.config_documentation"
-                )}
-              </a>
-            </li>
-          </ul>
-          ${alexa_enabled
+          <p>
+            ${this.hass!.localize("ui.panel.config.cloud.account.alexa.info")}
+          </p>
+          ${!alexa_enabled
+            ? ""
+            : !alexa_registered
             ? html`
-                <div class="state-reporting">
-                  <h3>
+                <ha-alert
+                  .title=${this.hass.localize(
+                    "ui.panel.config.cloud.account.alexa.not_configured_title"
+                  )}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.alexa.not_configured_text"
+                  )}
+
+                  <ul>
+                    <li>
+                      <a
+                        href="https://skills-store.amazon.com/deeplink/dp/B0772J1QKB?deviceType=app"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${this.hass!.localize(
+                          "ui.panel.config.cloud.account.alexa.enable_ha_skill"
+                        )}
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://www.nabucasa.com/config/amazon_alexa/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${this.hass!.localize(
+                          "ui.panel.config.cloud.account.alexa.config_documentation"
+                        )}
+                      </a>
+                    </li>
+                  </ul>
+                </ha-alert>
+              `
+            : html`
+                <ha-settings-row>
+                  <span slot="heading">
                     ${this.hass!.localize(
                       "ui.panel.config.cloud.account.alexa.enable_state_reporting"
                     )}
-                  </h3>
-                  <div class="state-reporting-switch">
-                    <ha-switch
-                      .checked=${alexa_report_state}
-                      @change=${this._reportToggleChanged}
-                    ></ha-switch>
-                  </div>
-                </div>
-                <p>
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.account.alexa.info_state_reporting"
-                  )}
-                </p>
-              `
-            : ""}
+                  </span>
+                  <span slot="description">
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.alexa.info_state_reporting"
+                    )}
+                  </span>
+                  <ha-switch
+                    .checked=${alexa_report_state}
+                    @change=${this._reportToggleChanged}
+                  ></ha-switch>
+                </ha-settings-row>
+              `}
         </div>
         <div class="card-actions">
-          <mwc-button
-            @click=${this._handleSync}
-            .disabled=${!alexa_enabled || this._syncing}
-          >
-            ${this.hass!.localize(
-              "ui.panel.config.cloud.account.alexa.sync_entities"
-            )}
-          </mwc-button>
-          <div class="spacer"></div>
           <a href="/config/cloud/alexa">
             <mwc-button
               >${this.hass!.localize(
@@ -104,21 +123,6 @@ export class CloudAlexaPref extends LitElement {
         </div>
       </ha-card>
     `;
-  }
-
-  private async _handleSync() {
-    this._syncing = true;
-    try {
-      await syncCloudAlexaEntities(this.hass!);
-    } catch (err: any) {
-      alert(
-        `${this.hass!.localize(
-          "ui.panel.config.cloud.account.alexa.sync_entities_error"
-        )} ${err.body.message}`
-      );
-    } finally {
-      this._syncing = false;
-    }
   }
 
   private async _enabledToggleChanged(ev) {
@@ -159,39 +163,32 @@ export class CloudAlexaPref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      .switch {
+      ha-settings-row {
+        padding: 0;
+      }
+      .header-actions {
         position: absolute;
         right: 24px;
         top: 24px;
+        display: flex;
+        flex-direction: row;
       }
-      :host([dir="rtl"]) .switch {
+      :host([dir="rtl"]) .header-actions {
         right: auto;
         left: 24px;
+      }
+      .header-actions .icon-link {
+        margin-top: -16px;
+        margin-inline-end: 8px;
+        margin-right: 8px;
+        direction: var(--direction);
+        color: var(--secondary-text-color);
       }
       .card-actions {
         display: flex;
       }
       .card-actions a {
         text-decoration: none;
-      }
-      .spacer {
-        flex-grow: 1;
-      }
-      .state-reporting {
-        display: flex;
-        margin-top: 1.5em;
-      }
-      .state-reporting + p {
-        margin-top: 0.5em;
-      }
-      .state-reporting h3 {
-        flex-grow: 1;
-        margin: 0;
-      }
-      .state-reporting-switch {
-        margin-top: 0.25em;
-        margin-right: 7px;
-        margin-left: 0.5em;
       }
     `;
   }

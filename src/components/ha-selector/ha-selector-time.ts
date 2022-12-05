@@ -6,15 +6,19 @@ import "../ha-time-input";
 
 @customElement("ha-selector-time")
 export class HaTimeSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: TimeSelector;
+  @property({ attribute: false }) public selector!: TimeSelector;
 
   @property() public value?: string;
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = false;
 
   protected render() {
     return html`
@@ -22,7 +26,9 @@ export class HaTimeSelector extends LitElement {
         .value=${this.value}
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
-        hide-label
+        .required=${this.required}
+        .helper=${this.helper}
+        .label=${this.label}
         enable-second
       ></ha-time-input>
     `;

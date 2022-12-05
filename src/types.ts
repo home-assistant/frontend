@@ -8,6 +8,9 @@ import {
   MessageBase,
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
+import { AreaRegistryEntry } from "./data/area_registry";
+import { DeviceRegistryEntry } from "./data/device_registry";
+import { EntityRegistryEntry } from "./data/entity_registry";
 import { CoreFrontendUserData } from "./data/frontend";
 import { FrontendLocaleData, getHassTranslations } from "./data/translation";
 import { Themes } from "./data/ws-themes";
@@ -109,17 +112,6 @@ export interface Panels {
   [name: string]: PanelInfo;
 }
 
-export interface CalendarEvent {
-  summary: string;
-  title: string;
-  start: string;
-  end?: string;
-  backgroundColor?: string;
-  borderColor?: string;
-  calendar: string;
-  [key: string]: any;
-}
-
 export interface CalendarViewChanged {
   end: Date;
   start: Date;
@@ -150,6 +142,8 @@ export interface TranslationMetadata {
     [lang: string]: Translation;
   };
 }
+
+export type TranslationDict = typeof import("./translations/en.json");
 
 export interface IconMetaFile {
   version: string;
@@ -195,6 +189,9 @@ export interface HomeAssistant {
   connection: Connection;
   connected: boolean;
   states: HassEntities;
+  entities: { [id: string]: EntityRegistryEntry };
+  devices: { [id: string]: DeviceRegistryEntry };
+  areas: { [id: string]: AreaRegistryEntry };
   services: HassServices;
   config: HassConfig;
   themes: Themes;

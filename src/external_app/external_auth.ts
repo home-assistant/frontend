@@ -128,14 +128,14 @@ export class ExternalAuth extends Auth {
   }
 }
 
-export const createExternalAuth = (hassUrl: string) => {
+export const createExternalAuth = async (hassUrl: string) => {
   const auth = new ExternalAuth(hassUrl);
   if (
     (window.externalApp && window.externalApp.externalBus) ||
     (window.webkit && window.webkit.messageHandlers.externalBus)
   ) {
     auth.external = new ExternalMessaging();
-    auth.external.attach();
+    await auth.external.attach();
   }
   return auth;
 };

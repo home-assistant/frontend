@@ -12,7 +12,7 @@ import { property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../data/entity";
+import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { HomeAssistant } from "../../types";
 import "../ha-formfield";
@@ -39,21 +39,26 @@ export class HaEntityToggle extends LitElement {
       return html` <ha-switch disabled></ha-switch> `;
     }
 
-    if (this.stateObj.attributes.assumed_state) {
+    if (
+      this.stateObj.attributes.assumed_state ||
+      this.stateObj.state === UNKNOWN
+    ) {
       return html`
         <ha-icon-button
           .label=${`Turn ${computeStateName(this.stateObj)} off`}
           .path=${mdiFlashOff}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOff}
-          ?state-active=${!this._isOn}
+          class=${!this._isOn && this.stateObj.state !== UNKNOWN
+            ? "state-active"
+            : ""}
         ></ha-icon-button>
         <ha-icon-button
           .label=${`Turn ${computeStateName(this.stateObj)} on`}
           .path=${mdiFlash}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOn}
-          ?state-active=${this._isOn}
+          class=${this._isOn ? "state-active" : ""}
         ></ha-icon-button>
       `;
     }
@@ -63,7 +68,7 @@ export class HaEntityToggle extends LitElement {
         this._isOn ? "off" : "on"
       }`}
       .checked=${this._isOn}
-      .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
+      .disabled=${this.stateObj.state === UNAVAILABLE}
       @change=${this._toggleChanged}
     ></ha-switch>`;
 
@@ -156,10 +161,11 @@ export class HaEntityToggle extends LitElement {
         min-width: 38px;
       }
       ha-icon-button {
+        --mdc-icon-button-size: 40px;
         color: var(--ha-icon-button-inactive-color, var(--primary-text-color));
         transition: color 0.5s;
       }
-      ha-icon-button[state-active] {
+      ha-icon-button.state-active {
         color: var(--ha-icon-button-active-color, var(--primary-color));
       }
       ha-switch {

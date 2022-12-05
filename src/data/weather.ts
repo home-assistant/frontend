@@ -2,9 +2,21 @@ import {
   mdiAlertCircleOutline,
   mdiGauge,
   mdiWaterPercent,
+  mdiWeatherCloudy,
   mdiWeatherFog,
+  mdiWeatherHail,
+  mdiWeatherLightning,
+  mdiWeatherLightningRainy,
+  mdiWeatherNight,
+  mdiWeatherNightPartlyCloudy,
+  mdiWeatherPartlyCloudy,
+  mdiWeatherPouring,
   mdiWeatherRainy,
+  mdiWeatherSnowy,
+  mdiWeatherSnowyRainy,
+  mdiWeatherSunny,
   mdiWeatherWindy,
+  mdiWeatherWindyVariant,
 } from "@mdi/js";
 import {
   HassEntityAttributeBase,
@@ -25,14 +37,24 @@ interface ForecastAttribute {
   humidity?: number;
   condition?: string;
   daytime?: boolean;
+  pressure?: number;
+  wind_speed?: string;
 }
 
 interface WeatherEntityAttributes extends HassEntityAttributeBase {
-  temperature: number;
+  attribution?: string;
   humidity?: number;
   forecast?: ForecastAttribute[];
-  wind_speed: string;
-  wind_bearing: string;
+  pressure?: number;
+  temperature?: number;
+  visibility?: number;
+  wind_bearing?: number | string;
+  wind_speed?: number;
+  precipitation_unit: string;
+  pressure_unit: string;
+  temperature_unit: string;
+  visibility_unit: string;
+  wind_speed_unit: string;
 }
 
 export interface WeatherEntity extends HassEntityBase {
@@ -57,7 +79,21 @@ export const weatherSVGs = new Set<string>([
 ]);
 
 export const weatherIcons = {
+  "clear-night": mdiWeatherNight,
+  cloudy: mdiWeatherCloudy,
   exceptional: mdiAlertCircleOutline,
+  fog: mdiWeatherFog,
+  hail: mdiWeatherHail,
+  lightning: mdiWeatherLightning,
+  "lightning-rainy": mdiWeatherLightningRainy,
+  partlycloudy: mdiWeatherPartlyCloudy,
+  pouring: mdiWeatherPouring,
+  rainy: mdiWeatherRainy,
+  snowy: mdiWeatherSnowy,
+  "snowy-rainy": mdiWeatherSnowyRainy,
+  sunny: mdiWeatherSunny,
+  windy: mdiWeatherWindy,
+  "windy-variant": mdiWeatherWindyVariant,
 };
 
 export const weatherAttrIcons = {
@@ -112,16 +148,16 @@ const cardinalDirections = [
   "N",
 ];
 
-const getWindBearingText = (degree: string): string => {
-  const degreenum = parseInt(degree, 10);
+const getWindBearingText = (degree: number | string): string => {
+  const degreenum = typeof degree === "number" ? degree : parseInt(degree, 10);
   if (isFinite(degreenum)) {
     // eslint-disable-next-line no-bitwise
     return cardinalDirections[(((degreenum + 11.25) / 22.5) | 0) % 16];
   }
-  return degree;
+  return typeof degree === "number" ? degree.toString() : degree;
 };
 
-const getWindBearing = (bearing: string): string => {
+const getWindBearing = (bearing: number | string): string => {
   if (bearing != null) {
     return getWindBearingText(bearing);
   }
@@ -130,14 +166,19 @@ const getWindBearing = (bearing: string): string => {
 
 export const getWind = (
   hass: HomeAssistant,
-  speed: string,
-  bearing: string
+  stateObj: WeatherEntity,
+  speed?: number,
+  bearing?: number | string
 ): string => {
-  const speedText = `${formatNumber(speed, hass.locale)} ${getWeatherUnit(
-    hass!,
-    "wind_speed"
-  )}`;
-  if (bearing !== null) {
+  const speedText =
+    speed !== undefined && speed !== null
+      ? `${formatNumber(speed, hass.locale)} ${getWeatherUnit(
+          hass!,
+          stateObj,
+          "wind_speed"
+        )}`
+      : "-";
+  if (bearing !== undefined && bearing !== null) {
     const cardinalDirection = getWindBearing(bearing);
     return `${speedText} (${
       hass.localize(
@@ -150,13 +191,30 @@ export const getWind = (
 
 export const getWeatherUnit = (
   hass: HomeAssistant,
+  stateObj: WeatherEntity,
   measure: string
 ): string => {
+  const lengthUnit = hass.config.unit_system.length || "";
   switch (measure) {
     case "visibility":
-      return hass.config.unit_system.length || "";
+      return stateObj.attributes.visibility_unit || lengthUnit;
     case "precipitation":
-      return hass.config.unit_system.accumulated_precipitation || "";
+      return (
+        stateObj.attributes.precipitation_unit ||
+        (lengthUnit === "km" ? "mm" : "in")
+      );
+    case "pressure":
+      return (
+        stateObj.attributes.pressure_unit ||
+        (lengthUnit === "km" ? "hPa" : "inHg")
+      );
+    case "temperature":
+      return (
+        stateObj.attributes.temperature_unit ||
+        hass.config.unit_system.temperature
+      );
+    case "wind_speed":
+      return stateObj.attributes.wind_speed_unit || `${lengthUnit}/h`;
     case "humidity":
     case "precipitation_probability":
       return "%";
@@ -201,7 +259,7 @@ export const getSecondaryWeatherAttribute = (
         `
       : hass!.localize(`ui.card.weather.attributes.${attribute}`)}
     ${formatNumber(value, hass.locale, { maximumFractionDigits: 1 })}
-    ${getWeatherUnit(hass!, attribute)}
+    ${getWeatherUnit(hass!, stateObj, attribute)}
   `;
 };
 
@@ -236,7 +294,7 @@ const getWeatherExtrema = (
     return undefined;
   }
 
-  const unit = getWeatherUnit(hass!, "temperature");
+  const unit = getWeatherUnit(hass!, stateObj, "temperature");
 
   return html`
     ${tempHigh ? `${formatNumber(tempHigh, hass.locale)} ${unit}` : ""}
@@ -432,6 +490,29 @@ export const getWeatherStateIcon = (
         .path=${weatherIcons[state]}
       ></ha-svg-icon>
     `;
+  }
+
+  return undefined;
+};
+
+export const weatherIcon = (state?: string, nightTime?: boolean): string =>
+  !state
+    ? undefined
+    : nightTime && state === "partlycloudy"
+    ? mdiWeatherNightPartlyCloudy
+    : weatherIcons[state];
+
+const DAY_IN_MILLISECONDS = 86400000;
+
+export const isForecastHourly = (
+  forecast?: ForecastAttribute[]
+): boolean | undefined => {
+  if (forecast && forecast?.length && forecast?.length > 2) {
+    const date1 = new Date(forecast[1].datetime);
+    const date2 = new Date(forecast[2].datetime);
+    const timeDiff = date2.getTime() - date1.getTime();
+
+    return timeDiff < DAY_IN_MILLISECONDS;
   }
 
   return undefined;

@@ -1,6 +1,4 @@
 // Tasks to generate entry HTML
-/* eslint-disable import/no-dynamic-require */
-/* eslint-disable global-require */
 const gulp = require("gulp");
 const fs = require("fs-extra");
 const path = require("path");
@@ -91,7 +89,9 @@ gulp.task("gen-pages-prod", (done) => {
 });
 
 gulp.task("gen-index-app-dev", (done) => {
-  let latestAppJS, latestCoreJS, latestCustomPanelJS;
+  let latestAppJS;
+  let latestCoreJS;
+  let latestCustomPanelJS;
 
   if (env.useWDS()) {
     latestAppJS = "http://localhost:8000/src/entrypoints/app.ts";

@@ -1,6 +1,7 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { property } from "lit/decorators";
 import { navigate, NavigateOptions } from "../../common/navigate";
+import { deepEqual } from "../../common/util/deep-equal";
 import { CustomPanelInfo } from "../../data/panel_custom";
 import { HomeAssistant, Route } from "../../types";
 import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
@@ -54,12 +55,15 @@ export class HaPanelCustom extends ReactiveElement {
   protected update(changedProps: PropertyValues) {
     super.update(changedProps);
     if (changedProps.has("panel")) {
-      // Clean up old things if we had a panel
-      if (changedProps.get("panel")) {
-        this._cleanupPanel();
+      // Clean up old things if we had a panel and the new one is different.
+      const oldPanel = changedProps.get("panel") as CustomPanelInfo | undefined;
+      if (!deepEqual(oldPanel, this.panel)) {
+        if (oldPanel) {
+          this._cleanupPanel();
+        }
+        this._createPanel(this.panel);
+        return;
       }
-      this._createPanel(this.panel);
-      return;
     }
     if (!this._setProperties) {
       return;

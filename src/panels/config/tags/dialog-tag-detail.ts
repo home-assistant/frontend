@@ -1,11 +1,12 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
+import "../../../components/ha-textfield";
 import { Tag, UpdateTagParams } from "../../../data/tag";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
@@ -42,6 +43,8 @@ class DialogTagDetail
       this._id = "";
       this._name = "";
     }
+
+    this._generateQR();
   }
 
   public closeDialog(): void {
@@ -69,7 +72,9 @@ class DialogTagDetail
         )}
       >
         <div>
-          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           <div class="form">
             ${this._params.entry
               ? html`${this.hass!.localize(
@@ -77,30 +82,30 @@ class DialogTagDetail
                 )}:
                 ${this._params.entry.id}`
               : ""}
-            <paper-input
+            <ha-textfield
               dialogInitialFocus
               .value=${this._name}
               .configValue=${"name"}
-              @value-changed=${this._valueChanged}
+              @input=${this._valueChanged}
               .label=${this.hass!.localize("ui.panel.config.tag.detail.name")}
               .errorMessage=${this.hass!.localize(
                 "ui.panel.config.tag.detail.required_error_msg"
               )}
               required
               auto-validate
-            ></paper-input>
+            ></ha-textfield>
             ${!this._params.entry
-              ? html` <paper-input
+              ? html`<ha-textfield
                   .value=${this._id}
                   .configValue=${"id"}
-                  @value-changed=${this._valueChanged}
+                  @input=${this._valueChanged}
                   .label=${this.hass!.localize(
                     "ui.panel.config.tag.detail.tag_id"
                   )}
                   .placeholder=${this.hass!.localize(
                     "ui.panel.config.tag.detail.tag_id_placeholder"
                   )}
-                ></paper-input>`
+                ></ha-textfield>`
               : ""}
           </div>
           ${this._params.entry
@@ -121,16 +126,9 @@ class DialogTagDetail
                     )}
                   </p>
                 </div>
-
-                <div id="qr">
-                  ${this._qrCode
-                    ? this._qrCode
-                    : html`
-                        <mwc-button @click=${this._generateQR}
-                          >Generate QR code
-                        </mwc-button>
-                      `}
-                </div>
+                ${this._qrCode
+                  ? html` <div id="qr">${this._qrCode}</div> `
+                  : ""}
               `
             : ``}
         </div>
@@ -170,11 +168,12 @@ class DialogTagDetail
     `;
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const configValue = (ev.target as any).configValue;
+  private _valueChanged(ev: Event) {
+    const target = ev.target as any;
+    const configValue = target.configValue;
 
     this._error = undefined;
-    this[`_${configValue}`] = ev.detail.value;
+    this[`_${configValue}`] = target.value;
   }
 
   private async _updateEntry() {
@@ -225,6 +224,9 @@ class DialogTagDetail
       {
         width: 180,
         errorCorrectionLevel: "Q",
+        color: {
+          light: "#fff",
+        },
       }
     );
     const context = canvas.getContext("2d");

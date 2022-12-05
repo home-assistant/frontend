@@ -1,4 +1,4 @@
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 
 export const canToggleDomain = (hass: HomeAssistant, domain: string) => {
   const services = hass.services[domain];

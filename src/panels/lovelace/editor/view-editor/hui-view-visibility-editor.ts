@@ -1,5 +1,4 @@
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -68,19 +67,20 @@ export class HuiViewVisibilityEditor extends LitElement {
       </p>
       ${this._sortedUsers(this._users).map(
         (user) => html`
-          <paper-icon-item>
+          <mwc-list-item graphic="avatar" hasMeta>
             <ha-user-badge
-              slot="item-icon"
+              slot="graphic"
               .hass=${this.hass}
               .user=${user}
             ></ha-user-badge>
-            <paper-item-body>${user.name}</paper-item-body>
+            <span>${user.name}</span>
             <ha-switch
+              slot="meta"
               .userId=${user.id}
               @change=${this.valChange}
               .checked=${this.checkUser(user.id)}
             ></ha-switch>
-          </paper-icon-item>
+          </mwc-list-item>
         `
       )}
     `;

@@ -155,8 +155,8 @@ class HuiGenericEntityRow extends LitElement {
           </div>`
         : html``}
       ${this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain)
-        ? html` <div
-            class="text-content ${classMap({
+        ? html`<div
+            class="text-content value ${classMap({
               pointer,
             })}"
             @action=${this._handleAction}
@@ -165,7 +165,7 @@ class HuiGenericEntityRow extends LitElement {
               hasDoubleClick: hasAction(this.config!.double_tap_action),
             })}
           >
-            <slot></slot>
+            <div class="state"><slot></slot></div>
           </div>`
         : html`<slot></slot>`}
     `;
@@ -229,6 +229,15 @@ class HuiGenericEntityRow extends LitElement {
       }
       .pointer {
         cursor: pointer;
+      }
+      .state {
+        text-align: right;
+      }
+      .state.rtl {
+        text-align: left;
+      }
+      .value {
+        direction: ltr;
       }
     `;
   }

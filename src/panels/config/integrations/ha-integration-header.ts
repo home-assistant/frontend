@@ -1,4 +1,4 @@
-import { mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
+import { mdiBugPlay, mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -12,17 +12,19 @@ import { brandsUrl } from "../../../util/brands-url";
 export class HaIntegrationHeader extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public banner!: string;
+  @property() public banner?: string;
 
   @property() public localizedDomainName?: string;
 
   @property() public domain!: string;
 
-  @property() public label!: string;
+  @property() public label?: string;
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   @property({ attribute: false }) public configEntry?: ConfigEntry;
+
+  @property({ attribute: false }) public debugLoggingEnabled?: boolean;
 
   protected render(): TemplateResult {
     let primary: string;
@@ -74,6 +76,15 @@ export class HaIntegrationHeader extends LitElement {
           ),
         ]);
       }
+    }
+
+    if (this.debugLoggingEnabled) {
+      icons.push([
+        mdiBugPlay,
+        this.hass.localize(
+          "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+        ),
+      ]);
     }
 
     return html`
@@ -129,19 +140,27 @@ export class HaIntegrationHeader extends LitElement {
       color: var(--text-on-state-color);
       text-align: center;
       padding: 2px;
-      border-top-left-radius: var(--ha-card-border-radius, 4px);
-      border-top-right-radius: var(--ha-card-border-radius, 4px);
+
+      /* Padding is subtracted for nested elements with border radiuses */
+      border-top-left-radius: calc(var(--ha-card-border-radius, 12px) - 2px);
+      border-top-right-radius: calc(var(--ha-card-border-radius, 12px) - 2px);
     }
     .header {
       display: flex;
       position: relative;
-      padding: 0 8px 8px 16px;
+      padding-top: 0px;
+      padding-bottom: 8px;
+      padding-inline-start: 16px;
+      padding-inline-end: 8px;
+      direction: var(--direction);
     }
     .header img {
-      margin-right: 16px;
       margin-top: 16px;
+      margin-inline-start: initial;
+      margin-inline-end: 16px;
       width: 40px;
       height: 40px;
+      direction: var(--direction);
     }
     .header .info {
       flex: 1;

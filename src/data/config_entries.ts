@@ -1,4 +1,6 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
+import { IntegrationType } from "./integration";
 
 export interface ConfigEntry {
   entry_id: string;
@@ -11,8 +13,10 @@ export interface ConfigEntry {
     | "migration_error"
     | "setup_retry"
     | "not_loaded"
-    | "failed_unload";
+    | "failed_unload"
+    | "setup_in_progress";
   supports_options: boolean;
+  supports_remove_device: boolean;
   supports_unload: boolean;
   pref_disable_new_entities: boolean;
   pref_disable_polling: boolean;
@@ -27,14 +31,68 @@ export type ConfigEntryMutableParams = Partial<
   >
 >;
 
+// https://github.com/home-assistant/core/blob/2286dea636fda001f03433ba14d7adbda43979e5/homeassistant/config_entries.py#L81
 export const ERROR_STATES: ConfigEntry["state"][] = [
   "migration_error",
   "setup_error",
   "setup_retry",
 ];
 
-export const getConfigEntries = (hass: HomeAssistant) =>
-  hass.callApi<ConfigEntry[]>("GET", "config/config_entries/entry");
+// https://github.com/home-assistant/core/blob/2286dea636fda001f03433ba14d7adbda43979e5/homeassistant/config_entries.py#L81
+export const RECOVERABLE_STATES: ConfigEntry["state"][] = [
+  "not_loaded",
+  "loaded",
+  "setup_error",
+  "setup_retry",
+];
+
+export interface ConfigEntryUpdate {
+  // null means no update as is the current state
+  type: null | "added" | "removed" | "updated";
+  entry: ConfigEntry;
+}
+
+export const subscribeConfigEntries = (
+  hass: HomeAssistant,
+  callbackFunction: (message: ConfigEntryUpdate[]) => void,
+  filters?: {
+    type?: IntegrationType[];
+    domain?: string;
+  }
+): Promise<UnsubscribeFunc> => {
+  const params: any = {
+    type: "config_entries/subscribe",
+  };
+  if (filters && filters.type) {
+    params.type_filter = filters.type;
+  }
+  return hass.connection.subscribeMessage<ConfigEntryUpdate[]>(
+    (message) => callbackFunction(message),
+    params
+  );
+};
+
+export const getConfigEntries = (
+  hass: HomeAssistant,
+  filters?: {
+    type?: IntegrationType[];
+    domain?: string;
+  }
+): Promise<ConfigEntry[]> => {
+  const params: any = {};
+  if (filters) {
+    if (filters.type) {
+      params.type_filter = filters.type;
+    }
+    if (filters.domain) {
+      params.domain = filters.domain;
+    }
+  }
+  return hass.callWS<ConfigEntry[]>({
+    type: "config_entries/get",
+    ...params,
+  });
+};
 
 export const updateConfigEntry = (
   hass: HomeAssistant,

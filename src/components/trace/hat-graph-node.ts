@@ -19,6 +19,8 @@ export class HatGraphNode extends LitElement {
 
   @property({ reflect: true, type: Boolean }) disabled?: boolean;
 
+  @property({ reflect: true, type: Boolean }) notEnabled = false;
+
   @property({ reflect: true, type: Boolean }) graphStart?: boolean;
 
   @property({ type: Boolean, attribute: "nofocus" }) noFocus = false;
@@ -114,8 +116,14 @@ export class HatGraphNode extends LitElement {
         --stroke-clr: var(--hover-clr);
         --icon-clr: var(--default-icon-clr);
       }
-      :host([disabled]) circle {
-        stroke: var(--disabled-clr);
+      :host([notEnabled]) circle {
+        --stroke-clr: var(--disabled-clr);
+      }
+      :host([notEnabled][active]) circle {
+        --stroke-clr: var(--disabled-active-clr);
+      }
+      :host([notEnabled]:hover) circle {
+        --stroke-clr: var(--disabled-hover-clr);
       }
       svg {
         width: 100%;

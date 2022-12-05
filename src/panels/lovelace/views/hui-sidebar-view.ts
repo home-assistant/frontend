@@ -69,7 +69,10 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       this._createCards();
     }
 
-    if (!changedProperties.has("lovelace")) {
+    if (
+      !changedProperties.has("lovelace") &&
+      !changedProperties.has("_config")
+    ) {
       return;
     }
 
@@ -220,7 +223,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
         box-sizing: border-box;
       }
 
-      .container > div > * {
+      .container > div > *:not([hidden]) {
         display: block;
         margin: var(--masonry-view-card-margin, 4px 4px 8px);
       }

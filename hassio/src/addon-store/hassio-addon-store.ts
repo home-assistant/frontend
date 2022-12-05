@@ -14,16 +14,18 @@ import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
-import "../../../src/common/search/search-input";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-icon-button";
+import "../../../src/components/search-input";
 import {
-  HassioAddonInfo,
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+import { StoreAddon } from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -59,17 +61,24 @@ class HassioAddonStore extends LitElement {
   @state() private _filter?: string;
 
   public async refreshData() {
-    await reloadHassioAddons(this.hass);
-    await this._loadData();
+    try {
+      await reloadHassioAddons(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        text: extractApiErrorMessage(err),
+      });
+    } finally {
+      await this._loadData();
+    }
   }
 
   protected render(): TemplateResult {
     let repos: TemplateResult[] = [];
 
-    if (this.supervisor.addon.repositories) {
+    if (this.supervisor.store.repositories) {
       repos = this.addonRepositories(
-        this.supervisor.addon.repositories,
-        this.supervisor.addon.addons,
+        this.supervisor.store.repositories,
+        this.supervisor.store.addons,
         this._filter
       );
     }
@@ -95,7 +104,7 @@ class HassioAddonStore extends LitElement {
             ${this.supervisor.localize("store.repositories")}
           </mwc-list-item>
           <mwc-list-item>
-            ${this.supervisor.localize("common.reload")}
+            ${this.supervisor.localize("store.check_updates")}
           </mwc-list-item>
           ${this.hass.userData?.showAdvanced &&
           atLeastVersion(this.hass.config.version, 0, 117)
@@ -110,8 +119,6 @@ class HassioAddonStore extends LitElement {
               <div class="search">
                 <search-input
                   .hass=${this.hass}
-                  no-label-float
-                  no-underline
                   .filter=${this._filter}
                   @value-changed=${this._filterChanged}
                 ></search-input>
@@ -147,7 +154,7 @@ class HassioAddonStore extends LitElement {
   private addonRepositories = memoizeOne(
     (
       repositories: HassioAddonRepository[],
-      addons: HassioAddonInfo[],
+      addons: StoreAddon[],
       filter?: string
     ) =>
       repositories.sort(sortRepos).map((repo) => {
@@ -221,13 +228,14 @@ class HassioAddonStore extends LitElement {
         margin-top: 24px;
       }
       .search {
-        padding: 0 16px;
-        background: var(--sidebar-background-color);
-        border-bottom: 1px solid var(--divider-color);
+        position: sticky;
+        top: 0;
+        z-index: 2;
       }
-      .search search-input {
-        position: relative;
-        top: 2px;
+      search-input {
+        display: block;
+        --mdc-text-field-fill-color: var(--sidebar-background-color);
+        --mdc-text-field-idle-line-color: var(--divider-color);
       }
       .advanced {
         padding: 12px;

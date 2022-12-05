@@ -1,11 +1,14 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
 import { Lovelace } from "../../../../src/panels/lovelace/types";
 import "../../../../src/panels/lovelace/views/hui-view";
 import { HomeAssistant } from "../../../../src/types";
 import "./hc-launch-screen";
+
+(window as any).loadCardHelpers = () =>
+  import("../../../../src/panels/lovelace/custom-card-helpers");
 
 @customElement("hc-lovelace")
 class HcLovelace extends LitElement {
@@ -16,6 +19,8 @@ class HcLovelace extends LitElement {
   @property() public viewPath?: string | number;
 
   @property() public urlPath: string | null = null;
+
+  @query("hui-view") private _huiView?: HTMLElement;
 
   protected render(): TemplateResult {
     const index = this._viewIndex;
@@ -75,12 +80,12 @@ class HcLovelace extends LitElement {
           this.lovelaceConfig.background;
 
         if (configBackground) {
-          (this.shadowRoot!.querySelector(
-            "hui-view"
-          ) as HTMLElement)!.style.setProperty(
+          this._huiView!.style.setProperty(
             "--lovelace-background",
             configBackground
           );
+        } else {
+          this._huiView!.style.removeProperty("--lovelace-background");
         }
       }
     }
@@ -112,6 +117,9 @@ class HcLovelace extends LitElement {
       }
       :host > * {
         flex: 1;
+      }
+      hui-view {
+        background: var(--lovelace-background, var(--primary-background-color));
       }
     `;
   }

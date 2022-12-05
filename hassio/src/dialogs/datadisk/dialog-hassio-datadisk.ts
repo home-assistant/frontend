@@ -1,12 +1,11 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-markdown";
+import "../../../../src/components/ha-select";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -90,18 +89,20 @@ class HassioDatadiskDialog extends LitElement {
                     )}
                     <br /><br />
 
-                    <paper-dropdown-menu
+                    <ha-select
                       .label=${this.dialogParams.supervisor.localize(
                         "dialog.datadisk_move.select_device"
                       )}
-                      @value-changed=${this._select_device}
+                      @selected=${this._select_device}
+                      dialogInitialFocus
                     >
-                      <paper-listbox slot="dropdown-content">
-                        ${this.devices.map(
-                          (device) => html`<paper-item>${device}</paper-item>`
-                        )}
-                      </paper-listbox>
-                    </paper-dropdown-menu>
+                      ${this.devices.map(
+                        (device) =>
+                          html`<mwc-list-item .value=${device}
+                            >${device}</mwc-list-item
+                          >`
+                      )}
+                    </ha-select>
                   `
                 : this.devices === undefined
                 ? this.dialogParams.supervisor.localize(
@@ -111,7 +112,11 @@ class HassioDatadiskDialog extends LitElement {
                     "dialog.datadisk_move.no_devices"
                   )}
 
-              <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+              <mwc-button
+                slot="secondaryAction"
+                @click=${this.closeDialog}
+                dialogInitialFocus
+              >
                 ${this.dialogParams.supervisor.localize(
                   "dialog.datadisk_move.cancel"
                 )}
@@ -130,8 +135,8 @@ class HassioDatadiskDialog extends LitElement {
     `;
   }
 
-  private _select_device(event) {
-    this.selectedDevice = event.detail.value;
+  private _select_device(ev) {
+    this.selectedDevice = ev.target.value;
   }
 
   private async _moveDatadisk() {
@@ -156,7 +161,7 @@ class HassioDatadiskDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        paper-dropdown-menu {
+        ha-select {
           width: 100%;
         }
         ha-circular-progress {

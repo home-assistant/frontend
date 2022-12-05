@@ -17,6 +17,7 @@ import "./state-card-number";
 import "./state-card-scene";
 import "./state-card-script";
 import "./state-card-select";
+import "./state-card-text";
 import "./state-card-timer";
 import "./state-card-toggle";
 import "./state-card-vacuum";

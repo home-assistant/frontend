@@ -181,7 +181,7 @@
     {
       "label": "Run HA Core for Supervisor in devcontainer",
       "type": "shell",
-      "command": "HASSIO=${input:supervisorHost} HASSIO_TOKEN=${input:supervisorToken} script/core",
+      "command": "SUPERVISOR=${input:supervisorHost} SUPERVISOR_TOKEN=${input:supervisorToken} script/core",
       "isBackground": true,
       "group": {
         "kind": "build",
@@ -191,7 +191,13 @@
       "runOptions": {
         "instanceLimit": 1
       }
-    }
+    },
+    {
+      "label": "Setup and fetch nightly translations",
+      "type": "gulp",
+      "task": "setup-and-fetch-nightly-translations",
+      "problemMatcher": []
+          }
   ],
   "inputs": [
     {

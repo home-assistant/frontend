@@ -4,7 +4,10 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
-import { setInputDateTimeValue } from "../../../data/input_datetime";
+import {
+  setInputDateTimeValue,
+  stateToIsoDateString,
+} from "../../../data/input_datetime";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-input_datetime")
@@ -23,7 +26,8 @@ class MoreInfoInputDatetime extends LitElement {
           this.stateObj.attributes.has_date
             ? html`
                 <ha-date-input
-                  .value=${`${this.stateObj.attributes.year}-${this.stateObj.attributes.month}-${this.stateObj.attributes.day}`}
+                  .locale=${this.hass.locale}
+                  .value=${stateToIsoDateString(this.stateObj)}
                   .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
                   @value-changed=${this._dateChanged}
                 >
@@ -42,7 +46,6 @@ class MoreInfoInputDatetime extends LitElement {
                     : this.stateObj.state}
                   .locale=${this.hass.locale}
                   .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
-                  hide-label
                   @value-changed=${this._timeChanged}
                   @click=${this._stopEventPropagation}
                 ></ha-time-input>
@@ -57,7 +60,7 @@ class MoreInfoInputDatetime extends LitElement {
     ev.stopPropagation();
   }
 
-  private _timeChanged(ev): void {
+  private _timeChanged(ev: CustomEvent<{ value: string }>): void {
     setInputDateTimeValue(
       this.hass!,
       this.stateObj!.entity_id,
@@ -66,10 +69,9 @@ class MoreInfoInputDatetime extends LitElement {
         ? this.stateObj!.state.split(" ")[0]
         : undefined
     );
-    ev.target.blur();
   }
 
-  private _dateChanged(ev): void {
+  private _dateChanged(ev: CustomEvent<{ value: string }>): void {
     setInputDateTimeValue(
       this.hass!,
       this.stateObj!.entity_id,
@@ -78,8 +80,6 @@ class MoreInfoInputDatetime extends LitElement {
         : undefined,
       ev.detail.value
     );
-
-    ev.target.blur();
   }
 
   static get styles(): CSSResultGroup {

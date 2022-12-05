@@ -1,20 +1,19 @@
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-switch";
-import type { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/ha-form/ha-form";
+import { SchemaUnion } from "../../../../components/ha-form/types";
+import { CoreFrontendUserData } from "../../../../data/frontend";
 import {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace";
 import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
-import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
@@ -25,62 +24,54 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
   @state() private _params?: LovelaceDashboardDetailsDialogParams;
 
-  @state() private _urlPath!: LovelaceDashboard["url_path"];
+  @state() private _urlPathChanged = false;
 
-  @state() private _showInSidebar!: boolean;
+  @state() private _data?: Partial<LovelaceDashboard>;
 
-  @state() private _icon!: string;
-
-  @state() private _title!: string;
-
-  @state()
-  private _requireAdmin!: LovelaceDashboard["require_admin"];
-
-  @state() private _error?: string;
+  @state() private _error?: Record<string, string>;
 
   @state() private _submitting = false;
 
-  public async showDialog(
-    params: LovelaceDashboardDetailsDialogParams
-  ): Promise<void> {
+  public showDialog(params: LovelaceDashboardDetailsDialogParams): void {
     this._params = params;
     this._error = undefined;
-    this._urlPath = this._params.urlPath || "";
+    this._urlPathChanged = false;
     if (this._params.dashboard) {
-      this._showInSidebar = !!this._params.dashboard.show_in_sidebar;
-      this._icon = this._params.dashboard.icon || "";
-      this._title = this._params.dashboard.title || "";
-      this._requireAdmin = this._params.dashboard.require_admin || false;
+      this._data = this._params.dashboard;
     } else {
-      this._showInSidebar = true;
-      this._icon = "";
-      this._title = "";
-      this._requireAdmin = false;
+      this._data = {
+        show_in_sidebar: true,
+        icon: undefined,
+        title: "",
+        require_admin: false,
+        mode: "storage",
+      };
     }
-    await this.updateComplete;
+  }
+
+  public closeDialog(): void {
+    this._params = undefined;
+    this._data = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
-    if (!this._params) {
+    if (!this._params || !this._data) {
       return html``;
     }
     const defaultPanelUrlPath = this.hass.defaultPanel;
-    const urlInvalid =
-      this._params.urlPath !== "lovelace" &&
-      !/^[a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+$/.test(this._urlPath);
-    const titleInvalid = !this._title.trim();
-    const dir = computeRTLDirection(this.hass);
+    const titleInvalid = !this._data.title || !this._data.title.trim();
 
     return html`
       <ha-dialog
         open
-        @closed=${this._close}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
           this._params.urlPath
-            ? this._title ||
+            ? this._data.title ||
                 this.hass.localize(
                   "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
                 )
@@ -99,76 +90,14 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                 "ui.panel.config.lovelace.dashboards.cant_edit_default"
               )
             : html`
-                ${this._error
-                  ? html` <div class="error">${this._error}</div> `
-                  : ""}
-                <div class="form">
-                  <paper-input
-                    .value=${this._title}
-                    @value-changed=${this._titleChanged}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.title"
-                    )}
-                    @blur=${this.hass.userData?.showAdvanced
-                      ? this._fillUrlPath
-                      : undefined}
-                    .invalid=${titleInvalid}
-                    .errorMessage=${this.hass.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.title_required"
-                    )}
-                    dialogInitialFocus
-                  ></paper-input>
-                  <ha-icon-picker
-                    .value=${this._icon}
-                    @value-changed=${this._iconChanged}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.icon"
-                    )}
-                  ></ha-icon-picker>
-                  ${!this._params.dashboard && this.hass.userData?.showAdvanced
-                    ? html`
-                        <paper-input
-                          .value=${this._urlPath}
-                          @value-changed=${this._urlChanged}
-                          .label=${this.hass.localize(
-                            "ui.panel.config.lovelace.dashboards.detail.url"
-                          )}
-                          .errorMessage=${this.hass.localize(
-                            "ui.panel.config.lovelace.dashboards.detail.url_error_msg"
-                          )}
-                          .invalid=${urlInvalid}
-                        ></paper-input>
-                      `
-                    : ""}
-                  <div>
-                    <ha-formfield
-                      .label=${this.hass.localize(
-                        "ui.panel.config.lovelace.dashboards.detail.show_sidebar"
-                      )}
-                      .dir=${dir}
-                    >
-                      <ha-switch
-                        .checked=${this._showInSidebar}
-                        @change=${this._showSidebarChanged}
-                      >
-                      </ha-switch>
-                    </ha-formfield>
-                  </div>
-                  <div>
-                    <ha-formfield
-                      .label=${this.hass.localize(
-                        "ui.panel.config.lovelace.dashboards.detail.require_admin"
-                      )}
-                      .dir=${dir}
-                    >
-                      <ha-switch
-                        .checked=${this._requireAdmin}
-                        @change=${this._requireAdminChanged}
-                      >
-                      </ha-switch>
-                    </ha-formfield>
-                  </div>
-                </div>
+                <ha-form
+                  .schema=${this._schema(this._params, this.hass.userData)}
+                  .data=${this._data}
+                  .hass=${this.hass}
+                  .error=${this._error}
+                  .computeLabel=${this._computeLabel}
+                  @value-changed=${this._valueChanged}
+                ></ha-form>
               `}
         </div>
         ${this._params.urlPath
@@ -206,7 +135,10 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         <mwc-button
           slot="primaryAction"
           @click=${this._updateDashboard}
-          .disabled=${urlInvalid || titleInvalid || this._submitting}
+          .disabled=${(this._error && "url_path" in this._error) ||
+          titleInvalid ||
+          this._submitting}
+          dialogInitialFocus
         >
           ${this._params.urlPath
             ? this._params.dashboard?.id
@@ -222,41 +154,102 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     `;
   }
 
-  private _urlChanged(ev: PolymerChangedEvent<string>) {
-    this._error = undefined;
-    this._urlPath = ev.detail.value;
-  }
+  private _schema = memoizeOne(
+    (
+      params: LovelaceDashboardDetailsDialogParams,
+      userData: CoreFrontendUserData | null | undefined
+    ) =>
+      [
+        {
+          name: "title",
+          required: true,
+          selector: {
+            text: {},
+          },
+        },
+        {
+          name: "icon",
+          required: true,
+          selector: {
+            icon: {},
+          },
+        },
+        ...(!params.dashboard && userData?.showAdvanced
+          ? ([
+              {
+                name: "url_path",
+                required: true,
+                selector: { text: {} },
+              },
+            ] as const)
+          : []),
+        {
+          name: "require_admin",
+          required: true,
+          selector: {
+            boolean: {},
+          },
+        },
+        {
+          name: "show_in_sidebar",
+          required: true,
+          selector: {
+            boolean: {},
+          },
+        },
+      ] as const
+  );
 
-  private _iconChanged(ev: PolymerChangedEvent<string>) {
-    this._error = undefined;
-    this._icon = ev.detail.value;
-  }
+  private _computeLabel = (
+    entry: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
+    this.hass.localize(
+      `ui.panel.config.lovelace.dashboards.detail.${
+        entry.name === "show_in_sidebar"
+          ? "show_sidebar"
+          : entry.name === "url_path"
+          ? "url"
+          : entry.name
+      }`
+    );
 
-  private _titleChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
-    this._title = ev.detail.value;
-    if (!this.hass.userData?.showAdvanced) {
-      this._fillUrlPath();
+    const value = ev.detail.value;
+    if (value.url_path !== this._data?.url_path) {
+      this._urlPathChanged = true;
+      if (
+        !value.url_path ||
+        value.url_path === "lovelace" ||
+        !/^[a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+$/.test(value.url_path)
+      ) {
+        this._error = {
+          url_path: this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.detail.url_error_msg"
+          ),
+        };
+      }
+    }
+    if (value.title !== this._data?.title) {
+      this._data = value;
+      this._fillUrlPath(value.title);
+    } else {
+      this._data = value;
     }
   }
 
-  private _fillUrlPath() {
-    if ((this.hass.userData?.showAdvanced && this._urlPath) || !this._title) {
+  private _fillUrlPath(title: string) {
+    if ((this.hass.userData?.showAdvanced && this._urlPathChanged) || !title) {
       return;
     }
 
-    const slugifyTitle = slugify(this._title, "-");
-    this._urlPath = slugifyTitle.includes("-")
-      ? slugifyTitle
-      : `lovelace-${slugifyTitle}`;
-  }
-
-  private _showSidebarChanged(ev: Event) {
-    this._showInSidebar = (ev.target as HaSwitch).checked;
-  }
-
-  private _requireAdminChanged(ev: Event) {
-    this._requireAdmin = (ev.target as HaSwitch).checked;
+    const slugifyTitle = slugify(title, "-");
+    this._data = {
+      ...this._data,
+      url_path: slugifyTitle.includes("-")
+        ? slugifyTitle
+        : `dashboard-${slugifyTitle}`,
+    };
   }
 
   private _toggleDefault() {
@@ -272,29 +265,26 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
   private async _updateDashboard() {
     if (this._params?.urlPath && !this._params.dashboard?.id) {
-      this._close();
+      this.closeDialog();
     }
     this._submitting = true;
     try {
-      const values: Partial<LovelaceDashboardMutableParams> = {
-        require_admin: this._requireAdmin,
-        show_in_sidebar: this._showInSidebar,
-        icon: this._icon || undefined,
-        title: this._title,
-      };
       if (this._params!.dashboard) {
+        const values: Partial<LovelaceDashboardMutableParams> = {
+          require_admin: this._data!.require_admin,
+          show_in_sidebar: this._data!.show_in_sidebar,
+          icon: this._data!.icon || undefined,
+          title: this._data!.title,
+        };
         await this._params!.updateDashboard(values);
       } else {
-        (values as LovelaceDashboardCreateParams).url_path =
-          this._urlPath.trim();
-        (values as LovelaceDashboardCreateParams).mode = "storage";
         await this._params!.createDashboard(
-          values as LovelaceDashboardCreateParams
+          this._data as LovelaceDashboardCreateParams
         );
       }
-      this._close();
+      this.closeDialog();
     } catch (err: any) {
-      this._error = err?.message || "Unknown error";
+      this._error = { base: err?.message || "Unknown error" };
     } finally {
       this._submitting = false;
     }
@@ -304,26 +294,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     this._submitting = true;
     try {
       if (await this._params!.removeDashboard()) {
-        this._close();
+        this.closeDialog();
       }
     } finally {
       this._submitting = false;
     }
   }
 
-  private _close(): void {
-    this._params = undefined;
-  }
-
   static get styles(): CSSResultGroup {
-    return [
-      haStyleDialog,
-      css`
-        ha-switch {
-          padding: 16px 0;
-        }
-      `,
-    ];
+    return [haStyleDialog, css``];
   }
 }
 

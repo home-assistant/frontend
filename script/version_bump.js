@@ -24,10 +24,15 @@ function auto(version) {
   return patch(version);
 }
 
+function nightly() {
+  return `${today()}.dev`;
+}
+
 const methods = {
   patch,
   today,
   auto,
+  nightly,
 };
 
 async function main(args) {
@@ -50,14 +55,18 @@ async function main(args) {
     return;
   }
 
-  const setup = fs.readFileSync("setup.py", "utf8");
-  const version = setup.match(/\d{8}\.\d+/)[0];
+  const setup = fs.readFileSync("pyproject.toml", "utf8");
+  const version = setup.match(/version\W+=\W"(\d{8}\.\d)"/)[1];
   const newVersion = method(version);
 
   console.log("Current version:", version);
   console.log("New version:", newVersion);
 
-  fs.writeFileSync("setup.py", setup.replace(version, newVersion), "utf-8");
+  fs.writeFileSync(
+    "pyproject.toml",
+    setup.replace(version, newVersion),
+    "utf-8"
+  );
 
   if (!commit) {
     return;

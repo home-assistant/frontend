@@ -11,7 +11,7 @@ export const debounce = <T extends any[]>(
   immediate = false
 ) => {
   let timeout: number | undefined;
-  return (...args: T): void => {
+  const debouncedFunc = (...args: T): void => {
     const later = () => {
       timeout = undefined;
       if (!immediate) {
@@ -25,4 +25,8 @@ export const debounce = <T extends any[]>(
       func(...args);
     }
   };
+  debouncedFunc.cancel = () => {
+    clearTimeout(timeout);
+  };
+  return debouncedFunc;
 };

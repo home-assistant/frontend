@@ -174,6 +174,26 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (this._config!.needle) {
       return undefined;
     }
+
+    // new format
+    let segments = this._config!.segments;
+    if (segments) {
+      segments = [...segments].sort((a, b) => a?.from - b?.from);
+
+      for (let i = 0; i < segments.length; i++) {
+        const segment = segments[i];
+        if (
+          segment &&
+          numberValue >= segment.from &&
+          (i + 1 === segments.length || numberValue < segments[i + 1]?.from)
+        ) {
+          return segment.color;
+        }
+      }
+      return severityMap.normal;
+    }
+
+    // old format
     const sections = this._config!.severity;
 
     if (!sections) {
@@ -206,6 +226,17 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   private _severityLevels() {
+    // new format
+    const segments = this._config!.segments;
+    if (segments) {
+      return segments.map((segment) => ({
+        level: segment?.from,
+        stroke: segment?.color,
+        label: segment?.label,
+      }));
+    }
+
+    // old format
     const sections = this._config!.severity;
 
     if (!sections) {

@@ -1,9 +1,9 @@
-import "@polymer/paper-input/paper-input";
-import { html, LitElement, PropertyValues } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
 import "../../../../../components/ha-service-picker";
+import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 import type { EventAction } from "../../../../../data/script";
@@ -13,6 +13,8 @@ import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 @customElement("ha-automation-action-event")
 export class HaEventAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @property() public action!: EventAction;
 
@@ -40,19 +42,21 @@ export class HaEventAction extends LitElement implements ActionElement {
     const { event, event_data } = this.action;
 
     return html`
-      <paper-input
+      <ha-textfield
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.event.event"
         )}
-        name="event"
         .value=${event}
-        @value-changed=${this._eventChanged}
-      ></paper-input>
+        .disabled=${this.disabled}
+        @change=${this._eventChanged}
+      ></ha-textfield>
       <ha-yaml-editor
+        .hass=${this.hass}
         .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.event.service_data"
+          "ui.panel.config.automation.editor.actions.type.event.event_data"
         )}
         .name=${"event_data"}
+        .readOnly=${this.disabled}
         .defaultValue=${event_data}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
@@ -71,8 +75,16 @@ export class HaEventAction extends LitElement implements ActionElement {
   private _eventChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: { ...this.action, event: ev.detail.value },
+      value: { ...this.action, event: (ev.target as any).value },
     });
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      ha-textfield {
+        display: block;
+      }
+    `;
   }
 }
 

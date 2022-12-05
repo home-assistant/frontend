@@ -12,8 +12,7 @@ import listPlugin from "@fullcalendar/list";
 import listStyle from "@fullcalendar/list/main.css";
 import "@material/mwc-button";
 import {
-  mdiChevronLeft,
-  mdiChevronRight,
+  mdiPlus,
   mdiViewAgenda,
   mdiViewDay,
   mdiViewModule,
@@ -33,15 +32,26 @@ import memoize from "memoize-one";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button-toggle-group";
-import "../../components/ha-icon-button";
+import "../../components/ha-fab";
+import "../../components/ha-icon-button-prev";
+import "../../components/ha-icon-button-next";
 import { haStyle } from "../../resources/styles";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
 import type {
-  CalendarEvent,
   CalendarViewChanged,
   FullCalendarView,
   HomeAssistant,
   ToggleButton,
 } from "../../types";
+import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
+import type {
+  Calendar as CalendarData,
+  CalendarEvent,
+} from "../../data/calendar";
+import { CalendarEntityFeature } from "../../data/calendar";
+import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -74,6 +84,8 @@ export class HAFullCalendar extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public events: CalendarEvent[] = [];
+
+  @property({ attribute: false }) public calendars: CalendarData[] = [];
 
   @property({ attribute: false }) public views: FullCalendarView[] = [
     "dayGridMonth",
@@ -112,46 +124,43 @@ export class HAFullCalendar extends LitElement {
                           "ui.components.calendar.today"
                         )}</mwc-button
                       >
-                      <ha-icon-button
+                      <ha-icon-button-prev
                         .label=${this.hass.localize("ui.common.previous")}
-                        .path=${mdiChevronLeft}
                         class="prev"
                         @click=${this._handlePrev}
                       >
-                      </ha-icon-button>
-                      <ha-icon-button
+                      </ha-icon-button-prev>
+                      <ha-icon-button-next
                         .label=${this.hass.localize("ui.common.next")}
-                        .path=${mdiChevronRight}
                         class="next"
                         @click=${this._handleNext}
                       >
-                      </ha-icon-button>
+                      </ha-icon-button-next>
                     </div>
                     <h1>${this.calendar.view.title}</h1>
                     <ha-button-toggle-group
                       .buttons=${viewToggleButtons}
                       .active=${this._activeView}
                       @value-changed=${this._handleView}
+                      .dir=${computeRTLDirection(this.hass)}
                     ></ha-button-toggle-group>
                   `
                 : html`
                     <div class="controls">
                       <h1>${this.calendar.view.title}</h1>
                       <div>
-                        <ha-icon-button
+                        <ha-icon-button-prev
                           .label=${this.hass.localize("ui.common.previous")}
-                          .path=${mdiChevronLeft}
                           class="prev"
                           @click=${this._handlePrev}
                         >
-                        </ha-icon-button>
-                        <ha-icon-button
+                        </ha-icon-button-prev>
+                        <ha-icon-button-next
                           .label=${this.hass.localize("ui.common.next")}
-                          .path=${mdiChevronRight}
                           class="next"
                           @click=${this._handleNext}
                         >
-                        </ha-icon-button>
+                        </ha-icon-button-next>
                       </div>
                     </div>
                     <div class="controls">
@@ -167,13 +176,25 @@ export class HAFullCalendar extends LitElement {
                         .buttons=${viewToggleButtons}
                         .active=${this._activeView}
                         @value-changed=${this._handleView}
+                        .dir=${computeRTLDirection(this.hass)}
                       ></ha-button-toggle-group>
                     </div>
                   `}
             </div>
           `
         : ""}
+
       <div id="calendar"></div>
+      ${this._mutableCalendars.length > 0
+        ? html`<ha-fab
+            slot="fab"
+            .label=${this.hass.localize("ui.components.calendar.event.add")}
+            extended
+            @click=${this._createEvent}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          </ha-fab>`
+        : html``}
     `;
   }
 
@@ -209,6 +230,7 @@ export class HAFullCalendar extends LitElement {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
+      firstDay: firstWeekdayIndex(this.hass.locale),
       initialView: this.initialView,
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
@@ -224,19 +246,46 @@ export class HAFullCalendar extends LitElement {
       this.shadowRoot!.getElementById("calendar")!,
       config
     );
-
     this.calendar!.render();
     this._fireViewChanged();
   }
 
-  private _handleEventClick(info): void {
-    if (info.view.type !== "dayGridMonth") {
-      return;
-    }
+  // Return calendars that support creating events
+  private get _mutableCalendars(): CalendarData[] {
+    return this.calendars
+      .filter((selCal) => {
+        const entityStateObj = this.hass.states[selCal.entity_id];
+        return (
+          entityStateObj &&
+          supportsFeature(entityStateObj, CalendarEntityFeature.CREATE_EVENT)
+        );
+      })
+      .map((cal) => cal);
+  }
 
-    this._activeView = "dayGridDay";
-    this.calendar!.changeView("dayGridDay");
-    this.calendar!.gotoDate(info.event.startStr);
+  private _createEvent(_info) {
+    showCalendarEventEditDialog(this, {
+      calendars: this._mutableCalendars,
+      updated: () => {
+        this._fireViewChanged();
+      },
+    });
+  }
+
+  private _handleEventClick(info): void {
+    const entityStateObj = this.hass.states[info.event.extendedProps.calendar];
+    const canDelete =
+      entityStateObj &&
+      supportsFeature(entityStateObj, CalendarEntityFeature.DELETE_EVENT);
+    showCalendarEventDetailDialog(this, {
+      calendars: this.calendars,
+      calendarId: info.event.extendedProps.calendar,
+      entry: info.event.extendedProps.eventData,
+      updated: () => {
+        this._fireViewChanged();
+      },
+      canDelete: canDelete,
+    });
   }
 
   private _handleDateClick(info): void {
@@ -364,6 +413,9 @@ export class HAFullCalendar extends LitElement {
 
         .today {
           margin-right: 20px;
+          margin-inline-end: 20px;
+          margin-inline-start: initial;
+          direction: var(--direction);
         }
 
         .prev,
@@ -373,6 +425,13 @@ export class HAFullCalendar extends LitElement {
 
         ha-button-toggle-group {
           color: var(--primary-color);
+        }
+
+        ha-fab {
+          position: absolute;
+          bottom: 32px;
+          right: 32px;
+          z-index: 1;
         }
 
         #calendar {

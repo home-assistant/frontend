@@ -66,7 +66,7 @@ class HassioHostInfo extends LitElement {
       },
     ];
     return html`
-      <ha-card header="Host">
+      <ha-card header="Host" outlined>
         <div class="card-content">
           <div>
             ${this.supervisor.host.features.includes("hostname")
@@ -186,7 +186,7 @@ class HassioHostInfo extends LitElement {
 
           <ha-button-menu corner="BOTTOM_START">
             <ha-icon-button
-              .label=${this.hass.localize("common.menu")}
+              .label=${this.supervisor.localize("common.menu")}
               .path=${mdiDotsVertical}
               slot="trigger"
             ></ha-icon-button>
@@ -439,16 +439,6 @@ class HassioHostInfo extends LitElement {
         ha-button-menu {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;
-        }
-        @media (min-width: 563px) {
-          paper-listbox {
-            max-height: 150px;
-            overflow: auto;
-          }
-        }
-        paper-item {
-          cursor: pointer;
-          min-height: 35px;
         }
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);

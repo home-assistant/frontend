@@ -1,25 +1,26 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import "../../../components/ha-chip";
+import "../../../components/ha-chip-set";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-help-tooltip";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
-import { adminChangePassword } from "../../../data/auth";
+import "../../../components/ha-textfield";
 import {
+  computeUserBadges,
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
 } from "../../../data/user";
-import {
-  showAlertDialog,
-  showPromptDialog,
-} from "../../../dialogs/generic/show-dialog-box";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { showAdminChangePasswordDialog } from "./show-dialog-admin-change-password";
 import { UserDetailDialogParams } from "./show-dialog-user-detail";
 
 @customElement("dialog-user-detail")
@@ -55,6 +56,7 @@ class DialogUserDetail extends LitElement {
       return html``;
     }
     const user = this._params.entry;
+    const badges = computeUserBadges(this.hass, user, true);
     return html`
       <ha-dialog
         open
@@ -71,33 +73,28 @@ class DialogUserDetail extends LitElement {
             ${this.hass.localize("ui.panel.config.users.editor.username")}:
             ${user.username}
           </div>
-          <div>
-            ${user.is_owner
-              ? html`
-                  <span class="state"
-                    >${this.hass.localize(
-                      "ui.panel.config.users.editor.owner"
-                    )}</span
-                  >
-                `
-              : ""}
-            ${user.system_generated
-              ? html`
-                  <span class="state">
-                    ${this.hass.localize(
-                      "ui.panel.config.users.editor.system_generated"
-                    )}
-                  </span>
-                `
-              : ""}
-          </div>
+          ${badges.length === 0
+            ? ""
+            : html`
+                <ha-chip-set>
+                  ${badges.map(
+                    ([icon, label]) => html`
+                      <ha-chip hasIcon>
+                        <ha-svg-icon slot="icon" .path=${icon}></ha-svg-icon>
+                        ${label}
+                      </ha-chip>
+                    `
+                  )}
+                </ha-chip-set>
+              `}
           <div class="form">
-            <paper-input
+            <ha-textfield
+              dialogInitialFocus
               .value=${this._name}
               .disabled=${user.system_generated}
-              @value-changed=${this._nameChanged}
-              label=${this.hass!.localize("ui.panel.config.users.editor.name")}
-            ></paper-input>
+              @input=${this._nameChanged}
+              .label=${this.hass!.localize("ui.panel.config.users.editor.name")}
+            ></ha-textfield>
             <div class="row">
               <ha-formfield
                 .label=${this.hass.localize(
@@ -211,9 +208,9 @@ class DialogUserDetail extends LitElement {
     `;
   }
 
-  private _nameChanged(ev: PolymerChangedEvent<string>) {
+  private _nameChanged(ev) {
     this._error = undefined;
-    this._name = ev.detail.value;
+    this._name = ev.target.value;
   }
 
   private _adminChanged(ev): void {
@@ -268,40 +265,8 @@ class DialogUserDetail extends LitElement {
       });
       return;
     }
-    const newPassword = await showPromptDialog(this, {
-      title: this.hass.localize("ui.panel.config.users.editor.change_password"),
-      inputType: "password",
-      inputLabel: this.hass.localize(
-        "ui.panel.config.users.editor.new_password"
-      ),
-    });
-    if (!newPassword) {
-      return;
-    }
-    const confirmPassword = await showPromptDialog(this, {
-      title: this.hass.localize("ui.panel.config.users.editor.change_password"),
-      inputType: "password",
-      inputLabel: this.hass.localize(
-        "ui.panel.config.users.add_user.password_confirm"
-      ),
-    });
-    if (!confirmPassword) {
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.users.add_user.password_not_match"
-        ),
-      });
-      return;
-    }
-    await adminChangePassword(this.hass, this._params!.entry.id, newPassword);
-    showAlertDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.users.editor.password_changed"
-      ),
-    });
+
+    showAdminChangePasswordDialog(this, { userId: this._params!.entry.id });
   }
 
   private _close(): void {
@@ -320,6 +285,10 @@ class DialogUserDetail extends LitElement {
         }
         .secondary {
           color: var(--secondary-text-color);
+        }
+        ha-chip-set,
+        ha-textfield {
+          display: block;
         }
         .state {
           background-color: rgba(var(--rgb-primary-text-color), 0.15);

@@ -1,3 +1,4 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -8,14 +9,22 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../components/ha-card";
 import "../../../components/chart/statistics-chart";
+import "../../../components/ha-card";
+import {
+  fetchStatistics,
+  getDisplayUnit,
+  getStatisticMetadata,
+  Statistics,
+  StatisticsMetaData,
+  StatisticsTypes,
+} from "../../../data/recorder";
 import { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
 import { StatisticsGraphCardConfig } from "./types";
-import { fetchStatistics, Statistics } from "../../../data/history";
 
 @customElement("hui-statistics-graph-card")
 export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
@@ -24,23 +33,44 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-statistics-graph-card-editor");
   }
 
-  public static getStubConfig(): StatisticsGraphCardConfig {
-    return { type: "statistics-graph", entities: [] };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFill: string[]
+  ): StatisticsGraphCardConfig {
+    const includeDomains = ["sensor"];
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains,
+      (stateObj: HassEntity) => "state_class" in stateObj.attributes
+    );
+    return {
+      type: "statistics-graph",
+      entities: foundEntities.length ? [foundEntities[0]] : [],
+    };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @state() private _config?: StatisticsGraphCardConfig;
+
   @state() private _statistics?: Statistics;
 
-  @state() private _config?: StatisticsGraphCardConfig;
+  @state() private _metadata?: Record<string, StatisticsMetaData>;
+
+  @state() private _unit?: string;
 
   private _entities: string[] = [];
 
   private _names: Record<string, string> = {};
 
-  private _fetching = false;
-
   private _interval?: number;
+
+  private _statTypes?: StatisticsTypes;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -55,13 +85,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     if (!this.hasUpdated) {
       return;
     }
-    this._getStatistics();
-    // statistics are created every hour
-    clearInterval(this._interval);
-    this._interval = window.setInterval(
-      () => this._getStatistics(),
-      1000 * 60 * 60
-    );
+    this._setFetchStatisticsTimer();
   }
 
   public getCardSize(): number {
@@ -90,12 +114,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     });
 
     if (typeof config.stat_types === "string") {
-      this._config = { ...config, stat_types: [config.stat_types] };
+      this._statTypes = [config.stat_types];
     } else if (!config.stat_types) {
-      this._config = { ...config, stat_types: ["sum", "min", "max", "mean"] };
+      this._statTypes = ["state", "sum", "min", "max", "mean"];
     } else {
-      this._config = config;
+      this._statTypes = config.stat_types;
     }
+    this._config = config;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -116,18 +141,34 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       | undefined;
 
     if (
-      oldConfig?.entities !== this._config.entities ||
-      oldConfig?.days_to_show !== this._config.days_to_show ||
-      oldConfig?.period !== this._config.period
+      changedProps.has("_config") &&
+      oldConfig?.entities !== this._config.entities
     ) {
-      this._getStatistics();
-      // statistics are created every hour
-      clearInterval(this._interval);
-      this._interval = window.setInterval(
-        () => this._getStatistics(),
-        1000 * 60 * 60
-      );
+      this._getStatisticsMetaData(this._entities).then(() => {
+        this._setFetchStatisticsTimer();
+      });
+      return;
     }
+
+    if (
+      changedProps.has("_config") &&
+      (oldConfig?.entities !== this._config.entities ||
+        oldConfig?.days_to_show !== this._config.days_to_show ||
+        oldConfig?.period !== this._config.period ||
+        oldConfig?.unit !== this._config.unit)
+    ) {
+      this._setFetchStatisticsTimer();
+    }
+  }
+
+  private _setFetchStatisticsTimer() {
+    this._getStatistics();
+    // statistics are created every hour
+    clearInterval(this._interval);
+    this._interval = window.setInterval(
+      () => this._getStatistics(),
+      this._intervalTimeout
+    );
   }
 
   protected render(): TemplateResult {
@@ -146,35 +187,72 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .hass=${this.hass}
             .isLoadingData=${!this._statistics}
             .statisticsData=${this._statistics}
+            .metadata=${this._metadata}
             .chartType=${this._config.chart_type || "line"}
-            .statTypes=${this._config.stat_types!}
+            .statTypes=${this._statTypes!}
             .names=${this._names}
+            .unit=${this._unit}
           ></statistics-chart>
         </div>
       </ha-card>
     `;
   }
 
+  private get _intervalTimeout(): number {
+    return (this._config?.period === "5minute" ? 5 : 60) * 1000 * 60;
+  }
+
+  private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
+    const statsMetadataArray = await getStatisticMetadata(
+      this.hass!,
+      statisticIds
+    );
+    const statisticsMetaData = {};
+    statsMetadataArray.forEach((x) => {
+      statisticsMetaData[x.statistic_id] = x;
+    });
+    this._metadata = statisticsMetaData;
+  }
+
   private async _getStatistics(): Promise<void> {
-    if (this._fetching) {
-      return;
-    }
     const startDate = new Date();
     startDate.setTime(
       startDate.getTime() -
         1000 * 60 * 60 * (24 * (this._config!.days_to_show || 30) + 1)
     );
-    this._fetching = true;
     try {
+      let unitClass;
+      if (this._config!.unit && this._metadata) {
+        const metadata = Object.values(this._metadata).find(
+          (metaData) =>
+            getDisplayUnit(this.hass!, metaData?.statistic_id, metaData) ===
+            this._config!.unit
+        );
+        if (metadata) {
+          unitClass = metadata.unit_class;
+          this._unit = this._config!.unit;
+        }
+      }
+      if (!unitClass && this._metadata) {
+        const metadata = this._metadata[this._entities[0]];
+        unitClass = metadata?.unit_class;
+        this._unit = unitClass
+          ? getDisplayUnit(this.hass!, metadata.statistic_id, metadata) ||
+            undefined
+          : undefined;
+      }
+      const unitconfig = unitClass ? { [unitClass]: this._unit } : undefined;
       this._statistics = await fetchStatistics(
         this.hass!,
         startDate,
         undefined,
         this._entities,
-        this._config!.period
+        this._config!.period,
+        unitconfig,
+        this._statTypes
       );
-    } finally {
-      this._fetching = false;
+    } catch (err) {
+      this._statistics = undefined;
     }
   }
 

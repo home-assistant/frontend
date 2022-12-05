@@ -1,8 +1,12 @@
 import { atLeastVersion } from "../common/config/version";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
-import { computeRTL } from "../common/util/compute_rtl";
+import {
+  computeRTLDirection,
+  setDirectionStyles,
+} from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import {
+  FirstWeekday,
   getHassTranslations,
   getHassTranslationsPre109,
   NumberFormat,
@@ -19,6 +23,7 @@ import {
   getUserLocale,
 } from "../util/common-translation";
 import { HassBaseEl } from "./hass-base-mixin";
+import { fireEvent } from "../common/dom/fire_event";
 
 declare global {
   // for fire event
@@ -32,6 +37,10 @@ declare global {
     "hass-time-format-select": {
       time_format: TimeFormat;
     };
+    "hass-first-weekday-select": {
+      first_weekday: FirstWeekday;
+    };
+    "translations-updated": undefined;
   }
 }
 
@@ -71,6 +80,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.addEventListener("hass-time-format-select", (e) => {
         this._selectTimeFormat((e as CustomEvent).detail, true);
       });
+      this.addEventListener("hass-first-weekday-select", (e) => {
+        this._selectFirstWeekday((e as CustomEvent).detail, true);
+      });
       this._loadCoreTranslations(getLocalLanguage());
     }
 
@@ -108,6 +120,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         ) {
           // We just got time_format from backend, no need to save back
           this._selectTimeFormat(locale.time_format, false);
+        }
+        if (
+          locale?.first_weekday &&
+          this.hass!.locale.first_weekday !== locale.first_weekday
+        ) {
+          // We just got first_weekday from backend, no need to save back
+          this._selectFirstWeekday(locale.first_weekday, false);
         }
       });
 
@@ -156,6 +175,18 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
     }
 
+    private _selectFirstWeekday(
+      first_weekday: FirstWeekday,
+      saveToBackend: boolean
+    ) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, first_weekday: first_weekday },
+      });
+      if (saveToBackend) {
+        saveTranslationPreferences(this.hass!, this.hass!.locale);
+      }
+    }
+
     private _selectLanguage(language: string, saveToBackend: boolean) {
       if (!this.hass) {
         // should not happen, do it to avoid use this.hass!
@@ -178,10 +209,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _applyTranslations(hass: HomeAssistant) {
       document.querySelector("html")!.setAttribute("lang", hass.language);
-      this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
+      this._applyDirection(hass);
       this._loadCoreTranslations(hass.language);
       this.__loadedFragmetTranslations = new Set();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
+    }
+
+    private _applyDirection(hass: HomeAssistant) {
+      const direction = computeRTLDirection(hass);
+      document.dir = direction;
+      setDirectionStyles(direction, this);
     }
 
     /**
@@ -229,12 +266,22 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         };
       }
 
+      let integrationsToLoad: string[] = [];
+
       // Check if already loaded
       if (!force) {
-        if (integration) {
+        if (integration && Array.isArray(integration)) {
+          integrationsToLoad = integration.filter(
+            (i) => !alreadyLoaded.integrations.includes(i)
+          );
+          if (!integrationsToLoad.length) {
+            return this.hass!.localize;
+          }
+        } else if (integration) {
           if (alreadyLoaded.integrations.includes(integration)) {
             return this.hass!.localize;
           }
+          integrationsToLoad = [integration];
         } else if (
           configFlow ? alreadyLoaded.configFlow : alreadyLoaded.setup
         ) {
@@ -243,10 +290,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       // Add to cache
-      if (integration) {
-        if (!alreadyLoaded.integrations.includes(integration)) {
-          alreadyLoaded.integrations.push(integration);
-        }
+      if (integrationsToLoad.length) {
+        alreadyLoaded.integrations.push(...integrationsToLoad);
       } else {
         alreadyLoaded.setup = true;
         if (configFlow) {
@@ -258,7 +303,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this.hass!,
         language,
         category,
-        integration,
+        integrationsToLoad.length ? integrationsToLoad : undefined,
         configFlow
       );
 
@@ -352,6 +397,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           localize,
         });
       }
+      fireEvent(this, "translations-updated");
     }
 
     private _refetchCachedHassTranslations(

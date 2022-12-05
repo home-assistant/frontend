@@ -11,6 +11,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -98,6 +99,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       ? html` <round-slider disabled="true"></round-slider> `
       : html`
           <round-slider
+            class=${classMap({ "round-slider_off": stateObj.state === "off" })}
             .value=${targetHumidity}
             .min=${stateObj.attributes.min_humidity}
             .max=${stateObj.attributes.max_humidity}
@@ -108,51 +110,36 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
           ></round-slider>
         `;
 
-    const setValues = svg`
-      <svg viewBox="0 0 40 20">
-        <text
-          x="50%"
-          dx="1"
-          y="60%"
-          text-anchor="middle"
-          style="font-size: 13px;"
-          class="set-value"
-        >
-          ${
-            UNAVAILABLE_STATES.includes(stateObj.state) ||
-            this._setHum === undefined ||
-            this._setHum === null
-              ? ""
-              : svg`
+    const setValues = html`
+      <svg viewBox="0 0 24 20">
+        <text x="50%" dx="1" y="73%" text-anchor="middle" id="set-values">
+          ${UNAVAILABLE_STATES.includes(stateObj.state) ||
+          this._setHum === undefined ||
+          this._setHum === null
+            ? ""
+            : svg`
                     ${this._setHum.toFixed()}
                     <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                       %
                     </tspan>
-                    `
-          }
+                    `}
         </text>
       </svg>
-      <svg id="set-values">
-        <g>
-          <text
-            dy="22"
-            text-anchor="middle"
-            id="set-mode"
-          >
-            ${this.hass!.localize(`state.default.${stateObj.state}`)}
-            ${
-              stateObj.attributes.mode &&
-              !UNAVAILABLE_STATES.includes(stateObj.state)
-                ? html`
-                    -
-                    ${this.hass!.localize(
-                      `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
-                    ) || stateObj.attributes.mode}
-                  `
-                : ""
-            }
-          </text>
-        </g>
+    `;
+    const currentMode = html`
+      <svg viewBox="0 0 40 10" id="humidity">
+        <text x="50%" y="50%" text-anchor="middle" id="set-mode">
+          ${this.hass!.localize(`state.default.${stateObj.state}`)}
+          ${stateObj.attributes.mode &&
+          !UNAVAILABLE_STATES.includes(stateObj.state)
+            ? html`
+                -
+                ${this.hass!.localize(
+                  `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
+                ) || stateObj.attributes.mode}
+              `
+            : ""}
+        </text>
       </svg>
     `;
 
@@ -170,7 +157,15 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
             <div id="slider">
               ${slider}
               <div id="slider-center">
-                <div id="humidity">${setValues}</div>
+                <ha-icon-button
+                  class="toggle-button"
+                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  @click=${this._toggle}
+                  tabindex="0"
+                >
+                  ${setValues}
+                </ha-icon-button>
+                ${currentMode}
               </div>
             </div>
           </div>
@@ -208,15 +203,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
-
-    const stateObj = this.hass.states[this._config.entity];
-    if (!stateObj) {
-      return;
-    }
-
-    if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
-      this._rescale_svg();
-    }
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -236,28 +222,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _rescale_svg() {
-    // Set the viewbox of the SVG containing the set humidity to perfectly
-    // fit the text
-    // That way it will auto-scale correctly
-    // This is not done to the SVG containing the current humidity, because
-    // it should not be centered on the text, but only on the value
-    if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
-      (
-        this.shadowRoot.querySelector("ha-card") as LitElement
-      ).updateComplete.then(() => {
-        const svgRoot = this.shadowRoot!.querySelector("#set-values");
-        const box = svgRoot!.querySelector("g")!.getBBox();
-        svgRoot!.setAttribute(
-          "viewBox",
-          `${box!.x} ${box!.y} ${box!.width} ${box!.height}`
-        );
-        svgRoot!.setAttribute("width", `${box!.width}`);
-        svgRoot!.setAttribute("height", `${box!.height}`);
-      });
-    }
-  }
-
   private _getSetHum(stateObj: HassEntity): undefined | number {
     if (UNAVAILABLE_STATES.includes(stateObj.state)) {
       return undefined;
@@ -274,6 +238,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     this.hass!.callService("humidifier", "set_humidity", {
       entity_id: this._config!.entity,
       humidity: e.detail.value,
+    });
+  }
+
+  private _toggle(): void {
+    this.hass!.callService("humidifier", "toggle", {
+      entity_id: this._config!.entity,
     });
   }
 
@@ -306,6 +276,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         border-radius: 100%;
         color: var(--secondary-text-color);
         z-index: 25;
+        inset-inline-start: initial;
+        inset-inline-end: 0;
+        direction: var(--direction);
       }
 
       .content {
@@ -336,6 +309,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         padding-bottom: 10%;
       }
 
+      .round-slider_off {
+        --round-slider-path-color: var(--slider-track-color);
+        --round-slider-bar-color: var(--disabled-text-color);
+        padding-bottom: 10%;
+      }
+
       #slider-center {
         position: absolute;
         width: calc(100% - 40px);
@@ -346,27 +325,37 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         top: 20px;
         text-align: center;
         overflow-wrap: break-word;
-        pointer-events: none;
       }
 
       #humidity {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 50%;
-        top: 45%;
-        left: 50%;
+        max-width: 80%;
+        transform: translate(0, 350%);
       }
 
       #set-values {
-        max-width: 80%;
-        transform: translate(0, -50%);
-        font-size: 20px;
+        font-size: 13px;
+        font-family: var(--paper-font-body1_-_font-family);
+        font-weight: var(--paper-font-body1_-_font-weight);
       }
 
       #set-mode {
         fill: var(--secondary-text-color);
-        font-size: 16px;
+        font-size: 4px;
+      }
+
+      .toggle-button {
+        color: var(--primary-text-color);
+        width: 60%;
+        height: auto;
+        position: absolute;
+        max-width: calc(100% - 40px);
+        box-sizing: border-box;
+        border-radius: 100%;
+        top: 39%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        --mdc-icon-button-size: 100%;
+        --mdc-icon-size: 100%;
       }
 
       #info {

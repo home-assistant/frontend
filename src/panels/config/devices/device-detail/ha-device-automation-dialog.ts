@@ -10,6 +10,7 @@ import {
   fetchDeviceActions,
   fetchDeviceConditions,
   fetchDeviceTriggers,
+  sortDeviceAutomations,
 } from "../../../../data/device_automation";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -60,19 +61,19 @@ export class DialogDeviceAutomation extends LitElement {
       return;
     }
 
-    const { deviceId, script } = this._params;
+    const { device, script } = this._params;
 
-    fetchDeviceActions(this.hass, deviceId).then((actions) => {
-      this._actions = actions;
+    fetchDeviceActions(this.hass, device.id).then((actions) => {
+      this._actions = actions.sort(sortDeviceAutomations);
     });
     if (script) {
       return;
     }
-    fetchDeviceTriggers(this.hass, deviceId).then((triggers) => {
-      this._triggers = triggers;
+    fetchDeviceTriggers(this.hass, device.id).then((triggers) => {
+      this._triggers = triggers.sort(sortDeviceAutomations);
     });
-    fetchDeviceConditions(this.hass, deviceId).then((conditions) => {
-      this._conditions = conditions;
+    fetchDeviceConditions(this.hass, device.id).then((conditions) => {
+      this._conditions = conditions.sort(sortDeviceAutomations);
     });
   }
 
@@ -88,7 +89,14 @@ export class DialogDeviceAutomation extends LitElement {
         .heading=${this.hass.localize(
           `ui.panel.config.devices.${
             this._params.script ? "script" : "automation"
-          }.create`
+          }.create`,
+          {
+            type: this.hass.localize(
+              `ui.panel.config.devices.type.${
+                this._params.device.entry_type || "device"
+              }`
+            ),
+          }
         )}
       >
         <div @entry-selected=${this.closeDialog}>

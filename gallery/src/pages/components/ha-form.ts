@@ -1,11 +1,116 @@
 /* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
-import { LitElement, TemplateResult, html } from "lit";
-import { customElement } from "lit/decorators";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
+import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
+import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
+import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
+import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { computeInitialHaFormData } from "../../../../src/components/ha-form/compute-initial-ha-form-data";
-import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../src/components/ha-form/types";
+import { getEntity } from "../../../../src/fake_data/entity";
+import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
+
+const ENTITIES = [
+  getEntity("alarm_control_panel", "alarm", "disarmed", {
+    friendly_name: "Alarm",
+  }),
+  getEntity("media_player", "livingroom", "playing", {
+    friendly_name: "Livingroom",
+    media_content_type: "music",
+    device_class: "tv",
+  }),
+  getEntity("media_player", "lounge", "idle", {
+    friendly_name: "Lounge",
+    supported_features: 444983,
+    device_class: "speaker",
+  }),
+  getEntity("light", "bedroom", "on", {
+    friendly_name: "Bedroom",
+    effect: "colorloop",
+    effect_list: ["colorloop", "random"],
+  }),
+  getEntity("switch", "coffee", "off", {
+    friendly_name: "Coffee",
+    device_class: "switch",
+  }),
+];
+
+const DEVICES = [
+  {
+    area_id: "bedroom",
+    configuration_url: null,
+    config_entries: ["config_entry_1"],
+    connections: [],
+    disabled_by: null,
+    entry_type: null,
+    id: "device_1",
+    identifiers: [["demo", "volume1"] as [string, string]],
+    manufacturer: null,
+    model: null,
+    name_by_user: null,
+    name: "Dishwasher",
+    sw_version: null,
+    hw_version: null,
+    via_device_id: null,
+  },
+  {
+    area_id: "backyard",
+    configuration_url: null,
+    config_entries: ["config_entry_2"],
+    connections: [],
+    disabled_by: null,
+    entry_type: null,
+    id: "device_2",
+    identifiers: [["demo", "pwm1"] as [string, string]],
+    manufacturer: null,
+    model: null,
+    name_by_user: null,
+    name: "Lamp",
+    sw_version: null,
+    hw_version: null,
+    via_device_id: null,
+  },
+  {
+    area_id: null,
+    configuration_url: null,
+    config_entries: ["config_entry_3"],
+    connections: [],
+    disabled_by: null,
+    entry_type: null,
+    id: "device_3",
+    identifiers: [["demo", "pwm1"] as [string, string]],
+    manufacturer: null,
+    model: null,
+    name_by_user: "User name",
+    name: "Technical name",
+    sw_version: null,
+    hw_version: null,
+    via_device_id: null,
+  },
+];
+
+const AREAS = [
+  {
+    area_id: "backyard",
+    name: "Backyard",
+    picture: null,
+  },
+  {
+    area_id: "bedroom",
+    name: "Bedroom",
+    picture: null,
+  },
+  {
+    area_id: "livingroom",
+    name: "Livingroom",
+    picture: null,
+  },
+];
 
 const SCHEMAS: {
   title: string;
@@ -14,6 +119,82 @@ const SCHEMAS: {
   schema: HaFormSchema[];
   data?: Record<string, any>;
 }[] = [
+  {
+    title: "Selectors",
+    translations: {
+      addon: "Addon",
+      entity: "Entity",
+      device: "Device",
+      area: "Area",
+      target: "Target",
+      number: "Number",
+      boolean: "Boolean",
+      time: "Time",
+      action: "Action",
+      text: "Text",
+      text_multiline: "Text Multiline",
+      object: "Object",
+      select: "Select",
+      icon: "Icon",
+      media: "Media",
+      location: "Location",
+      entities: "Entities",
+    },
+    schema: [
+      { name: "addon", selector: { addon: {} } },
+      { name: "entity", selector: { entity: {} } },
+      {
+        name: "Attribute",
+        selector: { attribute: { entity_id: "" } },
+        context: { filter_entity: "entity" },
+      },
+      {
+        name: "State",
+        selector: { state: { entity_id: "" } },
+        context: { filter_entity: "entity", filter_attribute: "Attribute" },
+      },
+      { name: "Device", selector: { device: {} } },
+      { name: "Config entry", selector: { config_entry: {} } },
+      { name: "Duration", selector: { duration: {} } },
+      { name: "area", selector: { area: {} } },
+      { name: "target", selector: { target: {} } },
+      { name: "number", selector: { number: { min: 0, max: 10 } } },
+      { name: "boolean", selector: { boolean: {} } },
+      { name: "time", required: true, selector: { time: {} } },
+      { name: "datetime", required: true, selector: { datetime: {} } },
+      { name: "date", required: true, selector: { date: {} } },
+      { name: "action", selector: { action: {} } },
+      { name: "text", selector: { text: { multiline: false } } },
+      { name: "text_multiline", selector: { text: { multiline: true } } },
+      { name: "object", selector: { object: {} } },
+      {
+        name: "select",
+        selector: {
+          select: { options: ["Everyone Home", "Some Home", "All gone"] },
+        },
+      },
+      {
+        name: "icon",
+        selector: {
+          icon: {},
+        },
+      },
+      {
+        name: "media",
+        selector: {
+          media: {},
+        },
+      },
+      {
+        name: "location",
+        selector: { location: { radius: true, icon: "mdi:home" } },
+      },
+      {
+        name: "entities",
+        selector: { entity: { multiple: true } },
+      },
+    ],
+  },
   {
     title: "Authentication",
     translations: {
@@ -50,13 +231,11 @@ const SCHEMAS: {
       {
         type: "boolean",
         name: "bool",
-        optional: true,
         default: false,
       },
       {
         type: "integer",
         name: "int",
-        optional: true,
         default: 10,
       },
       {
@@ -67,7 +246,6 @@ const SCHEMAS: {
       {
         type: "string",
         name: "string",
-        optional: true,
         default: "Default",
       },
       {
@@ -77,7 +255,6 @@ const SCHEMAS: {
           ["other", "other"],
         ],
         name: "select",
-        optional: true,
         default: "default",
       },
       {
@@ -87,7 +264,6 @@ const SCHEMAS: {
           other: "Other",
         },
         name: "multi",
-        optional: true,
         default: ["default"],
       },
       {
@@ -108,7 +284,6 @@ const SCHEMAS: {
       {
         type: "integer",
         name: "int with default",
-        optional: true,
         default: 10,
       },
       {
@@ -122,7 +297,6 @@ const SCHEMAS: {
       {
         type: "integer",
         name: "int range optional",
-        optional: true,
         valueMin: 0,
         valueMax: 10,
       },
@@ -148,7 +322,6 @@ const SCHEMAS: {
           ["other", "Other"],
         ],
         name: "select optional",
-        optional: true,
       },
       {
         type: "select",
@@ -161,7 +334,6 @@ const SCHEMAS: {
           ["option", "1000"],
         ],
         name: "select many otions",
-        optional: true,
         default: "default",
       },
     ],
@@ -190,7 +362,6 @@ const SCHEMAS: {
           option: "1000",
         },
         name: "multi many otions",
-        optional: true,
         default: ["default"],
       },
     ],
@@ -239,22 +410,36 @@ const SCHEMAS: {
         valueMin: 1,
         valueMax: 65535,
         name: "port",
-        optional: true,
         default: 80,
       },
-      { type: "string", name: "path", optional: true, default: "/" },
-      { type: "boolean", name: "ssl", optional: true, default: false },
+      { type: "string", name: "path", default: "/" },
+      { type: "boolean", name: "ssl", default: false },
     ],
   },
 ];
 
 @customElement("demo-components-ha-form")
 class DemoHaForm extends LitElement {
+  @state() private hass!: HomeAssistant;
+
   private data = SCHEMAS.map(
     ({ schema, data }) => data || computeInitialHaFormData(schema)
   );
 
   private disabled = SCHEMAS.map(() => false);
+
+  constructor() {
+    super();
+    const hass = provideHass(this);
+    hass.updateTranslations(null, "en");
+    hass.updateTranslations("config", "en");
+    hass.addEntities(ENTITIES);
+    mockEntityRegistry(hass);
+    mockDeviceRegistry(hass, DEVICES);
+    mockConfigEntries(hass);
+    mockAreaRegistry(hass, AREAS);
+    mockHassioSupervisor(hass);
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -278,6 +463,7 @@ class DemoHaForm extends LitElement {
               (slot) => html`
                 <ha-form
                   slot=${slot}
+                  .hass=${this.hass}
                   .data=${this.data[idx]}
                   .schema=${info.schema}
                   .error=${info.error}

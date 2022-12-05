@@ -1,5 +1,4 @@
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-listbox/paper-listbox";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import memoizeOne from "memoize-one";
@@ -74,9 +73,9 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     );
 
     return html`
-      <ha-card .header=${this.device.user_given_name || this.device.name}>
+      <ha-card>
         <div class="card-content">
-          <div class="info">
+          <div>
             <div class="model">${this.device.model}</div>
             <div class="manuf">
               ${this.hass.localize(
@@ -88,15 +87,17 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
           </div>
 
           <div class="device-entities">
-            ${entities.map(
-              (entity) => html`
-                <state-badge
-                  @click=${this._openMoreInfo}
-                  .title=${entity.stateName!}
-                  .stateObj=${this.hass!.states[entity.entity_id]}
-                  slot="item-icon"
-                ></state-badge>
-              `
+            ${entities.map((entity) =>
+              !entity.disabled_by
+                ? html`
+                    <state-badge
+                      @click=${this._openMoreInfo}
+                      .title=${entity.stateName!}
+                      .stateObj=${this.hass!.states[entity.entity_id]}
+                      slot="item-icon"
+                    ></state-badge>
+                  `
+                : ""
             )}
           </div>
           <paper-input
@@ -226,6 +227,10 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         }
         state-badge {
           cursor: pointer;
+        }
+
+        ha-card {
+          border: none;
         }
       `,
     ];

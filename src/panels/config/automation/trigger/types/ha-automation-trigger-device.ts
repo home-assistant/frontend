@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -18,6 +18,8 @@ export class HaDeviceTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public trigger!: DeviceTrigger;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @state() private _deviceId?: string;
 
@@ -53,6 +55,7 @@ export class HaDeviceTrigger extends LitElement {
         .value=${deviceId}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.device.label"
         )}
@@ -62,6 +65,7 @@ export class HaDeviceTrigger extends LitElement {
         .deviceId=${deviceId}
         @value-changed=${this._deviceTriggerPicked}
         .hass=${this.hass}
+        .disabled=${this.disabled}
         label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.device.trigger"
         )}
@@ -69,8 +73,10 @@ export class HaDeviceTrigger extends LitElement {
       ${this._capabilities?.extra_fields
         ? html`
             <ha-form
+              .hass=${this.hass}
               .data=${this._extraFieldsData(this.trigger, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
+              .disabled=${this.disabled}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
                 this.hass.localize
               )}
@@ -111,6 +117,11 @@ export class HaDeviceTrigger extends LitElement {
   private _devicePicked(ev) {
     ev.stopPropagation();
     this._deviceId = ev.target.value;
+    if (this._deviceId === undefined) {
+      fireEvent(this, "value-changed", {
+        value: { ...HaDeviceTrigger.defaultConfig, platform: "device" },
+      });
+    }
   }
 
   private _deviceTriggerPicked(ev) {
@@ -145,6 +156,17 @@ export class HaDeviceTrigger extends LitElement {
         `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${schema.name}`
       ) || schema.name;
   }
+
+  static styles = css`
+    ha-device-picker {
+      display: block;
+      margin-bottom: 24px;
+    }
+
+    ha-form {
+      margin-top: 24px;
+    }
+  `;
 }
 
 declare global {

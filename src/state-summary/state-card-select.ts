@@ -1,18 +1,11 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import "@material/mwc-list/mwc-list-item";
+import "../components/ha-select";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
+import { UNAVAILABLE } from "../data/entity";
 import { SelectEntity, setSelectOption } from "../data/select";
 import type { HomeAssistant } from "../types";
 
@@ -25,42 +18,34 @@ class StateCardSelect extends LitElement {
   protected render(): TemplateResult {
     return html`
       <state-badge .stateObj=${this.stateObj}></state-badge>
-      <paper-dropdown-menu-light
+      <ha-select
+        .value=${this.stateObj.state}
         .label=${computeStateName(this.stateObj)}
-        @iron-select=${this._selectedOptionChanged}
-        @click=${stopPropagation}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
+        naturalMenuWidth
+        fixedMenuPosition
+        @selected=${this._selectedOptionChanged}
+        @closed=${stopPropagation}
       >
-        <paper-listbox slot="dropdown-content">
-          ${this.stateObj.attributes.options.map(
-            (option) =>
-              html`
-                <paper-item .option=${option}
-                  >${(this.stateObj.attributes.device_class &&
-                    this.hass.localize(
-                      `component.select.state.${this.stateObj.attributes.device_class}.${option}`
-                    )) ||
-                  this.hass.localize(`component.select.state._.${option}`) ||
-                  option}</paper-item
-                >
-              `
-          )}
-        </paper-listbox>
-      </paper-dropdown-menu-light>
+        ${this.stateObj.attributes.options.map(
+          (option) =>
+            html`
+              <mwc-list-item .value=${option}>
+                ${(this.stateObj.attributes.device_class &&
+                  this.hass.localize(
+                    `component.select.state.${this.stateObj.attributes.device_class}.${option}`
+                  )) ||
+                this.hass.localize(`component.select.state._.${option}`) ||
+                option}
+              </mwc-list-item>
+            `
+        )}
+      </ha-select>
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!changedProps.has("stateObj")) {
-      return;
-    }
-    // Update selected after rendering the items or else it won't work in Firefox
-    this.shadowRoot!.querySelector("paper-listbox")!.selected =
-      this.stateObj.attributes.options.indexOf(this.stateObj.state);
-  }
-
   private _selectedOptionChanged(ev) {
-    const option = ev.target.selectedItem.option;
+    const option = ev.target.value;
     if (option === this.stateObj.state) {
       return;
     }
@@ -70,7 +55,7 @@ class StateCardSelect extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        display: block;
+        display: flex;
       }
 
       state-badge {
@@ -78,14 +63,8 @@ class StateCardSelect extends LitElement {
         margin-top: 10px;
       }
 
-      paper-dropdown-menu-light {
-        display: block;
-        margin-left: 53px;
-      }
-
-      paper-item {
-        cursor: pointer;
-        min-width: 200px;
+      ha-select {
+        width: 100%;
       }
     `;
   }

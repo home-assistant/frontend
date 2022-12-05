@@ -29,6 +29,7 @@ const createConfigEntry = (
   source: "zeroconf",
   state: "loaded",
   supports_options: false,
+  supports_remove_device: false,
   supports_unload: true,
   disabled_by: null,
   pref_disable_new_entities: false,
@@ -187,11 +188,15 @@ const createEntityRegistryEntries = (
     device_id: "mock-device-id",
     area_id: null,
     disabled_by: null,
+    hidden_by: null,
     entity_category: null,
     entity_id: "binary_sensor.updater",
+    id: "binary_sensor.updater",
     name: null,
     icon: null,
     platform: "updater",
+    has_entity_name: false,
+    unique_id: "updater",
   },
 ];
 
@@ -278,7 +283,7 @@ export class DemoIntegrationCard extends LitElement {
               .deviceRegistryEntries=${createDeviceRegistryEntries(
                 info.items[0]
               )}
-              ?disabled=${info.disabled}
+              ?entryDisabled=${info.disabled}
               .selectedConfigEntryId=${info.highlight}
             ></ha-integration-card>
           `

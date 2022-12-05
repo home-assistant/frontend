@@ -1,11 +1,10 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
-import "../../components/ha-paper-dropdown-menu";
+import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { TimeFormat } from "../../data/translation";
 import { HomeAssistant } from "../../types";
@@ -26,42 +25,34 @@ class TimeFormatRow extends LitElement {
         <span slot="description">
           ${this.hass.localize("ui.panel.profile.time_format.description")}
         </span>
-        <ha-paper-dropdown-menu
+        <ha-select
           .label=${this.hass.localize(
             "ui.panel.profile.time_format.dropdown_label"
           )}
-          dynamic-align
           .disabled=${this.hass.locale === undefined}
+          .value=${this.hass.locale.time_format}
+          @selected=${this._handleFormatSelection}
         >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected=${this.hass.locale.time_format}
-            @iron-select=${this._handleFormatSelection}
-            attr-for-selected="format"
-          >
-            ${Object.values(TimeFormat).map((format) => {
-              const formattedTime = formatTime(date, {
-                ...this.hass.locale,
-                time_format: format,
-              });
-              const value = this.hass.localize(
-                `ui.panel.profile.time_format.formats.${format}`
-              );
-              return html` <paper-item .format=${format} .label=${value}>
-                <paper-item-body two-line>
-                  <div>${value}</div>
-                  <div secondary>${formattedTime}</div>
-                </paper-item-body>
-              </paper-item>`;
-            })}
-          </paper-listbox>
-        </ha-paper-dropdown-menu>
+          ${Object.values(TimeFormat).map((format) => {
+            const formattedTime = formatTime(date, {
+              ...this.hass.locale,
+              time_format: format,
+            });
+            const value = this.hass.localize(
+              `ui.panel.profile.time_format.formats.${format}`
+            );
+            return html`<mwc-list-item .value=${format} twoline>
+              <span>${value}</span>
+              <span slot="secondary">${formattedTime}</span>
+            </mwc-list-item>`;
+          })}
+        </ha-select>
       </ha-settings-row>
     `;
   }
 
-  private async _handleFormatSelection(ev: CustomEvent) {
-    fireEvent(this, "hass-time-format-select", ev.detail.item.format);
+  private async _handleFormatSelection(ev) {
+    fireEvent(this, "hass-time-format-select", ev.target.value);
   }
 }
 

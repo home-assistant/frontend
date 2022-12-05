@@ -30,8 +30,8 @@ class HassioCreateBackupDialog extends LitElement {
   @query("supervisor-backup-content")
   private _backupContent!: SupervisorBackupContent;
 
-  public showDialog(params: HassioCreateBackupDialogParams) {
-    this._dialogParams = params;
+  public showDialog(dialogParams: HassioCreateBackupDialogParams) {
+    this._dialogParams = dialogParams;
     this._creatingBackup = false;
   }
 
@@ -57,10 +57,11 @@ class HassioCreateBackupDialog extends LitElement {
         )}
       >
         ${this._creatingBackup
-          ? html` <ha-circular-progress active></ha-circular-progress>`
+          ? html`<ha-circular-progress active></ha-circular-progress>`
           : html`<supervisor-backup-content
               .hass=${this.hass}
               .supervisor=${this._dialogParams.supervisor}
+              dialogInitialFocus
             >
             </supervisor-backup-content>`}
         ${this._error

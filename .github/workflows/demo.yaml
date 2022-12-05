@@ -6,7 +6,7 @@ on:
       - dev
 
 env:
-  NODE_VERSION: 14
+  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 jobs:
@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -26,10 +26,10 @@ jobs:
           CI: true
       - name: Build Demo
         run: ./node_modules/.bin/gulp build-demo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy to Netlify
-        uses: netlify/actions/cli@master
+        run: npx netlify-cli deploy --dir=demo/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_DEV_SITE_ID }}
-        with:
-          args: deploy --dir=demo/dist --prod

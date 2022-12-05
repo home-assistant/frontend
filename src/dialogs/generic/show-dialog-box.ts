@@ -16,13 +16,16 @@ export interface ConfirmationDialogParams extends BaseDialogBoxParams {
   dismissText?: string;
   confirm?: () => void;
   cancel?: () => void;
+  destructive?: boolean;
 }
 
 export interface PromptDialogParams extends BaseDialogBoxParams {
   inputLabel?: string;
   inputType?: string;
   defaultValue?: string;
+  placeholder?: string;
   confirm?: (out?: string) => void;
+  cancel?: () => void;
 }
 
 export interface DialogBoxParams

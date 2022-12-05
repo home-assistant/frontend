@@ -31,11 +31,12 @@ export const applyThemesOnElement = (
   element,
   themes: HomeAssistant["themes"],
   selectedTheme?: string,
-  themeSettings?: Partial<HomeAssistant["selectedTheme"]>
+  themeSettings?: Partial<HomeAssistant["selectedTheme"]>,
+  main?: boolean
 ) => {
-  // If there is no explicitly desired theme provided, we automatically
+  // If there is no explicitly desired theme provided, and the element is the main element we automatically
   // use the active one from `themes`.
-  const themeToApply = selectedTheme || themes.theme;
+  const themeToApply = selectedTheme || (main ? themes.theme : undefined);
 
   // If there is no explicitly desired dark mode provided, we automatically
   // use the active one from `themes`.
@@ -47,7 +48,7 @@ export const applyThemesOnElement = (
   let cacheKey = themeToApply;
   let themeRules: Partial<ThemeVars> = {};
 
-  if (darkMode) {
+  if (themeToApply && darkMode) {
     cacheKey = `${cacheKey}__dark`;
     themeRules = { ...darkStyles };
   }

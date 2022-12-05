@@ -1,5 +1,5 @@
 import { html, LitElement, PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import type { HaDurationData } from "../../../../../components/ha-duration-input";
@@ -13,9 +13,11 @@ import { createDurationData } from "../../../../../common/datetime/create_durati
 export class HaDelayAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public action!: DelayAction;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property() public _timeData!: HaDurationData;
+  @property({ attribute: false }) public action!: DelayAction;
+
+  @state() private _timeData?: HaDurationData;
 
   public static get defaultConfig() {
     return { delay: "" };
@@ -43,6 +45,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
       .label=${this.hass.localize(
         `ui.panel.config.automation.editor.actions.type.delay.delay`
       )}
+      .disabled=${this.disabled}
       .data=${this._timeData}
       enableMillisecond
       @value-changed=${this._valueChanged}

@@ -25,6 +25,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { showAutomationEditor } from "../../../data/automation";
 import {
+  BlueprintDomain,
   BlueprintMetaData,
   Blueprints,
   deleteBlueprint,
@@ -108,6 +109,7 @@ class HaBlueprintOverview extends LitElement {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.headers.name"
         ),
+        main: true,
         sortable: true,
         filterable: true,
         direction: "asc",
@@ -124,7 +126,7 @@ class HaBlueprintOverview extends LitElement {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.headers.type"
         ),
-        template: (type: string) =>
+        template: (type: BlueprintDomain) =>
           html`${this.hass.localize(
             `ui.panel.config.blueprint.overview.types.${type}`
           )}`,
@@ -148,7 +150,7 @@ class HaBlueprintOverview extends LitElement {
         title: "",
         width: narrow ? undefined : "20%",
         type: narrow ? "icon-button" : undefined,
-        template: (_, blueprint: any) =>
+        template: (_, blueprint: BlueprintMetaDataPath) =>
           blueprint.error
             ? ""
             : narrow
@@ -224,7 +226,7 @@ class HaBlueprintOverview extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.blueprints}
+        .tabs=${configSections.automations}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._processedBlueprints(this.blueprints)}
         id="entity_id"
@@ -328,11 +330,15 @@ class HaBlueprintOverview extends LitElement {
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.blueprint.overview.confirm_delete_header"
+          "ui.panel.config.blueprint.overview.confirm_delete_title"
         ),
         text: this.hass.localize(
-          "ui.panel.config.blueprint.overview.confirm_delete_text"
+          "ui.panel.config.blueprint.overview.confirm_delete_text",
+          { name: blueprint.name }
         ),
+        confirmText: this.hass!.localize("ui.common.delete"),
+        dismissText: this.hass!.localize("ui.common.cancel"),
+        destructive: true,
       }))
     ) {
       return;

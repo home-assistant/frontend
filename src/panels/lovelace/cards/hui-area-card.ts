@@ -3,8 +3,10 @@ import {
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
+  mdiThermometer,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
+  mdiWaterAlert,
   mdiWaterPercent,
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -31,6 +33,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
+import "../components/hui-image";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -60,17 +63,21 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 const OTHER_DOMAINS = ["camera"];
 
 const DEVICE_CLASSES = {
-  sensor: ["temperature"],
-  binary_sensor: ["motion"],
+  sensor: ["temperature", "humidity"],
+  binary_sensor: ["motion", "moisture"],
 };
 
 const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
   fan: { on: domainIcon("fan"), off: domainIcon("fan") },
-  sensor: { humidity: mdiWaterPercent },
+  sensor: {
+    temperature: mdiThermometer,
+    humidity: mdiWaterPercent,
+  },
   binary_sensor: {
     motion: mdiRun,
+    moisture: mdiWaterAlert,
   },
 };
 
@@ -112,6 +119,7 @@ export class HuiAreaCard
         .filter(
           (entry) =>
             !entry.entity_category &&
+            !entry.hidden_by &&
             (entry.area_id
               ? entry.area_id === areaId
               : entry.device_id && devicesInArea.has(entry.device_id))
@@ -265,7 +273,7 @@ export class HuiAreaCard
 
     if (
       changedProps.has("_devicesInArea") ||
-      changedProps.has("_area") ||
+      changedProps.has("_areas") ||
       changedProps.has("_entities")
     ) {
       return true;
@@ -372,9 +380,7 @@ export class HuiAreaCard
           ? html`<hui-image
               .config=${this._config}
               .hass=${this.hass}
-              .image=${area.picture
-                ? this.hass.hassUrl(area.picture)
-                : undefined}
+              .image=${area.picture ? area.picture : undefined}
               .cameraImage=${cameraEntityId}
               aspectRatio="16:9"
             ></hui-image>`

@@ -13,7 +13,7 @@ import {
   energySourcesByType,
   getEnergyDataCollection,
 } from "../../../../data/energy";
-import { calculateStatisticsSumGrowth } from "../../../../data/history";
+import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import { createEntityNotFoundWarning } from "../../components/hui-warning";
@@ -31,6 +31,8 @@ class HuiEnergyCarbonGaugeCard
   @state() private _config?: EnergyCarbonGaugeCardConfig;
 
   @state() private _data?: EnergyData;
+
+  protected hassSubscribeRequiredHostProps = ["_config"];
 
   public getCardSize(): number {
     return 4;
@@ -82,10 +84,6 @@ class HuiEnergyCarbonGaugeCard
     );
 
     let value: number | undefined;
-
-    if (totalGridConsumption === 0) {
-      value = 100;
-    }
 
     if (this._data.fossilEnergyConsumption && totalGridConsumption) {
       const highCarbonEnergy = this._data.fossilEnergyConsumption
@@ -139,12 +137,12 @@ class HuiEnergyCarbonGaugeCard
               ></ha-gauge>
               <div class="name">
                 ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.non_fossil_energy_consumed"
+                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_consumed"
                 )}
               </div>
             `
           : html`${this.hass.localize(
-              "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.non_fossil_energy_not_calculated"
+              "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_not_calculated"
             )}`}
       </ha-card>
     `;

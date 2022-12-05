@@ -15,15 +15,18 @@ import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-icon-button";
 import {
-  fetchHassioAddonsInfo,
   HassioAddonInfo,
   HassioAddonRepository,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
-import { setSupervisorOption } from "../../../../src/data/hassio/supervisor";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
+import {
+  addStoreRepository,
+  fetchStoreRepositories,
+  removeStoreRepository,
+} from "../../../../src/data/supervisor/store";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {
@@ -58,7 +61,13 @@ class HassioRepositoriesDialog extends LitElement {
 
   private _filteredRepositories = memoizeOne((repos: HassioAddonRepository[]) =>
     repos
-      .filter((repo) => repo.slug !== "core" && repo.slug !== "local")
+      .filter(
+        (repo) =>
+          repo.slug !== "core" && // The core add-ons repository
+          repo.slug !== "local" && // Locally managed add-ons
+          repo.slug !== "a0d7b954" && // Home Assistant Community Add-ons
+          repo.slug !== "5c53de3b" // The ESPHome repository
+      )
       .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
   );
 
@@ -78,7 +87,7 @@ class HassioRepositoriesDialog extends LitElement {
     const repositories = this._filteredRepositories(this._repositories);
     const usedRepositories = this._filteredUsedRepositories(
       repositories,
-      this._dialogParams.supervisor.supervisor.addons
+      this._dialogParams.supervisor.addon.addons
     );
     return html`
       <ha-dialog
@@ -106,6 +115,9 @@ class HassioRepositoriesDialog extends LitElement {
                     </paper-item-body>
                     <div class="delete">
                       <ha-icon-button
+                        .label=${this._dialogParams!.supervisor.localize(
+                          "dialog.repositories.remove"
+                        )}
                         .disabled=${usedRepositories.includes(repo.slug)}
                         .slug=${repo.slug}
                         .path=${usedRepositories.includes(repo.slug)
@@ -139,6 +151,7 @@ class HassioRepositoriesDialog extends LitElement {
                 "dialog.repositories.add"
               )}
               @keydown=${this._handleKeyAdd}
+              dialogInitialFocus
             ></paper-input>
             <mwc-button @click=${this._addRepository}>
               ${this._processing
@@ -211,9 +224,7 @@ class HassioRepositoriesDialog extends LitElement {
 
   private async _loadData(): Promise<void> {
     try {
-      const addonsinfo = await fetchHassioAddonsInfo(this.hass);
-
-      this._repositories = addonsinfo.repositories;
+      this._repositories = await fetchStoreRepositories(this.hass);
 
       fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
     } catch (err: any) {
@@ -227,14 +238,9 @@ class HassioRepositoriesDialog extends LitElement {
       return;
     }
     this._processing = true;
-    const repositories = this._filteredRepositories(this._repositories!);
-    const newRepositories = repositories.map((repo) => repo.source);
-    newRepositories.push(input.value);
 
     try {
-      await setSupervisorOption(this.hass, {
-        addons_repositories: newRepositories,
-      });
+      await addStoreRepository(this.hass, input.value);
       await this._loadData();
 
       input.value = "";
@@ -246,19 +252,8 @@ class HassioRepositoriesDialog extends LitElement {
 
   private async _removeRepository(ev: Event) {
     const slug = (ev.currentTarget as any).slug;
-    const repositories = this._filteredRepositories(this._repositories!);
-    const repository = repositories.find((repo) => repo.slug === slug);
-    if (!repository) {
-      return;
-    }
-    const newRepositories = repositories
-      .map((repo) => repo.source)
-      .filter((repo) => repo !== repository.source);
-
     try {
-      await setSupervisorOption(this.hass, {
-        addons_repositories: newRepositories,
-      });
+      await removeStoreRepository(this.hass, slug);
       await this._loadData();
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);

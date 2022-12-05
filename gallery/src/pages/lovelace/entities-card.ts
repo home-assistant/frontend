@@ -75,6 +75,10 @@ const ENTITIES = [
     timestamp: 1641801600,
     friendly_name: "Date and Time",
   }),
+  getEntity("sensor", "humidity", "23.2", {
+    friendly_name: "Humidity",
+    unit_of_measurement: "%",
+  }),
   getEntity("input_select", "dropdown", "Soda", {
     friendly_name: "Dropdown",
     options: ["Soda", "Beer", "Wine"],
@@ -93,6 +97,9 @@ const ENTITIES = [
     step: 1,
     minimum: 0,
     maximum: 10,
+  }),
+  getEntity("text", "message", "Hello!", {
+    friendly_name: "Message",
   }),
 
   getEntity("light", "unavailable", "unavailable", {
@@ -125,6 +132,9 @@ const ENTITIES = [
     friendly_name: "Who cooks",
     icon: "mdi:cheff",
   }),
+  getEntity("text", "unavailable", "unavailable", {
+    friendly_name: "Message",
+  }),
 ];
 
 const CONFIGS = [
@@ -142,6 +152,8 @@ const CONFIGS = [
     - light.non_existing
     - climate.ecobee
     - input_number.number
+    - sensor.humidity
+    - text.message
     `,
   },
   {
@@ -214,6 +226,7 @@ const CONFIGS = [
     - climate.unavailable
     - input_number.unavailable
     - input_select.unavailable
+    - text.unavailable
     `,
   },
   {
@@ -249,7 +262,7 @@ const CONFIGS = [
       name: Bed light
       action_name: Toggle light
       service: light.toggle
-      service_data:
+      data:
         entity_id: light.bed_light
     - type: section
       label: Links

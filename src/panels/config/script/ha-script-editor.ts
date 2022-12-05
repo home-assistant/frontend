@@ -1,4 +1,3 @@
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
@@ -6,11 +5,12 @@ import {
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
+  mdiInformationOutline,
+  mdiPlay,
+  mdiTransitConnection,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import { PaperListboxElement } from "@polymer/paper-listbox";
 import {
   css,
   CSSResultGroup,
@@ -19,26 +19,32 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, state, query } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
+import type {
+  HaFormDataContainer,
+  SchemaUnion,
+} from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-picker";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
-  Action,
   deleteScript,
+  getScriptStateConfig,
+  fetchScriptFileConfig,
   getScriptEditorInitData,
-  ManualScriptConfig,
+  isMaxMode,
   MODES,
   MODES_MAX,
   ScriptConfig,
@@ -47,27 +53,27 @@ import {
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
+import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import "../automation/action/ha-automation-action";
-import { HaDeviceAction } from "../automation/action/types/ha-automation-action-device_id";
-import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
 import "./blueprint-script-editor";
+import "./manual-script-editor";
 
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scriptEntityId: string | null = null;
+  @property() public scriptId: string | null = null;
 
-  @property() public route!: Route;
+  @property() public entityId: string | null = null;
 
-  @property() public isWide?: boolean;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public isWide = false;
+
+  @property({ type: Boolean }) public narrow!: boolean;
 
   @state() private _config?: ScriptConfig;
 
@@ -81,23 +87,110 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @state() private _mode: "gui" | "yaml" = "gui";
 
-  @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
+  @state() private _readOnly = false;
+
+  @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
+
+  private _schema = memoizeOne(
+    (
+      hasID: boolean,
+      useBluePrint?: boolean,
+      currentMode?: typeof MODES[number]
+    ) =>
+      [
+        {
+          name: "alias",
+          selector: {
+            text: {
+              type: "text",
+            },
+          },
+        },
+        {
+          name: "icon",
+          selector: {
+            icon: {},
+          },
+        },
+        ...(!hasID
+          ? ([
+              {
+                name: "id",
+                selector: {
+                  text: {},
+                },
+              },
+            ] as const)
+          : []),
+        ...(!useBluePrint
+          ? ([
+              {
+                name: "mode",
+                selector: {
+                  select: {
+                    mode: "dropdown",
+                    options: MODES.map((mode) => ({
+                      label: this.hass.localize(
+                        `ui.panel.config.script.editor.modes.${mode}`
+                      ),
+                      value: mode,
+                    })),
+                  },
+                },
+              },
+            ] as const)
+          : []),
+        ...(currentMode && isMaxMode(currentMode)
+          ? ([
+              {
+                name: "max",
+                required: true,
+                selector: {
+                  number: { mode: "box", min: 1, max: Infinity },
+                },
+              },
+            ] as const)
+          : []),
+      ] as const
+  );
 
   protected render(): TemplateResult {
+    if (!this._config) {
+      return html``;
+    }
+
+    const schema = this._schema(
+      !!this.scriptId,
+      "use_blueprint" in this._config,
+      this._config.mode
+    );
+
+    const data = {
+      mode: MODES[0],
+      icon: undefined,
+      max: this._config.mode && isMaxMode(this._config.mode) ? 10 : undefined,
+      ...this._config,
+      id: this._entityId,
+    };
+
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .tabs=${configSections.automations}
+        .header=${!this._config?.alias ? "" : this._config.alias}
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._handleMenuAction}
-          activatable
-        >
+        ${this.scriptId && !this.narrow
+          ? html`
+              <mwc-button @click=${this._showTrace} slot="toolbar-icon">
+                ${this.hass.localize(
+                  "ui.panel.config.script.editor.show_trace"
+                )}
+              </mwc-button>
+            `
+          : ""}
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -105,19 +198,60 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           ></ha-icon-button>
 
           <mwc-list-item
+            graphic="icon"
+            .disabled=${!this.scriptId}
+            @click=${this._showInfo}
+          >
+            ${this.hass.localize("ui.panel.config.script.editor.show_info")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiInformationOutline}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!this.scriptId}
+            @click=${this._runScript}
+          >
+            ${this.hass.localize("ui.panel.config.script.picker.run_script")}
+            <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
+          </mwc-list-item>
+
+          ${this.scriptId && this.narrow
+            ? html`
+                <a href="/config/script/trace/${this.scriptId}">
+                  <mwc-list-item graphic="icon">
+                    ${this.hass.localize(
+                      "ui.panel.config.script.editor.show_trace"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiTransitConnection}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+                </a>
+              `
+            : ""}
+
+          <li divider role="separator"></li>
+
+          <mwc-list-item
             aria-label=${this.hass.localize(
               "ui.panel.config.automation.editor.edit_ui"
             )}
             graphic="icon"
-            ?activated=${this._mode === "gui"}
+            @click=${this._switchUiMode}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
-              ? html` <ha-svg-icon
-                  class="selected_menu_item"
-                  slot="graphic"
-                  .path=${mdiCheck}
-                ></ha-svg-icon>`
+              ? html`
+                  <ha-svg-icon
+                    class="selected_menu_item"
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>
+                `
               : ``}
           </mwc-list-item>
           <mwc-list-item
@@ -125,29 +259,36 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               "ui.panel.config.automation.editor.edit_yaml"
             )}
             graphic="icon"
-            ?activated=${this._mode === "yaml"}
+            @click=${this._switchYamlMode}
           >
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
-              ? html` <ha-svg-icon
-                  class="selected_menu_item"
-                  slot="graphic"
-                  .path=${mdiCheck}
-                ></ha-svg-icon>`
+              ? html`
+                  <ha-svg-icon
+                    class="selected_menu_item"
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>
+                `
               : ``}
           </mwc-list-item>
 
           <li divider role="separator"></li>
 
           <mwc-list-item
-            .disabled=${!this.scriptEntityId}
+            .disabled=${!this._readOnly && !this.scriptId}
             .label=${this.hass.localize(
-              "ui.panel.config.script.picker.duplicate_script"
+              this._readOnly
+                ? "ui.panel.config.script.editor.migrate"
+                : "ui.panel.config.script.editor.duplicate"
             )}
             graphic="icon"
+            @click=${this._duplicate}
           >
             ${this.hass.localize(
-              "ui.panel.config.script.picker.duplicate_script"
+              this._readOnly
+                ? "ui.panel.config.script.editor.migrate"
+                : "ui.panel.config.script.editor.duplicate"
             )}
             <ha-svg-icon
               slot="graphic"
@@ -156,33 +297,28 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           </mwc-list-item>
 
           <mwc-list-item
-            .disabled=${!this.scriptEntityId}
+            .disabled=${this._readOnly || !this.scriptId}
             aria-label=${this.hass.localize(
-              "ui.panel.config.script.editor.delete_script"
+              "ui.panel.config.script.picker.delete"
             )}
-            class=${classMap({ warning: Boolean(this.scriptEntityId) })}
+            class=${classMap({ warning: Boolean(this.scriptId) })}
             graphic="icon"
+            @click=${this._deleteConfirm}
           >
-            ${this.hass.localize("ui.panel.config.script.editor.delete_script")}
+            ${this.hass.localize("ui.panel.config.script.picker.delete")}
             <ha-svg-icon
-              class=${classMap({ warning: Boolean(this.scriptEntityId) })}
+              class=${classMap({ warning: Boolean(this.scriptId) })}
               slot="graphic"
               .path=${mdiDelete}
             >
             </ha-svg-icon>
           </mwc-list-item>
         </ha-button-menu>
-        ${this.narrow
-          ? html` <span slot="header">${this._config?.alias}</span> `
-          : ""}
         <div
           class="content ${classMap({
             "yaml-mode": this._mode === "yaml",
           })}"
         >
-          ${this._errors
-            ? html` <div class="errors">${this._errors}</div> `
-            : ""}
           ${this._mode === "gui"
             ? html`
                 <div
@@ -192,217 +328,83 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 >
                   ${this._config
                     ? html`
-                        <ha-config-section vertical .isWide=${this.isWide}>
-                          ${!this.narrow
+                        <div class="config-container">
+                          ${this._errors
                             ? html`
-                                <span slot="header">${this._config.alias}</span>
+                                <ha-alert alert-type="error">
+                                  ${this._errors}
+                                </ha-alert>
                               `
                             : ""}
-                          <span slot="introduction">
-                            ${this.hass.localize(
-                              "ui.panel.config.script.editor.introduction"
-                            )}
-                          </span>
-                          <ha-card>
+                          <ha-card outlined>
                             <div class="card-content">
-                              <paper-input
-                                .label=${this.hass.localize(
-                                  "ui.panel.config.script.editor.alias"
-                                )}
-                                name="alias"
-                                .value=${this._config.alias}
+                              <ha-form
+                                .schema=${schema}
+                                .data=${data}
+                                .hass=${this.hass}
+                                .disabled=${this._readOnly}
+                                .computeLabel=${this._computeLabelCallback}
+                                .computeHelper=${this._computeHelperCallback}
                                 @value-changed=${this._valueChanged}
-                                @change=${this._aliasChanged}
-                              >
-                              </paper-input>
-                              <ha-icon-picker
-                                .label=${this.hass.localize(
-                                  "ui.panel.config.script.editor.icon"
-                                )}
-                                .name=${"icon"}
-                                .value=${this._config.icon}
-                                @value-changed=${this._valueChanged}
-                              >
-                              </ha-icon-picker>
-                              ${!this.scriptEntityId
-                                ? html`<paper-input
-                                    .label=${this.hass.localize(
-                                      "ui.panel.config.script.editor.id"
-                                    )}
-                                    .errorMessage=${this.hass.localize(
-                                      "ui.panel.config.script.editor.id_already_exists"
-                                    )}
-                                    .invalid=${this._idError}
-                                    .value=${this._entityId}
-                                    @value-changed=${this._idChanged}
-                                  >
-                                  </paper-input>`
-                                : ""}
-                              ${"use_blueprint" in this._config
-                                ? ""
-                                : html`<p>
-                                      ${this.hass.localize(
-                                        "ui.panel.config.script.editor.modes.description",
-                                        "documentation_link",
-                                        html`<a
-                                          href=${documentationUrl(
-                                            this.hass,
-                                            "/integrations/script/#script-modes"
-                                          )}
-                                          target="_blank"
-                                          rel="noreferrer"
-                                          >${this.hass.localize(
-                                            "ui.panel.config.script.editor.modes.documentation"
-                                          )}</a
-                                        >`
-                                      )}
-                                    </p>
-                                    <paper-dropdown-menu-light
-                                      .label=${this.hass.localize(
-                                        "ui.panel.config.script.editor.modes.label"
-                                      )}
-                                      no-animations
-                                    >
-                                      <paper-listbox
-                                        slot="dropdown-content"
-                                        .selected=${this._config.mode
-                                          ? MODES.indexOf(this._config.mode)
-                                          : 0}
-                                        @iron-select=${this._modeChanged}
-                                      >
-                                        ${MODES.map(
-                                          (mode) => html`
-                                            <paper-item .mode=${mode}>
-                                              ${this.hass.localize(
-                                                `ui.panel.config.script.editor.modes.${mode}`
-                                              ) || mode}
-                                            </paper-item>
-                                          `
-                                        )}
-                                      </paper-listbox>
-                                    </paper-dropdown-menu-light>
-                                    ${this._config.mode &&
-                                    MODES_MAX.includes(this._config.mode)
-                                      ? html`<paper-input
-                                          .label=${this.hass.localize(
-                                            `ui.panel.config.script.editor.max.${this._config.mode}`
-                                          )}
-                                          type="number"
-                                          name="max"
-                                          .value=${this._config.max || "10"}
-                                          @value-changed=${this._valueChanged}
-                                        >
-                                        </paper-input>`
-                                      : html``} `}
+                              ></ha-form>
                             </div>
-                            ${this.scriptEntityId
-                              ? html`
-                                  <div
-                                    class="card-actions layout horizontal justified center"
-                                  >
-                                    <a
-                                      href="/config/script/trace/${this
-                                        .scriptEntityId}"
-                                    >
-                                      <mwc-button>
-                                        ${this.hass.localize(
-                                          "ui.panel.config.script.editor.show_trace"
-                                        )}
-                                      </mwc-button>
-                                    </a>
-                                    <mwc-button
-                                      @click=${this._runScript}
-                                      title=${this.hass.localize(
-                                        "ui.panel.config.script.picker.run_script"
-                                      )}
-                                      ?disabled=${this._dirty}
-                                    >
-                                      ${this.hass.localize(
-                                        "ui.panel.config.script.picker.run_script"
-                                      )}
-                                    </mwc-button>
-                                  </div>
-                                `
-                              : ``}
                           </ha-card>
-                        </ha-config-section>
+                        </div>
 
                         ${"use_blueprint" in this._config
-                          ? html`<blueprint-script-editor
-                              .hass=${this.hass}
-                              .narrow=${this.narrow}
-                              .isWide=${this.isWide}
-                              .config=${this._config}
-                              @value-changed=${this._configChanged}
-                            ></blueprint-script-editor>`
-                          : html`<ha-config-section
-                              vertical
-                              .isWide=${this.isWide}
-                            >
-                              <span slot="header">
-                                ${this.hass.localize(
-                                  "ui.panel.config.script.editor.sequence"
-                                )}
-                              </span>
-                              <span slot="introduction">
-                                <p>
-                                  ${this.hass.localize(
-                                    "ui.panel.config.script.editor.sequence_sentence"
-                                  )}
-                                </p>
-                                <a
-                                  href=${documentationUrl(
-                                    this.hass,
-                                    "/docs/scripts/"
-                                  )}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  ${this.hass.localize(
-                                    "ui.panel.config.script.editor.link_available_actions"
-                                  )}
-                                </a>
-                              </span>
-                              <ha-automation-action
-                                .actions=${this._config.sequence}
-                                @value-changed=${this._sequenceChanged}
+                          ? html`
+                              <blueprint-script-editor
                                 .hass=${this.hass}
-                              ></ha-automation-action>
-                            </ha-config-section>`}
+                                .narrow=${this.narrow}
+                                .isWide=${this.isWide}
+                                .config=${this._config}
+                                .disabled=${this._readOnly}
+                                @duplicate=${this._duplicate}
+                                @value-changed=${this._configChanged}
+                              ></blueprint-script-editor>
+                            `
+                          : html`
+                              <manual-script-editor
+                                .hass=${this.hass}
+                                .narrow=${this.narrow}
+                                .isWide=${this.isWide}
+                                .config=${this._config}
+                                .disabled=${this._readOnly}
+                                @duplicate=${this._duplicate}
+                                @value-changed=${this._configChanged}
+                              ></manual-script-editor>
+                            `}
                       `
                     : ""}
                 </div>
               `
             : this._mode === "yaml"
             ? html`
-                ${!this.narrow
+                ${this._readOnly
+                  ? html`<ha-alert alert-type="warning">
+                      ${this.hass.localize(
+                        "ui.panel.config.script.editor.read_only"
+                      )}
+                      <mwc-button slot="action" @click=${this._duplicate}>
+                        ${this.hass.localize(
+                          "ui.panel.config.script.editor.migrate"
+                        )}
+                      </mwc-button>
+                    </ha-alert>`
+                  : ""}
+                ${this._errors
                   ? html`
-                      <ha-card
-                        ><div class="card-header">${this._config?.alias}</div>
-                        <div
-                          class="card-actions layout horizontal justified center"
-                        >
-                          <mwc-button
-                            @click=${this._runScript}
-                            title=${this.hass.localize(
-                              "ui.panel.config.script.picker.run_script"
-                            )}
-                            ?disabled=${this._dirty}
-                          >
-                            ${this.hass.localize(
-                              "ui.panel.config.script.picker.run_script"
-                            )}
-                          </mwc-button>
-                        </div>
-                      </ha-card>
+                      <ha-alert alert-type="error">${this._errors}</ha-alert>
                     `
-                  : ``}
+                  : ""}
                 <ha-yaml-editor
+                  .hass=${this.hass}
                   .defaultValue=${this._preprocessYaml()}
+                  .readOnly=${this._readOnly}
                   @value-changed=${this._yamlChanged}
                 ></ha-yaml-editor>
-                <ha-card
-                  ><div class="card-actions">
+                <ha-card outlined>
+                  <div class="card-actions">
                     <mwc-button @click=${this._copyYaml}>
                       ${this.hass.localize(
                         "ui.panel.config.automation.editor.copy_to_clipboard"
@@ -426,77 +428,163 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    const oldScript = changedProps.get("scriptEntityId");
+    const oldScript = changedProps.get("scriptId");
     if (
-      changedProps.has("scriptEntityId") &&
-      this.scriptEntityId &&
+      changedProps.has("scriptId") &&
+      this.scriptId &&
+      !this.entityId &&
       this.hass &&
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
-      (!oldScript || oldScript !== this.scriptEntityId)
+      (!oldScript || oldScript !== this.scriptId)
     ) {
-      this.hass
-        .callApi<ManualScriptConfig>(
-          "GET",
-          `config/script/config/${computeObjectId(this.scriptEntityId)}`
-        )
-        .then(
-          (config) => {
-            // Normalize data: ensure sequence is a list
-            // Happens when people copy paste their scripts into the config
-            const value = config.sequence;
-            if (value && !Array.isArray(value)) {
-              config.sequence = [value];
-            }
-            this._dirty = false;
-            this._config = config;
-          },
-          (resp) => {
-            alert(
-              resp.status_code === 404
-                ? this.hass.localize(
-                    "ui.panel.config.script.editor.load_error_not_editable"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.script.editor.load_error_unknown",
-                    "err_no",
-                    resp.status_code
-                  )
-            );
-            history.back();
+      fetchScriptFileConfig(this.hass, this.scriptId).then(
+        (config) => {
+          this._dirty = false;
+          this._readOnly = false;
+          this._config = this._normalizeConfig(config);
+        },
+        (resp) => {
+          const entity = Object.values(this.hass.entities).find(
+            (ent) =>
+              ent.platform === "script" && ent.unique_id === this.scriptId
+          );
+          if (entity) {
+            navigate(`/config/script/show/${entity.entity_id}`, {
+              replace: true,
+            });
+            return;
           }
-        );
+          alert(
+            resp.status_code === 404
+              ? this.hass.localize(
+                  "ui.panel.config.script.editor.load_error_not_editable"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.script.editor.load_error_unknown",
+                  "err_no",
+                  resp.status_code || resp.code
+                )
+          );
+          history.back();
+        }
+      );
     }
 
-    if (
-      changedProps.has("scriptEntityId") &&
-      !this.scriptEntityId &&
-      this.hass
-    ) {
+    if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
       const initData = getScriptEditorInitData();
       this._dirty = !!initData;
       const baseConfig: Partial<ScriptConfig> = {
         alias: this.hass.localize("ui.panel.config.script.editor.default_name"),
       };
       if (!initData || !("use_blueprint" in initData)) {
-        baseConfig.sequence = [{ ...HaDeviceAction.defaultConfig }];
+        baseConfig.sequence = [];
       }
       this._config = {
         ...baseConfig,
         ...initData,
       } as ScriptConfig;
+      this._readOnly = false;
+    }
+
+    if (changedProps.has("entityId") && this.entityId) {
+      getScriptStateConfig(this.hass, this.entityId).then((c) => {
+        this._config = this._normalizeConfig(c.config);
+      });
+      const regEntry = this.hass.entities[this.entityId];
+      if (regEntry?.unique_id) {
+        this.scriptId = regEntry.unique_id;
+      }
+      this._entityId = this.entityId;
+      this._dirty = false;
+      this._readOnly = true;
     }
   }
 
-  private async _runScript(ev) {
+  private _normalizeConfig(config: ScriptConfig): ScriptConfig {
+    // Normalize data: ensure sequence is a list
+    // Happens when people copy paste their scripts into the config
+    const value = config.sequence;
+    if (value && !Array.isArray(value)) {
+      config.sequence = [value];
+    }
+    return config;
+  }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>,
+    data: HaFormDataContainer
+  ): string => {
+    switch (schema.name) {
+      case "mode":
+        return this.hass.localize("ui.panel.config.script.editor.modes.label");
+      case "max":
+        // Mode must be one of max modes per schema definition above
+        return this.hass.localize(
+          `ui.panel.config.script.editor.max.${
+            data.mode as typeof MODES_MAX[number]
+          }`
+        );
+      default:
+        return this.hass.localize(
+          `ui.panel.config.script.editor.${schema.name}`
+        );
+    }
+  };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string | undefined | TemplateResult => {
+    if (schema.name === "mode") {
+      return html`
+        <a
+          style="color: var(--secondary-text-color)"
+          href=${documentationUrl(
+            this.hass,
+            "/integrations/script/#script-modes"
+          )}
+          target="_blank"
+          rel="noreferrer"
+          >${this.hass.localize(
+            "ui.panel.config.script.editor.modes.learn_more"
+          )}</a
+        >
+      `;
+    }
+    return undefined;
+  };
+
+  private async _showInfo() {
+    if (!this.scriptId) {
+      return;
+    }
+    const entity = Object.values(this.hass.entities).find(
+      (entry) => entry.unique_id === this.scriptId
+    );
+    if (!entity) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId: entity.entity_id });
+  }
+
+  private async _showTrace() {
+    if (this.scriptId) {
+      const result = await this.confirmUnsavedChanged();
+      if (result) {
+        navigate(`/config/script/trace/${this.scriptId}`);
+      }
+    }
+  }
+
+  private async _runScript(ev: CustomEvent) {
     ev.stopPropagation();
-    await triggerScript(this.hass, this.scriptEntityId as string);
+    await triggerScript(this.hass, this.scriptId!);
     showToast(this, {
       message: this.hass.localize(
         "ui.notification_toast.triggered",
@@ -506,38 +594,19 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private _modeChanged(ev: CustomEvent) {
-    const mode = ((ev.target as PaperListboxElement)?.selectedItem as any)
-      ?.mode;
-
-    if (mode === this._config!.mode) {
-      return;
-    }
-
-    this._config = { ...this._config!, mode };
-    if (!MODES_MAX.includes(mode)) {
-      delete this._config.max;
-    }
-    this._dirty = true;
-  }
-
-  private _aliasChanged(ev: CustomEvent) {
-    if (this.scriptEntityId || this._entityId) {
-      return;
-    }
-    const aliasSlugify = slugify((ev.target as any).value);
+  private _computeEntityIdFromAlias(alias: string) {
+    const aliasSlugify = slugify(alias);
     let id = aliasSlugify;
     let i = 2;
     while (this.hass.states[`script.${id}`]) {
       id = `${aliasSlugify}_${i}`;
       i++;
     }
-    this._entityId = id;
+    return id;
   }
 
-  private _idChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._entityId = (ev.target as any).value;
+  private _setEntityId(id?: string) {
+    this._entityId = id;
     if (this.hass.states[`script.${this._entityId}`]) {
       this._idError = true;
     } else {
@@ -545,36 +614,72 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
+  private updateEntityId(
+    newId: string | undefined,
+    newAlias: string | undefined
+  ) {
+    const currentAlias = this._config?.alias ?? "";
+    const currentEntityId = this._entityId ?? "";
+
+    if (newId !== this._entityId) {
+      this._setEntityId(newId || undefined);
+      return;
+    }
+
+    const currentComputedEntity = this._computeEntityIdFromAlias(currentAlias);
+
+    if (currentComputedEntity === currentEntityId || !this._entityId) {
+      const newComputedId = newAlias
+        ? this._computeEntityIdFromAlias(newAlias)
+        : undefined;
+
+      this._setEntityId(newComputedId);
+    }
+  }
+
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const target = ev.target as any;
-    const name = target.name;
-    if (!name) {
+    if (this._readOnly) {
       return;
     }
-    let newVal = ev.detail.value;
-    if (target.type === "number") {
-      newVal = Number(newVal);
+    this._errors = undefined;
+    const values = ev.detail.value as any;
+
+    let changed = false;
+    const newValues: Omit<ScriptConfig, "sequence"> = {
+      alias: values.alias ?? "",
+      icon: values.icon,
+      mode: values.mode,
+      max: isMaxMode(values.mode) ? values.max : undefined,
+    };
+
+    if (!this.scriptId) {
+      this.updateEntityId(values.id, values.alias);
     }
-    if ((this._config![name] || "") === newVal) {
-      return;
+
+    for (const key of Object.keys(newValues)) {
+      const value = newValues[key];
+
+      if (value === this._config![key]) {
+        continue;
+      }
+      if (value === undefined) {
+        const newConfig = { ...this._config! };
+        delete newConfig![key];
+        this._config = newConfig;
+      } else {
+        this._config = { ...this._config!, [key]: value };
+      }
+      changed = true;
     }
-    if (!newVal) {
-      delete this._config![name];
-      this._config = { ...this._config! };
-    } else {
-      this._config = { ...this._config!, [name]: newVal };
+
+    if (changed) {
+      this._dirty = true;
     }
-    this._dirty = true;
   }
 
   private _configChanged(ev) {
     this._config = ev.detail.value;
-    this._dirty = true;
-  }
-
-  private _sequenceChanged(ev: CustomEvent): void {
-    this._config = { ...this._config!, sequence: ev.detail.value as Action[] };
     this._errors = undefined;
     this._dirty = true;
   }
@@ -584,8 +689,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _copyYaml(): Promise<void> {
-    if (this._editor?.yaml) {
-      await copyToClipboard(this._editor.yaml);
+    if (this._yamlEditor?.yaml) {
+      await copyToClipboard(this._yamlEditor.yaml);
       showToast(this, {
         message: this.hass.localize("ui.common.copied_clipboard"),
       });
@@ -602,82 +707,79 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this._dirty = true;
   }
 
-  private _backTapped = (): void => {
+  private async confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
-      showConfirmationDialog(this, {
+      return showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.config.automation.editor.unsaved_confirm_title"
+        ),
         text: this.hass!.localize(
-          "ui.panel.config.common.editor.confirm_unsaved"
+          "ui.panel.config.automation.editor.unsaved_confirm_text"
         ),
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
-        confirm: () => {
-          setTimeout(() => history.back());
-        },
+        destructive: true,
       });
-    } else {
-      history.back();
+    }
+    return true;
+  }
+
+  private _backTapped = async () => {
+    const result = await this.confirmUnsavedChanged();
+    if (result) {
+      afterNextRender(() => history.back());
     }
   };
 
   private async _duplicate() {
-    if (this._dirty) {
-      if (
-        !(await showConfirmationDialog(this, {
-          text: this.hass!.localize(
-            "ui.panel.config.common.editor.confirm_unsaved"
-          ),
-          confirmText: this.hass!.localize("ui.common.yes"),
-          dismissText: this.hass!.localize("ui.common.no"),
-        }))
-      ) {
-        return;
-      }
-      // Wait for dialog to complete closing
-      await new Promise((resolve) => setTimeout(resolve, 0));
+    const result = this._readOnly
+      ? await showConfirmationDialog(this, {
+          title: "Migrate script?",
+          text: "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?",
+        })
+      : await this.confirmUnsavedChanged();
+    if (result) {
+      showScriptEditor({
+        ...this._config,
+        alias: this._readOnly
+          ? this._config?.alias
+          : `${this._config?.alias} (${this.hass.localize(
+              "ui.panel.config.script.picker.duplicate"
+            )})`,
+      });
     }
-    showScriptEditor({
-      ...this._config,
-      alias: `${this._config?.alias} (${this.hass.localize(
-        "ui.panel.config.script.picker.duplicate"
-      )})`,
-    });
   }
 
   private async _deleteConfirm() {
     showConfirmationDialog(this, {
-      text: this.hass.localize("ui.panel.config.script.editor.delete_confirm"),
+      title: this.hass.localize(
+        "ui.panel.config.script.editor.delete_confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.script.editor.delete_confirm_text",
+        { name: this._config?.alias }
+      ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),
       confirm: () => this._delete(),
+      destructive: true,
     });
   }
 
   private async _delete() {
-    await deleteScript(
-      this.hass,
-      computeObjectId(this.scriptEntityId as string)
-    );
+    await deleteScript(this.hass, this.scriptId!);
     history.back();
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._mode = "gui";
-        break;
-      case 1:
-        this._mode = "yaml";
-        break;
-      case 2:
-        this._duplicate();
-        break;
-      case 3:
-        this._deleteConfirm();
-        break;
-    }
+  private _switchUiMode() {
+    this._mode = "gui";
   }
 
-  private _saveScript(): void {
+  private _switchYamlMode() {
+    this._mode = "yaml";
+  }
+
+  private async _saveScript(): Promise<void> {
     if (this._idError) {
       showToast(this, {
         message: this.hass.localize(
@@ -692,25 +794,27 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       });
       return;
     }
-    const id = this.scriptEntityId
-      ? computeObjectId(this.scriptEntityId)
-      : this._entityId || Date.now();
-    this.hass!.callApi("POST", "config/script/config/" + id, this._config).then(
-      () => {
-        this._dirty = false;
 
-        if (!this.scriptEntityId) {
-          navigate(`/config/script/edit/${id}`, { replace: true });
-        }
-      },
-      (errors) => {
-        this._errors = errors.body.message || errors.error || errors.body;
-        showToast(this, {
-          message: errors.body.message || errors.error || errors.body,
-        });
-        throw errors;
-      }
-    );
+    const id = this.scriptId || this._entityId || Date.now();
+    try {
+      await this.hass!.callApi(
+        "POST",
+        "config/script/config/" + id,
+        this._config
+      );
+    } catch (errors: any) {
+      this._errors = errors.body.message || errors.error || errors.body;
+      showToast(this, {
+        message: errors.body.message || errors.error || errors.body,
+      });
+      throw errors;
+    }
+
+    this._dirty = false;
+
+    if (!this.scriptId) {
+      navigate(`/config/script/edit/${id}`, { replace: true });
+    }
   }
 
   protected handleKeyboardSave() {
@@ -732,14 +836,22 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           font-weight: bold;
           color: var(--error-color);
         }
-        .content {
-          padding-bottom: 20px;
-        }
         .yaml-mode {
           height: 100%;
           display: flex;
           flex-direction: column;
           padding-bottom: 0;
+        }
+        .config-container,
+        manual-script-editor,
+        blueprint-script-editor {
+          margin: 0 auto;
+          max-width: 1040px;
+          padding: 28px 20px 0;
+        }
+        .config-container ha-alert {
+          margin-bottom: 16px;
+          display: block;
         }
         ha-yaml-editor {
           flex-grow: 1;
@@ -767,6 +879,23 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
+        }
+        .header {
+          display: flex;
+          margin: 16px 0;
+          align-items: center;
+        }
+        .header .name {
+          font-size: 20px;
+          font-weight: 400;
+          flex: 1;
+        }
+        .header a {
+          color: var(--secondary-text-color);
+        }
+        ha-button-menu a {
+          text-decoration: none;
+          color: var(--primary-color);
         }
       `,
     ];

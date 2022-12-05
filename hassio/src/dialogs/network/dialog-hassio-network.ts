@@ -94,7 +94,7 @@ export class DialogHassioNetwork
         open
         scrimClickAction
         escapeKeyAction
-        .heading=${true}
+        .heading=${this.supervisor.localize("dialog.network.title")}
         hideActions
         @closed=${this.closeDialog}
       >
@@ -104,7 +104,7 @@ export class DialogHassioNetwork
               ${this.supervisor.localize("dialog.network.title")}
             </span>
             <ha-icon-button
-              .label=${this.hass.localize("common.close")}
+              .label=${this.supervisor.localize("common.close")}
               .path=${mdiClose}
               slot="actionItems"
               dialogAction="cancel"
@@ -119,6 +119,7 @@ export class DialogHassioNetwork
                     html`<mwc-tab
                       .id=${device.interface}
                       .label=${device.interface}
+                      dialogInitialFocus
                     >
                     </mwc-tab>`
                 )}
@@ -315,6 +316,7 @@ export class DialogHassioNetwork
               value="auto"
               name="${version}method"
               .checked=${this._interface![version]?.method === "auto"}
+              dialogInitialFocus
             >
             </ha-radio>
           </ha-formfield>

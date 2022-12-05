@@ -12,9 +12,12 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import { Calendar, fetchCalendarEvents } from "../../../data/calendar";
-import type {
+import {
+  Calendar,
   CalendarEvent,
+  fetchCalendarEvents,
+} from "../../../data/calendar";
+import type {
   CalendarViewChanged,
   FullCalendarView,
   HomeAssistant,
@@ -215,6 +218,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         line-height: 1.2;
         padding-top: 16px;
         padding-left: 8px;
+        padding-inline-start: 8px;
+        direction: var(--direction);
       }
     `;
   }

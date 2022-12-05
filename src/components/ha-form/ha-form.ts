@@ -1,33 +1,47 @@
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
+import { HomeAssistant } from "../../types";
 import "../ha-alert";
+import "../ha-selector/ha-selector";
 import "./ha-form-boolean";
 import "./ha-form-constant";
 import "./ha-form-float";
+import "./ha-form-grid";
+import "./ha-form-expandable";
 import "./ha-form-integer";
 import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
 import "./ha-form-select";
 import "./ha-form-string";
-import { HaFormElement, HaFormDataContainer, HaFormSchema } from "./types";
+import { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
 
-const getValue = (obj, item) => (obj ? obj[item.name] : null);
+const getValue = (obj, item) =>
+  obj ? (!item.name ? obj : obj[item.name]) : null;
+
+const getError = (obj, item) => (obj && item.name ? obj[item.name] : null);
 
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
-  @property() public data!: HaFormDataContainer;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public schema!: HaFormSchema[];
+  @property({ attribute: false }) public data!: HaFormDataContainer;
+
+  @property({ attribute: false }) public schema!: readonly HaFormSchema[];
 
   @property() public error?: Record<string, string>;
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public computeError?: (schema: HaFormSchema, error) => string;
+  @property() public computeError?: (schema: any, error) => string;
 
-  @property() public computeLabel?: (schema: HaFormSchema) => string;
+  @property() public computeLabel?: (
+    schema: any,
+    data: HaFormDataContainer
+  ) => string;
+
+  @property() public computeHelper?: (schema: any) => string | undefined;
 
   public focus() {
     const root = this.shadowRoot?.querySelector(".root");
@@ -42,9 +56,9 @@ export class HaForm extends LitElement implements HaFormElement {
     }
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     return html`
-      <div class="root">
+      <div class="root" part="root">
         ${this.error && this.error.base
           ? html`
               <ha-alert alert-type="error">
@@ -53,7 +67,8 @@ export class HaForm extends LitElement implements HaFormElement {
             `
           : ""}
         ${this.schema.map((item) => {
-          const error = getValue(this.error, item);
+          const error = getError(this.error, item);
+
           return html`
             ${error
               ? html`
@@ -62,16 +77,48 @@ export class HaForm extends LitElement implements HaFormElement {
                   </ha-alert>
                 `
               : ""}
-            ${dynamicElement(`ha-form-${item.type}`, {
-              schema: item,
-              data: getValue(this.data, item),
-              label: this._computeLabel(item),
-              disabled: this.disabled,
-            })}
+            ${"selector" in item
+              ? html`<ha-selector
+                  .schema=${item}
+                  .hass=${this.hass}
+                  .name=${item.name}
+                  .selector=${item.selector}
+                  .value=${getValue(this.data, item)}
+                  .label=${this._computeLabel(item, this.data)}
+                  .disabled=${this.disabled || item.disabled}
+                  .helper=${this._computeHelper(item)}
+                  .required=${item.required || false}
+                  .context=${this._generateContext(item)}
+                ></ha-selector>`
+              : dynamicElement(`ha-form-${item.type}`, {
+                  schema: item,
+                  data: getValue(this.data, item),
+                  label: this._computeLabel(item, this.data),
+                  helper: this._computeHelper(item),
+                  disabled: this.disabled || item.disabled,
+                  hass: this.hass,
+                  computeLabel: this.computeLabel,
+                  computeHelper: this.computeHelper,
+                  context: this._generateContext(item),
+                })}
           `;
         })}
       </div>
     `;
+  }
+
+  private _generateContext(
+    schema: HaFormSchema
+  ): Record<string, any> | undefined {
+    if (!schema.context) {
+      return undefined;
+    }
+
+    const context = {};
+    for (const [context_key, data_key] of Object.entries(schema.context)) {
+      context[context_key] = this.data[data_key];
+    }
+    return context;
   }
 
   protected createRenderRoot() {
@@ -80,36 +127,40 @@ export class HaForm extends LitElement implements HaFormElement {
     root.addEventListener("value-changed", (ev) => {
       ev.stopPropagation();
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
+
+      const newValue = !schema.name
+        ? ev.detail.value
+        : { [schema.name]: ev.detail.value };
+
       fireEvent(this, "value-changed", {
-        value: { ...this.data, [schema.name]: ev.detail.value },
+        value: { ...this.data, ...newValue },
       });
     });
     return root;
   }
 
-  private _computeLabel(schema: HaFormSchema) {
+  private _computeLabel(schema: HaFormSchema, data: HaFormDataContainer) {
     return this.computeLabel
-      ? this.computeLabel(schema)
+      ? this.computeLabel(schema, data)
       : schema
       ? schema.name
       : "";
   }
 
-  private _computeError(error, schema: HaFormSchema | HaFormSchema[]) {
+  private _computeHelper(schema: HaFormSchema) {
+    return this.computeHelper ? this.computeHelper(schema) : "";
+  }
+
+  private _computeError(error, schema: HaFormSchema | readonly HaFormSchema[]) {
     return this.computeError ? this.computeError(error, schema) : error;
   }
 
   static get styles(): CSSResultGroup {
-    // .root has overflow: auto to avoid margin collapse
     return css`
-      .root {
-        margin-bottom: -24px;
-        overflow: auto;
-      }
       .root > * {
         display: block;
       }
-      .root > *:not([own-margin]) {
+      .root > *:not([own-margin]):not(:last-child) {
         margin-bottom: 24px;
       }
       ha-alert[own-margin] {

@@ -1,10 +1,10 @@
+import { addHours } from "date-fns/esm";
 import "@material/mwc-button";
 import {
   mdiClipboardTextMultipleOutline,
   mdiInformationOutline,
   mdiRefresh,
 } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -18,6 +18,8 @@ import "../../../components/ha-code-editor";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-tip";
+import "../../../components/search-input";
 import "../../../components/ha-expansion-panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
@@ -39,6 +41,18 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
+          padding: max(16px, env(safe-area-inset-top))
+            max(16px, env(safe-area-inset-right))
+            max(16px, env(safe-area-inset-bottom))
+            max(16px, env(safe-area-inset-left));
+        }
+
+        ha-textfield {
+          display: block;
+        }
+
+        .state-input {
+          margin-top: 16px;
         }
 
         ha-expansion-panel {
@@ -73,6 +87,19 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           );
         }
 
+        .filters th {
+          padding: 0;
+        }
+
+        .filters search-input {
+          display: block;
+          --mdc-text-field-fill-color: transparent;
+        }
+        ha-tip {
+          display: flex;
+          padding: 8px 0;
+        }
+
         th.attributes {
           position: relative;
         }
@@ -84,6 +111,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         :host([rtl]) .entities th {
           text-align: right;
+          direction: rtl;
         }
 
         .entities tr {
@@ -144,7 +172,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         [[localize('ui.panel.developer-tools.tabs.states.current_entities')]]
       </h1>
       <ha-expansion-panel
-        header="Set state"
+        header="[[localize('ui.panel.developer-tools.tabs.states.set_state')]]"
         outlined
         expanded="[[_expanded]]"
         on-expanded-changed="expandedChanged"
@@ -162,16 +190,18 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               on-change="entityIdChanged"
               allow-custom-entity
             ></ha-entity-picker>
-            <paper-input
+            <ha-tip>[[localize('ui.tips.key_e_hint')]]</ha-tip>
+            <ha-textfield
               label="[[localize('ui.panel.developer-tools.tabs.states.state')]]"
               required
               autocapitalize="none"
               autocomplete="off"
               autocorrect="off"
               spellcheck="false"
-              value="{{_state}}"
+              value="[[_state]]"
+              on-change="stateChanged"
               class="state-input"
-            ></paper-input>
+            ></ha-textfield>
             <p>
               [[localize('ui.panel.developer-tools.tabs.states.state_attributes')]]
             </p>
@@ -180,6 +210,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               value="[[_stateAttributes]]"
               error="[[!validJSON]]"
               on-value-changed="_yamlChanged"
+              dir="ltr"
             ></ha-code-editor>
             <div class="button-row">
               <mwc-button
@@ -200,12 +231,18 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               <p>
                 <b
                   >[[localize('ui.panel.developer-tools.tabs.states.last_changed')]]:</b
-                ><br />[[lastChangedString(_entity)]]
+                ><br />
+                <a href="[[historyFromLastChanged(_entity)]]"
+                  >[[lastChangedString(_entity)]]</a
+                >
               </p>
               <p>
                 <b
                   >[[localize('ui.panel.developer-tools.tabs.states.last_updated')]]:</b
-                ><br />[[lastUpdatedString(_entity)]]
+                ><br />
+                <a href="[[historyFromLastUpdated(_entity)]]"
+                  >[[lastUpdatedString(_entity)]]</a
+                >
               </p>
             </template>
           </div>
@@ -225,27 +262,29 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               ></ha-checkbox>
             </th>
           </tr>
-          <tr>
+          <tr class="filters">
             <th>
-              <paper-input
+              <search-input
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_entities')]]"
-                type="search"
-                value="{{_entityFilter}}"
-              ></paper-input>
+                value="[[_entityFilter]]"
+                on-value-changed="_entityFilterChanged"
+              ></search-input>
             </th>
             <th>
-              <paper-input
+              <search-input
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_states')]]"
                 type="search"
-                value="{{_stateFilter}}"
-              ></paper-input>
+                value="[[_stateFilter]]"
+                on-value-changed="_stateFilterChanged"
+              ></search-input>
             </th>
             <th hidden$="[[!computeShowAttributes(narrow, _showAttributes)]]">
-              <paper-input
+              <search-input
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_attributes')]]"
                 type="search"
-                value="{{_attributeFilter}}"
-              ></paper-input>
+                value="[[_attributeFilter]]"
+                on-value-changed="_attributeFilterChanged"
+              ></search-input>
             </th>
           </tr>
           <tr hidden$="[[!computeShowEntitiesPlaceholder(_entities)]]">
@@ -391,7 +430,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   entityIdChanged() {
-    if (this._entityId === "") {
+    if (!this._entityId) {
       this._entity = undefined;
       this._state = "";
       this._stateAttributes = "";
@@ -405,6 +444,36 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._state = state.state;
     this._stateAttributes = dump(state.attributes);
     this._expanded = true;
+  }
+
+  stateChanged(ev) {
+    this._state = ev.target.value;
+  }
+
+  _entityFilterChanged(ev) {
+    this._entityFilter = ev.detail.value;
+  }
+
+  _stateFilterChanged(ev) {
+    this._stateFilter = ev.detail.value;
+  }
+
+  _attributeFilterChanged(ev) {
+    this._attributeFilter = ev.detail.value;
+  }
+
+  _getHistoryURL(entityId, inputDate) {
+    const date = new Date(inputDate);
+    const hourBefore = addHours(date, -1).toISOString();
+    return `/history?entity_id=${entityId}&start_date=${hourBefore}`;
+  }
+
+  historyFromLastChanged(entity) {
+    return this._getHistoryURL(entity.entity_id, entity.last_changed);
+  }
+
+  historyFromLastUpdated(entity) {
+    return this._getHistoryURL(entity.entity_id, entity.last_updated);
   }
 
   expandedChanged(ev) {

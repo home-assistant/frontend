@@ -1,9 +1,3 @@
-import { Connection } from "home-assistant-js-websocket";
-import {
-  externalForwardConnectionEvents,
-  externalForwardHaptics,
-} from "./external_events_forwarder";
-
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
@@ -14,7 +8,6 @@ interface CommandInFlight {
 export interface EMMessage {
   id?: number;
   type: string;
-  payload?: unknown;
 }
 
 interface EMError {
@@ -36,97 +29,199 @@ interface EMMessageResultError {
   error: EMError;
 }
 
-interface EMExternalMessageRestart {
+interface EMOutgoingMessageConfigGet extends EMMessage {
+  type: "config/get";
+}
+
+interface EMOutgoingMessageMatterCommission extends EMMessage {
+  type: "matter/commission";
+}
+
+type EMOutgoingMessageWithAnswer = {
+  "config/get": {
+    request: EMOutgoingMessageConfigGet;
+    response: ExternalConfig;
+  };
+};
+
+interface EMOutgoingMessageExoplayerPlayHLS extends EMMessage {
+  type: "exoplayer/play_hls";
+  payload: {
+    url: string;
+    muted: boolean;
+  };
+}
+interface EMOutgoingMessageExoplayerResize extends EMMessage {
+  type: "exoplayer/resize";
+  payload: {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+  };
+}
+
+interface EMOutgoingMessageExoplayerStop extends EMMessage {
+  type: "exoplayer/stop";
+}
+
+interface EMOutgoingMessageThemeUpdate extends EMMessage {
+  type: "theme-update";
+}
+
+interface EMOutgoingMessageHaptic extends EMMessage {
+  type: "haptic";
+  payload: { hapticType: string };
+}
+
+interface EMOutgoingMessageConnectionStatus extends EMMessage {
+  type: "connection-status";
+  payload: { event: string };
+}
+
+interface EMOutgoingMessageAppConfiguration extends EMMessage {
+  type: "config_screen/show";
+}
+
+interface EMOutgoingMessageTagWrite extends EMMessage {
+  type: "tag/write";
+  payload: {
+    name: string | null;
+    tag: string;
+  };
+}
+
+interface EMOutgoingMessageSidebarShow extends EMMessage {
+  type: "sidebar/show";
+}
+
+type EMOutgoingMessageWithoutAnswer =
+  | EMOutgoingMessageHaptic
+  | EMOutgoingMessageConnectionStatus
+  | EMOutgoingMessageAppConfiguration
+  | EMOutgoingMessageTagWrite
+  | EMOutgoingMessageSidebarShow
+  | EMOutgoingMessageExoplayerPlayHLS
+  | EMOutgoingMessageExoplayerResize
+  | EMOutgoingMessageExoplayerStop
+  | EMOutgoingMessageThemeUpdate
+  | EMMessageResultSuccess
+  | EMMessageResultError
+  | EMOutgoingMessageMatterCommission;
+
+interface EMIncomingMessageRestart {
   id: number;
   type: "command";
   command: "restart";
 }
 
-type ExternalMessage =
+interface EMIncomingMessageShowNotifications {
+  id: number;
+  type: "command";
+  command: "notifications/show";
+}
+
+export type EMIncomingMessageCommands =
+  | EMIncomingMessageRestart
+  | EMIncomingMessageShowNotifications;
+
+type EMIncomingMessage =
   | EMMessageResultSuccess
   | EMMessageResultError
-  | EMExternalMessageRestart;
+  | EMIncomingMessageCommands;
+
+type EMIncomingMessageHandler = (msg: EMIncomingMessageCommands) => boolean;
+
+export interface ExternalConfig {
+  hasSettingsScreen: boolean;
+  hasSidebar: boolean;
+  canWriteTag: boolean;
+  hasExoPlayer: boolean;
+  canCommissionMatter: boolean;
+}
 
 export class ExternalMessaging {
+  public config!: ExternalConfig;
+
   public commands: { [msgId: number]: CommandInFlight } = {};
-
-  public connection?: Connection;
-
-  public cache: Record<string, any> = {};
 
   public msgId = 0;
 
-  public attach() {
-    externalForwardConnectionEvents(this);
-    externalForwardHaptics(this);
+  private _commandHandler?: EMIncomingMessageHandler;
+
+  public async attach() {
     window[CALLBACK_EXTERNAL_BUS] = (msg) => this.receiveMessage(msg);
+    window.addEventListener("connection-status", (ev) =>
+      this.fireMessage({
+        type: "connection-status",
+        payload: { event: ev.detail },
+      })
+    );
+    this.config = await this.sendMessage<"config/get">({
+      type: "config/get",
+    });
+  }
+
+  public addCommandHandler(handler: EMIncomingMessageHandler) {
+    this._commandHandler = handler;
   }
 
   /**
    * Send message to external app that expects a response.
    * @param msg message to send
    */
-  public sendMessage<T>(msg: EMMessage): Promise<T> {
+  public sendMessage<T extends keyof EMOutgoingMessageWithAnswer>(
+    msg: EMOutgoingMessageWithAnswer[T]["request"]
+  ): Promise<EMOutgoingMessageWithAnswer[T]["response"]> {
     const msgId = ++this.msgId;
     msg.id = msgId;
 
-    this.fireMessage(msg);
+    this._sendExternal(msg);
 
-    return new Promise<T>((resolve, reject) => {
-      this.commands[msgId] = { resolve, reject };
-    });
+    return new Promise<EMOutgoingMessageWithAnswer[T]["response"]>(
+      (resolve, reject) => {
+        this.commands[msgId] = { resolve, reject };
+      }
+    );
   }
 
   /**
    * Send message to external app without expecting a response.
    * @param msg message to send
    */
-  public fireMessage(
-    msg: EMMessage | EMMessageResultSuccess | EMMessageResultError
-  ) {
+  public fireMessage(msg: EMOutgoingMessageWithoutAnswer) {
     if (!msg.id) {
       msg.id = ++this.msgId;
     }
     this._sendExternal(msg);
   }
 
-  public receiveMessage(msg: ExternalMessage) {
+  public receiveMessage(msg: EMIncomingMessage) {
     if (__DEV__) {
       // eslint-disable-next-line no-console
       console.log("Receiving message from external app", msg);
     }
 
     if (msg.type === "command") {
-      if (!this.connection) {
+      if (!this._commandHandler || !this._commandHandler(msg)) {
+        let code: string;
+        let message: string;
+        if (this._commandHandler) {
+          code = "not_ready";
+          message = "Command handler not ready";
+        } else {
+          code = "unknown_command";
+          message = `Unknown command ${msg.command}`;
+        }
         // eslint-disable-next-line no-console
-        console.warn("Received command without having connection set", msg);
+        console.warn(message, msg);
         this.fireMessage({
           id: msg.id,
           type: "result",
           success: false,
           error: {
-            code: "commands_not_init",
-            message: `Commands connection not set`,
-          },
-        });
-      } else if (msg.command === "restart") {
-        this.connection.reconnect(true);
-        this.fireMessage({
-          id: msg.id,
-          type: "result",
-          success: true,
-          result: null,
-        });
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn("Received unknown command", msg.command, msg);
-        this.fireMessage({
-          id: msg.id,
-          type: "result",
-          success: false,
-          error: {
-            code: "unknown_command",
-            message: `Unknown command ${msg.command}`,
+            code,
+            message,
           },
         });
       }

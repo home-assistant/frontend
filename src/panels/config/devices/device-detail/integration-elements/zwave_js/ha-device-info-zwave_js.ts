@@ -7,80 +7,80 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import "../../../../../../components/ha-expansion-panel";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   ConfigEntry,
   getConfigEntries,
 } from "../../../../../../data/config_entries";
+import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
   fetchZwaveNodeStatus,
-  getZwaveJsIdentifiersFromDevice,
   nodeStatus,
-  ZWaveJSNodeStatus,
-  ZWaveJSNodeIdentifiers,
   SecurityClass,
+  subscribeZwaveNodeStatus,
+  ZWaveJSNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
+import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 
 @customElement("ha-device-info-zwave_js")
-export class HaDeviceInfoZWaveJS extends LitElement {
+export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public device!: DeviceRegistryEntry;
-
-  @state() private _entryId?: string;
+  @property({ attribute: false }) public device!: DeviceRegistryEntry;
 
   @state() private _configEntry?: ConfigEntry;
 
   @state() private _multipleConfigEntries = false;
 
-  @state() private _nodeId?: number;
-
   @state() private _node?: ZWaveJSNodeStatus;
 
-  protected updated(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues) {
+    super.willUpdate(changedProperties);
     if (changedProperties.has("device")) {
-      const identifiers: ZWaveJSNodeIdentifiers | undefined =
-        getZwaveJsIdentifiersFromDevice(this.device);
-      if (!identifiers) {
-        return;
-      }
-      this._nodeId = identifiers.node_id;
-      this._entryId = this.device.config_entries[0];
-
       this._fetchNodeDetails();
     }
   }
 
+  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+    return [
+      subscribeZwaveNodeStatus(this.hass, this.device!.id, (message) => {
+        if (!this._node) {
+          return;
+        }
+        this._node = {
+          ...this._node,
+          status: message.status,
+          ready: message.ready,
+        };
+      }),
+    ];
+  }
+
   protected async _fetchNodeDetails() {
-    if (!this._nodeId || !this._entryId) {
+    if (!this.device) {
       return;
     }
 
-    const configEntries = await getConfigEntries(this.hass);
-    let zwaveJsConfEntries = 0;
-    for (const entry of configEntries) {
-      if (entry.domain !== "zwave_js") {
-        continue;
-      }
-      if (zwaveJsConfEntries) {
-        this._multipleConfigEntries = true;
-      }
-      if (entry.entry_id === this._entryId) {
-        this._configEntry = entry;
-      }
-      if (this._configEntry && this._multipleConfigEntries) {
-        break;
-      }
-      zwaveJsConfEntries++;
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "zwave_js",
+    });
+
+    this._multipleConfigEntries = configEntries.length > 1;
+
+    const configEntry = configEntries.find((entry) =>
+      this.device.config_entries.includes(entry.entry_id)
+    );
+
+    if (!configEntry) {
+      return;
     }
 
-    this._node = await fetchZwaveNodeStatus(
-      this.hass,
-      this._entryId,
-      this._nodeId
-    );
+    this._configEntry = configEntry;
+
+    this._node = await fetchZwaveNodeStatus(this.hass, this.device.id);
   }
 
   protected render(): TemplateResult {
@@ -88,67 +88,76 @@ export class HaDeviceInfoZWaveJS extends LitElement {
       return html``;
     }
     return html`
-      <h4>
-        ${this.hass.localize("ui.panel.config.zwave_js.device_info.zwave_info")}
-      </h4>
-      ${this._multipleConfigEntries
-        ? html`
-            <div>
-              ${this.hass.localize("ui.panel.config.zwave_js.common.source")}:
-              ${this._configEntry!.title}
-            </div>
-          `
-        : ""}
-      <div>
-        ${this.hass.localize("ui.panel.config.zwave_js.common.node_id")}:
-        ${this._node.node_id}
-      </div>
-      <div>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.node_status"
-        )}:
-        ${this.hass.localize(
-          `ui.panel.config.zwave_js.node_status.${
-            nodeStatus[this._node.status]
-          }`
+      <ha-expansion-panel
+        .header=${this.hass.localize(
+          "ui.panel.config.zwave_js.device_info.zwave_info"
         )}
-      </div>
-      <div>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.node_ready"
-        )}:
-        ${this._node.ready
-          ? this.hass.localize("ui.common.yes")
-          : this.hass.localize("ui.common.no")}
-      </div>
-      <div>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.highest_security"
-        )}:
-        ${this._node.highest_security_class !== null
-          ? this.hass.localize(
-              `ui.panel.config.zwave_js.security_classes.${
-                SecurityClass[this._node.highest_security_class]
-              }.title`
-            )
-          : this._node.is_secure === false
-          ? this.hass.localize(
-              "ui.panel.config.zwave_js.security_classes.none.title"
-            )
-          : this.hass.localize("ui.panel.config.zwave_js.device_info.unknown")}
-      </div>
-      <div>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.zwave_plus"
-        )}:
-        ${this._node.zwave_plus_version
-          ? this.hass.localize(
-              "ui.panel.config.zwave_js.device_info.zwave_plus_version",
-              "version",
-              this._node.zwave_plus_version
-            )
-          : this.hass.localize("ui.common.no")}
-      </div>
+      >
+        ${this._multipleConfigEntries
+          ? html`
+              <div>
+                ${this.hass.localize("ui.panel.config.zwave_js.common.source")}:
+                ${this._configEntry!.title}
+              </div>
+            `
+          : ""}
+        <div>
+          ${this.hass.localize("ui.panel.config.zwave_js.device_info.node_id")}:
+          ${this._node.node_id}
+        </div>
+        ${!this._node.is_controller_node
+          ? html`
+              <div>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.device_info.node_status"
+                )}:
+                ${this.hass.localize(
+                  `ui.panel.config.zwave_js.node_status.${
+                    nodeStatus[this._node.status]
+                  }`
+                )}
+              </div>
+              <div>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.device_info.node_ready"
+                )}:
+                ${this._node.ready
+                  ? this.hass.localize("ui.common.yes")
+                  : this.hass.localize("ui.common.no")}
+              </div>
+              <div>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.device_info.highest_security"
+                )}:
+                ${this._node.highest_security_class !== null
+                  ? this.hass.localize(
+                      `ui.panel.config.zwave_js.security_classes.${
+                        SecurityClass[this._node.highest_security_class]
+                      }.title`
+                    )
+                  : this._node.is_secure === false
+                  ? this.hass.localize(
+                      "ui.panel.config.zwave_js.security_classes.none.title"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.zwave_js.device_info.unknown"
+                    )}
+              </div>
+              <div>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.device_info.zwave_plus"
+                )}:
+                ${this._node.zwave_plus_version
+                  ? this.hass.localize(
+                      "ui.panel.config.zwave_js.device_info.zwave_plus_version",
+                      "version",
+                      this._node.zwave_plus_version
+                    )
+                  : this.hass.localize("ui.common.no")}
+              </div>
+            `
+          : ""}
+      </ha-expansion-panel>
     `;
   }
 
@@ -163,7 +172,18 @@ export class HaDeviceInfoZWaveJS extends LitElement {
           word-break: break-all;
           margin-top: 2px;
         }
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0;
+          --expansion-panel-content-padding: 0;
+          padding-top: 4px;
+        }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-info-zwave_js": HaDeviceInfoZWaveJS;
   }
 }

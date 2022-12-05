@@ -1,14 +1,10 @@
-export const fileDownload = (
-  element: HTMLElement,
-  href: string,
-  filename: string
-): void => {
+export const fileDownload = (href: string, filename = ""): void => {
   const a = document.createElement("a");
   a.target = "_blank";
   a.href = href;
   a.download = filename;
 
-  element.shadowRoot!.appendChild(a);
+  document.body.appendChild(a);
   a.dispatchEvent(new MouseEvent("click"));
-  element.shadowRoot!.removeChild(a);
+  document.body.removeChild(a);
 };

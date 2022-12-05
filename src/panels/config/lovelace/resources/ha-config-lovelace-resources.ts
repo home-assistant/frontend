@@ -1,7 +1,4 @@
 import { mdiPlus } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
@@ -80,7 +77,6 @@ export class HaConfigLovelaceRescources extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
         .route=${this.route}
         .tabs=${lovelaceTabs}
         .columns=${this._columns(this.hass.language)}
@@ -161,9 +157,16 @@ export class HaConfigLovelaceRescources extends LitElement {
       removeResource: async () => {
         if (
           !(await showConfirmationDialog(this, {
-            text: this.hass!.localize(
-              "ui.panel.config.lovelace.resources.confirm_delete"
+            title: this.hass!.localize(
+              "ui.panel.config.lovelace.resources.confirm_delete_title"
             ),
+            text: this.hass!.localize(
+              "ui.panel.config.lovelace.resources.confirm_delete_text",
+              { url: resource!.url }
+            ),
+            dismissText: this.hass!.localize("ui.common.cancel"),
+            confirmText: this.hass!.localize("ui.common.delete"),
+            destructive: true,
           }))
         ) {
           return false;

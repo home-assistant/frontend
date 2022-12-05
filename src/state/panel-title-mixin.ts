@@ -3,7 +3,7 @@ import { Constructor, HomeAssistant } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 
 const setTitle = (title: string | undefined) => {
-  document.title = title ? `${title} - Home Assistant` : "Home Assistant";
+  document.title = title ? `${title} – Home Assistant` : "Home Assistant";
 };
 
 export const panelTitleMixin = <T extends Constructor<HassBaseEl>>(

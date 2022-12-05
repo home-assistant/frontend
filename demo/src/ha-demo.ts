@@ -1,5 +1,4 @@
 // Compat needs to be first import
-import "../../src/resources/compatibility";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
 import {
@@ -7,22 +6,25 @@ import {
   provideHass,
 } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
+import "../../src/resources/compatibility";
 import { HomeAssistant } from "../../src/types";
 import { selectedDemoConfig } from "./configs/demo-configs";
 import { mockAuth } from "./stubs/auth";
+import { mockConfigEntries } from "./stubs/config_entries";
+import { mockEnergy } from "./stubs/energy";
+import { energyEntities } from "./stubs/entities";
+import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
 import { mockFrontend } from "./stubs/frontend";
 import { mockHistory } from "./stubs/history";
 import { mockLovelace } from "./stubs/lovelace";
 import { mockMediaPlayer } from "./stubs/media_player";
 import { mockPersistentNotification } from "./stubs/persistent_notification";
+import { mockRecorder } from "./stubs/recorder";
 import { mockShoppingList } from "./stubs/shopping_list";
 import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockTranslations } from "./stubs/translations";
-import { mockEnergy } from "./stubs/energy";
-import { mockConfig } from "./stubs/config";
-import { energyEntities } from "./stubs/entities";
 
 class HaDemo extends HomeAssistantAppEl {
   protected async _initializeHass() {
@@ -44,6 +46,7 @@ class HaDemo extends HomeAssistantAppEl {
     mockAuth(hass);
     mockTranslations(hass);
     mockHistory(hass);
+    mockRecorder(hass);
     mockShoppingList(hass);
     mockSystemLog(hass);
     mockTemplate(hass);
@@ -51,8 +54,40 @@ class HaDemo extends HomeAssistantAppEl {
     mockMediaPlayer(hass);
     mockFrontend(hass);
     mockEnergy(hass);
-    mockConfig(hass);
     mockPersistentNotification(hass);
+    mockConfigEntries(hass);
+    mockEntityRegistry(hass, [
+      {
+        config_entry_id: "co2signal",
+        device_id: "co2signal",
+        area_id: null,
+        disabled_by: null,
+        entity_id: "sensor.co2_intensity",
+        id: "sensor.co2_intensity",
+        name: null,
+        icon: null,
+        platform: "co2signal",
+        hidden_by: null,
+        entity_category: null,
+        has_entity_name: false,
+        unique_id: "co2_intensity",
+      },
+      {
+        config_entry_id: "co2signal",
+        device_id: "co2signal",
+        area_id: null,
+        disabled_by: null,
+        entity_id: "sensor.grid_fossil_fuel_percentage",
+        id: "sensor.co2_intensity",
+        name: null,
+        icon: null,
+        platform: "co2signal",
+        hidden_by: null,
+        entity_category: null,
+        has_entity_name: false,
+        unique_id: "grid_fossil_fuel_percentage",
+      },
+    ]);
 
     hass.addEntities(energyEntities());
 
@@ -87,3 +122,9 @@ class HaDemo extends HomeAssistantAppEl {
 }
 
 customElements.define("ha-demo", HaDemo);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-demo": HaDemo;
+  }
+}

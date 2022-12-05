@@ -1,6 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
-import "@polymer/paper-input/paper-input";
 import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
@@ -8,6 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import "../components/entity/state-info";
 import "../components/ha-slider";
+import "../components/ha-textfield";
 
 class StateCardInputNumber extends mixinBehaviors(
   [IronResizableBehavior],
@@ -24,16 +24,17 @@ class StateCardInputNumber extends mixinBehaviors(
           @apply --paper-font-body1;
           color: var(--primary-text-color);
 
-          text-align: right;
-          line-height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: end;
         }
         .sliderstate {
           min-width: 45px;
         }
-        ha-slider[hidden] {
+        [hidden] {
           display: none !important;
         }
-        paper-input {
+        ha-textfield {
           text-align: right;
           margin-left: auto;
         }
@@ -54,23 +55,22 @@ class StateCardInputNumber extends mixinBehaviors(
           ignore-bar-touch=""
         >
         </ha-slider>
-        <paper-input
+        <ha-textfield
           no-label-float=""
           auto-validate=""
           pattern="[0-9]+([\\.][0-9]+)?"
           step="[[step]]"
           min="[[min]]"
           max="[[max]]"
-          value="{{value}}"
+          value="[[value]]"
           type="number"
           on-change="selectedValueChanged"
           on-click="stopPropagation"
+          on-input="onInput"
           hidden="[[hiddenbox]]"
+          suffix="[[stateObj.attributes.unit_of_measurement]]"
         >
-        </paper-input>
-        <div class="state" hidden="[[hiddenbox]]">
-          [[stateObj.attributes.unit_of_measurement]]
-        </div>
+        </ha-textfield>
         <div
           id="sliderstate"
           class="state sliderstate"
@@ -165,6 +165,7 @@ class StateCardInputNumber extends mixinBehaviors(
         this.hass.localize,
         newVal,
         this.hass.locale,
+        this.hass.entities,
         newVal.state
       ),
       mode: String(newVal.attributes.mode),
@@ -175,6 +176,10 @@ class StateCardInputNumber extends mixinBehaviors(
     if (this.mode === "slider" && prevMode !== "slider") {
       this.hiddenState();
     }
+  }
+
+  onInput(ev) {
+    this.value = ev.target.value;
   }
 
   selectedValueChanged() {

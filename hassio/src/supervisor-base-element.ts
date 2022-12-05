@@ -22,6 +22,7 @@ import {
   Supervisor,
   SupervisorObject,
   supervisorCollection,
+  SupervisorKeys,
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
@@ -124,9 +125,13 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
     this.supervisor = {
       ...this.supervisor,
-      localize: await computeLocalize(this.constructor.prototype, language, {
-        [language]: data,
-      }),
+      localize: await computeLocalize<SupervisorKeys>(
+        this.constructor.prototype,
+        language,
+        {
+          [language]: data,
+        }
+      ),
     };
   }
 

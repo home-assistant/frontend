@@ -1,11 +1,14 @@
 import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-item/paper-item-body";
-import { LitElement, css, html, PropertyValues } from "lit";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/buttons/ha-call-api-button";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import {
   cloudLogout,
@@ -13,7 +16,10 @@ import {
   fetchCloudSubscriptionInfo,
   SubscriptionInfo,
 } from "../../../../data/cloud";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
 import "./cloud-alexa-pref";
@@ -23,7 +29,7 @@ import "./cloud-tts-pref";
 import "./cloud-webhooks";
 
 @customElement("cloud-account")
-export class CloudAccount extends LitElement {
+export class CloudAccount extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -55,13 +61,17 @@ export class CloudAccount extends LitElement {
             </div>
 
             <ha-card
+              outlined
               .header=${this.hass.localize(
                 "ui.panel.config.cloud.account.nabu_casa_account"
               )}
             >
               <div class="account-row">
                 <paper-item-body two-line>
-                  ${this.cloudStatus.email}
+                  ${this.cloudStatus.email.replace(
+                    /(\w{3})[\w.-]+@([\w.]+\w)/,
+                    "$1***@$2"
+                  )}
                   <div secondary class="wrap">
                     ${this._subscription
                       ? this._subscription.human_description.replace(
@@ -81,6 +91,17 @@ export class CloudAccount extends LitElement {
                   </div>
                 </paper-item-body>
               </div>
+
+              ${this.cloudStatus.cloud === "connecting" &&
+              this.cloudStatus.cloud_last_disconnect_reason
+                ? html`
+                    <ha-alert
+                      alert-type="warning"
+                      .title=${this.cloudStatus.cloud_last_disconnect_reason
+                        .reason}
+                    ></ha-alert>
+                  `
+                : ""}
 
               <div class="account-row">
                 <paper-item-body>
@@ -115,11 +136,11 @@ export class CloudAccount extends LitElement {
                     )}
                   </mwc-button>
                 </a>
-                <mwc-button @click=${this._handleLogout}
-                  >${this.hass.localize(
+                <mwc-button @click=${this._signOut} class="warning">
+                  ${this.hass.localize(
                     "ui.panel.config.cloud.account.sign_out"
-                  )}</mwc-button
-                >
+                  )}
+                </mwc-button>
               </div>
             </ha-card>
           </ha-config-section>
@@ -178,6 +199,7 @@ export class CloudAccount extends LitElement {
 
             <cloud-webhooks
               .hass=${this.hass}
+              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
               dir=${this._rtlDirection}
             ></cloud-webhooks>
@@ -200,6 +222,37 @@ export class CloudAccount extends LitElement {
     }
   }
 
+  protected override hassSubscribe() {
+    const googleCheck = debounce(
+      () => {
+        if (this.cloudStatus && !this.cloudStatus.google_registered) {
+          fireEvent(this, "ha-refresh-cloud-status");
+        }
+      },
+      10000,
+      true
+    );
+    return [
+      this.hass.connection.subscribeEvents(() => {
+        if (!this.cloudStatus?.alexa_registered) {
+          fireEvent(this, "ha-refresh-cloud-status");
+        }
+      }, "alexa_smart_home"),
+      this.hass.connection.subscribeEvents(
+        googleCheck,
+        "google_assistant_command"
+      ),
+      this.hass.connection.subscribeEvents(
+        googleCheck,
+        "google_assistant_query"
+      ),
+      this.hass.connection.subscribeEvents(
+        googleCheck,
+        "google_assistant_sync"
+      ),
+    ];
+  }
+
   private async _fetchSubscriptionInfo() {
     this._subscription = await fetchCloudSubscriptionInfo(this.hass);
     if (
@@ -211,7 +264,18 @@ export class CloudAccount extends LitElement {
     }
   }
 
-  private async _handleLogout() {
+  private async _signOut() {
+    showConfirmationDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.cloud.account.sign_out_confirm"
+      ),
+      confirmText: this.hass!.localize("ui.common.yes"),
+      dismissText: this.hass!.localize("ui.common.no"),
+      confirm: () => this._logoutFromCloud(),
+    });
+  }
+
+  private async _logoutFromCloud() {
     await cloudLogout(this.hass);
     fireEvent(this, "ha-refresh-cloud-status");
   }
@@ -221,41 +285,39 @@ export class CloudAccount extends LitElement {
   }
 
   static get styles() {
-    return css`
-      [slot="introduction"] {
-        margin: -1em 0;
-      }
-      [slot="introduction"] a {
-        color: var(--primary-color);
-      }
-      .content {
-        padding-bottom: 24px;
-      }
-      .account-row {
-        display: flex;
-        padding: 0 16px;
-      }
-      .card-actions {
-        display: flex;
-        justify-content: space-between;
-      }
-      .card-actions a {
-        text-decoration: none;
-      }
-      mwc-button {
-        align-self: center;
-      }
-      .wrap {
-        white-space: normal;
-      }
-      .status {
-        text-transform: capitalize;
-        padding: 16px;
-      }
-      a {
-        color: var(--primary-color);
-      }
-    `;
+    return [
+      haStyle,
+      css`
+        [slot="introduction"] {
+          margin: -1em 0;
+        }
+        [slot="introduction"] a {
+          color: var(--primary-color);
+        }
+        .content {
+          padding-bottom: 24px;
+        }
+        .account-row {
+          display: flex;
+          padding: 0 16px;
+        }
+        .card-actions {
+          display: flex;
+          flex-direction: row-reverse;
+          justify-content: space-between;
+        }
+        mwc-button {
+          align-self: center;
+        }
+        .wrap {
+          white-space: normal;
+        }
+        .status {
+          text-transform: capitalize;
+          padding: 16px;
+        }
+      `,
+    ];
   }
 }
 

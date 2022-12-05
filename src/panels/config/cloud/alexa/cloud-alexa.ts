@@ -5,7 +5,11 @@ import {
   mdiCheckboxMultipleMarked,
   mdiCloseBox,
   mdiCloseBoxMultiple,
+  mdiDotsVertical,
+  mdiFormatListChecks,
+  mdiSync,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -25,7 +29,11 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-switch";
-import { AlexaEntity, fetchCloudAlexaEntities } from "../../../../data/alexa";
+import {
+  AlexaEntity,
+  fetchCloudAlexaEntities,
+  syncCloudAlexaEntities,
+} from "../../../../data/alexa";
 import {
   AlexaEntityConfig,
   CloudPreferences,
@@ -33,9 +41,14 @@ import {
   updateCloudAlexaEntityConfig,
   updateCloudPref,
 } from "../../../../data/cloud";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../../data/entity_registry";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
@@ -43,7 +56,7 @@ const DEFAULT_CONFIG_EXPOSE = true;
 const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];
 
 @customElement("cloud-alexa")
-class CloudAlexa extends LitElement {
+class CloudAlexa extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property()
@@ -53,8 +66,16 @@ class CloudAlexa extends LitElement {
 
   @state() private _entities?: AlexaEntity[];
 
-  @property()
+  @state() private _syncing = false;
+
+  @state()
   private _entityConfigs: CloudPreferences["alexa_entity_configs"] = {};
+
+  @state()
+  private _entityCategories?: Record<
+    string,
+    EntityRegistryEntry["entity_category"]
+  >;
 
   private _popstateSyncAttached = false;
 
@@ -72,7 +93,7 @@ class CloudAlexa extends LitElement {
   );
 
   protected render(): TemplateResult {
-    if (this._entities === undefined) {
+    if (this._entities === undefined || this._entityCategories === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
     const emptyFilter = isEmptyFilter(this.cloudStatus.alexa_entities);
@@ -99,10 +120,17 @@ class CloudAlexa extends LitElement {
         should_expose: null,
       };
       const isExposed = emptyFilter
-        ? this._configIsExposed(entity.entity_id, config)
+        ? this._configIsExposed(
+            entity.entity_id,
+            config,
+            this._entityCategories![entity.entity_id]
+          )
         : filterFunc(entity.entity_id);
       const isDomainExposed = emptyFilter
-        ? this._configIsDomainExposed(entity.entity_id)
+        ? this._configIsDomainExposed(
+            entity.entity_id,
+            this._entityCategories![entity.entity_id]
+          )
         : filterFunc(entity.entity_id);
       if (isExposed) {
         selected++;
@@ -134,7 +162,7 @@ class CloudAlexa extends LitElement {
       ></ha-icon-button>`;
 
       target.push(html`
-        <ha-card>
+        <ha-card outlined>
           <div class="card-content">
             <div class="top-line">
               <state-info
@@ -203,74 +231,84 @@ class CloudAlexa extends LitElement {
     }
 
     return html`
-      <hass-subpage .hass=${this.hass} .narrow=${
-      this.narrow
-    } .header=${this.hass!.localize("ui.panel.config.cloud.alexa.title")}>
-        ${
-          emptyFilter
-            ? html`
-                <mwc-button
-                  slot="toolbar-icon"
-                  @click=${this._openDomainToggler}
-                  >${this.hass!.localize(
-                    "ui.panel.config.cloud.alexa.manage_domains"
-                  )}</mwc-button
-                >
-              `
-            : ""
-        }
-        ${
-          !emptyFilter
-            ? html`
-                <div class="banner">
-                  ${this.hass!.localize("ui.panel.config.cloud.alexa.banner")}
-                </div>
-              `
-            : ""
-        }
-          ${
-            exposedCards.length > 0
-              ? html`
-                  <div class="header">
-                    <h3>
-                      ${this.hass!.localize(
-                        "ui.panel.config.cloud.alexa.exposed_entities"
-                      )}
-                    </h3>
-                    ${!this.narrow
-                      ? this.hass!.localize(
-                          "ui.panel.config.cloud.alexa.exposed",
-                          "selected",
-                          selected
-                        )
-                      : selected}
-                  </div>
-                  <div class="content">${exposedCards}</div>
-                `
-              : ""
-          }
-          ${
-            notExposedCards.length > 0
-              ? html`
-                  <div class="header second">
-                    <h3>
-                      ${this.hass!.localize(
-                        "ui.panel.config.cloud.alexa.not_exposed_entities"
-                      )}
-                    </h3>
-                    ${!this.narrow
-                      ? this.hass!.localize(
-                          "ui.panel.config.cloud.alexa.not_exposed",
-                          "selected",
-                          this._entities.length - selected
-                        )
-                      : this._entities.length - selected}
-                  </div>
-                  <div class="content">${notExposedCards}</div>
-                `
-              : ""
-          }
-        </div>
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .header=${this.hass!.localize("ui.panel.config.cloud.alexa.title")}
+      >
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${!emptyFilter}
+            @click=${this._openDomainToggler}
+          >
+            ${this.hass.localize("ui.panel.config.cloud.alexa.manage_defaults")}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiFormatListChecks}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            graphic="icon"
+            .disabled=${this._syncing}
+            @click=${this._handleSync}
+          >
+            ${this.hass.localize("ui.panel.config.cloud.alexa.sync_entities")}
+            <ha-svg-icon slot="graphic" .path=${mdiSync}></ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
+        ${!emptyFilter
+          ? html`
+              <div class="banner">
+                ${this.hass!.localize("ui.panel.config.cloud.alexa.banner")}
+              </div>
+            `
+          : ""}
+        ${exposedCards.length > 0
+          ? html`
+              <div class="header">
+                <h3>
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.alexa.exposed_entities"
+                  )}
+                </h3>
+                ${!this.narrow
+                  ? this.hass!.localize(
+                      "ui.panel.config.cloud.alexa.exposed",
+                      "selected",
+                      selected
+                    )
+                  : selected}
+              </div>
+              <div class="content">${exposedCards}</div>
+            `
+          : ""}
+        ${notExposedCards.length > 0
+          ? html`
+              <div class="header second">
+                <h3>
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.alexa.not_exposed_entities"
+                  )}
+                </h3>
+                ${!this.narrow
+                  ? this.hass!.localize(
+                      "ui.panel.config.cloud.alexa.not_exposed",
+                      "selected",
+                      this._entities.length - selected
+                    )
+                  : this._entities.length - selected}
+              </div>
+              <div class="content">${notExposedCards}</div>
+            `
+          : ""}
       </hass-subpage>
     `;
   }
@@ -285,6 +323,23 @@ class CloudAlexa extends LitElement {
     if (changedProps.has("cloudStatus")) {
       this._entityConfigs = this.cloudStatus.prefs.alexa_entity_configs;
     }
+  }
+
+  protected override hassSubscribe(): (
+    | UnsubscribeFunc
+    | Promise<UnsubscribeFunc>
+  )[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection, (entries) => {
+        const categories = {};
+
+        for (const entry of entries) {
+          categories[entry.entity_id] = entry.entity_category;
+        }
+
+        this._entityCategories = categories;
+      }),
+    ];
   }
 
   private async _fetchData() {
@@ -305,15 +360,26 @@ class CloudAlexa extends LitElement {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
-  private _configIsDomainExposed(entityId: string) {
+  private _configIsDomainExposed(
+    entityId: string,
+    entityCategory: EntityRegistryEntry["entity_category"] | undefined
+  ) {
     const domain = computeDomain(entityId);
     return this.cloudStatus.prefs.alexa_default_expose
-      ? this.cloudStatus.prefs.alexa_default_expose.includes(domain)
+      ? !entityCategory &&
+          this.cloudStatus.prefs.alexa_default_expose.includes(domain)
       : DEFAULT_CONFIG_EXPOSE;
   }
 
-  private _configIsExposed(entityId: string, config: AlexaEntityConfig) {
-    return config.should_expose ?? this._configIsDomainExposed(entityId);
+  private _configIsExposed(
+    entityId: string,
+    config: AlexaEntityConfig,
+    entityCategory: EntityRegistryEntry["entity_category"] | undefined
+  ) {
+    return (
+      config.should_expose ??
+      this._configIsDomainExposed(entityId, entityCategory)
+    );
   }
 
   private async _exposeChanged(ev: CustomEvent<ActionDetail>) {
@@ -355,6 +421,10 @@ class CloudAlexa extends LitElement {
 
   private _openDomainToggler() {
     showDomainTogglerDialog(this, {
+      title: this.hass!.localize("ui.panel.config.cloud.alexa.manage_defaults"),
+      description: this.hass!.localize(
+        "ui.panel.config.cloud.alexa.manage_defaults_dialog_description"
+      ),
       domains: this._entities!.map((entity) =>
         computeDomain(entity.entity_id)
       ).filter((value, idx, self) => self.indexOf(value) === idx),
@@ -370,6 +440,21 @@ class CloudAlexa extends LitElement {
         });
       },
     });
+  }
+
+  private async _handleSync() {
+    this._syncing = true;
+    try {
+      await syncCloudAlexaEntities(this.hass!);
+    } catch (err: any) {
+      alert(
+        `${this.hass!.localize(
+          "ui.panel.config.cloud.alexa.sync_entities_error"
+        )} ${err.body.message}`
+      );
+    } finally {
+      this._syncing = false;
+    }
   }
 
   private async _updateDomainExposed(domain: string, expose: boolean) {

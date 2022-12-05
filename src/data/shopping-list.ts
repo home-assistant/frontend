@@ -41,7 +41,7 @@ export const addItem = (
 
 export const reorderItems = (
   hass: HomeAssistant,
-  itemIds: [string]
+  itemIds: string[]
 ): Promise<ShoppingListItem> =>
   hass.callWS({
     type: "shopping_list/items/reorder",

@@ -1,13 +1,14 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { mdiOpenInNew } from "@mdi/js";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
+import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 import {
   BlueprintImportResult,
   importBlueprint,
@@ -32,7 +33,7 @@ class DialogImportBlueprint extends LitElement {
 
   @state() private _url?: string;
 
-  @query("#input") private _input?: PaperInputElement;
+  @query("#input") private _input?: HaTextField;
 
   public showDialog(params): void {
     this._params = params;
@@ -90,13 +91,13 @@ class DialogImportBlueprint extends LitElement {
                       </ul>
                     `
                   : html`
-                      <paper-input
+                      <ha-textfield
                         id="input"
-                        .value=${this._result.suggested_filename}
+                        .value=${this._result.suggested_filename || ""}
                         .label=${this.hass.localize(
                           "ui.panel.config.blueprint.add.file_name"
                         )}
-                      ></paper-input>
+                      ></ha-textfield>
                     `}
                 <ha-expansion-panel
                   .header=${this.hass.localize(
@@ -105,50 +106,61 @@ class DialogImportBlueprint extends LitElement {
                 >
                   <pre>${this._result.raw_data}</pre>
                 </ha-expansion-panel>`
-            : html`${this.hass.localize(
-                  "ui.panel.config.blueprint.add.import_introduction_link",
-                  "community_link",
-                  html`<a
-                    href="https://www.home-assistant.io/get-blueprints"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    >${this.hass.localize(
-                      "ui.panel.config.blueprint.add.community_forums"
-                    )}</a
-                  >`
-                )}<paper-input
+            : html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.blueprint.add.import_introduction"
+                  )}
+                </p>
+                <a
+                  href="https://www.home-assistant.io/get-blueprints"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.blueprint.add.community_forums"
+                  )}
+                  <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                </a>
+                <ha-textfield
                   id="input"
                   .label=${this.hass.localize(
                     "ui.panel.config.blueprint.add.url"
                   )}
-                  .value=${this._url}
+                  .value=${this._url || ""}
                   dialogInitialFocus
-                ></paper-input>`}
+                ></ha-textfield>
+              `}
         </div>
+        <mwc-button
+          slot="primaryAction"
+          @click=${this.closeDialog}
+          .disabled=${this._saving}
+        >
+          ${this.hass.localize("ui.common.cancel")}
+        </mwc-button>
         ${!this._result
-          ? html`<mwc-button
-              slot="primaryAction"
-              @click=${this._import}
-              .disabled=${this._importing}
-            >
-              ${this._importing
-                ? html`<ha-circular-progress
-                    active
-                    size="small"
-                    .title=${this.hass.localize(
-                      "ui.panel.config.blueprint.add.importing"
-                    )}
-                  ></ha-circular-progress>`
-                : ""}
-              ${this.hass.localize("ui.panel.config.blueprint.add.import_btn")}
-            </mwc-button>`
-          : html`<mwc-button
-                slot="secondaryAction"
-                @click=${this.closeDialog}
-                .disabled=${this._saving}
+          ? html`
+              <mwc-button
+                slot="primaryAction"
+                @click=${this._import}
+                .disabled=${this._importing}
               >
-                ${this.hass.localize("ui.common.cancel")}
+                ${this._importing
+                  ? html`<ha-circular-progress
+                      active
+                      size="small"
+                      .title=${this.hass.localize(
+                        "ui.panel.config.blueprint.add.importing"
+                      )}
+                    ></ha-circular-progress>`
+                  : ""}
+                ${this.hass.localize(
+                  "ui.panel.config.blueprint.add.import_btn"
+                )}
               </mwc-button>
+            `
+          : html`
               <mwc-button
                 slot="primaryAction"
                 @click=${this._save}
@@ -164,7 +176,8 @@ class DialogImportBlueprint extends LitElement {
                     ></ha-circular-progress>`
                   : ""}
                 ${this.hass.localize("ui.panel.config.blueprint.add.save_btn")}
-              </mwc-button>`}
+              </mwc-button>
+            `}
       </ha-dialog>
     `;
   }
@@ -212,9 +225,25 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return haStyleDialog;
-  }
+  static styles = [
+    haStyleDialog,
+    css`
+      p {
+        margin-top: 0;
+        margin-bottom: 8px;
+      }
+      ha-textfield {
+        display: block;
+        margin-top: 24px;
+      }
+      a {
+        text-decoration: none;
+      }
+      a ha-svg-icon {
+        --mdc-icon-size: 16px;
+      }
+    `,
+  ];
 }
 
 declare global {

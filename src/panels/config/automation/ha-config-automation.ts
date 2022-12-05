@@ -49,6 +49,9 @@ class HaConfigAutomation extends HassRouterPage {
       edit: {
         tag: "ha-automation-editor",
       },
+      show: {
+        tag: "ha-automation-editor",
+      },
       trace: {
         tag: "ha-automation-trace",
         load: () => import("./ha-automation-trace"),
@@ -59,7 +62,9 @@ class HaConfigAutomation extends HassRouterPage {
   private _getAutomations = memoizeOne(
     (states: HassEntities): AutomationEntity[] =>
       Object.values(states).filter(
-        (entity) => computeStateDomain(entity) === "automation"
+        (entity) =>
+          computeStateDomain(entity) === "automation" &&
+          !entity.attributes.restored
       ) as AutomationEntity[]
   );
 
@@ -82,13 +87,22 @@ class HaConfigAutomation extends HassRouterPage {
         this._debouncedUpdateAutomations(pageEl);
       }
     }
-
+    if (
+      (!changedProps || changedProps.has("route")) &&
+      this._currentPage === "show"
+    ) {
+      const automationId = decodeURIComponent(this.routeTail.path.substr(1));
+      pageEl.automationId = null;
+      pageEl.entityId = automationId === "new" ? null : automationId;
+      return;
+    }
     if (
       (!changedProps || changedProps.has("route")) &&
       this._currentPage !== "dashboard"
     ) {
-      const automationId = this.routeTail.path.substr(1);
+      const automationId = decodeURIComponent(this.routeTail.path.substr(1));
       pageEl.automationId = automationId === "new" ? null : automationId;
+      pageEl.entityId = null;
     }
   }
 }

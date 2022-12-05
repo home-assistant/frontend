@@ -8,7 +8,7 @@ import {
 } from "../../common/number/format_number";
 import { LineChartEntity, LineChartState } from "../../data/history";
 import { HomeAssistant } from "../../types";
-import "./ha-chart-base";
+import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -28,11 +28,13 @@ class StateHistoryChartLine extends LitElement {
 
   @property({ type: Boolean }) public isSingleDevice = false;
 
-  @property({ attribute: false }) public endTime?: Date;
+  @property({ attribute: false }) public endTime!: Date;
 
   @state() private _chartData?: ChartData<"line">;
 
-  @state() private _chartOptions?: ChartOptions<"line">;
+  @state() private _chartOptions?: ChartOptions;
+
+  private _chartTime: Date = new Date();
 
   protected render() {
     return html`
@@ -57,6 +59,7 @@ class StateHistoryChartLine extends LitElement {
                 locale: this.hass.locale,
               },
             },
+            suggestedMax: this.endTime,
             ticks: {
               maxRotation: 0,
               sampleSize: 5,
@@ -120,7 +123,13 @@ class StateHistoryChartLine extends LitElement {
         locale: numberFormatToLocale(this.hass.locale),
       };
     }
-    if (changedProps.has("data")) {
+    if (
+      changedProps.has("data") ||
+      this._chartTime <
+        new Date(this.endTime.getTime() - MIN_TIME_BETWEEN_UPDATES)
+    ) {
+      // If the line is more than 5 minutes old, re-gen it
+      // so the X axis grows even if there is no new data
       this._generateData();
     }
   }
@@ -130,28 +139,12 @@ class StateHistoryChartLine extends LitElement {
     const computedStyles = getComputedStyle(this);
     const entityStates = this.data;
     const datasets: ChartDataset<"line">[] = [];
-    let endTime: Date;
-
     if (entityStates.length === 0) {
       return;
     }
 
-    endTime =
-      this.endTime ||
-      // Get the highest date from the last date of each device
-      new Date(
-        Math.max(
-          ...entityStates.map((devSts) =>
-            new Date(
-              devSts.states[devSts.states.length - 1].last_changed
-            ).getTime()
-          )
-        )
-      );
-    if (endTime > new Date()) {
-      endTime = new Date();
-    }
-
+    this._chartTime = new Date();
+    const endTime = this.endTime;
     const names = this.names || {};
     entityStates.forEach((states) => {
       const domain = states.domain;
@@ -183,12 +176,7 @@ class StateHistoryChartLine extends LitElement {
         prevValues = datavalues;
       };
 
-      const addDataSet = (
-        nameY: string,
-        step = false,
-        fill = false,
-        color?: string
-      ) => {
+      const addDataSet = (nameY: string, fill = false, color?: string) => {
         if (!color) {
           color = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
@@ -198,7 +186,7 @@ class StateHistoryChartLine extends LitElement {
           fill: fill ? "origin" : false,
           borderColor: color,
           backgroundColor: color + "7F",
-          stepped: step ? "before" : false,
+          stepped: "before",
           pointRadius: 0,
           data: [],
         });
@@ -239,13 +227,11 @@ class StateHistoryChartLine extends LitElement {
         addDataSet(
           `${this.hass.localize("ui.card.climate.current_temperature", {
             name: name,
-          })}`,
-          true
+          })}`
         );
         if (hasHeat) {
           addDataSet(
             `${this.hass.localize("ui.card.climate.heating", { name: name })}`,
-            true,
             true,
             computedStyles.getPropertyValue("--state-climate-heat-color")
           );
@@ -255,7 +241,6 @@ class StateHistoryChartLine extends LitElement {
         if (hasCool) {
           addDataSet(
             `${this.hass.localize("ui.card.climate.cooling", { name: name })}`,
-            true,
             true,
             computedStyles.getPropertyValue("--state-climate-cool-color")
           );
@@ -268,22 +253,19 @@ class StateHistoryChartLine extends LitElement {
             `${this.hass.localize("ui.card.climate.target_temperature_mode", {
               name: name,
               mode: this.hass.localize("ui.card.climate.high"),
-            })}`,
-            true
+            })}`
           );
           addDataSet(
             `${this.hass.localize("ui.card.climate.target_temperature_mode", {
               name: name,
               mode: this.hass.localize("ui.card.climate.low"),
-            })}`,
-            true
+            })}`
           );
         } else {
           addDataSet(
             `${this.hass.localize("ui.card.climate.target_temperature_entity", {
               name: name,
-            })}`,
-            true
+            })}`
           );
         }
 
@@ -318,14 +300,12 @@ class StateHistoryChartLine extends LitElement {
         addDataSet(
           `${this.hass.localize("ui.card.humidifier.target_humidity_entity", {
             name: name,
-          })}`,
-          true
+          })}`
         );
         addDataSet(
           `${this.hass.localize("ui.card.humidifier.on_entity", {
             name: name,
           })}`,
-          true,
           true
         );
 
@@ -337,9 +317,7 @@ class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        // Only interpolate for sensors
-        const isStep = domain !== "sensor";
-        addDataSet(name, isStep);
+        addDataSet(name);
 
         let lastValue: number;
         let lastDate: Date;

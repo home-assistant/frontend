@@ -9,6 +9,10 @@ import { Constructor } from "../types";
 
 const Component = Vue.extend({
   props: {
+    timePicker: {
+      type: Boolean,
+      default: true,
+    },
     twentyfourHours: {
       type: Boolean,
       default: true,
@@ -33,13 +37,23 @@ const Component = Vue.extend({
         return new Date();
       },
     },
+    firstDay: {
+      type: Number,
+      default: 1,
+    },
+    autoApply: {
+      type: Boolean,
+      default: false,
+    },
   },
   render(createElement) {
     // @ts-ignore
     return createElement(DateRangePicker, {
       props: {
-        "time-picker": true,
-        "auto-apply": false,
+        // @ts-ignore
+        "time-picker": this.timePicker,
+        // @ts-ignore
+        "auto-apply": this.autoApply,
         opens: "right",
         "show-dropdowns": false,
         // @ts-ignore
@@ -48,6 +62,10 @@ const Component = Vue.extend({
         disabled: this.disabled,
         // @ts-ignore
         ranges: this.ranges ? {} : false,
+        "locale-data": {
+          // @ts-ignore
+          firstDay: this.firstDay,
+        },
       },
       model: {
         value: {
@@ -103,17 +121,20 @@ class DateRangePickerElement extends WrappedElement {
           .daterangepicker {
             left: 0px !important;
             top: auto;
+            box-shadow: var(--ha-card-box-shadow, none);
             background-color: var(--card-background-color);
-            border: none;
-            border-radius: var(--ha-card-border-radius, 4px);
-            box-shadow: var(
-              --ha-card-box-shadow,
-              0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-              0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-              0px 1px 3px 0px rgba(0, 0, 0, 0.12)
+            border-radius: var(--ha-card-border-radius, 12px);
+            border-width: var(--ha-card-border-width, 1px);
+            border-style: solid;
+            border-color: var(
+              --ha-card-border-color,
+              var(--divider-color, #e0e0e0)
             );
             color: var(--primary-text-color);
             min-width: initial !important;
+          }
+          .daterangepicker:before {
+            display: none;
           }
           .daterangepicker:after {
             border-bottom: 6px solid var(--card-background-color);
@@ -217,6 +238,10 @@ class DateRangePickerElement extends WrappedElement {
           }
           .calendar-table {
             padding: 0 !important;
+          }
+          .daterangepicker.ltr {
+            direction: ltr;
+            text-align: left;
           }
         `;
     const shadowRoot = this.shadowRoot!;

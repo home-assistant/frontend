@@ -6,7 +6,7 @@ import {
   ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import { addHours, differenceInDays } from "date-fns";
+import { addHours, differenceInDays } from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -14,7 +14,6 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../../common/color/colors";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -26,8 +25,10 @@ import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
+  getStatisticLabel,
   Statistics,
-} from "../../../../data/history";
+  StatisticsUnitConfiguration,
+} from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -43,17 +44,22 @@ export class HuiEnergyDevicesGraphCard
 
   @state() private _config?: EnergyDevicesGraphCardConfig;
 
-  @state() private _data?: Statistics;
-
   @state() private _chartData: ChartData = { datasets: [] };
 
+  @state() private _data?: EnergyData;
+
   @query("ha-chart-base") private _chart?: HaChartBase;
+
+  protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       getEnergyDataCollection(this.hass, {
         key: this._config?.collection_key,
-      }).subscribe((data) => this._getStatistics(data)),
+      }).subscribe((data) => {
+        this._data = data;
+        this._getStatistics(data);
+      }),
     ];
   }
 
@@ -105,11 +111,14 @@ export class HuiEnergyDevicesGraphCard
           ticks: {
             autoSkip: false,
             callback: (index) => {
-              const entityId = (
+              const statisticId = (
                 this._chartData.datasets[0].data[index] as ScatterDataPoint
               ).y;
-              const entity = this.hass.states[entityId];
-              return entity ? computeStateName(entity) : entityId;
+              return getStatisticLabel(
+                this.hass,
+                statisticId as any,
+                this._data?.statsMetadata[statisticId]
+              );
             },
           },
         },
@@ -126,8 +135,12 @@ export class HuiEnergyDevicesGraphCard
           mode: "nearest",
           callbacks: {
             title: (item) => {
-              const entity = this.hass.states[item[0].label];
-              return entity ? computeStateName(entity) : item[0].label;
+              const statisticId = item[0].label;
+              return getStatisticLabel(
+                this.hass,
+                statisticId,
+                this._data?.statsMetadata[statisticId]
+              );
             },
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
@@ -160,19 +173,79 @@ export class HuiEnergyDevicesGraphCard
       energyData.start
     );
 
-    this._data = await fetchStatistics(
-      this.hass,
-      addHours(energyData.start, -1),
-      energyData.end,
-      energyData.prefs.device_consumption.map(
-        (device) => device.stat_consumption
-      ),
-      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+    const devices = energyData.prefs.device_consumption.map(
+      (device) => device.stat_consumption
     );
 
-    const data: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> = [];
+    const period =
+      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
+
+    const startMinHour = addHours(energyData.start, -1);
+
+    const lengthUnit = this.hass.config.unit_system.length || "";
+    const units: StatisticsUnitConfiguration = {
+      energy: "kWh",
+      volume: lengthUnit === "km" ? "m³" : "ft³",
+    };
+
+    const data = await fetchStatistics(
+      this.hass,
+      startMinHour,
+      energyData.end,
+      devices,
+      period,
+      units
+    );
+
+    Object.values(data).forEach((stat) => {
+      // if the start of the first value is after the requested period, we have the first data point, and should add a zero point
+      if (stat.length && new Date(stat[0].start) > startMinHour) {
+        stat.unshift({
+          ...stat[0],
+          start: startMinHour.getTime(),
+          end: startMinHour.getTime(),
+          sum: 0,
+          state: 0,
+        });
+      }
+    });
+
+    let compareData: Statistics | undefined;
+
+    if (energyData.startCompare && energyData.endCompare) {
+      const startCompareMinHour = addHours(energyData.startCompare, -1);
+      compareData = await fetchStatistics(
+        this.hass,
+        startCompareMinHour,
+        energyData.endCompare,
+        devices,
+        period,
+        units
+      );
+
+      Object.values(compareData).forEach((stat) => {
+        // if the start of the first value is after the requested period, we have the first data point, and should add a zero point
+        if (stat.length && new Date(stat[0].start) > startMinHour) {
+          stat.unshift({
+            ...stat[0],
+            start: startCompareMinHour.getTime(),
+            end: startCompareMinHour.getTime(),
+            sum: 0,
+            state: 0,
+          });
+        }
+      });
+    }
+
+    const chartData: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> =
+      [];
+    const chartDataCompare: Array<
+      ChartDataset<"bar", ParsedDataType<"bar">>["data"]
+    > = [];
     const borderColor: string[] = [];
+    const borderColorCompare: string[] = [];
     const backgroundColor: string[] = [];
+    const backgroundColorCompare: string[] = [];
 
     const datasets: ChartDataset<"bar", ParsedDataType<"bar">[]>[] = [
       {
@@ -181,33 +254,67 @@ export class HuiEnergyDevicesGraphCard
         ),
         borderColor,
         backgroundColor,
-        data,
-        barThickness: 20,
+        data: chartData,
+        barThickness: compareData ? 10 : 20,
       },
     ];
 
+    if (compareData) {
+      datasets.push({
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_devices_graph.previous_energy_usage"
+        ),
+        borderColor: borderColorCompare,
+        backgroundColor: backgroundColorCompare,
+        data: chartDataCompare,
+        barThickness: 10,
+      });
+    }
+
     energyData.prefs.device_consumption.forEach((device, idx) => {
       const value =
-        device.stat_consumption in this._data!
-          ? calculateStatisticSumGrowth(this._data![device.stat_consumption]) ||
-            0
+        device.stat_consumption in data
+          ? calculateStatisticSumGrowth(data[device.stat_consumption]) || 0
           : 0;
 
-      data.push({
+      chartData.push({
         // @ts-expect-error
         y: device.stat_consumption,
         x: value,
         idx,
       });
+
+      if (compareData) {
+        const compareValue =
+          device.stat_consumption in compareData
+            ? calculateStatisticSumGrowth(
+                compareData[device.stat_consumption]
+              ) || 0
+            : 0;
+
+        chartDataCompare.push({
+          // @ts-expect-error
+          y: device.stat_consumption,
+          x: compareValue,
+          idx,
+        });
+      }
     });
 
-    data.sort((a, b) => b.x - a.x);
+    chartData.sort((a, b) => b.x - a.x);
 
-    data.forEach((d: any) => {
+    chartData.forEach((d: any) => {
       const color = getColorByIndex(d.idx);
 
       borderColor.push(color);
       backgroundColor.push(color + "7F");
+    });
+
+    chartDataCompare.forEach((d: any) => {
+      const color = getColorByIndex(d.idx);
+
+      borderColorCompare.push(color + "7F");
+      backgroundColorCompare.push(color + "32");
     });
 
     this._chartData = {

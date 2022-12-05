@@ -1,14 +1,13 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
 import { mdiDelete } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-textfield";
+import type { HaTextField } from "../../../../components/ha-textfield";
 import type { InputSelect } from "../../../../data/input_select";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
@@ -28,7 +27,7 @@ class HaInputSelectForm extends LitElement {
 
   @state() private _options: string[] = [];
 
-  @query("#option_input", true) private _optionInput?: PaperInputElement;
+  @query("#option_input", true) private _optionInput?: HaTextField;
 
   set item(item: InputSelect) {
     this._item = item;
@@ -59,20 +58,21 @@ class HaInputSelectForm extends LitElement {
 
     return html`
       <div class="form">
-        <paper-input
-          .value=${this._name}
-          .configValue=${"name"}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.name"
-          )}
+        <ha-textfield
+          dialogInitialFocus
           .errorMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
+          .value=${this._name}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.generic.name"
+          )}
           .invalid=${nameInvalid}
-          dialogInitialFocus
-        ></paper-input>
+          .configValue=${"name"}
+          @input=${this._valueChanged}
+        ></ha-textfield>
         <ha-icon-picker
+          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
@@ -80,15 +80,18 @@ class HaInputSelectForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-picker>
-        ${this.hass!.localize(
-          "ui.dialogs.helper_settings.input_select.options"
-        )}:
+        <div class="header">
+          ${this.hass!.localize(
+            "ui.dialogs.helper_settings.input_select.options"
+          )}:
+        </div>
         ${this._options.length
           ? this._options.map(
               (option, index) => html`
-                <paper-item class="option">
-                  <paper-item-body> ${option} </paper-item-body>
+                <mwc-list-item class="option" hasMeta>
+                  ${option}
                   <ha-icon-button
+                    slot="meta"
                     .index=${index}
                     .label=${this.hass.localize(
                       "ui.dialogs.helper_settings.input_select.remove_option"
@@ -96,25 +99,25 @@ class HaInputSelectForm extends LitElement {
                     @click=${this._removeOption}
                     .path=${mdiDelete}
                   ></ha-icon-button>
-                </paper-item>
+                </mwc-list-item>
               `
             )
           : html`
-              <paper-item>
+              <mwc-list-item noninteractive>
                 ${this.hass!.localize(
                   "ui.dialogs.helper_settings.input_select.no_options"
                 )}
-              </paper-item>
+              </mwc-list-item>
             `}
-        <div class="layout horizontal bottom">
-          <paper-input
+        <div class="layout horizontal center">
+          <ha-textfield
             class="flex-auto"
             id="option_input"
             .label=${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add_option"
             )}
             @keydown=${this._handleKeyAdd}
-          ></paper-input>
+          ></ha-textfield>
           <mwc-button @click=${this._addOption}
             >${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add"
@@ -135,7 +138,7 @@ class HaInputSelectForm extends LitElement {
 
   private _addOption() {
     const input = this._optionInput;
-    if (!input || !input.value) {
+    if (!input?.value) {
       return;
     }
     fireEvent(this, "value-changed", {
@@ -167,7 +170,8 @@ class HaInputSelectForm extends LitElement {
     }
     ev.stopPropagation();
     const configValue = (ev.target as any).configValue;
-    const value = ev.detail.value;
+    const value = ev.detail?.value || (ev.target as any).value;
+
     if (this[`_${configValue}`] === value) {
       return;
     }
@@ -175,7 +179,7 @@ class HaInputSelectForm extends LitElement {
     if (!value) {
       delete newValue[configValue];
     } else {
-      newValue[configValue] = ev.detail.value;
+      newValue[configValue] = value;
     }
     fireEvent(this, "value-changed", {
       value: newValue,
@@ -193,9 +197,21 @@ class HaInputSelectForm extends LitElement {
           border: 1px solid var(--divider-color);
           border-radius: 4px;
           margin-top: 4px;
+          --mdc-icon-button-size: 24px;
         }
         mwc-button {
           margin-left: 8px;
+        }
+        ha-textfield {
+          display: block;
+          margin-bottom: 8px;
+        }
+        #option_input {
+          margin-top: 8px;
+        }
+        .header {
+          margin-top: 8px;
+          margin-bottom: 8px;
         }
       `,
     ];

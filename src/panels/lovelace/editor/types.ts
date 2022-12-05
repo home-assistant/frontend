@@ -6,6 +6,7 @@ import {
 } from "../../../data/lovelace";
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { LovelaceTileFeatureConfig } from "../tile-features/types";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -38,12 +39,12 @@ export interface ConfigError {
   message: string;
 }
 
-export interface EntitiesEditorEvent {
-  detail?: {
+export interface EntitiesEditorEvent extends CustomEvent {
+  detail: {
     entities?: EntityConfig[];
     item?: any;
   };
-  target?: EventTarget;
+  target: EventTarget | null;
 }
 
 export interface EditorTarget extends EventTarget {
@@ -64,7 +65,7 @@ export interface Card {
 }
 
 export interface HeaderFooter {
-  type: string;
+  type: LovelaceHeaderFooterConfig["type"];
   icon?: string;
 }
 
@@ -74,8 +75,11 @@ export interface CardPickTarget extends EventTarget {
 
 export interface SubElementEditorConfig {
   index?: number;
-  elementConfig?: LovelaceRowConfig | LovelaceHeaderFooterConfig;
-  type: string;
+  elementConfig?:
+    | LovelaceRowConfig
+    | LovelaceHeaderFooterConfig
+    | LovelaceTileFeatureConfig;
+  type: "header" | "footer" | "row" | "tile-feature";
 }
 
 export interface EditSubElementEvent {

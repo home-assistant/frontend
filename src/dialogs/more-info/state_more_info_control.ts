@@ -1,8 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
-  DOMAINS_HIDE_DEFAULT_MORE_INFO,
   DOMAINS_WITH_MORE_INFO,
-} from "../../common/const";
+  DOMAINS_HIDE_DEFAULT_MORE_INFO,
+} from "./const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 
 const LAZY_LOADED_MORE_INFO_CONTROL = {
@@ -25,6 +25,7 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
   script: () => import("./controls/more-info-script"),
   sun: () => import("./controls/more-info-sun"),
   timer: () => import("./controls/more-info-timer"),
+  update: () => import("./controls/more-info-update"),
   vacuum: () => import("./controls/more-info-vacuum"),
   water_heater: () => import("./controls/more-info-water_heater"),
   weather: () => import("./controls/more-info-weather"),

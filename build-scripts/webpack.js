@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const webpack = require("webpack");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
-const paths = require("./paths.js");
-const bundle = require("./bundle.js");
 const log = require("fancy-log");
 const WebpackBar = require("webpackbar");
+const paths = require("./paths.js");
+const bundle = require("./bundle.js");
 
 class LogStartCompilePlugin {
   ignoredFirst = false;
@@ -30,6 +29,7 @@ const createWebpackConfig = ({
   isProdBuild,
   latestBuild,
   isStatsBuild,
+  isHassioBuild,
   dontHash,
 }) => {
   if (!dontHash) {
@@ -75,7 +75,7 @@ const createWebpackConfig = ({
       chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
     },
     plugins: [
-      new WebpackBar({ fancy: !isProdBuild }),
+      !isStatsBuild && new WebpackBar({ fancy: !isProdBuild }),
       new WebpackManifestPlugin({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
@@ -102,7 +102,6 @@ const createWebpackConfig = ({
               ? path.resolve(context, resource)
               : require.resolve(resource);
           } catch (err) {
-            // eslint-disable-next-line no-console
             console.error(
               "Error in Home Assistant ignore plugin",
               resource,
@@ -117,7 +116,9 @@ const createWebpackConfig = ({
         },
       }),
       new webpack.NormalModuleReplacementPlugin(
-        new RegExp(bundle.emptyPackages({ latestBuild }).join("|")),
+        new RegExp(
+          bundle.emptyPackages({ latestBuild, isHassioBuild }).join("|")
+        ),
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
       !isProdBuild && new LogStartCompilePlugin(),
@@ -135,6 +136,8 @@ const createWebpackConfig = ({
         "lit/directives/cache$": "lit/directives/cache.js",
         "lit/directives/repeat$": "lit/directives/repeat.js",
         "lit/polyfill-support$": "lit/polyfill-support.js",
+        "@lit-labs/virtualizer/layouts/grid":
+          "@lit-labs/virtualizer/layouts/grid.js",
       },
     },
     output: {

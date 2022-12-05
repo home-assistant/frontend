@@ -29,7 +29,6 @@ class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
         .main-text {
           @apply --paper-font-common-nowrap;
           color: var(--primary-text-color);
-          text-transform: capitalize;
         }
 
         .main-text[take-height] {
@@ -86,7 +85,12 @@ class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
   computePrimaryText(localize, playerObj) {
     return (
       playerObj.primaryTitle ||
-      computeStateDisplay(localize, playerObj.stateObj, this.hass.locale)
+      computeStateDisplay(
+        localize,
+        playerObj.stateObj,
+        this.hass.locale,
+        this.hass.entities
+      )
     );
   }
 }

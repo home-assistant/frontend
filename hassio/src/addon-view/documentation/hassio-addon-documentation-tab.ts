@@ -38,7 +38,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
     }
     return html`
       <div class="content">
-        <ha-card>
+        <ha-card outlined>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
@@ -81,7 +81,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
       );
     } catch (err: any) {
       this._error = this.supervisor.localize(
-        "addon.documentation.get_logs",
+        "addon.documentation.get_documentation",
         "error",
         extractApiErrorMessage(err)
       );

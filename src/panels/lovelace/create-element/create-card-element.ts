@@ -10,6 +10,7 @@ import "../cards/hui-light-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
 import "../cards/hui-weather-forecast-card";
+import "../cards/hui-tile-card";
 import {
   createLovelaceElement,
   getLovelaceElementClass,
@@ -27,6 +28,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "sensor",
   "thermostat",
   "weather-forecast",
+  "tile",
 ]);
 
 const LAZY_LOAD_TYPES = {
@@ -35,6 +37,7 @@ const LAZY_LOAD_TYPES = {
   calendar: () => import("../cards/hui-calendar-card"),
   conditional: () => import("../cards/hui-conditional-card"),
   "empty-state": () => import("../cards/hui-empty-state-card"),
+  "energy-compare": () => import("../cards/energy/hui-energy-compare-card"),
   "energy-carbon-consumed-gauge": () =>
     import("../cards/energy/hui-energy-carbon-consumed-gauge-card"),
   "energy-date-selection": () =>
@@ -44,6 +47,8 @@ const LAZY_LOAD_TYPES = {
   "energy-distribution": () =>
     import("../cards/energy/hui-energy-distribution-card"),
   "energy-gas-graph": () => import("../cards/energy/hui-energy-gas-graph-card"),
+  "energy-water-graph": () =>
+    import("../cards/energy/hui-energy-water-graph-card"),
   "energy-grid-neutrality-gauge": () =>
     import("../cards/energy/hui-energy-grid-neutrality-gauge-card"),
   "energy-solar-consumed-gauge": () =>
@@ -74,6 +79,7 @@ const LAZY_LOAD_TYPES = {
   "shopping-list": () => import("../cards/hui-shopping-list-card"),
   starting: () => import("../cards/hui-starting-card"),
   "statistics-graph": () => import("../cards/hui-statistics-graph-card"),
+  statistic: () => import("../cards/hui-statistic-card"),
   "vertical-stack": () => import("../cards/hui-vertical-stack-card"),
 };
 

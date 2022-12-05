@@ -21,13 +21,11 @@ import "./home-assistant-main";
 
 const useHash = __DEMO__;
 const curPath = () =>
-  window.decodeURIComponent(
-    useHash ? location.hash.substr(1) : location.pathname
-  );
+  useHash ? location.hash.substring(1) : location.pathname;
 
 const panelUrl = (path: string) => {
   const dividerPos = path.indexOf("/", 1);
-  return dividerPos === -1 ? path.substr(1) : path.substr(1, dividerPos - 1);
+  return dividerPos === -1 ? path.substring(1) : path.substring(1, dividerPos);
 };
 
 @customElement("home-assistant")
@@ -80,8 +78,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     super.firstUpdated(changedProps);
     this._initializeHass();
     setTimeout(() => registerServiceWorker(this), 1000);
-    /* polyfill for paper-dropdown */
-    import("web-animations-js/web-animations-next-lite.min");
+
     this.addEventListener("hass-suspend-when-hidden", (ev) => {
       this._updateHass({ suspendWhenHidden: ev.detail.suspend });
       storeState(this.hass!);
@@ -140,6 +137,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     super.hassConnected();
     // @ts-ignore
     this._loadHassTranslations(this.hass!.language, "state");
+    // @ts-ignore
+    this._loadHassTranslations(this.hass!.language, "entity");
 
     document.addEventListener(
       "visibilitychange",

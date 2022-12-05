@@ -1,11 +1,8 @@
-import { Cluster, ZHADevice } from "../../../../../data/zha";
-
-export interface PickerTarget extends EventTarget {
-  selected: number;
-}
+import { HaSelect } from "../../../../../components/ha-select";
+import { ZHADevice } from "../../../../../data/zha";
 
 export interface ItemSelectedEvent {
-  target?: PickerTarget;
+  target?: HaSelect;
 }
 
 export interface ZHADeviceRemovedEvent {
@@ -38,14 +35,11 @@ export interface IssueCommandServiceData {
   cluster_type: string;
   command: number;
   command_type: string;
+  params?: any;
 }
 
 export interface ZHADeviceSelectedParams {
   node: ZHADevice;
-}
-
-export interface ZHAClusterSelectedParams {
-  cluster: Cluster;
 }
 
 export interface NodeServiceData {

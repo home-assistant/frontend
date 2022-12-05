@@ -1,5 +1,4 @@
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -110,6 +109,13 @@ class ZHADevicePairingStatusCard extends LitElement {
           padding: 8px;
           text-align: center;
           margin-bottom: 20px;
+          /* Padding is subtracted for nested elements with border radiuses */
+          border-top-left-radius: calc(
+            var(--ha-card-border-radius, 12px) - 2px
+          );
+          border-top-right-radius: calc(
+            var(--ha-card-border-radius, 12px) - 2px
+          );
         }
         .discovered.initialized .header {
           background: var(--success-color);

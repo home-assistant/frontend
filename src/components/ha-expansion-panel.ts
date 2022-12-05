@@ -1,53 +1,119 @@
 import { mdiChevronDown } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import "./ha-svg-icon";
 
 @customElement("ha-expansion-panel")
-class HaExpansionPanel extends LitElement {
+export class HaExpansionPanel extends LitElement {
   @property({ type: Boolean, reflect: true }) expanded = false;
 
   @property({ type: Boolean, reflect: true }) outlined = false;
+
+  @property({ type: Boolean, reflect: true }) leftChevron = false;
 
   @property() header?: string;
 
   @property() secondary?: string;
 
+  @state() _showContent = this.expanded;
+
   @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
     return html`
-      <div class="summary" @click=${this._toggleContainer}>
-        <slot class="header" name="header">
-          ${this.header}
-          <slot class="secondary" name="secondary">${this.secondary}</slot>
-        </slot>
-        <ha-svg-icon
-          .path=${mdiChevronDown}
-          class="summary-icon ${classMap({ expanded: this.expanded })}"
-        ></ha-svg-icon>
+      <div class="top">
+        <div
+          id="summary"
+          @click=${this._toggleContainer}
+          @keydown=${this._toggleContainer}
+          @focus=${this._focusChanged}
+          @blur=${this._focusChanged}
+          role="button"
+          tabindex="0"
+          aria-expanded=${this.expanded}
+          aria-controls="sect1"
+        >
+          ${this.leftChevron
+            ? html`
+                <ha-svg-icon
+                  .path=${mdiChevronDown}
+                  class="summary-icon ${classMap({ expanded: this.expanded })}"
+                ></ha-svg-icon>
+              `
+            : ""}
+          <slot name="header">
+            <div class="header">
+              ${this.header}
+              <slot class="secondary" name="secondary">${this.secondary}</slot>
+            </div>
+          </slot>
+          ${!this.leftChevron
+            ? html`
+                <ha-svg-icon
+                  .path=${mdiChevronDown}
+                  class="summary-icon ${classMap({ expanded: this.expanded })}"
+                ></ha-svg-icon>
+              `
+            : ""}
+        </div>
+        <slot name="icons"></slot>
       </div>
       <div
         class="container ${classMap({ expanded: this.expanded })}"
         @transitionend=${this._handleTransitionEnd}
+        role="region"
+        aria-labelledby="summary"
+        aria-hidden=${!this.expanded}
+        tabindex="-1"
       >
-        <slot></slot>
+        ${this._showContent ? html`<slot></slot>` : ""}
       </div>
     `;
   }
 
-  private _handleTransitionEnd() {
-    this._container.style.removeProperty("height");
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("expanded") && this.expanded) {
+      this._showContent = this.expanded;
+      setTimeout(() => {
+        // Verify we're still expanded
+        if (this.expanded) {
+          this._container.style.overflow = "initial";
+        }
+      }, 300);
+    }
   }
 
-  private async _toggleContainer(): Promise<void> {
+  private _handleTransitionEnd() {
+    this._container.style.removeProperty("height");
+    this._container.style.overflow = this.expanded ? "initial" : "hidden";
+    this._showContent = this.expanded;
+  }
+
+  private async _toggleContainer(ev): Promise<void> {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    ev.preventDefault();
     const newExpanded = !this.expanded;
     fireEvent(this, "expanded-will-change", { expanded: newExpanded });
+    this._container.style.overflow = "hidden";
 
     if (newExpanded) {
+      this._showContent = true;
       // allow for dynamic content to be rendered
       await nextRender();
     }
@@ -65,10 +131,26 @@ class HaExpansionPanel extends LitElement {
     fireEvent(this, "expanded-changed", { expanded: this.expanded });
   }
 
+  private _focusChanged(ev) {
+    this.shadowRoot!.querySelector(".top")!.classList.toggle(
+      "focused",
+      ev.type === "focus"
+    );
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;
+      }
+
+      .top {
+        display: flex;
+        align-items: center;
+      }
+
+      .top.focused {
+        background: var(--input-fill-color);
       }
 
       :host([outlined]) {
@@ -79,30 +161,46 @@ class HaExpansionPanel extends LitElement {
           --ha-card-border-color,
           var(--divider-color, #e0e0e0)
         );
-        border-radius: var(--ha-card-border-radius, 4px);
-        padding: 0 8px;
+        border-radius: var(--ha-card-border-radius, 12px);
       }
 
-      .summary {
+      .summary-icon {
+        margin-left: 8px;
+      }
+
+      :host([leftchevron]) .summary-icon {
+        margin-left: 0;
+        margin-right: 8px;
+      }
+
+      #summary {
+        flex: 1;
         display: flex;
-        padding: var(--expansion-panel-summary-padding, 0);
+        padding: var(--expansion-panel-summary-padding, 0 8px);
         min-height: 48px;
         align-items: center;
         cursor: pointer;
         overflow: hidden;
         font-weight: 500;
+        outline: none;
       }
 
       .summary-icon {
         transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-        margin-left: auto;
+        direction: var(--direction);
       }
 
       .summary-icon.expanded {
         transform: rotate(180deg);
       }
 
+      .header,
+      ::slotted([slot="header"]) {
+        flex: 1;
+      }
+
       .container {
+        padding: var(--expansion-panel-content-padding, 0 8px);
         overflow: hidden;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
         height: 0px;
@@ -110,10 +208,6 @@ class HaExpansionPanel extends LitElement {
 
       .container.expanded {
         height: auto;
-      }
-
-      .header {
-        display: block;
       }
 
       .secondary {

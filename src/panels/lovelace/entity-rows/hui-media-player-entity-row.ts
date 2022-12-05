@@ -110,10 +110,11 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     const entityState = stateObj.state;
     const controlButton = this._computeControlButton(stateObj);
+    const assumedState = stateObj.attributes.assumed_state === true;
 
     const buttons = html`
       ${!this._narrow &&
-      entityState === "playing" &&
+      (entityState === "playing" || assumedState) &&
       supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
         ? html`
             <ha-icon-button
@@ -125,14 +126,15 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ></ha-icon-button>
           `
         : ""}
-      ${(entityState === "playing" &&
+      ${!assumedState &&
+      ((entityState === "playing" &&
         (supportsFeature(stateObj, SUPPORT_PAUSE) ||
           supportsFeature(stateObj, SUPPORT_STOP))) ||
-      ((entityState === "paused" || entityState === "idle") &&
-        supportsFeature(stateObj, SUPPORT_PLAY)) ||
-      (entityState === "on" &&
-        (supportsFeature(stateObj, SUPPORT_PLAY) ||
-          supportsFeature(stateObj, SUPPORT_PAUSE)))
+        ((entityState === "paused" || entityState === "idle") &&
+          supportsFeature(stateObj, SUPPORT_PLAY)) ||
+        (entityState === "on" &&
+          (supportsFeature(stateObj, SUPPORT_PLAY) ||
+            supportsFeature(stateObj, SUPPORT_PAUSE))))
         ? html`
             <ha-icon-button
               .path=${controlButton.icon}
@@ -143,7 +145,34 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ></ha-icon-button>
           `
         : ""}
-      ${entityState === "playing" &&
+      ${assumedState && supportsFeature(stateObj, SUPPORT_PLAY)
+        ? html`
+            <ha-icon-button
+              .path=${mdiPlay}
+              .label=${this.hass.localize(`ui.card.media_player.media_play`)}
+              @click=${this._play}
+            ></ha-icon-button>
+          `
+        : ""}
+      ${assumedState && supportsFeature(stateObj, SUPPORT_PAUSE)
+        ? html`
+            <ha-icon-button
+              .path=${mdiPause}
+              .label=${this.hass.localize(`ui.card.media_player.media_pause`)}
+              @click=${this._pause}
+            ></ha-icon-button>
+          `
+        : ""}
+      ${assumedState && supportsFeature(stateObj, SUPPORT_STOP)
+        ? html`
+            <ha-icon-button
+              .path=${mdiStop}
+              .label=${this.hass.localize(`ui.card.media_player.media_stop`)}
+              @click=${this._stop}
+            ></ha-icon-button>
+          `
+        : ""}
+      ${(entityState === "playing" || assumedState) &&
       supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
         ? html`
             <ha-icon-button
@@ -164,7 +193,12 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         .hass=${this.hass}
         .config=${this._config}
         .secondaryText=${mediaDescription ||
-        computeStateDisplay(this.hass.localize, stateObj, this.hass.locale)}
+        computeStateDisplay(
+          this.hass.localize,
+          stateObj,
+          this.hass.locale,
+          this.hass.entities
+        )}
       >
         <div class="controls">
           ${supportsFeature(stateObj, SUPPORT_TURN_ON) &&
@@ -312,6 +346,24 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     });
   }
 
+  private _play(): void {
+    this.hass!.callService("media_player", "media_play", {
+      entity_id: this._config!.entity,
+    });
+  }
+
+  private _pause(): void {
+    this.hass!.callService("media_player", "media_pause", {
+      entity_id: this._config!.entity,
+    });
+  }
+
+  private _stop(): void {
+    this.hass!.callService("media_player", "media_stop", {
+      entity_id: this._config!.entity,
+    });
+  }
+
   private _previousTrack(): void {
     this.hass!.callService("media_player", "media_previous_track", {
       entity_id: this._config!.entity,
@@ -368,6 +420,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       }
       .controls {
         white-space: nowrap;
+        direction: ltr;
       }
       ha-slider {
         flex-grow: 2;

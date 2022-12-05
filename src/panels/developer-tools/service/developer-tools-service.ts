@@ -38,10 +38,10 @@ class HaPanelDevService extends LitElement {
 
   @state() private _uiAvailable = true;
 
-  @LocalStorage("panel-dev-service-state-service-data", true)
+  @LocalStorage("panel-dev-service-state-service-data", true, false)
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
 
-  @LocalStorage("panel-dev-service-state-yaml-mode", true)
+  @LocalStorage("panel-dev-service-state-yaml-mode", true, false)
   private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
@@ -92,27 +92,31 @@ class HaPanelDevService extends LitElement {
             "ui.panel.developer-tools.tabs.services.description"
           )}
         </p>
-
-        ${this._yamlMode
-          ? html`<ha-service-picker
-                .hass=${this.hass}
-                .value=${this._serviceData?.service}
-                @value-changed=${this._serviceChanged}
-              ></ha-service-picker>
-              <ha-yaml-editor
-                .defaultValue=${this._serviceData}
-                @value-changed=${this._yamlChanged}
-              ></ha-yaml-editor>`
-          : html`<ha-card
-              ><div>
+        <ha-card>
+          ${this._yamlMode
+            ? html`<div class="card-content">
+                <ha-service-picker
+                  .hass=${this.hass}
+                  .value=${this._serviceData?.service}
+                  @value-changed=${this._serviceChanged}
+                ></ha-service-picker>
+                <ha-yaml-editor
+                  .hass=${this.hass}
+                  .defaultValue=${this._serviceData}
+                  @value-changed=${this._yamlChanged}
+                ></ha-yaml-editor>
+              </div>`
+            : html`
                 <ha-service-control
                   .hass=${this.hass}
                   .value=${this._serviceData}
                   .narrow=${this.narrow}
                   showAdvanced
                   @value-changed=${this._serviceDataChanged}
-                ></ha-service-control></div
-            ></ha-card>`}
+                  class="card-content"
+                ></ha-service-control>
+              `}
+        </ha-card>
       </div>
       <div class="button-row">
         <div class="buttons">
@@ -388,11 +392,19 @@ class HaPanelDevService extends LitElement {
       css`
         .content {
           padding: 16px;
+          padding: max(16px, env(safe-area-inset-top))
+            max(16px, env(safe-area-inset-right))
+            max(16px, env(safe-area-inset-bottom))
+            max(16px, env(safe-area-inset-left));
           max-width: 1200px;
           margin: auto;
         }
         .button-row {
           padding: 8px 16px;
+          padding: max(8px, env(safe-area-inset-top))
+            max(16px, env(safe-area-inset-right))
+            max(8px, env(safe-area-inset-bottom))
+            max(16px, env(safe-area-inset-left));
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
           background: var(--card-background-color);

@@ -4,7 +4,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-form/ha-form";
-import { HaFormSchema } from "../../../../src/components/ha-form/types";
+import type { SchemaUnion } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-settings-row";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -21,22 +21,21 @@ import { RegistriesDialogParams } from "./show-dialog-registries";
 
 const SCHEMA = [
   {
-    type: "string",
     name: "registry",
     required: true,
+    selector: { text: {} },
   },
   {
-    type: "string",
     name: "username",
     required: true,
+    selector: { text: {} },
   },
   {
-    type: "string",
     name: "password",
     required: true,
-    format: "password",
+    selector: { text: { type: "password" } },
   },
-];
+] as const;
 
 @customElement("dialog-hassio-registries")
 class HassioRegistriesDialog extends LitElement {
@@ -81,6 +80,7 @@ class HassioRegistriesDialog extends LitElement {
                 .schema=${SCHEMA}
                 @value-changed=${this._valueChanged}
                 .computeLabel=${this._computeLabel}
+                dialogInitialFocus
               ></ha-form>
               <div class="action">
                 <mwc-button
@@ -125,7 +125,7 @@ class HassioRegistriesDialog extends LitElement {
                     </ha-alert>
                   `}
               <div class="action">
-                <mwc-button @click=${this._addRegistry}>
+                <mwc-button @click=${this._addRegistry} dialogInitialFocus>
                   ${this.supervisor.localize(
                     "dialog.registries.add_new_registry"
                   )}
@@ -135,8 +135,8 @@ class HassioRegistriesDialog extends LitElement {
     `;
   }
 
-  private _computeLabel = (schema: HaFormSchema) =>
-    this.supervisor.localize(`dialog.registries.${schema.name}`) || schema.name;
+  private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) =>
+    this.supervisor.localize(`dialog.registries.${schema.name}`);
 
   private _valueChanged(ev: CustomEvent) {
     this._input = ev.detail.value;

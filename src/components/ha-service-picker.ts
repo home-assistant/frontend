@@ -1,6 +1,5 @@
-import { mdiCheck } from "@mdi/js";
 import { html, LitElement } from "lit";
-import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
+import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -11,42 +10,17 @@ import "./ha-combo-box";
 
 const rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> = (
   item
-  // eslint-disable-next-line lit/prefer-static-styles
-) => html`<style>
-    paper-item {
-      padding: 0;
-      margin: -10px;
-      margin-left: 0px;
-    }
-    #content {
-      display: flex;
-      align-items: center;
-    }
-    :host([selected]) paper-item {
-      margin-left: 10px;
-    }
-    ha-svg-icon {
-      padding-left: 2px;
-      margin-right: -2px;
-      color: var(--secondary-text-color);
-    }
-    :host(:not([selected])) ha-svg-icon {
-      display: none;
-    }
-    :host([selected]) paper-icon-item {
-      margin-left: 0;
-    }
-  </style>
-  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-  <paper-item>
-    <paper-item-body two-line>
-      ${item.name}
-      <span secondary>${item.name === item.service ? "" : item.service}</span>
-    </paper-item-body>
-  </paper-item>`;
+) => html`<mwc-list-item twoline>
+  <span>${item.name}</span>
+  <span slot="secondary"
+    >${item.name === item.service ? "" : item.service}</span
+  >
+</mwc-list-item>`;
 
 class HaServicePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @property() public value?: string;
 
@@ -63,6 +37,7 @@ class HaServicePicker extends LitElement {
           this._filter
         )}
         .value=${this.value}
+        .disabled=${this.disabled}
         .renderer=${rowRenderer}
         item-value-path="service"
         item-label-path="name"

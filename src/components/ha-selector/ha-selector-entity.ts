@@ -1,77 +1,87 @@
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { subscribeEntityRegistry } from "../../data/entity_registry";
-import { EntitySelector } from "../../data/selector";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import {
+  EntitySources,
+  fetchEntitySourcesWithCache,
+} from "../../data/entity_sources";
+import type { EntitySelector } from "../../data/selector";
+import { filterSelectorEntities } from "../../data/selector";
 import { HomeAssistant } from "../../types";
+import "../entity/ha-entities-picker";
 import "../entity/ha-entity-picker";
 
 @customElement("ha-selector-entity")
-export class HaEntitySelector extends SubscribeMixin(LitElement) {
+export class HaEntitySelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() public selector!: EntitySelector;
 
-  @state() private _entityPlaformLookup?: Record<string, string>;
+  @state() private _entitySources?: EntitySources;
 
   @property() public value?: any;
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = true;
+
   protected render() {
-    return html`<ha-entity-picker
-      .hass=${this.hass}
-      .value=${this.value}
-      .label=${this.label}
-      .entityFilter=${this._filterEntities}
-      .disabled=${this.disabled}
-      allow-custom-entity
-    ></ha-entity-picker>`;
+    if (!this.selector.entity?.multiple) {
+      return html`<ha-entity-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .label=${this.label}
+        .helper=${this.helper}
+        .includeEntities=${this.selector.entity?.include_entities}
+        .excludeEntities=${this.selector.entity?.exclude_entities}
+        .entityFilter=${this._filterEntities}
+        .disabled=${this.disabled}
+        .required=${this.required}
+        allow-custom-entity
+      ></ha-entity-picker>`;
+    }
+
+    return html`
+      ${this.label ? html`<label>${this.label}</label>` : ""}
+      <ha-entities-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .helper=${this.helper}
+        .includeEntities=${this.selector.entity.include_entities}
+        .excludeEntities=${this.selector.entity.exclude_entities}
+        .entityFilter=${this._filterEntities}
+        .disabled=${this.disabled}
+        .required=${this.required}
+      ></ha-entities-picker>
+    `;
   }
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        const entityLookup = {};
-        for (const confEnt of entities) {
-          if (!confEnt.platform) {
-            continue;
-          }
-          entityLookup[confEnt.entity_id] = confEnt.platform;
-        }
-        this._entityPlaformLookup = entityLookup;
-      }),
-    ];
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (
+      changedProps.has("selector") &&
+      this.selector.entity?.integration &&
+      !this._entitySources
+    ) {
+      fetchEntitySourcesWithCache(this.hass).then((sources) => {
+        this._entitySources = sources;
+      });
+    }
   }
 
   private _filterEntities = (entity: HassEntity): boolean => {
-    if (this.selector.entity?.domain) {
-      if (computeStateDomain(entity) !== this.selector.entity.domain) {
-        return false;
-      }
+    if (!this.selector?.entity) {
+      return true;
     }
-    if (this.selector.entity?.device_class) {
-      if (
-        !entity.attributes.device_class ||
-        entity.attributes.device_class !== this.selector.entity.device_class
-      ) {
-        return false;
-      }
-    }
-    if (this.selector.entity?.integration) {
-      if (
-        !this._entityPlaformLookup ||
-        this._entityPlaformLookup[entity.entity_id] !==
-          this.selector.entity.integration
-      ) {
-        return false;
-      }
-    }
-    return true;
+    return filterSelectorEntities(
+      this.selector.entity,
+      entity,
+      this._entitySources
+    );
   };
 }
 

@@ -1,8 +1,4 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -10,7 +6,9 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
 import { fetchUsers, User } from "../../data/user";
 import { HomeAssistant } from "../../types";
+import "../ha-select";
 import "./ha-user-badge";
+import "../ha-list-item";
 
 class HaUserPicker extends LitElement {
   public hass?: HomeAssistant;
@@ -37,34 +35,31 @@ class HaUserPicker extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-dropdown-menu-light
+      <ha-select
         .label=${this.label}
         .disabled=${this.disabled}
+        .value=${this.value}
+        @selected=${this._userChanged}
       >
-        <paper-listbox
-          slot="dropdown-content"
-          .selected=${this.value}
-          attr-for-selected="data-user-id"
-          @iron-select=${this._userChanged}
-        >
-          <paper-icon-item data-user-id="">
-            ${this.noUserLabel ||
-            this.hass?.localize("ui.components.user-picker.no_user")}
-          </paper-icon-item>
-          ${this._sortedUsers(this.users).map(
-            (user) => html`
-              <paper-icon-item data-user-id=${user.id}>
-                <ha-user-badge
-                  .hass=${this.hass}
-                  .user=${user}
-                  slot="item-icon"
-                ></ha-user-badge>
-                ${user.name}
-              </paper-icon-item>
-            `
-          )}
-        </paper-listbox>
-      </paper-dropdown-menu-light>
+        ${this.users?.length === 0
+          ? html`<mwc-list-item value="">
+              ${this.noUserLabel ||
+              this.hass?.localize("ui.components.user-picker.no_user")}
+            </mwc-list-item>`
+          : ""}
+        ${this._sortedUsers(this.users).map(
+          (user) => html`
+            <ha-list-item graphic="avatar" .value=${user.id}>
+              <ha-user-badge
+                .hass=${this.hass}
+                .user=${user}
+                slot="graphic"
+              ></ha-user-badge>
+              ${user.name}
+            </ha-list-item>
+          `
+        )}
+      </ha-select>
     `;
   }
 
@@ -78,10 +73,10 @@ class HaUserPicker extends LitElement {
   }
 
   private _userChanged(ev) {
-    const newValue = ev.detail.item.dataset.userId;
+    const newValue = ev.target.value;
 
     if (newValue !== this.value) {
-      this.value = ev.detail.value;
+      this.value = newValue;
       setTimeout(() => {
         fireEvent(this, "value-changed", { value: newValue });
         fireEvent(this, "change");
@@ -94,14 +89,8 @@ class HaUserPicker extends LitElement {
       :host {
         display: inline-block;
       }
-      paper-dropdown-menu-light {
+      mwc-list {
         display: block;
-      }
-      paper-listbox {
-        min-width: 200px;
-      }
-      paper-icon-item {
-        cursor: pointer;
       }
     `;
   }

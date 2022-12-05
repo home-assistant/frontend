@@ -176,7 +176,7 @@ export class HuiDialogEditCard
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
         @opened=${this._opened}
-        .heading=${true}
+        .heading=${heading}
       >
         <div slot="heading">
           <ha-header-bar>
@@ -207,6 +207,7 @@ export class HuiDialogEditCard
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
+              dialogInitialFocus
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
@@ -242,10 +243,10 @@ export class HuiDialogEditCard
             `
           : ""}
         <div slot="primaryAction" @click=${this._save}>
-          <mwc-button @click=${this._cancel}>
+          <mwc-button @click=${this._cancel} dialogInitialFocus>
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
-          ${this._cardConfig !== undefined
+          ${this._cardConfig !== undefined && this._dirty
             ? html`
                 <mwc-button
                   ?disabled=${!this._canSave || this._saving}
@@ -259,9 +260,7 @@ export class HuiDialogEditCard
                           size="small"
                         ></ha-circular-progress>
                       `
-                    : this._dirty
-                    ? this.hass!.localize("ui.common.save")
-                    : this.hass!.localize("ui.common.close")}
+                    : this.hass!.localize("ui.common.save")}
                 </mwc-button>
               `
             : ``}

@@ -168,7 +168,6 @@ export class HuiUnusedEntities extends LitElement {
       }
       hui-entity-picker-table {
         flex-grow: 1;
-        margin-top: -20px;
       }
       .fab {
         position: sticky;

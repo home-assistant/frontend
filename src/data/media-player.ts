@@ -16,6 +16,11 @@ import {
   mdiPlayPause,
   mdiPodcast,
   mdiPower,
+  mdiRepeat,
+  mdiRepeatOff,
+  mdiRepeatOnce,
+  mdiShuffle,
+  mdiShuffleDisabled,
   mdiSkipNext,
   mdiSkipPrevious,
   mdiStop,
@@ -28,11 +33,14 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { HomeAssistant } from "../types";
+import { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
+import type { HomeAssistant, TranslationDict } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
+import { isTTSMediaSource } from "./tts";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
-  media_content_type?: any;
+  media_content_id?: string;
+  media_content_type?: string;
   media_artist?: string;
   media_playlist?: string;
   media_series_title?: string;
@@ -43,10 +51,13 @@ interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   media_duration?: number;
   media_position?: number;
   media_title?: string;
+  media_channel?: string;
   icon?: string;
   entity_picture_local?: string;
   is_volume_muted?: boolean;
   volume_level?: number;
+  repeat?: string;
+  shuffle?: boolean;
   source?: string;
   source_list?: string[];
   sound_mode?: string;
@@ -78,7 +89,9 @@ export const SUPPORT_VOLUME_BUTTONS = 1024;
 export const SUPPORT_SELECT_SOURCE = 2048;
 export const SUPPORT_STOP = 4096;
 export const SUPPORT_PLAY = 16384;
+export const SUPPORT_REPEAT_SET = 262144;
 export const SUPPORT_SELECT_SOUND_MODE = 65536;
+export const SUPPORT_SHUFFLE_SET = 32768;
 export const SUPPORT_BROWSE_MEDIA = 131072;
 
 export type MediaPlayerBrowseAction = "pick" | "play";
@@ -88,7 +101,7 @@ export const BROWSER_PLAYER = "browser";
 export type MediaClassBrowserSetting = {
   icon: string;
   thumbnail_ratio?: string;
-  layout?: string;
+  layout?: "grid";
   show_list_images?: boolean;
 };
 
@@ -147,6 +160,7 @@ export const MediaClassBrowserSettings: {
 
 export interface MediaPickedEvent {
   item: MediaPlayerItem;
+  navigateIds: MediaPlayerItemId[];
 }
 
 export interface MediaPlayerThumbnail {
@@ -157,19 +171,20 @@ export interface MediaPlayerThumbnail {
 export interface ControlButton {
   icon: string;
   // Used as key for action as well as tooltip and aria-label translation key
-  action: string;
+  action: keyof TranslationDict["ui"]["card"]["media_player"];
 }
 
 export interface MediaPlayerItem {
   title: string;
   media_content_type: string;
   media_content_id: string;
-  media_class: string;
-  children_media_class: string;
+  media_class: keyof TranslationDict["ui"]["components"]["media-browser"]["class"];
+  children_media_class?: string;
   can_play: boolean;
   can_expand: boolean;
   thumbnail?: string;
   children?: MediaPlayerItem[];
+  not_shown?: number;
 }
 
 export const browseMediaPlayer = (
@@ -185,15 +200,6 @@ export const browseMediaPlayer = (
     media_content_type: mediaContentType,
   });
 
-export const browseLocalMediaPlayer = (
-  hass: HomeAssistant,
-  mediaContentId?: string
-): Promise<MediaPlayerItem> =>
-  hass.callWS<MediaPlayerItem>({
-    type: "media_source/browse_media",
-    media_content_id: mediaContentId,
-  });
-
 export const getCurrentProgress = (stateObj: MediaPlayerEntity): number => {
   let progress = stateObj.attributes.media_position!;
 
@@ -204,7 +210,10 @@ export const getCurrentProgress = (stateObj: MediaPlayerEntity): number => {
     (Date.now() -
       new Date(stateObj.attributes.media_position_updated_at!).getTime()) /
     1000.0;
-  return progress;
+  // Prevent negative values, so we do not go back to 59:59 at the start
+  // for example if there are slight clock sync deltas between backend and frontend and
+  // therefore media_position_updated_at might be slightly larger than Date.now().
+  return progress < 0 ? 0 : progress;
 };
 
 export const computeMediaDescription = (
@@ -230,6 +239,9 @@ export const computeMediaDescription = (
         }
       }
       break;
+    case "channel":
+      secondaryTitle = stateObj.attributes.media_channel!;
+      break;
     default:
       secondaryTitle = stateObj.attributes.app_name || "";
   }
@@ -238,7 +250,8 @@ export const computeMediaDescription = (
 };
 
 export const computeMediaControls = (
-  stateObj: MediaPlayerEntity
+  stateObj: MediaPlayerEntity,
+  useExtendedControls = false
 ): ControlButton[] | undefined => {
   if (!stateObj) {
     return undefined;
@@ -270,8 +283,22 @@ export const computeMediaControls = (
     });
   }
 
+  const assumedState = stateObj.attributes.assumed_state === true;
+  const stateAttr = stateObj.attributes;
+
   if (
-    (state === "playing" || state === "paused") &&
+    (state === "playing" || state === "paused" || assumedState) &&
+    supportsFeature(stateObj, SUPPORT_SHUFFLE_SET) &&
+    useExtendedControls
+  ) {
+    buttons.push({
+      icon: stateAttr.shuffle === true ? mdiShuffle : mdiShuffleDisabled,
+      action: "shuffle_set",
+    });
+  }
+
+  if (
+    (state === "playing" || state === "paused" || assumedState) &&
     supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
   ) {
     buttons.push({
@@ -281,14 +308,15 @@ export const computeMediaControls = (
   }
 
   if (
-    (state === "playing" &&
+    !assumedState &&
+    ((state === "playing" &&
       (supportsFeature(stateObj, SUPPORT_PAUSE) ||
         supportsFeature(stateObj, SUPPORT_STOP))) ||
-    ((state === "paused" || state === "idle") &&
-      supportsFeature(stateObj, SUPPORT_PLAY)) ||
-    (state === "on" &&
-      (supportsFeature(stateObj, SUPPORT_PLAY) ||
-        supportsFeature(stateObj, SUPPORT_PAUSE)))
+      ((state === "paused" || state === "idle") &&
+        supportsFeature(stateObj, SUPPORT_PLAY)) ||
+      (state === "on" &&
+        (supportsFeature(stateObj, SUPPORT_PLAY) ||
+          supportsFeature(stateObj, SUPPORT_PAUSE))))
   ) {
     buttons.push({
       icon:
@@ -308,8 +336,29 @@ export const computeMediaControls = (
     });
   }
 
+  if (assumedState && supportsFeature(stateObj, SUPPORT_PLAY)) {
+    buttons.push({
+      icon: mdiPlay,
+      action: "media_play",
+    });
+  }
+
+  if (assumedState && supportsFeature(stateObj, SUPPORT_PAUSE)) {
+    buttons.push({
+      icon: mdiPause,
+      action: "media_pause",
+    });
+  }
+
+  if (assumedState && supportsFeature(stateObj, SUPPORT_STOP)) {
+    buttons.push({
+      icon: mdiStop,
+      action: "media_stop",
+    });
+  }
+
   if (
-    (state === "playing" || state === "paused") &&
+    (state === "playing" || state === "paused" || assumedState) &&
     supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
   ) {
     buttons.push({
@@ -318,5 +367,111 @@ export const computeMediaControls = (
     });
   }
 
+  if (
+    (state === "playing" || state === "paused" || assumedState) &&
+    supportsFeature(stateObj, SUPPORT_REPEAT_SET) &&
+    useExtendedControls
+  ) {
+    buttons.push({
+      icon:
+        stateAttr.repeat === "all"
+          ? mdiRepeat
+          : stateAttr.repeat === "one"
+          ? mdiRepeatOnce
+          : mdiRepeatOff,
+      action: "repeat_set",
+    });
+  }
+
   return buttons.length > 0 ? buttons : undefined;
+};
+
+export const formatMediaTime = (seconds: number | undefined): string => {
+  if (seconds === undefined || seconds === Infinity) {
+    return "";
+  }
+
+  let secondsString = new Date(seconds * 1000).toISOString();
+  secondsString =
+    seconds > 3600
+      ? secondsString.substring(11, 16)
+      : secondsString.substring(14, 19);
+  return secondsString.replace(/^0+/, "").padStart(4, "0");
+};
+
+export const cleanupMediaTitle = (title?: string): string | undefined => {
+  if (!title) {
+    return undefined;
+  }
+
+  const index = title.indexOf("?authSig=");
+  return index > 0 ? title.slice(0, index) : title;
+};
+
+/**
+ * Set volume of a media player entity.
+ * @param hass Home Assistant object
+ * @param entity_id entity ID of media player
+ * @param volume_level number between 0..1
+ * @returns
+ */
+export const setMediaPlayerVolume = (
+  hass: HomeAssistant,
+  entity_id: string,
+  volume_level: number
+) =>
+  hass.callService("media_player", "volume_set", { entity_id, volume_level });
+
+export const handleMediaControlClick = (
+  hass: HomeAssistant,
+  stateObj: MediaPlayerEntity,
+  action: string
+) =>
+  hass!.callService(
+    "media_player",
+    action,
+    action === "shuffle_set"
+      ? {
+          entity_id: stateObj!.entity_id,
+          shuffle: !stateObj!.attributes.shuffle,
+        }
+      : action === "repeat_set"
+      ? {
+          entity_id: stateObj!.entity_id,
+          repeat:
+            stateObj!.attributes.repeat === "all"
+              ? "one"
+              : stateObj!.attributes.repeat === "off"
+              ? "all"
+              : "off",
+        }
+      : {
+          entity_id: stateObj!.entity_id,
+        }
+  );
+
+export const mediaPlayerPlayMedia = (
+  hass: HomeAssistant,
+  entity_id: string,
+  media_content_id: string,
+  media_content_type: string,
+  extra: {
+    enqueue?: "play" | "next" | "add" | "replace";
+    announce?: boolean;
+  } = {}
+) => {
+  // We set text-to-speech to announce.
+  if (
+    !extra.enqueue &&
+    extra.announce === undefined &&
+    isTTSMediaSource(media_content_id)
+  ) {
+    extra.announce = true;
+  }
+  return hass.callService("media_player", "play_media", {
+    entity_id,
+    media_content_id,
+    media_content_type,
+    ...extra,
+  });
 };

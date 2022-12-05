@@ -29,7 +29,7 @@ export const createImage = async (
     body: fd,
   });
   if (resp.status === 413) {
-    throw new Error("Uploaded image is too large");
+    throw new Error(`Uploaded image is too large (${file.name})`);
   } else if (resp.status !== 200) {
     throw new Error("Unknown error");
   }

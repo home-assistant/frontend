@@ -3,7 +3,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-blueprint-picker";
-import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import { showAutomationEditor } from "../../../data/automation";
@@ -94,10 +93,10 @@ class DialogNewAutomation extends LitElement implements HassDialog {
       haStyleDialog,
       css`
         mwc-list-item.blueprint {
-          height: 92px;
+          height: 110px;
         }
         ha-blueprint-picker {
-          margin-top: -16px;
+          margin-top: 8px;
         }
         ha-dialog {
           --dialog-content-padding: 0;

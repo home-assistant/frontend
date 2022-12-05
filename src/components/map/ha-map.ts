@@ -6,21 +6,19 @@ import {
   Map,
   Marker,
   Polyline,
-  TileLayer,
 } from "leaflet";
 import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   LeafletModuleType,
-  replaceTileLayer,
   setupLeafletMap,
 } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import "./ha-entity-marker";
+import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
-import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
+import "./ha-entity-marker";
 
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
@@ -59,8 +57,6 @@ export class HaMap extends ReactiveElement {
   public leafletMap?: Map;
 
   private Leaflet?: LeafletModuleType;
-
-  private _tileLayer?: TileLayer;
 
   private _resizeObserver?: ResizeObserver;
 
@@ -137,17 +133,11 @@ export class HaMap extends ReactiveElement {
     if (
       !changedProps.has("darkMode") &&
       (!changedProps.has("hass") ||
-        (oldHass && oldHass.themes.darkMode === this.hass.themes.darkMode))
+        (oldHass && oldHass.themes?.darkMode === this.hass.themes?.darkMode))
     ) {
       return;
     }
-    const darkMode = this.darkMode ?? this.hass.themes.darkMode;
-    this._tileLayer = replaceTileLayer(
-      this.Leaflet!,
-      this.leafletMap!,
-      this._tileLayer!,
-      darkMode
-    );
+    const darkMode = this.darkMode ?? this.hass.themes?.darkMode;
     this.shadowRoot!.getElementById("map")!.classList.toggle("dark", darkMode);
   }
 
@@ -159,10 +149,7 @@ export class HaMap extends ReactiveElement {
       this.shadowRoot!.append(map);
     }
     const darkMode = this.darkMode ?? this.hass.themes.darkMode;
-    [this.leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
-      map,
-      darkMode
-    );
+    [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
     this.shadowRoot!.getElementById("map")!.classList.toggle("dark", darkMode);
     this._loaded = true;
   }
@@ -466,11 +453,19 @@ export class HaMap extends ReactiveElement {
       }
       #map.dark {
         background: #090909;
+        --map-filter: invert(0.9) hue-rotate(170deg) grayscale(0.7);
       }
       .light {
         color: #000000;
       }
       .dark {
+        color: #ffffff;
+      }
+      .leaflet-tile-pane {
+        filter: var(--map-filter);
+      }
+      .dark .leaflet-bar a {
+        background-color: var(--card-background-color, #1c1c1c);
         color: #ffffff;
       }
       .leaflet-marker-draggable {
@@ -487,6 +482,14 @@ export class HaMap extends ReactiveElement {
         flex-direction: column;
         text-align: center;
         color: var(--primary-text-color);
+      }
+      .leaflet-pane {
+        z-index: 0 !important;
+      }
+      .leaflet-control,
+      .leaflet-top,
+      .leaflet-bottom {
+        z-index: 1 !important;
       }
     `;
   }

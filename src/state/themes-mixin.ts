@@ -38,13 +38,19 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
       if (!this._themeApplied && mql.matches) {
-        applyThemesOnElement(document.documentElement, {
-          default_theme: "default",
-          default_dark_theme: null,
-          themes: {},
-          darkMode: true,
-          theme: "default",
-        });
+        applyThemesOnElement(
+          document.documentElement,
+          {
+            default_theme: "default",
+            default_dark_theme: null,
+            themes: {},
+            darkMode: true,
+            theme: "default",
+          },
+          undefined,
+          undefined,
+          true
+        );
       }
     }
 
@@ -93,7 +99,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         document.documentElement,
         this.hass.themes,
         themeName,
-        themeSettings
+        themeSettings,
+        true
       );
 
       if (darkMode !== this.hass.themes.darkMode) {

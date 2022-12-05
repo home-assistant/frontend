@@ -1,9 +1,9 @@
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-textfield";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import { Counter } from "../../../../data/counter";
 import { haStyle } from "../../../../resources/styles";
@@ -68,10 +68,10 @@ class HaCounterForm extends LitElement {
 
     return html`
       <div class="form">
-        <paper-input
+        <ha-textfield
           .value=${this._name}
           .configValue=${"name"}
-          @value-changed=${this._valueChanged}
+          @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
@@ -80,8 +80,9 @@ class HaCounterForm extends LitElement {
           )}
           .invalid=${nameInvalid}
           dialogInitialFocus
-        ></paper-input>
+        ></ha-textfield>
         <ha-icon-picker
+          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
@@ -89,44 +90,44 @@ class HaCounterForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-picker>
-        <paper-input
+        <ha-textfield
           .value=${this._minimum}
           .configValue=${"minimum"}
           type="number"
-          @value-changed=${this._valueChanged}
+          @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.minimum"
           )}
-        ></paper-input>
-        <paper-input
+        ></ha-textfield>
+        <ha-textfield
           .value=${this._maximum}
           .configValue=${"maximum"}
           type="number"
-          @value-changed=${this._valueChanged}
+          @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.maximum"
           )}
-        ></paper-input>
-        <paper-input
+        ></ha-textfield>
+        <ha-textfield
           .value=${this._initial}
           .configValue=${"initial"}
           type="number"
-          @value-changed=${this._valueChanged}
+          @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.initial"
           )}
-        ></paper-input>
+        ></ha-textfield>
         ${this.hass.userData?.showAdvanced
           ? html`
-              <paper-input
+              <ha-textfield
                 .value=${this._step}
                 .configValue=${"step"}
                 type="number"
-                @value-changed=${this._valueChanged}
+                @input=${this._valueChanged}
                 .label=${this.hass!.localize(
                   "ui.dialogs.helper_settings.counter.step"
                 )}
-              ></paper-input>
+              ></ha-textfield>
               <div class="row">
                 <ha-switch
                   .checked=${this._restore}
@@ -155,12 +156,12 @@ class HaCounterForm extends LitElement {
     const configValue = target.configValue;
     const value =
       target.type === "number"
-        ? ev.detail.value !== ""
-          ? Number(ev.detail.value)
+        ? target.value !== ""
+          ? Number(target.value)
           : undefined
         : target.localName === "ha-switch"
         ? (ev.target as HaSwitch).checked
-        : ev.detail.value;
+        : ev.detail?.value || target.value;
     if (this[`_${configValue}`] === value) {
       return;
     }
@@ -191,6 +192,10 @@ class HaCounterForm extends LitElement {
         }
         .row div {
           margin-left: 16px;
+        }
+        ha-textfield {
+          display: block;
+          margin: 8px 0;
         }
       `,
     ];

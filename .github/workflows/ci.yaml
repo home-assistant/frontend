@@ -11,17 +11,18 @@ on:
       - master
 
 env:
-  NODE_VERSION: 14
+  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -43,9 +44,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -62,9 +63,9 @@ jobs:
     needs: [lint, test]
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -81,9 +82,9 @@ jobs:
     needs: [lint, test]
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn

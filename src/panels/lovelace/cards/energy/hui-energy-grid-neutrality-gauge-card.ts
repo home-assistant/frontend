@@ -13,7 +13,7 @@ import {
   getEnergyDataCollection,
   GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import { calculateStatisticsSumGrowth } from "../../../../data/history";
+import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
@@ -34,6 +34,8 @@ class HuiEnergyGridGaugeCard
   @state() private _config?: EnergyGridGaugeCardConfig;
 
   @state() private _data?: EnergyData;
+
+  protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -159,6 +161,7 @@ class HuiEnergyGridGaugeCard
       ha-gauge {
         width: 100%;
         max-width: 250px;
+        direction: ltr;
       }
 
       .name {

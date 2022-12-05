@@ -3,47 +3,18 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { UNAVAILABLE } from "./entity";
 
-export const SUPPORT_OPEN = 1;
-export const SUPPORT_CLOSE = 2;
-export const SUPPORT_SET_POSITION = 4;
-export const SUPPORT_STOP = 8;
-export const SUPPORT_OPEN_TILT = 16;
-export const SUPPORT_CLOSE_TILT = 32;
-export const SUPPORT_STOP_TILT = 64;
-export const SUPPORT_SET_TILT_POSITION = 128;
-
-export const FEATURE_CLASS_NAMES = {
-  4: "has-set_position",
-  16: "has-open_tilt",
-  32: "has-close_tilt",
-  64: "has-stop_tilt",
-  128: "has-set_tilt_position",
-};
-
-export const supportsOpen = (stateObj) =>
-  supportsFeature(stateObj, SUPPORT_OPEN);
-
-export const supportsClose = (stateObj) =>
-  supportsFeature(stateObj, SUPPORT_CLOSE);
-
-export const supportsSetPosition = (stateObj) =>
-  supportsFeature(stateObj, SUPPORT_SET_POSITION);
-
-export const supportsStop = (stateObj) =>
-  supportsFeature(stateObj, SUPPORT_STOP);
-
-export const supportsOpenTilt = (stateObj) =>
-  supportsFeature(stateObj, SUPPORT_OPEN_TILT);
-
-export const supportsCloseTilt = (stateObj) =>
-  supportsFeature(stateObj, SUPPORT_CLOSE_TILT);
-
-export const supportsStopTilt = (stateObj) =>
-  supportsFeature(stateObj, SUPPORT_STOP_TILT);
-
-export const supportsSetTiltPosition = (stateObj) =>
-  supportsFeature(stateObj, SUPPORT_SET_TILT_POSITION);
+export const enum CoverEntityFeature {
+  OPEN = 1,
+  CLOSE = 2,
+  SET_POSITION = 4,
+  STOP = 8,
+  OPEN_TILT = 16,
+  CLOSE_TILT = 32,
+  STOP_TILT = 64,
+  SET_TILT_POSITION = 128,
+}
 
 export function isFullyOpen(stateObj: CoverEntity) {
   if (stateObj.attributes.current_position !== undefined) {
@@ -77,17 +48,59 @@ export function isClosing(stateObj: CoverEntity) {
 
 export function isTiltOnly(stateObj: CoverEntity) {
   const supportsCover =
-    supportsOpen(stateObj) || supportsClose(stateObj) || supportsStop(stateObj);
+    supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
+    supportsFeature(stateObj, CoverEntityFeature.CLOSE) ||
+    supportsFeature(stateObj, CoverEntityFeature.STOP);
   const supportsTilt =
-    supportsOpenTilt(stateObj) ||
-    supportsCloseTilt(stateObj) ||
-    supportsStopTilt(stateObj);
+    supportsFeature(stateObj, CoverEntityFeature.OPEN_TILT) ||
+    supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT) ||
+    supportsFeature(stateObj, CoverEntityFeature.STOP_TILT);
   return supportsTilt && !supportsCover;
 }
 
+export function canOpen(stateObj: CoverEntity) {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return (!isFullyOpen(stateObj) && !isOpening(stateObj)) || assumedState;
+}
+
+export function canClose(stateObj: CoverEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return (!isFullyClosed(stateObj) && !isClosing(stateObj)) || assumedState;
+}
+
+export function canStop(stateObj: CoverEntity): boolean {
+  return stateObj.state !== UNAVAILABLE;
+}
+
+export function canOpenTilt(stateObj: CoverEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return !isFullyOpenTilt(stateObj) || assumedState;
+}
+
+export function canCloseTilt(stateObj: CoverEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  return !isFullyClosedTilt(stateObj) || assumedState;
+}
+
+export function canStopTilt(stateObj: CoverEntity): boolean {
+  return stateObj.state !== UNAVAILABLE;
+}
+
 interface CoverEntityAttributes extends HassEntityAttributeBase {
-  current_position: number;
-  current_tilt_position: number;
+  current_position?: number;
+  current_tilt_position?: number;
 }
 
 export interface CoverEntity extends HassEntityBase {

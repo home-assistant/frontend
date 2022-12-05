@@ -1,8 +1,9 @@
 import "@material/mwc-button";
-import type { Button } from "@material/mwc-button";
+import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../ha-circular-progress";
+import "../ha-svg-icon";
 
 @customElement("ha-progress-button")
 export class HaProgressButton extends LitElement {
@@ -12,38 +13,53 @@ export class HaProgressButton extends LitElement {
 
   @property({ type: Boolean }) public raised = false;
 
-  @query("mwc-button", true) private _button?: Button;
+  @state() private _result?: "success" | "error";
 
   public render(): TemplateResult {
+    const overlay = this._result || this.progress;
     return html`
       <mwc-button
         ?raised=${this.raised}
         .disabled=${this.disabled || this.progress}
         @click=${this._buttonTapped}
+        class=${this._result || ""}
       >
         <slot></slot>
       </mwc-button>
-      ${this.progress
-        ? html`<div class="progress">
-            <ha-circular-progress size="small" active></ha-circular-progress>
-          </div>`
-        : ""}
+      ${!overlay
+        ? ""
+        : html`
+            <div class="progress">
+              ${this._result === "success"
+                ? html`<ha-svg-icon .path=${mdiCheckBold}></ha-svg-icon>`
+                : this._result === "error"
+                ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
+                : this.progress
+                ? html`
+                    <ha-circular-progress
+                      size="small"
+                      active
+                    ></ha-circular-progress>
+                  `
+                : ""}
+            </div>
+          `}
     `;
   }
 
   public actionSuccess(): void {
-    this._tempClass("success");
+    this._setResult("success");
   }
 
   public actionError(): void {
-    this._tempClass("error");
+    this._setResult("error");
   }
 
-  private _tempClass(className: string): void {
-    this._button!.classList.add(className);
+  private _setResult(result: "success" | "error"): void {
+    this._result = result;
     setTimeout(() => {
-      this._button!.classList.remove(className);
-    }, 1000);
+      this._result = undefined;
+    }, 2000);
   }
 
   private _buttonTapped(ev: Event): void {
@@ -68,6 +84,8 @@ export class HaProgressButton extends LitElement {
         --mdc-theme-primary: white;
         background-color: var(--success-color);
         transition: none;
+        border-radius: 4px;
+        pointer-events: none;
       }
 
       mwc-button[raised].success {
@@ -79,6 +97,8 @@ export class HaProgressButton extends LitElement {
         --mdc-theme-primary: white;
         background-color: var(--error-color);
         transition: none;
+        border-radius: 4px;
+        pointer-events: none;
       }
 
       mwc-button[raised].error {
@@ -87,12 +107,20 @@ export class HaProgressButton extends LitElement {
       }
 
       .progress {
-        bottom: 0;
-        margin-top: 4px;
+        bottom: 4px;
         position: absolute;
         text-align: center;
-        top: 0;
+        top: 4px;
         width: 100%;
+      }
+
+      ha-svg-icon {
+        color: white;
+      }
+
+      mwc-button.success slot,
+      mwc-button.error slot {
+        visibility: hidden;
       }
     `;
   }

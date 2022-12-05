@@ -1,0 +1,72 @@
+name: Nightly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *"
+
+env:
+  PYTHON_VERSION: "3.10"
+  NODE_VERSION: 16
+  NODE_OPTIONS: --max_old_space_size=6144
+
+permissions:
+  actions: none
+
+jobs:
+  nightly:
+    name: Nightly
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Download translations
+        run: ./script/translations_download
+        env:
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+
+      - name: Bump version
+        run: script/version_bump.js nightly
+
+      - name: Build nightly Python wheels
+        run: |
+          pip install build
+          yarn install
+          export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
+          script/build_frontend
+          rm -rf dist home_assistant_frontend.egg-info
+          python3 -m build
+
+      - name: Archive translations
+        run: tar -czvf translations.tar.gz translations
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: dist/home_assistant_frontend*.whl
+          if-no-files-found: error
+
+      - name: Upload translations
+        uses: actions/upload-artifact@v3
+        with:
+          name: translations
+          path: translations.tar.gz
+          if-no-files-found: error

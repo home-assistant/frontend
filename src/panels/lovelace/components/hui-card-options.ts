@@ -116,7 +116,7 @@ export class HuiCardOptions extends LitElement {
         outline: 2px solid var(--primary-color);
       }
 
-      :host:not(.panel) ::slotted(*) {
+      :host(:not(.panel)) ::slotted(*) {
         display: block;
       }
 

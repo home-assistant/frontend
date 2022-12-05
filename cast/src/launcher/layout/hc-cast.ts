@@ -88,7 +88,7 @@ class HcCast extends LitElement {
               >
                 ${(this.lovelaceConfig
                   ? this.lovelaceConfig.views
-                  : [generateDefaultViewConfig([], [], [], {}, () => "")]
+                  : [generateDefaultViewConfig({}, {}, {}, {}, () => "")]
                 ).map(
                   (view, idx) => html`
                     <paper-icon-item

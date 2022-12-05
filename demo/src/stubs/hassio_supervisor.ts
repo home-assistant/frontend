@@ -31,7 +31,7 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
             version_latest: "3.6.2",
             update_available: false,
             repository: "a0d7b954",
-            icon: true,
+            icon: false,
             logo: true,
           },
           {

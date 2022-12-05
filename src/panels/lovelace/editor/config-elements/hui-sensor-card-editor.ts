@@ -1,9 +1,8 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "../../../../components/ha-form/ha-form";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   assert,
   assign,
@@ -17,16 +16,11 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
-import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-switch";
-import { HomeAssistant } from "../../../../types";
-import { SensorCardConfig } from "../../cards/types";
-import "../../components/hui-theme-select-editor";
-import { LovelaceCardEditor } from "../../types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { SensorCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(
@@ -43,8 +37,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const includeDomains = ["counter", "input_number", "number", "sensor"];
-
 @customElement("hui-sensor-card-editor")
 export class HuiSensorCardEditor
   extends LitElement
@@ -59,198 +51,122 @@ export class HuiSensorCardEditor
     this._config = config;
   }
 
-  get _entity(): string {
-    return this._config!.entity || "";
-  }
-
-  get _name(): string {
-    return this._config!.name || "";
-  }
-
-  get _icon(): string {
-    return this._config!.icon || "";
-  }
-
-  get _graph(): string {
-    return this._config!.graph || "none";
-  }
-
-  get _unit(): string {
-    return this._config!.unit || "";
-  }
-
-  get _detail(): number {
-    return this._config!.detail ?? 1;
-  }
-
-  get _theme(): string {
-    return this._config!.theme || "";
-  }
-
-  get _hours_to_show(): number | string {
-    return this._config!.hours_to_show || "24";
-  }
+  private _schema = memoizeOne(
+    (entity: string, icon: string | undefined, entityState: HassEntity) =>
+      [
+        {
+          name: "entity",
+          selector: {
+            entity: { domain: ["counter", "input_number", "number", "sensor"] },
+          },
+        },
+        { name: "name", selector: { text: {} } },
+        {
+          type: "grid",
+          name: "",
+          schema: [
+            {
+              name: "icon",
+              selector: {
+                icon: {
+                  placeholder: icon || entityState?.attributes.icon,
+                  fallbackPath:
+                    !icon && !entityState?.attributes.icon && entityState
+                      ? domainIcon(computeDomain(entity), entityState)
+                      : undefined,
+                },
+              },
+            },
+            {
+              name: "graph",
+              selector: {
+                select: {
+                  options: [
+                    {
+                      value: "none",
+                      label: "None",
+                    },
+                    {
+                      value: "line",
+                      label: "Line",
+                    },
+                  ],
+                },
+              },
+            },
+            { name: "unit", selector: { text: {} } },
+            { name: "detail", selector: { boolean: {} } },
+            { name: "theme", selector: { theme: {} } },
+            {
+              name: "hours_to_show",
+              selector: { number: { min: 1, mode: "box" } },
+            },
+          ],
+        },
+      ] as const
+  );
 
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
 
-    const graphs = ["line", "none"];
+    const entityState = this.hass.states[this._config.entity];
 
-    const entityState = this.hass.states[this._entity];
+    const schema = this._schema(
+      this._config.entity,
+      this._config.icon,
+      entityState
+    );
+
+    const data = {
+      hours_to_show: 24,
+      graph: "none",
+      ...this._config,
+      detail: this._config!.detail === 2,
+    };
 
     return html`
-      <div class="card-config">
-        <ha-entity-picker
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.entity"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.required"
-          )})"
-          .hass=${this.hass}
-          .value=${this._entity}
-          .configValue=${"entity"}
-          .includeDomains=${includeDomains}
-          @change=${this._valueChanged}
-          allow-custom-entity
-        ></ha-entity-picker>
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.name"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value=${this._name}
-          .configValue=${"name"}
-          @value-changed=${this._valueChanged}
-        ></paper-input>
-        <div class="side-by-side">
-          <ha-icon-picker
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.icon"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value=${this._icon}
-            .placeholder=${this._icon || entityState?.attributes.icon}
-            .fallbackPath=${!this._icon &&
-            !entityState?.attributes.icon &&
-            entityState
-              ? domainIcon(computeDomain(entityState.entity_id), entityState)
-              : undefined}
-            .configValue=${"icon"}
-            @value-changed=${this._valueChanged}
-          ></ha-icon-picker>
-          <paper-dropdown-menu
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.sensor.graph_type"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .configValue=${"graph"}
-            @value-changed=${this._valueChanged}
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              .selected=${graphs.indexOf(this._graph)}
-            >
-              ${graphs.map((graph) => html`<paper-item>${graph}</paper-item>`)}
-            </paper-listbox>
-          </paper-dropdown-menu>
-        </div>
-        <div class="side-by-side">
-          <paper-input
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.unit"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value=${this._unit}
-            .configValue=${"unit"}
-            @value-changed=${this._valueChanged}
-          ></paper-input>
-          <ha-formfield
-            label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.sensor.show_more_detail"
-            )}
-          >
-            <ha-switch
-              .checked=${this._detail === 2}
-              .configValue=${"detail"}
-              @change=${this._change}
-            ></ha-switch>
-          </ha-formfield>
-        </div>
-        <div class="side-by-side">
-          <hui-theme-select-editor
-            .hass=${this.hass}
-            .value=${this._theme}
-            .configValue=${"theme"}
-            @value-changed=${this._valueChanged}
-          ></hui-theme-select-editor>
-          <paper-input
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.hours_to_show"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            type="number"
-            .value=${this._hours_to_show}
-            min="1"
-            .configValue=${"hours_to_show"}
-            @value-changed=${this._valueChanged}
-          ></paper-input>
-        </div>
-      </div>
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${schema}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
     `;
   }
 
-  private _change(ev: Event) {
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    const value = (ev.target! as EditorTarget).checked ? 2 : 1;
-
-    if (this._detail === value) {
-      return;
-    }
-
-    this._config = {
-      ...this._config,
-      detail: value,
-    };
-
-    fireEvent(this, "config-changed", { config: this._config });
+  private _valueChanged(ev: CustomEvent): void {
+    const config = ev.detail.value;
+    config.detail = config.detail ? 2 : 1;
+    fireEvent(this, "config-changed", { config });
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
-    if (!this._config || !this.hass) {
-      return;
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "theme":
+        return `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.theme"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
+      case "detail":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.sensor.show_more_detail"
+        );
+      case "graph":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.sensor.graph_type"
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
     }
-    const target = ev.target! as EditorTarget;
-
-    if (this[`_${target.configValue}`] === target.value) {
-      return;
-    }
-    if (target.configValue) {
-      if (
-        target.value === "" ||
-        (target.type === "number" && isNaN(Number(target.value)))
-      ) {
-        this._config = { ...this._config };
-        delete this._config[target.configValue!];
-      } else {
-        let value: any = target.value;
-        if (target.type === "number") {
-          value = Number(value);
-        }
-        this._config = { ...this._config, [target.configValue!]: value };
-      }
-    }
-    fireEvent(this, "config-changed", { config: this._config });
-  }
+  };
 
   static get styles(): CSSResultGroup {
     return configElementStyle;

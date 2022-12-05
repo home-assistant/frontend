@@ -1,8 +1,3 @@
-import "@material/mwc-button/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResultGroup,
@@ -13,37 +8,30 @@ import {
 } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/buttons/ha-call-service-button";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
+import "../../../../../components/buttons/ha-progress-button";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-service-description";
 import {
   bindDeviceToGroup,
   Cluster,
-  fetchClustersForZhaNode,
+  fetchClustersForZhaDevice,
   unbindDeviceFromGroup,
   ZHADevice,
   ZHAGroup,
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import "../../../ha-config-section";
 import { ItemSelectedEvent } from "./types";
 import "./zha-clusters-data-table";
 import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
+import "@material/mwc-list/mwc-list-item";
 
 @customElement("zha-group-binding-control")
 export class ZHAGroupBindingControl extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public isWide?: boolean;
-
-  @property() public narrow?: boolean;
-
-  @property() public selectedDevice?: ZHADevice;
-
-  @state() private _showHelp = false;
+  @property() public device?: ZHADevice;
 
   @state() private _bindTargetIndex = -1;
 
@@ -53,6 +41,8 @@ export class ZHAGroupBindingControl extends LitElement {
 
   @state() private _clusters: Cluster[] = [];
 
+  @state() private _bindingOperationInProgress = false;
+
   private _groupToBind?: ZHAGroup;
 
   private _clustersToBind?: Cluster[];
@@ -61,117 +51,64 @@ export class ZHAGroupBindingControl extends LitElement {
   private _zhaClustersDataTable!: ZHAClustersDataTable;
 
   protected updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has("selectedDevice")) {
+    if (changedProperties.has("device")) {
       this._bindTargetIndex = -1;
       this._selectedClusters = [];
       this._clustersToBind = [];
       this._fetchClustersForZhaNode();
     }
-    super.update(changedProperties);
+    super.updated(changedProperties);
   }
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide=${this.isWide}>
-        <div class="sectionHeader" slot="header">
-          <span
-            >${this.hass!.localize(
-              "ui.panel.config.zha.group_binding.header"
-            )}</span
-          >
-          <ha-icon-button
-            class="toggle-help-icon"
-            @click=${this._onHelpTap}
-            .path=${mdiHelpCircle}
-            .label=${this.hass!.localize("ui.common.help")}
-          >
-          </ha-icon-button>
-        </div>
-        <span slot="introduction"
-          >${this.hass!.localize(
-            "ui.panel.config.zha.group_binding.introduction"
-          )}</span
-        >
-
         <ha-card class="content">
           <div class="command-picker">
-            <paper-dropdown-menu
+            <ha-select
               .label=${this.hass!.localize(
                 "ui.panel.config.zha.group_binding.group_picker_label"
               )}
               class="menu"
+              .value=${String(this._bindTargetIndex)}
+              @selected=${this._bindTargetIndexChanged}
+              @closed=${stopPropagation}
+              fixedMenuPosition
+              naturalMenuWidth
             >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${this._bindTargetIndex}
-                @iron-select=${this._bindTargetIndexChanged}
-              >
-                ${this.groups.map(
-                  (group) => html` <paper-item>${group.name}</paper-item> `
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu>
+              ${this.groups.map(
+                (group, idx) =>
+                  html`<mwc-list-item .value=${String(idx)}
+                    >${group.name}</mwc-list-item
+                  > `
+              )}
+            </ha-select>
           </div>
-          ${this._showHelp
-            ? html`
-                <div class="helpText">
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.group_binding.group_picker_help"
-                  )}
-                </div>
-              `
-            : ""}
           <div class="command-picker">
             <zha-clusters-data-table
               .hass=${this.hass}
-              .narrow=${this.narrow}
               .clusters=${this._clusters}
               @selection-changed=${this._handleClusterSelectionChanged}
               class="menu"
             ></zha-clusters-data-table>
           </div>
-          ${this._showHelp
-            ? html`
-                <div class="helpText">
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.group_binding.cluster_selection_help"
-                  )}
-                </div>
-              `
-            : ""}
           <div class="card-actions">
-            <mwc-button
-              @click=${this._onBindGroupClick}
-              .disabled=${!this._canBind}
-              >${this.hass!.localize(
-                "ui.panel.config.zha.group_binding.bind_button_label"
-              )}</mwc-button
-            >
-            ${this._showHelp
-              ? html`
-                  <div class="helpText">
-                    ${this.hass!.localize(
-                      "ui.panel.config.zha.group_binding.bind_button_help"
-                    )}
-                  </div>
-                `
-              : ""}
-            <mwc-button
-              @click=${this._onUnbindGroupClick}
-              .disabled=${!this._canBind}
-              >${this.hass!.localize(
-                "ui.panel.config.zha.group_binding.unbind_button_label"
-              )}</mwc-button
-            >
-            ${this._showHelp
-              ? html`
-                  <div class="helpText">
-                    ${this.hass!.localize(
-                      "ui.panel.config.zha.group_binding.unbind_button_help"
-                    )}
-                  </div>
-                `
-              : ""}
+          <ha-progress-button
+            @click=${this._onBindGroupClick}
+            .disabled=${!this._canBind || this._bindingOperationInProgress}
+          >
+            ${this.hass!.localize(
+              "ui.panel.config.zha.group_binding.bind_button_label"
+            )}
+          </ha-progress-button>
+
+          <ha-progress-button
+            @click=${this._onUnbindGroupClick}
+            .disabled=${!this._canBind || this._bindingOperationInProgress}
+          >
+            ${this.hass!.localize(
+              "ui.panel.config.zha.group_binding.unbind_button_label"
+            )}
+          </ha-progress-button>
           </div>
         </ha-card>
       </ha-config-section>
@@ -179,38 +116,56 @@ export class ZHAGroupBindingControl extends LitElement {
   }
 
   private _bindTargetIndexChanged(event: ItemSelectedEvent): void {
-    this._bindTargetIndex = event.target!.selected;
+    this._bindTargetIndex = Number(event.target!.value);
     this._groupToBind =
       this._bindTargetIndex === -1
         ? undefined
         : this.groups[this._bindTargetIndex];
   }
 
-  private _onHelpTap(): void {
-    this._showHelp = !this._showHelp;
-  }
-
-  private async _onBindGroupClick(): Promise<void> {
+  private async _onBindGroupClick(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
     if (this.hass && this._canBind) {
-      await bindDeviceToGroup(
-        this.hass,
-        this.selectedDevice!.ieee,
-        this._groupToBind!.group_id,
-        this._clustersToBind!
-      );
-      this._zhaClustersDataTable.clearSelection();
+      this._bindingOperationInProgress = true;
+      button.progress = true;
+      try {
+        await bindDeviceToGroup(
+          this.hass,
+          this.device!.ieee,
+          this._groupToBind!.group_id,
+          this._clustersToBind!
+        );
+        this._zhaClustersDataTable.clearSelection();
+        button.actionSuccess();
+      } catch (err: any) {
+        button.actionError();
+      } finally {
+        this._bindingOperationInProgress = false;
+        button.progress = false;
+      }
     }
   }
 
-  private async _onUnbindGroupClick(): Promise<void> {
+  private async _onUnbindGroupClick(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
     if (this.hass && this._canBind) {
-      await unbindDeviceFromGroup(
-        this.hass,
-        this.selectedDevice!.ieee,
-        this._groupToBind!.group_id,
-        this._clustersToBind!
-      );
-      this._zhaClustersDataTable.clearSelection();
+      this._bindingOperationInProgress = true;
+      button.progress = true;
+      try {
+        await unbindDeviceFromGroup(
+          this.hass,
+          this.device!.ieee,
+          this._groupToBind!.group_id,
+          this._clustersToBind!
+        );
+        this._zhaClustersDataTable.clearSelection();
+        button.actionSuccess();
+      } catch (err: any) {
+        button.actionError();
+      } finally {
+        this._bindingOperationInProgress = false;
+        button.progress = false;
+      }
     }
   }
 
@@ -230,9 +185,9 @@ export class ZHAGroupBindingControl extends LitElement {
 
   private async _fetchClustersForZhaNode(): Promise<void> {
     if (this.hass) {
-      this._clusters = await fetchClustersForZhaNode(
+      this._clusters = await fetchClustersForZhaDevice(
         this.hass,
-        this.selectedDevice!.ieee
+        this.device!.ieee
       );
       this._clusters = this._clusters
         .filter((cluster) => cluster.type.toLowerCase() === "out")
@@ -245,7 +200,7 @@ export class ZHAGroupBindingControl extends LitElement {
       this._groupToBind &&
         this._clustersToBind &&
         this._clustersToBind?.length > 0 &&
-        this.selectedDevice
+        this.device
     );
   }
 
@@ -255,18 +210,6 @@ export class ZHAGroupBindingControl extends LitElement {
       css`
         .menu {
           width: 100%;
-        }
-
-        .content {
-          margin-top: 24px;
-        }
-
-        ha-card {
-          max-width: 680px;
-        }
-
-        .card-actions.warning ha-call-service-button {
-          color: var(--error-color);
         }
 
         .command-picker {
@@ -284,30 +227,6 @@ export class ZHAGroupBindingControl extends LitElement {
 
         .sectionHeader {
           flex-grow: 1;
-        }
-
-        .helpText {
-          color: grey;
-          padding-left: 28px;
-          padding-right: 28px;
-          padding-bottom: 10px;
-        }
-
-        .toggle-help-icon {
-          float: right;
-          top: -6px;
-          right: 0;
-          padding-right: 0px;
-          color: var(--primary-color);
-        }
-
-        ha-service-description {
-          display: block;
-          color: grey;
-        }
-
-        [hidden] {
-          display: none;
         }
       `,
     ];

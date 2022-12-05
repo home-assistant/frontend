@@ -7,6 +7,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../../../components/ha-expansion-panel";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { fetchZHADevice, ZHADevice } from "../../../../../../data/zha";
 import { haStyle } from "../../../../../../resources/styles";
@@ -22,6 +23,7 @@ export class HaDeviceActionsZha extends LitElement {
   @state() private _zhaDevice?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (changedProperties.has("device")) {
       const zigbeeConnection = this.device.connections.find(
         (conn) => conn[0] === "zigbee"
@@ -40,38 +42,39 @@ export class HaDeviceActionsZha extends LitElement {
       return html``;
     }
     return html`
-      <h4>Zigbee info</h4>
-      <div>IEEE: ${this._zhaDevice.ieee}</div>
-      <div>Nwk: ${formatAsPaddedHex(this._zhaDevice.nwk)}</div>
-      <div>Device Type: ${this._zhaDevice.device_type}</div>
-      <div>
-        LQI:
-        ${this._zhaDevice.lqi ||
-        this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
-      </div>
-      <div>
-        RSSI:
-        ${this._zhaDevice.rssi ||
-        this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
-      </div>
-      <div>
-        ${this.hass!.localize("ui.dialogs.zha_device_info.last_seen")}:
-        ${this._zhaDevice.last_seen ||
-        this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
-      </div>
-      <div>
-        ${this.hass!.localize("ui.dialogs.zha_device_info.power_source")}:
-        ${this._zhaDevice.power_source ||
-        this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
-      </div>
-      ${this._zhaDevice.quirk_applied
-        ? html`
-            <div>
-              ${this.hass!.localize("ui.dialogs.zha_device_info.quirk")}:
-              ${this._zhaDevice.quirk_class}
-            </div>
-          `
-        : ""}
+      <ha-expansion-panel header="Zigbee info">
+        <div>IEEE: ${this._zhaDevice.ieee}</div>
+        <div>Nwk: ${formatAsPaddedHex(this._zhaDevice.nwk)}</div>
+        <div>Device Type: ${this._zhaDevice.device_type}</div>
+        <div>
+          LQI:
+          ${this._zhaDevice.lqi ||
+          this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
+        </div>
+        <div>
+          RSSI:
+          ${this._zhaDevice.rssi ||
+          this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
+        </div>
+        <div>
+          ${this.hass!.localize("ui.dialogs.zha_device_info.last_seen")}:
+          ${this._zhaDevice.last_seen ||
+          this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
+        </div>
+        <div>
+          ${this.hass!.localize("ui.dialogs.zha_device_info.power_source")}:
+          ${this._zhaDevice.power_source ||
+          this.hass!.localize("ui.dialogs.zha_device_info.unknown")}
+        </div>
+        ${this._zhaDevice.quirk_applied
+          ? html`
+              <div>
+                ${this.hass!.localize("ui.dialogs.zha_device_info.quirk")}:
+                ${this._zhaDevice.quirk_class}
+              </div>
+            `
+          : ""}
+      </ha-expansion-panel>
     `;
   }
 
@@ -85,6 +88,11 @@ export class HaDeviceActionsZha extends LitElement {
         div {
           word-break: break-all;
           margin-top: 2px;
+        }
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0;
+          --expansion-panel-content-padding: 0;
+          padding-top: 4px;
         }
       `,
     ];

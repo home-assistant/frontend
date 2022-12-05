@@ -26,6 +26,7 @@ export interface ZHADevice {
   power_source?: string;
   area_id?: string;
   device_type: string;
+  active_coordinator: boolean;
   signature: any;
   neighbors: Neighbor[];
   pairing_status?: string;
@@ -35,6 +36,8 @@ export interface Neighbor {
   ieee: string;
   nwk: string;
   lqi: string;
+  depth: string;
+  relationship: string;
 }
 
 export interface ZHADeviceEndpoint {
@@ -105,6 +108,7 @@ export interface Command {
   name: string;
   id: number;
   type: string;
+  schema: HaFormSchema[];
 }
 
 export interface ReadAttributeServiceData {
@@ -125,6 +129,54 @@ export interface ZHAGroup {
 export interface ZHAConfiguration {
   data: Record<string, Record<string, unknown>>;
   schemas: Record<string, HaFormSchema[]>;
+}
+
+export interface ZHANetworkBackupNodeInfo {
+  nwk: string;
+  ieee: string;
+  logical_type: "coordinator" | "router" | "end_device";
+}
+
+export interface ZHANetworkBackupKey {
+  key: string;
+  tx_counter: number;
+  rx_counter: number;
+  seq: number;
+  partner_ieee: string;
+}
+
+export interface ZHANetworkBackupNetworkInfo {
+  extended_pan_id: string;
+  pan_id: string;
+  nwk_update_id: number;
+  nwk_manager_id: string;
+  channel: number;
+  channel_mask: number[];
+  security_level: number;
+  network_key: ZHANetworkBackupKey;
+  tc_link_key: ZHANetworkBackupKey;
+  key_table: ZHANetworkBackupKey[];
+  children: string[];
+  nwk_addresses: Record<string, string>;
+  stack_specific?: Record<string, any>;
+  metadata: Record<string, any>;
+  source: string;
+}
+
+export interface ZHANetworkBackup {
+  backup_time: string;
+  network_info: ZHANetworkBackupNetworkInfo;
+  node_info: ZHANetworkBackupNodeInfo;
+}
+
+export interface ZHANetworkSettings {
+  settings: ZHANetworkBackup;
+  radio_type: "ezsp" | "znp" | "deconz" | "zigate" | "xbee";
+}
+
+export interface ZHANetworkBackupAndMetadata {
+  backup: ZHANetworkBackup;
+  is_complete: boolean;
 }
 
 export interface ZHAGroupMember {
@@ -260,7 +312,7 @@ export const fetchCommandsForCluster = (
     cluster_type: clusterType,
   });
 
-export const fetchClustersForZhaNode = (
+export const fetchClustersForZhaDevice = (
   hass: HomeAssistant,
   ieeeAddress: string
 ): Promise<Cluster[]> =>
@@ -346,6 +398,38 @@ export const updateZHAConfiguration = (
   hass.callWS({
     type: "zha/configuration/update",
     data: data,
+  });
+
+export const fetchZHANetworkSettings = (
+  hass: HomeAssistant
+): Promise<ZHANetworkSettings> =>
+  hass.callWS({
+    type: "zha/network/settings",
+  });
+
+export const createZHANetworkBackup = (
+  hass: HomeAssistant
+): Promise<ZHANetworkBackupAndMetadata> =>
+  hass.callWS({
+    type: "zha/network/backups/create",
+  });
+
+export const restoreZHANetworkBackup = (
+  hass: HomeAssistant,
+  backup: ZHANetworkBackup,
+  ezspForceWriteEUI64 = false
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/network/backups/restore",
+    backup: backup,
+    ezsp_force_write_eui64: ezspForceWriteEUI64,
+  });
+
+export const listZHANetworkBackups = (
+  hass: HomeAssistant
+): Promise<ZHANetworkBackup[]> =>
+  hass.callWS({
+    type: "zha/network/backups/list",
   });
 
 export const INITIALIZED = "INITIALIZED";

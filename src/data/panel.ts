@@ -21,16 +21,16 @@ export const getDefaultPanel = (hass: HomeAssistant): PanelInfo =>
     ? hass.panels[hass.defaultPanel]
     : hass.panels[DEFAULT_PANEL];
 
-export const getPanelNameTranslationKey = (panel: PanelInfo): string => {
+export const getPanelNameTranslationKey = (panel: PanelInfo) => {
   if (panel.url_path === "lovelace") {
-    return "panel.states";
+    return "panel.states" as const;
   }
 
   if (panel.url_path === "profile") {
-    return "panel.profile";
+    return "panel.profile" as const;
   }
 
-  return `panel.${panel.title}`;
+  return `panel.${panel.title}` as const;
 };
 
 export const getPanelTitle = (hass: HomeAssistant): string | undefined => {

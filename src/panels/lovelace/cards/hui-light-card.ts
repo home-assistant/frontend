@@ -19,7 +19,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
-import { LightEntity, lightSupportsDimming } from "../../../data/light";
+import { LightEntity, lightSupportsBrightness } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -93,8 +93,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const brightness =
-      Math.round((stateObj.attributes.brightness / 255) * 100) || 0;
+    const brightness = Math.round(
+      ((stateObj.attributes.brightness || 0) / 255) * 100
+    );
 
     const name = this._config.name ?? computeStateName(stateObj);
 
@@ -121,14 +122,14 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 @value-changing=${this._dragEvent}
                 @value-changed=${this._setBrightness}
                 style=${styleMap({
-                  visibility: lightSupportsDimming(stateObj)
+                  visibility: lightSupportsBrightness(stateObj)
                     ? "visible"
                     : "hidden",
                 })}
               ></round-slider>
               <ha-icon-button
                 class="light-button ${classMap({
-                  "slider-center": lightSupportsDimming(stateObj),
+                  "slider-center": lightSupportsBrightness(stateObj),
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
@@ -159,7 +160,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                     ${computeStateDisplay(
                       this.hass.localize,
                       stateObj,
-                      this.hass.locale
+                      this.hass.locale,
+                      this.hass.entities
                     )}
                   </div>
                 `
@@ -276,9 +278,12 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         cursor: pointer;
         top: 0;
         right: 0;
+        inset-inline-start: initial;
+        inset-inline-end: 0;
         border-radius: 100%;
         color: var(--secondary-text-color);
         z-index: 1;
+        direction: var(--direction);
       }
 
       .content {

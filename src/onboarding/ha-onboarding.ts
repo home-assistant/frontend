@@ -124,22 +124,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._fetchOnboardingSteps();
-    this._fetchInstallationType();
     import("./onboarding-integrations");
     import("./onboarding-core-config");
     registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
     if (window.innerWidth > 450) {
       import("./particles");
-    }
-    if (matchMedia("(prefers-color-scheme: dark)").matches) {
-      applyThemesOnElement(document.documentElement, {
-        default_theme: "default",
-        default_dark_theme: null,
-        themes: {},
-        darkMode: true,
-        theme: "default",
-      });
     }
   }
 
@@ -149,10 +139,25 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       document.querySelector("html")!.setAttribute("lang", this.language!);
     }
     if (changedProps.has("hass")) {
-      this.hassChanged(
-        this.hass!,
-        changedProps.get("hass") as HomeAssistant | undefined
-      );
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      this.hassChanged(this.hass!, oldHass);
+      if (oldHass?.themes !== this.hass!.themes) {
+        if (matchMedia("(prefers-color-scheme: dark)").matches) {
+          applyThemesOnElement(
+            document.documentElement,
+            {
+              default_theme: "default",
+              default_dark_theme: null,
+              themes: {},
+              darkMode: true,
+              theme: "default",
+            },
+            undefined,
+            undefined,
+            true
+          );
+        }
+      }
     }
   }
 
@@ -209,6 +214,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         });
         history.replaceState(null, "", location.pathname);
         await this._connectHass(auth);
+      } else {
+        // User creating screen needs to know the installation type.
+        this._fetchInstallationType();
       }
 
       this._steps = steps;

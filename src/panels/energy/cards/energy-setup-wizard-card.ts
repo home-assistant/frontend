@@ -15,6 +15,7 @@ import "../../config/energy/components/ha-energy-grid-settings";
 import "../../config/energy/components/ha-energy-solar-settings";
 import "../../config/energy/components/ha-energy-battery-settings";
 import "../../config/energy/components/ha-energy-gas-settings";
+import "../../config/energy/components/ha-energy-water-settings";
 import "../../config/energy/components/ha-energy-device-settings";
 import { haStyle } from "../../../resources/styles";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -51,7 +52,12 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
 
   protected render(): TemplateResult {
     return html`
-      <p>Step ${this._step + 1} of 5</p>
+      <p>
+        ${this.hass.localize("ui.panel.energy.setup.step", {
+          step: this._step + 1,
+          steps: 6,
+        })}
+      </p>
       ${this._step === 0
         ? html`<ha-energy-grid-settings
             .hass=${this.hass}
@@ -77,6 +83,12 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
             .preferences=${this._preferences}
             @value-changed=${this._prefsChanged}
           ></ha-energy-gas-settings>`
+        : this._step === 4
+        ? html`<ha-energy-water-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-water-settings>`
         : html`<ha-energy-device-settings
             .hass=${this.hass}
             .preferences=${this._preferences}
@@ -115,7 +127,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
   }
 
   private _next() {
-    if (this._step === 4) {
+    if (this._step === 5) {
       return;
     }
     this._step++;

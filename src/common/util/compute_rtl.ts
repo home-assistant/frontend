@@ -1,3 +1,4 @@
+import { LitElement } from "lit";
 import { HomeAssistant } from "../../types";
 
 export function computeRTL(hass: HomeAssistant) {
@@ -14,4 +15,22 @@ export function computeRTLDirection(hass: HomeAssistant) {
 
 export function emitRTLDirection(rtl: boolean) {
   return rtl ? "rtl" : "ltr";
+}
+
+export function computeDirectionStyles(isRTL: boolean, element: LitElement) {
+  const direction: string = emitRTLDirection(isRTL);
+  setDirectionStyles(direction, element);
+}
+
+export function setDirectionStyles(direction: string, element: LitElement) {
+  element.style.direction = direction;
+  element.style.setProperty("--direction", direction);
+  element.style.setProperty(
+    "--float-start",
+    direction === "ltr" ? "left" : "right"
+  );
+  element.style.setProperty(
+    "--float-end",
+    direction === "ltr" ? "right" : "left"
+  );
 }

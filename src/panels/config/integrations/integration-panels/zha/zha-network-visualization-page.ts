@@ -8,7 +8,7 @@ import {
   Node,
 } from "vis-network/peer/esm/vis-network";
 import { navigate } from "../../../../../common/navigate";
-import "../../../../../common/search/search-input";
+import "../../../../../components/search-input";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-checkbox";
@@ -37,7 +37,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @property({ type: Boolean }) public isWide!: boolean;
 
   @property()
-  public zoomedDeviceId?: string;
+  public zoomedDeviceIdFromURL?: string;
+
+  @state()
+  private zoomedDeviceId?: string;
 
   @query("#visualization", true)
   private _visualization?: HTMLElement;
@@ -63,6 +66,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
+
+    // prevent zoomedDeviceIdFromURL from being restored to zoomedDeviceId after the user clears it
+    if (this.zoomedDeviceIdFromURL) {
+      this.zoomedDeviceId = this.zoomedDeviceIdFromURL;
+    }
 
     if (this.hass) {
       this._fetchData();
@@ -144,8 +152,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
               <div slot="header">
                 <search-input
                   .hass=${this.hass}
-                  no-label-float
-                  no-underline
                   class="header"
                   @value-changed=${this._handleSearchChange}
                   .filter=${this._filter}
@@ -161,8 +167,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
           ${!this.narrow
             ? html`<search-input
                 .hass=${this.hass}
-                no-label-float
-                no-underline
                 @value-changed=${this._handleSearchChange}
                 .filter=${this._filter}
                 .label=${this.hass.localize(
@@ -440,19 +444,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
         search-input {
           flex: 1;
+          display: block;
         }
 
         search-input.header {
-          display: block;
-          position: relative;
-          top: -2px;
           color: var(--secondary-text-color);
         }
 
         ha-device-picker {
           flex: 1;
-          position: relative;
-          top: -4px;
         }
 
         .controls {

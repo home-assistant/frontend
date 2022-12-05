@@ -1,129 +1,191 @@
 import "@material/mwc-button/mwc-button";
-import { mdiPackageVariant } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
-import "../../../components/ha-logo-svg";
-import "../../../components/ha-svg-icon";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
-import { buttonLinkStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-
-export const SUPERVISOR_UPDATE_NAMES = {
-  core: "Home Assistant Core",
-  os: "Home Assistant Operating System",
-  supervisor: "Home Assistant Supervisor",
-};
+import "../../../components/ha-icon-next";
+import type { UpdateEntity } from "../../../data/update";
+import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-list-item";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import {
+  computeDeviceName,
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../data/device_registry";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../data/entity_registry";
 
 @customElement("ha-config-updates")
-class HaConfigUpdates extends LitElement {
+class HaConfigUpdates extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false })
-  public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
+  public updateEntities?: UpdateEntity[];
 
-  @state() private _showAll = false;
+  @property({ attribute: false, type: Array })
+  private devices?: DeviceRegistryEntry[];
+
+  @property({ attribute: false, type: Array })
+  private entities?: EntityRegistryEntry[];
+
+  @property({ type: Number })
+  public total?: number;
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeDeviceRegistry(this.hass.connection, (entries) => {
+        this.devices = entries;
+      }),
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this.entities = entities.filter((entity) => entity.device_id !== null);
+      }),
+    ];
+  }
+
+  private getDeviceEntry = memoizeOne(
+    (deviceId: string): DeviceRegistryEntry | undefined =>
+      this.devices?.find((device) => device.id === deviceId)
+  );
+
+  private getEntityEntry = memoizeOne(
+    (entityId: string): EntityRegistryEntry | undefined =>
+      this.entities?.find((entity) => entity.entity_id === entityId)
+  );
 
   protected render(): TemplateResult {
-    if (!this.supervisorUpdates?.length) {
+    if (!this.updateEntities?.length) {
       return html``;
     }
 
-    const updates =
-      this._showAll || this.supervisorUpdates.length <= 3
-        ? this.supervisorUpdates
-        : this.supervisorUpdates.slice(0, 2);
+    const updates = this.updateEntities;
 
     return html`
       <div class="title">
         ${this.hass.localize("ui.panel.config.updates.title", {
-          count: this.supervisorUpdates.length,
+          count: this.total || this.updateEntities.length,
         })}
       </div>
-      ${updates.map(
-        (update) => html`
-          <paper-icon-item>
-            <span slot="item-icon" class="icon">
-              ${update.update_type === "addon"
-                ? update.icon
-                  ? html`<img src="/api/hassio${update.icon}" />`
-                  : html`<ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>`
-                : html`<ha-logo-svg></ha-logo-svg>`}
-            </span>
-            <paper-item-body two-line>
-              ${update.update_type === "addon"
-                ? update.name
-                : SUPERVISOR_UPDATE_NAMES[update.update_type!]}
-              <div secondary>
-                ${this.hass.localize(
-                  "ui.panel.config.updates.version_available",
-                  {
-                    version_available: update.version_latest,
-                  }
-                )}
-              </div>
-            </paper-item-body>
-            <a href="/hassio${update.panel_path}">
-              <mwc-button
-                .label=${this.hass.localize("ui.panel.config.updates.show")}
+      <mwc-list>
+        ${updates.map((entity) => {
+          const entityEntry = this.getEntityEntry(entity.entity_id);
+          const deviceEntry =
+            entityEntry && entityEntry.device_id
+              ? this.getDeviceEntry(entityEntry.device_id)
+              : undefined;
+
+          return html`
+            <ha-list-item
+              twoline
+              graphic="avatar"
+              class=${entity.attributes.skipped_version ? "skipped" : ""}
+              .entity_id=${entity.entity_id}
+              .hasMeta=${!this.narrow}
+              @click=${this._openMoreInfo}
+            >
+              <state-badge
+                slot="graphic"
+                .title=${entity.attributes.title ||
+                entity.attributes.friendly_name}
+                .stateObj=${entity}
+                class=${this.narrow && entity.attributes.in_progress
+                  ? "updating"
+                  : ""}
+              ></state-badge>
+              ${this.narrow && entity.attributes.in_progress
+                ? html`<ha-circular-progress
+                    active
+                    size="small"
+                    slot="graphic"
+                    class="absolute"
+                  ></ha-circular-progress>`
+                : ""}
+              <span
+                >${deviceEntry
+                  ? computeDeviceName(deviceEntry, this.hass)
+                  : entity.attributes.friendly_name}</span
               >
-              </mwc-button>
-            </a>
-          </paper-icon-item>
-        `
-      )}
-      ${!this._showAll && this.supervisorUpdates.length >= 4
-        ? html`
-            <button class="link show-all" @click=${this._showAllClicked}>
-              ${this.hass.localize("ui.panel.config.updates.more_updates", {
-                count: this.supervisorUpdates!.length - updates.length,
-              })}
-            </button>
-          `
-        : ""}
+              <span slot="secondary">
+                ${entity.attributes.title} ${entity.attributes.latest_version}
+                ${entity.attributes.skipped_version
+                  ? `(${this.hass.localize("ui.panel.config.updates.skipped")})`
+                  : ""}
+              </span>
+              ${!this.narrow
+                ? entity.attributes.in_progress
+                  ? html`<ha-circular-progress
+                      active
+                      size="small"
+                      slot="meta"
+                    ></ha-circular-progress>`
+                  : html`<ha-icon-next slot="meta"></ha-icon-next>`
+                : ""}
+            </ha-list-item>
+          `;
+        })}
+      </mwc-list>
     `;
   }
 
-  private _showAllClicked() {
-    this._showAll = true;
+  private _openMoreInfo(ev: MouseEvent): void {
+    fireEvent(this, "hass-more-info", {
+      entityId: (ev.currentTarget as any).entity_id,
+    });
   }
 
   static get styles(): CSSResultGroup[] {
     return [
-      buttonLinkStyle,
       css`
+        :host {
+          --mdc-list-vertical-padding: 0;
+        }
         .title {
           font-size: 16px;
           padding: 16px;
           padding-bottom: 0;
         }
-        a {
-          text-decoration: none;
-          color: var(--primary-text-color);
+        .skipped {
+          background: var(--secondary-background-color);
         }
-        .icon {
-          display: inline-flex;
-          height: 100%;
-          align-items: center;
-        }
-        img,
-        ha-svg-icon,
-        ha-logo-svg {
-          --mdc-icon-size: 32px;
-          max-height: 32px;
-          width: 32px;
-        }
-        ha-logo-svg {
+        ha-icon-next {
           color: var(--secondary-text-color);
+          height: 24px;
+          width: 24px;
         }
-        button.show-all {
+        button.show-more {
           color: var(--primary-color);
-          text-decoration: none;
-          margin: 16px;
+          text-align: left;
+          cursor: pointer;
+          background: none;
+          border-width: initial;
+          border-style: none;
+          border-color: initial;
+          border-image: initial;
+          padding: 16px;
+          font: inherit;
+        }
+        button.show-more:focus {
+          outline: none;
+          text-decoration: underline;
+        }
+        ha-list-item {
+          cursor: pointer;
+          font-size: 16px;
+        }
+        ha-circular-progress.absolute {
+          position: absolute;
+        }
+        state-badge.updating {
+          opacity: 0.5;
         }
       `,
     ];

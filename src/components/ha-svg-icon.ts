@@ -12,7 +12,10 @@ export class HaSvgIcon extends LitElement {
     <svg
       viewBox=${this.viewBox || "0 0 24 24"}
       preserveAspectRatio="xMidYMid meet"
-      focusable="false">
+      focusable="false"
+      role="img" 
+      aria-hidden="true"
+    >
       <g>
       ${this.path ? svg`<path d=${this.path}></path>` : ""}
       </g>

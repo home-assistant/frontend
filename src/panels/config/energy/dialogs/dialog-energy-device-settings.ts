@@ -1,5 +1,5 @@
 import { mdiDevices } from "@mdi/js";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
@@ -14,8 +14,7 @@ import "../../../../components/ha-radio";
 import "../../../../components/ha-formfield";
 import "../../../../components/entity/ha-entity-picker";
 
-const energyUnits = ["kWh"];
-const energyDeviceClasses = ["energy"];
+const energyUnitClasses = ["energy"];
 
 @customElement("dialog-energy-device-settings")
 export class DialogEnergyDeviceSettings
@@ -69,12 +68,12 @@ export class DialogEnergyDeviceSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitOfMeasurement=${energyUnits}
-          .includeDeviceClasses=${energyDeviceClasses}
+          .includeUnitClass=${energyUnitClasses}
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.device_consumption_energy"
           )}
           @value-changed=${this._statisticChanged}
+          dialogInitialFocus
         ></ha-statistic-picker>
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
@@ -109,7 +108,14 @@ export class DialogEnergyDeviceSettings
   }
 
   static get styles(): CSSResultGroup {
-    return haStyleDialog;
+    return [
+      haStyleDialog,
+      css`
+        ha-statistic-picker {
+          width: 100%;
+        }
+      `,
+    ];
   }
 }
 

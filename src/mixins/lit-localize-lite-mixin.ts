@@ -3,6 +3,8 @@ import { property } from "lit/decorators";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import { Constructor, Resources } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
+import { translationMetadata } from "../resources/translations-metadata";
+import { computeDirectionStyles } from "../common/util/compute_rtl";
 
 const empty = () => "";
 
@@ -23,6 +25,14 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
     public connectedCallback(): void {
       super.connectedCallback();
       this._initializeLocalizeLite();
+    }
+
+    protected firstUpdated(changedProps: PropertyValues) {
+      super.firstUpdated(changedProps);
+      computeDirectionStyles(
+        translationMetadata.translations[this.language!].isRTL,
+        this
+      );
     }
 
     protected updated(changedProperties: PropertyValues) {

@@ -46,6 +46,9 @@ export const darkStyles = {
   "codemirror-qualifier": "#DECB6B",
   "codemirror-type": "#DECB6B",
   "energy-grid-return-color": "#a280db",
+  "map-filter":
+    "invert(.9) hue-rotate(170deg) brightness(1.5) contrast(1.2) saturate(.3)",
+  "rgb-disabled-color": "111, 111, 111",
 };
 
 export const derivedStyles = {
@@ -158,6 +161,7 @@ export const buttonLinkStyle = css`
     text-align: left;
     text-decoration: underline;
     cursor: pointer;
+    outline: none;
   }
 `;
 
@@ -184,6 +188,8 @@ export const haStyle = css`
 
   app-toolbar {
     height: var(--header-height);
+    border-bottom: var(--app-header-border-bottom);
+    box-sizing: border-box;
   }
 
   app-header div[sticky] {
@@ -313,7 +319,6 @@ export const haStyleDialog = css`
   }
 
   ha-dialog .form {
-    padding-bottom: 24px;
     color: var(--primary-text-color);
   }
 
@@ -332,7 +337,7 @@ export const haStyleDialog = css`
       );
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
-      --vertial-align-dialog: flex-end;
+      --vertical-align-dialog: flex-end;
       --ha-dialog-border-radius: 0px;
     }
   }

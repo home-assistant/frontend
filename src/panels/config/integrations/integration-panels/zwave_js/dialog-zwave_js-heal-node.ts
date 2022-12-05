@@ -22,10 +22,6 @@ import { ZWaveJSHealNodeDialogParams } from "./show-dialog-zwave_js-heal-node";
 class DialogZWaveJSHealNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private entry_id?: string;
-
-  @state() private node_id?: number;
-
   @state() private device?: DeviceRegistryEntry;
 
   @state() private _status?: string;
@@ -33,16 +29,12 @@ class DialogZWaveJSHealNode extends LitElement {
   @state() private _error?: string;
 
   public showDialog(params: ZWaveJSHealNodeDialogParams): void {
-    this.entry_id = params.entry_id;
     this.device = params.device;
-    this.node_id = params.node_id;
     this._fetchData();
   }
 
   public closeDialog(): void {
-    this.entry_id = undefined;
     this._status = undefined;
-    this.node_id = undefined;
     this.device = undefined;
     this._error = undefined;
 
@@ -50,7 +42,7 @@ class DialogZWaveJSHealNode extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this.entry_id || !this.device) {
+    if (!this.device) {
       return html``;
     }
 
@@ -174,7 +166,7 @@ class DialogZWaveJSHealNode extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
           : ``}
@@ -194,7 +186,7 @@ class DialogZWaveJSHealNode extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
           : ``}
@@ -206,10 +198,9 @@ class DialogZWaveJSHealNode extends LitElement {
     if (!this.hass) {
       return;
     }
-    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(
-      this.hass!,
-      this.entry_id!
-    );
+    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(this.hass!, {
+      device_id: this.device!.id,
+    });
     if (network.controller.is_heal_network_active) {
       this._status = "network-healing";
     }
@@ -221,11 +212,7 @@ class DialogZWaveJSHealNode extends LitElement {
     }
     this._status = "started";
     try {
-      this._status = (await healZwaveNode(
-        this.hass,
-        this.entry_id!,
-        this.node_id!
-      ))
+      this._status = (await healZwaveNode(this.hass, this.device!.id))
         ? "finished"
         : "failed";
     } catch (err: any) {

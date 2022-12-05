@@ -6,17 +6,16 @@ import { splitByGroups } from "../../../common/entity/split_by_groups";
 import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import type { AreaRegistryEntry } from "../../../data/area_registry";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import {
   EnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import { LovelaceCardConfig, LovelaceViewConfig } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_BATTERY } from "../../../data/sensor";
 import { computeUserInitials } from "../../../data/user";
+import { HomeAssistant } from "../../../types";
+import { HELPER_DOMAINS } from "../../config/helpers/const";
 import {
   AlarmPanelCardConfig,
   EntitiesCardConfig,
@@ -40,47 +39,58 @@ const HIDE_DOMAIN = new Set([
 
 const HIDE_PLATFORM = new Set(["mobile_app"]);
 
-interface SplittedByAreas {
-  areasWithEntities: Array<[AreaRegistryEntry, HassEntity[]]>;
+interface SplittedByAreaDevice {
+  areasWithEntities: { [areaId: string]: HassEntity[] };
+  devicesWithEntities: { [deviceId: string]: HassEntity[] };
   otherEntities: HassEntities;
 }
 
-const splitByAreas = (
-  areaEntries: AreaRegistryEntry[],
-  deviceEntries: DeviceRegistryEntry[],
-  entityEntries: EntityRegistryEntry[],
+const splitByAreaDevice = (
+  deviceEntries: HomeAssistant["devices"],
+  entityEntries: HomeAssistant["entities"],
   entities: HassEntities
-): SplittedByAreas => {
+): SplittedByAreaDevice => {
   const allEntities = { ...entities };
-  const areasWithEntities: SplittedByAreas["areasWithEntities"] = [];
+  const areasWithEntities: SplittedByAreaDevice["areasWithEntities"] = {};
+  const devicesWithEntities: SplittedByAreaDevice["devicesWithEntities"] = {};
 
-  for (const area of areaEntries) {
-    const areaEntities: HassEntity[] = [];
-    const areaDevices = new Set(
-      deviceEntries
-        .filter((device) => device.area_id === area.area_id)
-        .map((device) => device.id)
-    );
-    for (const entity of entityEntries) {
-      if (
-        ((areaDevices.has(
-          // @ts-ignore
-          entity.device_id
-        ) &&
-          !entity.area_id) ||
-          entity.area_id === area.area_id) &&
-        entity.entity_id in allEntities
-      ) {
-        areaEntities.push(allEntities[entity.entity_id]);
-        delete allEntities[entity.entity_id];
+  const areaDevices = new Set(
+    Object.values(deviceEntries)
+      .filter((device) => device.area_id)
+      .map((device) => device.id)
+  );
+  for (const entity of Object.values(entityEntries)) {
+    if (
+      (entity.area_id ||
+        (entity.device_id && areaDevices.has(entity.device_id))) &&
+      entity.entity_id in allEntities
+    ) {
+      const areaId =
+        entity.area_id || deviceEntries[entity.device_id!].area_id!;
+      if (!(areaId in areasWithEntities)) {
+        areasWithEntities[areaId] = [];
       }
+      areasWithEntities[areaId].push(allEntities[entity.entity_id]);
+      delete allEntities[entity.entity_id];
+    } else if (entity.device_id && entity.entity_id in allEntities) {
+      if (!(entity.device_id in devicesWithEntities)) {
+        devicesWithEntities[entity.device_id] = [];
+      }
+      devicesWithEntities[entity.device_id].push(allEntities[entity.entity_id]);
+      delete allEntities[entity.entity_id];
     }
-    if (areaEntities.length > 0) {
-      areasWithEntities.push([area, areaEntities]);
+  }
+  for (const [deviceId, deviceEntities] of Object.entries(
+    devicesWithEntities
+  )) {
+    if (deviceEntities.length === 1) {
+      allEntities[deviceEntities[0].entity_id] = deviceEntities[0];
+      delete devicesWithEntities[deviceId];
     }
   }
   return {
     areasWithEntities,
+    devicesWithEntities,
     otherEntities: allEntities,
   };
 };
@@ -96,7 +106,7 @@ export const computeCards = (
   const entities: Array<string | LovelaceRowConfig> = [];
 
   const titlePrefix = entityCardOptions.title
-    ? `${entityCardOptions.title} `.toLowerCase()
+    ? entityCardOptions.title.toLowerCase()
     : undefined;
 
   const footerEntities: ButtonsHeaderFooterConfig["entities"] = [];
@@ -231,18 +241,21 @@ export const computeCards = (
 
 const computeDefaultViewStates = (
   entities: HassEntities,
-  entityEntries: EntityRegistryEntry[]
+  entityEntries: HomeAssistant["entities"]
 ): HassEntities => {
   const states = {};
   const hiddenEntities = new Set(
-    entityEntries
+    Object.values(entityEntries)
       .filter(
-        (entry) => entry.entity_category || HIDE_PLATFORM.has(entry.platform)
+        (entry) =>
+          entry.entity_category ||
+          HIDE_PLATFORM.has(entry.platform) ||
+          entry.hidden_by
       )
       .map((entry) => entry.entity_id)
   );
 
-  Object.keys(entities).forEach((entityId) => {
+  for (const entityId of Object.keys(entities)) {
     const stateObj = entities[entityId];
     if (
       !HIDE_DOMAIN.has(computeStateDomain(stateObj)) &&
@@ -250,7 +263,7 @@ const computeDefaultViewStates = (
     ) {
       states[entityId] = entities[entityId];
     }
-  });
+  }
   return states;
 };
 
@@ -270,7 +283,7 @@ export const generateViewConfig = (
   const ungroupedEntitites: { [domain: string]: string[] } = {};
 
   // Organize ungrouped entities in ungrouped things
-  Object.keys(splitted.ungrouped).forEach((entityId) => {
+  for (const entityId of Object.keys(splitted.ungrouped)) {
     const state = splitted.ungrouped[entityId];
     const domain = computeStateDomain(state);
 
@@ -279,9 +292,9 @@ export const generateViewConfig = (
     }
 
     ungroupedEntitites[domain].push(state.entity_id);
-  });
+  }
 
-  let cards: LovelaceCardConfig[] = [];
+  const cards: LovelaceCardConfig[] = [];
 
   if ("person" in ungroupedEntitites) {
     const personCards: LovelaceCardConfig[] = [];
@@ -339,9 +352,9 @@ export const generateViewConfig = (
     delete ungroupedEntitites.person;
   }
 
-  splitted.groups.forEach((groupEntity) => {
-    cards = cards.concat(
-      computeCards(
+  for (const groupEntity of splitted.groups) {
+    cards.push(
+      ...computeCards(
         groupEntity.attributes.entity_id.map(
           (entityId): [string, HassEntity] => [entityId, entities[entityId]]
         ),
@@ -351,13 +364,40 @@ export const generateViewConfig = (
         }
       )
     );
-  });
+  }
+
+  // Group helper entities in a single card
+  const helperEntities: string[] = [];
+
+  for (const domain of HELPER_DOMAINS) {
+    if (!(domain in ungroupedEntitites)) {
+      continue;
+    }
+    helperEntities.push(...ungroupedEntitites[domain]);
+    delete ungroupedEntitites[domain];
+  }
+
+  // Prepare translations for cards
+  const domainTranslations: Record<string, string> = {};
+
+  for (const domain of Object.keys(ungroupedEntitites)) {
+    domainTranslations[domain] = domainToName(localize, domain);
+  }
+
+  if (helperEntities.length) {
+    ungroupedEntitites._helpers = helperEntities;
+    domainTranslations._helpers = localize(
+      "ui.panel.lovelace.strategy.original-states.helpers"
+    );
+  }
 
   Object.keys(ungroupedEntitites)
-    .sort()
+    .sort((domain1, domain2) =>
+      stringCompare(domainTranslations[domain1], domainTranslations[domain2])
+    )
     .forEach((domain) => {
-      cards = cards.concat(
-        computeCards(
+      cards.push(
+        ...computeCards(
           ungroupedEntitites[domain]
             .sort((a, b) =>
               stringCompare(
@@ -370,7 +410,7 @@ export const generateViewConfig = (
               entities[entityId],
             ]),
           {
-            title: domainToName(localize, domain),
+            title: domainTranslations[domain],
           }
         )
       );
@@ -390,9 +430,9 @@ export const generateViewConfig = (
 };
 
 export const generateDefaultViewConfig = (
-  areaEntries: AreaRegistryEntry[],
-  deviceEntries: DeviceRegistryEntry[],
-  entityEntries: EntityRegistryEntry[],
+  areaEntries: HomeAssistant["areas"],
+  deviceEntries: HomeAssistant["devices"],
+  entityEntries: HomeAssistant["entities"],
   entities: HassEntities,
   localize: LocalizeFunc,
   energyPrefs?: EnergyPreferences
@@ -404,15 +444,14 @@ export const generateDefaultViewConfig = (
 
   // In the case of a default view, we want to use the group order attribute
   const groupOrders = {};
-  Object.keys(states).forEach((entityId) => {
+  for (const entityId of Object.keys(states)) {
     const stateObj = states[entityId];
     if (stateObj.attributes.order) {
       groupOrders[entityId] = stateObj.attributes.order;
     }
-  });
+  }
 
-  const splittedByAreas = splitByAreas(
-    areaEntries,
+  const splittedByAreaDevice = splitByAreaDevice(
     deviceEntries,
     entityEntries,
     states
@@ -423,14 +462,17 @@ export const generateDefaultViewConfig = (
     path,
     title,
     icon,
-    splittedByAreas.otherEntities,
+    splittedByAreaDevice.otherEntities,
     groupOrders
   );
 
-  const areaCards: LovelaceCardConfig[] = [];
+  const splittedCards: LovelaceCardConfig[] = [];
 
-  splittedByAreas.areasWithEntities.forEach(([area, areaEntities]) => {
-    areaCards.push(
+  for (const [areaId, areaEntities] of Object.entries(
+    splittedByAreaDevice.areasWithEntities
+  )) {
+    const area = areaEntries[areaId];
+    splittedCards.push(
       ...computeCards(
         areaEntities.map((entity) => [entity.entity_id, entity]),
         {
@@ -438,8 +480,29 @@ export const generateDefaultViewConfig = (
         }
       )
     );
-  });
-
+  }
+  for (const [deviceId, deviceEntities] of Object.entries(
+    splittedByAreaDevice.devicesWithEntities
+  )) {
+    const device = deviceEntries[deviceId];
+    splittedCards.push(
+      ...computeCards(
+        deviceEntities.map((entity) => [entity.entity_id, entity]),
+        {
+          title:
+            device.name_by_user ||
+            device.name ||
+            localize(
+              "ui.panel.config.devices.unnamed_device",
+              "type",
+              localize(
+                `ui.panel.config.devices.type.${device.entry_type || "device"}`
+              )
+            ),
+        }
+      )
+    );
+  }
   if (energyPrefs) {
     // Distribution card requires the grid to be configured
     const grid = energyPrefs.energy_sources.find(
@@ -447,7 +510,7 @@ export const generateDefaultViewConfig = (
     ) as GridSourceTypeEnergyPreference | undefined;
 
     if (grid && grid.flow_from.length > 0) {
-      areaCards.push({
+      splittedCards.push({
         title: localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
         ),
@@ -457,7 +520,7 @@ export const generateDefaultViewConfig = (
     }
   }
 
-  config.cards!.unshift(...areaCards);
+  config.cards!.unshift(...splittedCards);
 
   return config;
 };

@@ -21,6 +21,7 @@ import {
 } from "../../../data/system_log";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
@@ -68,8 +69,18 @@ class DialogSystemLogDetail extends LitElement {
         // Custom components with our official docs should not link to our docs
         !this._manifest.documentation.includes("://www.home-assistant.io"));
 
+    const title = this.hass.localize(
+      "ui.panel.config.logs.details",
+      "level",
+      html`<span class=${item.level.toLowerCase()}
+        >${this.hass.localize(
+          `ui.panel.config.logs.level.${item.level.toLowerCase()}`
+        )}</span
+      >`
+    );
+
     return html`
-      <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${true}>
+      <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>
         <ha-header-bar slot="heading">
           <ha-icon-button
             slot="navigationIcon"
@@ -77,17 +88,7 @@ class DialogSystemLogDetail extends LitElement {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title">
-            ${this.hass.localize(
-              "ui.panel.config.logs.details",
-              "level",
-              html`<span class=${item.level.toLowerCase()}
-                >${this.hass.localize(
-                  "ui.panel.config.logs.level." + item.level.toLowerCase()
-                )}</span
-              >`
-            )}
-          </span>
+          <span slot="title"> ${title} </span>
           <ha-icon-button
             id="copy"
             @click=${this._copyLog}
@@ -103,7 +104,7 @@ class DialogSystemLogDetail extends LitElement {
               )}
             </ha-alert>`
           : ""}
-        <div class="contents">
+        <div class="contents" tabindex="-1" dialogInitialFocus>
           <p>
             Logger: ${item.name}<br />
             Source: ${item.source.join(":")}
@@ -117,7 +118,12 @@ class DialogSystemLogDetail extends LitElement {
                     ? ""
                     : html`
                         (<a
-                          href=${this._manifest.documentation}
+                          href=${this._manifest.is_built_in
+                            ? documentationUrl(
+                                this.hass,
+                                `/integrations/${this._manifest.domain}`
+                              )
+                            : this._manifest.documentation}
                           target="_blank"
                           rel="noreferrer"
                           >documentation</a
@@ -221,6 +227,8 @@ class DialogSystemLogDetail extends LitElement {
         }
         .contents {
           padding: 16px;
+          outline: none;
+          direction: ltr;
         }
         .error {
           color: var(--error-color);

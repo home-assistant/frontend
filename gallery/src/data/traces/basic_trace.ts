@@ -119,7 +119,7 @@ export const basicTrace: DemoTrace = {
             params: {
               domain: "input_boolean",
               service: "toggle",
-              service_data: {},
+              data: {},
               target: {
                 entity_id: ["input_boolean.toggle_4"],
               },
@@ -164,7 +164,7 @@ export const basicTrace: DemoTrace = {
             params: {
               domain: "input_boolean",
               service: "toggle",
-              service_data: {},
+              data: {},
               target: {
                 entity_id: ["input_boolean.toggle_2"],
               },
@@ -182,7 +182,7 @@ export const basicTrace: DemoTrace = {
             params: {
               domain: "input_boolean",
               service: "toggle",
-              service_data: {},
+              data: {},
               target: {
                 entity_id: ["input_boolean.toggle_3"],
               },
@@ -200,7 +200,7 @@ export const basicTrace: DemoTrace = {
             params: {
               domain: "input_boolean",
               service: "toggle",
-              service_data: {},
+              data: {},
               target: {
                 entity_id: ["input_boolean.toggle_4"],
               },
@@ -298,11 +298,11 @@ export const basicTrace: DemoTrace = {
       source: "state of input_boolean.toggle_1",
       entity_id: "automation.toggle_toggles",
       context_id: "6cfcae368e7b3686fad6c59e83ae76c9",
-      when: "2021-03-25T04:36:51.240832+00:00",
+      when: 1616647011.240832,
       domain: "automation",
     },
     {
-      when: "2021-03-25T04:36:51.249828+00:00",
+      when: 1616647011.249828,
       name: "Toggle 4",
       state: "on",
       entity_id: "input_boolean.toggle_4",
@@ -313,7 +313,7 @@ export const basicTrace: DemoTrace = {
       context_name: "Ensure Party mode",
     },
     {
-      when: "2021-03-25T04:36:51.258947+00:00",
+      when: 1616647011.258947,
       name: "Toggle 2",
       state: "on",
       entity_id: "input_boolean.toggle_2",
@@ -324,7 +324,7 @@ export const basicTrace: DemoTrace = {
       context_name: "Ensure Party mode",
     },
     {
-      when: "2021-03-25T04:36:51.261806+00:00",
+      when: 1616647011.261806,
       name: "Toggle 3",
       state: "off",
       entity_id: "input_boolean.toggle_3",
@@ -335,7 +335,7 @@ export const basicTrace: DemoTrace = {
       context_name: "Ensure Party mode",
     },
     {
-      when: "2021-03-25T04:36:51.265246+00:00",
+      when: 1616647011.265246,
       name: "Toggle 4",
       state: "off",
       entity_id: "input_boolean.toggle_4",

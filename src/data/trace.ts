@@ -16,6 +16,7 @@ interface BaseTraceStep {
 export interface TriggerTraceStep extends BaseTraceStep {
   changed_variables: {
     trigger: {
+      alias?: string;
       description: string;
       [key: string]: unknown;
     };
@@ -42,6 +43,14 @@ export interface CallServiceActionTraceStep extends BaseTraceStep {
 
 export interface ChooseActionTraceStep extends BaseTraceStep {
   result?: { choice: number | "default" };
+}
+
+export interface IfActionTraceStep extends BaseTraceStep {
+  result?: { choice: "then" | "else" };
+}
+
+export interface StopActionTraceStep extends BaseTraceStep {
+  result?: { stop: string; error: boolean };
 }
 
 export interface ChooseChoiceActionTraceStep extends BaseTraceStep {
@@ -177,7 +186,11 @@ export const getDataFromPath = (
     const asNumber = Number(raw);
 
     if (isNaN(asNumber)) {
-      result = result[raw];
+      const tempResult = result[raw];
+      if (!tempResult && raw === "sequence") {
+        continue;
+      }
+      result = tempResult;
       continue;
     }
 

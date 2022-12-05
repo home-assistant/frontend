@@ -14,6 +14,8 @@ import { customElement, property } from "lit/decorators";
 export class HaChip extends LitElement {
   @property({ type: Boolean }) public hasIcon = false;
 
+  @property({ type: Boolean }) public hasTrailingIcon = false;
+
   @property({ type: Boolean }) public noText = false;
 
   protected render(): TemplateResult {
@@ -30,6 +32,11 @@ export class HaChip extends LitElement {
             <span class="mdc-chip__text"><slot></slot></span>
           </span>
         </span>
+        ${this.hasTrailingIcon
+          ? html`<div class="mdc-chip__icon mdc-chip__icon--trailing">
+              <slot name="trailing-icon"></slot>
+            </div>`
+          : null}
       </div>
     `;
   }
@@ -53,13 +60,22 @@ export class HaChip extends LitElement {
         color: var(--ha-chip-text-color, var(--primary-text-color));
       }
 
-      .mdc-chip__icon--leading {
-        --mdc-icon-size: 20px;
+      .mdc-chip__icon--leading,
+      .mdc-chip__icon--trailing {
+        --mdc-icon-size: 18px;
+        line-height: 14px;
         color: var(--ha-chip-icon-color, var(--ha-chip-text-color));
       }
-      .mdc-chip.no-text
-        .mdc-chip__icon--leading:not(.mdc-chip__icon--leading-hidden) {
+      .mdc-chip.mdc-chip--selected .mdc-chip__checkmark,
+      .mdc-chip .mdc-chip__icon--leading:not(.mdc-chip__icon--leading-hidden) {
         margin-right: -4px;
+        margin-inline-start: -4px;
+        margin-inline-end: 4px;
+        direction: var(--direction);
+      }
+
+      span[role="gridcell"] {
+        line-height: 14px;
       }
     `;
   }

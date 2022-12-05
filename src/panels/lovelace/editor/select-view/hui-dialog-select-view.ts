@@ -1,13 +1,13 @@
 import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-radio-list-item";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon";
-import "../../../../components/ha-paper-dropdown-menu";
+import "../../../../components/ha-select";
 import {
   fetchConfig,
   fetchDashboards,
@@ -69,49 +69,47 @@ export class HuiDialogSelectView extends LitElement {
         )}
       >
         ${this._params.allowDashboardChange
-          ? html`<ha-paper-dropdown-menu
+          ? html`<ha-select
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.select_view.dashboard_label"
               )}
-              dynamic-align
               .disabled=${!this._dashboards.length}
+              .value=${this._urlPath || this.hass.defaultPanel}
+              @selected=${this._dashboardChanged}
+              @closed=${stopPropagation}
+              fixedMenuPosition
+              naturalMenuWidth
+              dialogInitialFocus
             >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${this._urlPath || this.hass.defaultPanel}
-                @iron-select=${this._dashboardChanged}
-                attr-for-selected="url-path"
+              <mwc-list-item
+                value="lovelace"
+                .disabled=${(this.hass.panels.lovelace?.config as any)?.mode ===
+                "yaml"}
               >
-                <paper-item
-                  .urlPath=${"lovelace"}
-                  .disabled=${(this.hass.panels.lovelace?.config as any)
-                    ?.mode === "yaml"}
-                >
-                  Default
-                </paper-item>
-                ${this._dashboards.map((dashboard) => {
-                  if (!this.hass.user!.is_admin && dashboard.require_admin) {
-                    return "";
-                  }
-                  return html`
-                    <paper-item
-                      .disabled=${dashboard.mode !== "storage"}
-                      .urlPath=${dashboard.url_path}
-                      >${dashboard.title}</paper-item
-                    >
-                  `;
-                })}
-              </paper-listbox>
-            </ha-paper-dropdown-menu>`
+                Default
+              </mwc-list-item>
+              ${this._dashboards.map((dashboard) => {
+                if (!this.hass.user!.is_admin && dashboard.require_admin) {
+                  return "";
+                }
+                return html`
+                  <mwc-list-item
+                    .disabled=${dashboard.mode !== "storage"}
+                    .value=${dashboard.url_path}
+                    >${dashboard.title}</mwc-list-item
+                  >
+                `;
+              })}
+            </ha-select>`
           : ""}
         ${this._config
           ? this._config.views.length > 1
             ? html`
-                <mwc-list>
+                <mwc-list dialogInitialFocus>
                   ${this._config.views.map(
                     (view, idx) => html`
                       <mwc-radio-list-item
-                        graphic=${this._config?.views.some(({ icon }) => icon)
+                        .graphic=${this._config?.views.some(({ icon }) => icon)
                           ? "icon"
                           : null}
                         @click=${this._viewChanged}
@@ -127,7 +125,11 @@ export class HuiDialogSelectView extends LitElement {
               `
             : ""
           : html`<div>No config found.</div>`}
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        <mwc-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          dialogInitialFocus
+        >
           ${this.hass!.localize("ui.common.cancel")}
         </mwc-button>
         <mwc-button slot="primaryAction" @click=${this._selectView}>
@@ -142,8 +144,8 @@ export class HuiDialogSelectView extends LitElement {
       this._params!.dashboards || (await fetchDashboards(this.hass));
   }
 
-  private async _dashboardChanged(ev: CustomEvent) {
-    let urlPath: string | null = ev.detail.item.urlPath;
+  private async _dashboardChanged(ev) {
+    let urlPath: string | null = ev.target.value;
     if (urlPath === this._urlPath) {
       return;
     }
@@ -181,7 +183,7 @@ export class HuiDialogSelectView extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-paper-dropdown-menu {
+        ha-select {
           width: 100%;
         }
       `,

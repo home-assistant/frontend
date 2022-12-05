@@ -1,3 +1,4 @@
+// Caution before editing - For latest builds, this module is replaced with emptiness and thus not imported (see build-scripts/bundle.js)
 import "core-js";
 import "regenerator-runtime/runtime";
 import "lit/polyfill-support";

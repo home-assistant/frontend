@@ -1,8 +1,9 @@
-import "@polymer/paper-input/paper-input";
+import "../../../../components/ha-form/ha-form";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-textfield";
 import type { HaRadio } from "../../../../components/ha-radio";
 import { InputText } from "../../../../data/input_text";
 import { haStyle } from "../../../../resources/styles";
@@ -64,10 +65,10 @@ class HaInputTextForm extends LitElement {
 
     return html`
       <div class="form">
-        <paper-input
+        <ha-textfield
           .value=${this._name}
           .configValue=${"name"}
-          @value-changed=${this._valueChanged}
+          @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
@@ -76,8 +77,9 @@ class HaInputTextForm extends LitElement {
           )}
           .invalid=${nameInvalid}
           dialogInitialFocus
-        ></paper-input>
+        ></ha-textfield>
         <ha-icon-picker
+          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
@@ -87,28 +89,28 @@ class HaInputTextForm extends LitElement {
         ></ha-icon-picker>
         ${this.hass.userData?.showAdvanced
           ? html`
-              <paper-input
+              <ha-textfield
                 .value=${this._min}
                 .configValue=${"min"}
                 type="number"
                 min="0"
                 max="255"
-                @value-changed=${this._valueChanged}
+                @input=${this._valueChanged}
                 .label=${this.hass!.localize(
                   "ui.dialogs.helper_settings.input_text.min"
                 )}
-              ></paper-input>
-              <paper-input
+              ></ha-textfield>
+              <ha-textfield
                 .value=${this._max}
                 .configValue=${"max"}
                 min="0"
                 max="255"
                 type="number"
-                @value-changed=${this._valueChanged}
+                @input=${this._valueChanged}
                 .label=${this.hass!.localize(
                   "ui.dialogs.helper_settings.input_text.max"
                 )}
-              ></paper-input>
+              ></ha-textfield>
               <div class="layout horizontal center justified">
                 ${this.hass.localize(
                   "ui.dialogs.helper_settings.input_text.mode"
@@ -138,14 +140,14 @@ class HaInputTextForm extends LitElement {
                   ></ha-radio>
                 </ha-formfield>
               </div>
-              <paper-input
-                .value=${this._pattern}
+              <ha-textfield
+                .value=${this._pattern || ""}
                 .configValue=${"pattern"}
-                @value-changed=${this._valueChanged}
+                @input=${this._valueChanged}
                 .label=${this.hass!.localize(
                   "ui.dialogs.helper_settings.input_text.pattern"
                 )}
-              ></paper-input>
+              ></ha-textfield>
             `
           : ""}
       </div>
@@ -164,7 +166,7 @@ class HaInputTextForm extends LitElement {
     }
     ev.stopPropagation();
     const configValue = (ev.target as any).configValue;
-    const value = ev.detail.value;
+    const value = ev.detail?.value || (ev.target as any).value;
     if (this[`_${configValue}`] === value) {
       return;
     }
@@ -172,7 +174,7 @@ class HaInputTextForm extends LitElement {
     if (!value) {
       delete newValue[configValue];
     } else {
-      newValue[configValue] = ev.detail.value;
+      newValue[configValue] = value;
     }
     fireEvent(this, "value-changed", {
       value: newValue,
@@ -188,6 +190,10 @@ class HaInputTextForm extends LitElement {
         }
         .row {
           padding: 16px 0;
+        }
+        ha-textfield {
+          display: block;
+          margin: 8px 0;
         }
       `,
     ];

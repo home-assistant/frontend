@@ -1,16 +1,14 @@
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   DeviceAutomation,
   deviceAutomationsEqual,
+  sortDeviceAutomations,
 } from "../../data/device_automation";
 import { HomeAssistant } from "../../types";
-import "../ha-paper-dropdown-menu";
+import "../ha-select";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
 const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";
@@ -67,14 +65,12 @@ export abstract class HaDeviceAutomationPicker<
     this._createNoAutomation = createNoAutomation;
   }
 
-  private get _key() {
-    if (
-      !this.value ||
-      deviceAutomationsEqual(
-        this._createNoAutomation(this.deviceId),
-        this.value
-      )
-    ) {
+  private get _value() {
+    if (!this.value) {
+      return "";
+    }
+
+    if (!this._automations.length) {
       return NO_AUTOMATION_KEY;
     }
 
@@ -93,42 +89,32 @@ export abstract class HaDeviceAutomationPicker<
     if (this._renderEmpty) {
       return html``;
     }
+    const value = this._value;
     return html`
-      <ha-paper-dropdown-menu
+      <ha-select
         .label=${this.label}
-        .value=${this.value
-          ? this._localizeDeviceAutomation(this.hass, this.value)
-          : ""}
-        ?disabled=${this._automations.length === 0}
+        .value=${value}
+        @selected=${this._automationChanged}
+        .disabled=${this._automations.length === 0}
       >
-        <paper-listbox
-          slot="dropdown-content"
-          .selected=${this._key}
-          attr-for-selected="key"
-          @iron-select=${this._automationChanged}
-        >
-          <paper-item
-            key=${NO_AUTOMATION_KEY}
-            .automation=${this._createNoAutomation(this.deviceId)}
-            hidden
-          >
-            ${this.NO_AUTOMATION_TEXT}
-          </paper-item>
-          <paper-item key=${UNKNOWN_AUTOMATION_KEY} hidden>
-            ${this.UNKNOWN_AUTOMATION_TEXT}
-          </paper-item>
-          ${this._automations.map(
-            (automation, idx) => html`
-              <paper-item
-                key=${`${this.deviceId}_${idx}`}
-                .automation=${automation}
-              >
-                ${this._localizeDeviceAutomation(this.hass, automation)}
-              </paper-item>
-            `
-          )}
-        </paper-listbox>
-      </ha-paper-dropdown-menu>
+        ${value === NO_AUTOMATION_KEY
+          ? html`<mwc-list-item .value=${NO_AUTOMATION_KEY}>
+              ${this.NO_AUTOMATION_TEXT}
+            </mwc-list-item>`
+          : ""}
+        ${value === UNKNOWN_AUTOMATION_KEY
+          ? html`<mwc-list-item .value=${UNKNOWN_AUTOMATION_KEY}>
+              ${this.UNKNOWN_AUTOMATION_TEXT}
+            </mwc-list-item>`
+          : ""}
+        ${this._automations.map(
+          (automation, idx) => html`
+            <mwc-list-item .value=${`${automation.device_id}_${idx}`}>
+              ${this._localizeDeviceAutomation(this.hass, automation)}
+            </mwc-list-item>
+          `
+        )}
+      </ha-select>
     `;
   }
 
@@ -138,19 +124,13 @@ export abstract class HaDeviceAutomationPicker<
     if (changedProps.has("deviceId")) {
       this._updateDeviceInfo();
     }
-
-    // The value has changed, force the listbox to update
-    if (changedProps.has("value") || changedProps.has("_renderEmpty")) {
-      const listbox = this.shadowRoot!.querySelector("paper-listbox")!;
-      if (listbox) {
-        listbox._selectSelected(this._key);
-      }
-    }
   }
 
   private async _updateDeviceInfo() {
     this._automations = this.deviceId
-      ? await this._fetchDeviceAutomations(this.hass, this.deviceId)
+      ? (await this._fetchDeviceAutomations(this.hass, this.deviceId)).sort(
+          sortDeviceAutomations
+        )
       : // No device, clear the list of automations
         [];
 
@@ -168,29 +148,31 @@ export abstract class HaDeviceAutomationPicker<
   }
 
   private _automationChanged(ev) {
-    if (ev.detail.item.automation) {
-      this._setValue(ev.detail.item.automation);
+    const value = ev.target.value;
+    if (!value || [UNKNOWN_AUTOMATION_KEY, NO_AUTOMATION_KEY].includes(value)) {
+      return;
     }
+    const [deviceId, idx] = value.split("_");
+    const automation = this._automations[idx];
+    if (automation.device_id !== deviceId) {
+      return;
+    }
+    this._setValue(automation);
   }
 
   private _setValue(automation: T) {
     if (this.value && deviceAutomationsEqual(automation, this.value)) {
       return;
     }
-    fireEvent(this, "change");
-    fireEvent(this, "value-changed", { value: automation });
+    const value = { ...automation };
+    delete value.metadata;
+    fireEvent(this, "value-changed", { value });
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-paper-dropdown-menu {
-        width: 100%;
-      }
-      paper-listbox {
-        min-width: 200px;
-      }
-      paper-item {
-        cursor: pointer;
+      ha-select {
+        display: block;
       }
     `;
   }

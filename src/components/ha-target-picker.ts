@@ -42,6 +42,7 @@ import "./entity/ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
 import "./ha-area-picker";
 import "./ha-icon-button";
+import "./ha-input-helper-text";
 import "./ha-svg-icon";
 
 @customElement("ha-target-picker")
@@ -51,6 +52,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public value?: HassServiceTarget;
 
   @property() public label?: string;
+
+  @property() public helper?: string;
 
   /**
    * Show only targets with entities from specific domains.
@@ -75,6 +78,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
+
+  @property({ type: Boolean }) public horizontal = false;
 
   @state() private _areas?: { [areaId: string]: AreaRegistryEntry };
 
@@ -114,7 +119,26 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (!this._areas || !this._devices || !this._entities) {
       return html``;
     }
-    return html`<div class="mdc-chip-set items">
+    return html`
+      ${this.horizontal
+        ? html`
+            <div class="horizontal-container">
+              ${this._renderChips()} ${this._renderPicker()}
+            </div>
+            ${this._renderItems()}
+          `
+        : html`
+            <div>
+              ${this._renderItems()} ${this._renderPicker()}
+              ${this._renderChips()}
+            </div>
+          `}
+    `;
+  }
+
+  private _renderItems() {
+    return html`
+      <div class="mdc-chip-set items">
         ${this.value?.area_id
           ? ensureArray(this.value.area_id).map((area_id) => {
               const area = this._areas![area_id];
@@ -151,7 +175,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             })
           : ""}
       </div>
-      ${this._renderPicker()}
+    `;
+  }
+
+  private _renderChips() {
+    return html`
       <div class="mdc-chip-set">
         <div
           class="mdc-chip area_id add"
@@ -213,20 +241,22 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             </span>
           </span>
         </div>
-      </div>`;
+      </div>
+      ${this.helper
+        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        : ""}
+    `;
   }
 
   private async _showPicker(ev) {
     this._addMode = ev.currentTarget.type;
     await this.updateComplete;
-    setTimeout(() => {
-      this._inputElement?.open();
-      this._inputElement?.focus();
-    }, 0);
+    await this._inputElement?.focus();
+    await this._inputElement?.open();
   }
 
   private _renderChip(
-    type: string,
+    type: "area_id" | "device_id" | "entity_id",
     id: string,
     name: string,
     entityState?: HassEntity,
@@ -282,7 +312,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             class="mdc-chip__icon mdc-chip__icon--trailing"
             tabindex="-1"
             role="button"
-            .label=${this.hass.localize("ui.components.target-picker.expand")}
+            .label=${this.hass.localize("ui.components.target-picker.remove")}
             .path=${mdiClose}
             hideTooltip
             .id=${id}
@@ -302,48 +332,54 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private _renderPicker() {
     switch (this._addMode) {
       case "area_id":
-        return html`<ha-area-picker
-          .hass=${this.hass}
-          id="input"
-          .type=${"area_id"}
-          .label=${this.hass.localize(
-            "ui.components.target-picker.add_area_id"
-          )}
-          no-add
-          .deviceFilter=${this.deviceFilter}
-          .entityFilter=${this.entityRegFilter}
-          .includeDeviceClasses=${this.includeDeviceClasses}
-          .includeDomains=${this.includeDomains}
-          @value-changed=${this._targetPicked}
-        ></ha-area-picker>`;
+        return html`
+          <ha-area-picker
+            .hass=${this.hass}
+            id="input"
+            .type=${"area_id"}
+            .label=${this.hass.localize(
+              "ui.components.target-picker.add_area_id"
+            )}
+            no-add
+            .deviceFilter=${this.deviceFilter}
+            .entityFilter=${this.entityRegFilter}
+            .includeDeviceClasses=${this.includeDeviceClasses}
+            .includeDomains=${this.includeDomains}
+            @value-changed=${this._targetPicked}
+          ></ha-area-picker>
+        `;
       case "device_id":
-        return html`<ha-device-picker
-          .hass=${this.hass}
-          id="input"
-          .type=${"device_id"}
-          .label=${this.hass.localize(
-            "ui.components.target-picker.add_device_id"
-          )}
-          .deviceFilter=${this.deviceFilter}
-          .entityFilter=${this.entityRegFilter}
-          .includeDeviceClasses=${this.includeDeviceClasses}
-          .includeDomains=${this.includeDomains}
-          @value-changed=${this._targetPicked}
-        ></ha-device-picker>`;
+        return html`
+          <ha-device-picker
+            .hass=${this.hass}
+            id="input"
+            .type=${"device_id"}
+            .label=${this.hass.localize(
+              "ui.components.target-picker.add_device_id"
+            )}
+            .deviceFilter=${this.deviceFilter}
+            .entityFilter=${this.entityRegFilter}
+            .includeDeviceClasses=${this.includeDeviceClasses}
+            .includeDomains=${this.includeDomains}
+            @value-changed=${this._targetPicked}
+          ></ha-device-picker>
+        `;
       case "entity_id":
-        return html`<ha-entity-picker
-          .hass=${this.hass}
-          id="input"
-          .type=${"entity_id"}
-          .label=${this.hass.localize(
-            "ui.components.target-picker.add_entity_id"
-          )}
-          .entityFilter=${this.entityFilter}
-          .includeDeviceClasses=${this.includeDeviceClasses}
-          .includeDomains=${this.includeDomains}
-          @value-changed=${this._targetPicked}
-          allow-custom-entity
-        ></ha-entity-picker>`;
+        return html`
+          <ha-entity-picker
+            .hass=${this.hass}
+            id="input"
+            .type=${"entity_id"}
+            .label=${this.hass.localize(
+              "ui.components.target-picker.add_entity_id"
+            )}
+            .entityFilter=${this.entityFilter}
+            .includeDeviceClasses=${this.includeDeviceClasses}
+            .includeDomains=${this.includeDomains}
+            @value-changed=${this._targetPicked}
+            allow-custom-entity
+          ></ha-entity-picker>
+        `;
     }
     return html``;
   }
@@ -532,6 +568,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return css`
       ${unsafeCSS(chipStyles)}
+      .horizontal-container {
+        display: flex;
+        flex-wrap: wrap;
+        min-height: 56px;
+        align-items: center;
+      }
       .mdc-chip {
         color: var(--primary-text-color);
       }
@@ -562,6 +604,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         height: 16px;
         --mdc-icon-size: 14px;
         color: var(--secondary-text-color);
+        margin-inline-start: 4px !important;
+        margin-inline-end: -4px !important;
+        direction: var(--direction);
       }
       .mdc-chip__icon--leading {
         display: flex;
@@ -571,6 +616,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         border-radius: 50%;
         padding: 6px;
         margin-left: -14px !important;
+        margin-inline-start: -14px !important;
+        margin-inline-end: 4px !important;
+        direction: var(--direction);
       }
       .expand-btn {
         margin-right: 0;

@@ -1,10 +1,8 @@
 import { html } from "lit";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
   createConfigFlow,
   deleteConfigFlow,
   fetchConfigFlow,
-  getConfigFlowHandlers,
   handleConfigFlowStep,
 } from "../../data/config_flow";
 import { domainToName } from "../../data/integration";
@@ -22,19 +20,6 @@ export const showConfigFlowDialog = (
 ): void =>
   showFlowDialog(element, dialogParams, {
     loadDevicesAndAreas: true,
-    getFlowHandlers: async (hass) => {
-      const [handlers] = await Promise.all([
-        getConfigFlowHandlers(hass),
-        hass.loadBackendTranslation("title", undefined, true),
-      ]);
-
-      return handlers.sort((handlerA, handlerB) =>
-        caseInsensitiveStringCompare(
-          domainToName(hass.localize, handlerA),
-          domainToName(hass.localize, handlerB)
-        )
-      );
-    },
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
         createConfigFlow(hass, handler),
@@ -91,10 +76,22 @@ export const showConfigFlowDialog = (
       );
     },
 
-    renderShowFormStepFieldError(hass, step, error) {
-      return hass.localize(
-        `component.${step.handler}.config.error.${error}`,
+    renderShowFormStepFieldHelper(hass, step, field) {
+      const description = hass.localize(
+        `component.${step.handler}.config.step.${step.step_id}.data_description.${field.name}`,
         step.description_placeholders
+      );
+      return description
+        ? html`<ha-markdown breaks .content=${description}></ha-markdown>`
+        : "";
+    },
+
+    renderShowFormStepFieldError(hass, step, error) {
+      return (
+        hass.localize(
+          `component.${step.handler}.config.error.${error}`,
+          step.description_placeholders
+        ) || error
       );
     },
 
@@ -181,8 +178,35 @@ export const showConfigFlowDialog = (
         : "";
     },
 
+    renderMenuHeader(hass, step) {
+      return (
+        hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.title`
+        ) || hass.localize(`component.${step.handler}.title`)
+      );
+    },
+
+    renderMenuDescription(hass, step) {
+      const description = hass.localize(
+        `component.${step.handler}.config.step.${step.step_id}.description`,
+        step.description_placeholders
+      );
+      return description
+        ? html`
+            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+          `
+        : "";
+    },
+
+    renderMenuOption(hass, step, option) {
+      return hass.localize(
+        `component.${step.handler}.config.step.${step.step_id}.menu_options.${option}`,
+        step.description_placeholders
+      );
+    },
+
     renderLoadingDescription(hass, reason, handler, step) {
-      if (!["loading_flow", "loading_step"].includes(reason)) {
+      if (reason !== "loading_flow" && reason !== "loading_step") {
         return "";
       }
       const domain = step?.handler || handler;

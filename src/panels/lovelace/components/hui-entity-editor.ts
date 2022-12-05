@@ -1,24 +1,19 @@
 import { mdiDrag } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { guard } from "lit/directives/guard";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
+import {
+  loadSortable,
+  SortableInstance,
+} from "../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "../entity-rows/types";
-
-let Sortable;
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {
@@ -28,20 +23,20 @@ export class HuiEntityEditor extends LitElement {
 
   @property() protected label?: string;
 
-  @state() private _attached = false;
+  private _entityKeys = new WeakMap<EntityConfig, string>();
 
-  @state() private _renderEmptySortable = false;
-
-  private _sortable?;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._attached = true;
-  }
+  private _sortable?: SortableInstance;
 
   public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._attached = false;
+    this._destroySortable();
+  }
+
+  private _getKey(action: EntityConfig) {
+    if (!this._entityKeys.has(action)) {
+      this._entityKeys.set(action, Math.random().toString());
+    }
+
+    return this._entityKeys.get(action)!;
   }
 
   protected render(): TemplateResult {
@@ -58,87 +53,66 @@ export class HuiEntityEditor extends LitElement {
           ")"}
       </h3>
       <div class="entities">
-        ${guard([this.entities, this._renderEmptySortable], () =>
-          this._renderEmptySortable
-            ? ""
-            : this.entities!.map(
-                (entityConf, index) => html`
-                  <div class="entity" data-entity-id=${entityConf.entity}>
-                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                    <ha-entity-picker
-                      .hass=${this.hass}
-                      .value=${entityConf.entity}
-                      .index=${index}
-                      @value-changed=${this._valueChanged}
-                      allow-custom-entity
-                    ></ha-entity-picker>
-                  </div>
-                `
-              )
+        ${repeat(
+          this.entities,
+          (entityConf) => this._getKey(entityConf),
+          (entityConf, index) => html`
+            <div class="entity" data-entity-id=${entityConf.entity}>
+              <div class="handle">
+                <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+              </div>
+              <ha-entity-picker
+                .hass=${this.hass}
+                .value=${entityConf.entity}
+                .index=${index}
+                @value-changed=${this._valueChanged}
+                allow-custom-entity
+              ></ha-entity-picker>
+            </div>
+          `
         )}
       </div>
       <ha-entity-picker
+        class="add-entity"
         .hass=${this.hass}
         @value-changed=${this._addEntity}
       ></ha-entity-picker>
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-
-    const attachedChanged = changedProps.has("_attached");
-    const entitiesChanged = changedProps.has("entities");
-
-    if (!entitiesChanged && !attachedChanged) {
-      return;
-    }
-
-    if (attachedChanged && !this._attached) {
-      // Tear down sortable, if available
-      this._sortable?.destroy();
-      this._sortable = undefined;
-      return;
-    }
-
-    if (!this._sortable && this.entities) {
-      this._createSortable();
-      return;
-    }
-
-    if (entitiesChanged) {
-      this._handleEntitiesChanged();
-    }
-  }
-
-  private async _handleEntitiesChanged() {
-    this._renderEmptySortable = true;
-    await this.updateComplete;
-    const container = this.shadowRoot!.querySelector(".entities")!;
-    while (container.lastElementChild) {
-      container.removeChild(container.lastElementChild);
-    }
-    this._renderEmptySortable = false;
+  protected firstUpdated(): void {
+    this._createSortable();
   }
 
   private async _createSortable() {
-    if (!Sortable) {
-      const sortableImport = await import(
-        "sortablejs/modular/sortable.core.esm"
-      );
+    const Sortable = await loadSortable();
+    this._sortable = new Sortable(
+      this.shadowRoot!.querySelector(".entities")!,
+      {
+        animation: 150,
+        fallbackClass: "sortable-fallback",
+        handle: ".handle",
+        dataIdAttr: "data-entity-id",
+        onChoose: (evt: SortableEvent) => {
+          (evt.item as any).placeholder =
+            document.createComment("sort-placeholder");
+          evt.item.after((evt.item as any).placeholder);
+        },
+        onEnd: (evt: SortableEvent) => {
+          // put back in original location
+          if ((evt.item as any).placeholder) {
+            (evt.item as any).placeholder.replaceWith(evt.item);
+            delete (evt.item as any).placeholder;
+          }
+          this._entityMoved(evt);
+        },
+      }
+    );
+  }
 
-      Sortable = sortableImport.Sortable;
-      Sortable.mount(sortableImport.OnSpill);
-      Sortable.mount(sortableImport.AutoScroll());
-    }
-
-    this._sortable = new Sortable(this.shadowRoot!.querySelector(".entities"), {
-      animation: 150,
-      fallbackClass: "sortable-fallback",
-      handle: "ha-svg-icon",
-      dataIdAttr: "data-entity-id",
-      onEnd: async (evt: SortableEvent) => this._entityMoved(evt),
-    });
+  private _destroySortable() {
+    this._sortable?.destroy();
+    this._sortable = undefined;
   }
 
   private async _addEntity(ev: CustomEvent): Promise<void> {
@@ -170,7 +144,7 @@ export class HuiEntityEditor extends LitElement {
     const index = (ev.target as any).index;
     const newConfigEntities = this.entities!.concat();
 
-    if (value === "") {
+    if (value === "" || value === undefined) {
       newConfigEntities.splice(index, 1);
     } else {
       newConfigEntities[index] = {
@@ -186,13 +160,29 @@ export class HuiEntityEditor extends LitElement {
     return [
       sortableStyles,
       css`
+        ha-entity-picker {
+          margin-top: 8px;
+        }
+        .add-entity {
+          display: block;
+          margin-left: 31px;
+          margin-inline-start: 31px;
+          margin-inline-end: initial;
+          direction: var(--direction);
+        }
         .entity {
           display: flex;
           align-items: center;
         }
-        .entity ha-svg-icon {
+        .entity .handle {
           padding-right: 8px;
           cursor: move;
+          padding-inline-end: 8px;
+          padding-inline-start: initial;
+          direction: var(--direction);
+        }
+        .entity .handle > * {
+          pointer-events: none;
         }
         .entity ha-entity-picker {
           flex-grow: 1;

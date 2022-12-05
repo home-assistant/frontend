@@ -2,6 +2,7 @@ import { DEFAULT_SCHEMA, dump, load, Schema } from "js-yaml";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HomeAssistant } from "../types";
 import "./ha-code-editor";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
@@ -18,6 +19,8 @@ const isEmpty = (obj: Record<string, unknown>): boolean => {
 
 @customElement("ha-yaml-editor")
 export class HaYamlEditor extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public value?: any;
 
   @property({ attribute: false }) public yamlSchema: Schema = DEFAULT_SCHEMA;
@@ -28,13 +31,17 @@ export class HaYamlEditor extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public readOnly = false;
+
+  @property({ type: Boolean }) public required = false;
+
   @state() private _yaml = "";
 
   public setValue(value): void {
     try {
       this._yaml =
         value && !isEmpty(value)
-          ? dump(value, { schema: this.yamlSchema })
+          ? dump(value, { schema: this.yamlSchema, quotingType: '"' })
           : "";
     } catch (err: any) {
       // eslint-disable-next-line no-console
@@ -54,12 +61,19 @@ export class HaYamlEditor extends LitElement {
       return html``;
     }
     return html`
-      ${this.label ? html`<p>${this.label}</p>` : ""}
+      ${this.label
+        ? html`<p>${this.label}${this.required ? " *" : ""}</p>`
+        : ""}
       <ha-code-editor
+        .hass=${this.hass}
         .value=${this._yaml}
+        .readOnly=${this.readOnly}
         mode="yaml"
+        autocomplete-entities
+        autocomplete-icons
         .error=${this.isValid === false}
         @value-changed=${this._onChange}
+        dir="ltr"
       ></ha-code-editor>
     `;
   }

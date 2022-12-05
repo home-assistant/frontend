@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
+import { mdiCompare, mdiCompareRemove } from "@mdi/js";
 import {
   addDays,
   addMonths,
@@ -17,7 +17,7 @@ import {
   startOfToday,
   startOfWeek,
   startOfYear,
-} from "date-fns";
+} from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -30,9 +30,13 @@ import {
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-button-prev";
+import "../../../components/ha-icon-button-next";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, ToggleButton } from "../../../types";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -40,11 +44,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @property() public collectionKey?: string;
 
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
   @state() _startDate?: Date;
 
   @state() _endDate?: Date;
 
   @state() private _period?: "day" | "week" | "month" | "year";
+
+  @state() private _compare = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -103,24 +111,22 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             : `${formatDateShort(
                 this._startDate,
                 this.hass.locale
-              )} - ${formatDateShort(
+              )} – ${formatDateShort(
                 this._endDate || new Date(),
                 this.hass.locale
               )}`}
-          <ha-icon-button
+          <ha-icon-button-prev
             .label=${this.hass.localize(
               "ui.panel.lovelace.components.energy_period_selector.previous"
             )}
             @click=${this._pickPrevious}
-            .path=${mdiChevronLeft}
-          ></ha-icon-button>
-          <ha-icon-button
+          ></ha-icon-button-prev>
+          <ha-icon-button-next
             .label=${this.hass.localize(
               "ui.panel.lovelace.components.energy_period_selector.next"
             )}
             @click=${this._pickNext}
-            .path=${mdiChevronRight}
-          ></ha-icon-button>
+          ></ha-icon-button-next>
           <mwc-button dense outlined @click=${this._pickToday}>
             ${this.hass.localize(
               "ui.panel.lovelace.components.energy_period_selector.today"
@@ -133,7 +139,30 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .active=${this._period}
             dense
             @value-changed=${this._handleView}
+            .dir=${computeRTLDirection(this.hass)}
           ></ha-button-toggle-group>
+          ${this.narrow
+            ? html`<ha-icon-button
+                class="compare ${this._compare ? "active" : ""}"
+                .path=${this._compare ? mdiCompareRemove : mdiCompare}
+                @click=${this._toggleCompare}
+                dense
+                outlined
+              >
+                ${this.hass.localize(
+                  "ui.panel.lovelace.components.energy_period_selector.compare"
+                )}
+              </ha-icon-button>`
+            : html`<mwc-button
+                class="compare ${this._compare ? "active" : ""}"
+                @click=${this._toggleCompare}
+                dense
+                outlined
+              >
+                ${this.hass.localize(
+                  "ui.panel.lovelace.components.energy_period_selector.compare"
+                )}
+              </mwc-button>`}
         </div>
       </div>
     `;
@@ -151,11 +180,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         ? today
         : this._startDate;
 
+    const weekStartsOn = firstWeekdayIndex(this.hass.locale);
+
     this._setDate(
       this._period === "day"
         ? startOfDay(start)
         : this._period === "week"
-        ? startOfWeek(start, { weekStartsOn: 1 })
+        ? startOfWeek(start, { weekStartsOn })
         : this._period === "month"
         ? startOfMonth(start)
         : startOfYear(start)
@@ -163,11 +194,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   private _pickToday() {
+    const weekStartsOn = firstWeekdayIndex(this.hass.locale);
+
     this._setDate(
       this._period === "day"
         ? startOfToday()
         : this._period === "week"
-        ? startOfWeek(new Date(), { weekStartsOn: 1 })
+        ? startOfWeek(new Date(), { weekStartsOn })
         : this._period === "month"
         ? startOfMonth(new Date())
         : startOfYear(new Date())
@@ -199,11 +232,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   private _setDate(startDate: Date) {
+    const weekStartsOn = firstWeekdayIndex(this.hass.locale);
+
     const endDate =
       this._period === "day"
         ? endOfDay(startDate)
         : this._period === "week"
-        ? endOfWeek(startDate, { weekStartsOn: 1 })
+        ? endOfWeek(startDate, { weekStartsOn })
         : this._period === "month"
         ? endOfMonth(startDate)
         : endOfYear(startDate);
@@ -216,6 +251,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   private _updateDates(energyData: EnergyData): void {
+    this._compare = energyData.startCompare !== undefined;
     this._startDate = energyData.start;
     this._endDate = energyData.end || endOfToday();
     const dayDifference = differenceInDays(this._endDate, this._startDate);
@@ -231,6 +267,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         : undefined;
   }
 
+  private _toggleCompare() {
+    this._compare = !this._compare;
+    const energyCollection = getEnergyDataCollection(this.hass, {
+      key: "energy_dashboard",
+    });
+    energyCollection.setCompare(this._compare);
+    energyCollection.refresh();
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       .row {
@@ -240,9 +285,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       :host([narrow]) .row {
         flex-direction: column-reverse;
       }
-      :host([narrow]) .period {
-        margin-bottom: 8px;
-      }
       .label {
         display: flex;
         justify-content: flex-end;
@@ -251,12 +293,45 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       }
       .period {
         display: flex;
+        flex-wrap: wrap;
         justify-content: flex-end;
+        align-items: center;
+      }
+      :host([narrow]) .period {
+        margin-bottom: 8px;
+      }
+      mwc-button {
+        margin-left: 8px;
+      }
+      ha-icon-button {
+        margin-left: 4px;
+        --mdc-icon-size: 20px;
+      }
+      ha-icon-button.active::before,
+      mwc-button.active::before {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-color: currentColor;
+        opacity: 0;
+        pointer-events: none;
+        content: "";
+        transition: opacity 15ms linear, background-color 15ms linear;
+        opacity: var(--mdc-icon-button-ripple-opacity, 0.12);
+      }
+      ha-icon-button.active::before {
+        border-radius: 50%;
+      }
+      .compare {
+        position: relative;
       }
       :host {
         --mdc-button-outline-color: currentColor;
         --primary-color: currentColor;
         --mdc-theme-primary: currentColor;
+        --mdc-theme-on-primary: currentColor;
         --mdc-button-disabled-outline-color: var(--disabled-text-color);
         --mdc-button-disabled-ink-color: var(--disabled-text-color);
         --mdc-icon-button-ripple-opacity: 0.2;
@@ -266,6 +341,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       }
       ha-button-toggle-group {
         padding-left: 8px;
+        padding-inline-start: 8px;
+        direction: var(--direction);
       }
       mwc-button {
         flex-shrink: 0;

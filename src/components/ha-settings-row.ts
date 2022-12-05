@@ -21,7 +21,7 @@ export class HaSettingsRow extends LitElement {
           <div secondary><slot name="description"></slot></div>
         </paper-item-body>
       </div>
-      <slot></slot>
+      <div class="content"><slot></slot></div>
     `;
   }
 
@@ -43,6 +43,18 @@ export class HaSettingsRow extends LitElement {
         );
         flex: 1;
       }
+      .content {
+        display: contents;
+      }
+      :host(:not([narrow])) .content {
+        display: var(--settings-row-content-display, flex);
+        justify-content: flex-end;
+        flex: 1;
+        padding: 16px 0;
+      }
+      .content ::slotted(*) {
+        width: var(--settings-row-content-width);
+      }
       :host([narrow]) {
         align-items: normal;
         flex-direction: column;
@@ -56,7 +68,7 @@ export class HaSettingsRow extends LitElement {
         white-space: normal;
       }
       .prefix-wrap {
-        display: contents;
+        display: var(--settings-row-prefix-display);
       }
       :host([narrow]) .prefix-wrap {
         display: flex;

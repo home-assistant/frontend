@@ -134,6 +134,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             )}
             .zoom=${this._config.default_zoom ?? 14}
             .paths=${this._getHistoryPaths(this._config, this._history)}
+            .autoFit=${this._config.auto_fit}
             .darkMode=${this._config.dark_mode}
           ></ha-map>
           <ha-icon-button
@@ -374,9 +375,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
       #root {
         position: relative;
-      }
-
-      :host([ispanel]) #root {
         height: 100%;
       }
     `;

@@ -20,6 +20,7 @@ export interface HassioBackup {
   slug: string;
   date: string;
   name: string;
+  size: number;
   type: "full" | "partial";
   protected: boolean;
   content: BackupContent;

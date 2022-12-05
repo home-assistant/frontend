@@ -1,7 +1,8 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { DeviceRegistryEntry } from "../../../../data/device_registry";
 
 export interface DeviceAutomationDialogParams {
-  deviceId: string;
+  device: DeviceRegistryEntry;
   script?: boolean;
 }
 

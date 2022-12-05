@@ -85,7 +85,7 @@ export class HassioUpdate extends LitElement {
       return html``;
     }
     return html`
-      <ha-card>
+      <ha-card outlined>
         <div class="card-content">
           <div class="icon">
             <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
@@ -148,7 +148,6 @@ export class HassioUpdate extends LitElement {
         }
         ha-settings-row {
           padding: 0;
-          --paper-item-body-two-line-min-height: 32px;
         }
       `,
     ];

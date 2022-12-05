@@ -50,6 +50,9 @@ export class HuiEntityPickerTable extends LitElement {
     const columns: DataTableColumnContainer = {
       icon: {
         title: "",
+        label: this.hass!.localize(
+          "ui.panel.lovelace.unused_entities.state_icon"
+        ),
         type: "icon",
         template: (_icon, entity: any) => html`
           <state-badge

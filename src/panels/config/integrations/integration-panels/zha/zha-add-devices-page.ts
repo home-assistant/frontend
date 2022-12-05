@@ -190,12 +190,19 @@ class ZHAAddDevicesPage extends LitElement {
     }
   }
 
+  private _deactivate(): void {
+    this._active = false;
+    if (this._addDevicesTimeoutHandle) {
+      clearTimeout(this._addDevicesTimeoutHandle);
+    }
+  }
+
   private _subscribe(): void {
     if (!this.hass) {
       return;
     }
     this._active = true;
-    const data: any = { type: "zha/devices/permit" };
+    const data: any = { type: "zha/devices/permit", duration: 254 };
     if (this._ieeeAddress) {
       data.ieee = this._ieeeAddress;
     }
@@ -204,8 +211,8 @@ class ZHAAddDevicesPage extends LitElement {
       data
     );
     this._addDevicesTimeoutHandle = setTimeout(
-      () => this._unsubscribe(),
-      120000
+      () => this._deactivate(),
+      254000
     );
   }
 

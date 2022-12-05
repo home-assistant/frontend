@@ -1,11 +1,9 @@
 import "@material/mwc-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
@@ -26,6 +24,7 @@ import "./ha-force-narrow-row";
 import "./ha-long-lived-access-tokens-card";
 import "./ha-mfa-modules-card";
 import "./ha-pick-dashboard-row";
+import "./ha-pick-first-weekday-row";
 import "./ha-pick-language-row";
 import "./ha-pick-number-format-row";
 import "./ha-pick-theme-row";
@@ -35,6 +34,7 @@ import "./ha-refresh-tokens-card";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
 
+@customElement("ha-panel-profile")
 class HaPanelProfile extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -101,6 +101,10 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-time-format-row>
+            <ha-pick-first-weekday-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-first-weekday-row>
             <ha-pick-theme-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -254,5 +258,8 @@ class HaPanelProfile extends LitElement {
     ];
   }
 }
-
-customElements.define("ha-panel-profile", HaPanelProfile);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-panel-profile": HaPanelProfile;
+  }
+}

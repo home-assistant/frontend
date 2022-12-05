@@ -72,8 +72,7 @@ export const handleAction = async (
             "action",
             serviceName ||
               hass.localize(
-                "ui.panel.lovelace.editor.action-editor.actions." +
-                  actionConfig.action
+                `ui.panel.lovelace.editor.action-editor.actions.${actionConfig.action}`
               ) ||
               actionConfig.action
           ),
@@ -148,7 +147,7 @@ export const handleAction = async (
       hass.callService(
         domain,
         service,
-        actionConfig.service_data,
+        actionConfig.data ?? actionConfig.service_data,
         actionConfig.target
       );
       forwardHaptic("light");

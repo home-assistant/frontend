@@ -48,7 +48,7 @@ class HassioCoreInfo extends LitElement {
     ];
 
     return html`
-      <ha-card header="Core">
+      <ha-card header="Core" outlined>
         <div class="card-content">
           <div>
             <ha-settings-row>
@@ -204,16 +204,6 @@ class HassioCoreInfo extends LitElement {
         ha-button-menu {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;
-        }
-        @media (min-width: 563px) {
-          paper-listbox {
-            max-height: 150px;
-            overflow: auto;
-          }
-        }
-        paper-item {
-          cursor: pointer;
-          min-height: 35px;
         }
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);

@@ -11,6 +11,8 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { clamp } from "../../common/number/clamp";
 
+export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
+
 interface Tooltip extends TooltipModel<any> {
   top: string;
   left: string;
@@ -36,6 +38,26 @@ export default class HaChartBase extends LitElement {
   @state() private _tooltip?: Tooltip;
 
   @state() private _hiddenDatasets: Set<number> = new Set();
+
+  private _releaseCanvas() {
+    // release the canvas memory to prevent
+    // safari from running out of memory.
+    if (this.chart) {
+      this.chart.destroy();
+    }
+  }
+
+  public disconnectedCallback() {
+    this._releaseCanvas();
+    super.disconnectedCallback();
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._setupChart();
+    }
+  }
 
   protected firstUpdated() {
     this._setupChart();
@@ -166,6 +188,10 @@ export default class HaChartBase extends LitElement {
     ChartConstructor.defaults.color = computedStyles.getPropertyValue(
       "--secondary-text-color"
     );
+    ChartConstructor.defaults.font.family =
+      computedStyles.getPropertyValue("--mdc-typography-body1-font-family") ||
+      computedStyles.getPropertyValue("--mdc-typography-font-family") ||
+      "Roboto, Noto, sans-serif";
 
     this.chart = new ChartConstructor(ctx, {
       type: this.chartType,
@@ -304,6 +330,9 @@ export default class HaChartBase extends LitElement {
         width: 16px;
         flex-shrink: 0;
         box-sizing: border-box;
+        margin-inline-end: 6px;
+        margin-inline-start: initial;
+        direction: var(--direction);
       }
       .chartTooltip .bullet {
         align-self: baseline;
@@ -312,6 +341,9 @@ export default class HaChartBase extends LitElement {
       :host([rtl]) .chartTooltip .bullet {
         margin-right: inherit;
         margin-left: 6px;
+        margin-inline-end: inherit;
+        margin-inline-start: 6px;
+        direction: var(--direction);
       }
       .chartTooltip {
         padding: 8px;
@@ -348,6 +380,7 @@ export default class HaChartBase extends LitElement {
       .chartTooltip .title {
         text-align: center;
         font-weight: 500;
+        direction: ltr;
       }
       .chartTooltip .footer {
         font-weight: 500;

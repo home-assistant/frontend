@@ -1,4 +1,5 @@
 import { supportsFeature } from "../common/entity/supports-feature";
+import { cleanupMediaTitle } from "../data/media-player";
 
 export default class MediaPlayerEntity {
   constructor(hass, stateObj) {
@@ -115,7 +116,7 @@ export default class MediaPlayerEntity {
   }
 
   get primaryTitle() {
-    return this._attr.media_title;
+    return cleanupMediaTitle(this._attr.media_title);
   }
 
   get secondaryTitle() {

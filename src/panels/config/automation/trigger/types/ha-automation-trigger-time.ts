@@ -1,29 +1,58 @@
+import memoizeOne from "memoize-one";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-radio";
-import { TimeTrigger } from "../../../../../data/automation";
-import { HomeAssistant } from "../../../../../types";
-import {
-  handleChangeEvent,
-  TriggerElement,
-} from "../ha-automation-trigger-row";
-import "../../../../../components/ha-time-input";
+import type { TimeTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+import type { TriggerElement } from "../ha-automation-trigger-row";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
-const includeDomains = ["input_datetime"];
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: TimeTrigger;
+  @property({ attribute: false }) public trigger!: TimeTrigger;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @state() private _inputMode?: boolean;
 
   public static get defaultConfig() {
     return { at: "" };
   }
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc, inputMode?: boolean) => {
+      const atSelector = inputMode
+        ? { entity: { domain: "input_datetime" } }
+        : { time: {} };
+
+      return [
+        {
+          name: "mode",
+          type: "select",
+          required: true,
+          options: [
+            [
+              "value",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.time.type_value"
+              ),
+            ],
+            [
+              "input",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.time.type_input"
+              ),
+            ],
+          ],
+        },
+        { name: "at", selector: atSelector },
+      ] as const;
+    }
+  );
 
   public willUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("trigger")) {
@@ -50,67 +79,47 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       this._inputMode ??
       (at?.startsWith("input_datetime.") || at?.startsWith("sensor."));
 
-    return html`<ha-formfield
-        .label=${this.hass!.localize(
-          "ui.panel.config.automation.editor.triggers.type.time.type_value"
-        )}
-      >
-        <ha-radio
-          @change=${this._handleModeChanged}
-          name="mode"
-          value="value"
-          ?checked=${!inputMode}
-        ></ha-radio>
-      </ha-formfield>
-      <ha-formfield
-        .label=${this.hass!.localize(
-          "ui.panel.config.automation.editor.triggers.type.time.type_input"
-        )}
-      >
-        <ha-radio
-          @change=${this._handleModeChanged}
-          name="mode"
-          value="input"
-          ?checked=${inputMode}
-        ></ha-radio>
-      </ha-formfield>
+    const schema = this._schema(this.hass.localize, inputMode);
 
-      ${inputMode
-        ? html`<ha-entity-picker
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.type.time.at"
-            )}
-            .includeDomains=${includeDomains}
-            .name=${"at"}
-            .value=${at?.startsWith("input_datetime.") ||
-            at?.startsWith("sensor.")
-              ? at
-              : ""}
-            @value-changed=${this._valueChanged}
-            .hass=${this.hass}
-            allow-custom-entity
-          ></ha-entity-picker>`
-        : html`<ha-time-input
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.type.time.at"
-            )}
-            .name=${"at"}
-            .value=${at?.startsWith("input_datetime.") ||
-            at?.startsWith("sensor.")
-              ? ""
-              : at}
-            .locale=${this.hass.locale}
-            @value-changed=${this._valueChanged}
-          ></ha-time-input>`} `;
-  }
+    const data = {
+      mode: inputMode ? "input" : "value",
+      ...this.trigger,
+    };
 
-  private _handleModeChanged(ev: Event) {
-    this._inputMode = (ev.target as any).value === "input";
+    return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${schema}
+        .disabled=${this.disabled}
+        @value-changed=${this._valueChanged}
+        .computeLabel=${this._computeLabelCallback}
+      ></ha-form>
+    `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
+    ev.stopPropagation();
+    const newValue = ev.detail.value;
+
+    this._inputMode = newValue.mode === "input";
+    delete newValue.mode;
+
+    Object.keys(newValue).forEach((key) =>
+      newValue[key] === undefined || newValue[key] === ""
+        ? delete newValue[key]
+        : {}
+    );
+
+    fireEvent(this, "value-changed", { value: newValue });
   }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
+    this.hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.time.${schema.name}`
+    );
 }
 
 declare global {

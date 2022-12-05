@@ -1,5 +1,14 @@
+import { Connection, createCollection } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
+import { debounce } from "../common/util/debounce";
+
+export type IntegrationType =
+  | "device"
+  | "helper"
+  | "hub"
+  | "service"
+  | "hardware";
 
 export interface IntegrationManifest {
   is_built_in: boolean;
@@ -15,6 +24,8 @@ export interface IntegrationManifest {
   ssdp?: Array<{ manufacturer?: string; modelName?: string; st?: string }>;
   zeroconf?: string[];
   homekit?: { models: string[] };
+  integration_type?: IntegrationType;
+  loggers?: string[];
   quality_scale?: "gold" | "internal" | "platinum" | "silver";
   iot_class:
     | "assumed_state"
@@ -23,11 +34,28 @@ export interface IntegrationManifest {
     | "local_polling"
     | "local_push";
 }
-
 export interface IntegrationSetup {
   domain: string;
   seconds?: number;
 }
+
+export interface IntegrationLogInfo {
+  domain: string;
+  level?: number;
+}
+
+export enum LogSeverity {
+  CRITICAL = 50,
+  FATAL = 50,
+  ERROR = 40,
+  WARNING = 30,
+  WARN = 30,
+  INFO = 20,
+  DEBUG = 10,
+  NOTSET = 0,
+}
+
+export type IntegrationLogPersistance = "none" | "once" | "permanent";
 
 export const integrationIssuesUrl = (
   domain: string,
@@ -42,8 +70,18 @@ export const domainToName = (
   manifest?: IntegrationManifest
 ) => localize(`component.${domain}.title`) || manifest?.name || domain;
 
-export const fetchIntegrationManifests = (hass: HomeAssistant) =>
-  hass.callWS<IntegrationManifest[]>({ type: "manifest/list" });
+export const fetchIntegrationManifests = (
+  hass: HomeAssistant,
+  integrations?: string[]
+) => {
+  const params: any = {
+    type: "manifest/list",
+  };
+  if (integrations) {
+    params.integrations = integrations;
+  }
+  return hass.callWS<IntegrationManifest[]>(params);
+};
 
 export const fetchIntegrationManifest = (
   hass: HomeAssistant,
@@ -52,3 +90,46 @@ export const fetchIntegrationManifest = (
 
 export const fetchIntegrationSetups = (hass: HomeAssistant) =>
   hass.callWS<IntegrationSetup[]>({ type: "integration/setup_info" });
+
+export const fetchIntegrationLogInfo = (conn) =>
+  conn.sendMessagePromise({
+    type: "logger/log_info",
+  });
+
+export const setIntegrationLogLevel = (
+  hass: HomeAssistant,
+  integration: string,
+  level: string,
+  persistence: IntegrationLogPersistance
+) =>
+  hass.callWS({
+    type: "logger/integration_log_level",
+    integration,
+    level,
+    persistence,
+  });
+
+const subscribeLogInfoUpdates = (conn, store) =>
+  conn.subscribeEvents(
+    debounce(
+      () =>
+        fetchIntegrationLogInfo(conn).then((log_infos) =>
+          store.setState(log_infos, true)
+        ),
+      200,
+      true
+    ),
+    "logging_changed"
+  );
+
+export const subscribeLogInfo = (
+  conn: Connection,
+  onChange: (devices: IntegrationLogInfo[]) => void
+) =>
+  createCollection<IntegrationLogInfo[]>(
+    "_integration_log_info",
+    fetchIntegrationLogInfo,
+    subscribeLogInfoUpdates,
+    conn,
+    onChange
+  );

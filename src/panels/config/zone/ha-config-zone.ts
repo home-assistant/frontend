@@ -13,7 +13,6 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
@@ -37,7 +36,10 @@ import {
   Zone,
   ZoneMutableParams,
 } from "../../../data/zone";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -185,36 +187,26 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     <div style="display:inline-block">
                       <ha-icon-button
                         .entityId=${stateObject.entity_id}
-                        @click=${this._openCoreConfig}
-                        disabled=${ifDefined(
-                          stateObject.entity_id === "zone.home" &&
-                            this.narrow &&
-                            this._canEditCore
-                            ? undefined
-                            : true
-                        )}
+                        .noEdit=${stateObject.entity_id !== "zone.home" ||
+                        !this._canEditCore}
                         .path=${stateObject.entity_id === "zone.home" &&
-                        this.narrow &&
                         this._canEditCore
                           ? mdiPencil
                           : mdiPencilOff}
-                        .label=${hass.localize(
-                          "ui.panel.config.zone.edit_zone"
-                        )}
+                        .label=${stateObject.entity_id === "zone.home"
+                          ? hass.localize("ui.panel.config.zone.edit_home")
+                          : hass.localize("ui.panel.config.zone.edit_zone")}
+                        @click=${this._openCoreConfig}
                       ></ha-icon-button>
-                      <paper-tooltip animation-delay="0" position="left">
-                        ${stateObject.entity_id === "zone.home"
-                          ? hass.localize(
-                              `ui.panel.config.zone.${
-                                this.narrow
-                                  ? "edit_home_zone_narrow"
-                                  : "edit_home_zone"
-                              }`
-                            )
-                          : hass.localize(
-                              "ui.panel.config.zone.configured_in_yaml"
-                            )}
-                      </paper-tooltip>
+                      ${stateObject.entity_id !== "zone.home"
+                        ? html`
+                            <paper-tooltip animation-delay="0" position="left">
+                              ${hass.localize(
+                                "ui.panel.config.zone.configured_in_yaml"
+                              )}
+                            </paper-tooltip>
+                          `
+                        : ""}
                     </div>
                   </paper-icon-item>
                 `
@@ -228,7 +220,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"
-        .tabs=${configSections.persons}
+        .tabs=${configSections.areas}
       >
         ${this.narrow
           ? html`
@@ -236,7 +228,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                 <span slot="introduction">
                   ${hass.localize("ui.panel.config.zone.introduction")}
                 </span>
-                <ha-card>${listBox}</ha-card>
+                <ha-card outlined>${listBox}</ha-card>
               </ha-config-section>
             `
           : ""}
@@ -391,22 +383,16 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._openDialog(entry);
   }
 
-  private async _openCoreConfig(ev: Event) {
-    const entityId: string = (ev.currentTarget! as any).entityId;
-    if (entityId !== "zone.home" || !this.narrow || !this._canEditCore) {
+  private async _openCoreConfig(ev) {
+    if (ev.currentTarget.noEdit) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
+        text: this.hass.localize("ui.panel.config.zone.configured_in_yaml"),
+        confirm: () => {},
+      });
       return;
     }
-    if (
-      !(await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.panel.config.zone.go_to_core_config"),
-        text: this.hass.localize("ui.panel.config.zone.home_zone_core_config"),
-        confirmText: this.hass!.localize("ui.common.yes"),
-        dismissText: this.hass!.localize("ui.common.no"),
-      }))
-    ) {
-      return;
-    }
-    navigate("/config/core");
+    navigate("/config/general");
   }
 
   private async _createEntry(values: ZoneMutableParams) {
@@ -485,7 +471,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         color: var(--primary-color);
       }
       ha-card {
-        max-width: 600px;
         margin: 16px auto;
         overflow: hidden;
       }

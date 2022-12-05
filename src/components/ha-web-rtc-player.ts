@@ -7,7 +7,10 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { fireEvent } from "../common/dom/fire_event";
 import { handleWebRtcOffer, WebRtcAnswer } from "../data/camera";
+import { fetchWebRtcSettings } from "../data/rtsp_to_webrtc";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 
@@ -34,6 +37,8 @@ class HaWebRtcPlayer extends LitElement {
   @property({ type: Boolean, attribute: "playsinline" })
   public playsInline = false;
 
+  @property() public posterUrl!: string;
+
   @state() private _error?: string;
 
   // don't cache this, as we remove it on disconnects
@@ -43,7 +48,7 @@ class HaWebRtcPlayer extends LitElement {
 
   private _remoteStream?: MediaStream;
 
-  protected render(): TemplateResult {
+  protected override render(): TemplateResult {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
@@ -54,16 +59,25 @@ class HaWebRtcPlayer extends LitElement {
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
+        .poster=${this.posterUrl}
+        @loadeddata=${this._loadedData}
       ></video>
     `;
   }
 
-  public disconnectedCallback() {
+  public override connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._startWebRtc();
+    }
+  }
+
+  public override disconnectedCallback() {
     super.disconnectedCallback();
     this._cleanUp();
   }
 
-  protected updated(changedProperties: PropertyValues<this>) {
+  protected override updated(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("entityid")) {
       return;
     }
@@ -76,7 +90,8 @@ class HaWebRtcPlayer extends LitElement {
   private async _startWebRtc(): Promise<void> {
     this._error = undefined;
 
-    const peerConnection = new RTCPeerConnection();
+    const configuration = await this._fetchPeerConfiguration();
+    const peerConnection = new RTCPeerConnection(configuration);
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.
     peerConnection.createDataChannel("dataSendChannel");
@@ -92,12 +107,25 @@ class HaWebRtcPlayer extends LitElement {
     );
     await peerConnection.setLocalDescription(offer);
 
+    let candidates = ""; // Build an Offer SDP string with ice candidates
+    const iceResolver = new Promise<void>((resolve) => {
+      peerConnection.addEventListener("icecandidate", async (event) => {
+        if (!event.candidate) {
+          resolve(); // Gathering complete
+          return;
+        }
+        candidates += `a=${event.candidate.candidate}\r\n`;
+      });
+    });
+    await iceResolver;
+    const offer_sdp = offer.sdp! + candidates;
+
     let webRtcAnswer: WebRtcAnswer;
     try {
       webRtcAnswer = await handleWebRtcOffer(
         this.hass,
         this.entityid,
-        offer.sdp!
+        offer_sdp
       );
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
@@ -128,6 +156,23 @@ class HaWebRtcPlayer extends LitElement {
     this._peerConnection = peerConnection;
   }
 
+  private async _fetchPeerConfiguration(): Promise<RTCConfiguration> {
+    if (!isComponentLoaded(this.hass!, "rtsp_to_webrtc")) {
+      return {};
+    }
+    const settings = await fetchWebRtcSettings(this.hass!);
+    if (!settings || !settings.stun_server) {
+      return {};
+    }
+    return {
+      iceServers: [
+        {
+          urls: [`stun:${settings.stun_server!}`],
+        },
+      ],
+    };
+  }
+
   private _cleanUp() {
     if (this._remoteStream) {
       this._remoteStream.getTracks().forEach((track) => {
@@ -143,6 +188,11 @@ class HaWebRtcPlayer extends LitElement {
       this._peerConnection.close();
       this._peerConnection = undefined;
     }
+  }
+
+  private _loadedData() {
+    // @ts-ignore
+    fireEvent(this, "load");
   }
 
   static get styles(): CSSResultGroup {

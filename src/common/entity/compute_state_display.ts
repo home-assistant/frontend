@@ -1,49 +1,96 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { EntityRegistryEntry } from "../../data/entity_registry";
 import { FrontendLocaleData } from "../../data/translation";
+import {
+  updateIsInstallingFromAttributes,
+  UPDATE_SUPPORT_PROGRESS,
+} from "../../data/update";
+import { HomeAssistant } from "../../types";
+import { formatDuration, UNIT_TO_SECOND_CONVERT } from "../datetime/duration";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
-import { formatNumber, isNumericState } from "../number/format_number";
+import {
+  formatNumber,
+  getNumberFormatOptions,
+  isNumericFromAttributes,
+} from "../number/format_number";
+import { blankBeforePercent } from "../translations/blank_before_percent";
 import { LocalizeFunc } from "../translations/localize";
-import { computeStateDomain } from "./compute_state_domain";
+import { computeDomain } from "./compute_domain";
+import { supportsFeatureFromAttributes } from "./supports-feature";
 
 export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
+  entities: HomeAssistant["entities"],
   state?: string
-): string => {
-  const compareState = state !== undefined ? state : stateObj.state;
+): string =>
+  computeStateDisplayFromEntityAttributes(
+    localize,
+    locale,
+    entities,
+    stateObj.entity_id,
+    stateObj.attributes,
+    state !== undefined ? state : stateObj.state
+  );
 
-  if (compareState === UNKNOWN || compareState === UNAVAILABLE) {
-    return localize(`state.default.${compareState}`);
+export const computeStateDisplayFromEntityAttributes = (
+  localize: LocalizeFunc,
+  locale: FrontendLocaleData,
+  entities: HomeAssistant["entities"],
+  entityId: string,
+  attributes: any,
+  state: string
+): string => {
+  if (state === UNKNOWN || state === UNAVAILABLE) {
+    return localize(`state.default.${state}`);
   }
 
   // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
-  if (isNumericState(stateObj)) {
-    if (stateObj.attributes.device_class === "monetary") {
+  if (isNumericFromAttributes(attributes)) {
+    // state is duration
+    if (
+      attributes.device_class === "duration" &&
+      attributes.unit_of_measurement &&
+      UNIT_TO_SECOND_CONVERT[attributes.unit_of_measurement]
+    ) {
       try {
-        return formatNumber(compareState, locale, {
+        return formatDuration(state, attributes.unit_of_measurement);
+      } catch (_err) {
+        // fallback to default
+      }
+    }
+    if (attributes.device_class === "monetary") {
+      try {
+        return formatNumber(state, locale, {
           style: "currency",
-          currency: stateObj.attributes.unit_of_measurement,
+          currency: attributes.unit_of_measurement,
+          minimumFractionDigits: 2,
         });
       } catch (_err) {
         // fallback to default
       }
     }
-    return `${formatNumber(compareState, locale)}${
-      stateObj.attributes.unit_of_measurement
-        ? " " + stateObj.attributes.unit_of_measurement
-        : ""
-    }`;
+    const unit = !attributes.unit_of_measurement
+      ? ""
+      : attributes.unit_of_measurement === "%"
+      ? blankBeforePercent(locale) + "%"
+      : ` ${attributes.unit_of_measurement}`;
+    return `${formatNumber(
+      state,
+      locale,
+      getNumberFormatOptions({ state, attributes } as HassEntity)
+    )}${unit}`;
   }
 
-  const domain = computeStateDomain(stateObj);
+  const domain = computeDomain(entityId);
 
   if (domain === "input_datetime") {
     if (state !== undefined) {
-      // If trying to display an explicit state, need to parse the explict state to `Date` then format.
+      // If trying to display an explicit state, need to parse the explicit state to `Date` then format.
       // Attributes aren't available, we have to use `state`.
       try {
         const components = state.split(" ");
@@ -74,36 +121,32 @@ export const computeStateDisplay = (
     } else {
       // If not trying to display an explicit state, create `Date` object from `stateObj`'s attributes then format.
       let date: Date;
-      if (stateObj.attributes.has_date && stateObj.attributes.has_time) {
+      if (attributes.has_date && attributes.has_time) {
         date = new Date(
-          stateObj.attributes.year,
-          stateObj.attributes.month - 1,
-          stateObj.attributes.day,
-          stateObj.attributes.hour,
-          stateObj.attributes.minute
+          attributes.year,
+          attributes.month - 1,
+          attributes.day,
+          attributes.hour,
+          attributes.minute
         );
         return formatDateTime(date, locale);
       }
-      if (stateObj.attributes.has_date) {
-        date = new Date(
-          stateObj.attributes.year,
-          stateObj.attributes.month - 1,
-          stateObj.attributes.day
-        );
+      if (attributes.has_date) {
+        date = new Date(attributes.year, attributes.month - 1, attributes.day);
         return formatDate(date, locale);
       }
-      if (stateObj.attributes.has_time) {
+      if (attributes.has_time) {
         date = new Date();
-        date.setHours(stateObj.attributes.hour, stateObj.attributes.minute);
+        date.setHours(attributes.hour, attributes.minute);
         return formatTime(date, locale);
       }
-      return stateObj.state;
+      return state;
     }
   }
 
   if (domain === "humidifier") {
-    if (compareState === "on" && stateObj.attributes.humidity) {
-      return `${stateObj.attributes.humidity} %`;
+    if (state === "on" && attributes.humidity) {
+      return `${attributes.humidity} %`;
     }
   }
 
@@ -113,27 +156,64 @@ export const computeStateDisplay = (
     domain === "number" ||
     domain === "input_number"
   ) {
-    return formatNumber(compareState, locale);
+    // Format as an integer if the value and step are integers
+    return formatNumber(
+      state,
+      locale,
+      getNumberFormatOptions({ state, attributes } as HassEntity)
+    );
   }
 
   // state of button is a timestamp
   if (
     domain === "button" ||
     domain === "input_button" ||
-    (domain === "sensor" && stateObj.attributes.device_class === "timestamp")
+    domain === "scene" ||
+    (domain === "sensor" && attributes.device_class === "timestamp")
   ) {
-    return formatDateTime(new Date(compareState), locale);
+    try {
+      return formatDateTime(new Date(state), locale);
+    } catch (_err) {
+      return state;
+    }
   }
 
+  if (domain === "update") {
+    // When updating, and entity does not support % show "Installing"
+    // When updating, and entity does support % show "Installing (xx%)"
+    // When update available, show the version
+    // When the latest version is skipped, show the latest version
+    // When update is not available, show "Up-to-date"
+    // When update is not available and there is no latest_version show "Unavailable"
+    return state === "on"
+      ? updateIsInstallingFromAttributes(attributes)
+        ? supportsFeatureFromAttributes(attributes, UPDATE_SUPPORT_PROGRESS) &&
+          typeof attributes.in_progress === "number"
+          ? localize("ui.card.update.installing_with_progress", {
+              progress: attributes.in_progress,
+            })
+          : localize("ui.card.update.installing")
+        : attributes.latest_version
+      : attributes.skipped_version === attributes.latest_version
+      ? attributes.latest_version ?? localize("state.default.unavailable")
+      : localize("ui.card.update.up_to_date");
+  }
+
+  const entity = entities[entityId] as EntityRegistryEntry | undefined;
+
   return (
-    // Return device class translation
-    (stateObj.attributes.device_class &&
+    (entity?.translation_key &&
       localize(
-        `component.${domain}.state.${stateObj.attributes.device_class}.${compareState}`
+        `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${state}`
+      )) ||
+    // Return device class translation
+    (attributes.device_class &&
+      localize(
+        `component.${domain}.state.${attributes.device_class}.${state}`
       )) ||
     // Return default translation
-    localize(`component.${domain}.state._.${compareState}`) ||
+    localize(`component.${domain}.state._.${state}`) ||
     // We don't know! Return the raw state.
-    compareState
+    state
   );
 };

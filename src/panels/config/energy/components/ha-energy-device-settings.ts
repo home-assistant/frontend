@@ -3,7 +3,6 @@ import { mdiDelete, mdiDevices } from "@mdi/js";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-state-icon";
@@ -13,6 +12,10 @@ import {
   EnergyPreferencesValidation,
   saveEnergyPreferences,
 } from "../../../../data/energy";
+import {
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/recorder";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -32,11 +35,14 @@ export class EnergyDeviceSettings extends LitElement {
   public preferences!: EnergyPreferences;
 
   @property({ attribute: false })
+  public statsMetadata?: Record<string, StatisticsMetaData>;
+
+  @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
 
   protected render(): TemplateResult {
     return html`
-      <ha-card>
+      <ha-card outlined>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
           ${this.hass.localize(
@@ -81,11 +87,14 @@ export class EnergyDeviceSettings extends LitElement {
               <div class="row">
                 <ha-state-icon .state=${entityState}></ha-state-icon>
                 <span class="content"
-                  >${entityState
-                    ? computeStateName(entityState)
-                    : device.stat_consumption}</span
+                  >${getStatisticLabel(
+                    this.hass,
+                    device.stat_consumption,
+                    this.statsMetadata?.[device.stat_consumption]
+                  )}</span
                 >
                 <ha-icon-button
+                  .label=${this.hass.localize("ui.common.delete")}
                   @click=${this._deleteDevice}
                   .device=${device}
                   .path=${mdiDelete}

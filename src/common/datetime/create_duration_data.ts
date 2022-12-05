@@ -1,11 +1,11 @@
-import { HaDurationData } from "../../components/ha-duration-input";
-import { ForDict } from "../../data/automation";
+import type { HaDurationData } from "../../components/ha-duration-input";
+import type { ForDict } from "../../data/automation";
 
 export const createDurationData = (
   duration: string | number | ForDict | undefined
-): HaDurationData => {
+): HaDurationData | undefined => {
   if (duration === undefined) {
-    return {};
+    return undefined;
   }
   if (typeof duration !== "object") {
     if (typeof duration === "string" || isNaN(duration)) {
@@ -18,6 +18,9 @@ export const createDurationData = (
       };
     }
     return { seconds: duration };
+  }
+  if (!("days" in duration)) {
+    return duration;
   }
   const { days, minutes, seconds, milliseconds } = duration;
   let hours = duration.hours || 0;

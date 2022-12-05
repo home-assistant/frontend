@@ -1,14 +1,13 @@
+import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/ha-formfield";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
 import { hasLocation } from "../../../../../common/entity/has_location";
-import "../../../../../components/entity/ha-entity-picker";
 import type { ZoneTrigger } from "../../../../../data/automation";
 import type { PolymerChangedEvent } from "../../../../../polymer-types";
 import type { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-radio";
-import "../../../../../components/ha-formfield";
 import type { HaRadio } from "../../../../../components/ha-radio";
 
 function zoneAndLocationFilter(stateObj) {
@@ -22,6 +21,8 @@ export class HaZoneTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: ZoneTrigger;
+
+  @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig() {
     return {
@@ -39,6 +40,7 @@ export class HaZoneTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.zone.entity"
         )}
         .value=${entity_id}
+        .disabled=${this.disabled}
         @value-changed=${this._entityPicked}
         .hass=${this.hass}
         allow-custom-entity
@@ -49,6 +51,7 @@ export class HaZoneTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.zone.zone"
         )}
         .value=${zone}
+        .disabled=${this.disabled}
         @value-changed=${this._zonePicked}
         .hass=${this.hass}
         allow-custom-entity
@@ -60,6 +63,7 @@ export class HaZoneTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.zone.event"
         )}
         <ha-formfield
+          .disabled=${this.disabled}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.zone.enter"
           )}
@@ -67,11 +71,13 @@ export class HaZoneTrigger extends LitElement {
           <ha-radio
             name="event"
             value="enter"
+            .disabled=${this.disabled}
             .checked=${event === "enter"}
             @change=${this._radioGroupPicked}
           ></ha-radio>
         </ha-formfield>
         <ha-formfield
+          .disabled=${this.disabled}
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.zone.leave"
           )}
@@ -79,6 +85,7 @@ export class HaZoneTrigger extends LitElement {
           <ha-radio
             name="event"
             value="leave"
+            .disabled=${this.disabled}
             .checked=${event === "leave"}
             @change=${this._radioGroupPicked}
           ></ha-radio>
@@ -115,6 +122,10 @@ export class HaZoneTrigger extends LitElement {
     label {
       display: flex;
       align-items: center;
+    }
+    ha-entity-picker {
+      display: block;
+      margin-bottom: 24px;
     }
   `;
 }

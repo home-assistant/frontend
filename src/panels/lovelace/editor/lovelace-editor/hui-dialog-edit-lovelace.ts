@@ -16,7 +16,7 @@ export class HuiDialogEditLovelace extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  private _config?: LovelaceConfig;
+  @state() private _config?: LovelaceConfig;
 
   private _saving = false;
 
@@ -50,6 +50,7 @@ export class HuiDialogEditLovelace extends LitElement {
             .hass=${this.hass}
             .config=${this._config}
             @lovelace-config-changed=${this._ConfigChanged}
+            dialogInitialFocus
           ></hui-lovelace-editor>
         </div>
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">

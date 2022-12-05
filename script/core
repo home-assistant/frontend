@@ -4,6 +4,8 @@
 # Stop on errors
 set -e
 
+WD="${WORKSPACE_DIRECTORY:=/workspaces/frontend}"
+
 if [ -z "${DEVCONTAINER}" ]; then
   echo "This task should only run inside a devcontainer, for local install HA Core in a venv."
   exit 1
@@ -13,12 +15,12 @@ if [ -z $(which hass) ]; then
   echo "Installing Home Asstant core from dev."
   python3 -m pip install --upgrade \
     colorlog \
-    git+git://github.com/home-assistant/home-assistant.git@dev
+    git+https://github.com/home-assistant/home-assistant.git@dev
 fi
 
-if [ ! -d "/workspaces/frontend/config" ]; then
+if [ ! -d "${WD}/config" ]; then
   echo "Creating default configuration."
-  mkdir -p "/workspaces/frontend/config";
+  mkdir -p "${WD}/config";
   hass --script ensure_config -c config
   echo "demo:
 
@@ -26,24 +28,32 @@ logger:
   default: info
   logs:
     homeassistant.components.frontend: debug
-" >> /workspaces/frontend/config/configuration.yaml
+" >> "${WD}/config/configuration.yaml"
 
   if [ ! -z "${HASSIO}" ]; then
   echo "
 # frontend:
-#   development_repo: /workspaces/frontend
+#   development_repo: ${WD}
 
 hassio:
-  development_repo: /workspaces/frontend" >> /workspaces/frontend/config/configuration.yaml
+  development_repo: ${WD}" >> "${WD}/config/configuration.yaml"
   else
   echo "
 frontend:
-  development_repo: /workspaces/frontend
+  development_repo: ${WD}
 
 # hassio:
-#   development_repo: /workspaces/frontend" >> /workspaces/frontend/config/configuration.yaml
+#   development_repo: ${WD}" >> "${WD}/config/configuration.yaml"
   fi
 
+  if [ ! -z "${CODESPACES}" ]; then
+  echo "
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 127.0.0.1
+" >> "${WD}/config/configuration.yaml"
+  fi
 fi
 
-hass -c /workspaces/frontend/config
+hass -c "${WD}/config"

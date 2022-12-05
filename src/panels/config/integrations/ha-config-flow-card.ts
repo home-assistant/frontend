@@ -1,7 +1,14 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
+import {
+  mdiBookshelf,
+  mdiCog,
+  mdiDotsVertical,
+  mdiEyeOff,
+  mdiOpenInNew,
+} from "@mdi/js";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ATTENTION_SOURCES,
@@ -10,11 +17,13 @@ import {
   localizeConfigFlowTitle,
 } from "../../../data/config_flow";
 import type { IntegrationManifest } from "../../../data/integration";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import "./ha-integration-action-card";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-config-flow-card")
 export class HaConfigFlowCard extends LitElement {
@@ -70,39 +79,49 @@ export class HaConfigFlowCard extends LitElement {
                   ? "_self"
                   : "_blank"}
               >
-                <mwc-list-item hasMeta>
+                <mwc-list-item graphic="icon" hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.open_configuration_url"
-                  )}<ha-svg-icon
-                    slot="meta"
-                    .path=${mdiOpenInNew}
-                  ></ha-svg-icon>
+                  )}
+                  <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+                  <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
                 </mwc-list-item>
               </a>`
             : ""}
           ${this.manifest
             ? html`<a
-                href=${this.manifest.documentation}
+                href=${this.manifest.is_built_in
+                  ? documentationUrl(
+                      this.hass,
+                      `/integrations/${this.manifest.domain}`
+                    )
+                  : this.manifest.documentation}
                 rel="noreferrer"
                 target="_blank"
               >
-                <mwc-list-item hasMeta>
+                <mwc-list-item graphic="icon" hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.documentation"
-                  )}<ha-svg-icon
-                    slot="meta"
-                    .path=${mdiOpenInNew}
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiBookshelf}
                   ></ha-svg-icon>
+                  <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
                 </mwc-list-item>
               </a>`
             : ""}
           ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
           this.flow.context.unique_id
             ? html`
-                <mwc-list-item @click=${this._ignoreFlow}>
+                <mwc-list-item
+                  graphic="icon"
+                  @request-selected=${this._ignoreFlow}
+                >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.ignore.ignore"
                   )}
+                  <ha-svg-icon slot="graphic" .path=${mdiEyeOff}></ha-svg-icon>
                 </mwc-list-item>
               `
             : ""}
@@ -120,7 +139,10 @@ export class HaConfigFlowCard extends LitElement {
     });
   }
 
-  private async _ignoreFlow() {
+  private async _ignoreFlow(ev: CustomEvent<RequestSelectedDetail>) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_ignore_title",
@@ -163,6 +185,10 @@ export class HaConfigFlowCard extends LitElement {
     a {
       text-decoration: none;
       color: var(--primary-color);
+    }
+    ha-svg-icon[slot="meta"] {
+      width: 18px;
+      height: 18px;
     }
   `;
 }

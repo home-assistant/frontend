@@ -16,6 +16,9 @@
     "runem.lit-plugin",
     "ms-python.vscode-pylance"
   ],
+  "containerEnv": {
+    "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"
+  },
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",
     "files.eol": "\n",

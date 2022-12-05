@@ -1,36 +1,36 @@
 /* eslint-plugin-disable lit */
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../components/entity/state-info";
+import "../components/ha-textfield";
 
 class StateCardInputText extends PolymerElement {
   static get template() {
     return html`
       <style include="iron-flex iron-flex-alignment"></style>
       <style>
-        paper-input {
+        ha-textfield {
           margin-left: 16px;
         }
       </style>
 
       <div class="horizontal justified layout">
         ${this.stateInfoTemplate}
-        <paper-input
-          no-label-float=""
+        <ha-textfield
           minlength="[[stateObj.attributes.min]]"
           maxlength="[[stateObj.attributes.max]]"
-          value="{{value}}"
+          value="[[value]]"
           auto-validate="[[stateObj.attributes.pattern]]"
           pattern="[[stateObj.attributes.pattern]]"
           type="[[stateObj.attributes.mode]]"
+          on-input="onInput"
           on-change="selectedValueChanged"
           on-click="stopPropagation"
           placeholder="(empty value)"
         >
-        </paper-input>
+        </ha-textfield>
       </div>
     `;
   }
@@ -66,6 +66,10 @@ class StateCardInputText extends PolymerElement {
 
   stateObjectChanged(newVal) {
     this.value = newVal.state;
+  }
+
+  onInput(ev) {
+    this.value = ev.target.value;
   }
 
   selectedValueChanged() {

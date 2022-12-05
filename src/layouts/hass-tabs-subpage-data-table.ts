@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import { mdiFilterVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -131,7 +130,13 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Array of tabs to show on the page.
    * @type {Array}
    */
-  @property() public tabs!: PageNavigation[];
+  @property() public tabs: PageNavigation[] = [];
+
+  /**
+   * Force hides the filter menu.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public hideFilterMenu = false;
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
@@ -157,30 +162,31 @@ export class HaTabsSubpageDataTable extends LitElement {
       : hiddenLabel;
 
     const headerToolbar = html`<search-input
-        .hass=${this.hass}
-        .filter=${this.filter}
-        no-label-float
-        no-underline
-        @value-changed=${this._handleSearchChange}
-        .label=${this.searchLabel ||
-        this.hass.localize("ui.components.data-table.search")}
-      >
-      </search-input
-      >${filterInfo
-        ? html`<div class="active-filters">
-            ${this.narrow
-              ? html`<div>
-                  <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-                  <paper-tooltip animation-delay="0" position="left">
-                    ${filterInfo}
-                  </paper-tooltip>
+      .hass=${this.hass}
+      .filter=${this.filter}
+      .suffix=${!this.narrow}
+      @value-changed=${this._handleSearchChange}
+      .label=${this.searchLabel ||
+      this.hass.localize("ui.components.data-table.search")}
+    >
+      ${!this.narrow
+        ? html`<div
+            class="filters"
+            slot="suffix"
+            @click=${this._preventDefault}
+          >
+            ${filterInfo
+              ? html`<div class="active-filters">
+                  ${filterInfo}
+                  <mwc-button @click=${this._clearFilter}>
+                    ${this.hass.localize("ui.components.data-table.clear")}
+                  </mwc-button>
                 </div>`
-              : filterInfo}
-            <mwc-button @click=${this._clearFilter}>
-              ${this.hass.localize("ui.components.data-table.clear")}
-            </mwc-button>
+              : ""}
+            <slot name="filter-menu"></slot>
           </div>`
-        : ""}<slot name="filter-menu"></slot>`;
+        : ""}
+    </search-input>`;
 
     return html`
       <hass-tabs-subpage
@@ -195,7 +201,24 @@ export class HaTabsSubpageDataTable extends LitElement {
         .mainPage=${this.mainPage}
         .supervisor=${this.supervisor}
       >
-        <div slot="toolbar-icon"><slot name="toolbar-icon"></slot></div>
+        ${!this.hideFilterMenu
+          ? html`
+              <div slot="toolbar-icon">
+                ${this.narrow
+                  ? html`
+                      <div class="filter-menu">
+                        ${this.numHidden || this.activeFilters
+                          ? html`<span class="badge"
+                              >${this.numHidden || "!"}</span
+                            >`
+                          : ""}
+                        <slot name="filter-menu"></slot>
+                      </div>
+                    `
+                  : ""}<slot name="toolbar-icon"></slot>
+              </div>
+            `
+          : ""}
         ${this.narrow
           ? html`
               <div slot="header">
@@ -233,7 +256,14 @@ export class HaTabsSubpageDataTable extends LitElement {
     `;
   }
 
+  private _preventDefault(ev) {
+    ev.preventDefault();
+  }
+
   private _handleSearchChange(ev: CustomEvent) {
+    if (this.filter === ev.detail.value) {
+      return;
+    }
     this.filter = ev.detail.value;
     fireEvent(this, "search-changed", { value: this.filter });
   }
@@ -253,11 +283,14 @@ export class HaTabsSubpageDataTable extends LitElement {
         height: calc(100vh - 1px - var(--header-height));
         display: block;
       }
+      :host([narrow]) hass-tabs-subpage {
+        --main-title-margin: 0;
+      }
       .table-header {
-        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
-        padding: 0 16px;
         display: flex;
         align-items: center;
+        --mdc-shape-small: 0;
+        height: 56px;
       }
       .search-toolbar {
         display: flex;
@@ -265,12 +298,33 @@ export class HaTabsSubpageDataTable extends LitElement {
         color: var(--secondary-text-color);
       }
       search-input {
-        position: relative;
-        top: 2px;
-        flex-grow: 1;
+        --mdc-text-field-fill-color: var(--sidebar-background-color);
+        --mdc-text-field-idle-line-color: var(--divider-color);
+        --text-field-overflow: visible;
+        z-index: 5;
       }
-      search-input.header {
-        left: -8px;
+      .table-header search-input {
+        display: block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+      }
+      .search-toolbar search-input {
+        display: block;
+        width: 100%;
+        color: var(--secondary-text-color);
+        --mdc-ripple-color: transparant;
+      }
+      .filters {
+        --mdc-text-field-fill-color: var(--input-fill-color);
+        --mdc-text-field-idle-line-color: var(--input-idle-line-color);
+        --mdc-shape-small: 4px;
+        --text-field-overflow: initial;
+        display: flex;
+        justify-content: flex-end;
+        margin-right: 8px;
+        color: var(--primary-text-color);
       }
       .active-filters {
         color: var(--primary-text-color);
@@ -280,6 +334,8 @@ export class HaTabsSubpageDataTable extends LitElement {
         padding: 2px 2px 2px 8px;
         margin-left: 4px;
         font-size: 14px;
+        width: max-content;
+        cursor: initial;
       }
       .active-filters ha-svg-icon {
         color: var(--primary-color);
@@ -298,6 +354,30 @@ export class HaTabsSubpageDataTable extends LitElement {
         left: 0;
         content: "";
       }
+      .badge {
+        min-width: 20px;
+        box-sizing: border-box;
+        border-radius: 50%;
+        font-weight: 400;
+        background-color: var(--primary-color);
+        line-height: 20px;
+        text-align: center;
+        padding: 0px 4px;
+        color: var(--text-primary-color);
+        position: absolute;
+        right: 0;
+        top: 4px;
+        font-size: 0.65em;
+      }
+      .filter-menu {
+        position: relative;
+      }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hass-tabs-subpage-data-table": HaTabsSubpageDataTable;
   }
 }
