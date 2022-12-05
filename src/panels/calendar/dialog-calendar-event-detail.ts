@@ -152,7 +152,7 @@ class DialogCalendarEventDetail extends LitElement {
     }
   }
 
-  private _translateRruleElement(id: string | number | Weekday): string {
+  private _translateRruleElement = (id: string | number | Weekday) :string => {
     if (typeof id === "string") {
       return this.hass.localize(`ui.components.calendar.event.rrule.${id}`);
     }
@@ -160,7 +160,7 @@ class DialogCalendarEventDetail extends LitElement {
     return "";
   }
 
-  private _formatDate(year: number, month: string, day: number): string {
+  private _formatDate = (year: number, month: string, day: number): string => {
     if (!year || !month || !day) {
       return "";
     }
