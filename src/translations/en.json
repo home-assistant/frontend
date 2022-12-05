@@ -3203,7 +3203,8 @@
           "subscribe_to": "Topic to subscribe to",
           "start_listening": "Start listening",
           "stop_listening": "Stop listening",
-          "message_received": "Message {id} received on {topic} at {time}:"
+          "message_received": "Message {id} received on {topic} at {time}:",
+          "qos": "QoS"
         },
         "zha": {
           "common": {

@@ -7,6 +7,7 @@ import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import { HomeAssistant } from "../../../../../types";
 import "./mqtt-subscribe-card";
 
@@ -20,6 +21,8 @@ class HaPanelDevMqtt extends LitElement {
 
   @state() private payload = "";
 
+  @state() private qos = "0";
+
   private inited = false;
 
   protected firstUpdated() {
@@ -28,6 +31,9 @@ class HaPanelDevMqtt extends LitElement {
     }
     if (localStorage && localStorage["panel-dev-mqtt-payload"]) {
       this.payload = localStorage["panel-dev-mqtt-payload"];
+    }
+    if (localStorage && localStorage["panel-dev-mqtt-qos"]) {
+      this.qos = localStorage["panel-dev-mqtt-qos"];
     }
     this.inited = true;
   }
@@ -54,6 +60,18 @@ class HaPanelDevMqtt extends LitElement {
                 .value=${this.topic}
                 @change=${this._handleTopic}
               ></ha-textfield>
+              <ha-select
+                .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
+                .value=${this.qos}
+                @selected=${this._handleQos}
+                @closed=${stopPropagation}
+                fixedMenuPosition
+                naturalMenuWidth
+                >${["0", "1", "2"].map(
+                  (qos) =>
+                    html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
+                )}
+              </ha-select>
 
               <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor
@@ -95,6 +113,14 @@ class HaPanelDevMqtt extends LitElement {
     }
   }
 
+  private _handleQos(ev: CustomEvent) {
+    const newValue = (ev.target! as any).value;
+    if (newValue >= 0 && newValue !== this.qos && localStorage && this.inited) {
+      this.qos = newValue;
+      localStorage["panel-dev-mqtt-qos"] = this.qos;
+    }
+  }
+
   private _publish(): void {
     if (!this.hass) {
       return;
@@ -102,6 +128,7 @@ class HaPanelDevMqtt extends LitElement {
     this.hass.callService("mqtt", "publish", {
       topic: this.topic,
       payload_template: this.payload,
+      qos: parseInt(this.qos),
     });
   }
 
