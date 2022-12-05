@@ -87,6 +87,11 @@ class DialogCalendarEventDetail extends LitElement {
               ${this._data!.rrule
                 ? this._renderRruleAsText(this._data.rrule)
                 : ""}
+              ${this._data.description
+                ? html`<br />
+                    <div class="description">${this._data.description}</div>
+                    <br />`
+                : html``}
             </div>
           </div>
 
@@ -238,6 +243,11 @@ class DialogCalendarEventDetail extends LitElement {
         }
         .field {
           display: flex;
+        }
+        .description {
+          color: var(--secondary-text-color);
+          max-width: 300px;
+          overflow-wrap: break-word;
         }
       `,
     ];

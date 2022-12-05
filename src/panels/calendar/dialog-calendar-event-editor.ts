@@ -7,6 +7,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isDate } from "../../common/string/is_date";
 import "../../components/ha-date-input";
+import "../../components/ha-textarea";
 import "../../components/ha-time-input";
 import {
   Calendar,
@@ -41,6 +42,8 @@ class DialogCalendarEventEditor extends LitElement {
   @state() private _calendarId?: string;
 
   @state() private _summary = "";
+
+  @state() private _description = "";
 
   @state() private _rrule?: string;
 
@@ -127,6 +130,15 @@ class DialogCalendarEventEditor extends LitElement {
             error-message=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
           ></ha-textfield>
+          <ha-textarea
+            class="description"
+            name="description"
+            .label=${this.hass.localize(
+              "ui.components.calendar.event.description"
+            )}
+            @change=${this._handleDescriptionChanged}
+            autogrow
+          ></ha-textarea>
           <ha-combo-box
             name="calendar"
             .hass=${this.hass}
@@ -252,6 +264,10 @@ class DialogCalendarEventEditor extends LitElement {
     this._summary = ev.target.value;
   }
 
+  private _handleDescriptionChanged(ev) {
+    this._description = ev.target.value;
+  }
+
   private _handleRRuleChanged(ev) {
     this._rrule = ev.detail.value;
   }
@@ -291,6 +307,7 @@ class DialogCalendarEventEditor extends LitElement {
     );
     const data: CalendarEventMutableParams = {
       summary: this._summary,
+      description: this._description,
       rrule: this._rrule,
       dtstart: "",
       dtend: "",
@@ -390,6 +407,7 @@ class DialogCalendarEventEditor extends LitElement {
     this._dtstart = undefined;
     this._dtend = undefined;
     this._summary = "";
+    this._description = "";
     this._rrule = undefined;
   }
 
@@ -400,9 +418,12 @@ class DialogCalendarEventEditor extends LitElement {
         state-info {
           line-height: 40px;
         }
-        ha-textfield {
+        ha-textfield,
+        ha-textarea {
           display: block;
-          margin-bottom: 24px;
+        }
+        ha-textarea {
+          margin-bottom: 16px;
         }
         ha-formfield {
           display: block;
@@ -435,7 +456,6 @@ class DialogCalendarEventEditor extends LitElement {
         }
         ha-combo-box {
           display: block;
-          margin-bottom: 24px;
         }
         ha-svg-icon {
           width: 40px;
