@@ -28,6 +28,7 @@ class HassioDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        back-path="/config"
         .header=${this.supervisor.localize("panel.addons")}
       >
         <hassio-addons

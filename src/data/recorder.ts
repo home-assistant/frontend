@@ -267,7 +267,7 @@ export const adjustStatisticsSum = (
   return hass.callWS({
     type: "recorder/adjust_sum_statistics",
     statistic_id,
-    start_time_iso,
+    start_time: start_time_iso,
     adjustment,
     adjustment_unit_of_measurement,
   });

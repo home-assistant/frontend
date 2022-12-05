@@ -7,10 +7,12 @@ if (__BUILD__ === "latest" && polyfillsLoaded) {
 }
 
 // Tuesday, August 10
-export const formatDateWeekday = (dateObj: Date, locale: FrontendLocaleData) =>
-  formatDateWeekdayMem(locale).format(dateObj);
+export const formatDateWeekdayDay = (
+  dateObj: Date,
+  locale: FrontendLocaleData
+) => formatDateWeekdayDayMem(locale).format(dateObj);
 
-const formatDateWeekdayMem = memoizeOne(
+const formatDateWeekdayDayMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
       weekday: "long",
@@ -90,5 +92,16 @@ const formatDateYearMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
       year: "numeric",
+    })
+);
+
+// Monday
+export const formatDateWeekday = (dateObj: Date, locale: FrontendLocaleData) =>
+  formatDateWeekdayMem(locale).format(dateObj);
+
+const formatDateWeekdayMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      weekday: "long",
     })
 );

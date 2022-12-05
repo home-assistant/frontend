@@ -18,7 +18,7 @@ import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { LocalStorage } from "../../common/decorators/local-storage";
-import { ensureArray } from "../../common/ensure-array";
+import { ensureArray } from "../../common/array/ensure-array";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
