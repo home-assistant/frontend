@@ -210,7 +210,10 @@ export const getCurrentProgress = (stateObj: MediaPlayerEntity): number => {
     (Date.now() -
       new Date(stateObj.attributes.media_position_updated_at!).getTime()) /
     1000.0;
-  return progress;
+  // Prevent negative values, so we do not go back to 59:59 at the start
+  // for example if there are slight clock sync deltas between backend and frontend and
+  // therefore media_position_updated_at might be slightly larger than Date.now().
+  return progress < 0 ? 0 : progress;
 };
 
 export const computeMediaDescription = (
