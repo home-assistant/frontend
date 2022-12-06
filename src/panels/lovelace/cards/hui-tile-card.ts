@@ -128,6 +128,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   private _computeStateColor = memoize((entity: HassEntity, color?: string) => {
+    if (UNAVAILABLE_STATES.includes(entity.state)) {
+      return undefined;
+    }
+
+    // Use default color for person/device_tracker because color is on the badge
+    if (
+      computeDomain(entity.entity_id) === "person" ||
+      computeDomain(entity.entity_id) === "device_tracker"
+    ) {
+      return "var(--rgb-state-default-color)";
+    }
+
     if (!stateActive(entity)) {
       return undefined;
     }
