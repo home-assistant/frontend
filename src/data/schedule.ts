@@ -1,21 +1,30 @@
+import {
+  nextFriday,
+  nextMonday,
+  nextSaturday,
+  nextSunday,
+  nextThursday,
+  nextTuesday,
+  nextWednesday,
+} from "date-fns";
 import { HomeAssistant } from "../types";
 
-export const weekdays = [
-  "sunday",
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-] as const;
+export const weekdays = {
+  sunday: nextSunday,
+  monday: nextMonday,
+  tuesday: nextTuesday,
+  wednesday: nextWednesday,
+  thursday: nextThursday,
+  friday: nextFriday,
+  saturday: nextSaturday,
+} as const;
 
 export interface ScheduleDay {
   from: string;
   to: string;
 }
 
-type ScheduleDays = { [K in typeof weekdays[number]]?: ScheduleDay[] };
+type ScheduleDays = { [K in keyof typeof weekdays]?: ScheduleDay[] };
 
 export interface Schedule extends ScheduleDays {
   id: string;
