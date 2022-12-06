@@ -2,6 +2,7 @@ import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
+import { UNAVAILABLE_STATES } from "./entity";
 
 export interface Calendar {
   entity_id: string;
@@ -127,7 +128,11 @@ const getCalendarDate = (dateObj: any): string | undefined => {
 
 export const getCalendars = (hass: HomeAssistant): Calendar[] =>
   Object.keys(hass.states)
-    .filter((eid) => computeDomain(eid) === "calendar")
+    .filter(
+      (eid) =>
+        computeDomain(eid) === "calendar" &&
+        !UNAVAILABLE_STATES.includes(hass.states[eid].state)
+    )
     .sort()
     .map((eid, idx) => ({
       entity_id: eid,
