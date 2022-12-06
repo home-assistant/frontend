@@ -75,6 +75,7 @@ import {
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
 import "../../../layouts/hass-subpage";
+import { SENSOR_ENTITIES } from "../../../common/const";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -172,13 +173,7 @@ export class HaConfigDevicePage extends LitElement {
       const result = groupBy(entities, (entry) =>
         entry.entity_category
           ? entry.entity_category
-          : [
-              "sensor",
-              "binary_sensor",
-              "camera",
-              "device_tracker",
-              "weather",
-            ].includes(computeDomain(entry.entity_id))
+          : SENSOR_ENTITIES.includes(computeDomain(entry.entity_id))
           ? "sensor"
           : "control"
       ) as Record<
