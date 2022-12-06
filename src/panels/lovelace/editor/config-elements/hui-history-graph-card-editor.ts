@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
+  boolean,
   number,
   object,
   optional,
@@ -28,6 +29,7 @@ const cardConfigStruct = assign(
     title: optional(string()),
     hours_to_show: optional(number()),
     refresh_interval: optional(number()),
+    show_names: optional(boolean()),
   })
 );
 
