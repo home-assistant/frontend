@@ -29,6 +29,7 @@ import type {
   HaMapPathPoint,
 } from "../../../components/map/ha-map";
 import { getColorByIndex } from "../../../common/color/colors";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
 import {
   formatTime,
   formatTimeWeekday,
@@ -291,11 +292,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               const p = {} as HaMapPathPoint;
               p.point = [latitude, longitude] as LatLngTuple;
               const t = new Date(entityState.last_updated);
-              if (todayString === t.toDateString()) {
-                p.tooltip = formatTime(t, this.hass.locale);
-              } else {
-                p.tooltip = formatTimeWeekday(t, this.hass.locale);
-              }
+              if (config.hours_to_show && config.hours_to_show > 144) {
+                // if showing > 6 days in the history trail, show the full
+                // date and time
+                p.tooltip = formatDateTime(t, this.hass.locale);
+              } else if (todayString === t.toDateString()) {
+                  p.tooltip = formatTime(t, this.hass.locale);
+                } else {
+                  p.tooltip = formatTimeWeekday(t, this.hass.locale);
+                }
               accumulator.push(p);
             }
             return accumulator;
