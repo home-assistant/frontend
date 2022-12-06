@@ -308,7 +308,7 @@ class DialogCalendarEventEditor extends LitElement {
     // Prevent that the end time can be before the start time. Try to keep the
     // duration the same.
     if (this._dtend! <= this._dtstart!) {
-      const newEnd = addMilliseconds(new Date(this._dtstart), duration);
+      const newEnd = addMilliseconds(this._dtstart, duration);
       // en-CA locale used for date format YYYY-MM-DD
       // en-GB locale used for 24h time format HH:MM:SS
       this._dtend = new Date(
