@@ -117,10 +117,6 @@ export const computeCards = (
     const stateObj = states[entityId];
     const domain = computeDomain(entityId);
 
-    if (!stateObj) {
-      continue;
-    }
-
     if (domain === "alarm_control_panel") {
       const cardConfig: AlarmPanelCardConfig = {
         type: "alarm-panel",
@@ -227,8 +223,16 @@ export const computeCards = (
     }
 
     return stringCompare(
-      typeof a === "string" ? computeStateName(states[a]) : a.name || "",
-      typeof b === "string" ? computeStateName(states[b]) : b.name || ""
+      typeof a === "string"
+        ? states[a]
+          ? computeStateName(states[a])
+          : ""
+        : a.name || "",
+      typeof b === "string"
+        ? states[b]
+          ? computeStateName(states[b])
+          : ""
+        : b.name || ""
     );
   });
 
