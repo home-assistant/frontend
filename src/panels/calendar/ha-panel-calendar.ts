@@ -118,9 +118,9 @@ class PanelCalendar extends LitElement {
     start: Date,
     end: Date,
     calendars: Calendar[]
-  ): Promise<CalendarEvent[]> {
+  ): Promise<{ events: CalendarEvent[]; errors: string[] }> {
     if (!calendars.length) {
-      return [];
+      return { events: [], errors: [] };
     }
 
     return fetchCalendarEvents(this.hass, start, end, calendars);
@@ -135,8 +135,8 @@ class PanelCalendar extends LitElement {
       const checked = ev.target.checked;
 
       if (checked) {
-        const events = await this._fetchEvents(this._start!, this._end!, [cal]);
-        this._events = [...this._events, ...events];
+        const result = await this._fetchEvents(this._start!, this._end!, [cal]);
+        this._events = [...this._events, ...result.events];
         this._deSelectedCalendars = this._deSelectedCalendars.filter(
           (deCal) => deCal !== cal.entity_id
         );
@@ -161,19 +161,15 @@ class PanelCalendar extends LitElement {
   ): Promise<void> {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
-    this._events = await this._fetchEvents(
-      this._start,
-      this._end,
-      this._selectedCalendars
-    );
+    this._events = (
+      await this._fetchEvents(this._start, this._end, this._selectedCalendars)
+    ).events;
   }
 
   private async _handleRefresh(): Promise<void> {
-    this._events = await this._fetchEvents(
-      this._start!,
-      this._end!,
-      this._selectedCalendars
-    );
+    this._events = (
+      await this._fetchEvents(this._start!, this._end!, this._selectedCalendars)
+    ).events;
   }
 
   static get styles(): CSSResultGroup {

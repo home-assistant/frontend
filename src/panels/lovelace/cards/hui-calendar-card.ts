@@ -199,7 +199,9 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         nameList = nameList.concat(name || error_entity_id);
       });
 
-      this._error = `Could not retrieve events for ${nameList}`;
+      this._error = `${this.hass!.localize(
+        "ui.components.calendar.event_retrieval_error"
+      )} ${nameList}`;
     }
   }
 
