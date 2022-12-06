@@ -7,6 +7,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isDate } from "../../common/string/is_date";
 import "../../components/ha-date-input";
+import "../../components/ha-textarea";
 import "../../components/ha-time-input";
 import {
   Calendar,
@@ -42,6 +43,8 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _summary = "";
 
+  @state() private _description = "";
+
   @state() private _rrule?: string;
 
   @state() private _allDay = false;
@@ -73,7 +76,11 @@ class DialogCalendarEventEditor extends LitElement {
       }
     } else {
       this._allDay = false;
-      this._dtstart = startOfHour(new Date());
+      // If we have been provided a selected date (e.g. based on the currently displayed
+      // day in a calendar view), use that as the starting value.
+      this._dtstart = startOfHour(
+        params.selectedDate ? params.selectedDate : new Date()
+      );
       this._dtend = addHours(this._dtstart, 1);
     }
   }
@@ -123,6 +130,15 @@ class DialogCalendarEventEditor extends LitElement {
             error-message=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
           ></ha-textfield>
+          <ha-textarea
+            class="description"
+            name="description"
+            .label=${this.hass.localize(
+              "ui.components.calendar.event.description"
+            )}
+            @change=${this._handleDescriptionChanged}
+            autogrow
+          ></ha-textarea>
           <ha-combo-box
             name="calendar"
             .hass=${this.hass}
@@ -189,6 +205,7 @@ class DialogCalendarEventEditor extends LitElement {
           </div>
           <ha-recurrence-rule-editor
             .locale=${this.hass.locale}
+            .timezone=${this.hass.config.time_zone}
             .value=${this._rrule || ""}
             @value-changed=${this._handleRRuleChanged}
           >
@@ -247,6 +264,10 @@ class DialogCalendarEventEditor extends LitElement {
     this._summary = ev.target.value;
   }
 
+  private _handleDescriptionChanged(ev) {
+    this._description = ev.target.value;
+  }
+
   private _handleRRuleChanged(ev) {
     this._rrule = ev.detail.value;
   }
@@ -286,6 +307,7 @@ class DialogCalendarEventEditor extends LitElement {
     );
     const data: CalendarEventMutableParams = {
       summary: this._summary,
+      description: this._description,
       rrule: this._rrule,
       dtstart: "",
       dtend: "",
@@ -308,6 +330,13 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private async _createEvent() {
+    if (!this._summary || !this._calendarId) {
+      this._error = this.hass.localize(
+        "ui.components.calendar.event.not_all_required_fields"
+      );
+      return;
+    }
+
     this._submitting = true;
     try {
       await createCalendarEvent(
@@ -385,6 +414,7 @@ class DialogCalendarEventEditor extends LitElement {
     this._dtstart = undefined;
     this._dtend = undefined;
     this._summary = "";
+    this._description = "";
     this._rrule = undefined;
   }
 
@@ -395,9 +425,16 @@ class DialogCalendarEventEditor extends LitElement {
         state-info {
           line-height: 40px;
         }
-        ha-textfield {
+        ha-alert {
           display: block;
-          margin-bottom: 24px;
+          margin-bottom: 16px;
+        }
+        ha-textfield,
+        ha-textarea {
+          display: block;
+        }
+        ha-textarea {
+          margin-bottom: 16px;
         }
         ha-formfield {
           display: block;
@@ -430,12 +467,11 @@ class DialogCalendarEventEditor extends LitElement {
         }
         ha-combo-box {
           display: block;
-          margin-bottom: 24px;
         }
         ha-svg-icon {
           width: 40px;
           margin-right: 8px;
-          margin-inline-end: 8px;
+          margin-inline-end: 16px;
           margin-inline-start: initial;
           direction: var(--direction);
           vertical-align: top;

@@ -18,6 +18,7 @@ export type LocalizeKeys =
   | `ui.card.alarm_control_panel.${string}`
   | `ui.card.weather.attributes.${string}`
   | `ui.card.weather.cardinal_direction.${string}`
+  | `ui.components.calendar.event.rrule.${string}`
   | `ui.components.logbook.${string}`
   | `ui.components.selectors.file.${string}`
   | `ui.dialogs.entity_registry.editor.${string}`
@@ -30,7 +31,6 @@ export type LocalizeKeys =
   | `ui.panel.config.dashboard.${string}`
   | `ui.panel.config.devices.${string}`
   | `ui.panel.config.energy.${string}`
-  | `ui.panel.config.helpers.${string}`
   | `ui.panel.config.info.${string}`
   | `ui.panel.config.logs.${string}`
   | `ui.panel.config.lovelace.${string}`

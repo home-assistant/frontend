@@ -35,7 +35,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
-import { HELPER_DOMAINS } from "./const";
+import { HelperDomain, isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 
 // This groups items by a key but only returns last entry per key.
@@ -118,7 +118,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         sortable: true,
         width: "25%",
         filterable: true,
-        template: (type, row) =>
+        template: (type: HelperDomain, row) =>
           row.configEntry
             ? domainToName(localize, type)
             : html`
@@ -243,7 +243,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     if (!domain) {
       return;
     }
-    if (HELPER_DOMAINS.includes(domain)) {
+    if (isHelperDomain(domain)) {
       showHelperDetailDialog(this, {
         domain,
       });
@@ -330,7 +330,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const newStates = Object.values(this.hass!.states).filter(
       (entity) =>
         extraEntities.has(entity.entity_id) ||
-        HELPER_DOMAINS.includes(computeStateDomain(entity))
+        isHelperDomain(computeStateDomain(entity))
     );
 
     if (

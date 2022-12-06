@@ -24,7 +24,7 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@braintree/sanitize-url": "^5.0.2",
+    "@braintree/sanitize-url": "^6.0.0",
     "@codemirror/autocomplete": "^0.19.12",
     "@codemirror/commands": "^0.19.8",
     "@codemirror/gutter": "^0.19.9",

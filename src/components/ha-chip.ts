@@ -77,6 +77,10 @@ export class HaChip extends LitElement {
       span[role="gridcell"] {
         line-height: 14px;
       }
+
+      :host {
+        outline: none;
+      }
     `;
   }
 }

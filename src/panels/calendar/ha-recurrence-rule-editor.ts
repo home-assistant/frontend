@@ -34,6 +34,8 @@ export class RecurrenceRuleEditor extends LitElement {
 
   @property({ attribute: false }) public locale!: HomeAssistant["locale"];
 
+  @property() public timezone?: string;
+
   @state() private _computedRRule = "";
 
   @state() private _freq?: RepeatFrequency = "none";
@@ -292,6 +294,7 @@ export class RecurrenceRuleEditor extends LitElement {
       byweekday: ruleByWeekDay(this._weekday),
       count: this._count,
       until: this._until,
+      tzid: this.timezone,
     };
     const contentline = RRule.optionsToString(options);
     return contentline.slice(6); // Strip "RRULE:" prefix

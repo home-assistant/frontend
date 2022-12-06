@@ -246,7 +246,10 @@ class HaScheduleForm extends LitElement {
   private get _events() {
     const events: any[] = [];
     const currentDay = new Date().getDay();
-    const baseDay = currentDay === 0 ? 7 : currentDay;
+    const baseDay =
+      currentDay === 0 && firstWeekdayIndex(this.hass.locale) === 1
+        ? 7
+        : currentDay;
 
     for (const [i, day] of weekdays.entries()) {
       if (!this[`_${day}`].length) {
@@ -254,8 +257,11 @@ class HaScheduleForm extends LitElement {
       }
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
-        // Add 7 to 0 because we start the calendar on Monday
-        const distance = i - baseDay + (i === 0 ? 7 : 0);
+        // Add 7 to 0 because we start the calendar on Monday, except when the locale says otherwise (firstWeekdayIndex() != 1)
+        const distance =
+          i -
+          baseDay +
+          (i === 0 && firstWeekdayIndex(this.hass.locale) === 1 ? 7 : 0);
 
         const start = new Date();
         start.setDate(start.getDate() + distance);
@@ -426,6 +432,8 @@ class HaScheduleForm extends LitElement {
           -webkit-user-select: none;
           -ms-user-select: none;
           user-select: none;
+          --fc-border-color: var(--divider-color);
+          --fc-event-border-color: var(--divider-color);
         }
 
         .fc-v-event .fc-event-time {
@@ -465,6 +473,18 @@ class HaScheduleForm extends LitElement {
 
         .fc-timegrid-event-short .fc-event-time:after {
           content: ""; /* prevent trailing dash in half hour events since we do not have event titles */
+        }
+
+        a {
+          color: inherit !important;
+        }
+
+        th.fc-col-header-cell.fc-day {
+          background-color: var(--table-header-background-color);
+          color: var(--primary-text-color);
+          font-size: 11px;
+          font-weight: bold;
+          text-transform: uppercase;
         }
       `,
     ];
