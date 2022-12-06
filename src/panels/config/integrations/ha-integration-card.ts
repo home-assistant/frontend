@@ -548,6 +548,9 @@ export class HaIntegrationCard extends LitElement {
   }
 
   private async _handleDisableDebugLogging(ev: MouseEvent) {
+    // Stop propagation since otherwise we end up here twice while we await the log level change
+    // and trigger two identical debug log downloads.
+    ev.stopPropagation();
     const configEntry = ((ev.target as HTMLElement).closest("ha-card") as any)
       .configEntry;
     const integration = configEntry.domain;

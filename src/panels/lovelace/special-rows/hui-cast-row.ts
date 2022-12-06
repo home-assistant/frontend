@@ -122,6 +122,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     await ensureConnectedCastSession(this._castManager!, this.hass.auth);
     castSendShowLovelaceView(
       this._castManager!,
+      this.hass.auth.data.hassUrl,
       this._config!.view,
       this._config!.dashboard
     );

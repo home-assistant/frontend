@@ -29,6 +29,7 @@ export interface CalendarEventData {
   dtstart: string;
   dtend: string;
   rrule?: string;
+  description?: string;
 }
 
 export interface CalendarEventMutableParams {
@@ -36,6 +37,7 @@ export interface CalendarEventMutableParams {
   dtstart: string;
   dtend: string;
   rrule?: string;
+  description?: string;
 }
 
 // The scope of a delete/update for a recurring event
@@ -91,6 +93,7 @@ export const fetchCalendarEvents = async (
       const eventData: CalendarEventData = {
         uid: ev.uid,
         summary: ev.summary,
+        description: ev.description,
         dtstart: eventStart,
         dtend: eventEnd,
         recurrence_id: ev.recurrence_id,

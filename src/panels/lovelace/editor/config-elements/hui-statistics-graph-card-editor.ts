@@ -20,7 +20,7 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { ensureArray } from "../../../../common/ensure-array";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import {

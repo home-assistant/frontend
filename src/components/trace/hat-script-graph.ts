@@ -25,7 +25,7 @@ import {
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { ensureArray } from "../../common/ensure-array";
+import { ensureArray } from "../../common/array/ensure-array";
 import { Condition, Trigger } from "../../data/automation";
 import {
   Action,

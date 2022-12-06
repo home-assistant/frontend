@@ -26,7 +26,7 @@ class StateHistoryChartLine extends LitElement {
 
   @property() public identifier?: string;
 
-  @property({ type: Boolean }) public isSingleDevice = false;
+  @property({ type: Boolean }) public showNames = true;
 
   @property({ attribute: false }) public endTime!: Date;
 
@@ -101,7 +101,7 @@ class StateHistoryChartLine extends LitElement {
             propagate: true,
           },
           legend: {
-            display: !this.isSingleDevice,
+            display: this.showNames,
             labels: {
               usePointStyle: true,
             },

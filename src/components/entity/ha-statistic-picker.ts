@@ -3,7 +3,7 @@ import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { ensureArray } from "../../common/ensure-array";
+import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
 import {

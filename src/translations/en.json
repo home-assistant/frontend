@@ -642,6 +642,9 @@
           "all_day": "All Day",
           "start": "Start",
           "end": "End",
+          "invalid_duration": "The duration of the event is not valid. Please check start and end date.",
+          "not_all_required_fields": "Not all required fields are filled in",
+          "end_auto_adjusted": "Event end was adjusted to prevent negative duration",
           "confirm_delete": {
             "delete": "Delete Event",
             "delete_this": "Delete Only This Event",
@@ -666,7 +669,32 @@
               "daily": "days"
             }
           },
-          "summary": "Summary"
+          "rrule": {
+            "every": "every",
+            "years": "years",
+            "year": "year",
+            "months": "months",
+            "month": "month",
+            "weeks": "weeks",
+            "week": "week",
+            "weekdays": "weekdays",
+            "weekday": "weekday",
+            "days": "days",
+            "day": "day",
+            "until": "until",
+            "for": "for",
+            "in": "in",
+            "on": "on",
+            "on the": "on the",
+            "and": "and",
+            "or": "or",
+            "at": "at",
+            "last": "last",
+            "time": "time",
+            "times": "times"
+          },
+          "summary": "Summary",
+          "description": "Description"
         }
       },
       "attributes": {
@@ -2579,8 +2607,6 @@
               "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
               "default_language": "Default language to use",
               "default_gender": "Default gender to use",
-              "male": "Male",
-              "female": "Female",
               "try": "Try",
               "dialog": {
                 "header": "Try Text to Speech",
@@ -4009,8 +4035,9 @@
               "calendar_entities": "Calendar Entities",
               "views": {
                 "dayGridMonth": "Month",
+                "dayGridWeek": "Week",
                 "dayGridDay": "Day",
-                "list": "List"
+                "listWeek": "List (7 days)"
               }
             },
             "conditional": {
