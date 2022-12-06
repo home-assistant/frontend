@@ -1,7 +1,13 @@
 import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { addDays, addHours, startOfHour } from "date-fns/esm";
+import {
+  addDays,
+  addHours,
+  addMilliseconds,
+  differenceInMilliseconds,
+  startOfHour,
+} from "date-fns/esm";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -35,6 +41,8 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _info?: string;
+
   @state() private _params?: CalendarEventDetailDialogParams;
 
   @state() private _calendars: Calendar[] = [];
@@ -57,6 +65,7 @@ class DialogCalendarEventEditor extends LitElement {
 
   public showDialog(params: CalendarEventEditDialogParams): void {
     this._error = undefined;
+    this._info = undefined;
     this._params = params;
     this._calendars = params.calendars;
     this._calendarId = params.calendarId || this._calendars[0].entity_id;
@@ -119,6 +128,14 @@ class DialogCalendarEventEditor extends LitElement {
         <div class="content">
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
+          ${this._info
+            ? html`<ha-alert
+                alert-type="info"
+                dismissable
+                @alert-dismissed-clicked=${this._clearInfo}
+                >${this._info}</ha-alert
+              >`
             : ""}
 
           <ha-textfield
@@ -260,6 +277,10 @@ class DialogCalendarEventEditor extends LitElement {
     }
   );
 
+  private _clearInfo() {
+    this._info = undefined;
+  }
+
   private _handleSummaryChanged(ev) {
     this._summary = ev.target.value;
   }
@@ -277,9 +298,30 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private _startDateChanged(ev: CustomEvent) {
+    // Store previous event duration
+    const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
+
     this._dtstart = new Date(
       ev.detail.value + "T" + this._dtstart!.toISOString().split("T")[1]
     );
+
+    // Prevent that the end time can be before the start time. Try to keep the
+    // duration the same.
+    if (this._dtend! <= this._dtstart!) {
+      const newEnd = addMilliseconds(this._dtstart, duration);
+      // en-CA locale used for date format YYYY-MM-DD
+      // en-GB locale used for 24h time format HH:MM:SS
+      this._dtend = new Date(
+        `${newEnd.toLocaleDateString("en-CA", {
+          timeZone: this.hass.config.time_zone,
+        })}T${newEnd.toLocaleTimeString("en-GB", {
+          timeZone: this.hass.config.time_zone,
+        })}`
+      );
+      this._info = this.hass.localize(
+        "ui.components.calendar.event.end_auto_adjusted"
+      );
+    }
   }
 
   private _endDateChanged(ev: CustomEvent) {
@@ -289,9 +331,28 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private _startTimeChanged(ev: CustomEvent) {
+    // Store previous event duration
+    const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
+
     this._dtstart = new Date(
       this._dtstart!.toISOString().split("T")[0] + "T" + ev.detail.value
     );
+
+    // Prevent that the end time can be before the start time. Try to keep the
+    // duration the same.
+    if (this._dtend! <= this._dtstart!) {
+      const newEnd = addMilliseconds(new Date(this._dtstart), duration);
+      this._dtend = new Date(
+        `${newEnd.toLocaleDateString("en-CA", {
+          timeZone: this.hass.config.time_zone,
+        })}T${newEnd.toLocaleTimeString("en-GB", {
+          timeZone: this.hass.config.time_zone,
+        })}`
+      );
+      this._info = this.hass.localize(
+        "ui.components.calendar.event.end_auto_adjusted"
+      );
+    }
   }
 
   private _endTimeChanged(ev: CustomEvent) {
@@ -333,6 +394,13 @@ class DialogCalendarEventEditor extends LitElement {
     if (!this._summary || !this._calendarId) {
       this._error = this.hass.localize(
         "ui.components.calendar.event.not_all_required_fields"
+      );
+      return;
+    }
+
+    if (this._dtend! <= this._dtstart!) {
+      this._error = this.hass.localize(
+        "ui.components.calendar.event.invalid_duration"
       );
       return;
     }

@@ -163,7 +163,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   .historyData=${this._stateHistory}
                   .endTime=${this._endDate}
-                  no-single
                 >
                 </state-history-charts>
               `}

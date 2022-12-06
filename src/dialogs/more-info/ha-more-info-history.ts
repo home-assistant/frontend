@@ -67,12 +67,14 @@ export class MoreInfoHistory extends LitElement {
                 .statTypes=${statTypes}
                 .names=${this._statNames}
                 hideLegend
+                .showNames=${false}
               ></statistics-chart>`
             : html`<state-history-charts
                 up-to-now
                 .hass=${this.hass}
                 .historyData=${this._stateHistory}
                 .isLoadingData=${!this._stateHistory}
+                .showNames=${false}
               ></state-history-charts>`}`
       : ""}`;
   }

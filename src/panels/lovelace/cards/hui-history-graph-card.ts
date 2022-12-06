@@ -144,7 +144,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
             .historyData=${this._stateHistory}
             .names=${this._names}
             up-to-now
-            no-single
+            .showNames=${this._config.show_names}
           ></state-history-charts>
         </div>
       </ha-card>
