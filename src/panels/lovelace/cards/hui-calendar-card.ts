@@ -127,14 +127,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        ${this._error
-          ? html`<ha-alert
-              alert-type="error"
-              dismissable
-              @alert-dismissed-clicked=${this._clearError}
-              >${this._error}</ha-alert
-            >`
-          : ""}
         <div class="header">${this._config.title}</div>
         <ha-full-calendar
           .narrow=${this._narrow}
@@ -142,6 +134,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .hass=${this.hass}
           .views=${views}
           .initialView=${this._config.initial_view!}
+          .error=${this._error}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
@@ -180,6 +173,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
 
+    this._error = undefined;
     const result = await fetchCalendarEvents(
       this.hass!,
       this._startDate,
@@ -188,16 +182,14 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     );
     this._events = result.events;
 
-    if (this._calendars && result.errors.length > 0) {
-      let nameList = "";
-      result.errors.forEach((error_entity_id) => {
-        const name = computeStateName(this.hass!.states[error_entity_id]);
-        if (nameList.length > 0) {
-          nameList = nameList.concat(", ");
-        }
-
-        nameList = nameList.concat(name || error_entity_id);
-      });
+    if (result.errors.length > 0) {
+      const nameList = result.errors
+        .map((error_entity_id) =>
+          this.hass!.states[error_entity_id]
+            ? computeStateName(this.hass!.states[error_entity_id])
+            : error_entity_id
+        )
+        .join(", ");
 
       this._error = `${this.hass!.localize(
         "ui.components.calendar.event_retrieval_error"
@@ -229,10 +221,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
     this._resizeObserver.observe(card);
-  }
-
-  private _clearError() {
-    this._error = undefined;
   }
 
   static get styles(): CSSResultGroup {

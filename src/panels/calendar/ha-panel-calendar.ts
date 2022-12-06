@@ -15,6 +15,7 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-card";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
@@ -39,6 +40,8 @@ class PanelCalendar extends LitElement {
   @state() private _calendars: Calendar[] = [];
 
   @state() private _events: CalendarEvent[] = [];
+
+  @state() private _error?: string = undefined;
 
   @LocalStorage("deSelectedCalendars", true)
   private _deSelectedCalendars: string[] = [];
@@ -101,6 +104,7 @@ class PanelCalendar extends LitElement {
             .calendars=${this._calendars}
             .narrow=${this.narrow}
             .hass=${this.hass}
+            .error=${this._error}
             @view-changed=${this._handleViewChanged}
           ></ha-full-calendar>
         </div>
@@ -137,6 +141,7 @@ class PanelCalendar extends LitElement {
       if (checked) {
         const result = await this._fetchEvents(this._start!, this._end!, [cal]);
         this._events = [...this._events, ...result.events];
+        this._handleErrors(result.errors);
         this._deSelectedCalendars = this._deSelectedCalendars.filter(
           (deCal) => deCal !== cal.entity_id
         );
@@ -161,15 +166,40 @@ class PanelCalendar extends LitElement {
   ): Promise<void> {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
-    this._events = (
-      await this._fetchEvents(this._start, this._end, this._selectedCalendars)
-    ).events;
+    const result = await this._fetchEvents(
+      this._start,
+      this._end,
+      this._selectedCalendars
+    );
+    this._events = result.events;
+    this._handleErrors(result.errors);
   }
 
   private async _handleRefresh(): Promise<void> {
-    this._events = (
-      await this._fetchEvents(this._start!, this._end!, this._selectedCalendars)
-    ).events;
+    const result = await this._fetchEvents(
+      this._start!,
+      this._end!,
+      this._selectedCalendars
+    );
+    this._events = result.events;
+    this._handleErrors(result.errors);
+  }
+
+  private _handleErrors(error_entity_ids: string[]) {
+    this._error = undefined;
+    if (error_entity_ids.length > 0) {
+      const nameList = result.errors
+        .map((error_entity_id) =>
+          this.hass!.states[error_entity_id]
+            ? computeStateName(this.hass!.states[error_entity_id])
+            : error_entity_id
+        )
+        .join(", ");
+
+      this._error = `${this.hass!.localize(
+        "ui.components.calendar.event_retrieval_error"
+      )} ${nameList}`;
+    }
   }
 
   static get styles(): CSSResultGroup {
