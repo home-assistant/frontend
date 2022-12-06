@@ -2,20 +2,20 @@
 .reify-cache
 
 # build
-build
-hass_frontend/*
-dist
-translations
+build/
+dist/
+/hass_frontend/
+/translations/
 
 # yarn
-.yarn/*
+.yarn/**
 !.yarn/patches
 !.yarn/releases
 !.yarn/plugins
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
-node_modules/*
+/node_modules/
 yarn-error.log
 npm-debug.log
 
@@ -27,11 +27,11 @@ npm-debug.log
 # venv stuff
 pyvenv.cfg
 pip-selfcheck.json
-venv/*
+/venv/
 .venv
 
 # vscode
-.vscode/*
+.vscode/**
 !.vscode/extensions.json
 !.vscode/launch.json
 !.vscode/tasks.json
@@ -46,4 +46,4 @@ src/cast/dev_const.ts
 .tool-versions
 
 # Home Assistant config
-/config
+/config/

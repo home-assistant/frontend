@@ -8,6 +8,8 @@ import { BaseCastMessage } from "./types";
 
 export interface GetStatusMessage extends BaseCastMessage {
   type: "get_status";
+  hassUrl?: string;
+  hassUUID?: string;
 }
 
 export interface ConnectMessage extends BaseCastMessage {
@@ -15,12 +17,15 @@ export interface ConnectMessage extends BaseCastMessage {
   refreshToken: string;
   clientId: string | null;
   hassUrl: string;
+  hassUUID?: string;
 }
 
 export interface ShowLovelaceViewMessage extends BaseCastMessage {
   type: "show_lovelace_view";
   viewPath: string | number | null;
   urlPath: string | null;
+  hassUrl: string;
+  hassUUID?: string;
 }
 
 export interface ShowDemoMessage extends BaseCastMessage {
@@ -43,6 +48,7 @@ export const castSendAuth = (cast: CastManager, auth: Auth) =>
 
 export const castSendShowLovelaceView = (
   cast: CastManager,
+  hassUrl: string,
   viewPath: ShowLovelaceViewMessage["viewPath"],
   urlPath?: string | null
 ) =>
@@ -50,6 +56,7 @@ export const castSendShowLovelaceView = (
     type: "show_lovelace_view",
     viewPath,
     urlPath: urlPath || null,
+    hassUrl: CAST_DEV ? CAST_DEV_HASS_URL : hassUrl,
   });
 
 export const castSendShowDemo = (cast: CastManager) =>

@@ -1,73 +1,14 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { getGraphColorByIndex } from "../../common/color/colors";
-import { rgb2hex } from "../../common/color/convert-color";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import { stateActive } from "../../common/entity/state_active";
-import { stateColor } from "../../common/entity/state_color";
 import { numberFormatToLocale } from "../../common/number/format_number";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { TimelineEntity } from "../../data/history";
 import { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import type { TimeLineData } from "./timeline-chart/const";
-
-const stateColorTokenMap: Map<string, string> = new Map();
-const stateColorMap: Map<string, string> = new Map();
-
-let colorIndex = 0;
-
-export const getStateColorToken = (
-  stateString: string,
-  entityState?: HassEntity
-) => {
-  if (!entityState || !stateActive(entityState, stateString)) {
-    return `disabled`;
-  }
-  const color = stateColor(entityState, stateString);
-  if (color) {
-    return `state-${color}`;
-  }
-  return undefined;
-};
-
-const getColor = (
-  stateString: string,
-  computedStyles: CSSStyleDeclaration,
-  entityState?: HassEntity
-) => {
-  const stateColorToken = getStateColorToken(stateString, entityState);
-
-  if (stateColorToken) {
-    if (stateColorTokenMap.has(stateColorToken)) {
-      return stateColorTokenMap.get(stateColorToken);
-    }
-    const value = computedStyles.getPropertyValue(
-      `--rgb-${stateColorToken}-color`
-    );
-
-    if (value) {
-      const parsedValue = value.split(",").map((v) => Number(v)) as [
-        number,
-        number,
-        number
-      ];
-      const hexValue = rgb2hex(parsedValue);
-      stateColorTokenMap.set(stateColorToken, hexValue);
-      return hexValue;
-    }
-  }
-
-  if (stateColorMap.has(stateString)) {
-    return stateColorMap.get(stateString);
-  }
-  const color = getGraphColorByIndex(colorIndex, computedStyles);
-  colorIndex++;
-  stateColorMap.set(stateString, color);
-  return color;
-};
+import { computeTimelineColor } from "./timeline-chart/timeline-color";
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -83,7 +24,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property() public identifier?: string;
 
-  @property({ type: Boolean }) public isSingleDevice = false;
+  @property({ type: Boolean }) public showNames = true;
 
   @property({ type: Boolean }) public chunked = false;
 
@@ -175,8 +116,7 @@ export class StateHistoryChartTimeline extends LitElement {
             drawTicks: false,
           },
           ticks: {
-            display:
-              this.chunked || !this.isSingleDevice || this.data.length !== 1,
+            display: this.chunked || this.showNames,
           },
           afterSetDimensions: (y) => {
             y.maxWidth = y.chart.width * 0.18;
@@ -271,7 +211,7 @@ export class StateHistoryChartTimeline extends LitElement {
             start: prevLastChanged,
             end: newLastChanged,
             label: locState,
-            color: getColor(
+            color: computeTimelineColor(
               prevState,
               computedStyles,
               this.hass.states[stateInfo.entity_id]
@@ -289,7 +229,7 @@ export class StateHistoryChartTimeline extends LitElement {
           start: prevLastChanged,
           end: endTime,
           label: locState,
-          color: getColor(
+          color: computeTimelineColor(
             prevState,
             computedStyles,
             this.hass.states[stateInfo.entity_id]

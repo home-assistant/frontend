@@ -48,7 +48,7 @@ class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
 
-  @property({ type: Boolean, attribute: "no-single" }) public noSingle = false;
+  @property({ type: Boolean }) public showNames = true;
 
   @property({ type: Boolean }) public isLoadingData = false;
 
@@ -128,8 +128,7 @@ class StateHistoryCharts extends LitElement {
           .unit=${item.unit}
           .data=${item.data}
           .identifier=${item.identifier}
-          .isSingleDevice=${!this.noSingle &&
-          this.historyData.line?.length === 1}
+          .showNames=${this.showNames}
           .endTime=${this._computedEndTime}
           .names=${this.names}
         ></state-history-chart-line>
@@ -141,8 +140,7 @@ class StateHistoryCharts extends LitElement {
         .data=${item}
         .startTime=${this._computedStartTime}
         .endTime=${this._computedEndTime}
-        .isSingleDevice=${!this.noSingle &&
-        this.historyData.timeline?.length === 1}
+        .showNames=${this.showNames}
         .names=${this.names}
         .narrow=${this.narrow}
         .chunked=${this.virtualize}

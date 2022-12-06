@@ -4,14 +4,12 @@ import {
 } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../../src/common/entity/compute_domain";
 import { computeStateDisplay } from "../../../../src/common/entity/compute_state_display";
-import { stateColorCss } from "../../../../src/common/entity/state_color";
-import { stateIconPath } from "../../../../src/common/entity/state_icon_path";
 import "../../../../src/components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../../src/components/data-table/ha-data-table";
+import "../../../../src/components/entity/state-badge";
 import "../../../../src/components/ha-chip";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import { HomeAssistant } from "../../../../src/types";
@@ -105,6 +103,12 @@ const ENTITIES: HassEntity[] = [
   createEntity("alarm_control_panel.arming", "arming"),
   createEntity("alarm_control_panel.disarming", "disarming"),
   createEntity("alarm_control_panel.triggered", "triggered"),
+  // Alert
+  createEntity("alert.off", "off"),
+  createEntity("alert.on", "on"),
+  // Automation
+  createEntity("automation.off", "off"),
+  createEntity("automation.on", "on"),
   // Binary Sensor
   ...BINARY_SENSOR_DEVICE_CLASSES.map((dc) =>
     createEntity(`binary_sensor.${dc}`, "on", dc)
@@ -113,8 +117,11 @@ const ENTITIES: HassEntity[] = [
   createEntity("button.restart", "unknown", "restart"),
   createEntity("button.update", "unknown", "update"),
   // Calendar
-  createEntity("calendar.on", "on"),
   createEntity("calendar.off", "off"),
+  createEntity("calendar.on", "on"),
+  // Camera
+  createEntity("camera.off", "off"),
+  createEntity("camera.on", "on"),
   // Climate
   createEntity("climate.off", "off"),
   createEntity("climate.heat", "heat"),
@@ -124,10 +131,10 @@ const ENTITIES: HassEntity[] = [
   createEntity("climate.dry", "dry"),
   createEntity("climate.fan_only", "fan_only"),
   // Cover
-  createEntity("cover.opening", "opening"),
-  createEntity("cover.open", "open"),
   createEntity("cover.closing", "closing"),
   createEntity("cover.closed", "closed"),
+  createEntity("cover.opening", "opening"),
+  createEntity("cover.open", "open"),
   createEntity("cover.awning", "open", "awning"),
   createEntity("cover.blind", "open", "blind"),
   createEntity("cover.curtain", "open", "curtain"),
@@ -139,24 +146,27 @@ const ENTITIES: HassEntity[] = [
   createEntity("cover.shutter", "open", "shutter"),
   createEntity("cover.window", "open", "window"),
   // Device tracker/person
-  createEntity("device_tracker.home", "home"),
   createEntity("device_tracker.not_home", "not_home"),
+  createEntity("device_tracker.home", "home"),
   createEntity("device_tracker.work", "work"),
   createEntity("person.home", "home"),
   createEntity("person.not_home", "not_home"),
   createEntity("person.work", "work"),
   // Fan
-  createEntity("fan.on", "on"),
   createEntity("fan.off", "off"),
+  createEntity("fan.on", "on"),
   // Humidifier
-  createEntity("humidifier.on", "on"),
   createEntity("humidifier.off", "off"),
+  createEntity("humidifier.on", "on"),
+  // Helpers
+  createEntity("input_boolean.off", "off"),
+  createEntity("input_boolean.on", "on"),
   // Light
-  createEntity("light.on", "on"),
   createEntity("light.off", "off"),
+  createEntity("light.on", "on"),
   // Locks
-  createEntity("lock.locked", "locked"),
   createEntity("lock.unlocked", "unlocked"),
+  createEntity("lock.locked", "locked"),
   createEntity("lock.locking", "locking"),
   createEntity("lock.unlocking", "unlocking"),
   createEntity("lock.jammed", "jammed"),
@@ -180,6 +190,12 @@ const ENTITIES: HassEntity[] = [
   createEntity("media_player.speaker_playing", "playing", "speaker"),
   createEntity("media_player.speaker_paused", "paused", "speaker"),
   createEntity("media_player.speaker_standby", "standby", "speaker"),
+  // Remote
+  createEntity("remote.off", "off"),
+  createEntity("remote.on", "on"),
+  // Script
+  createEntity("script.off", "off"),
+  createEntity("script.on", "on"),
   // Sensor
   ...SENSOR_DEVICE_CLASSES.map((dc) => createEntity(`sensor.${dc}`, "10", dc)),
   // Battery sensor
@@ -196,9 +212,12 @@ const ENTITIES: HassEntity[] = [
   createEntity("switch.outlet_on", "on", "outlet"),
   createEntity("switch.switch_off", "off", "switch"),
   createEntity("switch.switch_on", "on", "switch"),
+  // Timer
+  createEntity("timer.off", "off"),
+  createEntity("timer.on", "on"),
   // Vacuum
-  createEntity("vacuum.cleaning", "cleaning"),
   createEntity("vacuum.docked", "docked"),
+  createEntity("vacuum.cleaning", "cleaning"),
   createEntity("vacuum.paused", "paused"),
   createEntity("vacuum.idle", "idle"),
   createEntity("vacuum.returning", "returning"),
@@ -280,18 +299,12 @@ export class DemoEntityState extends LitElement {
       const columns: DataTableColumnContainer<EntityRowData> = {
         icon: {
           title: "Icon",
-          template: (_, entry) => {
-            const cssColor = stateColorCss(entry.stateObj);
-            return html`
-              <ha-svg-icon
-                style=${styleMap({
-                  color: `rgb(${cssColor})`,
-                })}
-                .path=${stateIconPath(entry.stateObj)}
-              >
-              </ha-svg-icon>
-            `;
-          },
+          template: (_, entry) => html`
+            <state-badge
+              .stateObj=${entry.stateObj}
+              .stateColor=${true}
+            ></state-badge>
+          `,
         },
         entity_id: {
           title: "Entity id",

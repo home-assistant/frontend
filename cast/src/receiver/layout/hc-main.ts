@@ -33,7 +33,6 @@ import { castContext } from "../cast_context";
 import "./hc-launch-screen";
 
 let resourcesLoaded = false;
-
 @customElement("hc-main")
 export class HcMain extends HassElement {
   @state() private _showDemo = false;
@@ -45,6 +44,8 @@ export class HcMain extends HassElement {
   @state() private _error?: string;
 
   @state() private _urlPath?: string | null;
+
+  private _hassUUID?: string;
 
   private _unsubLovelace?: UnsubscribeFunc;
 
@@ -125,6 +126,7 @@ export class HcMain extends HassElement {
 
     if (this.hass) {
       status.hassUrl = this.hass.auth.data.hassUrl;
+      status.hassUUID = this._hassUUID;
       status.lovelacePath = this._lovelacePath;
       status.urlPath = this._urlPath;
     }
@@ -163,6 +165,18 @@ export class HcMain extends HassElement {
   };
 
   private async _handleGetStatusMessage(msg: GetStatusMessage) {
+    if (
+      (this.hass && msg.hassUUID && msg.hassUUID !== this._hassUUID) ||
+      (this.hass && msg.hassUrl && msg.hassUrl !== this.hass.auth.data.hassUrl)
+    ) {
+      this._error = "Not connected to the same Home Assistant instance.";
+      this._sendError(
+        ReceiverErrorCode.WRONG_INSTANCE,
+        this._error,
+        msg.senderId!
+      );
+    }
+
     this._sendStatus(msg.senderId!);
   }
 
@@ -179,6 +193,7 @@ export class HcMain extends HassElement {
           expires_in: 0,
         }),
       });
+      this._hassUUID = msg.hassUUID;
     } catch (err: any) {
       const errorMessage = this._getErrorMessage(err);
       this._error = errorMessage;
@@ -209,9 +224,29 @@ export class HcMain extends HassElement {
     if (!this.hass) {
       this._sendStatus(msg.senderId!);
       this._error = "Cannot show Lovelace because we're not connected.";
-      this._sendError(ReceiverErrorCode.NOT_CONNECTED, this._error);
+      this._sendError(
+        ReceiverErrorCode.NOT_CONNECTED,
+        this._error,
+        msg.senderId!
+      );
       return;
     }
+
+    if (
+      (msg.hassUUID && msg.hassUUID !== this._hassUUID) ||
+      (msg.hassUrl && msg.hassUrl !== this.hass.auth.data.hassUrl)
+    ) {
+      this._sendStatus(msg.senderId!);
+      this._error =
+        "Cannot show Lovelace because we're not connected to the same Home Assistant instance.";
+      this._sendError(
+        ReceiverErrorCode.WRONG_INSTANCE,
+        this._error,
+        msg.senderId!
+      );
+      return;
+    }
+
     this._error = undefined;
     if (msg.urlPath === "lovelace") {
       msg.urlPath = null;
