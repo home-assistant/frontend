@@ -33,6 +33,10 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
       return compareState === "problem";
     case "group":
       return ["on", "home", "open", "locked", "problem"].includes(compareState);
+    case "timer":
+      return compareState === "active";
+    case "camera":
+      return compareState === "streaming";
     default:
       return true;
   }
