@@ -23,7 +23,11 @@ import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
 import "../../../components/map/ha-map";
-import type { HaMap, HaMapPaths, HaMapPathPoint } from "../../../components/map/ha-map";
+import type {
+  HaMap,
+  HaMapPaths,
+  HaMapPathPoint,
+} from "../../../components/map/ha-map";
 import { getColorByIndex } from "../../../common/color/colors";
 import {
   formatTime,
