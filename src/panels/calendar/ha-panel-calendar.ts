@@ -188,7 +188,7 @@ class PanelCalendar extends LitElement {
   private _handleErrors(error_entity_ids: string[]) {
     this._error = undefined;
     if (error_entity_ids.length > 0) {
-      const nameList = result.errors
+      const nameList = error_entity_ids
         .map((error_entity_id) =>
           this.hass!.states[error_entity_id]
             ? computeStateName(this.hass!.states[error_entity_id])
