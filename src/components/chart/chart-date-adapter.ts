@@ -40,7 +40,7 @@ import {
   formatDateMonth,
   formatDateMonthYear,
   formatDateShort,
-  formatDateWeekday,
+  formatDateWeekdayDay,
   formatDateYear,
 } from "../../common/datetime/format_date";
 import {
@@ -92,7 +92,7 @@ _adapters._date.override({
       case "hour":
         return formatTime(new Date(time), this.options.locale);
       case "weekday":
-        return formatDateWeekday(new Date(time), this.options.locale);
+        return formatDateWeekdayDay(new Date(time), this.options.locale);
       case "date":
         return formatDate(new Date(time), this.options.locale);
       case "day":

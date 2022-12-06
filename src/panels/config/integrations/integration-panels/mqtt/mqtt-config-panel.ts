@@ -82,7 +82,7 @@ class HaPanelDevMqtt extends LitElement {
   }
 
   private _handleTopic(ev: CustomEvent) {
-    this.topic = ev.detail.value;
+    this.topic = (ev.target! as any).value;
     if (localStorage && this.inited) {
       localStorage["panel-dev-mqtt-topic"] = this.topic;
     }

@@ -25,7 +25,7 @@ import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-c
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { Helper } from "./const";
+import { Helper, HelperDomain } from "./const";
 import "./forms/ha-counter-form";
 import "./forms/ha-input_boolean-form";
 import "./forms/ha-input_button-form";
@@ -37,7 +37,18 @@ import "./forms/ha-schedule-form";
 import "./forms/ha-timer-form";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
-const HELPERS = {
+type HelperCreators = {
+  [domain in HelperDomain]: (
+    hass: HomeAssistant,
+    // Not properly typed because there is currently a mismatch for this._item between:
+    // 1. Type passed to form should be Helper
+    // 2. Type received by creator should be MutableParams version
+    // The two are not compatible.
+    params: any
+  ) => Promise<Helper>;
+};
+
+const HELPERS: HelperCreators = {
   input_boolean: createInputBoolean,
   input_button: createInputButton,
   input_text: createInputText,
@@ -57,7 +68,7 @@ export class DialogHelperDetail extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _domain?: string;
+  @state() private _domain?: HelperDomain;
 
   @state() private _error?: string;
 
@@ -127,7 +138,7 @@ export class DialogHelperDetail extends LitElement {
     } else {
       const items: [string, string][] = [];
 
-      for (const helper of Object.keys(HELPERS)) {
+      for (const helper of Object.keys(HELPERS) as (keyof typeof HELPERS)[]) {
         items.push([
           helper,
           this.hass.localize(`ui.panel.config.helpers.types.${helper}`) ||

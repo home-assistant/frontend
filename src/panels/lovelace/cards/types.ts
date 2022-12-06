@@ -300,6 +300,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   refresh_interval?: number;
   title?: string;
+  show_names?: boolean;
 }
 
 export interface StatisticsGraphCardConfig extends LovelaceCardConfig {

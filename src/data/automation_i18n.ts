@@ -1,6 +1,6 @@
 import { formatDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { ensureArray } from "../common/ensure-array";
+import { ensureArray } from "../common/array/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
 import { Condition, Trigger } from "./automation";
