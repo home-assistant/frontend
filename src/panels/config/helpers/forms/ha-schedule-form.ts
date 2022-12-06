@@ -214,7 +214,7 @@ class HaScheduleForm extends LitElement {
       }
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
-        let date = nextDay(new Date(), i);
+        let date = nextDay(new Date(), i as Day);
         if (
           !isSameWeek(date, new Date(), {
             weekStartsOn: firstWeekdayIndex(this.hass.locale),
