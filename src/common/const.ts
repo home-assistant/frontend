@@ -188,6 +188,14 @@ export const DOMAINS_WITH_CARD = [
   "water_heater",
 ];
 
+export const SENSOR_ENTITIES = [
+  "sensor",
+  "binary_sensor",
+  "camera",
+  "device_tracker",
+  "weather",
+];
+
 /** Domains that render an input element instead of a text value when displayed in a row.
  *  Those rows should then not show a cursor pointer when hovered (which would normally
  *  be the default) unless the element itself enforces it (e.g. a button). Also those elements
