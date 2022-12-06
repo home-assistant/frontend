@@ -97,6 +97,8 @@ export class HAFullCalendar extends LitElement {
 
   @property() public initialView: FullCalendarView = "dayGridMonth";
 
+  @property({ attribute: false }) public error?: string = undefined;
+
   private calendar?: Calendar;
 
   private _viewButtons?: ToggleButton[];
@@ -116,6 +118,14 @@ export class HAFullCalendar extends LitElement {
     return html`
       ${this.calendar
         ? html`
+            ${this.error
+              ? html`<ha-alert
+                  alert-type="error"
+                  dismissable
+                  @alert-dismissed-clicked=${this._clearError}
+                  >${this.error}</ha-alert
+                >`
+              : ""}
             <div class="header">
               ${!this.narrow
                 ? html`
@@ -380,6 +390,10 @@ export class HAFullCalendar extends LitElement {
     );
   });
 
+  private _clearError() {
+    this.error = undefined;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -447,6 +461,11 @@ export class HAFullCalendar extends LitElement {
           bottom: 32px;
           right: 32px;
           z-index: 1;
+        }
+
+        ha-alert {
+          display: block;
+          margin: 4px 0;
         }
 
         #calendar {

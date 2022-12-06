@@ -10,6 +10,7 @@ import { customElement, property, state, query } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import {
@@ -68,6 +69,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   @state() private _narrow = false;
 
   @state() private _veryNarrow = false;
+
+  @state() private _error?: string = undefined;
 
   @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
 
@@ -131,6 +134,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .hass=${this.hass}
           .views=${views}
           .initialView=${this._config.initial_view!}
+          .error=${this._error}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
@@ -169,12 +173,28 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._events = await fetchCalendarEvents(
+    this._error = undefined;
+    const result = await fetchCalendarEvents(
       this.hass!,
       this._startDate,
       this._endDate,
       this._calendars
     );
+    this._events = result.events;
+
+    if (result.errors.length > 0) {
+      const nameList = result.errors
+        .map((error_entity_id) =>
+          this.hass!.states[error_entity_id]
+            ? computeStateName(this.hass!.states[error_entity_id])
+            : error_entity_id
+        )
+        .join(", ");
+
+      this._error = `${this.hass!.localize(
+        "ui.components.calendar.event_retrieval_error"
+      )} ${nameList}`;
+    }
   }
 
   private _measureCard() {
