@@ -6,7 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 // @ts-ignore
 import timegridStyle from "@fullcalendar/timegrid/main.css";
-import { addDays, isSameDay, isSameWeek } from "date-fns";
+import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import {
   css,
   CSSResultGroup,
@@ -208,13 +208,13 @@ class HaScheduleForm extends LitElement {
   private get _events() {
     const events: any[] = [];
 
-    for (const [day, nextDayFunc] of Object.entries(weekdays)) {
+    for (const [i, day] of weekdays.entries()) {
       if (!this[`_${day}`].length) {
         continue;
       }
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
-        let date = nextDayFunc(new Date());
+        let date = nextDay(new Date(), i);
         if (
           !isSameWeek(date, new Date(), {
             weekStartsOn: firstWeekdayIndex(this.hass.locale),
@@ -249,7 +249,7 @@ class HaScheduleForm extends LitElement {
   private _handleSelect(info: { start: Date; end: Date }) {
     const { start, end } = info;
 
-    const day = Object.keys(weekdays)[start.getDay()];
+    const day = weekdays[start.getDay()];
     const value = [...this[`_${day}`]];
     const newValue = { ...this._item };
 
@@ -302,7 +302,7 @@ class HaScheduleForm extends LitElement {
     const { id, start, end } = info.event;
 
     const [day, index] = id.split("-");
-    const newDay = Object.keys(weekdays)[start.getDay()];
+    const newDay = weekdays[start.getDay()];
     const newValue = { ...this._item };
 
     const endFormatted = formatTime24h(end);
