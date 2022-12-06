@@ -5,6 +5,7 @@ import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
 import { binarySensorColor } from "./color/binary_sensor_color";
 import { climateColor } from "./color/climate_color";
 import { lockColor } from "./color/lock_color";
+import { personColor } from "./color/person_color";
 import { sensorColor } from "./color/sensor_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
@@ -28,6 +29,9 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
   const domain = computeDomain(stateObj.entity_id);
 
   switch (domain) {
+    case "automation":
+      return "automation";
+
     case "alarm_control_panel":
       return alarmControlPanelColor(compareState);
 
@@ -55,6 +59,10 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
     case "media_player":
       return "media-player";
 
+    case "person":
+    case "device_tracker":
+      return personColor(stateObj);
+
     case "sensor":
       return sensorColor(stateObj);
 
@@ -68,7 +76,19 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
       return compareState === "above_horizon" ? "sun-day" : "sun-night";
 
     case "switch":
+    case "input_boolean":
       return "switch";
+
+    case "alert":
+      return "alert";
+
+    case "calendar":
+    case "camera":
+    case "remote":
+    case "script":
+    case "timer":
+    case "group":
+      return "active";
 
     case "update":
       return updateIsInstalling(stateObj as UpdateEntity)

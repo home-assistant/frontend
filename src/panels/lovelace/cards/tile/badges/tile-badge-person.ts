@@ -1,6 +1,5 @@
-import { mdiHelp, mdiHome, mdiHomeExportOutline } from "@mdi/js";
+import { mdiHome, mdiHomeExportOutline } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE_STATES } from "../../../../../data/entity";
 import { HomeAssistant } from "../../../../../types";
 import { ComputeBadgeFunction } from "./tile-badge";
 
@@ -17,20 +16,18 @@ function getZone(entity: HassEntity, hass: HomeAssistant) {
 
 function personBadgeIcon(entity: HassEntity) {
   const state = entity.state;
-  if (UNAVAILABLE_STATES.includes(state)) {
-    return mdiHelp;
-  }
   return state === "not_home" ? mdiHomeExportOutline : mdiHome;
 }
 
-function personBadgeColor(entity: HassEntity, inZone?: boolean) {
-  if (inZone) {
-    return "var(--rgb-state-person-zone-color)";
+function personBadgeColor(entity: HassEntity) {
+  switch (entity.state) {
+    case "home":
+      return "var(--rgb-badge-person-home-color)";
+    case "not_home":
+      return "var(--rgb-badge-person-not-home-color)";
+    default:
+      return "var(--rgb-badge-person-zone-color)";
   }
-  const state = entity.state;
-  return state === "not_home"
-    ? "var(--rgb-state-person-not-home-color)"
-    : "var(--rgb-state-person-home-color)";
 }
 
 export const computePersonBadge: ComputeBadgeFunction = (stateObj, hass) => {
@@ -39,6 +36,6 @@ export const computePersonBadge: ComputeBadgeFunction = (stateObj, hass) => {
   return {
     iconPath: personBadgeIcon(stateObj),
     icon: zone?.attributes.icon,
-    color: personBadgeColor(stateObj, Boolean(zone)),
+    color: personBadgeColor(stateObj),
   };
 };
