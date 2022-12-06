@@ -10,6 +10,7 @@ import { customElement, property, state, query } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import {
@@ -69,6 +70,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @state() private _veryNarrow = false;
 
+  @state() private _error?: string = undefined;
+
   @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
 
   private _startDate?: Date;
@@ -124,6 +127,14 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
+        ${this._error
+          ? html`<ha-alert
+              alert-type="error"
+              dismissable
+              @alert-dismissed-clicked=${this._clearError}
+              >${this._error}</ha-alert
+            >`
+          : ""}
         <div class="header">${this._config.title}</div>
         <ha-full-calendar
           .narrow=${this._narrow}
@@ -169,12 +180,27 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._events = await fetchCalendarEvents(
+    const result = await fetchCalendarEvents(
       this.hass!,
       this._startDate,
       this._endDate,
       this._calendars
     );
+    this._events = result.events;
+
+    if (this._calendars && result.errors.length > 0) {
+      let nameList = "";
+      result.errors.forEach((error_entity_id) => {
+        const name = computeStateName(this.hass!.states[error_entity_id]);
+        if (nameList.length > 0) {
+          nameList = nameList.concat(", ");
+        }
+
+        nameList = nameList.concat(name || error_entity_id);
+      });
+
+      this._error = `Could not retrieve events for ${nameList}`;
+    }
   }
 
   private _measureCard() {
@@ -203,6 +229,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     this._resizeObserver.observe(card);
   }
 
+  private _clearError() {
+    this._error = undefined;
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       ha-card {
@@ -220,6 +250,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         padding-left: 8px;
         padding-inline-start: 8px;
         direction: var(--direction);
+      }
+
+      ha-alert {
+        display: block;
+        margin: 4px 0;
       }
     `;
   }

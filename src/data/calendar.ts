@@ -54,12 +54,13 @@ export const fetchCalendarEvents = async (
   start: Date,
   end: Date,
   calendars: Calendar[]
-): Promise<CalendarEvent[]> => {
+): Promise<{ events: CalendarEvent[]; errors: string[] }> => {
   const params = encodeURI(
     `?start=${start.toISOString()}&end=${end.toISOString()}`
   );
 
   const calEvents: CalendarEvent[] = [];
+  const errors: string[] = [];
   const promises: Promise<CalendarEvent[]>[] = [];
 
   calendars.forEach((cal) => {
@@ -77,6 +78,7 @@ export const fetchCalendarEvents = async (
       // eslint-disable-next-line no-await-in-loop
       result = await promise;
     } catch (err) {
+      errors.push(calendars[idx].entity_id);
       continue;
     }
     const cal = calendars[idx];
@@ -108,7 +110,7 @@ export const fetchCalendarEvents = async (
     });
   }
 
-  return calEvents;
+  return { events: calEvents, errors };
 };
 
 const getCalendarDate = (dateObj: any): string | undefined => {
