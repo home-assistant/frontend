@@ -1,5 +1,6 @@
 import "@lit-labs/virtualizer";
 import { VisibilityChangedEvent } from "@lit-labs/virtualizer/Virtualizer";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -8,37 +9,35 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { stateActive } from "../../common/entity/state_active";
-import { stateColorCss } from "../../common/entity/state_color";
+import { navigate } from "../../common/navigate";
+import { computeTimelineColor } from "../../components/chart/timeline-chart/timeline-color";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
+import "../../components/ha-icon-next";
 import "../../components/ha-relative-time";
 import {
   createHistoricState,
-  localizeTriggerSource,
   localizeStateMessage,
+  localizeTriggerSource,
   LogbookEntry,
 } from "../../data/logbook";
 import { TraceContexts } from "../../data/trace";
 import {
+  buttonLinkStyle,
   haStyle,
   haStyleScrollbar,
-  buttonLinkStyle,
 } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
-import "../../components/ha-icon-next";
-import { navigate } from "../../common/navigate";
 
 declare global {
   interface HASSDomEvents {
@@ -264,14 +263,15 @@ class HaLogbookRenderer extends LitElement {
     const stateObj = this.hass.states[item.entity_id!] as
       | HassEntity
       | undefined;
+    const computedStyles = getComputedStyle(this);
 
     const color =
-      stateObj && stateActive(stateObj, item.state)
-        ? stateColorCss(stateObj, item.state)
+      item.state !== undefined
+        ? computeTimelineColor(item.state, computedStyles, stateObj)
         : undefined;
 
     const style = {
-      "--indicator-color": color,
+      backgroundColor: color,
     };
 
     return html` <div class="indicator" style=${styleMap(style)}></div> `;
@@ -577,9 +577,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .indicator {
-          background-color: rgb(
-            var(--indicator-color, var(--rgb-disabled-color))
-          );
+          background-color: rgb(var(--rgb-disabled-color));
           height: 8px;
           width: 8px;
           border-radius: 4px;
