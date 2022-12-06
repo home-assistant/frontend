@@ -642,7 +642,9 @@
           "all_day": "All Day",
           "start": "Start",
           "end": "End",
-          "not_all_required_fields": "Not all required fields are filled in.",
+          "invalid_duration": "The duration of the event is not valid. Please check start and end date.",
+          "not_all_required_fields": "Not all required fields are filled in",
+          "end_auto_adjusted": "Event end was adjusted to prevent negative duration",
           "confirm_delete": {
             "delete": "Delete Event",
             "delete_this": "Delete Only This Event",
