@@ -84,6 +84,10 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    if (!this._setHum) {
+      this._setHum = this._getSetHum(stateObj);
+    }
+
     const name =
       this._config!.name ||
       computeStateName(this.hass!.states[this._config!.entity]);
