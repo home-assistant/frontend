@@ -297,10 +297,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
                 // date and time
                 p.tooltip = formatDateTime(t, this.hass.locale);
               } else if (todayString === t.toDateString()) {
-                  p.tooltip = formatTime(t, this.hass.locale);
-                } else {
-                  p.tooltip = formatTimeWeekday(t, this.hass.locale);
-                }
+                p.tooltip = formatTime(t, this.hass.locale);
+              } else {
+                p.tooltip = formatTimeWeekday(t, this.hass.locale);
+              }
               accumulator.push(p);
             }
             return accumulator;
