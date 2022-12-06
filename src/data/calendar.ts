@@ -60,7 +60,7 @@ export const fetchCalendarEvents = async (
   );
 
   const calEvents: CalendarEvent[] = [];
-  const promises: Promise<any>[] = [];
+  const promises: Promise<CalendarEvent[]>[] = [];
 
   calendars.forEach((cal) => {
     promises.push(
@@ -71,17 +71,14 @@ export const fetchCalendarEvents = async (
     );
   });
 
-  let results;
-  try {
-    results = await Promise.all(promises);
-  } catch (err) {
-    // In case there are invalid calendar entities, we get an HTTP 400 back from the attempted
-    // API fetch call. This should however not stop the frontend (e.g. switching the
-    // selected calendar week or day).
-    return calEvents;
-  }
-
-  results.forEach((result, idx) => {
+  for (const [idx, promise] of promises.entries()) {
+    let result: CalendarEvent[];
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      result = await promise;
+    } catch (err) {
+      continue;
+    }
     const cal = calendars[idx];
     result.forEach((ev) => {
       const eventStart = getCalendarDate(ev.start);
@@ -109,7 +106,7 @@ export const fetchCalendarEvents = async (
 
       calEvents.push(event);
     });
-  });
+  }
 
   return calEvents;
 };
