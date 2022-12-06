@@ -39,7 +39,7 @@ export class HaNumberSelector extends LitElement {
               <ha-slider
                 .min=${this.selector.number?.min}
                 .max=${this.selector.number?.max}
-                .value=${this._value}
+                .value=${this.value ?? ""}
                 .step=${this.selector.number?.step ?? 1}
                 .disabled=${this.disabled}
                 .required=${this.required}
@@ -81,17 +81,11 @@ export class HaNumberSelector extends LitElement {
     `;
   }
 
-  private get _value() {
-    return this.value ?? (this.selector.number?.min || 0);
-  }
-
   private _handleInputChange(ev) {
     ev.stopPropagation();
     const value =
       ev.target.value === "" || isNaN(ev.target.value)
-        ? this.required
-          ? this.selector.number?.min || 0
-          : undefined
+        ? ""
         : Number(ev.target.value);
     if (this.value === value) {
       return;
