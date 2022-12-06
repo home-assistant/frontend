@@ -1,6 +1,7 @@
+import { mdiExclamationThick } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
-import { UNAVAILABLE_STATES } from "../../../../../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../../../data/entity";
 import { HomeAssistant } from "../../../../../types";
 import { computeClimateBadge } from "./tile-badge-climate";
 import { computePersonBadge } from "./tile-badge-person";
@@ -17,8 +18,14 @@ export type ComputeBadgeFunction = (
 ) => TileBadge | undefined;
 
 export const computeTileBadge: ComputeBadgeFunction = (stateObj, hass) => {
-  if (UNAVAILABLE_STATES.includes(stateObj.state)) {
+  if (stateObj.state === UNKNOWN) {
     return undefined;
+  }
+  if (stateObj.state === UNAVAILABLE) {
+    return {
+      color: "var(--rgb-orange-color)",
+      iconPath: mdiExclamationThick,
+    };
   }
   const domain = computeDomain(stateObj.entity_id);
   switch (domain) {
