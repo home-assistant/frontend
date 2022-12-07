@@ -238,7 +238,8 @@ class DialogCalendarEventEditor extends LitElement {
                 ${this.hass.localize("ui.components.calendar.event.add")}
               </mwc-button>
             `
-          : html` <mwc-button
+          : html`
+              <mwc-button
                 slot="primaryAction"
                 @click=${this._saveEvent}
                 .disabled=${this._submitting}
@@ -258,7 +259,8 @@ class DialogCalendarEventEditor extends LitElement {
                       )}
                     </mwc-button>
                   `
-                : ""}`}
+                : ""}
+            `}
       </ha-dialog>
     `;
   }
