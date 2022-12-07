@@ -415,6 +415,7 @@ class DialogCalendarEventEditor extends LitElement {
       );
       return;
     }
+
     if (this._dtend! <= this._dtstart!) {
       this._error = this.hass.localize(
         "ui.components.calendar.event.invalid_duration"
