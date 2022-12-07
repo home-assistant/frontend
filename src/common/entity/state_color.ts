@@ -10,6 +10,25 @@ import { sensorColor } from "./color/sensor_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
+const STATIC_COLORED_DOMAIN = new Set([
+  "alert",
+  "automation",
+  "calendar",
+  "camera",
+  "cover",
+  "fan",
+  "group",
+  "humidifier",
+  "light",
+  "media_player",
+  "remote",
+  "script",
+  "siren",
+  "switch",
+  "timer",
+  "vacuum",
+]);
+
 export const stateColorCss = (stateObj?: HassEntity, state?: string) => {
   if (!stateObj || !stateActive(stateObj, state)) {
     return `var(--rgb-disabled-color)`;
@@ -28,36 +47,22 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
   const compareState = state !== undefined ? state : stateObj?.state;
   const domain = computeDomain(stateObj.entity_id);
 
-  switch (domain) {
-    case "automation":
-      return "automation";
+  if (STATIC_COLORED_DOMAIN.has(domain)) {
+    return domain.replace("_", "-");
+  }
 
+  switch (domain) {
     case "alarm_control_panel":
       return alarmControlPanelColor(compareState);
 
     case "binary_sensor":
       return binarySensorColor(stateObj);
 
-    case "cover":
-      return "cover";
-
     case "climate":
       return climateColor(compareState);
 
-    case "fan":
-      return "fan";
-
     case "lock":
       return lockColor(compareState);
-
-    case "light":
-      return "light";
-
-    case "humidifier":
-      return "humidifier";
-
-    case "media_player":
-      return "media-player";
 
     case "person":
     case "device_tracker":
@@ -66,29 +71,11 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
     case "sensor":
       return sensorColor(stateObj);
 
-    case "vacuum":
-      return "vacuum";
-
-    case "siren":
-      return "siren";
-
     case "sun":
       return compareState === "above_horizon" ? "sun-day" : "sun-night";
 
-    case "switch":
     case "input_boolean":
       return "switch";
-
-    case "alert":
-      return "alert";
-
-    case "calendar":
-    case "camera":
-    case "remote":
-    case "script":
-    case "timer":
-    case "group":
-      return "active";
 
     case "update":
       return updateIsInstalling(stateObj as UpdateEntity)
