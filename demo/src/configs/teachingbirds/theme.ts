@@ -4,6 +4,7 @@ export const demoThemeTeachingbirds = () => ({
   "paper-listbox-background-color": "#202020",
   "paper-grey-50": "var(--primary-text-color)",
   "paper-item-icon-color": "#d3d3d3",
+  "rgb-state-default-color": "211, 211, 211",
   "divider-color": "rgba(255, 255, 255, 0.12)",
   "primary-color": "#389638",
   "light-primary-color": "#6f956f",

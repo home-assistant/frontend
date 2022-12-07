@@ -645,7 +645,7 @@ class HaLogbookRenderer extends LitElement {
           margin-right: 16px;
           margin-inline-start: initial;
           flex-shrink: 0;
-          color: var(--state-icon-color);
+          color: rgb(var(--rgb-state-default-color));
           margin-inline-end: 16px;
           direction: var(--direction);
         }
@@ -664,7 +664,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         button.link {
-          color: var(--paper-item-icon-color);
+          color: rgb(var(--rgb-state-default-color));
           text-decoration: none;
         }
 

@@ -215,7 +215,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       }
 
       ha-svg-icon {
-        color: var(--paper-item-icon-color);
+        color: rgb(var(--rgb-state-default-color));
         margin-bottom: 8px;
       }
 

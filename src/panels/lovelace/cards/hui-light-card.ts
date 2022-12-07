@@ -315,7 +315,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       }
 
       .light-button {
-        color: var(--paper-item-icon-color, #44739e);
+        color: rgb(var(--rgb-state-default-color));
         width: 60%;
         height: auto;
         position: absolute;
@@ -330,7 +330,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       }
 
       .light-button.state-on {
-        color: var(--paper-item-icon-active-color, #fdd835);
+        color: rgb(var(--rgb-state-light-color));
       }
 
       .light-button.state-unavailable {

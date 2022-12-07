@@ -216,7 +216,7 @@ class MoreInfoWeather extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
-        color: var(--paper-item-icon-color);
+        color: rgb(var(--rgb-state-default-color));
         margin-left: 8px;
       }
       .section {
