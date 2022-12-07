@@ -33,9 +33,7 @@ export const describeTrigger = (
         } else if (index === trigger.event_type.length - 1) {
           // Last item in the list
           eventTypes += ` ${
-            trigger.event_type.length > 1
-              ? "or"
-              : ""
+            trigger.event_type.length > 1 ? "or" : ""
           } ${state}`;
         } else {
           // Middle item in the list
@@ -116,11 +114,9 @@ export const describeTrigger = (
             entities += `${computeStateName(states[entity]) || entity}`;
           } else if (index === trigger.entity_id.length - 1) {
             // Last item in the list
-            entities += ` ${
-              trigger.entity_id.length > 1
-                ? "or"
-                : ""
-            } ${computeStateName(states[entity]) || entity}`;
+            entities += ` ${trigger.entity_id.length > 1 ? "or" : ""} ${
+              computeStateName(states[entity]) || entity
+            }`;
           } else {
             // Middle item in the list
             entities += `, ${computeStateName(states[entity]) || entity}`;
@@ -149,11 +145,7 @@ export const describeTrigger = (
             from += `${state}`;
           } else if (index === trigger.from.length - 1) {
             // Last item in the list
-            from += ` ${
-              trigger.from.length > 1
-                ? "or"
-                : ""
-            } ${state}`;
+            from += ` ${trigger.from.length > 1 ? "or" : ""} ${state}`;
           } else {
             // Middle item in the list
             from += `, ${state}`;
@@ -174,11 +166,7 @@ export const describeTrigger = (
             to += `${state}`;
           } else if (index === trigger.to.length - 1) {
             // Last item in the list
-            to += ` ${
-              trigger.to.length > 1
-                ? "or"
-                : ""
-            } ${state}`;
+            to += ` ${trigger.to.length > 1 ? "or" : ""} ${state}`;
           } else {
             // Middle item in the list
             to += `, ${state}`;
@@ -271,11 +259,9 @@ export const describeTrigger = (
             entities += `${computeStateName(states[entity]) || entity}`;
           } else if (index === trigger.entity_id.length - 1) {
             // Last item in the list
-            entities += ` ${
-              trigger.entity_id.length > 1
-                ? "or"
-                : ""
-            } ${computeStateName(states[entity]) || entity}`;
+            entities += ` ${trigger.entity_id.length > 1 ? "or" : ""} ${
+              computeStateName(states[entity]) || entity
+            }`;
           } else {
             // Middle item in the list
             entities += `, ${computeStateName(states[entity]) || entity}`;
@@ -300,11 +286,9 @@ export const describeTrigger = (
             zones += `${computeStateName(states[zone]) || zone}`;
           } else if (index === trigger.zone.length - 1) {
             // Last item in the list
-            zones += ` ${
-              trigger.zone.length > 1
-                ? "or"
-                : ""
-            } ${computeStateName(states[zone]) || zone}`;
+            zones += ` ${trigger.zone.length > 1 ? "or" : ""} ${
+              computeStateName(states[zone]) || zone
+            }`;
           } else {
             // Middle item in the list
             zones += `, ${computeStateName(states[zone]) || zone}`;
@@ -336,11 +320,7 @@ export const describeTrigger = (
           sources += `${source}`;
         } else if (index === trigger.source.length - 1) {
           // Last item in the list
-          sources += ` ${
-            trigger.source.length > 1
-              ? "or"
-              : ""
-          } ${source}`;
+          sources += ` ${trigger.source.length > 1 ? "or" : ""} ${source}`;
         } else {
           // Middle item in the list
           sources += `, ${source}`;
@@ -362,11 +342,9 @@ export const describeTrigger = (
             zones += `${computeStateName(states[zone]) || zone}`;
           } else if (index === trigger.zone.length - 1) {
             // Last item in the list
-            zones += ` ${
-              trigger.zone.length > 1
-                ? "or"
-                : ""
-            } ${computeStateName(states[zone]) || zone}`;
+            zones += ` ${trigger.zone.length > 1 ? "or" : ""} ${
+              computeStateName(states[zone]) || zone
+            }`;
           } else {
             // Middle item in the list
             zones += `, ${computeStateName(states[zone]) || zone}`;
@@ -499,11 +477,7 @@ export const describeCondition = (
           states += `${state}`;
         } else if (index === condition.state.length - 1) {
           // Last item in the list
-          states += ` ${
-            condition.state.length > 1
-              ? "or"
-              : ""
-          } ${state}`;
+          states += ` ${condition.state.length > 1 ? "or" : ""} ${state}`;
         } else {
           // Middle item in the list
           states += `, ${state}`;
@@ -620,11 +594,9 @@ export const describeCondition = (
             entities += `${computeStateName(states[entity]) || entity}`;
           } else if (index === condition.entity_id.length - 1) {
             // Last item in the list
-            entities += ` ${
-              condition.entity_id.length > 1
-                ? "or"
-                : ""
-            } ${computeStateName(states[entity]) || entity}`;
+            entities += ` ${condition.entity_id.length > 1 ? "or" : ""} ${
+              computeStateName(states[entity]) || entity
+            }`;
           } else {
             // Middle item in the list
             entities += `, ${computeStateName(states[entity]) || entity}`;
@@ -649,11 +621,9 @@ export const describeCondition = (
             zones += `${computeStateName(states[zone]) || zone}`;
           } else if (index === condition.zone.length - 1) {
             // Last item in the list
-            zones += ` ${
-              condition.zone.length > 1
-                ? "or"
-                : ""
-            } ${computeStateName(states[zone]) || zone}`;
+            zones += ` ${condition.zone.length > 1 ? "or" : ""} ${
+              computeStateName(states[zone]) || zone
+            }`;
           } else {
             // Middle item in the list
             zones += `, ${computeStateName(states[zone]) || zone}`;
