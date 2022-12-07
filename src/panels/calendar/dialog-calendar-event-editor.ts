@@ -432,6 +432,7 @@ class DialogCalendarEventEditor extends LitElement {
       );
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
+      return;
     } finally {
       this._submitting = false;
     }
