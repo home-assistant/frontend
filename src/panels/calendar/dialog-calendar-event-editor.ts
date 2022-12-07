@@ -238,7 +238,8 @@ class DialogCalendarEventEditor extends LitElement {
                 ${this.hass.localize("ui.components.calendar.event.add")}
               </mwc-button>
             `
-          : html` <mwc-button
+          : html`
+              <mwc-button
                 slot="primaryAction"
                 @click=${this._saveEvent}
                 .disabled=${this._submitting}
@@ -258,7 +259,8 @@ class DialogCalendarEventEditor extends LitElement {
                       )}
                     </mwc-button>
                   `
-                : ""}`}
+                : ""}
+            `}
       </ha-dialog>
     `;
   }
@@ -302,7 +304,11 @@ class DialogCalendarEventEditor extends LitElement {
     const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
 
     this._dtstart = new Date(
-      ev.detail.value + "T" + this._dtstart!.toISOString().split("T")[1]
+      ev.detail.value +
+        "T" +
+        this._dtstart!.toLocaleTimeString("en-GB", {
+          timeZone: this.hass.config.time_zone,
+        })
     );
 
     // Prevent that the end time can be before the start time. Try to keep the
@@ -326,7 +332,11 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _endDateChanged(ev: CustomEvent) {
     this._dtend = new Date(
-      ev.detail.value + "T" + this._dtend!.toISOString().split("T")[1]
+      ev.detail.value +
+        "T" +
+        this._dtend!.toLocaleTimeString("en-GB", {
+          timeZone: this.hass.config.time_zone,
+        })
     );
   }
 
@@ -335,7 +345,11 @@ class DialogCalendarEventEditor extends LitElement {
     const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
 
     this._dtstart = new Date(
-      this._dtstart!.toISOString().split("T")[0] + "T" + ev.detail.value
+      this._dtstart!.toLocaleDateString("en-CA", {
+        timeZone: this.hass.config.time_zone,
+      }) +
+        "T" +
+        ev.detail.value
     );
 
     // Prevent that the end time can be before the start time. Try to keep the
@@ -357,7 +371,11 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _endTimeChanged(ev: CustomEvent) {
     this._dtend = new Date(
-      this._dtend!.toISOString().split("T")[0] + "T" + ev.detail.value
+      this._dtend!.toLocaleDateString("en-CA", {
+        timeZone: this.hass.config.time_zone,
+      }) +
+        "T" +
+        ev.detail.value
     );
   }
 

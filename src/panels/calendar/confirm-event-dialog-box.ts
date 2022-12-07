@@ -31,8 +31,8 @@ class ConfirmEventDialogBox extends LitElement {
     return html`
       <ha-dialog
         open
-        ?scrimClickAction="true"
-        ?escapeKeyAction="true"
+        scrimClickAction
+        escapeKeyAction
         @closed=${this._dialogClosed}
         defaultAction="ignore"
         .heading=${this._params.title}
