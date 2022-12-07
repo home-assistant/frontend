@@ -100,7 +100,7 @@
     "@vue/web-component-wrapper": "^1.2.0",
     "@webcomponents/scoped-custom-element-registry": "^0.0.5",
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "app-datepicker": "^5.0.1",
+    "app-datepicker": "^5.1.0",
     "chart.js": "^3.3.2",
     "comlink": "^4.3.1",
     "core-js": "^3.15.2",
