@@ -158,6 +158,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-fan-color: var(--rgb-cyan-color);
       --rgb-state-group-color: var(--rgb-amber-color);
       --rgb-state-humidifier-color: var(--rgb-light-blue-color);
+      --rgb-state-input-boolean-color: var(--rgb-amber-color);
       --rgb-state-light-color: var(--rgb-amber-color);
       --rgb-state-lock-jammed-color: var(--rgb-red-color);
       --rgb-state-lock-locked-color: var(--rgb-red-color);

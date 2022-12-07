@@ -19,6 +19,7 @@ const STATIC_COLORED_DOMAIN = new Set([
   "fan",
   "group",
   "humidifier",
+  "input_boolean",
   "light",
   "media_player",
   "remote",
@@ -73,9 +74,6 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
 
     case "sun":
       return compareState === "above_horizon" ? "sun-day" : "sun-night";
-
-    case "input_boolean":
-      return "switch";
 
     case "update":
       return updateIsInstalling(stateObj as UpdateEntity)
