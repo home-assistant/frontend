@@ -415,7 +415,6 @@ class DialogCalendarEventEditor extends LitElement {
       );
       return;
     }
-
     if (this._dtend! <= this._dtstart!) {
       this._error = this.hass.localize(
         "ui.components.calendar.event.invalid_duration"
@@ -432,6 +431,7 @@ class DialogCalendarEventEditor extends LitElement {
       );
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
+      return;
     } finally {
       this._submitting = false;
     }
