@@ -59,8 +59,6 @@ documentContainer.innerHTML = `<custom-style>
 
       /* states */
       --state-icon-color: #44739e;
-      /* an active state is anything that would require attention */
-      --state-icon-active-color: #FDD835;
       /* an error state is anything that would be considered an error */
       /* --state-icon-error-color: #db4437; derived from error-color */
 
