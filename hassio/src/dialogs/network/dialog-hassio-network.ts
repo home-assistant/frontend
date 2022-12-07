@@ -138,7 +138,10 @@ export class DialogHassioNetwork
         )}
         ${this._interface?.type === "wireless"
           ? html`
-              <ha-expansion-panel header="Wi-Fi" outlined>
+              <ha-expansion-panel
+                .header=${this.supervisor.localize("dialog.network.wifi")}
+                outlined
+              >
                 ${this._interface?.wifi?.ssid
                   ? html`<p>
                       ${this.supervisor.localize(
@@ -177,7 +180,11 @@ export class DialogHassioNetwork
                                 >
                                   <span>${ap.ssid}</span>
                                   <span slot="secondary">
-                                    ${ap.mac} - Strength: ${ap.signal}
+                                    ${ap.mac} -
+                                    ${this.supervisor.localize(
+                                      "dialog.network.signal_strength"
+                                    )}:
+                                    ${ap.signal}
                                   </span>
                                 </mwc-list-item>
                               `
@@ -241,7 +248,9 @@ export class DialogHassioNetwork
                               class="flex-auto"
                               type="password"
                               id="psk"
-                              label="Password"
+                              .label=${this.supervisor.localize(
+                                "dialog.network.wifi_password"
+                              )}
                               version="wifi"
                               @value-changed=${this
                                 ._handleInputValueChangedWifi}
