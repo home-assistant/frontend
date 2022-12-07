@@ -324,6 +324,7 @@
       "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
+      "ok": "OK",
       "yes": "Yes",
       "no": "No",
       "not_now": "Not now",
@@ -815,6 +816,9 @@
       },
       "image_cropper": {
         "crop": "Crop"
+      },
+      "date-picker": {
+        "today": "Today"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",

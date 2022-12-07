@@ -3,12 +3,16 @@ import "app-datepicker";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { nextRender } from "../common/util/render-status";
 import { haStyleDialog } from "../resources/styles";
+import { HomeAssistant } from "../types";
 import { datePickerDialogParams } from "./ha-date-input";
 import "./ha-dialog";
 
 @customElement("ha-dialog-date-picker")
 export class HaDialogDatePicker extends LitElement {
+  @property() public hass!: HomeAssistant;
+
   @property() public value?: string;
 
   @property({ type: Boolean }) public disabled = false;
@@ -19,7 +23,10 @@ export class HaDialogDatePicker extends LitElement {
 
   @state() private _value?: string;
 
-  public showDialog(params: datePickerDialogParams): void {
+  public async showDialog(params: datePickerDialogParams): Promise<void> {
+    // app-datpicker has a bug, that it removes its handlers when disconnected, but doesnt add them back when reconnected.
+    // So we need to wait for the next render to make sure the element is removed and re-created so the handlers are added.
+    await nextRender();
     this._params = params;
     this._value = params.value;
   }
@@ -42,13 +49,15 @@ export class HaDialogDatePicker extends LitElement {
         @datepicker-value-updated=${this._valueChanged}
         .firstDayOfWeek=${this._params.firstWeekday}
       ></app-datepicker>
-      <mwc-button slot="secondaryAction" @click=${this._setToday}
-        >today</mwc-button
-      >
-      <mwc-button slot="primaryAction" dialogaction="cancel" class="cancel-btn">
-        cancel
+      <mwc-button slot="secondaryAction" @click=${this._setToday}>
+        ${this.hass.localize("ui.dialogs.date-picker.today")}
       </mwc-button>
-      <mwc-button slot="primaryAction" @click=${this._setValue}>ok</mwc-button>
+      <mwc-button slot="primaryAction" dialogaction="cancel" class="cancel-btn">
+        ${this.hass.localize("ui.common.cancel")}
+      </mwc-button>
+      <mwc-button slot="primaryAction" @click=${this._setValue}>
+        ${this.hass.localize("ui.common.ok")}
+      </mwc-button>
     </ha-dialog>`;
   }
 
