@@ -634,7 +634,7 @@
         "label": "Calendar",
         "my_calendars": "My Calendars",
         "today": "Today",
-        "event_retrieval_error": "Could not retrieve events for calendars: ",
+        "event_retrieval_error": "Could not retrieve events for calendars:",
         "event": {
           "add": "Add Event",
           "delete": "Delete Event",
