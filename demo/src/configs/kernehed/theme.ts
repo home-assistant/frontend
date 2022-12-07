@@ -2,7 +2,6 @@
 export const demoThemeKernehed = () => ({
   "text-primary-color": "var(--primary-text-color)",
   "paper-item-icon-color": "var(--primary-text-color)",
-  "rgb-state-default-color": "var(--rgb-primary-text-color)",
   "primary-color": "#2980b9",
   "label-badge-red": "var(--accent-color)",
   "paper-tabs-selection-bar-color": "green",

@@ -74,16 +74,15 @@ export const applyThemesOnElement = (
       const labPrimaryColor = rgb2lab(rgbPrimaryColor);
       themeRules["primary-color"] = primaryColor;
       const rgbLightPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
-      const rgbDarkPrimaryColor = lab2rgb(labDarken(labPrimaryColor));
       themeRules["light-primary-color"] = rgb2hex(rgbLightPrimaryColor);
-      themeRules["dark-primary-color"] = lab2hex(rgbDarkPrimaryColor);
+      themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
       themeRules["text-primary-color"] =
         rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
       themeRules["text-light-primary-color"] =
         rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 6
           ? "#fff"
           : "#212121";
-      themeRules["rgb-state-default-color"] = rgbDarkPrimaryColor.join(", ");
+      themeRules["state-icon-color"] = themeRules["dark-primary-color"];
     }
     if (accentColor) {
       cacheKey = `${cacheKey}__accent_${accentColor}`;

@@ -268,7 +268,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         }
 
         .icon {
-          color: rgb(var(--rgb-state-default-color));
+          color: var(--state-icon-color, #44739e);
           line-height: 40px;
         }
 
