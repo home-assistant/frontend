@@ -11,6 +11,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { mdiImageFilterCenterFocus } from "@mdi/js";
 import memoizeOne from "memoize-one";
+import { isToday } from "date-fns";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
@@ -277,8 +278,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
       const paths: HaMapPaths[] = [];
 
-      const todayString = new Date().toDateString();
-
       for (const entityStates of history) {
         if (entityStates?.length <= 1) {
           continue;
@@ -296,7 +295,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
                 // if showing > 6 days in the history trail, show the full
                 // date and time
                 p.tooltip = formatDateTime(t, this.hass.locale);
-              } else if (todayString === t.toDateString()) {
+              } else if (isToday(t)) {
                 p.tooltip = formatTime(t, this.hass.locale);
               } else {
                 p.tooltip = formatTimeWeekday(t, this.hass.locale);
