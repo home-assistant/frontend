@@ -120,8 +120,8 @@ const ENTITIES: HassEntity[] = [
   createEntity("calendar.off", "off"),
   createEntity("calendar.on", "on"),
   // Camera
-  createEntity("camera.off", "off"),
-  createEntity("camera.on", "on"),
+  createEntity("camera.idle", "idle"),
+  createEntity("camera.streaming", "streaming"),
   // Climate
   createEntity("climate.off", "off"),
   createEntity("climate.heat", "heat"),
@@ -155,6 +155,9 @@ const ENTITIES: HassEntity[] = [
   // Fan
   createEntity("fan.off", "off"),
   createEntity("fan.on", "on"),
+  // Camera
+  createEntity("group.off", "off"),
+  createEntity("group.on", "on"),
   // Humidifier
   createEntity("humidifier.off", "off"),
   createEntity("humidifier.on", "on"),
@@ -213,8 +216,9 @@ const ENTITIES: HassEntity[] = [
   createEntity("switch.switch_off", "off", "switch"),
   createEntity("switch.switch_on", "on", "switch"),
   // Timer
-  createEntity("timer.off", "off"),
-  createEntity("timer.on", "on"),
+  createEntity("timer.idle", "idle"),
+  createEntity("timer.active", "active"),
+  createEntity("timer.paused", "paused"),
   // Vacuum
   createEntity("vacuum.docked", "docked"),
   createEntity("vacuum.cleaning", "cleaning"),
