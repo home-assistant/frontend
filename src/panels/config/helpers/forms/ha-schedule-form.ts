@@ -6,7 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 // @ts-ignore
 import timegridStyle from "@fullcalendar/timegrid/main.css";
-import { isSameDay } from "date-fns";
+import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import {
   css,
   CSSResultGroup,
@@ -245,11 +245,6 @@ class HaScheduleForm extends LitElement {
 
   private get _events() {
     const events: any[] = [];
-    const currentDay = new Date().getDay();
-    const baseDay =
-      currentDay === 0 && firstWeekdayIndex(this.hass.locale) === 1
-        ? 7
-        : currentDay;
 
     for (const [i, day] of weekdays.entries()) {
       if (!this[`_${day}`].length) {
@@ -257,14 +252,15 @@ class HaScheduleForm extends LitElement {
       }
 
       this[`_${day}`].forEach((item: ScheduleDay, index: number) => {
-        // Add 7 to 0 because we start the calendar on Monday, except when the locale says otherwise (firstWeekdayIndex() != 1)
-        const distance =
-          i -
-          baseDay +
-          (i === 0 && firstWeekdayIndex(this.hass.locale) === 1 ? 7 : 0);
-
-        const start = new Date();
-        start.setDate(start.getDate() + distance);
+        let date = nextDay(new Date(), i as Day);
+        if (
+          !isSameWeek(date, new Date(), {
+            weekStartsOn: firstWeekdayIndex(this.hass.locale),
+          })
+        ) {
+          date = addDays(date, -7);
+        }
+        const start = new Date(date);
         const start_tokens = item.from.split(":");
         start.setHours(
           parseInt(start_tokens[0]),
@@ -273,8 +269,7 @@ class HaScheduleForm extends LitElement {
           0
         );
 
-        const end = new Date();
-        end.setDate(end.getDate() + distance);
+        const end = new Date(date);
         const end_tokens = item.to.split(":");
         end.setHours(parseInt(end_tokens[0]), parseInt(end_tokens[1]), 0, 0);
 

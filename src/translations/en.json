@@ -324,6 +324,7 @@
       "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
+      "ok": "OK",
       "yes": "Yes",
       "no": "No",
       "not_now": "Not now",
@@ -634,6 +635,7 @@
         "label": "Calendar",
         "my_calendars": "My Calendars",
         "today": "Today",
+        "event_retrieval_error": "Could not retrieve events for calendars:",
         "event": {
           "add": "Add Event",
           "delete": "Delete Event",
@@ -814,6 +816,9 @@
       },
       "image_cropper": {
         "crop": "Crop"
+      },
+      "date-picker": {
+        "today": "Today"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",

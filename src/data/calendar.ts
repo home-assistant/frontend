@@ -2,6 +2,7 @@ import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
+import { UNAVAILABLE_STATES } from "./entity";
 
 export interface Calendar {
   entity_id: string;
@@ -56,13 +57,14 @@ export const fetchCalendarEvents = async (
   start: Date,
   end: Date,
   calendars: Calendar[]
-): Promise<CalendarEvent[]> => {
+): Promise<{ events: CalendarEvent[]; errors: string[] }> => {
   const params = encodeURI(
     `?start=${start.toISOString()}&end=${end.toISOString()}`
   );
 
   const calEvents: CalendarEvent[] = [];
-  const promises: Promise<any>[] = [];
+  const errors: string[] = [];
+  const promises: Promise<CalendarEvent[]>[] = [];
 
   calendars.forEach((cal) => {
     promises.push(
@@ -73,9 +75,15 @@ export const fetchCalendarEvents = async (
     );
   });
 
-  const results = await Promise.all(promises);
-
-  results.forEach((result, idx) => {
+  for (const [idx, promise] of promises.entries()) {
+    let result: CalendarEvent[];
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      result = await promise;
+    } catch (err) {
+      errors.push(calendars[idx].entity_id);
+      continue;
+    }
     const cal = calendars[idx];
     result.forEach((ev) => {
       const eventStart = getCalendarDate(ev.start);
@@ -104,9 +112,9 @@ export const fetchCalendarEvents = async (
 
       calEvents.push(event);
     });
-  });
+  }
 
-  return calEvents;
+  return { events: calEvents, errors };
 };
 
 const getCalendarDate = (dateObj: any): string | undefined => {
@@ -127,7 +135,11 @@ const getCalendarDate = (dateObj: any): string | undefined => {
 
 export const getCalendars = (hass: HomeAssistant): Calendar[] =>
   Object.keys(hass.states)
-    .filter((eid) => computeDomain(eid) === "calendar")
+    .filter(
+      (eid) =>
+        computeDomain(eid) === "calendar" &&
+        !UNAVAILABLE_STATES.includes(hass.states[eid].state)
+    )
     .sort()
     .map((eid, idx) => ({
       entity_id: eid,
