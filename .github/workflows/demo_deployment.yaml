@@ -1,9 +1,12 @@
-name: Gallery
+name: Demo deployment
 
 on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
+  push:
+    branches:
+      - dev
 
 env:
   NODE_VERSION: 16
@@ -12,30 +15,34 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: 
-      name: Production
-      url: ${{ steps.deploy.outputs.NETLIFY_URL }}
+    environment:
+      name: Demo
+      url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL }}
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v3
+
       - name: Set up Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
+
       - name: Install dependencies
         run: yarn install
         env:
           CI: true
-      - name: Build Gallery
-        run: ./node_modules/.bin/gulp build-gallery
+
+      - name: Build Demo
+        run: ./node_modules/.bin/gulp build-demo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Deploy to Netlify
         id: deploy
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=gallery/dist --prod
+          args: deploy --dir=demo/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_DEV_SITE_ID }}
