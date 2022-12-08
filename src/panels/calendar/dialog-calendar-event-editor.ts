@@ -11,6 +11,7 @@ import {
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../common/dom/fire_event";
 import { isDate } from "../../common/string/is_date";
 import "../../components/ha-date-input";
 import "../../components/ha-textarea";
@@ -94,6 +95,21 @@ class DialogCalendarEventEditor extends LitElement {
     }
   }
 
+  public closeDialog(): void {
+    if (!this._params) {
+      return;
+    }
+    this._calendars = [];
+    this._calendarId = undefined;
+    this._params = undefined;
+    this._dtstart = undefined;
+    this._dtend = undefined;
+    this._summary = "";
+    this._description = "";
+    this._rrule = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
@@ -108,7 +124,7 @@ class DialogCalendarEventEditor extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this._close}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${html`
@@ -437,7 +453,7 @@ class DialogCalendarEventEditor extends LitElement {
       this._submitting = false;
     }
     await this._params!.updated();
-    this._params = undefined;
+    this.closeDialog();
   }
 
   private async _saveEvent() {
@@ -491,18 +507,7 @@ class DialogCalendarEventEditor extends LitElement {
       this._submitting = false;
     }
     await this._params!.updated();
-    this._close();
-  }
-
-  private _close(): void {
-    this._calendars = [];
-    this._calendarId = undefined;
-    this._params = undefined;
-    this._dtstart = undefined;
-    this._dtend = undefined;
-    this._summary = "";
-    this._description = "";
-    this._rrule = undefined;
+    this.closeDialog();
   }
 
   static get styles(): CSSResultGroup {
