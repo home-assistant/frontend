@@ -136,6 +136,8 @@ documentContainer.innerHTML = `<custom-style>
       /* rgb state color */
       --rgb-state-default-color: 68, 115, 158;
       --rgb-state-active-color: var(--rgb-amber-color);
+
+      /* rgb state domain colors */
       --rgb-state-alarm-armed-color: var(--rgb-red-color);
       --rgb-state-alarm-arming-color: var(--rgb-orange-color);
       --rgb-state-alarm-pending-color: var(--rgb-orange-color);
@@ -159,8 +161,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-humidifier-color: var(--rgb-blue-color);
       --rgb-state-input-boolean-color: var(--rgb-state-active-color);
       --rgb-state-light-color: var(--rgb-amber-color);
-      --rgb-state-lock-jammed-color: var(--rgb-red-color);
       --rgb-state-lock-locked-color: var(--rgb-red-color);
+      --rgb-state-lock-jammed-color: var(--rgb-red-color);
+      --rgb-state-lock-unlocked-color: var(--rgb-green-color);
       --rgb-state-lock-pending-color: var(--rgb-orange-color);
       --rgb-state-media-player-color: var(--rgb-indigo-color);
       --rgb-state-person-home-color: var(--rgb-green-color);
