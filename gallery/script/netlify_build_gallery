@@ -1,6 +1,7 @@
 #!/bin/bash
 
 TARGET_LABEL="needs design preview"
+export SKIP_FETCH_NIGHTLY_TRANSLATIONS="true"
 
 if [[ "$NETLIFY" != "true" ]]; then
   echo "This script can only be run on Netlify"
