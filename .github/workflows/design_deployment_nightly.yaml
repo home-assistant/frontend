@@ -1,4 +1,4 @@
-name: Gallery
+name: Design deployment nightly
 
 on:
   workflow_dispatch:
@@ -12,25 +12,29 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: 
-      name: Production
-      url: ${{ steps.deploy.outputs.NETLIFY_URL }}
+    environment:
+      name: Design
+      url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL }}
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v3
+
       - name: Set up Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
+
       - name: Install dependencies
         run: yarn install
         env:
           CI: true
+
       - name: Build Gallery
         run: ./node_modules/.bin/gulp build-gallery
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Deploy to Netlify
         id: deploy
         uses: netlify/actions/cli@master
