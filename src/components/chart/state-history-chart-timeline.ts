@@ -64,7 +64,11 @@ export class StateHistoryChartTimeline extends LitElement {
       this._generateData();
     }
 
-    if (changedProps.has("startTime") || changedProps.has("endTime")) {
+    if (
+      changedProps.has("startTime") ||
+      changedProps.has("endTime") ||
+      changedProps.has("showNames")
+    ) {
       this._createOptions();
     }
   }
