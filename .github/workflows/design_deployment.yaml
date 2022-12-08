@@ -1,4 +1,4 @@
-name: Design deployment nightly
+name: Design deployment
 
 on:
   workflow_dispatch:
