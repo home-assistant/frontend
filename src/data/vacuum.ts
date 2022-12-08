@@ -53,7 +53,7 @@ export function canStart(stateObj: VacuumEntity): boolean {
 }
 
 export function canStop(stateObj: VacuumEntity): boolean {
-  return !["docked", "off"].includes(stateObj.state);
+  return !["docked", "off", "idle"].includes(stateObj.state);
 }
 
 export function canReturnHome(stateObj: VacuumEntity): boolean {
