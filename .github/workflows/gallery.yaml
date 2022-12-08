@@ -1,0 +1,34 @@
+name: Gallery
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+env:
+  NODE_VERSION: 16
+  NODE_OPTIONS: --max_old_space_size=6144
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@v3
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install
+        env:
+          CI: true
+      - name: Build Gallery
+        run: ./node_modules/.bin/gulp build-gallery
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Deploy to Netlify
+        run: npx netlify-cli deploy --dir=gallery/dist --prod
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}
