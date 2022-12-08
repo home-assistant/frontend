@@ -12,5 +12,4 @@ jobs:
       - name: Trigger Cast build
         run: curl -X POST -d {} https://api.netlify.com/build_hooks/${{ secrets.NETLIFY_CAST_DEV_BUILD_HOOK }}
 
-      - name: Trigger Demo build
-        run: curl -X POST -d {} https://api.netlify.com/build_hooks/${{ secrets.NETLIFY_DEMO_DEV_BUILD_HOOK }}
+
