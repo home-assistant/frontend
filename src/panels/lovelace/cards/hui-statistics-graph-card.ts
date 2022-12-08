@@ -9,7 +9,10 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../components/chart/statistics-chart";
+import {
+  ExtendedStatisticType,
+  statTypeMap,
+} from "../../../components/chart/statistics-chart";
 import "../../../components/ha-card";
 import {
   fetchStatistics,
@@ -17,7 +20,6 @@ import {
   getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
-  StatisticsTypes,
 } from "../../../data/recorder";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -70,7 +72,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
-  private _statTypes?: StatisticsTypes;
+  private _statTypes?: Array<ExtendedStatisticType>;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -249,7 +251,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         this._entities,
         this._config!.period,
         unitconfig,
-        this._statTypes
+        this._statTypes?.map((stat_type) => statTypeMap[stat_type])
       );
     } catch (err) {
       this._statistics = undefined;
