@@ -12,6 +12,9 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: 
+      name: Production
+      url: ${{ steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v3
@@ -29,7 +32,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy to Netlify
-        run: npx netlify-cli deploy --dir=gallery/dist --prod
+        id: deploy
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --dir=gallery/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}
