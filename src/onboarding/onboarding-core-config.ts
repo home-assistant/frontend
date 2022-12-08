@@ -407,6 +407,14 @@ class OnboardingCoreConfig extends LitElement {
 
   private async _save(ev) {
     ev.preventDefault();
+    if (!this._countryValue) {
+      alert(`Please fill in a country`);
+      return;
+    }
+    if (!this._languageValue) {
+      alert(`Please fill in a language`);
+      return;
+    }
     this._working = true;
     try {
       const location = this._locationValue;
