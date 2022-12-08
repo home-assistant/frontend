@@ -138,6 +138,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-active-color: var(--rgb-amber-color);
 
       /* rgb state domain colors */
+      --rgb-state-alarm-disarmed-color: var(--rgb-green-color);
       --rgb-state-alarm-armed-color: var(--rgb-red-color);
       --rgb-state-alarm-arming-color: var(--rgb-orange-color);
       --rgb-state-alarm-pending-color: var(--rgb-orange-color);
