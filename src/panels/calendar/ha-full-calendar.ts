@@ -69,7 +69,6 @@ const defaultFullCalendarConfig: CalendarOptions = {
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
   height: "parent",
-  eventDisplay: "list-item",
   locales: allLocales,
   views: {
     listWeek: {
