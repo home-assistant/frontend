@@ -135,7 +135,6 @@ documentContainer.innerHTML = `<custom-style>
 
       /* rgb state color */
       --rgb-state-default-color: 68, 115, 158;
-      --rgb-state-active-color: var(--rgb-amber-color);
 
       /* rgb state domain colors */
       --rgb-state-alarm-disarmed-color: var(--rgb-green-color);
@@ -144,11 +143,11 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-alarm-pending-color: var(--rgb-orange-color);
       --rgb-state-alarm-triggered-color: var(--rgb-red-color);
       --rgb-state-alert-color: var(--rgb-red-color);
-      --rgb-state-automation-color: var(--rgb-state-active-color);
+      --rgb-state-automation-color: var(--rgb-amber-color);
       --rgb-state-binary-sensor-alerting-color: var(--rgb-red-color);
-      --rgb-state-binary-sensor-color: var(--rgb-state-active-color);
-      --rgb-state-calendar-color: var(--rgb-state-active-color);
-      --rgb-state-camera-color: var(--rgb-state-active-color);
+      --rgb-state-binary-sensor-color: var(--rgb-amber-color);
+      --rgb-state-calendar-color: var(--rgb-amber-color);
+      --rgb-state-camera-color: var(--rgb-amber-color);
       --rgb-state-climate-auto-color: var(--rgb-green-color);
       --rgb-state-climate-cool-color: var(--rgb-blue-color);
       --rgb-state-climate-dry-color: var(--rgb-orange-color);
@@ -158,9 +157,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-climate-idle-color: var(--rgb-disabled-color);
       --rgb-state-cover-color: var(--rgb-purple-color);
       --rgb-state-fan-color: var(--rgb-cyan-color);
-      --rgb-state-group-color: var(--rgb-state-active-color);
+      --rgb-state-group-color: var(--rgb-amber-color);
       --rgb-state-humidifier-color: var(--rgb-blue-color);
-      --rgb-state-input-boolean-color: var(--rgb-state-active-color);
+      --rgb-state-input-boolean-color: var(--rgb-amber-color);
       --rgb-state-light-color: var(--rgb-amber-color);
       --rgb-state-lock-locked-color: var(--rgb-red-color);
       --rgb-state-lock-jammed-color: var(--rgb-red-color);
@@ -169,8 +168,8 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-media-player-color: var(--rgb-indigo-color);
       --rgb-state-person-home-color: var(--rgb-green-color);
       --rgb-state-person-zone-color: var(--rgb-blue-color);
-      --rgb-state-remote-color: var(--rgb-state-active-color);
-      --rgb-state-script-color: var(--rgb-state-active-color);
+      --rgb-state-remote-color: var(--rgb-amber-color);
+      --rgb-state-script-color: var(--rgb-amber-color);
       --rgb-state-sensor-battery-high-color: var(--rgb-green-color);
       --rgb-state-sensor-battery-low-color: var(--rgb-red-color);
       --rgb-state-sensor-battery-medium-color: var(--rgb-orange-color);
@@ -178,8 +177,8 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-siren-color: var(--rgb-red-color);
       --rgb-state-sun-day-color: var(--rgb-amber-color);
       --rgb-state-sun-night-color: var(--rgb-deep-purple-color);
-      --rgb-state-switch-color: var(--rgb-state-active-color);
-      --rgb-state-timer-color: var(--rgb-state-active-color);
+      --rgb-state-switch-color: var(--rgb-amber-color);
+      --rgb-state-timer-color: var(--rgb-amber-color);
       --rgb-state-update-color: var(--rgb-green-color);
       --rgb-state-update-installing-color: var(--rgb-orange-color);
       --rgb-state-vacuum-color: var(--rgb-teal-color);
