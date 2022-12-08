@@ -96,6 +96,9 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   public closeDialog(): void {
+    if (!this._params) {
+      return;
+    }
     this._calendars = [];
     this._calendarId = undefined;
     this._params = undefined;
