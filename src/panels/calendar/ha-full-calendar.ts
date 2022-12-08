@@ -96,6 +96,8 @@ export class HAFullCalendar extends LitElement {
 
   @property() public initialView: FullCalendarView = "dayGridMonth";
 
+  @property() public eventDisplay = "auto";
+
   @property({ attribute: false }) public error?: string = undefined;
 
   private calendar?: Calendar;
@@ -245,6 +247,7 @@ export class HAFullCalendar extends LitElement {
       locale: this.hass.language,
       firstDay: firstWeekdayIndex(this.hass.locale),
       initialView: this.initialView,
+      eventDisplay: this.eventDisplay,
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
         minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
