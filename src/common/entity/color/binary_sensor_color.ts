@@ -10,6 +10,10 @@ const ALERTING_DEVICE_CLASSES = new Set([
   "safety",
   "smoke",
   "tamper",
+  "door",
+  "garage_door",
+  "window",
+  "opening",
 ]);
 
 export const binarySensorColor = (stateObj: HassEntity): string | undefined => {
