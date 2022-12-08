@@ -85,7 +85,7 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
           translationKey: "start",
           icon: mdiPlay,
           serviceName: "start",
-          disabled: canStart(stateObj),
+          disabled: !canStart(stateObj),
         };
   },
   stop: (stateObj) => ({

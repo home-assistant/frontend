@@ -47,7 +47,7 @@ class StateHistoryChartLine extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated) {
+    if (!this.hasUpdated || changedProps.has("showNames")) {
       this._chartOptions = {
         parsing: false,
         animation: false,

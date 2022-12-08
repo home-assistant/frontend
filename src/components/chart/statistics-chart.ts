@@ -32,14 +32,26 @@ import {
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
-export type ExtendedStatisticType = StatisticType | "state" | "change";
+export type ExtendedStatisticType = StatisticType | "change";
+
+export const supportedStatTypeMap: Record<
+  ExtendedStatisticType,
+  StatisticType
+> = {
+  mean: "mean",
+  min: "min",
+  max: "max",
+  sum: "sum",
+  state: "sum",
+  change: "sum",
+};
 
 export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
   mean: "mean",
   min: "min",
   max: "max",
   sum: "sum",
-  state: "sum",
+  state: "state",
   change: "sum",
 };
 
