@@ -306,6 +306,7 @@ export class HAFullCalendar extends LitElement {
       calendars: this.calendars,
       calendarId: info.event.extendedProps.calendar,
       entry: info.event.extendedProps.eventData,
+      color: info.event.backgroundColor,
       updated: () => {
         this._fireViewChanged();
       },

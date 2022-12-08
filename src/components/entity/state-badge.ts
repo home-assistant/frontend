@@ -31,6 +31,8 @@ export class StateBadge extends LitElement {
 
   @property({ type: Boolean }) public stateColor?: boolean;
 
+  @property() public color?: string;
+
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
@@ -76,7 +78,8 @@ export class StateBadge extends LitElement {
       !changedProps.has("stateObj") &&
       !changedProps.has("overrideImage") &&
       !changedProps.has("overrideIcon") &&
-      !changedProps.has("stateColor")
+      !changedProps.has("stateColor") &&
+      !changedProps.has("color")
     ) {
       return;
     }
@@ -107,6 +110,9 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
+      } else if (this.color) {
+        // Externally provided overriding color wins over state color
+        iconStyle.color = this.color;
       } else if (stateActive(stateObj) && this._stateColor) {
         const iconColor = stateColor(stateObj);
         if (stateObj.attributes.rgb_color) {

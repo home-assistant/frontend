@@ -8,6 +8,7 @@ export interface CalendarEventDetailDialogParams {
   canDelete?: boolean;
   canEdit?: boolean;
   updated: () => void;
+  color?: string;
 }
 
 export const loadCalendarEventDetailDialog = () =>
