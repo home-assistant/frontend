@@ -157,6 +157,25 @@ const CONFIGS = [
     `,
   },
   {
+    heading: "With enabled state color",
+    config: `
+- type: entities
+  state_color: true
+  entities:
+    - scene.romantic_lights
+    - device_tracker.demo_paulus
+    - cover.kitchen_window
+    - group.kitchen
+    - lock.kitchen_door
+    - light.bed_light
+    - light.non_existing
+    - climate.ecobee
+    - input_number.number
+    - sensor.humidity
+    - text.message
+    `,
+  },
+  {
     heading: "Helpers",
     config: `
 - type: entities
