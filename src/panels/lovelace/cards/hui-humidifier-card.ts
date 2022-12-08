@@ -84,10 +84,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    if (!this._setHum) {
-      this._setHum = this._getSetHum(stateObj);
-    }
-
     const name =
       this._config!.name ||
       computeStateName(this.hass!.states[this._config!.entity]);
@@ -96,6 +92,8 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       Number.isFinite(Number(stateObj.attributes.humidity))
         ? stateObj.attributes.humidity
         : stateObj.attributes.min_humidity;
+
+    const setHumidity = this._setHum ? this._setHum : targetHumidity;
 
     const rtlDirection = computeRTLDirection(this.hass);
 
@@ -118,11 +116,11 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       <svg viewBox="0 0 24 20">
         <text x="50%" dx="1" y="73%" text-anchor="middle" id="set-values">
           ${UNAVAILABLE_STATES.includes(stateObj.state) ||
-          this._setHum === undefined ||
-          this._setHum === null
+          setHumidity === undefined ||
+          setHumidity === null
             ? ""
             : svg`
-                    ${this._setHum.toFixed()}
+                    ${setHumidity.toFixed()}
                     <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                       %
                     </tspan>
