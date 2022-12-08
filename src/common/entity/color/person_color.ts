@@ -1,7 +1,5 @@
-import { HassEntity } from "home-assistant-js-websocket";
-
-export const personColor = (stateObj: HassEntity): string | undefined => {
-  switch (stateObj.state) {
+export const personColor = (state: string): string | undefined => {
+  switch (state) {
     case "home":
       return "person-home";
     default:
