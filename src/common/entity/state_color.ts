@@ -67,10 +67,10 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
 
     case "person":
     case "device_tracker":
-      return personColor(stateObj);
+      return personColor(compareState);
 
     case "sensor":
-      return sensorColor(stateObj);
+      return sensorColor(stateObj, compareState);
 
     case "sun":
       return compareState === "above_horizon" ? "sun-day" : "sun-night";
