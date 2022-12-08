@@ -13,6 +13,7 @@ import {
   mdiDoorClosed,
   mdiDoorOpen,
   mdiFire,
+  mdiFireOff,
   mdiGarage,
   mdiGarageOpen,
   mdiHome,
@@ -75,7 +76,7 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
     case "smoke":
       return is_off ? mdiSmokeDetectorVariant : mdiSmokeDetectorVariantAlert;
     case "heat":
-      return is_off ? mdiThermometer : mdiFire;
+      return is_off ? mdiFireOff : mdiFire;
     case "light":
       return is_off ? mdiBrightness5 : mdiBrightness7;
     case "lock":
