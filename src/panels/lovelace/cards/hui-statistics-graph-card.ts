@@ -144,7 +144,6 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
     if (
       changedProps.has("_config") &&
-      oldConfig !== this._config &&
       oldConfig?.entities !== this._config.entities
     ) {
       this._getStatisticsMetaData(this._entities).then(() => {
