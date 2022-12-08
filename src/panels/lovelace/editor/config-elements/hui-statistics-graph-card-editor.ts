@@ -26,6 +26,7 @@ import { deepEqual } from "../../../../common/util/deep-equal";
 import {
   ExtendedStatisticType,
   statTypeMap,
+  supportedStatTypeMap,
 } from "../../../../components/chart/statistics-chart";
 import "../../../../components/entity/ha-statistics-picker";
 import "../../../../components/ha-form/ha-form";
@@ -185,7 +186,10 @@ export class HuiStatisticsGraphCardEditor
                     disabled:
                       !metaDatas ||
                       !metaDatas.every((metaData) =>
-                        statisticsMetaHasType(metaData, statTypeMap[stat_type])
+                        statisticsMetaHasType(
+                          metaData,
+                          supportedStatTypeMap[stat_type]
+                        )
                       ),
                   })),
                 },
