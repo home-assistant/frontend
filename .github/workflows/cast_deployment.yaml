@@ -15,7 +15,7 @@ env:
 jobs:
   deploy_dev:
     runs-on: ubuntu-latest
-    name: Deploy development
+    name: Deploy Development
     if: github.event_name != 'push'
     environment:
       name: Cast Development
@@ -56,7 +56,7 @@ jobs:
     name: Deploy Production
     if: github.event_name == 'push'
     environment:
-      name: Cast production
+      name: Cast Production
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
