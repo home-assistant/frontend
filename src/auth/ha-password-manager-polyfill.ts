@@ -71,7 +71,7 @@ export class HaPasswordManagerPolyfill extends LitElement {
           @submit=${this._handleSubmit}
         >
           ${autocompleteLoginFields(this.step.data_schema).map((input) =>
-            this.render_input(input)
+            this.renderInput(input)
           )}
           <input type="submit" />
           <style>
@@ -83,7 +83,7 @@ export class HaPasswordManagerPolyfill extends LitElement {
     return html``;
   }
 
-  private render_input(schema: HaFormSchema): TemplateResult | string {
+  private renderInput(schema: HaFormSchema): TemplateResult | string {
     const inputType = schema.name.includes("password") ? "password" : "text";
     if (schema.type !== "string") {
       return "";
