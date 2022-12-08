@@ -196,13 +196,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
     }
 
-    if (domain === "cover" && stateObj.state === "open") {
-      const position = (stateObj as CoverEntity).attributes.current_position;
-      if (position) {
-        return `${Math.round(position)}%`;
-      }
-    }
-
     if (domain === "fan" && stateObj.state === ON) {
       const speed = (stateObj as FanEntity).attributes.percentage;
       if (speed) {
@@ -210,12 +203,20 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
     }
 
-    return computeStateDisplay(
+    const stateDisplay = computeStateDisplay(
       this.hass!.localize,
       stateObj,
       this.hass!.locale,
       this.hass!.entities
     );
+
+    if (domain === "cover" && stateObj.state === "open") {
+      const position = (stateObj as CoverEntity).attributes.current_position;
+      if (position && position !== 100) {
+        return `${stateDisplay} - ${Math.round(position)}%`;
+      }
+    }
+    return stateDisplay;
   }
 
   protected render(): TemplateResult {
