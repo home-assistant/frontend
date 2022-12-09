@@ -9,7 +9,6 @@ import { hsv2rgb, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
-import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
@@ -129,8 +128,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   private _computeStateColor = memoize((entity: HassEntity, color?: string) => {
-    if (UNAVAILABLE_STATES.includes(entity.state)) {
-      return undefined;
+    // Use custom color
+    if (color) {
+      return computeRgbColor(color);
     }
 
     // Use default color for person/device_tracker because color is on the badge
@@ -141,16 +141,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       return "var(--rgb-state-default-color)";
     }
 
-    if (!stateActive(entity)) {
-      return undefined;
-    }
-
-    if (color) {
-      return computeRgbColor(color);
-    }
-
-    let stateColor = stateColorCss(entity);
-
+    // Use light color if the light support rgb
     if (
       computeDomain(entity.entity_id) === "light" &&
       entity.attributes.rgb_color
@@ -166,10 +157,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           hsvColor[1] = 0.4;
         }
       }
-      stateColor = hsv2rgb(hsvColor).join(",");
+      return hsv2rgb(hsvColor).join(",");
     }
 
-    return stateColor;
+    // Fallback to state color
+    return stateColorCss(entity) ?? "var(--rgb-state-default-color)";
   });
 
   private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
@@ -360,7 +352,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --tile-color: var(--rgb-disabled-color);
+        --tile-color: var(--rgb-state-default-color);
         --tile-tap-padding: 6px;
         -webkit-tap-highlight-color: transparent;
       }
@@ -368,7 +360,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         height: 100%;
       }
       ha-card.disabled {
-        background: rgba(var(--rgb-disabled-color), 0.1);
+        background: rgba(var(--rgb-state-unavailable-color), 0.1);
       }
       [role="button"] {
         cursor: pointer;

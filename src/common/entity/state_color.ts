@@ -1,5 +1,6 @@
 /** Return an color representing a state. */
 import { HassEntity } from "home-assistant-js-websocket";
+import { UNAVAILABLE } from "../../data/entity";
 import { UpdateEntity, updateIsInstalling } from "../../data/update";
 import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
 import { binarySensorColor } from "./color/binary_sensor_color";
@@ -30,18 +31,23 @@ const STATIC_COLORED_DOMAIN = new Set([
   "vacuum",
 ]);
 
-export const stateColorCss = (stateObj?: HassEntity, state?: string) => {
-  if (!stateObj || !stateActive(stateObj, state)) {
-    return `var(--rgb-disabled-color)`;
+export const stateColorCss = (stateObj: HassEntity, state?: string) => {
+  const compareState = state !== undefined ? state : stateObj?.state;
+  if (compareState === UNAVAILABLE) {
+    return `var(--rgb-state-unavailable-color)`;
   }
 
-  const color = stateColor(stateObj, state);
-
-  if (color) {
-    return `var(--rgb-state-${color}-color)`;
+  if (!stateActive(stateObj, state)) {
+    return `var(--rgb-state-inactive-color)`;
   }
 
-  return `var(--rgb-state-default-color)`;
+  const domainColor = stateColor(stateObj, state);
+
+  if (domainColor) {
+    return `var(--rgb-state-${domainColor}-color)`;
+  }
+
+  return undefined;
 };
 
 export const stateColor = (stateObj: HassEntity, state?: string) => {

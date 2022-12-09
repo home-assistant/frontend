@@ -16,7 +16,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
-import { stateColor } from "../../../common/entity/state_color";
+import { stateColorCss } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import {
   formatNumber,
@@ -76,6 +76,15 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
+  private getStateColor(stateObj: HassEntity, config: EntityCardConfig) {
+    const domain = stateObj ? computeStateDomain(stateObj) : undefined;
+    return (
+      config &&
+      (config.state_color ||
+        (domain === "light" && config.state_color !== false))
+    );
+  }
+
   public setConfig(config: EntityCardConfig): void {
     if (!config.entity) {
       throw new Error("Entity must be specified");
@@ -124,10 +133,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name || computeStateName(stateObj);
 
-    const active =
-      (this._config.state_color ||
-        (domain === "light" && this._config.state_color !== false)) &&
-      stateActive(stateObj);
+    const colored = stateObj && this.getStateColor(stateObj, this._config);
+    const active = stateObj && colored && stateActive(stateObj);
 
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
@@ -141,7 +148,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               data-domain=${ifDefined(domain)}
               data-state=${stateObj.state}
               style=${styleMap({
-                color: active ? this._computeColor(stateObj) : "",
+                color: colored ? this._computeColor(stateObj) : undefined,
                 height: this._config.icon_height
                   ? this._config.icon_height
                   : "",
@@ -187,19 +194,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   private _computeColor(stateObj: HassEntity | LightEntity): string {
-    const domain = computeStateDomain(stateObj);
-    if (
-      !(
-        this._config?.state_color ||
-        (domain === "light" && this._config?.state_color !== false)
-      ) ||
-      !stateActive(stateObj)
-    ) {
-      return "";
-    }
-    const iconColor = stateColor(stateObj);
+    const iconColor = stateColorCss(stateObj);
     if (iconColor) {
-      return `rgb(var(--rgb-state-${iconColor}-color))`;
+      return `rgb(${iconColor})`;
     }
     return "";
   }

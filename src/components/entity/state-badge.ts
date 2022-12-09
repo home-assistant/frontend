@@ -14,7 +14,7 @@ import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateActive } from "../../common/entity/state_active";
-import { stateColor } from "../../common/entity/state_color";
+import { stateColorCss } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import type { HomeAssistant } from "../../types";
@@ -107,24 +107,27 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
-      } else if (stateActive(stateObj) && this._stateColor) {
-        const iconColor = stateColor(stateObj);
-        if (stateObj.attributes.rgb_color) {
-          iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
-        } else if (iconColor) {
-          iconStyle.color = `rgb(var(--rgb-state-${iconColor}-color))`;
+      } else if (this._stateColor) {
+        const color = stateColorCss(stateObj);
+        if (color) {
+          iconStyle.color = `rgb(${color})`;
         }
-        if (stateObj.attributes.brightness) {
-          const brightness = stateObj.attributes.brightness;
-          if (typeof brightness !== "number") {
-            const errorMessage = `Type error: state-badge expected number, but type of ${
-              stateObj.entity_id
-            }.attributes.brightness is ${typeof brightness} (${brightness})`;
-            // eslint-disable-next-line
-            console.warn(errorMessage);
+        if (stateActive(stateObj)) {
+          if (stateObj.attributes.rgb_color) {
+            iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
           }
-          // lowest brightness will be around 50% (that's pretty dark)
-          iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+          if (stateObj.attributes.brightness) {
+            const brightness = stateObj.attributes.brightness;
+            if (typeof brightness !== "number") {
+              const errorMessage = `Type error: state-badge expected number, but type of ${
+                stateObj.entity_id
+              }.attributes.brightness is ${typeof brightness} (${brightness})`;
+              // eslint-disable-next-line
+              console.warn(errorMessage);
+            }
+            // lowest brightness will be around 50% (that's pretty dark)
+            iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+          }
         }
       }
     } else if (this.overrideImage) {
