@@ -107,6 +107,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-primary-color: 3, 169, 244;
       --rgb-accent-color: 255, 152, 0;
       --rgb-disabled-color: 189, 189, 189;
+      --rgb-off-color: 114, 114, 114;
       --rgb-primary-text-color: 33, 33, 33;
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
@@ -134,7 +135,11 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-white-color: 255, 255, 255;
 
       /* rgb state color */
-      --rgb-state-default-color: 68, 115, 158;
+      --rgb-state-default-color: var(--rgb-dark-primary-color, 68, 115, 158);
+      --rgb-state-unavailable-color: var(--rgb-disabled-color);
+      --rgb-state-off-color: var(--rgb-off-color);
+
+      /* rgb state color */
       --rgb-state-alarm-armed-color: var(--rgb-red-color);
       --rgb-state-alarm-arming-color: var(--rgb-orange-color);
       --rgb-state-alarm-pending-color: var(--rgb-orange-color);
@@ -151,7 +156,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-climate-fan-only-color: var(--rgb-cyan-color);
       --rgb-state-climate-heat-color: var(--rgb-deep-orange-color);
       --rgb-state-climate-heat-cool-color: var(--rgb-amber-color);
-      --rgb-state-climate-idle-color: var(--rgb-disabled-color);
+      --rgb-state-climate-idle-color: var(--rgb-off-color);
       --rgb-state-cover-color: var(--rgb-purple-color);
       --rgb-state-fan-color: var(--rgb-cyan-color);
       --rgb-state-group-color: var(--rgb-amber-color);
@@ -169,7 +174,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-sensor-battery-high-color: var(--rgb-green-color);
       --rgb-state-sensor-battery-low-color: var(--rgb-red-color);
       --rgb-state-sensor-battery-medium-color: var(--rgb-orange-color);
-      --rgb-state-sensor-battery-unknown-color: var(--rgb-disabled-color);
+      --rgb-state-sensor-battery-unknown-color: var(--rgb-off-color);
       --rgb-state-siren-color: var(--rgb-red-color);
       --rgb-state-sun-day-color: var(--rgb-amber-color);
       --rgb-state-sun-night-color: var(--rgb-deep-purple-color);
