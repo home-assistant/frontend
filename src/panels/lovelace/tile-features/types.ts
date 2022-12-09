@@ -10,6 +10,10 @@ export interface LightBrightnessTileFeatureConfig {
   type: "light-brightness";
 }
 
+export interface LightTemperatureTileFeatureConfig {
+  type: "light-temperature";
+}
+
 export const VACUUM_COMMANDS = [
   "start_pause",
   "stop",
@@ -29,6 +33,7 @@ export type LovelaceTileFeatureConfig =
   | CoverOpenCloseTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | LightBrightnessTileFeatureConfig
+  | LightTemperatureTileFeatureConfig
   | VacuumCommandsTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {

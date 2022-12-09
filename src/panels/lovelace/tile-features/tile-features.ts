@@ -2,7 +2,11 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntityFeature } from "../../../data/cover";
-import { lightSupportsBrightness } from "../../../data/light";
+import {
+  LightColorMode,
+  lightSupportsBrightness,
+  lightSupportsColorMode,
+} from "../../../data/light";
 import { supportsVacuumCommand } from "./hui-vacuum-commands-tile-feature";
 import { LovelaceTileFeatureConfig, VACUUM_COMMANDS } from "./types";
 
@@ -21,6 +25,9 @@ const TILE_FEATURES_SUPPORT: Record<TileFeatureType, SupportsTileFeature> = {
   "light-brightness": (stateObj) =>
     computeDomain(stateObj.entity_id) === "light" &&
     lightSupportsBrightness(stateObj),
+  "light-temperature": (stateObj) =>
+    computeDomain(stateObj.entity_id) === "light" &&
+    lightSupportsColorMode(stateObj, LightColorMode.COLOR_TEMP),
   "vacuum-commands": (stateObj) =>
     computeDomain(stateObj.entity_id) === "vacuum" &&
     VACUUM_COMMANDS.some((c) => supportsVacuumCommand(stateObj, c)),

@@ -4311,6 +4311,9 @@
                   "light-brightness": {
                     "label": "Light brightness"
                   },
+                  "light-temperature": {
+                    "label": "Light temperature"
+                  },
                   "vacuum-commands": {
                     "label": "Vacuum commands",
                     "commands": "Commands",

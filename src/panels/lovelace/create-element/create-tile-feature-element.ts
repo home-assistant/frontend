@@ -6,12 +6,14 @@ import {
 import "../tile-features/hui-cover-open-close-tile-feature";
 import "../tile-features/hui-cover-tilt-tile-feature";
 import "../tile-features/hui-light-brightness-tile-feature";
+import "../tile-features/hui-light-temperature-tile-feature";
 import "../tile-features/hui-vacuum-commands-tile-feature";
 
 const TYPES: Set<LovelaceTileFeatureConfig["type"]> = new Set([
   "cover-open-close",
   "cover-tilt",
   "light-brightness",
+  "light-temperature",
   "vacuum-commands",
 ]);
 

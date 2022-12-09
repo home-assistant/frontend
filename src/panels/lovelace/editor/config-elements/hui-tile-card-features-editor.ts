@@ -33,6 +33,7 @@ const FEATURES_TYPE: LovelaceTileFeatureConfig["type"][] = [
   "cover-open-close",
   "cover-tilt",
   "light-brightness",
+  "light-temperature",
   "vacuum-commands",
 ];
 
