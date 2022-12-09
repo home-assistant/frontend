@@ -320,7 +320,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     if (stateObj.attributes.rgb_color && stateActive(stateObj)) {
       return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
     }
-    return `rgb(${stateColorCss(stateObj)})`;
+    const iconColor = stateColorCss(stateObj);
+    if (iconColor) {
+      return `rgb(${iconColor})`;
+    }
+    return "";
   }
 
   private _handleAction(ev: ActionHandlerEvent) {

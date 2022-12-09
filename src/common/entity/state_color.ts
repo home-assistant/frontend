@@ -38,7 +38,7 @@ export const stateColorCss = (stateObj: HassEntity, state?: string) => {
   }
 
   if (!stateActive(stateObj, state)) {
-    return `var(--rgb-state-off-color)`;
+    return `var(--rgb-state-inactive-color)`;
   }
 
   const domainColor = stateColor(stateObj, state);
@@ -47,7 +47,7 @@ export const stateColorCss = (stateObj: HassEntity, state?: string) => {
     return `var(--rgb-state-${domainColor}-color)`;
   }
 
-  return `var(--rgb-state-default-color)`;
+  return undefined;
 };
 
 export const stateColor = (stateObj: HassEntity, state?: string) => {

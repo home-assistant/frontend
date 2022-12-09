@@ -107,7 +107,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-primary-color: 3, 169, 244;
       --rgb-accent-color: 255, 152, 0;
       --rgb-disabled-color: 189, 189, 189;
-      --rgb-off-color: 114, 114, 114;
+      --rgb-inactive-color: 114, 114, 114;
       --rgb-primary-text-color: 33, 33, 33;
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
@@ -137,7 +137,7 @@ documentContainer.innerHTML = `<custom-style>
       /* rgb state color */
       --rgb-state-default-color: var(--rgb-dark-primary-color, 68, 115, 158);
       --rgb-state-unavailable-color: var(--rgb-disabled-color);
-      --rgb-state-off-color: var(--rgb-off-color);
+      --rgb-state-inactive-color: var(--rgb-inactive-color);
 
       /* rgb state color */
       --rgb-state-alarm-armed-color: var(--rgb-red-color);

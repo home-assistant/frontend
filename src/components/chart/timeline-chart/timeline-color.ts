@@ -57,7 +57,7 @@ function computeTimelineStateColor(
   }
 
   if (!stateActive(stateObj, state)) {
-    const rgb = cssToRgb("--rgb-state-off-color", computedStyles);
+    const rgb = cssToRgb("--rgb-state-inactive-color", computedStyles);
     if (!rgb) return undefined;
     return rgb2hex(rgb);
   }

@@ -161,7 +161,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
 
     // Fallback to state color
-    return stateColorCss(entity);
+    return stateColorCss(entity) ?? "var(--rgb-state-default-color)";
   });
 
   private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {

@@ -108,7 +108,10 @@ export class StateBadge extends LitElement {
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
       } else if (this._stateColor) {
-        iconStyle.color = `rgb(${stateColorCss(stateObj)})`;
+        const color = stateColorCss(stateObj);
+        if (color) {
+          iconStyle.color = `rgb(${color})`;
+        }
         if (stateActive(stateObj)) {
           if (stateObj.attributes.rgb_color) {
             iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
