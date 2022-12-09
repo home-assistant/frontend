@@ -16,11 +16,15 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
 
   // Custom cases
   switch (domain) {
+    case "alarm_control_panel":
+      return compareState !== "disarmed";
     case "cover":
       return !["closed", "closing"].includes(compareState);
     case "device_tracker":
     case "person":
       return compareState !== "not_home";
+    case "lock":
+      return compareState !== "locked";
     case "media_player":
       return compareState !== "standby";
     case "vacuum":
