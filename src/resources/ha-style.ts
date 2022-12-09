@@ -145,9 +145,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-alert-color: var(--rgb-red-color);
       --rgb-state-automation-color: var(--rgb-amber-color);
       --rgb-state-binary-sensor-alerting-color: var(--rgb-red-color);
-      --rgb-state-binary-sensor-color: var(--rgb-amber-color);
-      --rgb-state-calendar-color: var(--rgb-amber-color);
-      --rgb-state-camera-color: var(--rgb-amber-color);
+      --rgb-state-binary-sensor-color: var(--rgb-blue-color);
+      --rgb-state-calendar-color: var(--rgb-blue-color);
+      --rgb-state-camera-color: var(--rgb-blue-color);
       --rgb-state-climate-auto-color: var(--rgb-green-color);
       --rgb-state-climate-cool-color: var(--rgb-blue-color);
       --rgb-state-climate-dry-color: var(--rgb-orange-color);
@@ -168,7 +168,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-media-player-color: var(--rgb-indigo-color);
       --rgb-state-person-home-color: var(--rgb-green-color);
       --rgb-state-person-zone-color: var(--rgb-blue-color);
-      --rgb-state-remote-color: var(--rgb-amber-color);
+      --rgb-state-remote-color: var(--rgb-blue-color);
       --rgb-state-script-color: var(--rgb-amber-color);
       --rgb-state-sensor-battery-high-color: var(--rgb-green-color);
       --rgb-state-sensor-battery-low-color: var(--rgb-red-color);
