@@ -268,11 +268,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         box-sizing: border-box;
       }
 
-      ha-card:focus {
-        outline: none;
-        background: var(--divider-color);
-      }
-
       ha-gauge {
         width: 100%;
         max-width: 250px;
