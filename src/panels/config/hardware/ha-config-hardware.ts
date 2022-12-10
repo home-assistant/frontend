@@ -9,6 +9,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { numberFormatToLocale } from "../../../common/number/format_number";
 import { round } from "../../../common/number/round";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
@@ -169,7 +170,8 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
               max: 100,
               min: 0,
               stepSize: 1,
-              callback: (value) => value + "%",
+              callback: (value) =>
+                value + blankBeforePercent(this.hass.locale) + "%",
             },
           },
           x: {
@@ -386,7 +388,8 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                       )}
                     </div>
                     <div class="value">
-                      ${this._systemStatusData.cpu_percent || "-"}%
+                      ${this._systemStatusData.cpu_percent ||
+                      "-"}${blankBeforePercent(this.hass.locale)}%
                     </div>
                   </div>
                   <div class="card-content">
