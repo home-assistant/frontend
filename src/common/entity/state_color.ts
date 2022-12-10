@@ -11,7 +11,7 @@ import { sensorColor } from "./color/sensor_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
-const STATIC_COLORED_DOMAIN = new Set([
+const STATIC_ACTIVE_COLORED_DOMAIN = new Set([
   "alert",
   "automation",
   "calendar",
@@ -37,14 +37,14 @@ export const stateColorCss = (stateObj: HassEntity, state?: string) => {
     return `var(--rgb-state-unavailable-color)`;
   }
 
-  if (!stateActive(stateObj, state)) {
-    return `var(--rgb-state-inactive-color)`;
-  }
-
   const domainColor = stateColor(stateObj, state);
 
   if (domainColor) {
     return `var(--rgb-state-${domainColor}-color)`;
+  }
+
+  if (!stateActive(stateObj, state)) {
+    return `var(--rgb-state-inactive-color)`;
   }
 
   return undefined;
@@ -54,7 +54,10 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
   const compareState = state !== undefined ? state : stateObj?.state;
   const domain = computeDomain(stateObj.entity_id);
 
-  if (STATIC_COLORED_DOMAIN.has(domain)) {
+  if (
+    STATIC_ACTIVE_COLORED_DOMAIN.has(domain) &&
+    stateActive(stateObj, state)
+  ) {
     return domain.replace("_", "-");
   }
 

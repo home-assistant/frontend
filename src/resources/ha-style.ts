@@ -136,12 +136,13 @@ documentContainer.innerHTML = `<custom-style>
 
       /* rgb state color */
       --rgb-state-default-color: var(--rgb-dark-primary-color, 68, 115, 158);
-      --rgb-state-unavailable-color: var(--rgb-disabled-color);
       --rgb-state-inactive-color: var(--rgb-inactive-color);
+      --rgb-state-unavailable-color: var(--rgb-disabled-color);
 
-      /* rgb state color */
-      --rgb-state-alarm-armed-color: var(--rgb-red-color);
+      /* rgb state domain colors */
+      --rgb-state-alarm-armed-color: var(--rgb-green-color);
       --rgb-state-alarm-arming-color: var(--rgb-orange-color);
+      --rgb-state-alarm-disarmed-color: var(--rgb-inactive-color);
       --rgb-state-alarm-pending-color: var(--rgb-orange-color);
       --rgb-state-alarm-triggered-color: var(--rgb-red-color);
       --rgb-state-alert-color: var(--rgb-red-color);
@@ -164,10 +165,12 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-input-boolean-color: var(--rgb-amber-color);
       --rgb-state-light-color: var(--rgb-amber-color);
       --rgb-state-lock-jammed-color: var(--rgb-red-color);
-      --rgb-state-lock-locked-color: var(--rgb-red-color);
+      --rgb-state-lock-locked-color: var(--rgb-green-color);
       --rgb-state-lock-pending-color: var(--rgb-orange-color);
+      --rgb-state-lock-unlocked-color: var(--rgb-red-color);
       --rgb-state-media-player-color: var(--rgb-indigo-color);
       --rgb-state-person-home-color: var(--rgb-green-color);
+      --rgb-state-person-not-home-color: var(--rgb-inactive-color);
       --rgb-state-person-zone-color: var(--rgb-blue-color);
       --rgb-state-remote-color: var(--rgb-amber-color);
       --rgb-state-script-color: var(--rgb-amber-color);
@@ -183,11 +186,6 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-update-color: var(--rgb-green-color);
       --rgb-state-update-installing-color: var(--rgb-orange-color);
       --rgb-state-vacuum-color: var(--rgb-teal-color);
-
-      /* rgb state badge color */
-      --rgb-badge-person-home-color: var(--rgb-state-person-home-color);
-      --rgb-badge-person-zone-color: var(--rgb-state-person-zone-color);
-      --rgb-badge-person-not-home-color: var(--rgb-red-color);
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
