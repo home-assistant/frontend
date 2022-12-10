@@ -56,22 +56,19 @@ function computeTimelineStateColor(
     return rgb2hex(rgb);
   }
 
-  if (!stateActive(stateObj, state)) {
+  const color = stateColor(stateObj, state);
+
+  if (!color && !stateActive(stateObj, state)) {
     const rgb = cssToRgb("--rgb-state-inactive-color", computedStyles);
     if (!rgb) return undefined;
     return rgb2hex(rgb);
   }
 
-  const color = stateColor(stateObj, state);
-
-  if (!color) return undefined;
-
-  const domain = computeDomain(stateObj.entity_id);
-
   const rgb = cssToRgb(`--rgb-state-${color}-color`, computedStyles);
 
   if (!rgb) return undefined;
 
+  const domain = computeDomain(stateObj.entity_id);
   const shade = DOMAIN_STATE_SHADES[domain]?.[state] as number | number;
   if (!shade) {
     return rgb2hex(rgb);
