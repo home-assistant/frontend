@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list-item";
 import {
   mdiCog,
   mdiDelete,
@@ -7,18 +8,19 @@ import {
   mdiPencil,
   mdiPlusCircle,
 } from "@mdi/js";
-import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { SENSOR_ENTITIES } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
@@ -59,6 +61,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -74,8 +77,6 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import "../../../layouts/hass-subpage";
-import { SENSOR_ENTITIES } from "../../../common/const";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -639,7 +640,11 @@ export class HaConfigDevicePage extends LitElement {
                     batteryState
                       ? html`
                           <div class="battery">
-                            ${batteryIsBinary ? "" : batteryState.state + " %"}
+                            ${batteryIsBinary
+                              ? ""
+                              : batteryState.state +
+                                blankBeforePercent(this.hass.locale) +
+                                "%"}
                             <ha-battery-icon
                               .hass=${this.hass!}
                               .batteryStateObj=${batteryState}

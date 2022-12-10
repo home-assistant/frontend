@@ -86,15 +86,17 @@ class HuiCoverOpenCloseTileFeature
             `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.STOP)
-          ? html`<ha-tile-button
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_control.cover.stop_cover"
-              )}
-              @click=${this._onStopTap}
-              .disabled=${!canStop(this.stateObj)}
-            >
-              <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-            </ha-tile-button> `
+          ? html`
+              <ha-tile-button
+                .label=${this.hass.localize(
+                  "ui.dialogs.more_info_control.cover.stop_cover"
+                )}
+                @click=${this._onStopTap}
+                .disabled=${!canStop(this.stateObj)}
+              >
+                <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
+              </ha-tile-button>
+            `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.CLOSE)
           ? html`
