@@ -37,8 +37,11 @@ export class TextBarElement extends BarElement {
     }
     const textColor =
       options.textColor ||
-      (options.backgroundColor &&
-        (luminosity(hex2rgb(options.backgroundColor)) > 0.5 ? "#000" : "#fff"));
+      (options.backgroundColor && options.backgroundColor === "transparent"
+        ? "transparent"
+        : luminosity(hex2rgb(options.backgroundColor)) > 0.5
+        ? "#000"
+        : "#fff");
 
     // ctx.font = "12px arial";
     ctx.fillStyle = textColor;
