@@ -2,10 +2,27 @@ import { HassEntity } from "home-assistant-js-websocket";
 
 export const evaluateFilter = (stateObj: HassEntity, filter: any): boolean => {
   const operator = filter.operator || "==";
-  const value = filter.value ?? filter;
-  const state = filter.attribute
+  let value = filter.value ?? filter;
+  let state = filter.attribute
     ? stateObj.attributes[filter.attribute]
     : stateObj.state;
+
+  if (operator === "==" || operator === "!=") {
+    const valueIsNumeric =
+      typeof value === "number" ||
+      (typeof value === "string" &&
+        !isNaN(+value) &&
+        value.trim().length !== 0);
+    const stateIsNumeric =
+      typeof state === "number" ||
+      (typeof state === "string" &&
+        !isNaN(+state) &&
+        state.trim().length !== 0);
+    if (valueIsNumeric && stateIsNumeric) {
+      value = +value;
+      state = +state;
+    }
+  }
 
   switch (operator) {
     case "==":
