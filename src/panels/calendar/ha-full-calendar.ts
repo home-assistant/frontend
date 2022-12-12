@@ -549,12 +549,8 @@ export class HAFullCalendar extends LitElement {
           background: inherit;
         }
 
-        td.fc-day-today .fc-daygrid-day-top {
-          padding-top: 4px;
-        }
-
         td.fc-day-today .fc-daygrid-day-number {
-          height: 24px;
+          height: 26px;
           color: var(--text-primary-color) !important;
           background-color: var(--primary-color);
           border-radius: 50%;
@@ -563,7 +559,6 @@ export class HAFullCalendar extends LitElement {
           white-space: nowrap;
           width: max-content;
           min-width: 24px;
-          line-height: 140%;
         }
 
         .fc-daygrid-day-events {
