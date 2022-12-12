@@ -49,7 +49,6 @@ export const darkStyles = {
   "map-filter":
     "invert(.9) hue-rotate(170deg) brightness(1.5) contrast(1.2) saturate(.3)",
   "rgb-disabled-color": "70, 70, 70",
-  "rgb-inactive-color": "141, 141, 141",
 };
 
 export const derivedStyles = {

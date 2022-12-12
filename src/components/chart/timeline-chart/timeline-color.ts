@@ -51,9 +51,7 @@ function computeTimelineStateColor(
   stateObj?: HassEntity
 ): string | undefined {
   if (!stateObj || state === UNAVAILABLE) {
-    const rgb = cssToRgb("--rgb-state-unavailable-color", computedStyles);
-    if (!rgb) return undefined;
-    return rgb2hex(rgb);
+    return "transparent";
   }
 
   const color = stateColor(stateObj, state);

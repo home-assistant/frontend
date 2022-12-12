@@ -1,5 +1,5 @@
 import { memoize } from "@fullcalendar/common";
-import { mdiHelp } from "@mdi/js";
+import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -225,10 +225,21 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <ha-card class="disabled">
+        <ha-card
+          style=${styleMap({
+            "--tile-color": `var(--rgb-disabled-color)`,
+          })}
+        >
           <div class="tile">
             <div class="icon-container">
-              <ha-tile-icon .iconPath=${mdiHelp}></ha-tile-icon>
+              <ha-tile-icon class="icon" .iconPath=${mdiHelp}></ha-tile-icon>
+              <ha-tile-badge
+                class="badge"
+                .iconPath=${mdiExclamationThick}
+                style=${styleMap({
+                  "--tile-badge-background-color": `rgb(var(--rgb-red-color))`,
+                })}
+              ></ha-tile-badge>
             </div>
             <ha-tile-info
               .primary=${entityId}
@@ -358,9 +369,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       ha-card {
         height: 100%;
-      }
-      ha-card.disabled {
-        background: rgba(var(--rgb-state-unavailable-color), 0.1);
       }
       [role="button"] {
         cursor: pointer;
