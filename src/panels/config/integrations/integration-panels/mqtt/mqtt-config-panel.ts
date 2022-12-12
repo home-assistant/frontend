@@ -1,9 +1,11 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { LocalStorage } from "../../../../../common/decorators/local-storage";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-switch";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-subpage";
@@ -19,17 +21,17 @@ class HaPanelDevMqtt extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @state()
   @LocalStorage("panel-dev-mqtt-topic-ls", true, false)
   private topic = "";
 
-  @state()
   @LocalStorage("panel-dev-mqtt-payload-ls", true, false)
   private payload = "";
 
-  @state()
   @LocalStorage("panel-dev-mqtt-qos-ls", true, false)
   private qos = "0";
+
+  @LocalStorage("panel-dev-mqtt-retain-ls", true, false)
+  private retain = false;
 
   protected render(): TemplateResult {
     return html`
@@ -62,7 +64,14 @@ class HaPanelDevMqtt extends LitElement {
                     html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
                 )}
               </ha-select>
-
+              <ha-formfield
+                label=${this.hass!.localize("ui.panel.config.mqtt.retain")}
+              >
+                <ha-switch
+                  @change=${this._handleRetain}
+                  .checked=${this.retain}
+                ></ha-switch>
+              </ha-formfield>
               <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor
                 mode="jinja2"
@@ -104,6 +113,10 @@ class HaPanelDevMqtt extends LitElement {
     }
   }
 
+  private _handleRetain(ev: CustomEvent) {
+    this.retain = (ev.target! as any).checked;
+  }
+
   private _publish(): void {
     if (!this.hass) {
       return;
@@ -112,6 +125,7 @@ class HaPanelDevMqtt extends LitElement {
       topic: this.topic,
       payload_template: this.payload,
       qos: parseInt(this.qos),
+      retain: this.retain,
     });
   }
 
