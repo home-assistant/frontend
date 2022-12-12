@@ -4,7 +4,6 @@ export const THEME_COLORS = new Set([
   "primary",
   "accent",
   "disabled",
-  "inactive",
   "red",
   "pink",
   "purple",
