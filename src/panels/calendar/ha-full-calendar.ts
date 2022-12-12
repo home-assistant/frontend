@@ -539,6 +539,7 @@ export class HAFullCalendar extends LitElement {
         a.fc-daygrid-day-number {
           float: none !important;
           font-size: 12px;
+          cursor: pointer;
         }
 
         .fc .fc-daygrid-day-number {
@@ -568,6 +569,7 @@ export class HAFullCalendar extends LitElement {
         .fc-event {
           border-radius: 4px;
           line-height: 1.7;
+          cursor: pointer;
         }
 
         .fc-daygrid-block-event .fc-event-main {
