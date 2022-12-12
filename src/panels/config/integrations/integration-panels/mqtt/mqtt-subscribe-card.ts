@@ -1,15 +1,14 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-textfield";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import { MQTTMessage, subscribeMQTTTopic } from "../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../types";
 import "@material/mwc-list/mwc-list-item";
 import { LocalStorage } from "../../../../../common/decorators/local-storage";
-import "../../../../../components/ha-textfield";
 
 const qosLevel = ["0", "1", "2"];
 
@@ -151,10 +150,6 @@ class MqttSubscribeCard extends LitElement {
       form {
         display: block;
         padding: 16px;
-      }
-      paper-input {
-        display: inline-block;
-        width: 200px;
       }
       .events {
         margin: -16px 0;
