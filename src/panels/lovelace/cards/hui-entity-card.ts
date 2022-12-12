@@ -134,8 +134,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     const name = this._config.name || computeStateName(stateObj);
 
     const active = stateObj && stateActive(stateObj);
-    const colored =
-      stateObj && active && this.getStateColor(stateObj, this._config);
+    const colored = active && this.getStateColor(stateObj, this._config);
 
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">

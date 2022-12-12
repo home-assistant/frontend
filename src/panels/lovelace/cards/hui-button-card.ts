@@ -157,8 +157,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       : "";
 
     const active = stateObj && stateActive(stateObj);
-    const colored =
-      stateObj && active && this.getStateColor(stateObj, this._config);
+    const colored = active && this.getStateColor(stateObj, this._config);
 
     return html`
       <ha-card
