@@ -51,10 +51,10 @@ documentContainer.innerHTML = `<custom-style>
       --header-height: 56px;
 
       /* for label-badge */
-      --label-badge-red: #DF4C1E;
-      --label-badge-blue: #039be5;
-      --label-badge-green: #0DA035;
-      --label-badge-yellow: #f4b400;
+      --label-badge-red: var(--error-color);
+      --label-badge-blue: var(--info-color);
+      --label-badge-green: var(--success-color);
+      --label-badge-yellow: var(--warning-color);
       --label-badge-grey: #9e9e9e;
 
       /* states */
@@ -168,7 +168,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-lock-locked-color: var(--rgb-green-color);
       --rgb-state-lock-pending-color: var(--rgb-orange-color);
       --rgb-state-lock-unlocked-color: var(--rgb-red-color);
-      --rgb-state-media-player-color: var(--rgb-indigo-color);
+      --rgb-state-media-player-color: var(--rgb-light-blue-color);
       --rgb-state-person-home-color: var(--rgb-green-color);
       --rgb-state-person-not-home-color: var(--rgb-inactive-color);
       --rgb-state-person-zone-color: var(--rgb-blue-color);
