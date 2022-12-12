@@ -234,6 +234,10 @@ export class HAFullCalendar extends LitElement {
       this._fireViewChanged();
     }
 
+    if (changedProps.has("eventDisplay")) {
+      this.calendar!.setOption("eventDisplay", this.eventDisplay);
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant;
 
     if (oldHass && oldHass.language !== this.hass.language) {
@@ -322,6 +326,7 @@ export class HAFullCalendar extends LitElement {
     this._activeView = "dayGridDay";
     this.calendar!.changeView("dayGridDay");
     this.calendar!.gotoDate(info.dateStr);
+    this._fireViewChanged();
   }
 
   private _handleNext(): void {
