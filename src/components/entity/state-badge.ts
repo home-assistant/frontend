@@ -107,27 +107,25 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
-      } else if (this._stateColor) {
+      } else if (this._stateColor && stateActive(stateObj)) {
         const color = stateColorCss(stateObj);
         if (color) {
           iconStyle.color = `rgb(${color})`;
         }
-        if (stateActive(stateObj)) {
-          if (stateObj.attributes.rgb_color) {
-            iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+        if (stateObj.attributes.rgb_color) {
+          iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+        }
+        if (stateObj.attributes.brightness) {
+          const brightness = stateObj.attributes.brightness;
+          if (typeof brightness !== "number") {
+            const errorMessage = `Type error: state-badge expected number, but type of ${
+              stateObj.entity_id
+            }.attributes.brightness is ${typeof brightness} (${brightness})`;
+            // eslint-disable-next-line
+            console.warn(errorMessage);
           }
-          if (stateObj.attributes.brightness) {
-            const brightness = stateObj.attributes.brightness;
-            if (typeof brightness !== "number") {
-              const errorMessage = `Type error: state-badge expected number, but type of ${
-                stateObj.entity_id
-              }.attributes.brightness is ${typeof brightness} (${brightness})`;
-              // eslint-disable-next-line
-              console.warn(errorMessage);
-            }
-            // lowest brightness will be around 50% (that's pretty dark)
-            iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
-          }
+          // lowest brightness will be around 50% (that's pretty dark)
+          iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
         }
       }
     } else if (this.overrideImage) {

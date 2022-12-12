@@ -234,6 +234,10 @@ export class HAFullCalendar extends LitElement {
       this._fireViewChanged();
     }
 
+    if (changedProps.has("eventDisplay")) {
+      this.calendar!.setOption("eventDisplay", this.eventDisplay);
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant;
 
     if (oldHass && oldHass.language !== this.hass.language) {
@@ -322,6 +326,7 @@ export class HAFullCalendar extends LitElement {
     this._activeView = "dayGridDay";
     this.calendar!.changeView("dayGridDay");
     this.calendar!.gotoDate(info.dateStr);
+    this._fireViewChanged();
   }
 
   private _handleNext(): void {
@@ -539,6 +544,7 @@ export class HAFullCalendar extends LitElement {
         a.fc-daygrid-day-number {
           float: none !important;
           font-size: 12px;
+          cursor: pointer;
         }
 
         .fc .fc-daygrid-day-number {
@@ -549,12 +555,8 @@ export class HAFullCalendar extends LitElement {
           background: inherit;
         }
 
-        td.fc-day-today .fc-daygrid-day-top {
-          padding-top: 4px;
-        }
-
         td.fc-day-today .fc-daygrid-day-number {
-          height: 24px;
+          height: 26px;
           color: var(--text-primary-color) !important;
           background-color: var(--primary-color);
           border-radius: 50%;
@@ -563,7 +565,6 @@ export class HAFullCalendar extends LitElement {
           white-space: nowrap;
           width: max-content;
           min-width: 24px;
-          line-height: 140%;
         }
 
         .fc-daygrid-day-events {
@@ -573,6 +574,7 @@ export class HAFullCalendar extends LitElement {
         .fc-event {
           border-radius: 4px;
           line-height: 1.7;
+          cursor: pointer;
         }
 
         .fc-daygrid-block-event .fc-event-main {
