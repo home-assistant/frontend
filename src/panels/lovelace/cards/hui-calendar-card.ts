@@ -134,6 +134,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .hass=${this.hass}
           .views=${views}
           .initialView=${this._config.initial_view!}
+          .eventDisplay=${"list-item"}
           .error=${this._error}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
