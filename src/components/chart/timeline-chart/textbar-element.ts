@@ -37,7 +37,7 @@ export class TextBarElement extends BarElement {
     }
     const textColor =
       options.textColor ||
-      (options.backgroundColor && options.backgroundColor === "transparent"
+      (options?.backgroundColor === "transparent"
         ? "transparent"
         : luminosity(hex2rgb(options.backgroundColor)) > 0.5
         ? "#000"
