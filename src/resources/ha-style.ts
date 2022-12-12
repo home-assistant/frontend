@@ -168,7 +168,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-lock-locked-color: var(--rgb-green-color);
       --rgb-state-lock-pending-color: var(--rgb-orange-color);
       --rgb-state-lock-unlocked-color: var(--rgb-red-color);
-      --rgb-state-media-player-color: var(--rgb-indigo-color);
+      --rgb-state-media-player-color: var(--rgb-light-blue-color);
       --rgb-state-person-home-color: var(--rgb-green-color);
       --rgb-state-person-not-home-color: var(--rgb-inactive-color);
       --rgb-state-person-zone-color: var(--rgb-blue-color);
