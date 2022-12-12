@@ -1,0 +1,52 @@
+name: Design preview
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+    branches:
+      - dev
+
+env:
+  NODE_VERSION: 16
+  NODE_OPTIONS: --max_old_space_size=6144
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'needs design preview')
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@v3
+
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install
+        env:
+          CI: true
+
+      - name: Build Gallery
+        run: ./node_modules/.bin/gulp build-gallery
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy preview to Netlify
+        id: deploy
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --dir=gallery/dist --alias "deploy-preview-${{ github.event.number }}"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}
+
+      - name: Generate summary
+        run: |
+          echo "${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}" >> "$GITHUB_STEP_SUMMARY"
