@@ -3,12 +3,12 @@ import { batteryStateColor } from "./battery_color";
 
 export const sensorColor = (
   stateObj: HassEntity,
-  compareState: string
+  state: string
 ): string | undefined => {
   const deviceClass = stateObj?.attributes.device_class;
 
   if (deviceClass === "battery") {
-    return batteryStateColor(compareState);
+    return batteryStateColor(state);
   }
 
   return undefined;

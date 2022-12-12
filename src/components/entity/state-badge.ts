@@ -14,7 +14,7 @@ import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateActive } from "../../common/entity/state_active";
-import { stateColor } from "../../common/entity/state_color";
+import { stateColorCss } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import type { HomeAssistant } from "../../types";
@@ -107,12 +107,13 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
-      } else if (stateActive(stateObj) && this._stateColor) {
-        const iconColor = stateColor(stateObj);
+      } else if (this._stateColor && stateActive(stateObj)) {
+        const color = stateColorCss(stateObj);
+        if (color) {
+          iconStyle.color = `rgb(${color})`;
+        }
         if (stateObj.attributes.rgb_color) {
           iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
-        } else if (iconColor) {
-          iconStyle.color = `rgb(var(--rgb-state-${iconColor}-color))`;
         }
         if (stateObj.attributes.brightness) {
           const brightness = stateObj.attributes.brightness;

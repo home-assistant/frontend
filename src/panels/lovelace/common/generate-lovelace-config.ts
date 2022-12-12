@@ -491,9 +491,15 @@ export const generateDefaultViewConfig = (
 
   const areaCards: LovelaceCardConfig[] = [];
 
-  for (const [areaId, areaEntities] of Object.entries(
+  const sortedAreas = Object.entries(
     splittedByAreaDevice.areasWithEntities
-  )) {
+  ).sort((a, b) => {
+    const areaA = areaEntries[a[0]];
+    const areaB = areaEntries[b[0]];
+    return stringCompare(areaA.name, areaB.name);
+  });
+
+  for (const [areaId, areaEntities] of sortedAreas) {
     const area = areaEntries[areaId];
     areaCards.push(
       ...computeCards(
@@ -506,13 +512,20 @@ export const generateDefaultViewConfig = (
     );
   }
 
-  areaCards.sort((a, b) => stringCompare(a.title || "", b.title || ""));
-
   const deviceCards: LovelaceCardConfig[] = [];
 
-  for (const [deviceId, deviceEntities] of Object.entries(
+  const sortedDevices = Object.entries(
     splittedByAreaDevice.devicesWithEntities
-  )) {
+  ).sort((a, b) => {
+    const deviceA = deviceEntries[a[0]];
+    const deviceB = deviceEntries[b[0]];
+    return stringCompare(
+      deviceA.name_by_user || deviceA.name || "",
+      deviceB.name_by_user || deviceB.name || ""
+    );
+  });
+
+  for (const [deviceId, deviceEntities] of sortedDevices) {
     const device = deviceEntries[deviceId];
     deviceCards.push(
       ...computeCards(
@@ -533,8 +546,6 @@ export const generateDefaultViewConfig = (
       )
     );
   }
-
-  deviceCards.sort((a, b) => stringCompare(a.title || "", b.title || ""));
 
   let energyCard: LovelaceCardConfig | undefined;
 

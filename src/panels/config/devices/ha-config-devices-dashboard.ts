@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import {
@@ -339,7 +340,9 @@ export class HaConfigDeviceDashboard extends LitElement {
             battery && computeStateDomain(battery) === "binary_sensor";
           return battery && (batteryIsBinary || !isNaN(battery.state as any))
             ? html`
-                ${batteryIsBinary ? "" : battery.state + " %"}
+                ${batteryIsBinary
+                  ? ""
+                  : battery.state + blankBeforePercent(this.hass.locale) + "%"}
                 <ha-battery-icon
                   .hass=${this.hass!}
                   .batteryStateObj=${battery}
