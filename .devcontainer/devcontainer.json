@@ -19,19 +19,24 @@
         "eamodio.gitlens"
       ],
       "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash",
         "files.eol": "\n",
         "editor.tabSize": 2,
         "editor.formatOnPaste": false,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
+        "editor.renderWhitespace": "boundary",
+        "editor.rulers": [80],
         "[typescript]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
         "[javascript]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
-        "files.trimTrailingWhitespace": true
+        "files.trimTrailingWhitespace": true,
+        "terminal.integrated.shell.linux": "/usr/bin/zsh",
+        "gitlens.showWelcomeOnInstall": false,
+        "gitlens.showWhatsNewAfterUpgrades": false,
+        "workbench.startupEditor": "none"
       }
     }
   }
