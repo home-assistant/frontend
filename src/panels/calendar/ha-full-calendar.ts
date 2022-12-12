@@ -559,7 +559,6 @@ export class HAFullCalendar extends LitElement {
           white-space: nowrap;
           width: max-content;
           min-width: 24px;
-          line-height: 140%;
         }
 
         .fc-daygrid-day-events {
