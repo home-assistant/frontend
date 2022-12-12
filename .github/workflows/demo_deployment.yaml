@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: Demo
-      url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL }}
+      url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v3
