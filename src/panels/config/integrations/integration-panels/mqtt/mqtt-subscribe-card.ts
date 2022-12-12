@@ -8,6 +8,8 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import { MQTTMessage, subscribeMQTTTopic } from "../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../types";
 import "@material/mwc-list/mwc-list-item";
+import { LocalStorage } from "../../../../../common/decorators/local-storage";
+import "../../../../../components/ha-textfield";
 
 const qosLevel = ["0", "1", "2"];
 
@@ -15,9 +17,11 @@ const qosLevel = ["0", "1", "2"];
 class MqttSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _topic = "";
+  @LocalStorage("panel-dev-mqtt-topic-subscribe", true, false)
+  private _topic = "";
 
-  @state() private _qos = "0";
+  @LocalStorage("panel-dev-mqtt-qos-subscribe", true, false)
+  private _qos = "0";
 
   @state() private _subscribed?: () => void;
 
@@ -44,14 +48,14 @@ class MqttSubscribeCard extends LitElement {
         header=${this.hass.localize("ui.panel.config.mqtt.description_listen")}
       >
         <form>
-          <paper-input
+          <ha-textfield
             .label=${this._subscribed
               ? this.hass.localize("ui.panel.config.mqtt.listening_to")
               : this.hass.localize("ui.panel.config.mqtt.subscribe_to")}
             .disabled=${this._subscribed !== undefined}
             .value=${this._topic}
-            @value-changed=${this._valueChanged}
-          ></paper-input>
+            @change=${this._handleTopic}
+          ></ha-textfield>
           <ha-select
             .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
             .disabled=${this._subscribed !== undefined}
@@ -97,8 +101,8 @@ class MqttSubscribeCard extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
-    this._topic = ev.detail.value;
+  private _handleTopic(ev: CustomEvent): void {
+    this._topic = (ev.target! as any).value;
   }
 
   private _handleQos(ev: CustomEvent): void {
