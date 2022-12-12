@@ -66,6 +66,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @state() private _calendars: Calendar[] = [];
 
+  @state() private _eventDisplay = "list-item";
+
   @state() private _narrow = false;
 
   @state() private _veryNarrow = false;
@@ -134,7 +136,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .hass=${this.hass}
           .views=${views}
           .initialView=${this._config.initial_view!}
-          .eventDisplay=${"list-item"}
+          .eventDisplay=${this._eventDisplay}
           .error=${this._error}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
@@ -164,6 +166,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
+    this._eventDisplay =
+      ev.detail.view === "dayGridMonth" ? "list-item" : "auto";
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
     this._fetchCalendarEvents();
