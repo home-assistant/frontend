@@ -135,13 +135,13 @@ documentContainer.innerHTML = `<custom-style>
 
       /* rgb state color */
       --rgb-state-default-color: var(--rgb-dark-primary-color, 68, 115, 158);
-      --rgb-state-inactive-color: var(--rgb-inactive-color);
+      --rgb-state-inactive-color: var(--rgb-grey-color);
       --rgb-state-unavailable-color: var(--rgb-disabled-color);
 
       /* rgb state domain colors */
       --rgb-state-alarm-armed-color: var(--rgb-green-color);
       --rgb-state-alarm-arming-color: var(--rgb-orange-color);
-      --rgb-state-alarm-disarmed-color: var(--rgb-inactive-color);
+      --rgb-state-alarm-disarmed-color: var(--rgb-grey-color);
       --rgb-state-alarm-pending-color: var(--rgb-orange-color);
       --rgb-state-alarm-triggered-color: var(--rgb-red-color);
       --rgb-state-alert-color: var(--rgb-red-color);
@@ -169,7 +169,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-lock-unlocked-color: var(--rgb-red-color);
       --rgb-state-media-player-color: var(--rgb-indigo-color);
       --rgb-state-person-home-color: var(--rgb-green-color);
-      --rgb-state-person-not-home-color: var(--rgb-inactive-color);
+      --rgb-state-person-not-home-color: var(--rgb-grey-color);
       --rgb-state-person-zone-color: var(--rgb-blue-color);
       --rgb-state-remote-color: var(--rgb-amber-color);
       --rgb-state-script-color: var(--rgb-amber-color);

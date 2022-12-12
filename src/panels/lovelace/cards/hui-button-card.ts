@@ -156,8 +156,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       ? this._config.name || (stateObj ? computeStateName(stateObj) : "")
       : "";
 
-    const colored = stateObj && this.getStateColor(stateObj, this._config);
-    const active = stateObj && colored && stateActive(stateObj);
+    const active = stateObj && stateActive(stateObj);
+    const colored =
+      stateObj && active && this.getStateColor(stateObj, this._config);
 
     return html`
       <ha-card
@@ -316,7 +317,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     return "";
   }
 
-  private _computeColor(stateObj: HassEntity | LightEntity): string {
+  private _computeColor(
+    stateObj: HassEntity | LightEntity
+  ): string | undefined {
     if (stateObj.attributes.rgb_color && stateActive(stateObj)) {
       return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
     }
@@ -324,7 +327,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     if (iconColor) {
       return `rgb(${iconColor})`;
     }
-    return "";
+    return undefined;
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
