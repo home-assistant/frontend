@@ -52,7 +52,9 @@ import {
   mdiScriptText,
   mdiSineWave,
   mdiSpeedometer,
+  mdiSunWireless,
   mdiThermometer,
+  mdiThermometerLines,
   mdiThermostat,
   mdiTimerOutline,
   mdiVideo,
@@ -126,6 +128,7 @@ export const FIXED_DOMAIN_ICONS = {
 export const FIXED_DEVICE_CLASS_ICONS = {
   apparent_power: mdiFlash,
   aqi: mdiAirFilter,
+  atmospheric_pressure: mdiThermometerLines,
   // battery: mdiBattery, => not included by design since `sensorIcon()` will dynamically determine the icon
   carbon_dioxide: mdiMoleculeCo2,
   carbon_monoxide: mdiMoleculeCo,
@@ -138,6 +141,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   gas: mdiMeterGas,
   humidity: mdiWaterPercent,
   illuminance: mdiBrightness5,
+  irradiance: mdiSunWireless,
   moisture: mdiWaterPercent,
   monetary: mdiCash,
   nitrogen_dioxide: mdiMolecule,

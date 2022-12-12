@@ -80,15 +80,17 @@ class HuiCoverTiltTileFeature
             `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT)
-          ? html`<ha-tile-button
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_control.cover.stop_cover"
-              )}
-              @click=${this._onStopTap}
-              .disabled=${!canStopTilt(this.stateObj)}
-            >
-              <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-            </ha-tile-button> `
+          ? html`
+              <ha-tile-button
+                .label=${this.hass.localize(
+                  "ui.dialogs.more_info_control.cover.stop_cover"
+                )}
+                @click=${this._onStopTap}
+                .disabled=${!canStopTilt(this.stateObj)}
+              >
+                <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
+              </ha-tile-button>
+            `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT)
           ? html`

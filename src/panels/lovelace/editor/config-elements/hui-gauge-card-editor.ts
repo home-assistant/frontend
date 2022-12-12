@@ -93,7 +93,7 @@ export class HuiGaugeCardEditor
         ...(showSeverity
           ? ([
               {
-                name: "",
+                name: "severity",
                 type: "grid",
                 schema: [
                   {
