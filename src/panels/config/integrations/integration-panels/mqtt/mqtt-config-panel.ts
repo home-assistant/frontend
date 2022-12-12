@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { LocalStorage } from "../../../../../common/decorators/local-storage";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import { getConfigEntries } from "../../../../../data/config_entries";
@@ -18,26 +19,17 @@ class HaPanelDevMqtt extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @state() private topic = "";
+  @state()
+  @LocalStorage("panel-dev-mqtt-topic-ls", true, false)
+  private topic = "";
 
-  @state() private payload = "";
+  @state()
+  @LocalStorage("panel-dev-mqtt-payload-ls", true, false)
+  private payload = "";
 
-  @state() private qos = "0";
-
-  private inited = false;
-
-  protected firstUpdated() {
-    if (localStorage && localStorage["panel-dev-mqtt-topic"]) {
-      this.topic = localStorage["panel-dev-mqtt-topic"];
-    }
-    if (localStorage && localStorage["panel-dev-mqtt-payload"]) {
-      this.payload = localStorage["panel-dev-mqtt-payload"];
-    }
-    if (localStorage && localStorage["panel-dev-mqtt-qos"]) {
-      this.qos = localStorage["panel-dev-mqtt-qos"];
-    }
-    this.inited = true;
-  }
+  @state()
+  @LocalStorage("panel-dev-mqtt-qos-ls", true, false)
+  private qos = "0";
 
   protected render(): TemplateResult {
     return html`
@@ -99,23 +91,16 @@ class HaPanelDevMqtt extends LitElement {
 
   private _handleTopic(ev: CustomEvent) {
     this.topic = (ev.target! as any).value;
-    if (localStorage && this.inited) {
-      localStorage["panel-dev-mqtt-topic"] = this.topic;
-    }
   }
 
   private _handlePayload(ev: CustomEvent) {
     this.payload = ev.detail.value;
-    if (localStorage && this.inited) {
-      localStorage["panel-dev-mqtt-payload"] = this.payload;
-    }
   }
 
   private _handleQos(ev: CustomEvent) {
     const newValue = (ev.target! as any).value;
-    if (newValue >= 0 && newValue !== this.qos && localStorage && this.inited) {
+    if (newValue >= 0 && newValue !== this.qos) {
       this.qos = newValue;
-      localStorage["panel-dev-mqtt-qos"] = this.qos;
     }
   }
 
