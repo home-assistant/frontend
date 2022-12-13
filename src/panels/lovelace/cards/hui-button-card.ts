@@ -21,6 +21,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { CLIMATE_HVAC_ACTION_COLORS } from "../../../common/entity/color/climate_color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -316,11 +317,16 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     return "";
   }
 
-  private _computeColor(
-    stateObj: HassEntity | LightEntity
-  ): string | undefined {
+  private _computeColor(stateObj: HassEntity): string | undefined {
     if (stateObj.attributes.rgb_color) {
       return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+    }
+    if (stateObj.attributes.hvac_action) {
+      const hvacAction = stateObj.attributes.hvac_action;
+      if (["heating", "cooling", "drying"].includes(hvacAction)) {
+        return `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+      }
+      return undefined;
     }
     const iconColor = stateColorCss(stateObj);
     if (iconColor) {
