@@ -149,6 +149,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               data-state=${stateObj.state}
               style=${styleMap({
                 color: colored ? this._computeColor(stateObj) : undefined,
+                filter: colored ? this._computeBrightness(stateObj) : undefined,
                 height: this._config.icon_height
                   ? this._config.icon_height
                   : "",
@@ -196,11 +197,22 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   private _computeColor(
     stateObj: HassEntity | LightEntity
   ): string | undefined {
+    if (stateObj.attributes.rgb_color && stateActive(stateObj)) {
+      return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+    }
     const iconColor = stateColorCss(stateObj);
     if (iconColor) {
       return `rgb(${iconColor})`;
     }
     return undefined;
+  }
+
+  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
+    if (stateObj.attributes.brightness && stateActive(stateObj)) {
+      const brightness = stateObj.attributes.brightness;
+      return `brightness(${(brightness + 245) / 5}%)`;
+    }
+    return "";
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
