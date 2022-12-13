@@ -309,7 +309,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _computeBrightness(stateObj: HassEntity | LightEntity): string {
-    if (!stateObj.attributes.brightness && stateActive(stateObj)) {
+    if (stateObj.attributes.brightness) {
       const brightness = stateObj.attributes.brightness;
       return `brightness(${(brightness + 245) / 5}%)`;
     }
@@ -319,7 +319,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   private _computeColor(
     stateObj: HassEntity | LightEntity
   ): string | undefined {
-    if (stateObj.attributes.rgb_color && stateActive(stateObj)) {
+    if (stateObj.attributes.rgb_color) {
       return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
     }
     const iconColor = stateColorCss(stateObj);
