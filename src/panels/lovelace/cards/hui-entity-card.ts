@@ -194,9 +194,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _computeColor(
-    stateObj: HassEntity | LightEntity
-  ): string | undefined {
+  private _computeColor(stateObj: HassEntity): string | undefined {
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
       if (["heating", "cooling", "drying"].includes(hvacAction)) {
