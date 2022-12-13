@@ -215,7 +215,9 @@ export class HaConfigDevicePage extends LitElement {
 
   private _brandsDomain = memoizeOne(
     (manufacturer: string, domains: string[]): string =>
-      findBestDeviceDomainMatch(manufacturer, domains)
+      domains.length > 1
+        ? findBestDeviceDomainMatch(manufacturer, domains)
+        : domains[0]
   );
 
   public willUpdate(changedProps) {

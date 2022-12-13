@@ -252,11 +252,14 @@ export class HaConfigDeviceDashboard extends LitElement {
                   alt=""
                   referrerpolicy="no-referrer"
                   src=${brandsUrl({
-                    domain: findBestDeviceDomainMatch(
-                      device.manufacturer,
-                      device.domains,
-                      device.integration.split(",")
-                    ),
+                    domain:
+                      device.domains.length > 1
+                        ? findBestDeviceDomainMatch(
+                            device.manufacturer,
+                            device.domains,
+                            device.integration.split(",")
+                          )
+                        : device.domains[0],
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
