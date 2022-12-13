@@ -193,8 +193,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                 .icon=${this._config.icon}
                 .state=${stateObj}
                 style=${styleMap({
-                  color: colored ? this._computeColor(stateObj) : "",
-                  filter: colored ? this._computeBrightness(stateObj) : "",
+                  color: colored ? this._computeColor(stateObj) : undefined,
+                  filter: colored
+                    ? this._computeBrightness(stateObj)
+                    : undefined,
                   height: this._config.icon_height
                     ? this._config.icon_height
                     : "",
