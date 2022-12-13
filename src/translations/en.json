@@ -4119,7 +4119,7 @@
               "description": "The Light card allows you to change the brightness of the light."
             },
             "generic": {
-              "alt_text": "Alternate Text",
+              "alt_text": "Alternative Text",
               "aspect_ratio": "Aspect Ratio",
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
