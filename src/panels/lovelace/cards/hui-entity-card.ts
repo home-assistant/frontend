@@ -12,6 +12,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { CLIMATE_HVAC_ACTION_COLORS } from "../../../common/entity/color/climate_color";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -28,7 +29,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { formatAttributeValue } from "../../../data/entity_attributes";
-import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
@@ -193,9 +193,14 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _computeColor(
-    stateObj: HassEntity | LightEntity
-  ): string | undefined {
+  private _computeColor(stateObj: HassEntity): string | undefined {
+    if (stateObj.attributes.hvac_action) {
+      const hvacAction = stateObj.attributes.hvac_action;
+      if (["heating", "cooling", "drying"].includes(hvacAction)) {
+        return `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+      }
+      return undefined;
+    }
     const iconColor = stateColorCss(stateObj);
     if (iconColor) {
       return `rgb(${iconColor})`;
