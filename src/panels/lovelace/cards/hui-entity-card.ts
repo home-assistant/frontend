@@ -29,6 +29,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { formatAttributeValue } from "../../../data/entity_attributes";
+import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
@@ -149,6 +150,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               data-state=${stateObj.state}
               style=${styleMap({
                 color: colored ? this._computeColor(stateObj) : undefined,
+                filter: colored ? this._computeBrightness(stateObj) : undefined,
                 height: this._config.icon_height
                   ? this._config.icon_height
                   : "",
@@ -201,11 +203,22 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       }
       return undefined;
     }
+    if (stateObj.attributes.rgb_color && stateActive(stateObj)) {
+      return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+    }
     const iconColor = stateColorCss(stateObj);
     if (iconColor) {
       return `rgb(${iconColor})`;
     }
     return undefined;
+  }
+
+  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
+    if (stateObj.attributes.brightness && stateActive(stateObj)) {
+      const brightness = stateObj.attributes.brightness;
+      return `brightness(${(brightness + 245) / 5}%)`;
+    }
+    return "";
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
