@@ -304,19 +304,13 @@ export const generateViewConfig = (
   path: string,
   title: string | undefined,
   icon: string | undefined,
-  entities: HassEntities,
-  groupOrders: { [entityId: string]: number }
+  entities: HassEntities
 ): LovelaceViewConfig => {
-  const splitted = splitByGroups(entities);
-  splitted.groups.sort(
-    (gr1, gr2) => groupOrders[gr1.entity_id] - groupOrders[gr2.entity_id]
-  );
-
   const ungroupedEntitites: { [domain: string]: string[] } = {};
 
   // Organize ungrouped entities in ungrouped things
-  for (const entityId of Object.keys(splitted.ungrouped)) {
-    const state = splitted.ungrouped[entityId];
+  for (const entityId of Object.keys(entities)) {
+    const state = entities[entityId];
     const domain = computeStateDomain(state);
 
     if (!(domain in ungroupedEntitites)) {
@@ -382,15 +376,6 @@ export const generateViewConfig = (
     }
 
     delete ungroupedEntitites.person;
-  }
-
-  for (const groupEntity of splitted.groups) {
-    cards.push(
-      ...computeCards(entities, groupEntity.attributes.entity_id, {
-        title: computeStateName(groupEntity),
-        show_header_toggle: groupEntity.attributes.control !== "hidden",
-      })
-    );
   }
 
   // Group helper entities in a single card
@@ -480,13 +465,28 @@ export const generateDefaultViewConfig = (
     states
   );
 
+  const splittedByGroups = splitByGroups(splittedByAreaDevice.otherEntities);
+  splittedByGroups.groups.sort(
+    (gr1, gr2) => groupOrders[gr1.entity_id] - groupOrders[gr2.entity_id]
+  );
+
+  const groupCards: LovelaceCardConfig[] = [];
+
+  for (const groupEntity of splittedByGroups.groups) {
+    groupCards.push(
+      ...computeCards(entities, groupEntity.attributes.entity_id, {
+        title: computeStateName(groupEntity),
+        show_header_toggle: groupEntity.attributes.control !== "hidden",
+      })
+    );
+  }
+
   const config = generateViewConfig(
     localize,
     path,
     title,
     icon,
-    splittedByAreaDevice.otherEntities,
-    groupOrders
+    splittedByGroups.ungrouped
   );
 
   const areaCards: LovelaceCardConfig[] = [];
@@ -568,9 +568,11 @@ export const generateDefaultViewConfig = (
 
   config.cards!.unshift(
     ...areaCards,
-    ...(energyCard ? [energyCard] : []),
-    ...deviceCards
+    ...groupCards,
+    ...(energyCard ? [energyCard] : [])
   );
+
+  config.cards!.push(...deviceCards);
 
   return config;
 };
