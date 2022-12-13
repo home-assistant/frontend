@@ -496,7 +496,7 @@ export const generateDefaultViewConfig = (
   ).sort((a, b) => {
     const areaA = areaEntries[a[0]];
     const areaB = areaEntries[b[0]];
-    return stringCompare(areaA.name, areaB.name);
+    return stringCompare(areaA?.name, areaB?.name);
   });
 
   for (const [areaId, areaEntities] of sortedAreas) {
