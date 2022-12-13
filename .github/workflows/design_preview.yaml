@@ -17,7 +17,9 @@ env:
 jobs:
   preview:
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'needs design preview')
+    # Skip running on forks since it won't have access to secrets
+    # Skip running PRs without 'needs design preview' label
+    if: github.repository == 'home-assistant/frontend' && contains(github.event.pull_request.labels.*.name, 'needs design preview')
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v3
