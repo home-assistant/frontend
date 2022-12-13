@@ -29,6 +29,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { formatAttributeValue } from "../../../data/entity_attributes";
+import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
