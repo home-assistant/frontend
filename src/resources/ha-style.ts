@@ -176,7 +176,6 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-sensor-battery-high-color: var(--rgb-green-color);
       --rgb-state-sensor-battery-low-color: var(--rgb-red-color);
       --rgb-state-sensor-battery-medium-color: var(--rgb-orange-color);
-      --rgb-state-sensor-battery-unknown-color: var(--rgb-off-color);
       --rgb-state-siren-color: var(--rgb-red-color);
       --rgb-state-sun-day-color: var(--rgb-amber-color);
       --rgb-state-sun-night-color: var(--rgb-deep-purple-color);
