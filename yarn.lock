@@ -9441,6 +9441,7 @@ fsevents@^1.2.7:
     sinon: ^11.0.0
     sortablejs: ^1.14.0
     source-map-url: ^0.4.0
+    string-similarity: 4.0.4
     superstruct: ^0.15.2
     systemjs: ^6.3.2
     tar: ^6.1.11
@@ -14596,6 +14597,13 @@ fsevents@^1.2.7:
   version: 0.3.1
   resolution: "string-argv@npm:0.3.1"
   checksum: efbd0289b599bee808ce80820dfe49c9635610715429c6b7cc50750f0437e3c2f697c81e5c390208c13b5d5d12d904a1546172a88579f6ee5cbaaaa4dc9ec5cf
+  languageName: node
+  linkType: hard
+
+"string-similarity@npm:4.0.4":
+  version: 4.0.4
+  resolution: "string-similarity@npm:4.0.4"
+  checksum: 797b41b24e1eb6b3b0ab896950b58c295a19a82933479c75f7b5279ffb63e0b456a8c8d10329c02f607ca1a50370e961e83d552aa468ff3b0fa15809abc9eff7
   languageName: node
   linkType: hard
 

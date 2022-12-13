@@ -38,6 +38,7 @@ import {
 import {
   computeDeviceName,
   DeviceRegistryEntry,
+  findBestDeviceDomainMatch,
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
@@ -210,6 +211,11 @@ export class HaConfigDevicePage extends LitElement {
   private _batteryChargingEntity = memoizeOne(
     (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
       findBatteryChargingEntity(this.hass, entities)
+  );
+
+  private _brandsDomain = memoizeOne(
+    (manufacturer: string, domains: string[]): string =>
+      findBestDeviceDomainMatch(manufacturer, domains)
   );
 
   public willUpdate(changedProps) {
@@ -611,15 +617,12 @@ export class HaConfigDevicePage extends LitElement {
         .narrow=${this.narrow}
         .header=${deviceName}
       >
-
-                <ha-icon-button
-                  slot="toolbar-icon"
-                  .path=${mdiPencil}
-                  @click=${this._showSettings}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.devices.edit_settings"
-                  )}
-                ></ha-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          .path=${mdiPencil}
+          @click=${this._showSettings}
+          .label=${this.hass.localize("ui.panel.config.devices.edit_settings")}
+        ></ha-icon-button>
         <div class="container">
           <div class="header fullwidth">
             ${
@@ -659,7 +662,12 @@ export class HaConfigDevicePage extends LitElement {
                       ? html`
                           <img
                             src=${brandsUrl({
-                              domain: integrations[0].domain,
+                              domain: device.manufacturer
+                                ? this._brandsDomain(
+                                    device.manufacturer,
+                                    Array.from(integrations, (i) => i.domain)
+                                  )
+                                : integrations[0].domain,
                               type: "logo",
                               darkOptimized: this.hass.themes?.darkMode,
                             })}

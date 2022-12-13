@@ -26,6 +26,7 @@ import {
   computeDeviceName,
   DeviceEntityLookup,
   DeviceRegistryEntry,
+  findBestDeviceDomainMatch,
 } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
@@ -46,6 +47,7 @@ interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
   area?: string;
   integration?: string;
+  domains?: string[];
   battery_entity?: [string | undefined, string | undefined];
 }
 
@@ -250,7 +252,11 @@ export class HaConfigDeviceDashboard extends LitElement {
                   alt=""
                   referrerpolicy="no-referrer"
                   src=${brandsUrl({
-                    domain: device.domains[0],
+                    domain: findBestDeviceDomainMatch(
+                      device.manufacturer,
+                      device.domains,
+                      device.integration.split(",")
+                    ),
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   })}

@@ -131,6 +131,7 @@
     "roboto-fontface": "^0.10.0",
     "rrule": "^2.7.1",
     "sortablejs": "^1.14.0",
+    "string-similarity": "4.0.4",
     "superstruct": "^0.15.2",
     "tinykeys": "^1.1.3",
     "tsparticles": "^1.34.0",

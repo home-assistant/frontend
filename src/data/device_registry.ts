@@ -1,5 +1,6 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
+import { findBestMatch } from "string-similarity";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
@@ -162,4 +163,25 @@ export const getDeviceIntegrationLookup = (
     deviceIntegrations[entity.device_id!].push(source.domain);
   }
   return deviceIntegrations;
+};
+
+export const findBestDeviceDomainMatch = (
+  manufacturer: string,
+  domains: string[],
+  integrations?: string[]
+): string => {
+  const { bestMatch: bestMatchDomain, bestMatchIndex: bestDomainIndex } =
+    findBestMatch(manufacturer, domains);
+  if (!integrations) {
+    return domains[bestDomainIndex];
+  }
+
+  const {
+    bestMatch: bestMatchIntegration,
+    bestMatchIndex: bestIntegrationIndex,
+  } = findBestMatch(manufacturer, integrations);
+
+  return bestMatchDomain.rating > bestMatchIntegration.rating
+    ? domains[bestDomainIndex]
+    : domains[bestIntegrationIndex];
 };
