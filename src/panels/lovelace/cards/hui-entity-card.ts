@@ -12,6 +12,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { CLIMATE_HVAC_ACTION_COLORS } from "../../../common/entity/color/climate_color";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -149,6 +150,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               data-state=${stateObj.state}
               style=${styleMap({
                 color: colored ? this._computeColor(stateObj) : undefined,
+                filter: colored ? this._computeBrightness(stateObj) : undefined,
                 height: this._config.icon_height
                   ? this._config.icon_height
                   : "",
@@ -193,14 +195,30 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _computeColor(
-    stateObj: HassEntity | LightEntity
-  ): string | undefined {
+  private _computeColor(stateObj: HassEntity): string | undefined {
+    if (stateObj.attributes.hvac_action) {
+      const hvacAction = stateObj.attributes.hvac_action;
+      if (["heating", "cooling", "drying"].includes(hvacAction)) {
+        return `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+      }
+      return undefined;
+    }
+    if (stateObj.attributes.rgb_color && stateActive(stateObj)) {
+      return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+    }
     const iconColor = stateColorCss(stateObj);
     if (iconColor) {
       return `rgb(${iconColor})`;
     }
     return undefined;
+  }
+
+  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
+    if (stateObj.attributes.brightness && stateActive(stateObj)) {
+      const brightness = stateObj.attributes.brightness;
+      return `brightness(${(brightness + 245) / 5}%)`;
+    }
+    return "";
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {

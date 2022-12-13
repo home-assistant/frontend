@@ -11,6 +11,7 @@ import {
 import { property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { CLIMATE_HVAC_ACTION_COLORS } from "../../common/entity/color/climate_color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateActive } from "../../common/entity/state_active";
@@ -34,7 +35,7 @@ export class StateBadge extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
-  @state() private _iconStyle: { [name: string]: string } = {};
+  @state() private _iconStyle: { [name: string]: string | undefined } = {};
 
   private get _stateColor() {
     const domain = this.stateObj
@@ -126,6 +127,14 @@ export class StateBadge extends LitElement {
           }
           // lowest brightness will be around 50% (that's pretty dark)
           iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+        }
+        if (stateObj.attributes.hvac_action) {
+          const hvacAction = stateObj.attributes.hvac_action;
+          if (["heating", "cooling", "drying"].includes(hvacAction)) {
+            iconStyle.color = `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+          } else {
+            delete iconStyle.color;
+          }
         }
       }
     } else if (this.overrideImage) {
