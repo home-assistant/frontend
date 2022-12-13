@@ -156,7 +156,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-climate-fan-only-color: var(--rgb-cyan-color);
       --rgb-state-climate-heat-color: var(--rgb-deep-orange-color);
       --rgb-state-climate-heat-cool-color: var(--rgb-amber-color);
-      --rgb-state-climate-idle-color: var(--rgb-off-color);
+      --rgb-state-climate-idle-color: var(--rgb-grey-color);
       --rgb-state-cover-color: var(--rgb-purple-color);
       --rgb-state-fan-color: var(--rgb-cyan-color);
       --rgb-state-group-color: var(--rgb-amber-color);
