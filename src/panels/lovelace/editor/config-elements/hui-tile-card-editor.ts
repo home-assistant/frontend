@@ -40,6 +40,7 @@ const cardConfigStruct = assign(
     icon: optional(string()),
     color: optional(string()),
     show_entity_picture: optional(boolean()),
+    vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     icon_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
@@ -99,6 +100,12 @@ export class HuiTileCardEditor
                 },
                 {
                   name: "show_entity_picture",
+                  selector: {
+                    boolean: {},
+                  },
+                },
+                {
+                  name: "vertical",
                   selector: {
                     boolean: {},
                   },
@@ -258,6 +265,7 @@ export class HuiTileCardEditor
       case "color":
       case "icon_tap_action":
       case "show_entity_picture":
+      case "vertical":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );

@@ -4295,6 +4295,7 @@
               "appearance": "Appearance",
               "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
+              "vertical": "Vertical",
               "features": {
                 "name": "Features",
                 "not_compatible": "Not compatible",
