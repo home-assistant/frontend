@@ -124,7 +124,7 @@ const OVERRIDE_SENSOR_UNITS = {
   temperature: ["°C", "°F", "K"],
   volume: ["fl. oz.", "ft³", "gal", "L", "mL", "m³"],
   water: ["ft³", "gal", "L", "m³"],
-  weight: ["g", "kg", "lb", "mg", "oz", "µg"],
+  weight: ["g", "kg", "lb", "mg", "oz", "st", "µg"],
   wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
 };
 
