@@ -8,6 +8,7 @@ import "../components/entity/state-badge";
 import { UNAVAILABLE } from "../data/entity";
 import { SelectEntity, setSelectOption } from "../data/select";
 import type { HomeAssistant } from "../types";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 
 @customElement("state-card-select")
 class StateCardSelect extends LitElement {
@@ -31,12 +32,13 @@ class StateCardSelect extends LitElement {
           (option) =>
             html`
               <mwc-list-item .value=${option}>
-                ${(this.stateObj.attributes.device_class &&
-                  this.hass.localize(
-                    `component.select.state.${this.stateObj.attributes.device_class}.${option}`
-                  )) ||
-                this.hass.localize(`component.select.state._.${option}`) ||
-                option}
+                ${computeStateDisplay(
+                  this.hass.localize,
+                  this.stateObj,
+                  this.hass.locale,
+                  this.hass.entities,
+                  option
+                )}
               </mwc-list-item>
             `
         )}
