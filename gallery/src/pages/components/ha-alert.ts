@@ -99,7 +99,7 @@ const alerts: {
     type: "warning",
     iconSlot: html`<span slot="icon" class="image"
       ><img
-        alt=""
+        alt="Home Assistant logo"
         src="https://www.home-assistant.io/images/home-assistant-logo.svg"
     /></span>`,
   },
