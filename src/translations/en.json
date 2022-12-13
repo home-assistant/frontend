@@ -1374,7 +1374,7 @@
           "confirm_remove_title": "Remove tag?",
           "confirm_remove": "Are you sure you want to remove tag {tag}?",
           "automation_title": "Tag {name} is scanned",
-          "qr_code_image": "QR code image for tag: {name}",
+          "qr_code_image": "QR code for tag {name}",
           "headers": {
             "icon": "Icon",
             "name": "Name",
