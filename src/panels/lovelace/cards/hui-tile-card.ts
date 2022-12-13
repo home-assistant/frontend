@@ -9,6 +9,7 @@ import { hsv2rgb, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
@@ -128,9 +129,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   private _computeStateColor = memoize((entity: HassEntity, color?: string) => {
-    // Use custom color
+    // Use custom color if active
     if (color) {
-      return computeRgbColor(color);
+      return stateActive(entity) ? computeRgbColor(color) : undefined;
     }
 
     // Use default color for person/device_tracker because color is on the badge
@@ -363,7 +364,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --tile-color: var(--rgb-state-default-color);
+        --tile-color: var(--rgb-state-inactive-color);
         --tile-tap-padding: 6px;
         -webkit-tap-highlight-color: transparent;
       }
