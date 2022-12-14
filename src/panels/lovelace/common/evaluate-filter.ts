@@ -10,10 +10,10 @@ export const evaluateFilter = (stateObj: HassEntity, filter: any): boolean => {
   if (operator === "==" || operator === "!=") {
     const valueIsNumeric =
       typeof value === "number" ||
-      (value.trim() && typeof value === "string" && !isNaN(Number(value)));
+      (typeof value === "string" && value.trim() && !isNaN(Number(value)));
     const stateIsNumeric =
       typeof state === "number" ||
-      (state.trim() && typeof state === "string" && !isNaN(Number(state)));
+      (typeof state === "string" && state.trim() && !isNaN(Number(state)));
     if (valueIsNumeric && stateIsNumeric) {
       value = Number(value);
       state = Number(state);
