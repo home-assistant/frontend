@@ -69,6 +69,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       this._config.tap_action && this._config.tap_action.action !== "none"
     );
 
+    const hasSecondary = this._config.secondary_info;
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
 
     return html`
@@ -94,6 +95,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       <div
         class="info ${classMap({
           pointer,
+          "text-content": !hasSecondary,
         })}"
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
@@ -102,6 +104,31 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
       >
         ${this._config.name || computeStateName(stateObj)}
+        ${hasSecondary
+          ? html`
+              <div class="secondary">
+                ${this._config.secondary_info === "entity-id"
+                  ? stateObj.entity_id
+                  : this._config.secondary_info === "last-changed"
+                  ? html`
+                      <ha-relative-time
+                        .hass=${this.hass}
+                        .datetime=${stateObj.last_changed}
+                        capitalize
+                      ></ha-relative-time>
+                    `
+                  : this._config.secondary_info === "last-updated"
+                  ? html`
+                      <ha-relative-time
+                        .hass=${this.hass}
+                        .datetime=${stateObj.last_updated}
+                        capitalize
+                      ></ha-relative-time>
+                    `
+                  : ""}
+              </div>
+            `
+          : ""}
       </div>
       <div
         class="attributes ${classMap({
