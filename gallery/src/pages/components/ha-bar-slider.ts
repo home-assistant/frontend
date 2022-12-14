@@ -142,7 +142,8 @@ export class DemoHaBarSlider extends LitElement {
       }
       .custom {
         --slider-bar-color: #ffcf4c;
-        --slider-bar-background: #ffcf4c64;
+        --slider-bar-background: #ffcf4c;
+        --slider-bar-background-opacity: 0.2;
         --slider-bar-thickness: 100px;
         --slider-bar-border-radius: 24px;
       }

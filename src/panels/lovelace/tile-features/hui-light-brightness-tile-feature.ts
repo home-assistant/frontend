@@ -73,8 +73,9 @@ class HuiLightBrightnessTileFeature
   static get styles() {
     return css`
       ha-tile-slider {
-        --tile-slider-bar-color: rgb(var(--tile-color));
-        --tile-slider-bar-background: rgba(var(--tile-color), 0.2);
+        --tile-slider-color: rgb(var(--tile-color));
+        --tile-slider-background: rgb(var(--tile-color));
+        --tile-slider-background-opacity: 0.2;
       }
       .container {
         padding: 0 12px 12px 12px;

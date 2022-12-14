@@ -243,6 +243,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               ></ha-tile-badge>
             </div>
             <ha-tile-info
+              class="info"
               .primary=${entityId}
               secondary=${this.hass.localize("ui.card.tile.not_found")}
             ></ha-tile-info>
@@ -311,6 +312,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               : null}
           </div>
           <ha-tile-info
+            class="info"
             .primary=${name}
             .secondary=${stateDisplay}
             role="button"
@@ -394,8 +396,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         transition: transform 180ms ease-in-out;
       }
       .icon-container .icon {
-        --icon-color: rgb(var(--tile-color));
-        --shape-color: rgba(var(--tile-color), 0.2);
+        --tile-icon-color: rgb(var(--tile-color));
       }
       .icon-container .badge {
         position: absolute;
@@ -406,16 +407,28 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       .icon-container[role="button"]:active {
         transform: scale(1.2);
       }
-      ha-tile-info {
+      .info {
+        position: relative;
         padding: var(--tile-tap-padding);
         flex: 1;
         min-width: 0;
         min-height: 40px;
-        border-radius: calc(var(--ha-card-border-radius, 10px) - 2px);
         transition: background-color 180ms ease-in-out;
       }
-      ha-tile-info:focus-visible {
-        background-color: rgba(var(--tile-color), 0.1);
+      .info::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        border-radius: calc(var(--ha-card-border-radius, 10px) - 2px);
+        background-color: transparent;
+        opacity: 0.1;
+        transition: background-color ease-in-out 180ms;
+      }
+      .info:focus-visible::before {
+        background-color: rgb(var(--tile-color));
       }
     `;
   }
