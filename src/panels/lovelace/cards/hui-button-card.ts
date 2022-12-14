@@ -185,7 +185,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           ? html`
               <ha-state-icon
                 tabindex="-1"
-                ?data-active=${active}
                 data-domain=${ifDefined(
                   stateObj ? computeStateDomain(stateObj) : undefined
                 )}
