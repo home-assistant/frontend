@@ -39,12 +39,14 @@ type TruncatedKey = {
   [T in TruncatedDomain]: `${T}.${typeof FIXED_DOMAIN_STATES[T][number]}`;
 }[TruncatedDomain];
 
-const isTruncatedKey = (key: `${string}.${string}`): key is TruncatedKey => {
-  const [domainKey, stateKey] = key.split(".", 2);
-  return (
+const getTruncatedKey = (domainKey: string, stateKey: string) => {
+  if (
     arrayLiteralIncludes(TRUNCATED_DOMAINS)(domainKey) &&
     arrayLiteralIncludes(FIXED_DOMAIN_STATES[domainKey])(stateKey)
-  );
+  ) {
+    return `${domainKey}.${stateKey}` as TruncatedKey;
+  }
+  return null;
 };
 
 @customElement("ha-state-label-badge")
@@ -217,8 +219,8 @@ export class HaStateLabelBadge extends LitElement {
     if (isUnavailableState(entityState.state)) {
       return this.hass!.localize(`state_badge.default.${entityState.state}`);
     }
-    const domainStateKey = `${domain}.${entityState.state}` as const;
-    if (isTruncatedKey(domainStateKey)) {
+    const domainStateKey = getTruncatedKey(domain, entityState.state);
+    if (domainStateKey) {
       return this.hass!.localize(`state_badge.${domainStateKey}`);
     }
     if (domain === "timer") {
