@@ -291,7 +291,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               const p = {} as HaMapPathPoint;
               p.point = [latitude, longitude] as LatLngTuple;
               const t = new Date(entityState.last_updated);
-              if (config.hours_to_show && config.hours_to_show > 144) {
+              if (config.hours_to_show! > 144) {
                 // if showing > 6 days in the history trail, show the full
                 // date and time
                 p.tooltip = formatDateTime(t, this.hass.locale);
