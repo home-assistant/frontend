@@ -17,7 +17,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/search-input";
 import "../../../../components/ha-circular-progress";
-import { UNAVAILABLE_STATES } from "../../../../data/entity";
+import { isUnavailableState } from "../../../../data/entity";
 import type {
   LovelaceCardConfig,
   LovelaceConfig,
@@ -163,12 +163,12 @@ export class HuiCardPicker extends LitElement {
     this._usedEntities = [...usedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !UNAVAILABLE_STATES.includes(this.hass!.states[eid].state)
+        !isUnavailableState(this.hass!.states[eid].state)
     );
     this._unusedEntities = [...unusedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !UNAVAILABLE_STATES.includes(this.hass!.states[eid].state)
+        !isUnavailableState(this.hass!.states[eid].state)
     );
 
     this._loadCards();

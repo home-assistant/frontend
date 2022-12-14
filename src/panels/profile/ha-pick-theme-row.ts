@@ -194,6 +194,10 @@ export class HaPickThemeRow extends LitElement {
 
   private _handleThemeSelection(ev) {
     const theme = ev.target.value;
+    if (theme === this.hass.selectedTheme?.theme) {
+      return;
+    }
+
     if (theme === "Backend-selected") {
       if (this.hass.selectedTheme?.theme) {
         fireEvent(this, "settheme", {

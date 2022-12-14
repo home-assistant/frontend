@@ -8,7 +8,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { canRun, ScriptEntity } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -65,7 +65,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.state === "off" || stateObj.attributes.max
           ? html`<mwc-button
               @click=${this._runScript}
-              .disabled=${UNAVAILABLE_STATES.includes(stateObj.state) ||
+              .disabled=${isUnavailableState(stateObj.state) ||
               !canRun(stateObj)}
             >
               ${this._config.action_name ||

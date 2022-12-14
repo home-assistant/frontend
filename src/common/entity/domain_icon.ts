@@ -180,6 +180,9 @@ export const domainIconWithoutDefault = (
           }
       }
 
+    case "person":
+      return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
+
     case "switch":
       switch (stateObj?.attributes.device_class) {
         case "outlet":

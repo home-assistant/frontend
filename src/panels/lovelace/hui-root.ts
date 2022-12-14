@@ -174,9 +174,6 @@ class HUIRoot extends LitElement {
                       : html`
                           <mwc-list-item
                             graphic="icon"
-                            aria-label=${this.hass!.localize(
-                              "ui.panel.lovelace.unused_entities.title"
-                            )}
                             @request-selected=${this._handleUnusedEntities}
                           >
                             <ha-svg-icon
@@ -324,17 +321,13 @@ class HUIRoot extends LitElement {
                           ${this.narrow
                             ? html`
                                 <mwc-list-item
-                                  .label=${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.search"
-                                  )}
                                   graphic="icon"
                                   @request-selected=${this._showQuickBar}
                                 >
-                                  <span
-                                    >${this.hass!.localize(
-                                      "ui.panel.lovelace.menu.search"
-                                    )}</span
-                                  >
+                                  ${this.hass!.localize(
+                                    "ui.panel.lovelace.menu.search"
+                                  )}
+
                                   <ha-svg-icon
                                     slot="graphic"
                                     .path=${mdiMagnify}
@@ -346,18 +339,14 @@ class HUIRoot extends LitElement {
                           this._conversation(this.hass.config.components)
                             ? html`
                                 <mwc-list-item
-                                  .label=${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.start_conversation"
-                                  )}
                                   graphic="icon"
                                   @request-selected=${this
                                     ._showVoiceCommandDialog}
                                 >
-                                  <span
-                                    >${this.hass!.localize(
-                                      "ui.panel.lovelace.menu.start_conversation"
-                                    )}</span
-                                  >
+                                  ${this.hass!.localize(
+                                    "ui.panel.lovelace.menu.start_conversation"
+                                  )}
+
                                   <ha-svg-icon
                                     slot="graphic"
                                     .path=${mdiMicrophone}
@@ -368,35 +357,25 @@ class HUIRoot extends LitElement {
                           ${this._yamlMode
                             ? html`
                                 <mwc-list-item
-                                  aria-label=${this.hass!.localize(
-                                    "ui.common.refresh"
-                                  )}
                                   graphic="icon"
                                   @request-selected=${this._handleRefresh}
                                 >
-                                  <span
-                                    >${this.hass!.localize(
-                                      "ui.common.refresh"
-                                    )}</span
-                                  >
+                                  ${this.hass!.localize("ui.common.refresh")}
+
                                   <ha-svg-icon
                                     slot="graphic"
                                     .path=${mdiRefresh}
                                   ></ha-svg-icon>
                                 </mwc-list-item>
                                 <mwc-list-item
-                                  aria-label=${this.hass!.localize(
-                                    "ui.panel.lovelace.unused_entities.title"
-                                  )}
                                   graphic="icon"
                                   @request-selected=${this
                                     ._handleUnusedEntities}
                                 >
-                                  <span
-                                    >${this.hass!.localize(
-                                      "ui.panel.lovelace.unused_entities.title"
-                                    )}</span
-                                  >
+                                  ${this.hass!.localize(
+                                    "ui.panel.lovelace.unused_entities.title"
+                                  )}
+
                                   <ha-svg-icon
                                     slot="graphic"
                                     .path=${mdiShape}
@@ -411,9 +390,6 @@ class HUIRoot extends LitElement {
                             ? html`
                                 <mwc-list-item
                                   graphic="icon"
-                                  aria-label=${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.reload_resources"
-                                  )}
                                   @request-selected=${this
                                     ._handleReloadResources}
                                 >
@@ -432,9 +408,6 @@ class HUIRoot extends LitElement {
                             ? html`
                                 <mwc-list-item
                                   graphic="icon"
-                                  aria-label=${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.configure_ui"
-                                  )}
                                   @request-selected=${this
                                     ._handleEnableEditMode}
                                 >
@@ -459,12 +432,7 @@ class HUIRoot extends LitElement {
                                   class="menu-link"
                                   target="_blank"
                                 >
-                                  <mwc-list-item
-                                    graphic="icon"
-                                    aria-label=${this.hass!.localize(
-                                      "ui.panel.lovelace.menu.help"
-                                    )}
-                                  >
+                                  <mwc-list-item graphic="icon">
                                     ${this.hass!.localize(
                                       "ui.panel.lovelace.menu.help"
                                     )}

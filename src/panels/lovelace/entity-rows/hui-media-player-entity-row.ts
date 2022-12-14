@@ -27,7 +27,7 @@ import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-slider";
-import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
   computeMediaDescription,
   ControlButton,
@@ -203,7 +203,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         <div class="controls">
           ${supportsFeature(stateObj, SUPPORT_TURN_ON) &&
           entityState === "off" &&
-          !UNAVAILABLE_STATES.includes(entityState)
+          !isUnavailableState(entityState)
             ? html`
                 <ha-icon-button
                   .path=${mdiPower}
@@ -217,7 +217,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             : ""}
           ${supportsFeature(stateObj, SUPPORT_TURN_OFF) &&
           entityState !== "off" &&
-          !UNAVAILABLE_STATES.includes(entityState)
+          !isUnavailableState(entityState)
             ? html`
                 <ha-icon-button
                   .path=${mdiPower}

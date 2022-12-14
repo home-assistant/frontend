@@ -12,6 +12,9 @@ import {
 import { setCustomPanelProperties } from "../../util/custom-panel/set-custom-panel-properties";
 
 declare global {
+  interface HTMLElementTagNameMap {
+    "ha-panel-custom": HaPanelCustom;
+  }
   interface Window {
     customPanel: HaPanelCustom | undefined;
   }
@@ -140,18 +143,18 @@ export class HaPanelCustom extends ReactiveElement {
     }
 
     window.customPanel = this;
+    const titleAttr = this.panel.title ? `title="${this.panel.title}"` : "";
     this.innerHTML = `
-    <style>
-      iframe {
-        border: 0;
-        width: 100%;
-        height: 100%;
-        display: block;
-        background-color: var(--primary-background-color);
-      }
-    </style>
-    <iframe></iframe>
-    `.trim();
+      <style>
+        iframe {
+          border: 0;
+          width: 100%;
+          height: 100%;
+          display: block;
+          background-color: var(--primary-background-color);
+        }
+      </style>
+      <iframe ${titleAttr}></iframe>`.trim();
     const iframeDoc = this.querySelector("iframe")!.contentWindow!.document;
     iframeDoc.open();
     iframeDoc.write(

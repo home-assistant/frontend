@@ -47,7 +47,7 @@ class DialogCalendarEventDetail extends LitElement {
     if (params.entry) {
       const entry = params.entry!;
       this._data = entry;
-      this._calendarId = params.calendarId || params.calendars[0].entity_id;
+      this._calendarId = params.calendarId;
     }
   }
 
@@ -101,6 +101,7 @@ class DialogCalendarEventDetail extends LitElement {
             <state-info
               .hass=${this.hass}
               .stateObj=${stateObj}
+              .color=${this._params.color}
               inDialog
             ></state-info>
           </div>

@@ -12,9 +12,6 @@ import { getLocalLanguage } from "../../util/common-translation";
 export type LocalizeKeys =
   | FlattenObjectKeys<Omit<TranslationDict, "supervisor">>
   | `panel.${string}`
-  | `state.${string}`
-  | `state_attributes.${string}`
-  | `state_badge.${string}`
   | `ui.card.alarm_control_panel.${string}`
   | `ui.card.weather.attributes.${string}`
   | `ui.card.weather.cardinal_direction.${string}`

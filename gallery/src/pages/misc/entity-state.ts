@@ -106,6 +106,7 @@ const ENTITIES: HassEntity[] = [
   // Alert
   createEntity("alert.off", "off"),
   createEntity("alert.on", "on"),
+  createEntity("alert.idle", "idle"),
   // Automation
   createEntity("automation.off", "off"),
   createEntity("automation.on", "on"),
@@ -130,6 +131,17 @@ const ENTITIES: HassEntity[] = [
   createEntity("climate.auto", "auto"),
   createEntity("climate.dry", "dry"),
   createEntity("climate.fan_only", "fan_only"),
+  createEntity("climate.auto_idle", "auto", undefined, { hvac_action: "idle" }),
+  createEntity("climate.auto_off", "auto", undefined, { hvac_action: "off" }),
+  createEntity("climate.auto_heating", "auto", undefined, {
+    hvac_action: "heating",
+  }),
+  createEntity("climate.auto_cooling", "auto", undefined, {
+    hvac_action: "cooling",
+  }),
+  createEntity("climate.auto_dry", "auto", undefined, {
+    hvac_action: "drying",
+  }),
   // Cover
   createEntity("cover.closing", "closing"),
   createEntity("cover.closed", "closed"),
@@ -208,6 +220,11 @@ const ENTITIES: HassEntity[] = [
   // Siren
   createEntity("siren.off", "off"),
   createEntity("siren.on", "on"),
+  // Sun
+  createEntity("sun.below", "below_horizon"),
+  createEntity("sun.above", "above_horizon"),
+  createEntity("sun.unknown", "unknown"),
+  createEntity("sun.unavailable", "unavailable"),
   // Switch
   createEntity("switch.off", "off"),
   createEntity("switch.on", "on"),
@@ -311,7 +328,7 @@ export class DemoEntityState extends LitElement {
           `,
         },
         entity_id: {
-          title: "Entity id",
+          title: "Entity ID",
           width: "30%",
           filterable: true,
           sortable: true,

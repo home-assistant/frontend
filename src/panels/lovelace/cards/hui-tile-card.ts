@@ -1,5 +1,5 @@
 import { memoize } from "@fullcalendar/common";
-import { mdiHelp } from "@mdi/js";
+import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,6 +9,7 @@ import { hsv2rgb, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { stateIconPath } from "../../../common/entity/state_icon_path";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
@@ -19,7 +20,7 @@ import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import { CoverEntity } from "../../../data/cover";
-import { ON, UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState, ON } from "../../../data/entity";
 import { FanEntity } from "../../../data/fan";
 import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -128,9 +129,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   private _computeStateColor = memoize((entity: HassEntity, color?: string) => {
-    // Use custom color
+    // Use custom color if active
     if (color) {
-      return computeRgbColor(color);
+      return stateActive(entity) ? computeRgbColor(color) : undefined;
     }
 
     // Use default color for person/device_tracker because color is on the badge
@@ -170,7 +171,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (
       (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
         TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
-      !UNAVAILABLE_STATES.includes(stateObj.state)
+      !isUnavailableState(stateObj.state)
     ) {
       return html`
         <hui-timestamp-display
@@ -225,10 +226,21 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <ha-card class="disabled">
+        <ha-card
+          style=${styleMap({
+            "--tile-color": `var(--rgb-disabled-color)`,
+          })}
+        >
           <div class="tile">
             <div class="icon-container">
-              <ha-tile-icon .iconPath=${mdiHelp}></ha-tile-icon>
+              <ha-tile-icon class="icon" .iconPath=${mdiHelp}></ha-tile-icon>
+              <ha-tile-badge
+                class="badge"
+                .iconPath=${mdiExclamationThick}
+                style=${styleMap({
+                  "--tile-badge-background-color": `rgb(var(--rgb-red-color))`,
+                })}
+              ></ha-tile-badge>
             </div>
             <ha-tile-info
               .primary=${entityId}
@@ -352,15 +364,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --tile-color: var(--rgb-state-default-color);
+        --tile-color: var(--rgb-state-inactive-color);
         --tile-tap-padding: 6px;
         -webkit-tap-highlight-color: transparent;
       }
       ha-card {
         height: 100%;
-      }
-      ha-card.disabled {
-        background: rgba(var(--rgb-state-unavailable-color), 0.1);
       }
       [role="button"] {
         cursor: pointer;

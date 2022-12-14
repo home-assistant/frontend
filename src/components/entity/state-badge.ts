@@ -11,6 +11,7 @@ import {
 import { property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { CLIMATE_HVAC_ACTION_COLORS } from "../../common/entity/color/climate_color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateActive } from "../../common/entity/state_active";
@@ -31,10 +32,12 @@ export class StateBadge extends LitElement {
 
   @property({ type: Boolean }) public stateColor?: boolean;
 
+  @property() public color?: string;
+
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
-  @state() private _iconStyle: { [name: string]: string } = {};
+  @state() private _iconStyle: { [name: string]: string | undefined } = {};
 
   private get _stateColor() {
     const domain = this.stateObj
@@ -58,11 +61,9 @@ export class StateBadge extends LitElement {
     }
 
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
-    const active = this._stateColor && stateObj ? stateActive(stateObj) : false;
 
     return html`<ha-state-icon
       style=${styleMap(this._iconStyle)}
-      ?data-active=${active}
       data-domain=${ifDefined(domain)}
       data-state=${ifDefined(stateObj?.state)}
       .icon=${this.overrideIcon}
@@ -76,7 +77,8 @@ export class StateBadge extends LitElement {
       !changedProps.has("stateObj") &&
       !changedProps.has("overrideImage") &&
       !changedProps.has("overrideIcon") &&
-      !changedProps.has("stateColor")
+      !changedProps.has("stateColor") &&
+      !changedProps.has("color")
     ) {
       return;
     }
@@ -107,26 +109,35 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
-      } else if (this._stateColor) {
+      } else if (this.color) {
+        // Externally provided overriding color wins over state color
+        iconStyle.color = this.color;
+      } else if (this._stateColor && stateActive(stateObj)) {
         const color = stateColorCss(stateObj);
         if (color) {
           iconStyle.color = `rgb(${color})`;
         }
-        if (stateActive(stateObj)) {
-          if (stateObj.attributes.rgb_color) {
-            iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+        if (stateObj.attributes.rgb_color) {
+          iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+        }
+        if (stateObj.attributes.brightness) {
+          const brightness = stateObj.attributes.brightness;
+          if (typeof brightness !== "number") {
+            const errorMessage = `Type error: state-badge expected number, but type of ${
+              stateObj.entity_id
+            }.attributes.brightness is ${typeof brightness} (${brightness})`;
+            // eslint-disable-next-line
+            console.warn(errorMessage);
           }
-          if (stateObj.attributes.brightness) {
-            const brightness = stateObj.attributes.brightness;
-            if (typeof brightness !== "number") {
-              const errorMessage = `Type error: state-badge expected number, but type of ${
-                stateObj.entity_id
-              }.attributes.brightness is ${typeof brightness} (${brightness})`;
-              // eslint-disable-next-line
-              console.warn(errorMessage);
-            }
-            // lowest brightness will be around 50% (that's pretty dark)
-            iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+          // lowest brightness will be around 50% (that's pretty dark)
+          iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+        }
+        if (stateObj.attributes.hvac_action) {
+          const hvacAction = stateObj.attributes.hvac_action;
+          if (["heating", "cooling", "drying"].includes(hvacAction)) {
+            iconStyle.color = `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+          } else {
+            delete iconStyle.color;
           }
         }
       }

@@ -1,4 +1,4 @@
-name: Demo deployment
+name: Cast deployment
 
 on:
   workflow_dispatch:
@@ -6,7 +6,6 @@ on:
     - cron: "0 0 * * *"
   push:
     branches:
-      - dev
       - master
 
 env:
@@ -16,10 +15,10 @@ env:
 jobs:
   deploy_dev:
     runs-on: ubuntu-latest
-    name: Demo Development
-    if: github.event_name != 'push' || github.ref != 'master'
+    name: Deploy Development
+    if: github.event_name != 'push'
     environment:
-      name: Demo Development
+      name: Cast Development
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
@@ -38,8 +37,8 @@ jobs:
         env:
           CI: true
 
-      - name: Build Demo
-        run: ./node_modules/.bin/gulp build-demo
+      - name: Build Cast
+        run: ./node_modules/.bin/gulp build-cast
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -47,17 +46,17 @@ jobs:
         id: deploy
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=demo/dist --prod
+          args: deploy --dir=cast/dist --alias dev
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_DEV_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_CAST_SITE_ID }}
 
   deploy_master:
     runs-on: ubuntu-latest
-    name: Demo Production
-    if: github.event_name == 'push' && github.ref == 'master'
+    name: Deploy Production
+    if: github.event_name == 'push'
     environment:
-      name: Demo Production
+      name: Cast Production
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
@@ -76,8 +75,8 @@ jobs:
         env:
           CI: true
 
-      - name: Build Demo
-        run: ./node_modules/.bin/gulp build-demo
+      - name: Build Cast
+        run: ./node_modules/.bin/gulp build-cast
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -85,7 +84,7 @@ jobs:
         id: deploy
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=demo/dist --prod
+          args: deploy --dir=cast/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_CAST_SITE_ID }}

@@ -1,4 +1,4 @@
-import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
+import { mdiCog, mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
@@ -191,7 +191,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                         !this._canEditCore}
                         .path=${stateObject.entity_id === "zone.home" &&
                         this._canEditCore
-                          ? mdiPencil
+                          ? mdiCog
                           : mdiPencilOff}
                         .label=${stateObject.entity_id === "zone.home"
                           ? hass.localize("ui.panel.config.zone.edit_home")
@@ -271,6 +271,19 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       navigate("/config/zone", { replace: true });
       this._createZone();
     }
+  }
+
+  protected updated() {
+    if (
+      !this.route.path.startsWith("/edit/") ||
+      !this._stateItems ||
+      !this._storageItems
+    ) {
+      return;
+    }
+    const id = this.route.path.slice(6);
+    navigate("/config/zone", { replace: true });
+    this._zoomZone(id);
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -374,7 +387,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._zoomZone(entityId);
   }
 
-  private _zoomZone(id: string) {
+  private async _zoomZone(id: string) {
     this._map?.fitMarker(id);
   }
 
