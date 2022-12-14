@@ -1,10 +1,9 @@
 import { fireEvent } from "../../common/dom/fire_event";
-import { Calendar, CalendarEventData } from "../../data/calendar";
+import { CalendarEventData } from "../../data/calendar";
 
 export interface CalendarEventDetailDialogParams {
-  calendars: Calendar[]; // When creating new events, is the list of calendar entities that support creation
-  calendarId?: string;
-  entry?: CalendarEventData;
+  calendarId: string;
+  entry: CalendarEventData;
   canDelete?: boolean;
   canEdit?: boolean;
   updated: () => void;
