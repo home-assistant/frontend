@@ -26,6 +26,11 @@ interface IntentResultActionDone extends IntentResultBase {
 
 interface IntentResultQueryAnswer extends IntentResultBase {
   response_type: "query_answer";
+  data: {
+    targets: IntentTarget[];
+    success: IntentTarget[];
+    failed: IntentTarget[];
+  };
 }
 
 interface IntentResultError extends IntentResultBase {
