@@ -19,7 +19,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
     case "alarm_control_panel":
       return compareState !== "disarmed";
     case "cover":
-      return !["closed", "closing"].includes(compareState);
+      return compareState !== "closed";
     case "device_tracker":
     case "person":
       return compareState !== "not_home";
