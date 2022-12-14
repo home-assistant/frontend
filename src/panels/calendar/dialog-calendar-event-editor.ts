@@ -7,17 +7,20 @@ import {
   differenceInMilliseconds,
   startOfHour,
 } from "date-fns/esm";
+import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { supportsFeature } from "../../common/entity/supports-feature";
 import { isDate } from "../../common/string/is_date";
+import "../../components/entity/ha-entity-picker";
 import "../../components/ha-date-input";
 import "../../components/ha-textarea";
 import "../../components/ha-time-input";
-import "../../components/entity/ha-entity-picker";
 import {
-  Calendar,
+  CalendarEntityFeature,
   CalendarEventMutableParams,
   createCalendarEvent,
   deleteCalendarEvent,
@@ -27,7 +30,6 @@ import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
 import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
-import { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
 
 const CALENDAR_DOMAINS = "calendar";
@@ -40,9 +42,7 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _info?: string;
 
-  @state() private _params?: CalendarEventDetailDialogParams;
-
-  @state() private _calendars: Calendar[] = [];
+  @state() private _params?: CalendarEventEditDialogParams;
 
   @state() private _calendarId?: string;
 
@@ -64,8 +64,13 @@ class DialogCalendarEventEditor extends LitElement {
     this._error = undefined;
     this._info = undefined;
     this._params = params;
-    this._calendars = params.calendars;
-    this._calendarId = params.calendarId || this._calendars[0].entity_id;
+    this._calendarId =
+      params.calendarId ||
+      Object.values(this.hass.states).find(
+        (stateObj) =>
+          computeStateDomain(stateObj) === "calendar" &&
+          supportsFeature(stateObj, CalendarEntityFeature.CREATE_EVENT)
+      )?.entity_id;
     if (params.entry) {
       const entry = params.entry!;
       this._allDay = isDate(entry.dtstart);
@@ -95,7 +100,6 @@ class DialogCalendarEventEditor extends LitElement {
     if (!this._params) {
       return;
     }
-    this._calendars = [];
     this._calendarId = undefined;
     this._params = undefined;
     this._dtstart = undefined;
@@ -174,6 +178,7 @@ class DialogCalendarEventEditor extends LitElement {
             .label=${this.hass.localize("ui.components.calendar.label")}
             .value=${this._calendarId!}
             .includeDomains=${CALENDAR_DOMAINS}
+            .entityFilter=${this._isEditableCalendar}
             required
             @value-changed=${this._handleCalendarChanged}
           ></ha-entity-picker>
@@ -272,6 +277,9 @@ class DialogCalendarEventEditor extends LitElement {
       </ha-dialog>
     `;
   }
+
+  private _isEditableCalendar = (entityStateObj: HassEntity) =>
+    supportsFeature(entityStateObj, CalendarEntityFeature.CREATE_EVENT);
 
   private _getLocaleStrings = memoizeOne((startDate?: Date, endDate?: Date) =>
     // en-CA locale used for date format YYYY-MM-DD
