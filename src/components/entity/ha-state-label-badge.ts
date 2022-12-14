@@ -10,20 +10,44 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { arrayLiteralIncludes } from "../../common/array/literal-includes";
 import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
 import {
   formatNumber,
   getNumberFormatOptions,
   isNumericState,
 } from "../../common/number/format_number";
-import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { timerTimeRemaining } from "../../data/timer";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
 import "../ha-state-icon";
+
+// Define the domains whose states have special truncated strings
+const TRUNCATED_DOMAINS = [
+  "alarm_control_panel",
+  "device_tracker",
+  "person",
+] as const satisfies ReadonlyArray<keyof typeof FIXED_DOMAIN_STATES>;
+
+type TruncatedDomain = typeof TRUNCATED_DOMAINS[number];
+type TruncatedKey = {
+  [T in TruncatedDomain]: `${T}.${typeof FIXED_DOMAIN_STATES[T][number]}`;
+}[TruncatedDomain];
+
+const getTruncatedKey = (domainKey: string, stateKey: string) => {
+  if (
+    arrayLiteralIncludes(TRUNCATED_DOMAINS)(domainKey) &&
+    arrayLiteralIncludes(FIXED_DOMAIN_STATES[domainKey])(stateKey)
+  ) {
+    return `${domainKey}.${stateKey}` as TruncatedKey;
+  }
+  return null;
+};
 
 @customElement("ha-state-label-badge")
 export class HaStateLabelBadge extends LitElement {
@@ -186,19 +210,18 @@ export class HaStateLabelBadge extends LitElement {
     }
   }
 
-  private _computeLabel(domain, entityState, _timerTimeRemaining) {
-    if (
-      entityState.state === UNAVAILABLE ||
-      ["device_tracker", "alarm_control_panel", "person"].includes(domain)
-    ) {
-      // Localize the state with a special state_badge namespace, which has variations of
-      // the state translations that are truncated to fit within the badge label. Translations
-      // are only added for device_tracker, alarm_control_panel and person.
-      return (
-        this.hass!.localize(`state_badge.${domain}.${entityState.state}`) ||
-        this.hass!.localize(`state_badge.default.${entityState.state}`) ||
-        entityState.state
-      );
+  private _computeLabel(
+    domain: string,
+    entityState: HassEntity,
+    _timerTimeRemaining = 0
+  ) {
+    // For unavailable states or certain domains, use a special translation that is truncated to fit within the badge label
+    if (isUnavailableState(entityState.state)) {
+      return this.hass!.localize(`state_badge.default.${entityState.state}`);
+    }
+    const domainStateKey = getTruncatedKey(domain, entityState.state);
+    if (domainStateKey) {
+      return this.hass!.localize(`state_badge.${domainStateKey}`);
     }
     if (domain === "timer") {
       return secondsToDuration(_timerTimeRemaining);
