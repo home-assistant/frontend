@@ -11,10 +11,11 @@ import {
 import { property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { CLIMATE_HVAC_ACTION_COLORS } from "../../common/entity/color/climate_color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateActive } from "../../common/entity/state_active";
-import { stateColor } from "../../common/entity/state_color";
+import { stateColorCss } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import type { HomeAssistant } from "../../types";
@@ -34,7 +35,7 @@ export class StateBadge extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
-  @state() private _iconStyle: { [name: string]: string } = {};
+  @state() private _iconStyle: { [name: string]: string | undefined } = {};
 
   private get _stateColor() {
     const domain = this.stateObj
@@ -107,12 +108,13 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
-      } else if (stateActive(stateObj) && this._stateColor) {
-        const iconColor = stateColor(stateObj);
+      } else if (this._stateColor && stateActive(stateObj)) {
+        const color = stateColorCss(stateObj);
+        if (color) {
+          iconStyle.color = `rgb(${color})`;
+        }
         if (stateObj.attributes.rgb_color) {
           iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
-        } else if (iconColor) {
-          iconStyle.color = `rgb(var(--rgb-state-${iconColor}-color))`;
         }
         if (stateObj.attributes.brightness) {
           const brightness = stateObj.attributes.brightness;
@@ -125,6 +127,14 @@ export class StateBadge extends LitElement {
           }
           // lowest brightness will be around 50% (that's pretty dark)
           iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+        }
+        if (stateObj.attributes.hvac_action) {
+          const hvacAction = stateObj.attributes.hvac_action;
+          if (["heating", "cooling", "drying"].includes(hvacAction)) {
+            iconStyle.color = `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+          } else {
+            delete iconStyle.color;
+          }
         }
       }
     } else if (this.overrideImage) {

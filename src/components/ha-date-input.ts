@@ -57,7 +57,10 @@ export class HaDateInput extends LitElement {
       readonly
       @click=${this._openDialog}
       .value=${this.value
-        ? formatDateNumeric(new Date(this.value), this.locale)
+        ? formatDateNumeric(
+            new Date(`${this.value.split("T")[0]}T00:00:00`),
+            this.locale
+          )
         : ""}
       .required=${this.required}
     >

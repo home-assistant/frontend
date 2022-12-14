@@ -11,6 +11,7 @@ import {
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../common/dom/fire_event";
 import { isDate } from "../../common/string/is_date";
 import "../../components/ha-date-input";
 import "../../components/ha-textarea";
@@ -94,6 +95,21 @@ class DialogCalendarEventEditor extends LitElement {
     }
   }
 
+  public closeDialog(): void {
+    if (!this._params) {
+      return;
+    }
+    this._calendars = [];
+    this._calendarId = undefined;
+    this._params = undefined;
+    this._dtstart = undefined;
+    this._dtend = undefined;
+    this._summary = "";
+    this._description = "";
+    this._rrule = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
@@ -108,7 +124,7 @@ class DialogCalendarEventEditor extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this._close}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${html`
@@ -238,7 +254,8 @@ class DialogCalendarEventEditor extends LitElement {
                 ${this.hass.localize("ui.components.calendar.event.add")}
               </mwc-button>
             `
-          : html` <mwc-button
+          : html`
+              <mwc-button
                 slot="primaryAction"
                 @click=${this._saveEvent}
                 .disabled=${this._submitting}
@@ -258,7 +275,8 @@ class DialogCalendarEventEditor extends LitElement {
                       )}
                     </mwc-button>
                   `
-                : ""}`}
+                : ""}
+            `}
       </ha-dialog>
     `;
   }
@@ -302,7 +320,11 @@ class DialogCalendarEventEditor extends LitElement {
     const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
 
     this._dtstart = new Date(
-      ev.detail.value + "T" + this._dtstart!.toISOString().split("T")[1]
+      ev.detail.value +
+        "T" +
+        this._dtstart!.toLocaleTimeString("en-GB", {
+          timeZone: this.hass.config.time_zone,
+        })
     );
 
     // Prevent that the end time can be before the start time. Try to keep the
@@ -326,7 +348,11 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _endDateChanged(ev: CustomEvent) {
     this._dtend = new Date(
-      ev.detail.value + "T" + this._dtend!.toISOString().split("T")[1]
+      ev.detail.value +
+        "T" +
+        this._dtend!.toLocaleTimeString("en-GB", {
+          timeZone: this.hass.config.time_zone,
+        })
     );
   }
 
@@ -335,7 +361,11 @@ class DialogCalendarEventEditor extends LitElement {
     const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
 
     this._dtstart = new Date(
-      this._dtstart!.toISOString().split("T")[0] + "T" + ev.detail.value
+      this._dtstart!.toLocaleDateString("en-CA", {
+        timeZone: this.hass.config.time_zone,
+      }) +
+        "T" +
+        ev.detail.value
     );
 
     // Prevent that the end time can be before the start time. Try to keep the
@@ -357,7 +387,11 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _endTimeChanged(ev: CustomEvent) {
     this._dtend = new Date(
-      this._dtend!.toISOString().split("T")[0] + "T" + ev.detail.value
+      this._dtend!.toLocaleDateString("en-CA", {
+        timeZone: this.hass.config.time_zone,
+      }) +
+        "T" +
+        ev.detail.value
     );
   }
 
@@ -414,11 +448,12 @@ class DialogCalendarEventEditor extends LitElement {
       );
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
+      return;
     } finally {
       this._submitting = false;
     }
     await this._params!.updated();
-    this._params = undefined;
+    this.closeDialog();
   }
 
   private async _saveEvent() {
@@ -472,18 +507,7 @@ class DialogCalendarEventEditor extends LitElement {
       this._submitting = false;
     }
     await this._params!.updated();
-    this._close();
-  }
-
-  private _close(): void {
-    this._calendars = [];
-    this._calendarId = undefined;
-    this._params = undefined;
-    this._dtstart = undefined;
-    this._dtend = undefined;
-    this._summary = "";
-    this._description = "";
-    this._rrule = undefined;
+    this.closeDialog();
   }
 
   static get styles(): CSSResultGroup {

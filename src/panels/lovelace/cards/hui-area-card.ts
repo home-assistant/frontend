@@ -564,7 +564,7 @@ export class HuiAreaCard
         --mdc-icon-button-size: 44px;
       }
       .on {
-        color: var(--paper-item-icon-active-color, #fdd835);
+        color: rgb(var(--rgb-state-light-color));
       }
     `;
   }

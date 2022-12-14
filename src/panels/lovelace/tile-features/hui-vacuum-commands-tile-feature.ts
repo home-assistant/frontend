@@ -40,7 +40,7 @@ export const VACUUM_COMMANDS_FEATURES: Record<
   VacuumCommand,
   VacuumEntityFeature[]
 > = {
-  start_pause: [VacuumEntityFeature.PAUSE],
+  start_pause: [VacuumEntityFeature.PAUSE, VacuumEntityFeature.START],
   stop: [VacuumEntityFeature.STOP],
   clean_spot: [VacuumEntityFeature.CLEAN_SPOT],
   locate: [VacuumEntityFeature.LOCATE],
@@ -85,7 +85,7 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
           translationKey: "start",
           icon: mdiPlay,
           serviceName: "start",
-          disabled: canStart(stateObj),
+          disabled: !canStart(stateObj),
         };
   },
   stop: (stateObj) => ({

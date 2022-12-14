@@ -129,7 +129,7 @@ class HuiEnergyCarbonGaugeCard
                 min="0"
                 max="100"
                 .value=${value}
-                .locale=${this.hass!.locale}
+                .locale=${this.hass.locale}
                 label="%"
                 style=${styleMap({
                   "--gauge-color": this._computeSeverity(value),

@@ -10,6 +10,8 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "./mqtt-subscribe-card";
 
+const qosLevel = ["0", "1", "2"];
+
 @customElement("mqtt-config-panel")
 class HaPanelDevMqtt extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -20,6 +22,8 @@ class HaPanelDevMqtt extends LitElement {
 
   @state() private payload = "";
 
+  @state() private qos = "0";
+
   private inited = false;
 
   protected firstUpdated() {
@@ -28,6 +32,9 @@ class HaPanelDevMqtt extends LitElement {
     }
     if (localStorage && localStorage["panel-dev-mqtt-payload"]) {
       this.payload = localStorage["panel-dev-mqtt-payload"];
+    }
+    if (localStorage && localStorage["panel-dev-mqtt-qos"]) {
+      this.qos = localStorage["panel-dev-mqtt-qos"];
     }
     this.inited = true;
   }
@@ -54,6 +61,15 @@ class HaPanelDevMqtt extends LitElement {
                 .value=${this.topic}
                 @change=${this._handleTopic}
               ></ha-textfield>
+              <ha-select
+                .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
+                .value=${this.qos}
+                @selected=${this._handleQos}
+                >${qosLevel.map(
+                  (qos) =>
+                    html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
+                )}
+              </ha-select>
 
               <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor
@@ -95,6 +111,14 @@ class HaPanelDevMqtt extends LitElement {
     }
   }
 
+  private _handleQos(ev: CustomEvent) {
+    const newValue = (ev.target! as any).value;
+    if (newValue >= 0 && newValue !== this.qos && localStorage && this.inited) {
+      this.qos = newValue;
+      localStorage["panel-dev-mqtt-qos"] = this.qos;
+    }
+  }
+
   private _publish(): void {
     if (!this.hass) {
       return;
@@ -102,6 +126,7 @@ class HaPanelDevMqtt extends LitElement {
     this.hass.callService("mqtt", "publish", {
       topic: this.topic,
       payload_template: this.payload,
+      qos: parseInt(this.qos),
     });
   }
 
