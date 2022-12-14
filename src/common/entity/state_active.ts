@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { OFF_STATES, UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../data/entity";
 import { computeDomain } from "./compute_domain";
 
 export function stateActive(stateObj: HassEntity, state?: string): boolean {
@@ -10,7 +10,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
     return compareState !== UNAVAILABLE;
   }
 
-  if (OFF_STATES.includes(compareState)) {
+  if (UNAVAILABLE_STATES.includes(compareState)) {
     return false;
   }
 
@@ -19,7 +19,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
     case "alarm_control_panel":
       return compareState !== "disarmed";
     case "alert":
-      return compareState === "on";
+      return compareState !== "idle";
     case "cover":
       return !["closed", "closing"].includes(compareState);
     case "device_tracker":
@@ -39,7 +39,13 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
       return compareState === "active";
     case "camera":
       return compareState === "streaming";
-    default:
-      return true;
   }
+
+  // Needs to be after the switch statement since some domains such as "alert"
+  // do not consider "off" an inactive state (as there is "idle" for example).
+  if (compareState === "off") {
+    return false;
+  }
+
+  return true;
 }
