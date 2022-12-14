@@ -114,8 +114,6 @@ export class StateBadge extends LitElement {
       } else if (this.color) {
         // Externally provided overriding color wins over state color
         iconStyle.color = this.color;
-      } else if (stateActive(stateObj) && this._stateColor) {
-        const iconColor = stateColor(stateObj);
       } else if (this._stateColor && stateActive(stateObj)) {
         const color = stateColorCss(stateObj);
         if (color) {
