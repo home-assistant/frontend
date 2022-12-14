@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
-import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import {
   addDays,
   addHours,
@@ -16,6 +15,7 @@ import { isDate } from "../../common/string/is_date";
 import "../../components/ha-date-input";
 import "../../components/ha-textarea";
 import "../../components/ha-time-input";
+import "../../components/entity/ha-entity-picker";
 import {
   Calendar,
   CalendarEventMutableParams,
@@ -30,11 +30,7 @@ import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
 
-const rowRenderer: ComboBoxLitRenderer<Calendar> = (
-  item
-) => html`<mwc-list-item>
-  <span>${item.name}</span>
-</mwc-list-item>`;
+const CALENDAR_DOMAINS = "calendar";
 
 @customElement("dialog-calendar-event-editor")
 class DialogCalendarEventEditor extends LitElement {
@@ -172,19 +168,15 @@ class DialogCalendarEventEditor extends LitElement {
             @change=${this._handleDescriptionChanged}
             autogrow
           ></ha-textarea>
-          <ha-combo-box
+          <ha-entity-picker
             name="calendar"
             .hass=${this.hass}
             .label=${this.hass.localize("ui.components.calendar.label")}
             .value=${this._calendarId!}
-            .renderer=${rowRenderer}
-            .items=${this._calendars}
-            item-id-path="entity_id"
-            item-value-path="entity_id"
-            item-label-path="name"
+            .includeDomains=${CALENDAR_DOMAINS}
             required
             @value-changed=${this._handleCalendarChanged}
-          ></ha-combo-box>
+          ></ha-entity-picker>
           <ha-formfield
             .label=${this.hass.localize("ui.components.calendar.event.all_day")}
           >
@@ -555,9 +547,6 @@ class DialogCalendarEventEditor extends LitElement {
           display: inline-block;
         }
         ha-rrule {
-          display: block;
-        }
-        ha-combo-box {
           display: block;
         }
         ha-svg-icon {
