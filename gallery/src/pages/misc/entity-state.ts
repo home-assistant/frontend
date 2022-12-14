@@ -106,6 +106,7 @@ const ENTITIES: HassEntity[] = [
   // Alert
   createEntity("alert.off", "off"),
   createEntity("alert.on", "on"),
+  createEntity("alert.idle", "idle"),
   // Automation
   createEntity("automation.off", "off"),
   createEntity("automation.on", "on"),
