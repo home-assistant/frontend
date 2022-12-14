@@ -20,7 +20,7 @@ import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import { CoverEntity } from "../../../data/cover";
-import { ON, UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState, ON } from "../../../data/entity";
 import { FanEntity } from "../../../data/fan";
 import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -171,7 +171,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (
       (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP ||
         TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
-      !UNAVAILABLE_STATES.includes(stateObj.state)
+      !isUnavailableState(stateObj.state)
     ) {
       return html`
         <hui-timestamp-display

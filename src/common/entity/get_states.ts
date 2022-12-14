@@ -2,7 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDomain } from "./compute_state_domain";
 import { UNAVAILABLE_STATES } from "../../data/entity";
 
-const FIXED_DOMAIN_STATES = {
+export const FIXED_DOMAIN_STATES = {
   alarm_control_panel: [
     "armed_away",
     "armed_custom_bypass",
@@ -57,7 +57,7 @@ const FIXED_DOMAIN_STATES = {
     "windy-variant",
     "windy",
   ],
-};
+} as const;
 
 const FIXED_DOMAIN_ATTRIBUTE_STATES = {
   alarm_control_panel: {

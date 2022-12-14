@@ -2,7 +2,7 @@ import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import "../../../components/entity/ha-entity-toggle";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -44,7 +44,7 @@ class HuiToggleEntityRow extends LitElement implements LovelaceRow {
     const showToggle =
       stateObj.state === "on" ||
       stateObj.state === "off" ||
-      UNAVAILABLE_STATES.includes(stateObj.state);
+      isUnavailableState(stateObj.state);
 
     return html`
       <hui-generic-entity-row

@@ -27,7 +27,7 @@ import {
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { formatAttributeValue } from "../../../data/entity_attributes";
 import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
@@ -130,7 +130,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     const domain = computeStateDomain(stateObj);
     const showUnit = this._config.attribute
       ? this._config.attribute in stateObj.attributes
-      : !UNAVAILABLE_STATES.includes(stateObj.state);
+      : !isUnavailableState(stateObj.state);
 
     const name = this._config.name || computeStateName(stateObj);
 

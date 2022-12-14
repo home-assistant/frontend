@@ -1,6 +1,6 @@
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
 import { TextEntity, setValue } from "../../../data/text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -71,7 +71,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
     const newValue = ev.target.value;
 
     // Filter out invalid text states
-    if (newValue && UNAVAILABLE_STATES.includes(newValue)) {
+    if (newValue && isUnavailableState(newValue)) {
       ev.target.value = stateObj.state;
       return;
     }
