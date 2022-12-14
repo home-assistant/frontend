@@ -471,7 +471,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         }
 
         :host(:not([narrow])) ha-settings-row ha-textfield {
-          width: 30%;
+          width: 100px;
           text-align: right;
         }
 
