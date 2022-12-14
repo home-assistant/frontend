@@ -6,6 +6,7 @@ const ALERTING_DEVICE_CLASSES = new Set([
   "carbon_monoxide",
   "gas",
   "heat",
+  "lock",
   "moisture",
   "problem",
   "safety",
