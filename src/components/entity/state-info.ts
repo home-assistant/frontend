@@ -19,6 +19,8 @@ class StateInfo extends LitElement {
   // property used only in CSS
   @property({ type: Boolean, reflect: true }) public rtl = false;
 
+  @property() public color?: string;
+
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
       return html``;
@@ -26,9 +28,10 @@ class StateInfo extends LitElement {
 
     const name = computeStateName(this.stateObj);
 
-    return html`<state-badge
+    return html` <state-badge
         .stateObj=${this.stateObj}
         .stateColor=${true}
+        .color=${this.color}
       ></state-badge>
       <div class="info">
         <div class="name" .title=${name} .inDialog=${this.inDialog}>
