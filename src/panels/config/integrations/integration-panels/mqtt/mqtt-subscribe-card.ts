@@ -100,8 +100,8 @@ class MqttSubscribeCard extends LitElement {
     `;
   }
 
-  private _handleTopic(ev: CustomEvent): void {
-    this._topic = (ev.target! as any).value;
+  private _handleTopic(ev): void {
+    this._topic = ev.target.value;
   }
 
   private _handleQos(ev: CustomEvent): void {
