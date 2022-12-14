@@ -19,6 +19,8 @@ interface IntentResultActionDone extends IntentResultBase {
   response_type: "action_done";
   data: {
     targets: IntentTarget[];
+    success: IntentTarget[];
+    failed: IntentTarget[];
   };
 }
 
