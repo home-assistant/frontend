@@ -391,7 +391,7 @@ class HaConfigSectionGeneral extends LitElement {
   );
 
   private _editLocation() {
-    navigate("/config/zone");
+    navigate("/config/zone/edit/zone.home");
   }
 
   static styles = [
