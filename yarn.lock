@@ -9421,7 +9421,7 @@ fsevents@^1.2.7:
     mocha: ^8.4.0
     node-vibrant: 3.2.1-alpha.1
     object-hash: ^2.0.3
-    open: ^7.0.4
+    open: ^8.4.0
     pinst: ^3.0.0
     prettier: ^2.8.1
     proxy-polyfill: ^0.3.2
@@ -12345,7 +12345,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"open@npm:^7.0.3, open@npm:^7.0.4, open@npm:^7.3.0":
+"open@npm:^7.0.3, open@npm:^7.3.0":
   version: 7.3.0
   resolution: "open@npm:7.3.0"
   dependencies:
@@ -12363,6 +12363,17 @@ fsevents@^1.2.7:
     is-docker: ^2.1.1
     is-wsl: ^2.2.0
   checksum: fcde0059188dd497e080436f81c5240dad0bebd331d1c856a532d4b870808bdc5770ef7c5c4b83143fd0c0577fe2b580e54c03357d695771259aa59f64cf0f40
+  languageName: node
+  linkType: hard
+
+"open@npm:^8.4.0":
+  version: 8.4.0
+  resolution: "open@npm:8.4.0"
+  dependencies:
+    define-lazy-prop: ^2.0.0
+    is-docker: ^2.1.1
+    is-wsl: ^2.2.0
+  checksum: e9545bec64cdbf30a0c35c1bdc310344adf8428a117f7d8df3c0af0a0a24c513b304916a6d9b11db0190ff7225c2d578885080b761ed46a3d5f6f1eebb98b63c
   languageName: node
   linkType: hard
 
