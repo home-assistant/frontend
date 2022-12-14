@@ -19,8 +19,8 @@ export const evaluateFilter = (stateObj: HassEntity, filter: any): boolean => {
         !isNaN(+state) &&
         state.trim().length !== 0);
     if (valueIsNumeric && stateIsNumeric) {
-      value = +value;
-      state = +state;
+      value = Number(value);
+      state = Number(state);
     }
   }
 
