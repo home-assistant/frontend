@@ -14,5 +14,3 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       include: scope
-      prefix: "prod"
-      prefix-development: "dev"
