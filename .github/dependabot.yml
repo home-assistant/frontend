@@ -6,3 +6,13 @@ updates:
       interval: weekly
       time: "06:00"
     open-pull-requests-limit: 10
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "06:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      include: scope
+      prefix: "prod"
+      prefix-development: "dev"
