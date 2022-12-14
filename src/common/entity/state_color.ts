@@ -1,16 +1,17 @@
 /** Return an color representing a state. */
 import { HassEntity } from "home-assistant-js-websocket";
-import { UpdateEntity, updateIsInstalling } from "../../data/update";
+import { UNAVAILABLE } from "../../data/entity";
 import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
 import { binarySensorColor } from "./color/binary_sensor_color";
 import { climateColor } from "./color/climate_color";
 import { lockColor } from "./color/lock_color";
 import { personColor } from "./color/person_color";
 import { sensorColor } from "./color/sensor_color";
+import { updateColor } from "./color/update_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
-const STATIC_COLORED_DOMAIN = new Set([
+const STATIC_ACTIVE_COLORED_DOMAIN = new Set([
   "alert",
   "automation",
   "calendar",
@@ -30,25 +31,33 @@ const STATIC_COLORED_DOMAIN = new Set([
   "vacuum",
 ]);
 
-export const stateColorCss = (stateObj?: HassEntity, state?: string) => {
-  if (!stateObj || !stateActive(stateObj, state)) {
-    return `var(--rgb-disabled-color)`;
+export const stateColorCss = (stateObj: HassEntity, state?: string) => {
+  const compareState = state !== undefined ? state : stateObj?.state;
+  if (compareState === UNAVAILABLE) {
+    return `var(--rgb-state-unavailable-color)`;
   }
 
-  const color = stateColor(stateObj, state);
+  const domainColor = stateColor(stateObj, state);
 
-  if (color) {
-    return `var(--rgb-state-${color}-color)`;
+  if (domainColor) {
+    return `var(--rgb-state-${domainColor}-color)`;
   }
 
-  return `var(--rgb-state-default-color)`;
+  if (!stateActive(stateObj, state)) {
+    return `var(--rgb-state-inactive-color)`;
+  }
+
+  return undefined;
 };
 
 export const stateColor = (stateObj: HassEntity, state?: string) => {
   const compareState = state !== undefined ? state : stateObj?.state;
   const domain = computeDomain(stateObj.entity_id);
 
-  if (STATIC_COLORED_DOMAIN.has(domain)) {
+  if (
+    STATIC_ACTIVE_COLORED_DOMAIN.has(domain) &&
+    stateActive(stateObj, state)
+  ) {
     return domain.replace("_", "-");
   }
 
@@ -57,7 +66,7 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
       return alarmControlPanelColor(compareState);
 
     case "binary_sensor":
-      return binarySensorColor(stateObj);
+      return binarySensorColor(stateObj, compareState);
 
     case "climate":
       return climateColor(compareState);
@@ -76,9 +85,7 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
       return compareState === "above_horizon" ? "sun-day" : "sun-night";
 
     case "update":
-      return updateIsInstalling(stateObj as UpdateEntity)
-        ? "update-installing"
-        : "update";
+      return updateColor(stateObj, compareState);
   }
 
   return undefined;

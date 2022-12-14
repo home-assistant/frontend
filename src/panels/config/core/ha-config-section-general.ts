@@ -25,6 +25,7 @@ import { SYMBOL_TO_ISO } from "../../../data/currency";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-alert";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
@@ -52,6 +53,8 @@ class HaConfigSectionGeneral extends LitElement {
 
   @state() private _languages?: { value: string; label: string }[];
 
+  @state() private _error?: string;
+
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
       this.hass.config.config_source
@@ -65,6 +68,9 @@ class HaConfigSectionGeneral extends LitElement {
         .header=${this.hass.localize("ui.panel.config.core.caption")}
       >
         <div class="content">
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           <ha-card outlined>
             <div class="card-content">
               ${!canEdit
@@ -289,7 +295,7 @@ class HaConfigSectionGeneral extends LitElement {
     this._country = this.hass.config.country;
     this._language = this.hass.config.language;
     this._elevation = this.hass.config.elevation;
-    this._timeZone = this.hass.config.time_zone;
+    this._timeZone = this.hass.config.time_zone || "Etc/GMT";
     this._name = this.hass.config.location_name;
     this._computeLanguages();
   }
@@ -347,6 +353,8 @@ class HaConfigSectionGeneral extends LitElement {
       };
     }
 
+    this._error = undefined;
+
     try {
       await saveCoreConfig(this.hass, {
         currency: this._currency,
@@ -361,7 +369,7 @@ class HaConfigSectionGeneral extends LitElement {
       button.actionSuccess();
     } catch (err: any) {
       button.actionError();
-      alert(`Error saving config: ${err.message}`);
+      this._error = err.message;
     } finally {
       button.progress = false;
     }
@@ -383,7 +391,7 @@ class HaConfigSectionGeneral extends LitElement {
   );
 
   private _editLocation() {
-    navigate("/config/zone");
+    navigate("/config/zone/edit/zone.home");
   }
 
   static styles = [

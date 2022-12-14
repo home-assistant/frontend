@@ -22,11 +22,11 @@ function personBadgeIcon(entity: HassEntity) {
 function personBadgeColor(entity: HassEntity) {
   switch (entity.state) {
     case "home":
-      return "var(--rgb-badge-person-home-color)";
+      return "var(--rgb-state-person-home-color)";
     case "not_home":
-      return "var(--rgb-badge-person-not-home-color)";
+      return "var(--rgb-state-person-not-home-color)";
     default:
-      return "var(--rgb-badge-person-zone-color)";
+      return "var(--rgb-state-person-zone-color)";
   }
 }
 

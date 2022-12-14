@@ -13,6 +13,8 @@ export const alarmControlPanelColor = (state?: string): string | undefined => {
       return "alarm-arming";
     case "triggered":
       return "alarm-triggered";
+    case "disarmed":
+      return "alarm-disarmed";
     default:
       return undefined;
   }

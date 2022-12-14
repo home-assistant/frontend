@@ -1,5 +1,5 @@
 import { memoize } from "@fullcalendar/common";
-import { mdiHelp } from "@mdi/js";
+import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -129,8 +129,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   private _computeStateColor = memoize((entity: HassEntity, color?: string) => {
-    if (UNAVAILABLE_STATES.includes(entity.state)) {
-      return undefined;
+    // Use custom color if active
+    if (color) {
+      return stateActive(entity) ? computeRgbColor(color) : undefined;
     }
 
     // Use default color for person/device_tracker because color is on the badge
@@ -141,16 +142,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       return "var(--rgb-state-default-color)";
     }
 
-    if (!stateActive(entity)) {
-      return undefined;
-    }
-
-    if (color) {
-      return computeRgbColor(color);
-    }
-
-    let stateColor = stateColorCss(entity);
-
+    // Use light color if the light support rgb
     if (
       computeDomain(entity.entity_id) === "light" &&
       entity.attributes.rgb_color
@@ -166,10 +158,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           hsvColor[1] = 0.4;
         }
       }
-      stateColor = hsv2rgb(hsvColor).join(",");
+      return hsv2rgb(hsvColor).join(",");
     }
 
-    return stateColor;
+    // Fallback to state color
+    return stateColorCss(entity) ?? "var(--rgb-state-default-color)";
   });
 
   private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
@@ -233,10 +226,21 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <ha-card class="disabled">
+        <ha-card
+          style=${styleMap({
+            "--tile-color": `var(--rgb-disabled-color)`,
+          })}
+        >
           <div class="tile">
             <div class="icon-container">
-              <ha-tile-icon .iconPath=${mdiHelp}></ha-tile-icon>
+              <ha-tile-icon class="icon" .iconPath=${mdiHelp}></ha-tile-icon>
+              <ha-tile-badge
+                class="badge"
+                .iconPath=${mdiExclamationThick}
+                style=${styleMap({
+                  "--tile-badge-background-color": `rgb(var(--rgb-red-color))`,
+                })}
+              ></ha-tile-badge>
             </div>
             <ha-tile-info
               .primary=${entityId}
@@ -360,15 +364,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --tile-color: var(--rgb-disabled-color);
+        --tile-color: var(--rgb-state-inactive-color);
         --tile-tap-padding: 6px;
         -webkit-tap-highlight-color: transparent;
       }
       ha-card {
         height: 100%;
-      }
-      ha-card.disabled {
-        background: rgba(var(--rgb-disabled-color), 0.1);
       }
       [role="button"] {
         cursor: pointer;

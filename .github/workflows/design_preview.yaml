@@ -1,20 +1,25 @@
-name: Design deployment
+name: Design preview
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 0 * * *"
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+    branches:
+      - dev
 
 env:
   NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 jobs:
-  deploy:
+  preview:
     runs-on: ubuntu-latest
-    environment:
-      name: Design
-      url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
+    # Skip running on forks since it won't have access to secrets
+    # Skip running PRs without 'needs design preview' label
+    if: github.repository == 'home-assistant/frontend' && contains(github.event.pull_request.labels.*.name, 'needs design preview')
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v3
@@ -35,11 +40,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy to Netlify
+      - name: Deploy preview to Netlify
         id: deploy
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=gallery/dist --prod
+          args: deploy --dir=gallery/dist --alias "deploy-preview-${{ github.event.number }}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}
+
+      - name: Generate summary
+        run: |
+          echo "${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}" >> "$GITHUB_STEP_SUMMARY"

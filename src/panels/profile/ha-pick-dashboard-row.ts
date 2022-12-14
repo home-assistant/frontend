@@ -13,7 +13,7 @@ class HaPickDashboardRow extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @state() private _dashboards: LovelaceDashboard[] = [];
+  @state() private _dashboards?: LovelaceDashboard[];
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -29,30 +29,37 @@ class HaPickDashboardRow extends LitElement {
         <span slot="description">
           ${this.hass.localize("ui.panel.profile.dashboard.description")}
         </span>
-        <ha-select
-          .label=${this.hass.localize(
-            "ui.panel.profile.dashboard.dropdown_label"
-          )}
-          .disabled=${!this._dashboards.length}
-          .value=${this.hass.defaultPanel}
-          @selected=${this._dashboardChanged}
-        >
-          <mwc-list-item value="lovelace">
-            ${this.hass.localize(
-              "ui.panel.profile.dashboard.default_dashboard_label"
-            )}
-          </mwc-list-item>
-          ${this._dashboards.map((dashboard) => {
-            if (!this.hass.user!.is_admin && dashboard.require_admin) {
-              return "";
-            }
-            return html`
-              <mwc-list-item .value=${dashboard.url_path}>
-                ${dashboard.title}
+        ${this._dashboards
+          ? html`<ha-select
+              .label=${this.hass.localize(
+                "ui.panel.profile.dashboard.dropdown_label"
+              )}
+              .disabled=${!this._dashboards?.length}
+              .value=${this.hass.defaultPanel}
+              @selected=${this._dashboardChanged}
+            >
+              <mwc-list-item value="lovelace">
+                ${this.hass.localize(
+                  "ui.panel.profile.dashboard.default_dashboard_label"
+                )}
               </mwc-list-item>
-            `;
-          })}
-        </ha-select>
+              ${this._dashboards.map((dashboard) => {
+                if (!this.hass.user!.is_admin && dashboard.require_admin) {
+                  return "";
+                }
+                return html`
+                  <mwc-list-item .value=${dashboard.url_path}>
+                    ${dashboard.title}
+                  </mwc-list-item>
+                `;
+              })}
+            </ha-select>`
+          : html`<ha-select
+              .label=${this.hass.localize(
+                "ui.panel.profile.dashboard.dropdown_label"
+              )}
+              disabled
+            ></ha-select>`}
       </ha-settings-row>
     `;
   }

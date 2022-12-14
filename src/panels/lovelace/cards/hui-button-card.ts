@@ -21,12 +21,13 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { CLIMATE_HVAC_ACTION_COLORS } from "../../../common/entity/color/climate_color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
-import { stateColor } from "../../../common/entity/state_color";
+import { stateColorCss } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
@@ -78,6 +79,15 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
   @state() private _shouldRenderRipple = false;
+
+  private getStateColor(stateObj: HassEntity, config: ButtonCardConfig) {
+    const domain = stateObj ? computeStateDomain(stateObj) : undefined;
+    return (
+      config &&
+      (config.state_color ||
+        (domain === "light" && config.state_color !== false))
+    );
+  }
 
   public getCardSize(): number {
     return (
@@ -146,13 +156,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     const name = this._config.show_name
       ? this._config.name || (stateObj ? computeStateName(stateObj) : "")
       : "";
-    const domain = stateObj ? computeStateDomain(stateObj) : undefined;
 
-    const active =
-      (this._config.state_color ||
-        (domain === "light" && this._config.state_color !== false)) &&
-      stateObj &&
-      stateActive(stateObj);
+    const active = stateObj && stateActive(stateObj);
+    const colored = active && this.getStateColor(stateObj, this._config);
 
     return html`
       <ha-card
@@ -187,9 +193,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                 .icon=${this._config.icon}
                 .state=${stateObj}
                 style=${styleMap({
-                  color: stateObj && active ? this._computeColor(stateObj) : "",
-                  filter:
-                    stateObj && active ? this._computeBrightness(stateObj) : "",
+                  color: colored ? this._computeColor(stateObj) : undefined,
+                  filter: colored
+                    ? this._computeBrightness(stateObj)
+                    : undefined,
                   height: this._config.icon_height
                     ? this._config.icon_height
                     : "",
@@ -305,22 +312,29 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _computeBrightness(stateObj: HassEntity | LightEntity): string {
-    if (!stateObj.attributes.brightness) {
+    if (stateObj.attributes.brightness) {
       const brightness = stateObj.attributes.brightness;
       return `brightness(${(brightness + 245) / 5}%)`;
     }
     return "";
   }
 
-  private _computeColor(stateObj: HassEntity | LightEntity): string {
+  private _computeColor(stateObj: HassEntity): string | undefined {
     if (stateObj.attributes.rgb_color) {
       return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
     }
-    const iconColor = stateColor(stateObj);
-    if (iconColor) {
-      return `rgb(var(--rgb-state-${iconColor}-color))`;
+    if (stateObj.attributes.hvac_action) {
+      const hvacAction = stateObj.attributes.hvac_action;
+      if (["heating", "cooling", "drying"].includes(hvacAction)) {
+        return `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+      }
+      return undefined;
     }
-    return "";
+    const iconColor = stateColorCss(stateObj);
+    if (iconColor) {
+      return `rgb(${iconColor})`;
+    }
+    return undefined;
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
