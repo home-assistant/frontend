@@ -30,7 +30,7 @@
     "@codemirror/gutter": "^0.19.9",
     "@codemirror/highlight": "^0.19.7",
     "@codemirror/history": "^0.19.2",
-    "@codemirror/legacy-modes": "^0.19.0",
+    "@codemirror/legacy-modes": "^6.3.1",
     "@codemirror/rectangular-selection": "^0.19.1",
     "@codemirror/search": "^0.19.6",
     "@codemirror/state": "^0.19.6",
