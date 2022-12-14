@@ -14,11 +14,20 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
     return false;
   }
 
+  // The "off" check is relevant for most domains, but there are exceptions
+  // such as "alert" where "off" is still a somewhat active state and
+  // therefore gets a custom color and "idle" is instead the state that
+  // matches what most other domains consider inactive.
+  if (compareState === OFF && domain !== "alert") {
+    return false;
+  }
+
   // Custom cases
   switch (domain) {
     case "alarm_control_panel":
       return compareState !== "disarmed";
     case "alert":
+      // "on" and "off" are active, as "off" just means alert was acknowledged but is still active
       return compareState !== "idle";
     case "cover":
       return !["closed", "closing"].includes(compareState);
@@ -39,12 +48,6 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
       return compareState === "active";
     case "camera":
       return compareState === "streaming";
-  }
-
-  // Needs to be after the switch statement since some domains such as "alert"
-  // do not consider "off" an inactive state (as there is "idle" for example).
-  if (compareState === OFF) {
-    return false;
   }
 
   return true;
