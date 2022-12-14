@@ -119,8 +119,8 @@ class MqttSubscribeCard extends LitElement {
       this._subscribed = await subscribeMQTTTopic(
         this.hass!,
         this._topic,
-        parseInt(this._qos),
-        (message) => this._handleMessage(message)
+        (message) => this._handleMessage(message),
+        parseInt(this._qos)
       );
     }
   }

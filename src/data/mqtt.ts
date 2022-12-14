@@ -37,8 +37,8 @@ export interface MQTTDeviceDebugInfo {
 export const subscribeMQTTTopic = (
   hass: HomeAssistant,
   topic: string,
-  qos?: number,
-  callback: (message: MQTTMessage) => void
+  callback: (message: MQTTMessage) => void,
+  qos?: number
 ) =>
   hass.connection.subscribeMessage<MQTTMessage>(callback, {
     type: "mqtt/subscribe",
