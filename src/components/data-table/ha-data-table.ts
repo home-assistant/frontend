@@ -627,7 +627,9 @@ export class HaDataTable extends LitElement {
           border-top: 1px solid var(--divider-color);
         }
 
-        .mdc-data-table__row.clickable:not(.mdc-data-table__row--selected):hover {
+        .mdc-data-table__row.clickable:not(
+            .mdc-data-table__row--selected
+          ):hover {
           background-color: rgba(var(--rgb-primary-text-color), 0.04);
         }
 
@@ -734,13 +736,17 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
-        .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(.not-sorted) {
+        .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(
+            .not-sorted
+          ) {
           text-align: left;
         }
         :host([dir="rtl"])
           .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
         :host([dir="rtl"])
-          .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(.not-sorted) {
+          .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(
+            .not-sorted
+          ) {
           text-align: right;
         }
 

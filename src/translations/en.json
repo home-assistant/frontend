@@ -324,6 +324,7 @@
       "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
+      "ok": "OK",
       "yes": "Yes",
       "no": "No",
       "not_now": "Not now",
@@ -634,7 +635,7 @@
         "label": "Calendar",
         "my_calendars": "My Calendars",
         "today": "Today",
-        "event_retrieval_error": "Could not retrieve events for calendars: ",
+        "event_retrieval_error": "Could not retrieve events for calendars:",
         "event": {
           "add": "Add Event",
           "delete": "Delete Event",
@@ -815,6 +816,9 @@
       },
       "image_cropper": {
         "crop": "Crop"
+      },
+      "date-picker": {
+        "today": "Today"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
@@ -3229,7 +3233,8 @@
           "subscribe_to": "Topic to subscribe to",
           "start_listening": "Start listening",
           "stop_listening": "Stop listening",
-          "message_received": "Message {id} received on {topic} at {time}:"
+          "message_received": "Message {id} received on {topic} at {time}:",
+          "qos": "QoS"
         },
         "zha": {
           "common": {
@@ -4345,6 +4350,7 @@
               "primary": "Primary",
               "accent": "Accent",
               "disabled": "Disabled",
+              "inactive": "Inactive",
               "red": "Red",
               "pink": "Pink",
               "purple": "Purple",

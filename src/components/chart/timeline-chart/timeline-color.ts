@@ -5,6 +5,7 @@ import { labBrighten } from "../../../common/color/lab";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColor } from "../../../common/entity/state_color";
+import { UNAVAILABLE } from "../../../data/entity";
 
 const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
   media_player: {
@@ -49,21 +50,23 @@ function computeTimelineStateColor(
   computedStyles: CSSStyleDeclaration,
   stateObj?: HassEntity
 ): string | undefined {
-  if (!stateObj || !stateActive(stateObj, state)) {
-    const rgb = cssToRgb("--rgb-disabled-color", computedStyles);
+  if (!stateObj || state === UNAVAILABLE) {
+    return "transparent";
+  }
+
+  const color = stateColor(stateObj, state);
+
+  if (!color && !stateActive(stateObj, state)) {
+    const rgb = cssToRgb("--rgb-state-inactive-color", computedStyles);
     if (!rgb) return undefined;
     return rgb2hex(rgb);
   }
-  const color = stateColor(stateObj, state);
-
-  if (!color) return undefined;
-
-  const domain = computeDomain(stateObj.entity_id);
 
   const rgb = cssToRgb(`--rgb-state-${color}-color`, computedStyles);
 
   if (!rgb) return undefined;
 
+  const domain = computeDomain(stateObj.entity_id);
   const shade = DOMAIN_STATE_SHADES[domain]?.[state] as number | number;
   if (!shade) {
     return rgb2hex(rgb);

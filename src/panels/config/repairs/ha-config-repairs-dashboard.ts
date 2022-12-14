@@ -117,7 +117,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         <div class="content">
           <ha-card outlined>
             <div class="card-content">
-              ${this._repairsIssues.length
+              ${issues.length
                 ? html`
                     <ha-config-repairs
                       .hass=${this.hass}
