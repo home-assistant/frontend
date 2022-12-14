@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../data/entity";
+import { OFF, UNAVAILABLE, UNAVAILABLE_STATES } from "../../data/entity";
 import { computeDomain } from "./compute_domain";
 
 export function stateActive(stateObj: HassEntity, state?: string): boolean {
@@ -43,7 +43,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
 
   // Needs to be after the switch statement since some domains such as "alert"
   // do not consider "off" an inactive state (as there is "idle" for example).
-  if (compareState === "off") {
+  if (compareState === OFF) {
     return false;
   }
 
