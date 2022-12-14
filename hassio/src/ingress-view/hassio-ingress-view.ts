@@ -59,7 +59,11 @@ class HassioIngressView extends LitElement {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
-    const iframe = html`<iframe src=${this._addon.ingress_url!}></iframe>`;
+    const iframe = html`<iframe
+      .title=${this._addon.name}
+      .src=${this._addon.ingress_url!}
+    >
+    </iframe>`;
 
     if (!this.ingressPanel) {
       return html`<hass-subpage

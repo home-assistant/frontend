@@ -1,8 +1,11 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
+import { LocalStorage } from "../../../../../common/decorators/local-storage";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-switch";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-subpage";
@@ -18,26 +21,17 @@ class HaPanelDevMqtt extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @state() private topic = "";
+  @LocalStorage("panel-dev-mqtt-topic-ls", true, false)
+  private topic = "";
 
-  @state() private payload = "";
+  @LocalStorage("panel-dev-mqtt-payload-ls", true, false)
+  private payload = "";
 
-  @state() private qos = "0";
+  @LocalStorage("panel-dev-mqtt-qos-ls", true, false)
+  private qos = "0";
 
-  private inited = false;
-
-  protected firstUpdated() {
-    if (localStorage && localStorage["panel-dev-mqtt-topic"]) {
-      this.topic = localStorage["panel-dev-mqtt-topic"];
-    }
-    if (localStorage && localStorage["panel-dev-mqtt-payload"]) {
-      this.payload = localStorage["panel-dev-mqtt-payload"];
-    }
-    if (localStorage && localStorage["panel-dev-mqtt-qos"]) {
-      this.qos = localStorage["panel-dev-mqtt-qos"];
-    }
-    this.inited = true;
-  }
+  @LocalStorage("panel-dev-mqtt-retain-ls", true, false)
+  private retain = false;
 
   protected render(): TemplateResult {
     return html`
@@ -70,7 +64,14 @@ class HaPanelDevMqtt extends LitElement {
                     html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
                 )}
               </ha-select>
-
+              <ha-formfield
+                label=${this.hass!.localize("ui.panel.config.mqtt.retain")}
+              >
+                <ha-switch
+                  @change=${this._handleRetain}
+                  .checked=${this.retain}
+                ></ha-switch>
+              </ha-formfield>
               <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor
                 mode="jinja2"
@@ -99,24 +100,21 @@ class HaPanelDevMqtt extends LitElement {
 
   private _handleTopic(ev: CustomEvent) {
     this.topic = (ev.target! as any).value;
-    if (localStorage && this.inited) {
-      localStorage["panel-dev-mqtt-topic"] = this.topic;
-    }
   }
 
   private _handlePayload(ev: CustomEvent) {
     this.payload = ev.detail.value;
-    if (localStorage && this.inited) {
-      localStorage["panel-dev-mqtt-payload"] = this.payload;
-    }
   }
 
   private _handleQos(ev: CustomEvent) {
     const newValue = (ev.target! as any).value;
-    if (newValue >= 0 && newValue !== this.qos && localStorage && this.inited) {
+    if (newValue >= 0 && newValue !== this.qos) {
       this.qos = newValue;
-      localStorage["panel-dev-mqtt-qos"] = this.qos;
     }
+  }
+
+  private _handleRetain(ev: CustomEvent) {
+    this.retain = (ev.target! as any).checked;
   }
 
   private _publish(): void {
@@ -127,6 +125,7 @@ class HaPanelDevMqtt extends LitElement {
       topic: this.topic,
       payload_template: this.payload,
       qos: parseInt(this.qos),
+      retain: this.retain,
     });
   }
 

@@ -32,6 +32,8 @@ export class StateBadge extends LitElement {
 
   @property({ type: Boolean }) public stateColor?: boolean;
 
+  @property() public color?: string;
+
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
@@ -59,11 +61,9 @@ export class StateBadge extends LitElement {
     }
 
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
-    const active = this._stateColor && stateObj ? stateActive(stateObj) : false;
 
     return html`<ha-state-icon
       style=${styleMap(this._iconStyle)}
-      ?data-active=${active}
       data-domain=${ifDefined(domain)}
       data-state=${ifDefined(stateObj?.state)}
       .icon=${this.overrideIcon}
@@ -77,7 +77,8 @@ export class StateBadge extends LitElement {
       !changedProps.has("stateObj") &&
       !changedProps.has("overrideImage") &&
       !changedProps.has("overrideIcon") &&
-      !changedProps.has("stateColor")
+      !changedProps.has("stateColor") &&
+      !changedProps.has("color")
     ) {
       return;
     }
@@ -108,6 +109,9 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
+      } else if (this.color) {
+        // Externally provided overriding color wins over state color
+        iconStyle.color = this.color;
       } else if (this._stateColor && stateActive(stateObj)) {
         const color = stateColorCss(stateObj);
         if (color) {

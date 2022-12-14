@@ -78,8 +78,8 @@ export class HuiGaugeCardEditor
           name: "",
           type: "grid",
           schema: [
-            { name: "min", selector: { number: { min: 1, mode: "box" } } },
-            { name: "max", selector: { number: { min: 1, mode: "box" } } },
+            { name: "min", selector: { number: { mode: "box" } } },
+            { name: "max", selector: { number: { mode: "box" } } },
           ],
         },
         {
