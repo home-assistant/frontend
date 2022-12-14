@@ -32,7 +32,7 @@ import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
 
-const CALENDAR_DOMAINS = "calendar";
+const CALENDAR_DOMAINS = ["calendar"];
 
 @customElement("dialog-calendar-event-editor")
 class DialogCalendarEventEditor extends LitElement {
