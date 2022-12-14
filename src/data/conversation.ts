@@ -45,7 +45,7 @@ interface IntentResultError extends IntentResultBase {
 }
 
 interface ConversationResult {
-  conversation_id: string;
+  conversation_id: string | null;
   response:
     | IntentResultActionDone
     | IntentResultQueryAnswer
