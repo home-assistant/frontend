@@ -22,7 +22,7 @@ import type { HaTextField } from "../../components/ha-textfield";
 import {
   AgentInfo,
   getAgentInfo,
-  processText,
+  processConversationInput,
   setConversationOnboarding,
 } from "../../data/conversation";
 import { haStyleDialog } from "../../resources/styles";
@@ -274,13 +274,17 @@ export class HaVoiceCommandDialog extends LitElement {
     // To make sure the answer is placed at the right user text, we add it before we process it
     this._addMessage(message);
     try {
-      const response = await processText(
+      const response = await processConversationInput(
         this.hass,
         text,
         this._conversationId!
       );
-      const plain = response.speech.plain;
-      message.text = plain.speech;
+      const plain = response.response.speech?.plain;
+      if (plain) {
+        message.text = plain.speech;
+      } else {
+        message.text = "<silence>";
+      }
 
       this.requestUpdate("_conversation");
     } catch {
