@@ -747,7 +747,8 @@
         "close": "Close"
       },
       "image_cropper": {
-        "crop": "Crop"
+        "crop": "Crop",
+        "crop_image": "Picture to crop"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
