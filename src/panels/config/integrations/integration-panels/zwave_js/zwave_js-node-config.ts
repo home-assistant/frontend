@@ -131,7 +131,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configTabs}
       >
-        <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
+        <ha-config-section
+          .narrow=${this.narrow}
+          .isWide=${this.isWide}
+          vertical
+        >
           <div slot="header">
             ${this.hass.localize("ui.panel.config.zwave_js.node_config.header")}
           </div>
@@ -190,11 +194,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         <br />
         <span>${item.property}</span>
       </span>
-      <span slot="heading" .title=${item.metadata.label}>
+      <span slot="heading" class="heading" .title=${item.metadata.label}>
         ${item.metadata.label}
       </span>
       <span slot="description">
-        ${item.metadata.description}
+        ${item.metadata.description || item.metadata.label}
         ${item.metadata.description !== null && !item.metadata.writeable
           ? html`<br />`
           : ""}
@@ -236,7 +240,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     ) {
       return html`
         ${labelAndDescription}
-        <div class="toggle">
+        <div class="switch">
           <ha-switch
             .property=${item.property}
             .propertyKey=${item.property_key}
@@ -271,22 +275,20 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (item.configuration_value_type === "enumerated") {
       return html`
         ${labelAndDescription}
-        <div class="flex">
-          <ha-select
-            .disabled=${!item.metadata.writeable}
-            .value=${item.value?.toString()}
-            .key=${id}
-            .property=${item.property}
-            .propertyKey=${item.property_key}
-            @selected=${this._dropdownSelected}
-          >
-            ${Object.entries(item.metadata.states).map(
-              ([key, entityState]) => html`
-                <mwc-list-item .value=${key}>${entityState}</mwc-list-item>
-              `
-            )}
-          </ha-select>
-        </div>
+        <ha-select
+          .disabled=${!item.metadata.writeable}
+          .value=${item.value?.toString()}
+          .key=${id}
+          .property=${item.property}
+          .propertyKey=${item.property_key}
+          @selected=${this._dropdownSelected}
+        >
+          ${Object.entries(item.metadata.states).map(
+            ([key, entityState]) => html`
+              <mwc-list-item .value=${key}>${entityState}</mwc-list-item>
+            `
+          )}
+        </ha-select>
       `;
     }
 
@@ -446,15 +448,16 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           padding-right: 40px;
         }
 
-        ha-card {
-          margin: 0 auto;
-          max-width: 600px;
-        }
-
         ha-settings-row {
+          --settings-row-prefix-display: contents;
+          --settings-row-content-width: 100%;
           --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
           padding: 4px 16px;
+        }
+
+        ha-settings-row:first-child {
+          border-top: none;
         }
 
         .prefix {
@@ -470,13 +473,20 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           font-size: 1.3em;
         }
 
+        .heading {
+          white-space: normal;
+        }
+
         :host(:not([narrow])) ha-settings-row ha-textfield {
-          width: 30%;
           text-align: right;
         }
 
         ha-card:last-child {
           margin-bottom: 24px;
+        }
+
+        .switch {
+          text-align: right;
         }
       `,
     ];
