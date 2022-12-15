@@ -116,14 +116,14 @@ const OVERRIDE_NUMBER_UNITS = {
 
 const OVERRIDE_SENSOR_UNITS = {
   distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
-  gas: ["ccf", "ft³", "m³"],
+  gas: ["CCF", "ft³", "m³"],
   precipitation: ["cm", "in", "mm"],
   precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
   speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mm/h", "mph"],
   temperature: ["°C", "°F", "K"],
-  volume: ["ccf", "fl. oz.", "ft³", "gal", "L", "mL", "m³"],
-  water: ["ccf", "ft³", "gal", "L", "m³"],
+  volume: ["CCF", "fl. oz.", "ft³", "gal", "L", "mL", "m³"],
+  water: ["CCF", "ft³", "gal", "L", "m³"],
   weight: ["g", "kg", "lb", "mg", "oz", "st", "µg"],
   wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
 };
