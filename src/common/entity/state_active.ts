@@ -30,7 +30,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
       // "on" and "off" are active, as "off" just means alert was acknowledged but is still active
       return compareState !== "idle";
     case "cover":
-      return !["closed", "closing"].includes(compareState);
+      return compareState !== "closed";
     case "device_tracker":
     case "person":
       return compareState !== "not_home";
