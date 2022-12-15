@@ -282,6 +282,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           overflow: hidden;
         }
 
+        ha-card:focus {
+          outline: none;
+        }
+
         ha-state-icon {
           width: 40%;
           height: auto;
