@@ -1,14 +1,9 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { getGraphColorByIndex } from "../../../common/color/colors";
-import {
-  hex2rgb,
-  lab2hex,
-  rgb2lab,
-} from "../../../common/color/convert-color";
+import { hex2rgb, lab2hex, rgb2lab } from "../../../common/color/convert-color";
 import { labBrighten } from "../../../common/color/lab";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateActive } from "../../../common/entity/state_active";
-import { stateColor } from "../../../common/entity/state_color";
+import { stateColorProperties } from "../../../common/entity/state_color";
 import { UNAVAILABLE } from "../../../data/entity";
 
 const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
@@ -22,13 +17,21 @@ const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
 };
 
 function cssToHex(
-  cssVariable: string,
+  cssProperty: string | string[],
   computedStyles: CSSStyleDeclaration
 ): string | undefined {
-  if (!cssVariable.endsWith("-color")) {
+  if (Array.isArray(cssProperty)) {
+    for (const property of cssProperty) {
+      const value = cssToHex(property, computedStyles);
+      if (value) return value;
+    }
     return undefined;
   }
-  return computedStyles.getPropertyValue(cssVariable).trim() || undefined;
+
+  if (!cssProperty.endsWith("-color")) {
+    return undefined;
+  }
+  return computedStyles.getPropertyValue(cssProperty).trim() || undefined;
 }
 
 function computeTimelineStateColor(
@@ -40,13 +43,13 @@ function computeTimelineStateColor(
     return "transparent";
   }
 
-  const color = stateColor(stateObj, state);
+  const properties = stateColorProperties(stateObj, state);
 
-  if (!color && !stateActive(stateObj, state)) {
-    return cssToHex("--state-inactive-color", computedStyles);
+  if (!properties) {
+    return undefined;
   }
 
-  const rgb = cssToHex(`--state-${color}-color`, computedStyles);
+  const rgb = cssToHex(properties, computedStyles);
 
   if (!rgb) return undefined;
 

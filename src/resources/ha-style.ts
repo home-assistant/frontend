@@ -141,22 +141,33 @@ documentContainer.innerHTML = `<custom-style>
       --state-unavailable-color: var(--disabled-color);
 
       /* rgb state domain colors */
-      --state-alarm-armed-color: var(--green-color);
-      --state-alarm-arming-color: var(--orange-color);
-      --state-alarm-disarmed-color: var(--grey-color);
-      --state-alarm-pending-color: var(--orange-color);
-      --state-alarm-triggered-color: var(--red-color);
-      --state-alert-color: var(--red-color);
+      --state-alarm_control_panel-armed_away-color: var(--green-color);
+      --state-alarm_control_panel-armed_custom_bypass-color: var(--green-color);
+      --state-alarm_control_panel-armed_home-color: var(--green-color);
+      --state-alarm_control_panel-armed_night-color: var(--green-color);
+      --state-alarm_control_panel-armed_vacation-color: var(--green-color);
+      --state-alarm_control_panel-arming-color: var(--orange-color);
+      --state-alarm_control_panel-disarmed-color: var(--state-inactive-color);
+      --state-alarm_control_panel-disarming-color: var(--orange-color);
+      --state-alarm_control_panel-pending-color: var(--orange-color);
+      --state-alarm_control_panel-triggered-color: var(--red-color);
+
+
+      --state-alert-on-color: var(--red-color);
       --state-alert-off-color: var(--orange-color);
+      --state-alert-idle-color: var(--grey-color);
+
       --state-automation-color: var(--amber-color);
-      --state-binary-sensor-alerting-color: var(--red-color);
-      --state-binary-sensor-color: var(--amber-color);
+
+      --state-binary_sensor-alerting-color: var(--red-color);
+      --state-binary_sensor-color: var(--amber-color);
+      
       --state-calendar-color: var(--amber-color);
       --state-camera-color: var(--amber-color);
       --state-climate-auto-color: var(--green-color);
       --state-climate-cool-color: var(--blue-color);
       --state-climate-dry-color: var(--orange-color);
-      --state-climate-fan-only-color: var(--cyan-color);
+      --state-climate-fan_only-color: var(--cyan-color);
       --state-climate-heat-color: var(--deep-orange-color);
       --state-climate-heat-cool-color: var(--amber-color);
       --state-climate-idle-color: var(--grey-color);
@@ -170,10 +181,13 @@ documentContainer.innerHTML = `<custom-style>
       --state-lock-locked-color: var(--green-color);
       --state-lock-pending-color: var(--orange-color);
       --state-lock-unlocked-color: var(--red-color);
-      --state-media-player-color: var(--light-blue-color);
+      --state-media_player-color: var(--light-blue-color);
       --state-person-home-color: var(--green-color);
-      --state-person-not-home-color: var(--grey-color);
+      --state-person-not_home-color: var(--grey-color);
       --state-person-zone-color: var(--blue-color);
+      --state-device_tracker-home-color: var(--green-color);
+      --state-device_tracker-not_home-color: var(--grey-color);
+      --state-device_tracker-zone-color: var(--blue-color);
       --state-remote-color: var(--amber-color);
       --state-script-color: var(--amber-color);
       --state-sensor-battery-high-color: var(--green-color);

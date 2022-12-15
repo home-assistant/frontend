@@ -111,9 +111,10 @@ const ENTITIES: HassEntity[] = [
   createEntity("automation.off", "off"),
   createEntity("automation.on", "on"),
   // Binary Sensor
-  ...BINARY_SENSOR_DEVICE_CLASSES.map((dc) =>
-    createEntity(`binary_sensor.${dc}`, "on", dc)
-  ),
+  ...BINARY_SENSOR_DEVICE_CLASSES.map((dc) => [
+    createEntity(`binary_sensor.${dc}`, "off", dc),
+    createEntity(`binary_sensor.${dc}`, "on", dc),
+  ]).reduce((arr, item) => [...arr, ...item], []),
   // Button
   createEntity("button.restart", "unknown", "restart"),
   createEntity("button.update", "unknown", "update"),
