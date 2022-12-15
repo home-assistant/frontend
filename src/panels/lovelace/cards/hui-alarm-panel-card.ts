@@ -269,7 +269,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         flex-direction: column;
         align-items: center;
         box-sizing: border-box;
-        --alarm-state-color: rgb(var(--rgb-state-alarm-armed-color));
+        --alarm-state-color: var(--state-alarm-armed-color);
       }
 
       ha-chip {
@@ -287,25 +287,25 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       }
 
       .unavailable {
-        --alarm-state-color: rgb(var(--rgb-state-unavailable-color));
+        --alarm-state-color: var(--state-unavailable-color);
       }
 
       .disarmed {
-        --alarm-state-color: rgb(var(--rgb-state-alarm-disarmed-color));
+        --alarm-state-color: var(--state-alarm-disarmed-color);
       }
 
       .triggered {
-        --alarm-state-color: rgb(var(--rgb-state-alarm-triggered-color));
+        --alarm-state-color: var(--state-alarm-triggered-color);
         animation: pulse 1s infinite;
       }
 
       .arming {
-        --alarm-state-color: rgb(var(--rgb-state-alarm-arming-color));
+        --alarm-state-color: var(--state-alarm-arming-color);
         animation: pulse 1s infinite;
       }
 
       .pending {
-        --alarm-state-color: rgb(var(--rgb-state-alarm-pending-color));
+        --alarm-state-color: var(--state-alarm-pending-color);
         animation: pulse 1s infinite;
       }
 

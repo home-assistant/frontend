@@ -577,7 +577,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .indicator {
-          background-color: rgb(var(--rgb-disabled-color));
+          background-color: var(--disabled-color);
           height: 8px;
           width: 8px;
           border-radius: 4px;

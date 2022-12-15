@@ -325,13 +325,13 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
       if (["heating", "cooling", "drying"].includes(hvacAction)) {
-        return `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+        return CLIMATE_HVAC_ACTION_COLORS[hvacAction];
       }
       return undefined;
     }
     const iconColor = stateColorCss(stateObj);
     if (iconColor) {
-      return `rgb(${iconColor})`;
+      return iconColor;
     }
     return undefined;
   }

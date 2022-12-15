@@ -115,7 +115,7 @@ export class StateBadge extends LitElement {
       } else if (this._stateColor && stateActive(stateObj)) {
         const color = stateColorCss(stateObj);
         if (color) {
-          iconStyle.color = `rgb(${color})`;
+          iconStyle.color = color;
         }
         if (stateObj.attributes.rgb_color) {
           iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
@@ -135,7 +135,7 @@ export class StateBadge extends LitElement {
         if (stateObj.attributes.hvac_action) {
           const hvacAction = stateObj.attributes.hvac_action;
           if (["heating", "cooling", "drying"].includes(hvacAction)) {
-            iconStyle.color = `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+            iconStyle.color = CLIMATE_HVAC_ACTION_COLORS[hvacAction];
           } else {
             delete iconStyle.color;
           }

@@ -23,7 +23,7 @@ export const computeTileBadge: ComputeBadgeFunction = (stateObj, hass) => {
   }
   if (stateObj.state === UNAVAILABLE) {
     return {
-      color: "var(--rgb-orange-color)",
+      color: "var(--orange-color)",
       iconPath: mdiExclamationThick,
     };
   }

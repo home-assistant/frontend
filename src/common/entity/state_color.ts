@@ -36,17 +36,17 @@ const STATIC_ACTIVE_COLORED_DOMAIN = new Set([
 export const stateColorCss = (stateObj: HassEntity, state?: string) => {
   const compareState = state !== undefined ? state : stateObj?.state;
   if (compareState === UNAVAILABLE) {
-    return `var(--rgb-state-unavailable-color)`;
+    return `var(--state-unavailable-color)`;
   }
 
   const domainColor = stateColor(stateObj, state);
 
   if (domainColor) {
-    return `var(--rgb-state-${domainColor}-color)`;
+    return `var(--state-${domainColor}-color)`;
   }
 
   if (!stateActive(stateObj, state)) {
-    return `var(--rgb-state-inactive-color)`;
+    return `var(--state-inactive-color)`;
   }
 
   return undefined;
