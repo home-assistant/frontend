@@ -74,6 +74,7 @@ export class HaBarSwitch extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="switch">
+        <div class="background"></div>
         <div class="button" aria-hidden="true">
           ${this.checked
             ? this.pathOn
@@ -91,8 +92,9 @@ export class HaBarSwitch extends LitElement {
     return css`
       :host {
         display: block;
-        --switch-bar-color-on: var(--rgb-primary-color);
-        --switch-bar-color-off: var(--rgb-disabled-color);
+        --switch-bar-on-color: rgb(var(--rgb-primary-color));
+        --switch-bar-off-color: rgb(var(--rgb-disabled-color));
+        --switch-bar-background-opacity: 0.2;
         --switch-bar-thickness: 40px;
         --switch-bar-border-radius: 12px;
         --switch-bar-padding: 4px;
@@ -109,10 +111,19 @@ export class HaBarSwitch extends LitElement {
         height: 100%;
         width: 100%;
         border-radius: var(--switch-bar-border-radius);
-        background-color: rgba(var(--switch-bar-color-off), 0.3);
+        overflow: hidden;
         padding: var(--switch-bar-padding);
-        transition: background-color 180ms ease-in-out;
         display: flex;
+      }
+      .switch .background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-color: var(--switch-bar-off-color);
+        transition: background-color 180ms ease-in-out;
+        opacity: var(--switch-bar-background-opacity);
       }
       .switch .button {
         width: 50%;
@@ -123,18 +134,18 @@ export class HaBarSwitch extends LitElement {
         );
         transition: transform 180ms ease-in-out,
           background-color 180ms ease-in-out;
-        background-color: rgb(var(--switch-bar-color-off));
+        background-color: var(--switch-bar-off-color);
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
       }
-      :host([checked]) .switch {
-        background-color: rgba(var(--switch-bar-color-on), 0.3);
+      :host([checked]) .switch .background {
+        background-color: var(--switch-bar-on-color);
       }
       :host([checked]) .switch .button {
         transform: translateX(100%);
-        background-color: rgb(var(--switch-bar-color-on));
+        background-color: var(--switch-bar-on-color);
       }
       :host([reversed]) .switch {
         flex-direction: row-reverse;
