@@ -47,6 +47,7 @@ interface SplittedByAreaDevice {
 }
 
 const splitByAreaDevice = (
+  areaEntries: HomeAssistant["areas"],
   deviceEntries: HomeAssistant["devices"],
   entityEntries: HomeAssistant["entities"],
   entities: HassEntities
@@ -55,25 +56,21 @@ const splitByAreaDevice = (
   const areasWithEntities: SplittedByAreaDevice["areasWithEntities"] = {};
   const devicesWithEntities: SplittedByAreaDevice["devicesWithEntities"] = {};
 
-  const areaDevices = new Set(
-    Object.values(deviceEntries)
-      .filter((device) => device.area_id)
-      .map((device) => device.id)
-  );
   for (const entity of Object.values(entityEntries)) {
-    if (
-      (entity.area_id ||
-        (entity.device_id && areaDevices.has(entity.device_id))) &&
-      entity.entity_id in allEntities
-    ) {
-      const areaId =
-        entity.area_id || deviceEntries[entity.device_id!].area_id!;
+    const areaId =
+      entity.area_id ||
+      (entity.device_id && deviceEntries[entity.device_id].area_id);
+    if (areaId && areaId in areaEntries && entity.entity_id in allEntities) {
       if (!(areaId in areasWithEntities)) {
         areasWithEntities[areaId] = [];
       }
       areasWithEntities[areaId].push(allEntities[entity.entity_id]);
       delete allEntities[entity.entity_id];
-    } else if (entity.device_id && entity.entity_id in allEntities) {
+    } else if (
+      entity.device_id &&
+      entity.device_id in deviceEntries &&
+      entity.entity_id in allEntities
+    ) {
       if (!(entity.device_id in devicesWithEntities)) {
         devicesWithEntities[entity.device_id] = [];
       }
@@ -460,6 +457,7 @@ export const generateDefaultViewConfig = (
   }
 
   const splittedByAreaDevice = splitByAreaDevice(
+    areaEntries,
     deviceEntries,
     entityEntries,
     states
