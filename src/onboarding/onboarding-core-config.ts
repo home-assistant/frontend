@@ -20,6 +20,7 @@ import { SYMBOL_TO_ISO } from "../data/currency";
 import { onboardCoreConfigStep } from "../data/onboarding";
 import type { PolymerChangedEvent } from "../polymer-types";
 import type { HomeAssistant } from "../types";
+import "../components/ha-alert";
 import "../components/ha-radio";
 import "../components/ha-formfield";
 import type { HaRadio } from "../components/ha-radio";
@@ -53,6 +54,8 @@ class OnboardingCoreConfig extends LitElement {
 
   @state() private _timeZone?: string;
 
+  @state() private _error?: string;
+
   @state() private _language?: ConfigUpdateValues["language"];
 
   @state() private _country?: ConfigUpdateValues["country"];
@@ -60,7 +63,17 @@ class OnboardingCoreConfig extends LitElement {
   @query("ha-locations-editor", true) private map!: HaLocationsEditor;
 
   protected render(): TemplateResult {
+    const countryInvalid = !this._isCountryValid();
+    const languageInvalid = !this._isLanguageValid();
+    const formInvalid = countryInvalid && languageInvalid;
     return html`
+
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""
+      }
+
       <p>
         ${this.onboardingLocalize(
           "ui.panel.page-onboarding.core-config.intro",
@@ -117,9 +130,13 @@ class OnboardingCoreConfig extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.config.core.section.core.core_config.country"
           )}
+          .errorMessage=${this.onboardingLocalize(
+            "ui.panel.page-onboarding.core-config.country_required"
+          )}
           name="country"
           .disabled=${this._working}
           .value=${this._countryValue}
+          .invalid=${countryInvalid}
           @change=${this._handleChange}
         ></ha-textfield>
 
@@ -128,9 +145,13 @@ class OnboardingCoreConfig extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.config.core.section.core.core_config.language"
           )}
+          .errorMessage=${this.onboardingLocalize(
+            "ui.panel.page-onboarding.core-config.language_required"
+          )}
           name="language"
           .disabled=${this._working}
           .value=${this._languageValue}
+          .invalid=${languageInvalid}
           @change=${this._handleChange}
         ></ha-textfield>
       </div>
@@ -213,35 +234,38 @@ class OnboardingCoreConfig extends LitElement {
       </div>
 
       <div class="row">
-            <div class="flex">
-              ${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.currency"
-              )}<br />
-              <a
-                href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
-                target="_blank"
-                rel="noopener noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.find_currency_value"
-                )}</a
-              >
-            </div>
-
-            <ha-textfield
-              class="flex"
-              .label=${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.currency"
-              )}
-              name="currency"
-              .disabled=${this._working}
-              .value=${this._currencyValue}
-              @change=${this._handleChange}
-            ></ha-textfield>
-          </div>
+        <div class="flex">
+          ${this.hass.localize(
+            "ui.panel.config.core.section.core.core_config.currency"
+          )}<br />
+          <a
+            href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
+            target="_blank"
+            rel="noopener noreferrer"
+          >${this.hass.localize(
+            "ui.panel.config.core.section.core.core_config.find_currency_value"
+          )}</a
+          >
         </div>
 
+        <ha-textfield
+          class="flex"
+          .label=${this.hass.localize(
+            "ui.panel.config.core.section.core.core_config.currency"
+          )}
+          name="currency"
+          .disabled=${this._working}
+          .value=${this._currencyValue}
+          @change=${this._handleChange}
+        ></ha-textfield>
+      </div>
+      </div>
+
       <div class="footer">
-        <mwc-button @click=${this._save} .disabled=${this._working}>
+        <mwc-button
+          @click=${this._save}
+          .disabled=${this._working || formInvalid}
+        >
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.core-config.finish"
           )}
@@ -330,6 +354,14 @@ class OnboardingCoreConfig extends LitElement {
     return this._currency !== undefined ? this._currency : "";
   }
 
+  private _isCountryValid() {
+    return this._countryValue.trim() !== "";
+  }
+
+  private _isLanguageValid() {
+    return this._languageValue.trim() !== "";
+  }
+
   private _markerLocation = memoizeOne(
     (location: [number, number]): MarkerLocation[] => [
       {
@@ -342,6 +374,7 @@ class OnboardingCoreConfig extends LitElement {
   );
 
   private _handleChange(ev: PolymerChangedEvent<string>) {
+    this._error = undefined;
     const target = ev.currentTarget as HaTextField;
 
     let value = target.value;
@@ -367,6 +400,7 @@ class OnboardingCoreConfig extends LitElement {
 
   private async _detect() {
     this._working = true;
+    this._error = undefined;
     try {
       const values = await detectCoreConfig(this.hass);
 
@@ -399,6 +433,16 @@ class OnboardingCoreConfig extends LitElement {
       }
       this._language = getLocalLanguage();
     } catch (err: any) {
+      this._error = err.message
+        ? this.onboardingLocalize(
+            "ui.panel.page-onboarding.core-config.location_detection_error",
+            "message",
+            err.message
+          )
+        : this.onboardingLocalize(
+            "ui.panel.page-onboarding.core-config.unknown_error"
+          );
+
       alert(`Failed to detect location information: ${err.message}`);
     } finally {
       this._working = false;
@@ -407,14 +451,6 @@ class OnboardingCoreConfig extends LitElement {
 
   private async _save(ev) {
     ev.preventDefault();
-    if (!this._countryValue) {
-      alert(`Please fill in a country`);
-      return;
-    }
-    if (!this._languageValue) {
-      alert(`Please fill in a language`);
-      return;
-    }
     this._working = true;
     try {
       const location = this._locationValue;
@@ -436,7 +472,11 @@ class OnboardingCoreConfig extends LitElement {
       });
     } catch (err: any) {
       this._working = false;
-      alert(`Failed to save: ${err.message}`);
+      this._error =
+        err.message ||
+        this.onboardingLocalize(
+          "ui.panel.page-onboarding.core-config.unknown_error"
+        );
     }
   }
 

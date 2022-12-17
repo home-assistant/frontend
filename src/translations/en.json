@@ -4931,6 +4931,10 @@
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "button_detect": "Detect",
+          "country_required": "Country is required",
+          "language_required": "Language is required",
+          "unknown_error": "Something went wrong",
+          "location_detection_error": "Failed to detect location information: {message}",
           "finish": "Next"
         },
         "integration": {
