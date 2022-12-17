@@ -1,4 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/polymer/lib/elements/dom-if";
 import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
 import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -41,19 +42,21 @@ class StateCardNumber extends mixinBehaviors(
 
       <div class="horizontal justified layout" id="number_card">
         ${this.stateInfoTemplate}
-        <ha-slider
-          min="[[min]]"
-          max="[[max]]"
-          value="{{value}}"
-          step="[[step]]"
-          hidden="[[hiddenslider]]"
-          pin
-          on-change="selectedValueChanged"
-          on-click="stopPropagation"
-          id="slider"
-          ignore-bar-touch=""
-        >
-        </ha-slider>
+        <template is="dom-if" if="[[hiddenbox]]">
+          <ha-slider
+            min="[[min]]"
+            max="[[max]]"
+            value="{{value}}"
+            step="[[step]]"
+            hidden="[[hiddenslider]]"
+            pin
+            on-change="selectedValueChanged"
+            on-click="stopPropagation"
+            id="slider"
+            ignore-bar-touch=""
+          >
+          </ha-slider>
+        </template>
         <ha-textfield
           auto-validate=""
           pattern="[0-9]+([\\.][0-9]+)?"
