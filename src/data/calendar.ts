@@ -163,9 +163,9 @@ export const updateCalendarEvent = (
   hass: HomeAssistant,
   entityId: string,
   uid: string,
+  event: CalendarEventMutableParams,
   recurrence_id?: string,
-  recurrence_range?: RecurrenceRange,
-  event: CalendarEventMutableParams
+  recurrence_range?: RecurrenceRange
 ) =>
   hass.callWS<void>({
     type: "calendar/event/update",

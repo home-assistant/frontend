@@ -472,7 +472,7 @@ class DialogCalendarEventEditor extends LitElement {
 
     this._submitting = true;
     const entry = this._params!.entry!;
-    let range = RecurrenceRange.THISEVENT;
+    let range: RecurrenceRange | undefined = RecurrenceRange.THISEVENT;
     if (entry.recurrence_id) {
       range = await showConfirmEventDialog(this, {
         title: this.hass.localize(
@@ -499,9 +499,9 @@ class DialogCalendarEventEditor extends LitElement {
         this.hass!,
         this._calendarId!,
         entry.uid!,
+        this._calculateData(),
         entry.recurrence_id || "",
-        range!,
-        this._calculateData()
+        range!
       );
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
