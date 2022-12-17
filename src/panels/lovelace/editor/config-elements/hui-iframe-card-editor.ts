@@ -1,7 +1,7 @@
 import "../../../../components/ha-form/ha-form";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, object, optional, string } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -15,6 +15,7 @@ const cardConfigStruct = assign(
     title: optional(string()),
     url: optional(string()),
     aspect_ratio: optional(string()),
+    allow_open_top_navigation: optional(boolean()),
   })
 );
 
@@ -26,6 +27,7 @@ const SCHEMA = [
     schema: [
       { name: "url", required: true, selector: { text: {} } },
       { name: "aspect_ratio", selector: { text: {} } },
+      { name: "allow_open_top_navigation", selector: { boolean: {} } },
     ],
   },
 ] as const;
