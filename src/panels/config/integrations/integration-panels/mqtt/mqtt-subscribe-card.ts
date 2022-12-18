@@ -170,6 +170,13 @@ class MqttSubscribeCard extends LitElement {
       pre {
         font-family: var(--code-font-family, monospace);
       }
+      ha-textfield {
+        width: calc(100% - 250px);
+        min-width: 120px;
+      }
+      ha-select {
+        width: 96px;
+      }
     `;
   }
 }

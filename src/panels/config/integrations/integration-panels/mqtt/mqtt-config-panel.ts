@@ -160,6 +160,16 @@ class HaPanelDevMqtt extends LitElement {
           margin: 0 auto;
           direction: ltr;
         }
+        ha-textfield {
+          width: calc(100% - 250px);
+          min-width: 120px;
+        }
+        ha-select {
+          width: 96px;
+        }
+        mwc-switch {
+          width: 146px;
+        }
         ha-card:first-child {
           margin-bottom: 16px;
         }
