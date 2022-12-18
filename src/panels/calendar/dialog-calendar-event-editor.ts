@@ -7,6 +7,7 @@ import {
   differenceInMilliseconds,
   startOfHour,
 } from "date-fns/esm";
+import { formatInTimeZone, toDate } from "date-fns-tz";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -60,6 +61,12 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _submitting = false;
 
+  // Dates are manipulated and displayed in the browser timezone
+  // which may be different from the Home Assistant timezone. When
+  // events are persisted, they are relative to the Home Assistant
+  // timezone, but floating without a timezone.
+  private _timeZone: string;
+
   public showDialog(params: CalendarEventEditDialogParams): void {
     this._error = undefined;
     this._info = undefined;
@@ -71,6 +78,7 @@ class DialogCalendarEventEditor extends LitElement {
           computeStateDomain(stateObj) === "calendar" &&
           supportsFeature(stateObj, CalendarEntityFeature.CREATE_EVENT)
       )?.entity_id;
+    this._timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     if (params.entry) {
       const entry = params.entry!;
       this._allDay = isDate(entry.dtstart);
@@ -281,19 +289,35 @@ class DialogCalendarEventEditor extends LitElement {
   private _isEditableCalendar = (entityStateObj: HassEntity) =>
     supportsFeature(entityStateObj, CalendarEntityFeature.CREATE_EVENT);
 
-  private _getLocaleStrings = memoizeOne((startDate?: Date, endDate?: Date) =>
-    // en-CA locale used for date format YYYY-MM-DD
-    // en-GB locale used for 24h time format HH:MM:SS
-    {
-      const timeZone = this.hass.config.time_zone;
-      return {
-        startDate: startDate?.toLocaleDateString("en-CA", { timeZone }),
-        startTime: startDate?.toLocaleTimeString("en-GB", { timeZone }),
-        endDate: endDate?.toLocaleDateString("en-CA", { timeZone }),
-        endTime: endDate?.toLocaleTimeString("en-GB", { timeZone }),
-      };
-    }
-  );
+  private _getLocaleStrings = memoizeOne((startDate?: Date, endDate?: Date) => ({
+      startDate: this._formatDate(startDate),
+      startTime: this._formatTime(startDate),
+      endDate: this._formatDate(endDate),
+      endTime: this._formatTime(endDate),
+    }));
+
+  // Formats a date in specified timezone, or defaulting to browser display timezone
+  private _formatDate(date: Date, timeZone?: string): string {
+    return formatInTimeZone(
+      date,
+      timeZone || this.timeZone,
+      "yyyy-MM-dd"
+    );
+  }
+
+  // Formats a time in specified timezone, or defaulting to browser display timezone
+  private _formatTime(date: Date, timeZone?: string): string {
+    return formatInTimeZone(
+      date,
+      timeZone || this.timeZone,
+      "HH:mm:ss"
+    ); // 24 hr
+  }
+
+  // Parse a date in the browser timezone
+  private _parseDate(dateStr: string): Date {
+    return toDate(dateStr, { timeZone: this.timeZone });
+  }
 
   private _clearInfo() {
     this._info = undefined;
@@ -319,27 +343,14 @@ class DialogCalendarEventEditor extends LitElement {
     // Store previous event duration
     const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
 
-    this._dtstart = new Date(
-      ev.detail.value +
-        "T" +
-        this._dtstart!.toLocaleTimeString("en-GB", {
-          timeZone: this.hass.config.time_zone,
-        })
+    this._dtstart = this._parseDate(
+      `${ev.detail.value}T${this._formatTime(this._dtstart!)}`
     );
 
     // Prevent that the end time can be before the start time. Try to keep the
     // duration the same.
     if (this._dtend! <= this._dtstart!) {
-      const newEnd = addMilliseconds(this._dtstart, duration);
-      // en-CA locale used for date format YYYY-MM-DD
-      // en-GB locale used for 24h time format HH:MM:SS
-      this._dtend = new Date(
-        `${newEnd.toLocaleDateString("en-CA", {
-          timeZone: this.hass.config.time_zone,
-        })}T${newEnd.toLocaleTimeString("en-GB", {
-          timeZone: this.hass.config.time_zone,
-        })}`
-      );
+      this._dtend = addMilliseconds(this._dtstart, duration);
       this._info = this.hass.localize(
         "ui.components.calendar.event.end_auto_adjusted"
       );
@@ -347,12 +358,8 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private _endDateChanged(ev: CustomEvent) {
-    this._dtend = new Date(
-      ev.detail.value +
-        "T" +
-        this._dtend!.toLocaleTimeString("en-GB", {
-          timeZone: this.hass.config.time_zone,
-        })
+    this._dtend = this._parseDate(
+      `${ev.detail.value}T${this._formatTime(this._dtend!)}`
     );
   }
 
@@ -360,25 +367,14 @@ class DialogCalendarEventEditor extends LitElement {
     // Store previous event duration
     const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
 
-    this._dtstart = new Date(
-      this._dtstart!.toLocaleDateString("en-CA", {
-        timeZone: this.hass.config.time_zone,
-      }) +
-        "T" +
-        ev.detail.value
+    this._dtstart = this._parseDate(
+      `${this._formatDate(this._dtstart!)}T${ev.detail.value}`
     );
 
     // Prevent that the end time can be before the start time. Try to keep the
     // duration the same.
     if (this._dtend! <= this._dtstart!) {
-      const newEnd = addMilliseconds(new Date(this._dtstart), duration);
-      this._dtend = new Date(
-        `${newEnd.toLocaleDateString("en-CA", {
-          timeZone: this.hass.config.time_zone,
-        })}T${newEnd.toLocaleTimeString("en-GB", {
-          timeZone: this.hass.config.time_zone,
-        })}`
-      );
+      this._dtend = addMilliseconds(new Date(this._dtstart), duration);
       this._info = this.hass.localize(
         "ui.components.calendar.event.end_auto_adjusted"
       );
@@ -386,20 +382,12 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private _endTimeChanged(ev: CustomEvent) {
-    this._dtend = new Date(
-      this._dtend!.toLocaleDateString("en-CA", {
-        timeZone: this.hass.config.time_zone,
-      }) +
-        "T" +
-        ev.detail.value
+    this._dtend = this._parseDate(
+      `${this._formatDate(this._dtend!)}T${ev.detail.value}`
     );
   }
 
   private _calculateData() {
-    const { startDate, startTime, endDate, endTime } = this._getLocaleStrings(
-      this._dtstart,
-      this._dtend
-    );
     const data: CalendarEventMutableParams = {
       summary: this._summary,
       description: this._description,
@@ -408,14 +396,18 @@ class DialogCalendarEventEditor extends LitElement {
       dtend: "",
     };
     if (this._allDay) {
-      data.dtstart = startDate!;
+      data.dtstart = this._formatDate(this._dtstart!);
       // End date/time is exclusive when persisted
-      data.dtend = addDays(new Date(this._dtend!), 1).toLocaleDateString(
-        "en-CA"
-      );
+      data.dtend = this._formatDate(addDays(this._dtend!, 1));
     } else {
-      data.dtstart = `${startDate}T${startTime}`;
-      data.dtend = `${endDate}T${endTime}`;
+      data.dtstart = `${this._formatDate(
+        this._dtstart!,
+        this.hass.config.time_zone
+      )}T${this._formatTime(this._dtstart!, this.hass.config.time_zone)}`;
+      data.dtend = `${this._formatDate(
+        this._dtend!,
+        this.hass.config.time_zone
+      )}T${this._formatTime(this._dtend!, this.hass.config.time_zone)}`;
     }
     return data;
   }
