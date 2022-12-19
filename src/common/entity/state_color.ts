@@ -105,12 +105,11 @@ export const stateColorProperties = (
 
   if (domain === "sensor" && dc === "battery") {
     const property = batteryStateColorProperty(compareState);
-    return property ? [property] : undefined;
+    return [property];
   }
 
   if (domain === "device_tracker" || domain === "person") {
     const property = personStateColorProperty(domain, compareState);
-
     return [property];
   }
 

@@ -1,4 +1,7 @@
-export const personStateColorProperty = (domain: string, state: string) => {
+export const personStateColorProperty = (
+  domain: string,
+  state: string
+): string => {
   switch (state) {
     case "home":
       return `--state-${domain}-home-color`;
