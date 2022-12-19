@@ -9,6 +9,8 @@ import { MQTTMessage, subscribeMQTTTopic } from "../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../types";
 import "@material/mwc-list/mwc-list-item";
 import { LocalStorage } from "../../../../../common/decorators/local-storage";
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-switch";
 
 const qosLevel = ["0", "1", "2"];
 
@@ -21,6 +23,9 @@ class MqttSubscribeCard extends LitElement {
 
   @LocalStorage("panel-dev-mqtt-qos-subscribe", true, false)
   private _qos = "0";
+
+  @LocalStorage("panel-dev-mqtt-json-format", true, false)
+  private _json_format = false;
 
   @state() private _subscribed?: () => void;
 
@@ -48,6 +53,18 @@ class MqttSubscribeCard extends LitElement {
       >
         <form>
           <div class="panel-dev-mqtt-subscribe-fields">
+            <p>
+              <ha-formfield
+                label=${this.hass!.localize(
+                  "ui.panel.config.mqtt.json_formatting"
+                )}
+              >
+                <ha-switch
+                  @change=${this._handleJSONFormat}
+                  .checked=${this._json_format}
+                ></ha-switch>
+              </ha-formfield>
+            </p>
             <ha-textfield
               .label=${this._subscribed
                 ? this.hass.localize("ui.panel.config.mqtt.listening_to")
@@ -114,6 +131,10 @@ class MqttSubscribeCard extends LitElement {
     }
   }
 
+  private _handleJSONFormat(ev: CustomEvent) {
+    this._json_format = (ev.target! as any).checked;
+  }
+
   private async _handleSubmit(): Promise<void> {
     if (this._subscribed) {
       this._subscribed();
@@ -132,9 +153,13 @@ class MqttSubscribeCard extends LitElement {
     const tail =
       this._messages.length > 30 ? this._messages.slice(0, 29) : this._messages;
     let payload: string;
-    try {
-      payload = JSON.stringify(JSON.parse(message.payload), null, 4);
-    } catch (err: any) {
+    if (this._json_format) {
+      try {
+        payload = JSON.stringify(JSON.parse(message.payload), null, 4);
+      } catch (err: any) {
+        payload = message.payload;
+      }
+    } else {
       payload = message.payload;
     }
     this._messages = [
