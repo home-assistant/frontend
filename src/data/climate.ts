@@ -21,27 +21,7 @@ export type HvacAction =
   | "drying"
   | "idle"
   | "fan";
-export type FanMode =
-  | "off"
-  | "on"
-  | "auto"
-  | "low"
-  | "medium"
-  | "high"
-  | "top"
-  | "middle"
-  | "focus"
-  | "diffuse";
-export type PresetMode =
-  | "none"
-  | "eco"
-  | "away"
-  | "boost"
-  | "comfort"
-  | "home"
-  | "sleep"
-  | "activity";
-export type SwingMode = "off" | "on" | "both" | "vertical" | "horizontal";
+type SwingMode = "off" | "on" | "both" | "vertical" | "horizontal";
 
 export type ClimateEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
@@ -61,10 +41,10 @@ export type ClimateEntity = HassEntityBase & {
     target_humidity_high?: number;
     min_humidity?: number;
     max_humidity?: number;
-    fan_mode?: FanMode;
-    fan_modes?: FanMode[];
-    preset_mode?: PresetMode;
-    preset_modes?: PresetMode[];
+    fan_mode?: string;
+    fan_modes?: string[];
+    preset_mode?: string;
+    preset_modes?: string[];
     swing_mode?: SwingMode;
     swing_modes?: SwingMode[];
     aux_heat?: "on" | "off";
