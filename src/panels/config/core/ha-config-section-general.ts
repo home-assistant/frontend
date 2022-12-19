@@ -118,13 +118,11 @@ class HaConfigSectionGeneral extends LitElement {
                 type="number"
                 .disabled=${disabled}
                 .value=${this._elevation}
+                .suffix=${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.elevation_meters"
+                )}
                 @change=${this._handleChange}
               >
-                <span slot="suffix">
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.elevation_meters"
-                  )}
-                </span>
               </ha-textfield>
               <div>
                 <div>
