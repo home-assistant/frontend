@@ -65,7 +65,7 @@ class DialogCalendarEventEditor extends LitElement {
   // which may be different from the Home Assistant timezone. When
   // events are persisted, they are relative to the Home Assistant
   // timezone, but floating without a timezone.
-  private _timeZone: string;
+  private _timeZone?: string;
 
   public showDialog(params: CalendarEventEditDialogParams): void {
     this._error = undefined;
@@ -297,10 +297,10 @@ class DialogCalendarEventEditor extends LitElement {
     }));
 
   // Formats a date in specified timezone, or defaulting to browser display timezone
-  private _formatDate(date: Date, timeZone?: string): string {
+  private _formatDate(date: Date, timeZone?: string = this._timeZone): string {
     return formatInTimeZone(
       date,
-      timeZone || this.timeZone,
+      timeZone,
       "yyyy-MM-dd"
     );
   }
