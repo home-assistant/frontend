@@ -24,13 +24,7 @@ import "../../../components/ha-slider";
 import "../../../components/ha-switch";
 import {
   ClimateEntity,
-  CLIMATE_SUPPORT_AUX_HEAT,
-  CLIMATE_SUPPORT_FAN_MODE,
-  CLIMATE_SUPPORT_PRESET_MODE,
-  CLIMATE_SUPPORT_SWING_MODE,
-  CLIMATE_SUPPORT_TARGET_HUMIDITY,
-  CLIMATE_SUPPORT_TARGET_TEMPERATURE,
-  CLIMATE_SUPPORT_TARGET_TEMPERATURE_RANGE,
+  ClimateEntityFeature,
   compareClimateHvacModes,
 } from "../../../data/climate";
 import { HomeAssistant } from "../../../types";
@@ -52,26 +46,32 @@ class MoreInfoClimate extends LitElement {
 
     const supportTargetTemperature = supportsFeature(
       stateObj,
-      CLIMATE_SUPPORT_TARGET_TEMPERATURE
+      ClimateEntityFeature.TARGET_TEMPERATURE
     );
     const supportTargetTemperatureRange = supportsFeature(
       stateObj,
-      CLIMATE_SUPPORT_TARGET_TEMPERATURE_RANGE
+      ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
     );
     const supportTargetHumidity = supportsFeature(
       stateObj,
-      CLIMATE_SUPPORT_TARGET_HUMIDITY
+      ClimateEntityFeature.TARGET_HUMIDITY
     );
-    const supportFanMode = supportsFeature(stateObj, CLIMATE_SUPPORT_FAN_MODE);
+    const supportFanMode = supportsFeature(
+      stateObj,
+      ClimateEntityFeature.FAN_MODE
+    );
     const supportPresetMode = supportsFeature(
       stateObj,
-      CLIMATE_SUPPORT_PRESET_MODE
+      ClimateEntityFeature.PRESET_MODE
     );
     const supportSwingMode = supportsFeature(
       stateObj,
-      CLIMATE_SUPPORT_SWING_MODE
+      ClimateEntityFeature.SWING_MODE
     );
-    const supportAuxHeat = supportsFeature(stateObj, CLIMATE_SUPPORT_AUX_HEAT);
+    const supportAuxHeat = supportsFeature(
+      stateObj,
+      ClimateEntityFeature.AUX_HEAT
+    );
 
     const temperatureStepSize =
       stateObj.attributes.target_temp_step ||

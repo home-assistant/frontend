@@ -51,13 +51,15 @@ export type ClimateEntity = HassEntityBase & {
   };
 };
 
-export const CLIMATE_SUPPORT_TARGET_TEMPERATURE = 1;
-export const CLIMATE_SUPPORT_TARGET_TEMPERATURE_RANGE = 2;
-export const CLIMATE_SUPPORT_TARGET_HUMIDITY = 4;
-export const CLIMATE_SUPPORT_FAN_MODE = 8;
-export const CLIMATE_SUPPORT_PRESET_MODE = 16;
-export const CLIMATE_SUPPORT_SWING_MODE = 32;
-export const CLIMATE_SUPPORT_AUX_HEAT = 64;
+export const enum ClimateEntityFeature {
+  TARGET_TEMPERATURE = 1,
+  TARGET_TEMPERATURE_RANGE = 2,
+  TARGET_HUMIDITY = 4,
+  FAN_MODE = 8,
+  PRESET_MODE = 16,
+  SWING_MODE = 32,
+  AUX_HEAT = 64,
+}
 
 const hvacModeOrdering: { [key in HvacMode]: number } = {
   auto: 1,
