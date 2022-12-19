@@ -2,6 +2,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE } from "../../data/entity";
 import { batteryStateColorProperty } from "./color/battery_color";
+import { personStateColorProperty } from "./color/person_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
@@ -13,20 +14,19 @@ const generateCssVariable = (properties: string[]): string =>
       ""
     );
 
-const DEVICE_CLASSES_COLORED_DOMAIN = new Set(["binary_sensor"]);
-
 const STATE_COLORED_DOMAIN = new Set([
   "alert",
   "lock",
   "alarm_control_panel",
-  "device_tracker",
-  "person",
   "climate",
+  "sun",
 ]);
 
+const DEVICE_CLASSES_COLORED_DOMAIN = new Set(["binary_sensor"]);
+
 const COLORED_DOMAIN = new Set([
-  ...DEVICE_CLASSES_COLORED_DOMAIN,
   ...STATE_COLORED_DOMAIN,
+  ...DEVICE_CLASSES_COLORED_DOMAIN,
   ...[
     "automation",
     "calendar",
@@ -45,6 +45,7 @@ const COLORED_DOMAIN = new Set([
     "switch",
     "timer",
     "vacuum",
+    "update",
   ],
 ]);
 
@@ -68,35 +69,30 @@ export const domainStateColorProperties = (
 ): string[] => {
   const state = stateOverride !== undefined ? stateOverride : stateObj.state;
   const domain = computeDomain(stateObj.entity_id);
-
-  const variables: string[] = [];
-  const dc = stateObj.attributes.device_class;
   const active = stateActive(stateObj, stateOverride);
 
-  const dcColored = DEVICE_CLASSES_COLORED_DOMAIN.has(domain);
+  const properties: string[] = [];
+
   const stateColored = STATE_COLORED_DOMAIN.has(domain);
 
-  if (dc && dcColored && active) {
-    variables.push(`--state-${domain}-${dc}-${state}-color`);
-    if (active) {
-      variables.push(`--state-${domain}-${dc}-color`);
-    }
-  }
-
   if (stateColored) {
-    variables.push(`--state-${domain}-${state}-color`);
+    properties.push(`--state-${domain}-${state}-color`);
   }
-  if (active) {
-    variables.push(`--state-${domain}-color`);
+
+  const dcColored = DEVICE_CLASSES_COLORED_DOMAIN.has(domain);
+  const dc = stateObj.attributes.device_class;
+  if (dc && dcColored && active) {
+    properties.push(`--state-${domain}-${dc}-color`);
   }
 
   if (active) {
-    variables.push(`--state-active-color`);
+    properties.push(`--state-${domain}-color`);
+    properties.push(`--state-active-color`);
   } else {
-    variables.push(`--state-inactive-color`);
+    properties.push(`--state-inactive-color`);
   }
 
-  return variables;
+  return properties;
 };
 
 export const stateColorProperties = (
@@ -110,6 +106,12 @@ export const stateColorProperties = (
   if (domain === "sensor" && dc === "battery") {
     const property = batteryStateColorProperty(compareState);
     return property ? [property] : undefined;
+  }
+
+  if (domain === "device_tracker" || domain === "person") {
+    const property = personStateColorProperty(domain, compareState);
+
+    return [property];
   }
 
   if (COLORED_DOMAIN.has(domain)) {

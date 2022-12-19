@@ -104,9 +104,9 @@ const ENTITIES: HassEntity[] = [
   createEntity("alarm_control_panel.disarming", "disarming"),
   createEntity("alarm_control_panel.triggered", "triggered"),
   // Alert
+  createEntity("alert.idle", "idle"),
   createEntity("alert.off", "off"),
   createEntity("alert.on", "on"),
-  createEntity("alert.idle", "idle"),
   // Automation
   createEntity("automation.off", "off"),
   createEntity("automation.on", "on"),
@@ -181,8 +181,8 @@ const ENTITIES: HassEntity[] = [
   createEntity("light.off", "off"),
   createEntity("light.on", "on"),
   // Locks
-  createEntity("lock.unlocked", "unlocked"),
   createEntity("lock.locked", "locked"),
+  createEntity("lock.unlocked", "unlocked"),
   createEntity("lock.locking", "locking"),
   createEntity("lock.unlocking", "unlocking"),
   createEntity("lock.jammed", "jammed"),
@@ -215,8 +215,9 @@ const ENTITIES: HassEntity[] = [
   // Sensor
   ...SENSOR_DEVICE_CLASSES.map((dc) => createEntity(`sensor.${dc}`, "10", dc)),
   // Battery sensor
-  ...[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) =>
-    createEntity(`sensor.battery_${value}`, value.toString(), "battery")
+  ...[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, "unknown", "not_valid"].map(
+    (value) =>
+      createEntity(`sensor.battery_${value}`, value.toString(), "battery")
   ),
   // Siren
   createEntity("siren.off", "off"),

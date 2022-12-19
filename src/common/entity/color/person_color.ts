@@ -1,10 +1,10 @@
-export const personColor = (state: string): string | undefined => {
+export const personStateColorProperty = (domain: string, state: string) => {
   switch (state) {
     case "home":
-      return "person-home";
+      return `--state-${domain}-home-color`;
     case "not_home":
-      return "person-not-home";
+      return `--state-${domain}-not_home-color`;
     default:
-      return "person-zone";
+      return `--state-${domain}-zone-color`;
   }
 };

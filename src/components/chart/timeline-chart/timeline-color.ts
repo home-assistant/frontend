@@ -4,7 +4,7 @@ import { hex2rgb, lab2hex, rgb2lab } from "../../../common/color/convert-color";
 import { labBrighten } from "../../../common/color/lab";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorProperties } from "../../../common/entity/state_color";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 
 const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
   media_player: {
@@ -40,7 +40,11 @@ function computeTimelineStateColor(
   stateObj?: HassEntity
 ): string | undefined {
   if (!stateObj || state === UNAVAILABLE) {
-    return "transparent";
+    return cssToHex("--history-unavailable-color", computedStyles);
+  }
+
+  if (state === UNKNOWN) {
+    return cssToHex("--history-unknown-color", computedStyles);
   }
 
   const properties = stateColorProperties(stateObj, state);
