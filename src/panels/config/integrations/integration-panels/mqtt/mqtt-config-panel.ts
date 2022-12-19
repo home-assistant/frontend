@@ -76,7 +76,6 @@ class HaPanelDevMqtt extends LitElement {
               </div>
               <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor
-                mode="jinja2"
                 autocomplete-entities
                 autocomplete-icons
                 .hass=${this.hass}
