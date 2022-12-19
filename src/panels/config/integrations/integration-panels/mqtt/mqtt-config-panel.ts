@@ -33,6 +33,9 @@ class HaPanelDevMqtt extends LitElement {
   @LocalStorage("panel-dev-mqtt-retain-ls", true, false)
   private _retain = false;
 
+  @LocalStorage("panel-dev-mqtt-allow-template-ls", true, false)
+  private allow_template = false;
+
   protected render(): TemplateResult {
     return html`
       <hass-subpage .narrow=${this.narrow} .hass=${this.hass}>
@@ -74,8 +77,27 @@ class HaPanelDevMqtt extends LitElement {
                   ></ha-switch>
                 </ha-formfield>
               </div>
-              <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
+              <p>
+                <ha-formfield
+                  label=${this.hass!.localize(
+                    "ui.panel.config.mqtt.allow_template"
+                  )}
+                >
+                  <ha-switch
+                    @change=${this._handleAllowTemplate}
+                    .checked=${this.allow_template}
+                  ></ha-switch>
+                </ha-formfield>
+              </p>
+              <p>
+                ${this.allow_template
+                  ? this.hass.localize("ui.panel.config.mqtt.payload")
+                  : this.hass.localize(
+                      "ui.panel.config.mqtt.payload_no_template"
+                    )}
+              </p>
               <ha-code-editor
+                mode="jinja2"
                 autocomplete-entities
                 autocomplete-icons
                 .hass=${this.hass}
@@ -118,16 +140,29 @@ class HaPanelDevMqtt extends LitElement {
     this._retain = (ev.target! as any).checked;
   }
 
+  private _handleAllowTemplate(ev: CustomEvent) {
+    this.allow_template = (ev.target! as any).checked;
+  }
+
   private _publish(): void {
     if (!this.hass) {
       return;
     }
-    this.hass.callService("mqtt", "publish", {
-      topic: this._topic,
-      payload_template: this._payload,
-      qos: parseInt(this._qos),
-      retain: this._retain,
-    });
+    if (this.allow_template) {
+      this.hass.callService("mqtt", "publish", {
+        topic: this._topic,
+        payload_template: this._payload,
+        qos: parseInt(this._qos),
+        retain: this._retain,
+      });
+    } else {
+      this.hass.callService("mqtt", "publish", {
+        topic: this._topic,
+        payload: this._payload,
+        qos: parseInt(this._qos),
+        retain: this._retain,
+      });
+    }
   }
 
   private async _openOptionFlow() {
