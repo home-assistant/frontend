@@ -471,8 +471,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         --brightness-font-size: 1.2rem;
         --rail-border-color: transparent;
       }
-      .auto,
       .heat_cool {
+        --mode-color: var(--state-climate-heat_cool-color);
+      }
+      .auto {
         --mode-color: var(--state-climate-auto-color);
       }
       .cool {
@@ -481,23 +483,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       .heat {
         --mode-color: var(--state-climate-heat-color);
       }
-      .manual {
-        --mode-color: var(--state-climate-manual-color);
-      }
       .off {
         --mode-color: var(--state-climate-off-color);
       }
       .fan_only {
         --mode-color: var(--state-climate-fan_only-color);
       }
-      .eco {
-        --mode-color: var(--state-climate-eco-color);
-      }
       .dry {
         --mode-color: var(--state-climate-dry-color);
-      }
-      .idle {
-        --mode-color: var(--state-climate-idle-color);
       }
       .unknown-mode {
         --mode-color: var(--state-unknown-color);

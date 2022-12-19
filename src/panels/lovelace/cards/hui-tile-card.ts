@@ -11,6 +11,7 @@ import {
   queryAsync,
   state,
 } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
@@ -148,7 +149,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       computeDomain(entity.entity_id) === "person" ||
       computeDomain(entity.entity_id) === "device_tracker"
     ) {
-      return "var(--state-default-color)";
+      return undefined;
     }
 
     // Use light color if the light support rgb
@@ -171,7 +172,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
 
     // Fallback to state color
-    return stateColorCss(entity) ?? "var(--state-default-color)";
+    return stateColorCss(entity);
   });
 
   private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
@@ -290,6 +291,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const stateDisplay = this._computeStateDisplay(stateObj);
 
+    const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
 
     const style = {
@@ -306,7 +308,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
 
     return html`
-      <ha-card style=${styleMap(style)}>
+      <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : null}
         <div class="tile">
           <div
@@ -419,8 +421,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         // For safari overflow hidden
         z-index: 0;
       }
-      ha-card.disabled {
-        --tile-color: var(--disabled-color);
+      ha-card.active {
+        --tile-color: var(--state-icon-color);
       }
       [role="button"] {
         cursor: pointer;

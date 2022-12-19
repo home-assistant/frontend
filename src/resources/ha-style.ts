@@ -57,29 +57,10 @@ documentContainer.innerHTML = `<custom-style>
       --label-badge-yellow: #f4b400;
       --label-badge-grey: #9e9e9e;
 
-      /* states */
+      /* states icon */
       --state-icon-color: #44739e;
       /* an error state is anything that would be considered an error */
       /* --state-icon-error-color: #db4437; derived from error-color */
-
-      --state-on-color: #66a61e;
-      --state-off-color: #ff0029;
-      --state-home-color: #66a61e;
-      --state-not_home-color: #ff0029;
-      /* --state-unavailable-color: #a0a0a0; derived from disabled-text-color */
-      --state-unknown-color: #606060;
-      --state-idle-color: #7990a3;
-
-      /* climate state colors */
-      --state-climate-auto-color: #008000;
-      --state-climate-eco-color: #00ff7f;
-      --state-climate-cool-color: #2b9af9;
-      --state-climate-heat-color: #ff8100;
-      --state-climate-manual-color: #44739e;
-      --state-climate-off-color: #8a8a8a;
-      --state-climate-fan_only-color: #8a8a8a;
-      --state-climate-dry-color: #efbd07;
-      --state-climate-idle-color: #8a8a8a;
 
       /* energy */
       --energy-grid-consumption-color: #488fc2;
@@ -138,7 +119,6 @@ documentContainer.innerHTML = `<custom-style>
       --white-color: #ffffff;      
 
       /* state color */
-      --state-default-color: var(--primary-color);
       --state-active-color: var(--amber-color);
       --state-inactive-color: var(--grey-color);
       --state-unavailable-color: var(--disabled-color);
@@ -167,7 +147,9 @@ documentContainer.innerHTML = `<custom-style>
       --state-binary_sensor-problem-color: var(--red-color);
       --state-binary_sensor-safety-color: var(--red-color);
       --state-binary_sensor-smoke-color: var(--red-color);
+      --state-binary_sensor-sound-color: var(--red-color);
       --state-binary_sensor-tamper-color: var(--red-color);
+      --state-climate-off-color: var(--grey-color);
       --state-climate-auto-color: var(--green-color);
       --state-climate-cool-color: var(--blue-color);
       --state-climate-dry-color: var(--orange-color);
