@@ -156,13 +156,11 @@ class OnboardingCoreConfig extends LitElement {
           type="number"
           .disabled=${this._working}
           .value=${this._elevationValue}
+          .suffix=${this.hass.localize(
+            "ui.panel.config.core.section.core.core_config.elevation_meters"
+          )}
           @change=${this._handleChange}
         >
-          <span slot="suffix">
-            ${this.hass.localize(
-              "ui.panel.config.core.section.core.core_config.elevation_meters"
-            )}
-          </span>
         </ha-textfield>
       </div>
 
