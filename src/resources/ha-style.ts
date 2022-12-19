@@ -193,6 +193,7 @@ documentContainer.innerHTML = `<custom-style>
       --state-sensor-battery-high-color: var(--green-color);
       --state-sensor-battery-low-color: var(--red-color);
       --state-sensor-battery-medium-color: var(--orange-color);
+      --state-sensor-battery-unknown-color: var(--brown-color);
       --state-siren-color: var(--red-color);
       --state-sun-day-color: var(--amber-color);
       --state-sun-night-color: var(--deep-purple-color);
