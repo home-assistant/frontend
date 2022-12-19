@@ -2,7 +2,6 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { TranslationDict } from "../types";
 
 export type HvacMode =
   | "off"
@@ -15,12 +14,34 @@ export type HvacMode =
 
 export const CLIMATE_PRESET_NONE = "none";
 
-type ClimateAttributes = TranslationDict["state_attributes"]["climate"];
-export type HvacAction = keyof ClimateAttributes["hvac_action"];
-export type FanMode = keyof ClimateAttributes["fan_mode"];
+export type HvacAction =
+  | "off"
+  | "heating"
+  | "cooling"
+  | "drying"
+  | "idle"
+  | "fan";
+export type FanMode =
+  | "off"
+  | "on"
+  | "auto"
+  | "low"
+  | "medium"
+  | "high"
+  | "top"
+  | "middle"
+  | "focus"
+  | "diffuse";
 export type PresetMode =
-  | keyof ClimateAttributes["preset_mode"]
-  | typeof CLIMATE_PRESET_NONE;
+  | "none"
+  | "eco"
+  | "away"
+  | "boost"
+  | "comfort"
+  | "home"
+  | "sleep"
+  | "activity";
+export type SwingMode = "off" | "on" | "both" | "vertical" | "horizontal";
 
 export type ClimateEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
@@ -44,8 +65,8 @@ export type ClimateEntity = HassEntityBase & {
     fan_modes?: FanMode[];
     preset_mode?: PresetMode;
     preset_modes?: PresetMode[];
-    swing_mode?: string;
-    swing_modes?: string[];
+    swing_mode?: SwingMode;
+    swing_modes?: SwingMode[];
     aux_heat?: "on" | "off";
   };
 };

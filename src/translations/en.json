@@ -22,31 +22,6 @@
     }
   },
   "state_attributes": {
-    "climate": {
-      "fan_mode": {
-        "off": "Off",
-        "on": "On",
-        "auto": "Auto"
-      },
-      "preset_mode": {
-        "none": "None",
-        "eco": "Eco",
-        "away": "Away",
-        "boost": "Boost",
-        "comfort": "Comfort",
-        "home": "Home",
-        "sleep": "Sleep",
-        "activity": "Activity"
-      },
-      "hvac_action": {
-        "off": "Off",
-        "heating": "Heating",
-        "cooling": "Cooling",
-        "drying": "Drying",
-        "idle": "Idle",
-        "fan": "Fan"
-      }
-    },
     "humidifier": {
       "mode": {
         "normal": "Normal",
