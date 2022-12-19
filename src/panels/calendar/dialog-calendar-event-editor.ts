@@ -78,7 +78,9 @@ class DialogCalendarEventEditor extends LitElement {
           computeStateDomain(stateObj) === "calendar" &&
           supportsFeature(stateObj, CalendarEntityFeature.CREATE_EVENT)
       )?.entity_id;
-    this._timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    this._timeZone =
+      Intl.DateTimeFormat().resolvedOptions().timeZone ||
+      this.hass.config.time_zone;
     if (params.entry) {
       const entry = params.entry!;
       this._allDay = isDate(entry.dtstart);
@@ -289,34 +291,28 @@ class DialogCalendarEventEditor extends LitElement {
   private _isEditableCalendar = (entityStateObj: HassEntity) =>
     supportsFeature(entityStateObj, CalendarEntityFeature.CREATE_EVENT);
 
-  private _getLocaleStrings = memoizeOne((startDate?: Date, endDate?: Date) => ({
-      startDate: this._formatDate(startDate),
-      startTime: this._formatTime(startDate),
-      endDate: this._formatDate(endDate),
-      endTime: this._formatTime(endDate),
-    }));
+  private _getLocaleStrings = memoizeOne(
+    (startDate?: Date, endDate?: Date) => ({
+      startDate: this._formatDate(startDate!),
+      startTime: this._formatTime(startDate!),
+      endDate: this._formatDate(endDate!),
+      endTime: this._formatTime(endDate!),
+    })
+  );
 
   // Formats a date in specified timezone, or defaulting to browser display timezone
-  private _formatDate(date: Date, timeZone?: string = this._timeZone): string {
-    return formatInTimeZone(
-      date,
-      timeZone,
-      "yyyy-MM-dd"
-    );
+  private _formatDate(date: Date, timeZone: string = this._timeZone!): string {
+    return formatInTimeZone(date, timeZone, "yyyy-MM-dd");
   }
 
   // Formats a time in specified timezone, or defaulting to browser display timezone
-  private _formatTime(date: Date, timeZone?: string): string {
-    return formatInTimeZone(
-      date,
-      timeZone || this.timeZone,
-      "HH:mm:ss"
-    ); // 24 hr
+  private _formatTime(date: Date, timeZone: string = this._timeZone!): string {
+    return formatInTimeZone(date, timeZone, "HH:mm:ss"); // 24 hr
   }
 
   // Parse a date in the browser timezone
   private _parseDate(dateStr: string): Date {
-    return toDate(dateStr, { timeZone: this.timeZone });
+    return toDate(dateStr, { timeZone: this._timeZone! });
   }
 
   private _clearInfo() {
