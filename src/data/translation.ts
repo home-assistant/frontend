@@ -44,6 +44,7 @@ declare global {
 export type TranslationCategory =
   | "title"
   | "state"
+  | "state_attributes"
   | "entity"
   | "config"
   | "config_panel"
