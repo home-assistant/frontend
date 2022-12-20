@@ -47,32 +47,35 @@ class MqttSubscribeCard extends LitElement {
         header=${this.hass.localize("ui.panel.config.mqtt.description_listen")}
       >
         <form>
-          <ha-textfield
-            .label=${this._subscribed
-              ? this.hass.localize("ui.panel.config.mqtt.listening_to")
-              : this.hass.localize("ui.panel.config.mqtt.subscribe_to")}
-            .disabled=${this._subscribed !== undefined}
-            .value=${this._topic}
-            @change=${this._handleTopic}
-          ></ha-textfield>
-          <ha-select
-            .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
-            .disabled=${this._subscribed !== undefined}
-            .value=${this._qos}
-            @selected=${this._handleQos}
-            >${qosLevel.map(
-              (qos) => html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
-            )}
-          </ha-select>
-          <mwc-button
-            .disabled=${this._topic === ""}
-            @click=${this._handleSubmit}
-            type="submit"
-          >
-            ${this._subscribed
-              ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
-              : this.hass.localize("ui.panel.config.mqtt.start_listening")}
-          </mwc-button>
+          <div class="panel-dev-mqtt-subsribe-fields">
+            <ha-textfield
+              .label=${this._subscribed
+                ? this.hass.localize("ui.panel.config.mqtt.listening_to")
+                : this.hass.localize("ui.panel.config.mqtt.subscribe_to")}
+              .disabled=${this._subscribed !== undefined}
+              .value=${this._topic}
+              @change=${this._handleTopic}
+            ></ha-textfield>
+            <ha-select
+              .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
+              .disabled=${this._subscribed !== undefined}
+              .value=${this._qos}
+              @selected=${this._handleQos}
+              >${qosLevel.map(
+                (qos) =>
+                  html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
+              )}
+            </ha-select>
+            <mwc-button
+              .disabled=${this._topic === ""}
+              @click=${this._handleSubmit}
+              type="submit"
+            >
+              ${this._subscribed
+                ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
+                : this.hass.localize("ui.panel.config.mqtt.start_listening")}
+            </mwc-button>
+          </div>
         </form>
         <div class="events">
           ${this._messages.map(
@@ -170,12 +173,34 @@ class MqttSubscribeCard extends LitElement {
       pre {
         font-family: var(--code-font-family, monospace);
       }
-      ha-textfield {
-        width: calc(100% - 250px);
-        min-width: 120px;
+      @media screen and (min-width: 275px) {
+        .panel-dev-mqtt-subsribe-fields {
+          display: float;
+          justify-content: space-between;
+        }
+        ha-select {
+          width: 96px;
+          margin-left: 0px;
+          margin-right: 8px;
+        }
+        ha-textfield {
+          flex: 0;
+          width: 100%;
+        }
       }
-      ha-select {
-        width: 96px;
+      @media screen and (min-width: 600px) {
+        .panel-dev-mqtt-subsribe-fields {
+          display: flex;
+          justify-content: space-between;
+        }
+        ha-select {
+          max-width: 96px;
+          margin-left: 8px;
+          margin-right: 8px;
+        }
+        ha-textfield {
+          flex: 1;
+        }
       }
     `;
   }
