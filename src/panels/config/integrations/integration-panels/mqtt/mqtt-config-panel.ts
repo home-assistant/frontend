@@ -148,21 +148,13 @@ class HaPanelDevMqtt extends LitElement {
     if (!this.hass) {
       return;
     }
-    if (this.allow_template) {
-      this.hass.callService("mqtt", "publish", {
-        topic: this._topic,
-        payload_template: this._payload,
-        qos: parseInt(this._qos),
-        retain: this._retain,
-      });
-    } else {
-      this.hass.callService("mqtt", "publish", {
-        topic: this._topic,
-        payload: this._payload,
-        qos: parseInt(this._qos),
-        retain: this._retain,
-      });
-    }
+    this.hass.callService("mqtt", "publish", {
+      topic: this._topic,
+      payload: !this.allow_template ? this._payload : undefined,
+      payload_template: this.allow_template ? this._payload : undefined,
+      qos: parseInt(this._qos),
+      retain: this._retain,
+    });
   }
 
   private async _openOptionFlow() {
