@@ -279,7 +279,9 @@ export class HuiEnergySourcesTableCard
                 ? html`<tr class="mdc-data-table__row total">
                     <td class="mdc-data-table__cell"></td>
                     <th class="mdc-data-table__cell" scope="row">
-                      Solar total
+                      ${this.hass.localize(
+                        "panel.lovelace.cards.energy.solar_total"
+                      )}
                     </th>
                     ${compare
                       ? html`<td
