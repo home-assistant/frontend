@@ -9517,7 +9517,7 @@ fsevents@^1.2.7:
     webpackbar: ^5.0.0-3
     weekstart: ^1.1.0
     workbox-build: ^6.4.2
-    workbox-cacheable-response: ^6.4.2
+    workbox-cacheable-response: ^6.5.4
     workbox-core: ^6.4.2
     workbox-expiration: ^6.4.2
     workbox-precaching: ^6.4.2
@@ -16434,7 +16434,7 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"workbox-cacheable-response@npm:6.4.2, workbox-cacheable-response@npm:^6.4.2":
+"workbox-cacheable-response@npm:6.4.2":
   version: 6.4.2
   resolution: "workbox-cacheable-response@npm:6.4.2"
   dependencies:
@@ -16443,10 +16443,26 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
+"workbox-cacheable-response@npm:^6.5.4":
+  version: 6.5.4
+  resolution: "workbox-cacheable-response@npm:6.5.4"
+  dependencies:
+    workbox-core: 6.5.4
+  checksum: f7545b71c1505d6f56f4ba1191989ea7af7119e67fa4eb414d80603221acd0fa31362014106c1df9b9ea0e28bdcf1e2b440859acab06a75e38e978a0d1c2e489
+  languageName: node
+  linkType: hard
+
 "workbox-core@npm:6.4.2, workbox-core@npm:^6.4.2":
   version: 6.4.2
   resolution: "workbox-core@npm:6.4.2"
   checksum: bbdf4346e85d775d7162a49710957083bfa2b8cfc50b475bce02fcb62879ef1619ff381b00c969553a48b0c64c8b5ef7d9fce23fd5a64df1df8ed8f78667f23a
+  languageName: node
+  linkType: hard
+
+"workbox-core@npm:6.5.4":
+  version: 6.5.4
+  resolution: "workbox-core@npm:6.5.4"
+  checksum: d973cc6c1c5fdbde7f6642632384c2e0de48f08228eb234db2c97a18a7e5422b483005767e7b447ea774abc0772dfc1edef2ef2b5df174df4d40ae61d4c49719
   languageName: node
   linkType: hard
 
