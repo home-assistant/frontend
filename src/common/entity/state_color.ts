@@ -1,18 +1,11 @@
 /** Return an color representing a state. */
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE } from "../../data/entity";
+import { computeCssVariable } from "../../resources/css-variables";
 import { batteryStateColorProperty } from "./color/battery_color";
 import { personStateColorProperty } from "./color/person_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
-
-const generateCssVariable = (properties: string[]): string =>
-  properties
-    .reverse()
-    .reduce<string>(
-      (str, variable) => `var(${variable}${str ? `, ${str}` : ""})`,
-      ""
-    );
 
 const STATE_COLORED_DOMAIN = new Set([
   "alert",
@@ -57,7 +50,7 @@ export const stateColorCss = (stateObj: HassEntity, state?: string) => {
 
   const properties = stateColorProperties(stateObj, state);
   if (properties) {
-    return generateCssVariable(properties);
+    return computeCssVariable(properties);
   }
 
   return undefined;
@@ -65,18 +58,18 @@ export const stateColorCss = (stateObj: HassEntity, state?: string) => {
 
 export const domainStateColorProperties = (
   stateObj: HassEntity,
-  stateOverride?: string
+  state?: string
 ): string[] => {
-  const state = stateOverride !== undefined ? stateOverride : stateObj.state;
+  const compareState = state !== undefined ? state : stateObj.state;
   const domain = computeDomain(stateObj.entity_id);
-  const active = stateActive(stateObj, stateOverride);
+  const active = stateActive(stateObj, state);
 
   const properties: string[] = [];
 
   const stateColored = STATE_COLORED_DOMAIN.has(domain);
 
   if (stateColored) {
-    properties.push(`--state-${domain}-${state}-color`);
+    properties.push(`--state-${domain}-${compareState}-color`);
   }
 
   const dcColored = DEVICE_CLASSES_COLORED_DOMAIN.has(domain);

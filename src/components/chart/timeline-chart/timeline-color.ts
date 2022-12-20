@@ -5,6 +5,7 @@ import { labBrighten } from "../../../common/color/lab";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorProperties } from "../../../common/entity/state_color";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { computeCssValue } from "../../../resources/css-variables";
 
 const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
   media_player: {
@@ -16,35 +17,17 @@ const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
   },
 };
 
-function cssToHex(
-  cssProperty: string | string[],
-  computedStyles: CSSStyleDeclaration
-): string | undefined {
-  if (Array.isArray(cssProperty)) {
-    for (const property of cssProperty) {
-      const value = cssToHex(property, computedStyles);
-      if (value) return value;
-    }
-    return undefined;
-  }
-
-  if (!cssProperty.endsWith("-color")) {
-    return undefined;
-  }
-  return computedStyles.getPropertyValue(cssProperty).trim() || undefined;
-}
-
 function computeTimelineStateColor(
   state: string,
   computedStyles: CSSStyleDeclaration,
   stateObj?: HassEntity
 ): string | undefined {
   if (!stateObj || state === UNAVAILABLE) {
-    return cssToHex("--history-unavailable-color", computedStyles);
+    return computeCssValue("--history-unavailable-color", computedStyles);
   }
 
   if (state === UNKNOWN) {
-    return cssToHex("--history-unknown-color", computedStyles);
+    return computeCssValue("--history-unknown-color", computedStyles);
   }
 
   const properties = stateColorProperties(stateObj, state);
@@ -53,7 +36,7 @@ function computeTimelineStateColor(
     return undefined;
   }
 
-  const rgb = cssToHex(properties, computedStyles);
+  const rgb = computeCssValue(properties, computedStyles);
 
   if (!rgb) return undefined;
 
