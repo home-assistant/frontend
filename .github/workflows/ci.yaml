@@ -15,21 +15,82 @@ env:
   NODE_OPTIONS: --max_old_space_size=6144
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+permissions: {}
+
 jobs:
-  lint:
+  dedupe:
+    name: Deduplicate dependencies
+    # Skip unless this is a dependabot pull request
+    if: |
+      github.actor == 'dependabot[bot]' &&
+      startsWith(github.head_ref, 'dependabot/npm_and_yarn/')
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
+    outputs:
+      # Downstream jobs need to use this SHA to get the dedupe commit
+      sha: ${{ steps.get-sha.outputs.sha }}
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v3
+        with:
+          # Checkout PR head instead of merge commit
+          # Use ref, not SHA, so reruns get the dedupe commit
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: Set up Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
       - name: Install dependencies
-        run: yarn install
-        env:
-          CI: true
+        # Do not run build scripts as a security measure since job has write permissions
+        run: yarn install --immutable --mode=skip-build
+      - name: Deduplicate dependencies
+        run: yarn dedupe --mode=skip-build
+      - name: Commit changes
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "github-action@users.noreply.github.com"
+          git add yarn.lock
+          git commit -m "Deduplicate dependencies" || exit 0
+          git push origin HEAD:$GITHUB_HEAD_REF
+          echo "DEDUPED=true" >> $GITHUB_ENV
+      - name: Output updated SHA for merge commit
+        id: get-sha
+        shell: bash
+        timeout-minutes: 15
+        run: |
+          if [ -v DEDUPED ]; then
+            echo "Waiting for GitHub to do the mergability check and update the commit SHA..."
+            while [ -z "$sha" -o "$sha" == "$GITHUB_SHA" ]; do
+              sleep 5s
+              sha=`git ls-remote origin $GITHUB_REF | awk '{print $1}'`
+            done
+          else
+            echo "No deduplication required so using current merge commit SHA"
+            # Still need to query remote here in case of rerun where previous attempt was deduplicated
+            sha=`git ls-remote origin $GITHUB_REF | awk '{print $1}'`
+          fi
+          echo "Done - SHA is $sha"
+          echo "sha=$sha" >> $GITHUB_OUTPUT
+  lint:
+    name: Lint and check format
+    needs: dedupe
+    # Allow dedupe job to be skipped
+    if: ${{ !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.dedupe.outputs.sha }}
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --immutable
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Run eslint
@@ -41,57 +102,67 @@ jobs:
       - name: Check for duplicate dependencies
         run: yarn dedupe --check
   test:
+    name: Run tests
+    needs: dedupe
+    # Allow dedupe job to be skipped
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.dedupe.outputs.sha }}
       - name: Set up Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
       - name: Install dependencies
-        run: yarn install
-        env:
-          CI: true
+        run: yarn install --immutable
       - name: Build resources
         run: ./node_modules/.bin/gulp build-translations build-locale-data
       - name: Run Tests
         run: yarn run test
   build:
+    name: Build frontend
+    needs: [dedupe, lint, test]
+    # Allow dedupe job to be skipped
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
-    needs: [lint, test]
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.dedupe.outputs.sha }}
       - name: Set up Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
       - name: Install dependencies
-        run: yarn install
-        env:
-          CI: true
+        run: yarn install --immutable
       - name: Build Application
         run: ./node_modules/.bin/gulp build-app
         env:
           IS_TEST: "true"
   supervisor:
-    runs-on: ubuntu-latest
+    name: Build supervisor
     needs: [lint, test]
+    # Allow dedupe job to be skipped
+    if: ${{ !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.dedupe.outputs.sha }}
       - name: Set up Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
       - name: Install dependencies
-        run: yarn install
-        env:
-          CI: true
+        run: yarn install --immutable
       - name: Build Application
         run: ./node_modules/.bin/gulp build-hassio
         env:
