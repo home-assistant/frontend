@@ -3225,7 +3225,7 @@
         "mqtt": {
           "title": "MQTT",
           "description_publish": "Publish a packet",
-          "topic": "topic",
+          "topic": "Topic",
           "payload": "Payload (template allowed)",
           "publish": "Publish",
           "description_listen": "Listen to a topic",
