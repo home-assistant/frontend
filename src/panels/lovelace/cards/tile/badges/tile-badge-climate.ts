@@ -6,7 +6,7 @@ import {
   mdiSnowflake,
   mdiWaterPercent,
 } from "@mdi/js";
-import { CLIMATE_HVAC_ACTION_COLORS } from "../../../../../common/entity/color/climate_color";
+import { CLIMATE_HVAC_ACTION_COLORS } from "../../../../../common/entity/color/climate_action_colors";
 import { ClimateEntity, HvacAction } from "../../../../../data/climate";
 import { ComputeBadgeFunction } from "./tile-badge";
 

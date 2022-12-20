@@ -143,6 +143,9 @@ const ENTITIES: HassEntity[] = [
   createEntity("climate.auto_dry", "auto", undefined, {
     hvac_action: "drying",
   }),
+  createEntity("climate.auto_fan", "auto", undefined, {
+    hvac_action: "fan",
+  }),
   // Cover
   createEntity("cover.closing", "closing"),
   createEntity("cover.closed", "closed"),

@@ -12,7 +12,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { CLIMATE_HVAC_ACTION_COLORS } from "../../../common/entity/color/climate_color";
+import { CLIMATE_HVAC_ACTION_COLORS } from "../../../common/entity/color/climate_action_colors";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -197,7 +197,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   private _computeColor(stateObj: HassEntity): string | undefined {
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
-      if (["heating", "cooling", "drying"].includes(hvacAction)) {
+      if (["heating", "cooling", "drying", "fan"].includes(hvacAction)) {
         return CLIMATE_HVAC_ACTION_COLORS[hvacAction];
       }
       return undefined;

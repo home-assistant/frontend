@@ -2,44 +2,37 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE } from "../../data/entity";
 import { computeCssVariable } from "../../resources/css-variables";
+import { slugify } from "../string/slugify";
 import { batteryStateColorProperty } from "./color/battery_color";
-import { personStateColorProperty } from "./color/person_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
 const STATE_COLORED_DOMAIN = new Set([
-  "alert",
-  "lock",
   "alarm_control_panel",
+  "alert",
+  "automation",
+  "binary_sensor",
+  "calendar",
+  "camera",
   "climate",
+  "cover",
+  "fan",
+  "group",
+  "humidifier",
+  "input_boolean",
+  "light",
+  "lock",
+  "media_player",
+  "remote",
+  "script",
+  "siren",
   "sun",
-]);
-
-const DEVICE_CLASSES_COLORED_DOMAIN = new Set(["binary_sensor"]);
-
-const COLORED_DOMAIN = new Set([
-  ...STATE_COLORED_DOMAIN,
-  ...DEVICE_CLASSES_COLORED_DOMAIN,
-  ...[
-    "automation",
-    "calendar",
-    "camera",
-    "cover",
-    "fan",
-    "group",
-    "humidifier",
-    "input_boolean",
-    "light",
-    "media_player",
-    "remote",
-    "script",
-    "schedule",
-    "siren",
-    "switch",
-    "timer",
-    "vacuum",
-    "update",
-  ],
+  "switch",
+  "timer",
+  "update",
+  "vacuum",
+  "device_tracker",
+  "person",
 ]);
 
 export const stateColorCss = (stateObj: HassEntity, state?: string) => {
@@ -66,24 +59,20 @@ export const domainStateColorProperties = (
 
   const properties: string[] = [];
 
-  const stateColored = STATE_COLORED_DOMAIN.has(domain);
+  const stateKey = slugify(compareState, "_");
+  const activeKey = active ? "active" : "inactive";
 
-  if (stateColored) {
-    properties.push(`--state-${domain}-${compareState}-color`);
-  }
-
-  const dcColored = DEVICE_CLASSES_COLORED_DOMAIN.has(domain);
   const dc = stateObj.attributes.device_class;
-  if (dc && dcColored && active) {
-    properties.push(`--state-${domain}-${dc}-color`);
+
+  if (dc) {
+    properties.push(`--state-${domain}-${dc}-${stateKey}-color`);
   }
 
-  if (active) {
-    properties.push(`--state-${domain}-color`);
-    properties.push(`--state-active-color`);
-  } else {
-    properties.push(`--state-inactive-color`);
-  }
+  properties.push(
+    `--state-${domain}-${stateKey}-color`,
+    `--state-${domain}-${activeKey}-color`,
+    `--state-${activeKey}-color`
+  );
 
   return properties;
 };
@@ -96,19 +85,14 @@ export const stateColorProperties = (
   const domain = computeDomain(stateObj.entity_id);
   const dc = stateObj.attributes.device_class;
 
+  // Special rules for battery coloring
   if (domain === "sensor" && dc === "battery") {
     const property = batteryStateColorProperty(compareState);
     return [property];
   }
 
-  if (domain === "device_tracker" || domain === "person") {
-    const property = personStateColorProperty(domain, compareState);
-    return [property];
-  }
-
-  if (COLORED_DOMAIN.has(domain)) {
-    const properties = domainStateColorProperties(stateObj, state);
-    return properties.length > 0 ? properties : undefined;
+  if (STATE_COLORED_DOMAIN.has(domain)) {
+    return domainStateColorProperties(stateObj, state);
   }
 
   return undefined;
