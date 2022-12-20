@@ -121,6 +121,7 @@ export class HaSelectSelector extends LitElement {
           .filteredItems=${options.filter(
             (option) => !option.disabled && !value?.includes(option.value)
           )}
+          .allowCustomValue=${this.selector.select.custom_value ?? false}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
         ></ha-combo-box>
