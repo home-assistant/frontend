@@ -116,7 +116,7 @@ documentContainer.innerHTML = `<custom-style>
       --dark-grey-color: #606060;
       --blue-grey-color: #607d8b;
       --black-color: #000000;
-      --white-color: #ffffff;      
+      --white-color: #ffffff;
 
       /* state color */
       --state-active-color: var(--amber-color);
