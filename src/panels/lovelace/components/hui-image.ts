@@ -193,6 +193,8 @@ export class HuiImage extends LitElement {
         style=${styleMap({
           paddingBottom: useRatio
             ? `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`
+            : this._lastImageHeight === undefined
+            ? "56.25%"
             : undefined,
           backgroundImage:
             useRatio && this._loadedImageSrc
@@ -204,7 +206,7 @@ export class HuiImage extends LitElement {
               : undefined,
         })}
         class="container ${classMap({
-          ratio: useRatio,
+          ratio: useRatio || this._lastImageHeight === undefined,
         })}"
       >
         ${this.cameraImage && this.cameraView === "live"
