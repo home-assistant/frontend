@@ -73,19 +73,14 @@ export class RecurrenceRuleEditor extends LitElement {
       );
     }
 
-    if (changedProps.has("value") || this._computedRRule !== this.value) {
-      this._willUpdateValue();
+    if (
+      !changedProps.has("value") &&
+      !changedProps.has("dtstart") &&
+      this._computedRRule === this.value
+    ) {
+      return;
     }
 
-    if (changedProps.has("dtstart")) {
-      this._monthlyRepeatItems = this.dtstart
-        ? getMonthlyRepeatItems(this.hass, this._interval, this.dtstart)
-        : [];
-      this._computeWeekday();
-    }
-  }
-
-  private _willUpdateValue() {
     this._interval = 1;
     this._weekday.clear();
     this._monthlyRepeat = undefined;
@@ -129,6 +124,11 @@ export class RecurrenceRuleEditor extends LitElement {
       this._end = "after";
       this._count = rrule.count;
     }
+
+    this._monthlyRepeatItems = this.dtstart
+      ? getMonthlyRepeatItems(this.hass, this._interval, this.dtstart)
+      : [];
+    this._computeWeekday();
   }
 
   renderRepeat() {

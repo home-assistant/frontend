@@ -193,10 +193,8 @@ export function getMonthlyRepeatItems(
   interval: number,
   dtstart: Date
 ): MonthlyRepeatItem[] {
-  const getLabel = (repeatValue: string) => renderRRuleAsText(
-      hass,
-      `RRULE:FREQ=MONTHLY;INTERVAL=${interval};${repeatValue}`
-    );
+  const getLabel = (repeatValue: string) =>
+    renderRRuleAsText(hass, `FREQ=MONTHLY;INTERVAL=${interval};${repeatValue}`);
 
   return [
     // The default repeat rule is on day of month e.g. 3rd day of month
