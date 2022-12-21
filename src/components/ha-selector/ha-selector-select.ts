@@ -123,10 +123,10 @@ export class HaSelectSelector extends LitElement {
           .required=${this.required && !value.length}
           .value=${this._filter}
           .items=${optionItems}
-          .filteredItems=${optionItems}
           .allowCustomValue=${this.selector.select.custom_value ?? false}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
+          @opened-changed=${this._openedChanged}
         ></ha-combo-box>
       `;
     }
@@ -134,6 +134,7 @@ export class HaSelectSelector extends LitElement {
     if (this.selector.select?.custom_value) {
       if (
         this.value !== undefined &&
+        !Array.isArray(this.value) &&
         !options.find((option) => option.value === this.value)
       ) {
         options.unshift({ value: this.value, label: this.value });
@@ -151,10 +152,10 @@ export class HaSelectSelector extends LitElement {
           .disabled=${this.disabled}
           .required=${this.required}
           .items=${optionItems}
-          .filteredItems=${optionItems}
           .value=${this.value}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
+          @opened-changed=${this._openedChanged}
         ></ha-combo-box>
       `;
     }
@@ -276,6 +277,12 @@ export class HaSelectSelector extends LitElement {
     fireEvent(this, "value-changed", {
       value: [...currentValue, newValue],
     });
+  }
+
+  private _openedChanged(ev?: CustomEvent): void {
+    if (ev?.detail.value) {
+      this._filterChanged();
+    }
   }
 
   private _filterChanged(ev?: CustomEvent): void {
