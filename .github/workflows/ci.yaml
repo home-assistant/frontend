@@ -53,26 +53,26 @@ jobs:
           git config user.email "github-action@users.noreply.github.com"
           git add yarn.lock
           git commit -m "Deduplicate dependencies" || exit 0
-          git push origin HEAD:$GITHUB_HEAD_REF
-          echo "DEDUPED=true" >> $GITHUB_ENV
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
+          echo "DEDUPED=true" >> "${GITHUB_ENV}"
       - name: Output updated SHA for merge commit
         id: get-sha
         shell: bash
         timeout-minutes: 15
         run: |
-          if [ -v DEDUPED ]; then
+          if [[ -v DEDUPED ]]; then
             echo "Waiting for GitHub to do the mergability check and update the commit SHA..."
-            while [ -z "$sha" -o "$sha" == "$GITHUB_SHA" ]; do
+            while [[ -z "${sha}" || "${sha}" == "${GITHUB_SHA}" ]]; do
               sleep 5s
-              sha=`git ls-remote origin $GITHUB_REF | awk '{print $1}'`
+              sha=$(git ls-remote origin "${GITHUB_REF}" | awk '{print $1}')
             done
           else
             echo "No deduplication required so using current merge commit SHA"
             # Still need to query remote here in case of rerun where previous attempt was deduplicated
-            sha=`git ls-remote origin $GITHUB_REF | awk '{print $1}'`
+            sha=$(git ls-remote origin "${GITHUB_REF}" | awk '{print $1}')
           fi
-          echo "Done - SHA is $sha"
-          echo "sha=$sha" >> $GITHUB_OUTPUT
+          echo "Done - SHA is ${sha}"
+          echo "sha=${sha}" >> "${GITHUB_OUTPUT}"
   lint:
     name: Lint and check format
     needs: dedupe
