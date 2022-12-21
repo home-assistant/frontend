@@ -88,6 +88,10 @@ export class HaSelectSelector extends LitElement {
       const value =
         !this.value || this.value === "" ? [] : (this.value as string[]);
 
+      const optionItems = options.filter(
+        (option) => !option.disabled && !value?.includes(option.value)
+      );
+
       return html`
         ${value?.length
           ? html`<ha-chip-set>
@@ -118,10 +122,8 @@ export class HaSelectSelector extends LitElement {
           .disabled=${this.disabled}
           .required=${this.required && !value.length}
           .value=${this._filter}
-          .items=${options}
-          .filteredItems=${options.filter(
-            (option) => !option.disabled && !value?.includes(option.value)
-          )}
+          .items=${optionItems}
+          .filteredItems=${optionItems}
           .allowCustomValue=${this.selector.select.custom_value ?? false}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
@@ -137,6 +139,8 @@ export class HaSelectSelector extends LitElement {
         options.unshift({ value: this.value, label: this.value });
       }
 
+      const optionItems = options.filter((option) => !option.disabled);
+
       return html`
         <ha-combo-box
           item-value-path="value"
@@ -146,7 +150,8 @@ export class HaSelectSelector extends LitElement {
           .helper=${this.helper}
           .disabled=${this.disabled}
           .required=${this.required}
-          .items=${options.filter((item) => !item.disabled)}
+          .items=${optionItems}
+          .filteredItems=${optionItems}
           .value=${this.value}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
@@ -277,9 +282,6 @@ export class HaSelectSelector extends LitElement {
     this._filter = ev?.detail.value || "";
 
     const filteredItems = this.comboBox.items?.filter((item) => {
-      if (this.selector.select?.multiple && this.value?.includes(item.value)) {
-        return false;
-      }
       const label = item.label || item.value;
       return label.toLowerCase().includes(this._filter?.toLowerCase());
     });
