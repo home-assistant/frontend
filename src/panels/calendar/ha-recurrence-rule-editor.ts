@@ -1,4 +1,5 @@
 import type { SelectedDetail } from "@material/mwc-list";
+import { getDate, startOfToday } from "date-fns";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -16,7 +17,9 @@ import {
   convertFrequency,
   convertRepeatFrequency,
   DEFAULT_COUNT,
+  getWeekday,
   getWeekdays,
+  getWeekydaysForMonth,
   intervalSuffix,
   RepeatEnd,
   RepeatFrequency,
@@ -32,6 +35,8 @@ export class RecurrenceRuleEditor extends LitElement {
 
   @property() public value = "";
 
+  @property() public dtstart?: Date;
+
   @property({ attribute: false }) public locale!: HomeAssistant["locale"];
 
   @property() public timezone?: string;
@@ -43,6 +48,8 @@ export class RecurrenceRuleEditor extends LitElement {
   @state() private _interval = 1;
 
   @state() private _weekday: Set<WeekdayStr> = new Set<WeekdayStr>();
+
+  @state() private _monthWeekday?: Weekday;
 
   @state() private _end: RepeatEnd = "never";
 
@@ -59,6 +66,14 @@ export class RecurrenceRuleEditor extends LitElement {
       this._allWeekdays = getWeekdays(firstWeekdayIndex(this.locale)).map(
         (day: Weekday) => day.toString() as WeekdayStr
       );
+    }
+
+    if (changedProps.has("dtstart")) {
+      this._allMonthWeekdays = getWeekydaysForMonth(
+        this._dtstart ? this._dtstart : startOfToday()
+      );
+      this._monthWeekday = undefined;
+      this._computeWeekday();
     }
 
     if (!changedProps.has("value") || this._computedRRule === this.value) {
@@ -87,6 +102,17 @@ export class RecurrenceRuleEditor extends LitElement {
     this._freq = convertFrequency(rrule!.freq!);
     if (rrule.interval) {
       this._interval = rrule.interval;
+    }
+    if (
+      this._freq === "monthly" &&
+      rrule.byweekday &&
+      Array.isArray(rrule.byweekday) &&
+      rrule.byweekday.length === 1 &&
+      rrule.byweekday[0] instanceof Weekday
+    ) {
+      [this._monthWeekday] = rrule.byweekday;
+    } else {
+      this._monthWeekday = undefined;
     }
     if (
       this._freq === "weekly" &&
@@ -129,7 +155,51 @@ export class RecurrenceRuleEditor extends LitElement {
   }
 
   renderMonthly() {
-    return this.renderInterval();
+    return html`
+      ${this.renderInterval()}
+      ${this.dtstart !== undefined
+        ? html` <ha-select
+            id="monthly"
+            label="Repeat Monthly"
+            @selected=${this._onMonthlyDetailSelected}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
+          >
+            <ha-list-item
+              value="BYMONTHDAY"
+              .selected=${this._monthWeekday === undefined}
+            >
+              ${this.renderRRuleByMonthDay()}
+            </ha-list-item>
+            ${this._allMonthWeekdays!.map(
+              (item) => html`
+                <ha-list-item
+                  .value=${item.toString()}
+                  .selected=${this._monthWeekday !== undefined &&
+                  this._monthWeekday! === item}
+                >
+                  ${this.renderRRuleByDay(item)}
+                </ha-list-item>
+              `
+            )}
+          </ha-select>`
+        : html``}
+    `;
+  }
+
+  renderRRuleByMonthDay() {
+    return RRule.fromString(
+      `RRULE:FREQ=MONTHLY;INTERVAL=${this._interval};BYMONTHDAY=${getDate(
+        this.dtstart!
+      )}`
+    ).toText();
+  }
+
+  renderRRuleByDay(byday: Weekday) {
+    return RRule.fromString(
+      `RRULE:FREQ=MONTHLY;INTERVAL=${this._interval};BYDAY=${byday.toString()}`
+    ).toText();
   }
 
   renderWeekly() {
@@ -233,6 +303,20 @@ export class RecurrenceRuleEditor extends LitElement {
     }
     if (this._freq !== "weekly") {
       this._weekday.clear();
+      this._computeWeekday();
+    }
+    e.stopPropagation();
+    this._updateRule();
+  }
+
+  private _onMonthlyDetailSelected(e: CustomEvent<SelectedDetail<number>>) {
+    const { value } = (e.target as Select).items[e.detail.index];
+    if (value === "BYMONTHDAY") {
+      // Default is already by day of month
+      this._monthWeekday = undefined;
+    } else {
+      const rrule = RRule.parseString(`RRULE:FREQ=MONTHLY;BYDAY=${value}`);
+      this._monthWeekday = rrule.byweekday;
     }
     e.stopPropagation();
     this._updateRule();
@@ -284,6 +368,15 @@ export class RecurrenceRuleEditor extends LitElement {
     this._updateRule();
   }
 
+  // Reset the weekday selected when there is only a single value
+  private _computeWeekday() {
+    if (this.dtstart && this._weekday.size <= 1) {
+      const weekdayNum = getWeekday(this.dtstart);
+      this._weekday.clear();
+      this._weekday.add(new Weekday(weekdayNum).toString() as WeekdayStr);
+    }
+  }
+
   private _computeRRule() {
     if (this._freq === undefined || this._freq === "none") {
       return "";
@@ -291,11 +384,15 @@ export class RecurrenceRuleEditor extends LitElement {
     const options = {
       freq: convertRepeatFrequency(this._freq!)!,
       interval: this._interval > 1 ? this._interval : undefined,
-      byweekday: ruleByWeekDay(this._weekday),
       count: this._count,
       until: this._until,
       tzid: this.timezone,
     };
+    if (this._freq === "monthly" && this._monthWeekday !== undefined) {
+      options.byweekday = this._monthWeekday;
+    } else if (options.freq === "weekly") {
+      options.byweekday = ruleByWeekDay(this._weekday);
+    }
     const contentline = RRule.optionsToString(options);
     return contentline.slice(6); // Strip "RRULE:" prefix
   }
