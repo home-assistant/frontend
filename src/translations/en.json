@@ -193,7 +193,8 @@
       "lock": {
         "code": "[%key:ui::card::alarm_control_panel::code%]",
         "lock": "Lock",
-        "unlock": "Unlock"
+        "unlock": "Unlock",
+        "open": "Open"
       },
       "media_player": {
         "source": "Source",

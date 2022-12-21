@@ -25,6 +25,12 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
         ${this.stateInfoTemplate}
         <mwc-button
           on-click="_callService"
+          data-service="open"
+          hidden$="[[isLocked]]"
+          >[[localize('ui.card.lock.open')]]</mwc-button
+        >
+        <mwc-button
+          on-click="_callService"
           data-service="unlock"
           hidden$="[[!isLocked]]"
           >[[localize('ui.card.lock.unlock')]]</mwc-button
