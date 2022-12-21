@@ -23,62 +23,7 @@ interface CachedResults {
   data: HistoryResult;
 }
 
-// This is a different interface, a different cache :(
-interface RecentCacheResults {
-  created: number;
-  language: string;
-  data: Promise<HistoryResult>;
-}
-
-const RECENT_THRESHOLD = 60000; // 1 minute
-const RECENT_CACHE: { [cacheKey: string]: RecentCacheResults } = {};
 const stateHistoryCache: { [cacheKey: string]: CachedResults } = {};
-
-// Cached type 1 function. Without cache config.
-export const getRecent = (
-  hass: HomeAssistant,
-  entityId: string,
-  startTime: Date,
-  endTime: Date,
-  localize: LocalizeFunc,
-  language: string
-) => {
-  const cacheKey = entityId;
-  const cache = RECENT_CACHE[cacheKey];
-
-  if (
-    cache &&
-    Date.now() - cache.created < RECENT_THRESHOLD &&
-    cache.language === language
-  ) {
-    return cache.data;
-  }
-
-  const noAttributes = !entityIdHistoryNeedsAttributes(hass, entityId);
-  const prom = fetchRecentWS(
-    hass,
-    entityId,
-    startTime,
-    endTime,
-    false,
-    undefined,
-    true,
-    noAttributes
-  ).then(
-    (stateHistory) => computeHistory(hass, stateHistory, localize),
-    (err) => {
-      delete RECENT_CACHE[entityId];
-      throw err;
-    }
-  );
-
-  RECENT_CACHE[cacheKey] = {
-    created: Date.now(),
-    language,
-    data: prom,
-  };
-  return prom;
-};
 
 // Cache type 2 functionality
 function getEmptyCache(
@@ -97,7 +42,7 @@ function getEmptyCache(
 
 export const getRecentWithCache = (
   hass: HomeAssistant,
-  entityId: string,
+  entityIds: string[],
   cacheConfig: CacheConfig,
   localize: LocalizeFunc,
   language: string
@@ -132,7 +77,9 @@ export const getRecentWithCache = (
   }
 
   const curCacheProm = cache.prom;
-  const noAttributes = !entityIdHistoryNeedsAttributes(hass, entityId);
+  const noAttributes = !entityIds.some((entityId) =>
+    entityIdHistoryNeedsAttributes(hass, entityId)
+  );
 
   const genProm = async () => {
     let fetchedHistory: HistoryStates;
@@ -142,7 +89,7 @@ export const getRecentWithCache = (
         curCacheProm,
         fetchRecentWS(
           hass,
-          entityId,
+          entityIds,
           toFetchStartTime,
           endTime,
           appendingToCache,
