@@ -6993,6 +6993,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"date-fns-tz@npm:^1.3.7":
+  version: 1.3.7
+  resolution: "date-fns-tz@npm:1.3.7"
+  peerDependencies:
+    date-fns: ">=2.0.0"
+  checksum: b749613669223056d5e6d715114c94bec57234b676d0cea0c72ca710626c81e9ea04df6441852a5fec74b42c5f27b2f076e13697ec43da360b67806a3042a10e
+  languageName: node
+  linkType: hard
+
 "date-fns@npm:^2.23.0":
   version: 2.23.0
   resolution: "date-fns@npm:2.23.0"
@@ -9427,6 +9436,7 @@ fsevents@^1.2.7:
     core-js: ^3.15.2
     cropperjs: ^1.5.12
     date-fns: ^2.23.0
+    date-fns-tz: ^1.3.7
     deep-clone-simple: ^1.1.1
     deep-freeze: ^0.0.1
     del: ^4.0.0
