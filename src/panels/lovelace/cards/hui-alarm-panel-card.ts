@@ -295,7 +295,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       }
 
       .triggered {
-        --alarm-state-color: rgb(var(--rgb-state-alarm-trigger-color));
+        --alarm-state-color: rgb(var(--rgb-state-alarm-triggered-color));
         animation: pulse 1s infinite;
       }
 
