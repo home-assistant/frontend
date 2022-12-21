@@ -1736,7 +1736,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/daygrid@npm:5.9.0, @fullcalendar/daygrid@npm:~5.9.0":
+"@fullcalendar/daygrid@npm:6.0.1":
+  version: 6.0.1
+  resolution: "@fullcalendar/daygrid@npm:6.0.1"
+  peerDependencies:
+    "@fullcalendar/core": ~6.0.1
+  checksum: 859e612ded4ac0f0eec7575803903b83a777767f75d2d86b8d8b5fe2e30ccddb368729498d70349343928262675881bc53a5a05a3401e3134044fb534433b1d6
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/daygrid@npm:~5.9.0":
   version: 5.9.0
   resolution: "@fullcalendar/daygrid@npm:5.9.0"
   dependencies:
@@ -9338,7 +9347,7 @@ fsevents@^1.2.7:
     "@formatjs/intl-relativetimeformat": ^9.3.2
     "@fullcalendar/common": 5.9.0
     "@fullcalendar/core": 5.9.0
-    "@fullcalendar/daygrid": 5.9.0
+    "@fullcalendar/daygrid": 6.0.1
     "@fullcalendar/interaction": 5.9.0
     "@fullcalendar/list": 5.9.0
     "@fullcalendar/timegrid": 5.9.0
