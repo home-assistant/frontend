@@ -3808,6 +3808,7 @@
             "energy_sources_table": {
               "grid_total": "Grid total",
               "gas_total": "Gas total",
+              "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
               "energy": "Energy",
@@ -3828,7 +3829,6 @@
               "not_produced_solar_energy": "You have not produced any solar energy",
               "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
             },
-            "solar_total": "Solar total",
             "grid_neutrality_gauge": {
               "energy_dependency": "This card indicates your net energy usage.",
               "color_explain": "If the needle is in the purple, you returned more energy to the grid than you consumed from it. If it's in the blue, you consumed more energy from the grid than you returned.",
