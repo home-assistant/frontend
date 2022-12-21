@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import { mdiCalendarClock, mdiClose } from "@mdi/js";
 import { addDays, isSameDay } from "date-fns/esm";
+import { toDate } from "date-fns-tz";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { RRule, Weekday } from "rrule";
@@ -185,11 +186,12 @@ class DialogCalendarEventDetail extends LitElement {
   };
 
   private _formatDateRange() {
-    const start = new Date(this._data!.dtstart);
+    // Parse a dates in the browser timezone
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const start = toDate(this._data!.dtstart, { timeZone: timeZone });
+    const endValue = toDate(this._data!.dtend, { timeZone: timeZone });
     // All day events should be displayed as a day earlier
-    const end = isDate(this._data.dtend)
-      ? addDays(new Date(this._data!.dtend), -1)
-      : new Date(this._data!.dtend);
+    const end = isDate(this._data.dtend) ? addDays(endValue, -1) : endValue;
     // The range can be shortened when the start and end are on the same day.
     if (isSameDay(start, end)) {
       if (isDate(this._data.dtstart)) {
