@@ -190,8 +190,7 @@ export class HaSelectSelector extends LitElement {
   private _valueChanged(ev) {
     ev.stopPropagation();
     const value = ev.detail?.value || ev.target.value;
-    const validValue = value || (typeof value === "number" && value === 0);
-    if (this.disabled || !validValue) {
+    if (this.disabled || value === undefined) {
       return;
     }
     fireEvent(this, "value-changed", {
