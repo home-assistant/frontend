@@ -1,7 +1,7 @@
 // Library for converting back and forth from values use by this webcomponent
 // and the values defined by rrule.js.
 import { RRule, Frequency, Weekday } from "rrule";
-import type { WeekdayStr } from "rrule";
+import type { Options, WeekdayStr } from "rrule";
 import {
   addDays,
   addMonths,
@@ -11,6 +11,11 @@ import {
   getDay,
   getMonth,
 } from "date-fns";
+import { formatDate } from "../../common/datetime/format_date";
+import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
+import { dayNames } from "../../common/translations/day_names";
+import { monthNames } from "../../common/translations/month_names";
+import { HomeAssistant } from "../../types";
 
 export type RepeatFrequency =
   | "none"
@@ -28,6 +33,12 @@ export const DEFAULT_COUNT = {
   weekly: 13,
   daily: 30,
 };
+
+export interface MonthlyRepeatItem {
+  value: string;
+  byday?: Weekday;
+  label: string;
+}
 
 export function intervalSuffix(freq: RepeatFrequency) {
   if (freq === "monthly") {
@@ -118,7 +129,7 @@ export function getWeekday(dtstart: Date): number {
   return weekDay;
 }
 
-export function getWeekdays(firstDay?: number) {
+export function getWeekdays(firstDay?: number): Weekday[] {
   if (firstDay === undefined || firstDay === 0) {
     return WEEKDAYS;
   }
@@ -131,9 +142,7 @@ export function getWeekdays(firstDay?: number) {
   return weekDays;
 }
 
-export function ruleByWeekDay(
-  weekdays: Set<WeekdayStr>
-): Weekday[] | undefined {
+export function ruleByWeekDay(weekdays: Set<WeekdayStr>): Weekday[] {
   return Array.from(weekdays).map((value: string) => {
     switch (value) {
       case "MO":
@@ -157,9 +166,11 @@ export function ruleByWeekDay(
 }
 
 /**
- * Determine the recurrence options based on the day of the month, e.g. "First Saturday" or "3rd Wednesday".
+ * Determine the recurrence options based on the day of the month. The
+ * return values are a Weekday object that represent a BYDAY for a
+ * particular week of the month like "first Saturday" or "last Friday".
  */
-export function getWeekydaysForMonth(dtstart: Date): Weekday[] {
+function getWeekydaysForMonth(dtstart: Date): Weekday[] {
   const weekDay = getWeekday(dtstart);
   const dayOfMonth = getDate(dtstart);
   const weekOfMonth = Math.floor((dayOfMonth - 1) / 7) + 1;
@@ -172,4 +183,90 @@ export function getWeekydaysForMonth(dtstart: Date): Weekday[] {
     byweekdays.push(new Weekday(weekDay, -1));
   }
   return byweekdays;
+}
+
+/**
+ * Returns the list of repeat values available for the specified date.
+ */
+export function getMonthlyRepeatItems(
+  hass: HomeAssistant,
+  interval: number,
+  dtstart: Date
+): MonthlyRepeatItem[] {
+  const getLabel = (repeatValue: string) => renderRRuleAsText(
+      hass,
+      `RRULE:FREQ=MONTHLY;INTERVAL=${interval};${repeatValue}`
+    );
+
+  return [
+    // The default repeat rule is on day of month e.g. 3rd day of month
+    {
+      value: `BYMONTHDAY=${getDate(dtstart)}`,
+      label: getLabel(`BYMONTHDAY=${getDate(dtstart)}`)!,
+    },
+    // Additional optional rules based on the week of month e.g. 2nd sunday of month
+    ...getWeekydaysForMonth(dtstart).map((item) => ({
+      value: `BYDAY=${item.toString()}`,
+      byday: item,
+      label: getLabel(`BYDAY=${item.toString()}`)!,
+    })),
+  ];
+}
+
+export function getMonthlyRepeatFromRule(
+  rrule: Partial<Options>
+): Weekday | undefined {
+  if (rrule.freq !== Frequency.MONTHLY) {
+    return undefined;
+  }
+  if (
+    rrule.byweekday &&
+    Array.isArray(rrule.byweekday) &&
+    rrule.byweekday.length === 1 &&
+    rrule.byweekday[0] instanceof Weekday
+  ) {
+    return rrule.byweekday[0];
+  }
+  return undefined;
+}
+
+/**
+ * A wrapper around RRule.toText that assists with translation.
+ */
+export function renderRRuleAsText(hass: HomeAssistant, value: string) {
+  const rule = RRule.fromString(`RRULE:${value}`);
+  if (!rule.isFullyConvertibleToText()) {
+    return undefined;
+  }
+  return capitalizeFirstLetter(
+    rule.toText(
+      (id: string | number | Weekday): string => {
+        if (typeof id === "string") {
+          return hass.localize(`ui.components.calendar.event.rrule.${id}`);
+        }
+        return "";
+      },
+      {
+        dayNames: dayNames(hass.locale),
+        monthNames: monthNames(hass.locale),
+        tokens: {},
+      },
+      // Format the date
+      (year: number, month: string, day: number): string => {
+        if (!year || !month || !day) {
+          return "";
+        }
+        // Build date so we can then format it
+        const date = new Date();
+        date.setFullYear(year);
+        // As input we already get the localized month name, so we now unfortunately
+        // need to convert it back to something Date can work with. The already localized
+        // months names are a must in the RRule.Language structure (an empty string[] would
+        // mean we get undefined months input in this method here).
+        date.setMonth(monthNames(hass.locale).indexOf(month));
+        date.setDate(day);
+        return formatDate(date, hass.locale);
+      }
+    )
+  );
 }
