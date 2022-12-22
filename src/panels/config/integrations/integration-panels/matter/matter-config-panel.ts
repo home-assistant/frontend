@@ -13,6 +13,8 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-alert";
 import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { subscribeDeviceRegistry } from "../../../../../data/device_registry";
+import { navigate } from "../../../../../common/navigate";
 
 @customElement("matter-config-panel")
 export class MatterConfigPanel extends LitElement {
@@ -21,6 +23,16 @@ export class MatterConfigPanel extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @state() private _error?: string;
+
+  private _unsubDevReg?: () => void;
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._unsubDevReg) {
+      this._unsubDevReg();
+      this._unsubDevReg = undefined;
+    }
+  }
 
   private get _canCommissionMatter() {
     return this.hass.auth.external?.config.canCommissionMatter;
@@ -69,6 +81,7 @@ export class MatterConfigPanel extends LitElement {
   }
 
   private _startMobileCommissioning() {
+    this._redirectOnNewDevice();
     this.hass.auth.external!.fireMessage({
       type: "matter/commission",
     });
@@ -112,6 +125,7 @@ export class MatterConfigPanel extends LitElement {
       return;
     }
     this._error = undefined;
+    this._redirectOnNewDevice();
     try {
       await commissionMatterDevice(this.hass, code);
     } catch (err: any) {
@@ -130,6 +144,7 @@ export class MatterConfigPanel extends LitElement {
       return;
     }
     this._error = undefined;
+    this._redirectOnNewDevice();
     try {
       await acceptSharedMatterDevice(this.hass, Number(code));
     } catch (err: any) {
@@ -153,6 +168,34 @@ export class MatterConfigPanel extends LitElement {
     } catch (err: any) {
       this._error = err.message;
     }
+  }
+
+  private _redirectOnNewDevice() {
+    if (this._unsubDevReg) {
+      return;
+    }
+    let lastSeen: Set<string> | undefined;
+
+    this._unsubDevReg = subscribeDeviceRegistry(
+      this.hass.connection,
+      (devices) => {
+        const matterDevices = devices.filter((device) =>
+          device.identifiers.find((identifier) => identifier[0] === "matter")
+        );
+        if (!lastSeen) {
+          lastSeen = new Set(devices.map((device) => device.id));
+          return;
+        }
+        const newDevices = matterDevices.filter(
+          (device) => !lastSeen!.has(device.id)
+        );
+        if (newDevices.length) {
+          this._unsubDevReg!();
+          this._unsubDevReg = undefined;
+          navigate(`/config/devices/device/${newDevices[0].id}`);
+        }
+      }
+    );
   }
 
   static styles = [
