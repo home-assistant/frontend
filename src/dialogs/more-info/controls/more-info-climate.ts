@@ -11,10 +11,7 @@ import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../../../common/entity/compute_attribute_display";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -99,12 +96,7 @@ class MoreInfoClimate extends LitElement {
             ${supportTargetTemperature || supportTargetTemperatureRange
               ? html`
                   <div>
-                    ${computeAttributeNameDisplay(
-                      hass.localize,
-                      stateObj,
-                      hass.entities,
-                      "temperature"
-                    )}
+                    ${hass.localize("ui.card.climate.target_temperature")}
                   </div>
                 `
               : ""}
@@ -155,14 +147,7 @@ class MoreInfoClimate extends LitElement {
         ${supportTargetHumidity
           ? html`
               <div class="container-humidity">
-                <div>
-                  ${computeAttributeNameDisplay(
-                    hass.localize,
-                    stateObj,
-                    hass.entities,
-                    "humidity"
-                  )}
-                </div>
+                <div>${hass.localize("ui.card.climate.target_humidity")}</div>
                 <div class="single-row">
                   <div class="target-humidity">
                     ${stateObj.attributes.humidity} %
@@ -217,12 +202,7 @@ class MoreInfoClimate extends LitElement {
           ? html`
               <div class="container-preset_modes">
                 <ha-select
-                  .label=${computeAttributeNameDisplay(
-                    hass.localize,
-                    stateObj,
-                    hass.entities,
-                    "preset_mode"
-                  )}
+                  .label=${hass.localize("ui.card.climate.preset_mode")}
                   .value=${stateObj.attributes.preset_mode}
                   fixedMenuPosition
                   naturalMenuWidth
@@ -250,12 +230,7 @@ class MoreInfoClimate extends LitElement {
           ? html`
               <div class="container-fan_list">
                 <ha-select
-                  .label=${computeAttributeNameDisplay(
-                    hass.localize,
-                    stateObj,
-                    hass.entities,
-                    "fan_mode"
-                  )}
+                  .label=${hass.localize("ui.card.climate.fan_mode")}
                   .value=${stateObj.attributes.fan_mode}
                   fixedMenuPosition
                   naturalMenuWidth
@@ -283,12 +258,7 @@ class MoreInfoClimate extends LitElement {
           ? html`
               <div class="container-swing_list">
                 <ha-select
-                  .label=${computeAttributeNameDisplay(
-                    hass.localize,
-                    stateObj,
-                    hass.entities,
-                    "swing_mode"
-                  )}
+                  .label=${hass.localize("ui.card.climate.swing_mode")}
                   .value=${stateObj.attributes.swing_mode}
                   fixedMenuPosition
                   naturalMenuWidth
@@ -317,12 +287,7 @@ class MoreInfoClimate extends LitElement {
               <div class="container-aux_heat">
                 <div class="center horizontal layout single-row">
                   <div class="flex">
-                    ${computeAttributeNameDisplay(
-                      hass.localize,
-                      stateObj,
-                      hass.entities,
-                      "aux_heat"
-                    )}
+                    ${hass.localize("ui.card.climate.aux_heat")}
                   </div>
                   <ha-switch
                     .checked=${stateObj.attributes.aux_heat === "on"}
