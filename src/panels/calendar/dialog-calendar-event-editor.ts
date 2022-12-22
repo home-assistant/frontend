@@ -170,7 +170,7 @@ class DialogCalendarEventEditor extends LitElement {
             class="summary"
             name="summary"
             .label=${this.hass.localize("ui.components.calendar.event.summary")}
-            value=${this._summary}
+            .value=${this._summary}
             required
             @change=${this._handleSummaryChanged}
             error-message=${this.hass.localize("ui.common.error_required")}
@@ -182,7 +182,7 @@ class DialogCalendarEventEditor extends LitElement {
             .label=${this.hass.localize(
               "ui.components.calendar.event.description"
             )}
-            value=${this._description}
+            .value=${this._description}
             @change=${this._handleDescriptionChanged}
             autogrow
           ></ha-textarea>
