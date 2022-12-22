@@ -52,19 +52,19 @@ class MqttSubscribeCard extends LitElement {
         header=${this.hass.localize("ui.panel.config.mqtt.description_listen")}
       >
         <form>
+          <p>
+            <ha-formfield
+              label=${this.hass!.localize(
+                "ui.panel.config.mqtt.json_formatting"
+              )}
+            >
+              <ha-switch
+                @change=${this._handleJSONFormat}
+                .checked=${this._json_format}
+              ></ha-switch>
+            </ha-formfield>
+          </p>
           <div class="panel-dev-mqtt-subscribe-fields">
-            <p>
-              <ha-formfield
-                label=${this.hass!.localize(
-                  "ui.panel.config.mqtt.json_formatting"
-                )}
-              >
-                <ha-switch
-                  @change=${this._handleJSONFormat}
-                  .checked=${this._json_format}
-                ></ha-switch>
-              </ha-formfield>
-            </p>
             <ha-textfield
               .label=${this._subscribed
                 ? this.hass.localize("ui.panel.config.mqtt.listening_to")
