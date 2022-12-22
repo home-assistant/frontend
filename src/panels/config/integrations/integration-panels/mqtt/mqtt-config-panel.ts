@@ -50,28 +50,30 @@ class HaPanelDevMqtt extends LitElement {
             )}
           >
             <div class="card-content">
-              <ha-textfield
-                .label=${this.hass.localize("ui.panel.config.mqtt.topic")}
-                .value=${this.topic}
-                @change=${this._handleTopic}
-              ></ha-textfield>
-              <ha-select
-                .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
-                .value=${this.qos}
-                @selected=${this._handleQos}
-                >${qosLevel.map(
-                  (qos) =>
-                    html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
-                )}
-              </ha-select>
-              <ha-formfield
-                label=${this.hass!.localize("ui.panel.config.mqtt.retain")}
-              >
-                <ha-switch
-                  @change=${this._handleRetain}
-                  .checked=${this.retain}
-                ></ha-switch>
-              </ha-formfield>
+              <div class="panel-dev-mqtt-fields">
+                <ha-textfield
+                  .label=${this.hass.localize("ui.panel.config.mqtt.topic")}
+                  .value=${this.topic}
+                  @change=${this._handleTopic}
+                ></ha-textfield>
+                <ha-select
+                  .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
+                  .value=${this.qos}
+                  @selected=${this._handleQos}
+                  >${qosLevel.map(
+                    (qos) =>
+                      html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
+                  )}
+                </ha-select>
+                <ha-formfield
+                  label=${this.hass!.localize("ui.panel.config.mqtt.retain")}
+                >
+                  <ha-switch
+                    @change=${this._handleRetain}
+                    .checked=${this.retain}
+                  ></ha-switch>
+                </ha-formfield>
+              </div>
               <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor
                 mode="jinja2"
@@ -159,6 +161,28 @@ class HaPanelDevMqtt extends LitElement {
           max-width: 600px;
           margin: 0 auto;
           direction: ltr;
+        }
+        .panel-dev-mqtt-fields {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+        }
+        ha-select {
+          width: 96px;
+          margin: 0 8px;
+        }
+        ha-textfield {
+          flex: 1;
+        }
+        @media screen and (max-width: 600px) {
+          ha-select {
+            margin-left: 0px;
+            margin-top: 8px;
+          }
+          ha-textfield {
+            flex: auto;
+            width: 100%;
+          }
         }
         ha-card:first-child {
           margin-bottom: 16px;
