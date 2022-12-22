@@ -162,7 +162,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       this._stateHistory = {
         ...(await getRecentWithCache(
           this.hass!,
-          this._cacheConfig!.cacheKey,
+          this._configEntities!.map((config) => config.entity),
           this._cacheConfig!,
           this.hass!.localize,
           this.hass!.language

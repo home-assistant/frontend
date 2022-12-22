@@ -1,4 +1,8 @@
-import { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import {
+  HassEntities,
+  HassEntity,
+  HassEntityAttributeBase,
+} from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
@@ -117,7 +121,7 @@ export const fetchRecent = (
 
 export const fetchRecentWS = (
   hass: HomeAssistant,
-  entityId: string, // This may be CSV
+  entityIds: string[],
   startTime: Date,
   endTime: Date,
   skipInitialState = false,
@@ -133,7 +137,7 @@ export const fetchRecentWS = (
     include_start_time_state: !skipInitialState,
     minimal_response: minimalResponse,
     no_attributes: noAttributes || false,
-    entity_ids: entityId.split(","),
+    entity_ids: entityIds,
   });
 
 export const fetchDate = (
@@ -160,9 +164,9 @@ export const fetchDateWS = (
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
     minimal_response: true,
-    no_attributes: !entityIds
-      .map((entityId) => entityIdHistoryNeedsAttributes(hass, entityId))
-      .reduce((cur, next) => cur || next, false),
+    no_attributes: !entityIds.some((entityId) =>
+      entityIdHistoryNeedsAttributes(hass, entityId)
+    ),
   };
   if (entityIds.length !== 0) {
     return hass.callWS<HistoryStates>({ ...params, entity_ids: entityIds });
@@ -195,13 +199,22 @@ const processTimelineEntity = (
     if (data.length > 0 && state.s === data[data.length - 1].state) {
       continue;
     }
+
+    const currentAttributes: HassEntityAttributeBase = {};
+    if (current_state?.attributes.device_class) {
+      currentAttributes.device_class = current_state?.attributes.device_class;
+    }
+
     data.push({
       state_localize: computeStateDisplayFromEntityAttributes(
         localize,
         language,
         entities,
         entityId,
-        state.a || first.a,
+        {
+          ...(state.a || first.a),
+          ...currentAttributes,
+        },
         state.s
       ),
       state: state.s,
