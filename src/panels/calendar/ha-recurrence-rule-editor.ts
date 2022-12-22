@@ -41,6 +41,8 @@ export class RecurrenceRuleEditor extends LitElement {
 
   @property() public dtstart?: Date;
 
+  @property() public allDay?: bool;
+
   @property({ attribute: false }) public locale!: HomeAssistant["locale"];
 
   @property() public timezone?: string;
@@ -402,7 +404,14 @@ export class RecurrenceRuleEditor extends LitElement {
       byweekday: byweekday,
       bymonthday: bymonthday,
     };
-    const contentline = RRule.optionsToString(options);
+    let contentline = RRule.optionsToString(options);
+    if (this._until && this.allDay) {
+      // rrule.js only computes UNTIL values as DATE-TIME however rfc5545 says
+      // The value of the UNTIL rule part MUST have the same value type as the
+      // "DTSTART" property. If needed, strip off any time values as a workaround
+      // This converts "UNTIL=20220512T060000" to "UNTIL=20220512"
+      contentline = contentline.replace(/(UNTIL=\d{8})T\d{6}Z?/, "$1");
+    }
     return contentline.slice(6); // Strip "RRULE:" prefix
   }
 
