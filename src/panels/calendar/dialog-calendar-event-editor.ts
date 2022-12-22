@@ -387,7 +387,7 @@ class DialogCalendarEventEditor extends LitElement {
     const data: CalendarEventMutableParams = {
       summary: this._summary,
       description: this._description,
-      rrule: this._rrule ? this._rrule : undefined,
+      rrule: this._rrule || undefined,
       dtstart: "",
       dtend: "",
     };
