@@ -162,33 +162,26 @@ class HaPanelDevMqtt extends LitElement {
           margin: 0 auto;
           direction: ltr;
         }
-        @media screen and (min-width: 275px) {
-          .panel-dev-mqtt-fields {
-            display: float;
-            justify-content: space-between;
-          }
-          ha-select {
-            width: 96px;
-            margin-left: 0px;
-            margin-right: 8px;
-          }
-          ha-textfield {
-            flex: 0;
-            width: 100%;
-          }
+        .panel-dev-mqtt-fields {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
         }
-        @media screen and (min-width: 600px) {
-          .panel-dev-mqtt-fields {
-            display: flex;
-            justify-content: space-between;
-          }
+        ha-select {
+          width: 96px;
+          margin: 0 8px;
+        }
+        ha-textfield {
+          flex: 1;
+        }
+        @media screen and (max-width: 600px) {
           ha-select {
-            max-width: 96px;
-            margin-left: 8px;
-            margin-right: 8px;
+            margin-left: 0px;
+            margin-top: 8px;
           }
           ha-textfield {
-            flex: 1;
+            flex: auto;
+            width: 100%;
           }
         }
         ha-card:first-child {
