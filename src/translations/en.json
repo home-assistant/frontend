@@ -998,18 +998,13 @@
           "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
           "aliases": {
             "heading": "{name} aliases",
-            "description": "Aliases are alternative names used in voice assistants to refer to this entity",
+            "description": "Aliases are alternative names used in voice assistants to refer to this entity.",
             "remove_alias": "Remove alias",
-            "add": "Add",
+            "save": "Save",
             "add_alias": "Add alias",
             "no_aliases": "No aliases have been added yet",
             "update": "Update",
-            "unknown_error": "Unknown error",
-            "remove": {
-              "title": "Remove {name}?",
-              "text": "This alias will be permanently deleted.",
-              "confirm": "Remove"
-            }
+            "unknown_error": "Unknown error"
           }
         }
       },

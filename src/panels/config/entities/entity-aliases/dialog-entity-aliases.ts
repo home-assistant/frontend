@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
-import { mdiDelete } from "@mdi/js";
+import { mdiDeleteOutline, mdiPlus } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-alert";
@@ -9,7 +9,6 @@ import "../../../../components/ha-area-picker";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { EntityAliasesDialogParams } from "./show-dialog-entity-aliases";
@@ -26,12 +25,13 @@ class DialogEntityAliases extends LitElement {
 
   @state() private _submitting = false;
 
-  @query("#alias_input") private _aliasInput?: HaTextField;
-
   public async showDialog(params: EntityAliasesDialogParams): Promise<void> {
     this._params = params;
     this._error = undefined;
-    this._aliases = this._params.entity.aliases;
+    this._aliases =
+      this._params.entity.aliases?.length > 0
+        ? this._params.entity.aliases
+        : [""];
     await this.updateComplete;
   }
 
@@ -65,44 +65,37 @@ class DialogEntityAliases extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
             : ""}
           <div class="form">
-            ${this._aliases.length
-              ? this._aliases.map(
-                  (alias, index) => html`
-                    <mwc-list-item class="alias" hasMeta>
-                      ${alias}
-                      <ha-icon-button
-                        slot="meta"
-                        .index=${index}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.entity_registry.editor.aliases.remove_alias"
-                        )}
-                        @click=${this._removeAlias}
-                        .path=${mdiDelete}
-                      ></ha-icon-button>
-                    </mwc-list-item>
-                  `
-                )
-              : html`
-                  <mwc-list-item noninteractive>
-                    ${this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.aliases.no_aliases"
+            ${this._aliases.map(
+              (alias, index) => html`
+                <div class="layout horizontal center-center row">
+                  <ha-textfield
+                    dialogInitialFocus=${index}
+                    .index=${index}
+                    class="flex-auto"
+                    label="Alias"
+                    .value=${alias}
+                    ?data-last=${index === this._aliases.length - 1}
+                    @change=${this._editAlias}
+                  ></ha-textfield>
+                  <ha-icon-button
+                    .index=${index}
+                    slot="navigationIcon"
+                    label=${this.hass!.localize(
+                      "ui.dialogs.entity_registry.editor.aliases.remove_alias"
                     )}
-                  </mwc-list-item>
-                `}
-            <div class="layout horizontal center">
-              <ha-textfield
-                class="flex-auto"
-                id="alias_input"
-                .label=${this.hass!.localize(
+                    @click=${this._removeAlias}
+                    .path=${mdiDeleteOutline}
+                  ></ha-icon-button>
+                </div>
+              `
+            )}
+            <div class="layout horizontal center-center">
+              <mwc-button @click=${this._addAlias}>
+                ${this.hass!.localize(
                   "ui.dialogs.entity_registry.editor.aliases.add_alias"
                 )}
-                @keydown=${this._handleKeyAdd}
-              ></ha-textfield>
-              <mwc-button @click=${this._addAlias}
-                >${this.hass!.localize(
-                  "ui.dialogs.entity_registry.editor.aliases.add"
-                )}</mwc-button
-              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </mwc-button>
             </div>
           </div>
         </div>
@@ -119,49 +112,29 @@ class DialogEntityAliases extends LitElement {
           .disabled=${this._submitting}
         >
           ${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.aliases.update"
+            "ui.dialogs.entity_registry.editor.aliases.save"
           )}
         </mwc-button>
       </ha-dialog>
     `;
   }
 
-  private _handleKeyAdd(ev: KeyboardEvent) {
-    ev.stopPropagation();
-    if (ev.keyCode !== 13) {
-      return;
-    }
-    this._addAlias();
+  private async _addAlias() {
+    this._aliases = [...this._aliases, ""];
+    await this.updateComplete;
+    const field = this.shadowRoot?.querySelector(`ha-textfield[data-last]`) as
+      | HaTextField
+      | undefined;
+    field?.focus();
   }
 
-  private _addAlias() {
-    const input = this._aliasInput;
-    if (!input?.value) {
-      return;
-    }
-    this._aliases = [...this._aliases, input.value];
-    input.value = "";
+  private async _editAlias(ev: Event) {
+    const index = (ev.target as any).index;
+    this._aliases[index] = (ev.target as any).value;
   }
 
   private async _removeAlias(ev: Event) {
     const index = (ev.target as any).index;
-    if (
-      !(await showConfirmationDialog(this, {
-        destructive: true,
-        title: this.hass.localize(
-          "ui.dialogs.entity_registry.editor.aliases.remove.title",
-          { name: this._aliases[index] }
-        ),
-        text: this.hass.localize(
-          "ui.dialogs.entity_registry.editor.aliases.remove.text"
-        ),
-        confirmText: this.hass.localize(
-          "ui.dialogs.entity_registry.editor.aliases.remove.confirm"
-        ),
-      }))
-    ) {
-      return;
-    }
     const aliases = [...this._aliases];
     aliases.splice(index, 1);
     this._aliases = aliases;
@@ -169,9 +142,13 @@ class DialogEntityAliases extends LitElement {
 
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
+    const noEmptyAliases = this._aliases
+      .map((alias) => alias.trim())
+      .filter((alias) => alias);
+
     try {
       await this._params!.updateEntry({
-        aliases: this._aliases,
+        aliases: noEmptyAliases,
       });
       this.closeDialog();
     } catch (err: any) {
@@ -190,9 +167,14 @@ class DialogEntityAliases extends LitElement {
       haStyle,
       haStyleDialog,
       css`
+        .row {
+          margin-bottom: 8px;
+        }
         ha-textfield {
           display: block;
-          margin-bottom: 8px;
+        }
+        ha-icon-button {
+          display: block;
         }
         mwc-button {
           margin-left: 8px;
