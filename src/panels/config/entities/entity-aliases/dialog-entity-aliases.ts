@@ -56,7 +56,7 @@ class DialogEntityAliases extends LitElement {
         open
         @closed=${this.closeDialog}
         .heading=${this.hass.localize(
-          "ui.dialogs.entity_registry.aliases.heading",
+          "ui.dialogs.entity_registry.editor.aliases.heading",
           { name }
         )}
       >
@@ -64,11 +64,6 @@ class DialogEntityAliases extends LitElement {
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
             : ""}
-          <p>
-            ${this.hass.localize(
-              "ui.dialogs.entity_registry.aliases.description"
-            )}
-          </p>
           <div class="form">
             ${this._aliases.length
               ? this._aliases.map(
@@ -79,7 +74,7 @@ class DialogEntityAliases extends LitElement {
                         slot="meta"
                         .index=${index}
                         .label=${this.hass.localize(
-                          "ui.dialogs.entity_registry.aliases.remove_alias"
+                          "ui.dialogs.entity_registry.editor.aliases.remove_alias"
                         )}
                         @click=${this._removeAlias}
                         .path=${mdiDelete}
@@ -90,7 +85,7 @@ class DialogEntityAliases extends LitElement {
               : html`
                   <mwc-list-item noninteractive>
                     ${this.hass!.localize(
-                      "ui.dialogs.entity_registry.aliases.no_aliases"
+                      "ui.dialogs.entity_registry.editor.aliases.no_aliases"
                     )}
                   </mwc-list-item>
                 `}
@@ -99,13 +94,13 @@ class DialogEntityAliases extends LitElement {
                 class="flex-auto"
                 id="alias_input"
                 .label=${this.hass!.localize(
-                  "ui.dialogs.entity_registry.aliases.add_alias"
+                  "ui.dialogs.entity_registry.editor.aliases.add_alias"
                 )}
                 @keydown=${this._handleKeyAdd}
               ></ha-textfield>
               <mwc-button @click=${this._addAlias}
                 >${this.hass!.localize(
-                  "ui.dialogs.entity_registry.aliases.add"
+                  "ui.dialogs.entity_registry.editor.aliases.add"
                 )}</mwc-button
               >
             </div>
@@ -123,7 +118,9 @@ class DialogEntityAliases extends LitElement {
           @click=${this._updateEntry}
           .disabled=${this._submitting}
         >
-          ${this.hass.localize("ui.dialogs.entity_registry.aliases.update")}
+          ${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.aliases.update"
+          )}
         </mwc-button>
       </ha-dialog>
     `;
@@ -152,14 +149,14 @@ class DialogEntityAliases extends LitElement {
       !(await showConfirmationDialog(this, {
         destructive: true,
         title: this.hass.localize(
-          "ui.dialogs.entity_registry.aliases.remove.title",
+          "ui.dialogs.entity_registry.editor.aliases.remove.title",
           { name: this._aliases[index] }
         ),
         text: this.hass.localize(
-          "ui.dialogs.entity_registry.aliases.remove.text"
+          "ui.dialogs.entity_registry.editor.aliases.remove.text"
         ),
         confirmText: this.hass.localize(
-          "ui.dialogs.entity_registry.aliases.remove.confirm"
+          "ui.dialogs.entity_registry.editor.aliases.remove.confirm"
         ),
       }))
     ) {
@@ -180,7 +177,9 @@ class DialogEntityAliases extends LitElement {
     } catch (err: any) {
       this._error =
         err.message ||
-        this.hass.localize("ui.dialogs.entity_registry.aliases.unknown_error");
+        this.hass.localize(
+          "ui.dialogs.entity_registry.editor.aliases.unknown_error"
+        );
     } finally {
       this._submitting = false;
     }

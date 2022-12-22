@@ -676,7 +676,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           <div class="label">
             ${this.hass.localize(
               "ui.dialogs.entity_registry.editor.entity_status"
-            )}:
+            )}
           </div>
           <div class="secondary">
             ${this._disabledBy &&
@@ -763,12 +763,43 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 </div>
               `
             : ""}
+
+          <div class="label">
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.aliases_section"
+            )}
+          </div>
+          <mwc-list class="aliases">
+            <mwc-list-item
+              .twoline=${this.entry.aliases.length > 0}
+              hasMeta
+              @click=${this._openAliasesSettings}
+            >
+              <span>
+                ${this.entry.aliases.length > 0
+                  ? this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.configured_aliases",
+                      { count: this.entry.aliases.length }
+                    )
+                  : this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.no_aliases"
+                    )}
+              </span>
+              <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+              <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
+            </mwc-list-item>
+          </mwc-list>
+          <div class="secondary">
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.aliases.description"
+            )}
+          </div>
           ${this.entry.device_id
             ? html`
                 <div class="label">
                   ${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.change_area"
-                  )}:
+                  )}
                 </div>
                 <ha-area-picker
                   .hass=${this.hass}
@@ -795,22 +826,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 </div>
               `
             : ""}
-          <div class="label">Aliases:</div>
-          <mwc-list class="aliases">
-            <mwc-list-item
-              .twoline=${this.entry.aliases.length > 0}
-              hasMeta
-              @click=${this._openAliasesSettings}
-            >
-              <span>
-                ${this.entry.aliases.length > 0
-                  ? `${this.entry.aliases.length} configured aliases`
-                  : "No configured aliases"}
-              </span>
-              <span slot="secondary">${this.entry.aliases.join(", ")}</span>
-              <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
-            </mwc-list-item>
-          </mwc-list>
         </ha-expansion-panel>
       </div>
       <div class="buttons">
@@ -1245,7 +1260,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         }
         .secondary {
           margin: 8px 0;
-          width: 340px;
         }
         li[divider] {
           border-bottom-color: var(--divider-color);

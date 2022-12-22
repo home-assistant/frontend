@@ -992,21 +992,24 @@
             "stream_orientation_6": "Rotate left",
             "stream_orientation_7": "Rotate right and flip",
             "stream_orientation_8": "Rotate right"
-          }
-        },
-        "aliases": {
-          "heading": "{name} aliases",
-          "description": "Aliases are alternative names used in voice assistants to refer to this entity",
-          "remove_alias": "Remove alias",
-          "add": "Add",
-          "add_alias": "Add alias",
-          "no_aliases": "No aliases have been added yet",
-          "update": "Update",
-          "unknown_error": "Unknown error",
-          "remove": {
-            "title": "Remove {name}?",
-            "text": "This alias will be permanently deleted.",
-            "confirm": "Remove"
+          },
+          "aliases_section": "Aliases",
+          "no_aliases": "No configured aliases",
+          "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
+          "aliases": {
+            "heading": "{name} aliases",
+            "description": "Aliases are alternative names used in voice assistants to refer to this entity",
+            "remove_alias": "Remove alias",
+            "add": "Add",
+            "add_alias": "Add alias",
+            "no_aliases": "No aliases have been added yet",
+            "update": "Update",
+            "unknown_error": "Unknown error",
+            "remove": {
+              "title": "Remove {name}?",
+              "text": "This alias will be permanently deleted.",
+              "confirm": "Remove"
+            }
           }
         }
       },
