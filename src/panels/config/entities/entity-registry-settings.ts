@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
+import { mdiPencil } from "@mdi/js";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -26,6 +27,7 @@ import {
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
@@ -793,9 +795,22 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 </div>
               `
             : ""}
-          <mwc-button @click=${this._openAliasesSettings}
-            >Open aliases Settings</mwc-button
-          >
+          <div class="label">Aliases:</div>
+          <mwc-list class="aliases">
+            <mwc-list-item
+              .twoline=${this.entry.aliases.length > 0}
+              hasMeta
+              @click=${this._openAliasesSettings}
+            >
+              <span>
+                ${this.entry.aliases.length > 0
+                  ? `${this.entry.aliases.length} configured aliases`
+                  : "No configured aliases"}
+              </span>
+              <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+              <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
+            </mwc-list-item>
+          </mwc-list>
         </ha-expansion-panel>
       </div>
       <div class="buttons">
@@ -1237,6 +1252,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         }
         ha-alert mwc-button {
           width: max-content;
+        }
+        .aliases {
+          border-radius: 4px;
+          margin-top: 4px;
+          margin-bottom: 4px;
+          --mdc-icon-button-size: 24px;
+          overflow: hidden;
         }
       `,
     ];
