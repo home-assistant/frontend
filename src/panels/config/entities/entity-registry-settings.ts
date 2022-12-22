@@ -75,6 +75,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
+import { showEntityAliasesDialog } from "./entity-aliases/show-dialog-entity-aliases";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -792,6 +793,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 </div>
               `
             : ""}
+          <mwc-button @click=${this._openAliasesSettings}
+            >Open aliases Settings</mwc-button
+          >
         </ha-expansion-panel>
       </div>
       <div class="buttons">
@@ -939,6 +943,20 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       device: this._device!,
       updateEntry: async (updates) => {
         await updateDeviceRegistryEntry(this.hass, this._device!.id, updates);
+      },
+    });
+  }
+
+  private _openAliasesSettings() {
+    showEntityAliasesDialog(this, {
+      entity: this.entry!,
+      updateEntry: async (updates) => {
+        const result = await updateEntityRegistryEntry(
+          this.hass,
+          this.entry.entity_id,
+          updates
+        );
+        fireEvent(this, "entity-entry-updated", result.entity_entry);
       },
     });
   }
