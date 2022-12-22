@@ -1302,7 +1302,6 @@
           "description": "Group devices and entities into areas",
           "edit_settings": "Area settings",
           "add_picture": "Add a picture",
-          "area_picture": "Area picture",
           "assigned_to_area": "Assigned to this area",
           "targeting_area": "Targeting this area",
           "area_not_found": "[%key:ui::card::area::area_not_found%]",

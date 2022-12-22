@@ -258,12 +258,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           <div class="column">
             ${area.picture
               ? html`<div class="img-container">
-                  <img
-                    alt=${this.hass.localize(
-                      "ui.panel.config.areas.area_picture"
-                    )}
-                    src=${area.picture}
-                  />
+                  <img alt=${area.name} src=${area.picture} />
                   <ha-icon-button
                     .path=${mdiPencil}
                     .entry=${area}
