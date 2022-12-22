@@ -173,18 +173,18 @@ class MqttSubscribeCard extends LitElement {
       pre {
         font-family: var(--code-font-family, monospace);
       }
-        .panel-dev-mqtt-subsribe-fields {
-          display: flex;
-          justify-content: space-between;
-          flex-wrap: wrap;
-        }
-        ha-select {
-          width: 96px;
-          margin: 0 8px;
-        }
-        ha-textfield {
-          flex: 1;
-        }
+      .panel-dev-mqtt-subscribe-fields {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      ha-select {
+        width: 96px;
+        margin: 0 8px;
+      }
+      ha-textfield {
+        flex: 1;
+      }
       @media screen and (max-width: 600px) {
         ha-select {
           margin-left: 0px;
