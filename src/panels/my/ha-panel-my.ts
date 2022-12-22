@@ -41,6 +41,10 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   server_controls: {
     redirect: "/developer-tools/yaml",
   },
+  calendar: {
+    component: "calendar",
+    redirect: "/calendar",
+  },
   config: {
     redirect: "/config/dashboard",
   },
