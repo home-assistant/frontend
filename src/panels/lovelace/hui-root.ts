@@ -40,7 +40,7 @@ import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-reques
 import { navigate } from "../../common/navigate";
 import {
   addSearchParam,
-  extractSearchParam,
+  extractSearchParamsObject,
 } from "../../common/url/search-params";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
@@ -556,8 +556,11 @@ class HUIRoot extends LitElement {
 
   protected firstUpdated() {
     // Check for requested edit mode
-    if (extractSearchParam("edit") === "1") {
+    const searchParams = extractSearchParamsObject();
+    if (searchParams.edit === "1") {
       this.lovelace!.setEditMode(true);
+    } else if (searchParams.conversation === "1") {
+      showVoiceCommandDialog(this);
     }
   }
 
