@@ -3808,6 +3808,7 @@
             "energy_sources_table": {
               "grid_total": "Grid total",
               "gas_total": "Gas total",
+              "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
               "energy": "Energy",
