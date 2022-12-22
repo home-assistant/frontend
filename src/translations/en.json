@@ -5041,8 +5041,8 @@
           "container": "Container",
           "disabled": "Disabled",
           "header": "Network",
-          "show_disabled": "Show disabled ports",
-          "introduction": "Change the ports on your host that are exposed by the add-on"
+          "show_disabled": "Configure exposed add-on ports",
+          "introduction": "Add or change the ports on your host that are exposed by the add-on. Maps an exposed port to an addon port"
         }
       },
       "dashboard": {
