@@ -14,7 +14,6 @@ export const entitiesConfigStruct = union([
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
-    alt_text: optional(string()),
   }),
   string(),
 ]);
