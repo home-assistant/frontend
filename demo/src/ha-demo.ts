@@ -71,6 +71,7 @@ class HaDemo extends HomeAssistantAppEl {
         entity_category: null,
         has_entity_name: false,
         unique_id: "co2_intensity",
+        aliases: [],
       },
       {
         config_entry_id: "co2signal",
@@ -86,6 +87,7 @@ class HaDemo extends HomeAssistantAppEl {
         entity_category: null,
         has_entity_name: false,
         unique_id: "grid_fossil_fuel_percentage",
+        aliases: [],
       },
     ]);
 
