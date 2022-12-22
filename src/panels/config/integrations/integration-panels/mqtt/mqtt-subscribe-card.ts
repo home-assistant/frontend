@@ -47,7 +47,7 @@ class MqttSubscribeCard extends LitElement {
         header=${this.hass.localize("ui.panel.config.mqtt.description_listen")}
       >
         <form>
-          <div class="panel-dev-mqtt-subsribe-fields">
+          <div class="panel-dev-mqtt-subscribe-fields">
             <ha-textfield
               .label=${this._subscribed
                 ? this.hass.localize("ui.panel.config.mqtt.listening_to")
