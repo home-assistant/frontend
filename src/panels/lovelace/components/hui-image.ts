@@ -206,7 +206,9 @@ export class HuiImage extends LitElement {
               : undefined,
         })}
         class="container ${classMap({
-          ratio: useRatio || this._lastImageHeight === undefined,
+          ratio:
+            useRatio ||
+            (this._lastImageHeight === undefined && imageSrc === undefined),
         })}"
       >
         ${this.cameraImage && this.cameraView === "live"
