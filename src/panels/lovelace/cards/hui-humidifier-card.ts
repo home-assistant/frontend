@@ -16,7 +16,6 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { isUnavailableState } from "../../../data/entity";
@@ -129,16 +128,25 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     const mainHumidity = html`
       <svg viewBox="0 0 24 20">
         <text x="50%" dx="1" y="73%" text-anchor="middle" id="main-humidity">
-          ${isUnavailableState(stateObj.state) ||
-          setHumidity === undefined ||
-          setHumidity === null
+          ${stateObjCurrentHumidity
+            ? isUnavailableState(stateObjCurrentHumidity.state)
+              ? ""
+              : svg`
+                        ${Math.round(Number(stateObjCurrentHumidity.state))}
+                        <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
+                          %
+                        </tspan>
+                        `
+            : isUnavailableState(stateObj.state) ||
+              setHumidity === undefined ||
+              setHumidity === null
             ? ""
             : svg`
-                    ${setHumidity.toFixed()}
-                    <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
-                      %
-                    </tspan>
-                    `}
+                        ${setHumidity.toFixed()}
+                        <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
+                          %
+                        </tspan>
+                        `}
         </text>
       </svg>
     `;
@@ -147,14 +155,11 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       <svg viewBox="0 0 40 10" id="secondary_humidity">
         <text x="50%" y="50%" text-anchor="middle" id="secondary-humidity">
           ${stateObjCurrentHumidity
-            ? html`
-                ${computeStateDisplay(
-                  this.hass!.localize,
-                  stateObjCurrentHumidity,
-                  this.hass!.locale,
-                  this.hass!.entities
-                )}
-              `
+            ? isUnavailableState(stateObj.state) ||
+              setHumidity === undefined ||
+              setHumidity === null
+              ? ""
+              : svg`${setHumidity.toFixed()}`
             : ""}
         </text>
       </svg>
