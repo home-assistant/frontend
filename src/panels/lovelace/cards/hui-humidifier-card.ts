@@ -126,9 +126,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
           ></round-slider>
         `;
 
-    const setValues = html`
+    const mainHumidity = html`
       <svg viewBox="0 0 24 20">
-        <text x="50%" dx="1" y="73%" text-anchor="middle" id="set-values">
+        <text x="50%" dx="1" y="73%" text-anchor="middle" id="main-humidity">
           ${isUnavailableState(stateObj.state) ||
           setHumidity === undefined ||
           setHumidity === null
@@ -143,13 +143,13 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       </svg>
     `;
 
-    const currentHumidity = html`
+    const secondaryHumidity = html`
       <svg
         viewBox="0 0 40 10"
-        id="current_humidity"
+        id="secondary_humidity"
         @click=${this._handleMoreInfoCurrentHumidity}
       >
-        <text x="50%" y="50%" text-anchor="middle" id="current-humidity">
+        <text x="50%" y="50%" text-anchor="middle" id="secondary-humidity">
           ${stateObjCurrentHumidity
             ? html`
                 ${computeStateDisplay(
@@ -200,9 +200,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
                   @click=${this._toggle}
                   tabindex="0"
                 >
-                  ${setValues}
+                  ${mainHumidity}
                 </ha-icon-button>
-                ${currentHumidity} ${currentMode}
+                ${secondaryHumidity} ${currentMode}
               </div>
             </div>
           </div>
@@ -384,7 +384,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         transform: translate(0, 250%);
       }
 
-      #set-values {
+      #main-humidity {
         font-size: 13px;
         font-family: var(--paper-font-body1_-_font-family);
         font-weight: var(--paper-font-body1_-_font-weight);
@@ -395,12 +395,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         font-size: 4px;
       }
 
-      #current_humidity {
+      #secondary_humidity {
         max-width: 80%;
         transform: translate(0, 300%);
       }
 
-      #current-humidity {
+      #secondary-humidity {
         fill: var(--primary-text-color);
         font-size: 5px;
       }
