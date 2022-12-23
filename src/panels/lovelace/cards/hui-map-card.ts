@@ -92,25 +92,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._cleanupHistory();
   }
 
-  private _computePadding(): void {
-    const root = this.shadowRoot!.getElementById("root");
-    if (!this._config || this.isPanel || !root) {
-      return;
-    }
-
-    if (!this._config.aspect_ratio) {
-      root.style.paddingBottom = "100%";
-      return;
-    }
-
-    const ratio = parseAspectRatio(this._config.aspect_ratio);
-
-    root.style.paddingBottom =
-      ratio && ratio.w > 0 && ratio.h > 0
-        ? `${((100 * ratio.h) / ratio.w).toFixed(2)}%`
-        : (root.style.paddingBottom = "100%");
-  }
-
   public getCardSize(): number {
     if (!this._config?.aspect_ratio) {
       return 7;
@@ -216,6 +197,25 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (changedProps.has("_config")) {
       this._computePadding();
     }
+  }
+
+  private _computePadding(): void {
+    const root = this.shadowRoot!.getElementById("root");
+    if (!this._config || this.isPanel || !root) {
+      return;
+    }
+
+    if (!this._config.aspect_ratio) {
+      root.style.paddingBottom = "100%";
+      return;
+    }
+
+    const ratio = parseAspectRatio(this._config.aspect_ratio);
+
+    root.style.paddingBottom =
+      ratio && ratio.w > 0 && ratio.h > 0
+        ? `${((100 * ratio.h) / ratio.w).toFixed(2)}%`
+        : (root.style.paddingBottom = "100%");
   }
 
   private _fitMap() {
