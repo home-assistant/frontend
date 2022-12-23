@@ -143,7 +143,6 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         <hui-image
           .hass=${this.hass}
           .image=${this._config.image}
-          .altText=${this._config.alt_text}
           .stateImage=${this._config.state_image}
           .stateFilter=${this._config.state_filter}
           .cameraImage=${computeDomain(this._config.entity) === "camera"

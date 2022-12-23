@@ -362,7 +362,6 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   show_name?: boolean;
   show_state?: boolean;
   theme?: string;
-  alt_text?: string;
 }
 
 export interface PictureGlanceCardConfig extends LovelaceCardConfig {
