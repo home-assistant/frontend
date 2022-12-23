@@ -144,11 +144,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     `;
 
     const secondaryHumidity = html`
-      <svg
-        viewBox="0 0 40 10"
-        id="secondary_humidity"
-        @click=${this._handleMoreInfoCurrentHumidity}
-      >
+      <svg viewBox="0 0 40 10" id="secondary_humidity">
         <text x="50%" y="50%" text-anchor="middle" id="secondary-humidity">
           ${stateObjCurrentHumidity
             ? html`
@@ -295,14 +291,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", {
       entityId: this._config!.entity,
     });
-  }
-
-  private _handleMoreInfoCurrentHumidity() {
-    if (this._config!.current_humidity_sensor) {
-      fireEvent(this, "hass-more-info", {
-        entityId: this._config!.current_humidity_sensor,
-      });
-    }
   }
 
   static get styles(): CSSResultGroup {
