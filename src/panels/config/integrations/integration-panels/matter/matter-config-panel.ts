@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import {
@@ -13,7 +13,6 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-alert";
 import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { subscribeDeviceRegistry } from "../../../../../data/device_registry";
 import { navigate } from "../../../../../common/navigate";
 
 @customElement("matter-config-panel")
@@ -24,15 +23,7 @@ export class MatterConfigPanel extends LitElement {
 
   @state() private _error?: string;
 
-  private _unsubDevReg?: () => void;
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    if (this._unsubDevReg) {
-      this._unsubDevReg();
-      this._unsubDevReg = undefined;
-    }
-  }
+  private _curMatterDevices?: Set<string>;
 
   private get _canCommissionMatter() {
     return this.hass.auth.external?.config.canCommissionMatter;
@@ -78,6 +69,28 @@ export class MatterConfigPanel extends LitElement {
         </div>
       </hass-subpage>
     `;
+  }
+
+  protected override updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    if (!this._curMatterDevices || !changedProps.has("hass")) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.devices === this.hass.devices) {
+      return;
+    }
+
+    const newMatterDevices = Object.values(this.hass.devices).filter(
+      (device) =>
+        device.identifiers.find((identifier) => identifier[0] === "matter") &&
+        !this._curMatterDevices!.has(device.id)
+    );
+    if (newMatterDevices.length) {
+      navigate(`/config/devices/device/${newMatterDevices[0].id}`);
+    }
   }
 
   private _startMobileCommissioning() {
@@ -171,30 +184,15 @@ export class MatterConfigPanel extends LitElement {
   }
 
   private _redirectOnNewDevice() {
-    if (this._unsubDevReg) {
+    if (this._curMatterDevices) {
       return;
     }
-    let lastSeen: Set<string> | undefined;
-
-    this._unsubDevReg = subscribeDeviceRegistry(
-      this.hass.connection,
-      (devices) => {
-        const matterDevices = devices.filter((device) =>
+    this._curMatterDevices = new Set(
+      Object.values(this.hass.devices)
+        .filter((device) =>
           device.identifiers.find((identifier) => identifier[0] === "matter")
-        );
-        if (!lastSeen) {
-          lastSeen = new Set(devices.map((device) => device.id));
-          return;
-        }
-        const newDevices = matterDevices.filter(
-          (device) => !lastSeen!.has(device.id)
-        );
-        if (newDevices.length) {
-          this._unsubDevReg!();
-          this._unsubDevReg = undefined;
-          navigate(`/config/devices/device/${newDevices[0].id}`);
-        }
-      }
+        )
+        .map((device) => device.id)
     );
   }
 
