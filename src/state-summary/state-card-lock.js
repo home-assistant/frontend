@@ -3,6 +3,7 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { supportsFeature } from "../common/entity/supports-feature";
 import "../components/entity/state-info";
 import LocalizeMixin from "../mixins/localize-mixin";
 
@@ -19,6 +20,9 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
           height: 37px;
           margin-right: -0.57em;
         }
+        [hidden] {
+          display: none !important;
+        }
       </style>
 
       <div class="horizontal justified layout">
@@ -26,7 +30,7 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
         <mwc-button
           on-click="_callService"
           data-service="open"
-          hidden$="[[isLocked]]"
+          hidden$="[[!supportsOpen]]"
           >[[localize('ui.card.lock.open')]]</mwc-button
         >
         <mwc-button
@@ -67,12 +71,14 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
         value: false,
       },
       isLocked: Boolean,
+      supportsOpen: Boolean,
     };
   }
 
   _stateObjChanged(newVal) {
     if (newVal) {
       this.isLocked = newVal.state === "locked";
+      this.supportsOpen = supportsFeature(newVal, 1);
     }
   }
 
