@@ -55,6 +55,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property() public helper?: string;
 
+  @property({ type: Boolean }) public filterDuplicates;
+
   /**
    * Show only targets with entities from specific domains.
    * @type {Array}
@@ -345,6 +347,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             .entityFilter=${this.entityRegFilter}
             .includeDeviceClasses=${this.includeDeviceClasses}
             .includeDomains=${this.includeDomains}
+            .excludeAreas=${this.filterDuplicates && this.value
+              ? this.value.area_id
+              : undefined}
             @value-changed=${this._targetPicked}
           ></ha-area-picker>
         `;
@@ -361,6 +366,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             .entityFilter=${this.entityRegFilter}
             .includeDeviceClasses=${this.includeDeviceClasses}
             .includeDomains=${this.includeDomains}
+            .excludeDevices=${this.filterDuplicates && this.value
+              ? this.value.device_id
+              : undefined}
             @value-changed=${this._targetPicked}
           ></ha-device-picker>
         `;
@@ -376,6 +384,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             .entityFilter=${this.entityFilter}
             .includeDeviceClasses=${this.includeDeviceClasses}
             .includeDomains=${this.includeDomains}
+            .excludeEntities=${this.filterDuplicates && this.value
+              ? this.value.entity_id
+              : undefined}
             @value-changed=${this._targetPicked}
             allow-custom-entity
           ></ha-entity-picker>
@@ -393,6 +404,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     const target = ev.currentTarget;
     target.value = "";
     this._addMode = undefined;
+    if (
+      this.filterDuplicates &&
+      this.value &&
+      this.value[target.type] &&
+      this.value[target.type].includes(value)
+    ) {
+      return;
+    }
     fireEvent(this, "value-changed", {
       value: this.value
         ? {
