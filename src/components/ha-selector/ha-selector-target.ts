@@ -88,6 +88,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
       .value=${this.value}
       .helper=${this.helper}
       .deviceFilter=${this._filterDevices}
+      .entityRegFilter=${this._filterEntities}
       .entityFilter=${this._filterEntities}
       .disabled=${this.disabled}
     ></ha-target-picker>`;
