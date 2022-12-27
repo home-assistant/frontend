@@ -1,23 +1,24 @@
-import "../../../../components/ha-form/ha-form";
+import { memoize } from "@fullcalendar/common";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, object, optional, string, assign } from "superstruct";
-import { memoize } from "@fullcalendar/common";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { entityId } from "../../../../common/structs/is-entity-id";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { UNAVAILABLE } from "../../../../data/entity";
+import type { WeatherEntity } from "../../../../data/weather";
 import type { HomeAssistant } from "../../../../types";
 import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { UNAVAILABLE } from "../../../../data/entity";
-import type { WeatherEntity } from "../../../../data/weather";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entity: optional(string()),
+    entity: optional(entityId()),
     name: optional(string()),
     theme: optional(string()),
     show_current: optional(boolean()),

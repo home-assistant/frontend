@@ -79,7 +79,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       config.geo_location_sources &&
       !Array.isArray(config.geo_location_sources)
     ) {
-      throw new Error("Geo_location_sources needs to be an array");
+      throw new Error("Parameter geo_location_sources needs to be an array");
     }
 
     this._config = config;
