@@ -1,6 +1,6 @@
 import type { SelectedDetail } from "@material/mwc-list";
 import { css, html, LitElement, PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { Options, WeekdayStr } from "rrule";
 import { ByWeekday, RRule, Weekday } from "rrule";
@@ -19,7 +19,6 @@ import {
   getWeekday,
   getWeekdays,
   getMonthlyRepeatItems,
-  getMonthlyRepeatFromRule,
   intervalSuffix,
   RepeatEnd,
   RepeatFrequency,
@@ -27,6 +26,8 @@ import {
   untilValue,
   WEEKDAY_NAME,
   MonthlyRepeatItem,
+  getMonthlyRepeatWeekdayFromRule,
+  getMonthdayRepeatFromRule,
 } from "./recurrence";
 import "../../components/ha-date-input";
 
@@ -52,13 +53,19 @@ export class RecurrenceRuleEditor extends LitElement {
 
   @state() private _weekday: Set<WeekdayStr> = new Set<WeekdayStr>();
 
-  @state() private _monthlyRepeat?: Weekday;
+  @state() private _monthlyRepeat?: string;
+
+  @state() private _monthlyRepeatWeekday?: Weekday;
+
+  @state() private _monthday?: number;
 
   @state() private _end: RepeatEnd = "never";
 
   @state() private _count?: number;
 
   @state() private _until?: Date;
+
+  @query("#monthly") private _monthlyRepeatSelect!: HaSelect;
 
   private _allWeekdays?: WeekdayStr[];
 
@@ -73,17 +80,46 @@ export class RecurrenceRuleEditor extends LitElement {
       );
     }
 
+    if (changedProps.has("dtstart") || changedProps.has("_interval")) {
+      this._monthlyRepeatItems = this.dtstart
+        ? getMonthlyRepeatItems(this.hass, this._interval, this.dtstart)
+        : [];
+      this._computeWeekday();
+      const selectElement = this._monthlyRepeatSelect;
+      if (selectElement) {
+        const oldSelected = selectElement.index;
+        // this._monthlyRepeat = undefined;
+        selectElement.select(-1);
+        this.updateComplete.then(() => {
+          selectElement.select(changedProps.has("dtstart") ? 0 : oldSelected);
+        });
+      }
+    }
+
     if (
-      !changedProps.has("value") &&
-      !changedProps.has("dtstart") &&
-      this._computedRRule === this.value
+      changedProps.has("timezone") ||
+      changedProps.has("_freq") ||
+      changedProps.has("_interval") ||
+      changedProps.has("_weekday") ||
+      changedProps.has("_monthlyRepeatWeekday") ||
+      changedProps.has("_monthday") ||
+      changedProps.has("_end") ||
+      changedProps.has("_count") ||
+      changedProps.has("_until")
     ) {
+      this._updateRule();
+      return;
+    }
+
+    if (this._computedRRule === this.value) {
       return;
     }
 
     this._interval = 1;
     this._weekday.clear();
     this._monthlyRepeat = undefined;
+    this._monthday = undefined;
+    this._monthlyRepeatWeekday = undefined;
     this._end = "never";
     this._count = undefined;
     this._until = undefined;
@@ -105,7 +141,14 @@ export class RecurrenceRuleEditor extends LitElement {
     if (rrule.interval) {
       this._interval = rrule.interval;
     }
-    this._monthlyRepeat = getMonthlyRepeatFromRule(rrule);
+    this._monthlyRepeatWeekday = getMonthlyRepeatWeekdayFromRule(rrule);
+    if (this._monthlyRepeatWeekday) {
+      this._monthlyRepeat = `BYDAY=${this._monthlyRepeatWeekday.toString()}`;
+    }
+    this._monthday = getMonthdayRepeatFromRule(rrule);
+    if (this._monthday) {
+      this._monthlyRepeat = `BYMONTHDAY=${this._monthday}`;
+    }
     if (
       this._freq === "weekly" &&
       rrule.byweekday &&
@@ -124,11 +167,6 @@ export class RecurrenceRuleEditor extends LitElement {
       this._end = "after";
       this._count = rrule.count;
     }
-
-    this._monthlyRepeatItems = this.dtstart
-      ? getMonthlyRepeatItems(this.hass, this._interval, this.dtstart)
-      : [];
-    this._computeWeekday();
   }
 
   renderRepeat() {
@@ -159,16 +197,14 @@ export class RecurrenceRuleEditor extends LitElement {
             id="monthly"
             label="Repeat Monthly"
             @selected=${this._onMonthlyDetailSelected}
+            .value=${this._monthlyRepeat || this._monthlyRepeatItems[0]?.value}
             @closed=${stopPropagation}
             fixedMenuPosition
             naturalMenuWidth
           >
             ${this._monthlyRepeatItems!.map(
               (item) => html`
-                <ha-list-item
-                  .value=${item.value}
-                  .selected=${item.byday === this._monthlyRepeat}
-                >
+                <ha-list-item .value=${item.value} .item=${item}>
                   ${item.label}
                 </ha-list-item>
               `
@@ -268,7 +304,6 @@ export class RecurrenceRuleEditor extends LitElement {
 
   private _onIntervalChange(e: Event) {
     this._interval = (e.target! as any).value;
-    this._updateRule();
   }
 
   private _onRepeatSelected(e: CustomEvent<SelectedDetail<number>>) {
@@ -282,13 +317,17 @@ export class RecurrenceRuleEditor extends LitElement {
       this._computeWeekday();
     }
     e.stopPropagation();
-    this._updateRule();
   }
 
   private _onMonthlyDetailSelected(e: CustomEvent<SelectedDetail<number>>) {
-    this._monthlyRepeat = this._monthlyRepeatItems[e.detail.index].byday;
     e.stopPropagation();
-    this._updateRule();
+    const selectedItem = this._monthlyRepeatItems[e.detail.index];
+    if (!selectedItem) {
+      return;
+    }
+    this._monthlyRepeat = selectedItem.value;
+    this._monthlyRepeatWeekday = selectedItem.byday;
+    this._monthday = selectedItem.bymonthday;
   }
 
   private _onWeekdayToggle(e: MouseEvent) {
@@ -299,7 +338,6 @@ export class RecurrenceRuleEditor extends LitElement {
     } else {
       this._weekday.delete(value);
     }
-    this._updateRule();
   }
 
   private _onEndSelected(e: CustomEvent<SelectedDetail<number>>) {
@@ -323,18 +361,15 @@ export class RecurrenceRuleEditor extends LitElement {
         this._until = undefined;
     }
     e.stopPropagation();
-    this._updateRule();
   }
 
   private _onCountChange(e: Event) {
     this._count = (e.target! as any).value;
-    this._updateRule();
   }
 
   private _onUntilChange(e: CustomEvent) {
     e.stopPropagation();
     this._until = new Date(e.detail.value);
-    this._updateRule();
   }
 
   // Reset the weekday selected when there is only a single value
@@ -351,18 +386,22 @@ export class RecurrenceRuleEditor extends LitElement {
       return "";
     }
     let byweekday: Weekday[] | undefined;
-    if (this._freq === "monthly" && this._monthlyRepeat !== undefined) {
-      byweekday = [this._monthlyRepeat];
+    let bymonthday: number | undefined;
+    if (this._freq === "monthly" && this._monthlyRepeatWeekday !== undefined) {
+      byweekday = [this._monthlyRepeatWeekday];
+    } else if (this._freq === "monthly" && this._monthday !== undefined) {
+      bymonthday = this._monthday;
     } else if (this._freq === "weekly") {
       byweekday = ruleByWeekDay(this._weekday);
     }
-    const options = {
+    const options: Partial<Options> = {
       freq: convertRepeatFrequency(this._freq!)!,
       interval: this._interval > 1 ? this._interval : undefined,
       count: this._count,
       until: this._until,
       tzid: this.timezone,
       byweekday: byweekday,
+      bymonthday: bymonthday,
     };
     const contentline = RRule.optionsToString(options);
     return contentline.slice(6); // Strip "RRULE:" prefix

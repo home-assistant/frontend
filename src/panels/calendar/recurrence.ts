@@ -1,7 +1,5 @@
 // Library for converting back and forth from values use by this webcomponent
 // and the values defined by rrule.js.
-import { RRule, Frequency, Weekday } from "rrule";
-import type { Options, WeekdayStr } from "rrule";
 import {
   addDays,
   addMonths,
@@ -9,8 +7,11 @@ import {
   addYears,
   getDate,
   getDay,
-  getMonth,
+  isLastDayOfMonth,
+  isSameMonth,
 } from "date-fns";
+import type { Options, WeekdayStr } from "rrule";
+import { Frequency, RRule, Weekday } from "rrule";
 import { formatDate } from "../../common/datetime/format_date";
 import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { dayNames } from "../../common/translations/day_names";
@@ -37,6 +38,7 @@ export const DEFAULT_COUNT = {
 export interface MonthlyRepeatItem {
   value: string;
   byday?: Weekday;
+  bymonthday?: number;
   label: string;
 }
 
@@ -173,11 +175,11 @@ export function ruleByWeekDay(weekdays: Set<WeekdayStr>): Weekday[] {
 function getWeekydaysForMonth(dtstart: Date): Weekday[] {
   const weekDay = getWeekday(dtstart);
   const dayOfMonth = getDate(dtstart);
-  const weekOfMonth = Math.floor((dayOfMonth - 1) / 7) + 1;
-  const isLastWeekday = getMonth(dtstart) !== getMonth(addDays(dtstart, 7));
+  const nthWeekdayOfMonth = Math.floor((dayOfMonth - 1) / 7) + 1;
+  const isLastWeekday = !isSameMonth(dtstart, addDays(dtstart, 7));
   const byweekdays: Weekday[] = [];
   if (!isLastWeekday || dayOfMonth <= 28) {
-    byweekdays.push(new Weekday(weekDay, weekOfMonth));
+    byweekdays.push(new Weekday(weekDay, nthWeekdayOfMonth));
   }
   if (isLastWeekday) {
     byweekdays.push(new Weekday(weekDay, -1));
@@ -196,7 +198,7 @@ export function getMonthlyRepeatItems(
   const getLabel = (repeatValue: string) =>
     renderRRuleAsText(hass, `FREQ=MONTHLY;INTERVAL=${interval};${repeatValue}`);
 
-  return [
+  const result: MonthlyRepeatItem[] = [
     // The default repeat rule is on day of month e.g. 3rd day of month
     {
       value: `BYMONTHDAY=${getDate(dtstart)}`,
@@ -209,9 +211,17 @@ export function getMonthlyRepeatItems(
       label: getLabel(`BYDAY=${item.toString()}`)!,
     })),
   ];
+  if (isLastDayOfMonth(dtstart)) {
+    result.push({
+      value: "BYMONTHDAY=-1",
+      bymonthday: -1,
+      label: getLabel(`BYMONTHDAY=-1`)!,
+    });
+  }
+  return result;
 }
 
-export function getMonthlyRepeatFromRule(
+export function getMonthlyRepeatWeekdayFromRule(
   rrule: Partial<Options>
 ): Weekday | undefined {
   if (rrule.freq !== Frequency.MONTHLY) {
@@ -226,6 +236,18 @@ export function getMonthlyRepeatFromRule(
     return rrule.byweekday[0];
   }
   return undefined;
+}
+
+export function getMonthdayRepeatFromRule(
+  rrule: Partial<Options>
+): number | undefined {
+  if (rrule.freq !== Frequency.MONTHLY || !rrule.bymonthday) {
+    return undefined;
+  }
+  if (Array.isArray(rrule.bymonthday)) {
+    return rrule.bymonthday[0];
+  }
+  return rrule.bymonthday;
 }
 
 /**
