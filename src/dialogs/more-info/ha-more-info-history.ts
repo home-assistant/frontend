@@ -139,7 +139,7 @@ export class MoreInfoHistory extends LitElement {
     }
     this._stateHistory = await getRecentWithCache(
       this.hass!,
-      this.entityId,
+      [this.entityId],
       {
         cacheKey: `more_info.${this.entityId}`,
         hoursToShow: 24,

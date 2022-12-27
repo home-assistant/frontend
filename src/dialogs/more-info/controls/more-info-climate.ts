@@ -11,6 +11,11 @@ import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import {
+  computeAttributeNameDisplay,
+  computeAttributeValueDisplay,
+} from "../../../common/entity/compute_attribute_display";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-climate-control";
@@ -19,13 +24,7 @@ import "../../../components/ha-slider";
 import "../../../components/ha-switch";
 import {
   ClimateEntity,
-  CLIMATE_SUPPORT_AUX_HEAT,
-  CLIMATE_SUPPORT_FAN_MODE,
-  CLIMATE_SUPPORT_PRESET_MODE,
-  CLIMATE_SUPPORT_SWING_MODE,
-  CLIMATE_SUPPORT_TARGET_HUMIDITY,
-  CLIMATE_SUPPORT_TARGET_TEMPERATURE,
-  CLIMATE_SUPPORT_TARGET_TEMPERATURE_RANGE,
+  ClimateEntityFeature,
   compareClimateHvacModes,
 } from "../../../data/climate";
 import { HomeAssistant } from "../../../types";
@@ -47,26 +46,32 @@ class MoreInfoClimate extends LitElement {
 
     const supportTargetTemperature = supportsFeature(
       stateObj,
-      CLIMATE_SUPPORT_TARGET_TEMPERATURE
+      ClimateEntityFeature.TARGET_TEMPERATURE
     );
     const supportTargetTemperatureRange = supportsFeature(
       stateObj,
-      CLIMATE_SUPPORT_TARGET_TEMPERATURE_RANGE
+      ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
     );
     const supportTargetHumidity = supportsFeature(
       stateObj,
-      CLIMATE_SUPPORT_TARGET_HUMIDITY
+      ClimateEntityFeature.TARGET_HUMIDITY
     );
-    const supportFanMode = supportsFeature(stateObj, CLIMATE_SUPPORT_FAN_MODE);
+    const supportFanMode = supportsFeature(
+      stateObj,
+      ClimateEntityFeature.FAN_MODE
+    );
     const supportPresetMode = supportsFeature(
       stateObj,
-      CLIMATE_SUPPORT_PRESET_MODE
+      ClimateEntityFeature.PRESET_MODE
     );
     const supportSwingMode = supportsFeature(
       stateObj,
-      CLIMATE_SUPPORT_SWING_MODE
+      ClimateEntityFeature.SWING_MODE
     );
-    const supportAuxHeat = supportsFeature(stateObj, CLIMATE_SUPPORT_AUX_HEAT);
+    const supportAuxHeat = supportsFeature(
+      stateObj,
+      ClimateEntityFeature.AUX_HEAT
+    );
 
     const temperatureStepSize =
       stateObj.attributes.target_temp_step ||
@@ -94,7 +99,12 @@ class MoreInfoClimate extends LitElement {
             ${supportTargetTemperature || supportTargetTemperatureRange
               ? html`
                   <div>
-                    ${hass.localize("ui.card.climate.target_temperature")}
+                    ${computeAttributeNameDisplay(
+                      hass.localize,
+                      stateObj,
+                      hass.entities,
+                      "temperature"
+                    )}
                   </div>
                 `
               : ""}
@@ -145,7 +155,14 @@ class MoreInfoClimate extends LitElement {
         ${supportTargetHumidity
           ? html`
               <div class="container-humidity">
-                <div>${hass.localize("ui.card.climate.target_humidity")}</div>
+                <div>
+                  ${computeAttributeNameDisplay(
+                    hass.localize,
+                    stateObj,
+                    hass.entities,
+                    "humidity"
+                  )}
+                </div>
                 <div class="single-row">
                   <div class="target-humidity">
                     ${stateObj.attributes.humidity} %
@@ -182,7 +199,13 @@ class MoreInfoClimate extends LitElement {
                 .map(
                   (mode) => html`
                     <mwc-list-item .value=${mode}>
-                      ${hass.localize(`component.climate.state._.${mode}`)}
+                      ${computeStateDisplay(
+                        hass.localize,
+                        stateObj,
+                        hass.locale,
+                        hass.entities,
+                        mode
+                      )}
                     </mwc-list-item>
                   `
                 )}
@@ -194,7 +217,12 @@ class MoreInfoClimate extends LitElement {
           ? html`
               <div class="container-preset_modes">
                 <ha-select
-                  .label=${hass.localize("ui.card.climate.preset_mode")}
+                  .label=${computeAttributeNameDisplay(
+                    hass.localize,
+                    stateObj,
+                    hass.entities,
+                    "preset_mode"
+                  )}
                   .value=${stateObj.attributes.preset_mode}
                   fixedMenuPosition
                   naturalMenuWidth
@@ -204,9 +232,13 @@ class MoreInfoClimate extends LitElement {
                   ${stateObj.attributes.preset_modes!.map(
                     (mode) => html`
                       <mwc-list-item .value=${mode}>
-                        ${hass.localize(
-                          `state_attributes.climate.preset_mode.${mode}`
-                        ) || mode}
+                        ${computeAttributeValueDisplay(
+                          hass.localize,
+                          stateObj,
+                          hass.entities,
+                          "preset_mode",
+                          mode
+                        )}
                       </mwc-list-item>
                     `
                   )}
@@ -218,7 +250,12 @@ class MoreInfoClimate extends LitElement {
           ? html`
               <div class="container-fan_list">
                 <ha-select
-                  .label=${hass.localize("ui.card.climate.fan_mode")}
+                  .label=${computeAttributeNameDisplay(
+                    hass.localize,
+                    stateObj,
+                    hass.entities,
+                    "fan_mode"
+                  )}
                   .value=${stateObj.attributes.fan_mode}
                   fixedMenuPosition
                   naturalMenuWidth
@@ -228,9 +265,13 @@ class MoreInfoClimate extends LitElement {
                   ${stateObj.attributes.fan_modes!.map(
                     (mode) => html`
                       <mwc-list-item .value=${mode}>
-                        ${hass.localize(
-                          `state_attributes.climate.fan_mode.${mode}`
-                        ) || mode}
+                        ${computeAttributeValueDisplay(
+                          hass.localize,
+                          stateObj,
+                          hass.entities,
+                          "fan_mode",
+                          mode
+                        )}
                       </mwc-list-item>
                     `
                   )}
@@ -242,7 +283,12 @@ class MoreInfoClimate extends LitElement {
           ? html`
               <div class="container-swing_list">
                 <ha-select
-                  .label=${hass.localize("ui.card.climate.swing_mode")}
+                  .label=${computeAttributeNameDisplay(
+                    hass.localize,
+                    stateObj,
+                    hass.entities,
+                    "swing_mode"
+                  )}
                   .value=${stateObj.attributes.swing_mode}
                   fixedMenuPosition
                   naturalMenuWidth
@@ -251,7 +297,15 @@ class MoreInfoClimate extends LitElement {
                 >
                   ${stateObj.attributes.swing_modes!.map(
                     (mode) => html`
-                      <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
+                      <mwc-list-item .value=${mode}>
+                        ${computeAttributeValueDisplay(
+                          hass.localize,
+                          stateObj,
+                          hass.entities,
+                          "swing_mode",
+                          mode
+                        )}
+                      </mwc-list-item>
                     `
                   )}
                 </ha-select>
@@ -263,7 +317,12 @@ class MoreInfoClimate extends LitElement {
               <div class="container-aux_heat">
                 <div class="center horizontal layout single-row">
                   <div class="flex">
-                    ${hass.localize("ui.card.climate.aux_heat")}
+                    ${computeAttributeNameDisplay(
+                      hass.localize,
+                      stateObj,
+                      hass.entities,
+                      "aux_heat"
+                    )}
                   </div>
                   <ha-switch
                     .checked=${stateObj.attributes.aux_heat === "on"}
