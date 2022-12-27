@@ -22,6 +22,7 @@ export interface EntityRegistryEntry {
   original_name?: string;
   unique_id: string;
   translation_key?: string;
+  aliases: string[];
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
@@ -63,6 +64,7 @@ export interface EntityRegistryEntryUpdateParams {
   new_entity_id?: string;
   options_domain?: string;
   options?: SensorEntityOptions | NumberEntityOptions | WeatherEntityOptions;
+  aliases?: string[];
 }
 
 export const findBatteryEntity = (
