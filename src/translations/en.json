@@ -22,31 +22,6 @@
     }
   },
   "state_attributes": {
-    "climate": {
-      "fan_mode": {
-        "off": "Off",
-        "on": "On",
-        "auto": "Auto"
-      },
-      "preset_mode": {
-        "none": "None",
-        "eco": "Eco",
-        "away": "Away",
-        "boost": "Boost",
-        "comfort": "Comfort",
-        "home": "Home",
-        "sleep": "Sleep",
-        "activity": "Activity"
-      },
-      "hvac_action": {
-        "off": "Off",
-        "heating": "Heating",
-        "cooling": "Cooling",
-        "drying": "Drying",
-        "idle": "Idle",
-        "fan": "Fan"
-      }
-    },
     "humidifier": {
       "mode": {
         "normal": "Normal",
@@ -140,7 +115,6 @@
       "climate": {
         "currently": "Currently",
         "on_off": "On / off",
-        "target_temperature": "Target temperature",
         "target_temperature_entity": "{name} target temperature",
         "target_temperature_mode": "{name} target temperature {mode}",
         "current_temperature": "{name} current temperature",
@@ -148,13 +122,8 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "target_humidity": "Target humidity",
         "operation": "Operation",
-        "fan_mode": "Fan mode",
-        "swing_mode": "Swing mode",
-        "preset_mode": "Preset",
-        "away_mode": "Away mode",
-        "aux_heat": "Aux heat"
+        "away_mode": "Away mode"
       },
       "counter": {
         "actions": {
