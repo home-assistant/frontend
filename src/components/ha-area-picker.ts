@@ -279,7 +279,7 @@ export class HaAreaPicker extends LitElement {
       (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      (this.comboBox as any).items = this._getAreas(
+      const areas = this._getAreas(
         Object.values(this.hass.areas),
         Object.values(this.hass.devices),
         Object.values(this.hass.entities),
@@ -291,6 +291,8 @@ export class HaAreaPicker extends LitElement {
         this.noAdd,
         this.excludeAreas
       );
+      (this.comboBox as any).items = areas;
+      (this.comboBox as any).filteredItems = areas;
     }
   }
 
