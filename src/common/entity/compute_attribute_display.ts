@@ -26,8 +26,6 @@ export const computeAttributeValueDisplay = (
     localize(
       `component.${domain}.state_attributes._.${attribute}.state.${attributeValue}`
     ) ||
-    // @ts-ignore For backward compatibility
-    localize(`state_attributes.${domain}.${attribute}.${attributeValue}`) ||
     attributeValue
   );
 };
