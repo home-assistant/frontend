@@ -3217,6 +3217,7 @@
           "payload": "Payload (template allowed)",
           "publish": "Publish",
           "description_listen": "Listen to a topic",
+          "json_formatting": "Format JSON content",
           "listening_to": "Listening to",
           "subscribe_to": "Topic to subscribe to",
           "start_listening": "Start listening",
