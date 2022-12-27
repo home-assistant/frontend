@@ -27,7 +27,7 @@ jobs:
           ref: dev
 
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -65,7 +65,7 @@ jobs:
           ref: master
 
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
