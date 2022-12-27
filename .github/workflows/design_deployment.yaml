@@ -17,10 +17,10 @@ jobs:
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.2.0
 
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
