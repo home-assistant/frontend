@@ -27,13 +27,11 @@ export const processConfigEntities = <
       config = { entity: entityConf } as T;
     } else if (typeof entityConf === "object" && !Array.isArray(entityConf)) {
       if (!("entity" in entityConf)) {
-        throw new Error(
-          `Entity object at position ${index} is missing entity field.`
-        );
+        throw new Error(`Object at position ${index} is missing entity field`);
       }
       config = entityConf as T;
     } else {
-      throw new Error(`Invalid entity specified at position ${index}.`);
+      throw new Error(`Invalid entity ID at position ${index}`);
     }
 
     if (checkEntityId && !isValidEntityId((config as EntityConfig).entity!)) {

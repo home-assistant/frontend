@@ -22,31 +22,6 @@
     }
   },
   "state_attributes": {
-    "climate": {
-      "fan_mode": {
-        "off": "Off",
-        "on": "On",
-        "auto": "Auto"
-      },
-      "preset_mode": {
-        "none": "None",
-        "eco": "Eco",
-        "away": "Away",
-        "boost": "Boost",
-        "comfort": "Comfort",
-        "home": "Home",
-        "sleep": "Sleep",
-        "activity": "Activity"
-      },
-      "hvac_action": {
-        "off": "Off",
-        "heating": "Heating",
-        "cooling": "Cooling",
-        "drying": "Drying",
-        "idle": "Idle",
-        "fan": "Fan"
-      }
-    },
     "humidifier": {
       "mode": {
         "normal": "Normal",
@@ -140,7 +115,6 @@
       "climate": {
         "currently": "Currently",
         "on_off": "On / off",
-        "target_temperature": "Target temperature",
         "target_temperature_entity": "{name} target temperature",
         "target_temperature_mode": "{name} target temperature {mode}",
         "current_temperature": "{name} current temperature",
@@ -148,13 +122,8 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "target_humidity": "Target humidity",
         "operation": "Operation",
-        "fan_mode": "Fan mode",
-        "swing_mode": "Swing mode",
-        "preset_mode": "Preset",
-        "away_mode": "Away mode",
-        "aux_heat": "Aux heat"
+        "away_mode": "Away mode"
       },
       "counter": {
         "actions": {
@@ -654,6 +623,12 @@
             "prompt": "Do you want to delete this event?",
             "recurring_prompt": "Do you want to delete only this event, or this and all future occurrences of the event?"
           },
+          "confirm_update": {
+            "update": "Update Event",
+            "update_this": "Update Only This Event",
+            "update_future": "Update All Future Events",
+            "recurring_prompt": "Do you want to update only this event, or this and all future occurrences of the event?"
+          },
           "repeat": {
             "label": "Repeat",
             "freq": {
@@ -992,6 +967,19 @@
             "stream_orientation_6": "Rotate left",
             "stream_orientation_7": "Rotate right and flip",
             "stream_orientation_8": "Rotate right"
+          },
+          "aliases_section": "Aliases",
+          "no_aliases": "No configured aliases",
+          "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
+          "aliases": {
+            "heading": "{name} aliases",
+            "description": "Aliases are alternative names used in voice assistants to refer to this entity.",
+            "remove_alias": "Remove alias",
+            "save": "Save",
+            "add_alias": "Add alias",
+            "no_aliases": "No aliases have been added yet",
+            "update": "Update",
+            "unknown_error": "Unknown error"
           }
         }
       },
@@ -3229,6 +3217,7 @@
           "payload": "Payload (template allowed)",
           "publish": "Publish",
           "description_listen": "Listen to a topic",
+          "json_formatting": "Format JSON content",
           "listening_to": "Listening to",
           "subscribe_to": "Topic to subscribe to",
           "start_listening": "Start listening",
