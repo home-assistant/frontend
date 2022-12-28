@@ -84,6 +84,14 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  /**
+   * List of devices to be excluded.
+   * @type {Array}
+   * @attr exclude-devices
+   */
+  @property({ type: Array, attribute: "exclude-devices" })
+  public excludeDevices?: string[];
+
   @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
   @property({ type: Boolean }) public disabled?: boolean;
@@ -104,7 +112,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
-      deviceFilter: this["deviceFilter"]
+      deviceFilter: this["deviceFilter"],
+      excludeDevices: this["excludeDevices"]
     ): Device[] => {
       if (!devices.length) {
         return [
@@ -162,6 +171,12 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
               !excludeDomains.includes(computeDomain(entity.entity_id))
           );
         });
+      }
+
+      if (excludeDevices) {
+        inputDevices = inputDevices.filter(
+          (device) => !excludeDevices!.includes(device.id)
+        );
       }
 
       if (includeDeviceClasses) {
@@ -258,7 +273,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         this.includeDomains,
         this.excludeDomains,
         this.includeDeviceClasses,
-        this.deviceFilter
+        this.deviceFilter,
+        this.excludeDevices
       );
     }
   }
