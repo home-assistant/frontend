@@ -67,7 +67,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
               @change=${this._valueChanged}
             ></ha-slider>
           </div>
-          <ha-input-helper-text>${this.helper}</ha-input-helper-text>
+          ${this.helper ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>` : ""}
         </div>
       `;
     }
