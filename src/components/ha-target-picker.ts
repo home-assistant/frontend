@@ -399,7 +399,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (
       this.value &&
       this.value[target.type] &&
-      this.value[target.type].includes(value)
+      ensureArray(this.value[target.type]).includes(value)
     ) {
       return;
     }
