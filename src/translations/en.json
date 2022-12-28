@@ -777,6 +777,7 @@
       },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
+        "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
         "how_can_i_help": "How can I help?",
