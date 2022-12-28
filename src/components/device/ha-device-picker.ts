@@ -231,7 +231,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         return outputDevices;
       }
       return outputDevices.sort((a, b) =>
-        stringCompare(a.name || "", b.name || "")
+        stringCompare(a.name || "", b.name || "", this.hass.locale.language)
       );
     }
   );
