@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import {
-  computeRgbColor,
+  computeCssColor,
   THEME_COLORS,
 } from "../../../common/color/compute-color";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -76,7 +76,7 @@ export class HuiColorPicker extends LitElement {
       <span
         class="circle-color"
         style=${styleMap({
-          "--circle-color": computeRgbColor(color),
+          "--circle-color": computeCssColor(color),
         })}
       ></span>
     `;
@@ -86,7 +86,7 @@ export class HuiColorPicker extends LitElement {
     return css`
       .circle-color {
         display: block;
-        background-color: rgb(var(--circle-color));
+        background-color: var(--circle-color);
         border-radius: 10px;
         width: 20px;
         height: 20px;

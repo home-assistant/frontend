@@ -106,6 +106,7 @@ const ENTITIES: HassEntity[] = [
   // Alert
   createEntity("alert.off", "off"),
   createEntity("alert.on", "on"),
+  createEntity("alert.idle", "idle"),
   // Automation
   createEntity("automation.off", "off"),
   createEntity("automation.on", "on"),
@@ -219,6 +220,11 @@ const ENTITIES: HassEntity[] = [
   // Siren
   createEntity("siren.off", "off"),
   createEntity("siren.on", "on"),
+  // Sun
+  createEntity("sun.below", "below_horizon"),
+  createEntity("sun.above", "above_horizon"),
+  createEntity("sun.unknown", "unknown"),
+  createEntity("sun.unavailable", "unavailable"),
   // Switch
   createEntity("switch.off", "off"),
   createEntity("switch.on", "on"),
@@ -322,7 +328,7 @@ export class DemoEntityState extends LitElement {
           `,
         },
         entity_id: {
-          title: "Entity id",
+          title: "Entity ID",
           width: "30%",
           filterable: true,
           sortable: true,

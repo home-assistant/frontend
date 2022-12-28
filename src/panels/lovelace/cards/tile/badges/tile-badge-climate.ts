@@ -1,5 +1,6 @@
 import {
   mdiClockOutline,
+  mdiFan,
   mdiFire,
   mdiPower,
   mdiSnowflake,
@@ -12,6 +13,7 @@ import { ComputeBadgeFunction } from "./tile-badge";
 export const CLIMATE_HVAC_ACTION_ICONS: Record<HvacAction, string> = {
   cooling: mdiSnowflake,
   drying: mdiWaterPercent,
+  fan: mdiFan,
   heating: mdiFire,
   idle: mdiClockOutline,
   off: mdiPower,

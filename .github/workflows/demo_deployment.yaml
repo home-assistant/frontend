@@ -7,23 +7,28 @@ on:
   push:
     branches:
       - dev
+      - master
 
 env:
   NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 jobs:
-  deploy:
+  deploy_dev:
     runs-on: ubuntu-latest
+    name: Demo Development
+    if: github.event_name != 'push' || github.ref != 'master'
     environment:
-      name: Demo
+      name: Demo Development
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.2.0
+        with:
+          ref: dev
 
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -46,3 +51,41 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_DEV_SITE_ID }}
+
+  deploy_master:
+    runs-on: ubuntu-latest
+    name: Demo Production
+    if: github.event_name == 'push' && github.ref == 'master'
+    environment:
+      name: Demo Production
+      url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@v3.2.0
+        with:
+          ref: master
+
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install
+        env:
+          CI: true
+
+      - name: Build Demo
+        run: ./node_modules/.bin/gulp build-demo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to Netlify
+        id: deploy
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --dir=demo/dist --prod
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_SITE_ID }}

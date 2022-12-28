@@ -11,6 +11,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { mdiImageFilterCenterFocus } from "@mdi/js";
 import memoizeOne from "memoize-one";
+import { isToday } from "date-fns";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
@@ -23,8 +24,17 @@ import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
 import "../../../components/map/ha-map";
-import type { HaMap, HaMapPaths } from "../../../components/map/ha-map";
+import type {
+  HaMap,
+  HaMapPaths,
+  HaMapPathPoint,
+} from "../../../components/map/ha-map";
 import { getColorByIndex } from "../../../common/color/colors";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
+import {
+  formatTime,
+  formatTimeWeekday,
+} from "../../../common/datetime/format_time";
 
 const MINUTE = 60000;
 
@@ -69,7 +79,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       config.geo_location_sources &&
       !Array.isArray(config.geo_location_sources)
     ) {
-      throw new Error("Geo_location_sources needs to be an array");
+      throw new Error("Parameter geo_location_sources needs to be an array");
     }
 
     this._config = config;
@@ -92,6 +102,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ratio && ratio.w > 0 && ratio.h > 0
         ? `${((100 * ratio.h) / ratio.w).toFixed(2)}`
         : "100";
+
     return 1 + Math.floor(Number(ar) / 25) || 3;
   }
 
@@ -175,10 +186,21 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return false;
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    const root = this.shadowRoot!.getElementById("root");
+  protected updated(changedProps: PropertyValues): void {
+    if (this._config?.hours_to_show && this._configEntities?.length) {
+      if (changedProps.has("_config")) {
+        this._getHistory();
+      } else if (Date.now() - this._date!.getTime() >= MINUTE) {
+        this._getHistory();
+      }
+    }
+    if (changedProps.has("_config")) {
+      this._computePadding();
+    }
+  }
 
+  private _computePadding(): void {
+    const root = this.shadowRoot!.getElementById("root");
     if (!this._config || this.isPanel || !root) {
       return;
     }
@@ -194,16 +216,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ratio && ratio.w > 0 && ratio.h > 0
         ? `${((100 * ratio.h) / ratio.w).toFixed(2)}%`
         : (root.style.paddingBottom = "100%");
-  }
-
-  protected updated(changedProps: PropertyValues): void {
-    if (this._config?.hours_to_show && this._configEntities?.length) {
-      if (changedProps.has("_config")) {
-        this._getHistory();
-      } else if (Date.now() - this._date!.getTime() >= MINUTE) {
-        this._getHistory();
-      }
-    }
   }
 
   private _fitMap() {
@@ -274,16 +286,28 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         }
         // filter location data from states and remove all invalid locations
         const points = entityStates.reduce(
-          (accumulator: LatLngTuple[], entityState) => {
+          (accumulator: HaMapPathPoint[], entityState) => {
             const latitude = entityState.attributes.latitude;
             const longitude = entityState.attributes.longitude;
             if (latitude && longitude) {
-              accumulator.push([latitude, longitude] as LatLngTuple);
+              const p = {} as HaMapPathPoint;
+              p.point = [latitude, longitude] as LatLngTuple;
+              const t = new Date(entityState.last_updated);
+              if (config.hours_to_show! > 144) {
+                // if showing > 6 days in the history trail, show the full
+                // date and time
+                p.tooltip = formatDateTime(t, this.hass.locale);
+              } else if (isToday(t)) {
+                p.tooltip = formatTime(t, this.hass.locale);
+              } else {
+                p.tooltip = formatTimeWeekday(t, this.hass.locale);
+              }
+              accumulator.push(p);
             }
             return accumulator;
           },
           []
-        ) as LatLngTuple[];
+        ) as HaMapPathPoint[];
 
         paths.push({
           points,

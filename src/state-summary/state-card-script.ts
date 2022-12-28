@@ -4,7 +4,7 @@ import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
-import { UNAVAILABLE_STATES } from "../data/entity";
+import { isUnavailableState } from "../data/entity";
 import { canRun, ScriptEntity } from "../data/script";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
@@ -41,7 +41,7 @@ export class StateCardScript extends LitElement {
         ${stateObj.state === "off" || stateObj.attributes.max
           ? html`<mwc-button
               @click=${this._runScript}
-              .disabled=${UNAVAILABLE_STATES.includes(stateObj.state) ||
+              .disabled=${isUnavailableState(stateObj.state) ||
               !canRun(stateObj)}
             >
               ${this.hass!.localize("ui.card.script.run")}

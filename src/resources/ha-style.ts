@@ -145,6 +145,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-alarm-pending-color: var(--rgb-orange-color);
       --rgb-state-alarm-triggered-color: var(--rgb-red-color);
       --rgb-state-alert-color: var(--rgb-red-color);
+      --rgb-state-alert-off-color: var(--rgb-orange-color);
       --rgb-state-automation-color: var(--rgb-amber-color);
       --rgb-state-binary-sensor-alerting-color: var(--rgb-red-color);
       --rgb-state-binary-sensor-color: var(--rgb-amber-color);
