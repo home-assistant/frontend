@@ -93,7 +93,10 @@ export class HaChip extends LitElement {
 
       .mdc-chip.outline {
         background: none;
-        border: 1px solid rgba(var(--rgb-primary-text-color), 0.5);
+        border: var(
+          --ha-chip-border,
+          1px solid rgba(var(--rgb-primary-text-color), 0.5)
+        );
       }
     `;
   }

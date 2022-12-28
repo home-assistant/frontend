@@ -1,24 +1,20 @@
+import { mdiDevices } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { SENSOR_ENTITIES } from "../../common/const";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
-import { stateActive } from "../../common/entity/state_active";
-import { stateColor } from "../../common/entity/state_color";
-import { stateIconPath } from "../../common/entity/state_icon_path";
-import "../../components/ha-chip";
-import "../../components/ha-chip-set";
-import "../../components/ha-icon";
-import "../../components/ha-svg-icon";
+import { navigate } from "../../common/navigate";
+import { groupBy } from "../../common/util/group-by";
+import "../../components/ha-target-chip";
+import { computeDeviceName } from "../../data/device_registry";
+import { isUnavailableState } from "../../data/entity";
+import { EntityRegistryEntry } from "../../data/entity_registry";
+import { EntityRegistryStateEntry } from "../../panels/config/devices/ha-config-device-page";
 import { HomeAssistant } from "../../types";
-
-declare global {
-  interface HASSDomEvents {
-    "shortcut-clicked": { entityId: string };
-  }
-}
 
 @customElement("ha-more-info-device-entities-shortcuts")
 class MoreInfoDevicesEntitiesShortcuts extends LitElement {
@@ -45,8 +41,20 @@ class MoreInfoDevicesEntitiesShortcuts extends LitElement {
     if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
       return;
     }
-    const entityId = (ev.target as any).entityId as string;
+    const entityId = (ev.target as any).id as string;
     fireEvent(this, "shortcut-clicked", { entityId });
+  }
+
+  private _handleDeviceChipClick(ev) {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    const deviceId = (ev.target as any).id as string;
+    fireEvent(this, "hass-more-info", { entityId: null });
+    navigate(`/config/devices/device/${deviceId}`);
   }
 
   protected render(): TemplateResult | null {
@@ -63,13 +71,39 @@ class MoreInfoDevicesEntitiesShortcuts extends LitElement {
       (entry) => this.hass!.states[entry.entity_id]
     );
 
-    const displayedEntities = deviceEntities.filter(
+    let displayedEntities = deviceEntities.filter(
       (entity) => entity.entity_id !== this.stateObj!.entity_id
     );
 
     // Do not display device entities if the current entity is not inside
-    if (displayedEntities.length === deviceEntities.length) {
+    if (
+      !displayedEntities.length ||
+      displayedEntities.length === deviceEntities.length
+    ) {
       return null;
+    }
+
+    if (displayedEntities.length > 3) {
+      const result = groupBy(displayedEntities, (entry) =>
+        entry.entity_category
+          ? entry.entity_category
+          : SENSOR_ENTITIES.includes(computeDomain(entry.entity_id))
+          ? "sensor"
+          : "control"
+      ) as Record<
+        | "control"
+        | "sensor"
+        | NonNullable<EntityRegistryEntry["entity_category"]>,
+        EntityRegistryStateEntry[]
+      >;
+
+      if (result.control?.length > 3) {
+        displayedEntities = result.control.slice(0, 3);
+      } else {
+        displayedEntities = (result.control || [])
+          .concat(result.sensor)
+          .slice(0, 3);
+      }
     }
 
     return html`
@@ -77,8 +111,7 @@ class MoreInfoDevicesEntitiesShortcuts extends LitElement {
         ${displayedEntities.map((entry) => {
           const stateObj = this.hass!.states[entry.entity_id];
 
-          const icon = stateObj.attributes.icon;
-          const iconPath = stateIconPath(stateObj);
+          const iconPath = "";
 
           const state = computeStateDisplay(
             this.hass!.localize,
@@ -86,40 +119,37 @@ class MoreInfoDevicesEntitiesShortcuts extends LitElement {
             this.hass!.locale,
             this.hass!.entities
           );
-          const color = stateColor(stateObj);
-          const active = stateActive(stateObj);
-
-          const iconStyle = styleMap({
-            "--ha-chip-icon-color":
-              color && active
-                ? `rgb(var(--rgb-state-${color}-color))`
-                : undefined,
-          });
 
           const name = stateObj.attributes.friendly_name ?? "";
 
           return html`
-            <ha-chip
-              outline
-              role="button"
-              type="button"
+            <ha-target-chip
               @click=${this._handleChipClick}
               @keydown=${this._handleChipClick}
-              .entityId=${stateObj.entity_id}
+              .entityState=${stateObj}
+              .iconPath=${iconPath}
+              type="entity_id"
+              .id=${stateObj.entity_id}
               aria-label=${name}
               .title=${name}
-              style=${iconStyle}
-              hasIcon
+              .name=${isUnavailableState(stateObj.state) ? name : state}
             >
-              ${icon
-                ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
-                : html`
-                    <ha-svg-icon slot="icon" .path=${iconPath}></ha-svg-icon>
-                  `}
-              ${state}
-            </ha-chip>
+            </ha-target-chip>
           `;
         })}
+        <ha-target-chip
+          @click=${this._handleDeviceChipClick}
+          @keydown=${this._handleDeviceChipClick}
+          .iconPath=${mdiDevices}
+          type="device_id"
+          .id=${deviceId}
+          .name=${computeDeviceName(
+            this.hass.devices[deviceId],
+            this.hass,
+            deviceEntities
+          )}
+        >
+        </ha-target-chip>
       </div>
     `;
   }
@@ -137,19 +167,14 @@ class MoreInfoDevicesEntitiesShortcuts extends LitElement {
       .container > * {
         margin: 4px;
       }
-      ha-chip {
-        cursor: pointer;
-        --ha-chip-icon-color: rgb(var(--rgb-state-default-color));
-      }
-      ha-chip ha-icon,
-      ha-chip ha-svg-icon {
-        pointer-events: none;
-      }
     `;
   }
 }
 
 declare global {
+  interface HASSDomEvents {
+    "shortcut-clicked": { entityId: string };
+  }
   interface HTMLElementTagNameMap {
     "ha-more-info-device-entities-shortcuts": MoreInfoDevicesEntitiesShortcuts;
   }
