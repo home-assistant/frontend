@@ -266,14 +266,16 @@ export const getCountryOptions = memoizeOne((language?: string) => {
     value: country,
     label: countryDisplayNames ? countryDisplayNames.of(country)! : country,
   }));
-  options.sort((a, b) => caseInsensitiveStringCompare(a.label, b.label));
+  options.sort((a, b) =>
+    caseInsensitiveStringCompare(a.label, b.label, language)
+  );
   return options;
 });
 
-export const createCountryListEl = () => {
+export const createCountryListEl = (language?: string) => {
   const list = document.createElement("datalist");
   list.id = "countries";
-  const options = getCountryOptions();
+  const options = getCountryOptions(language);
   for (const country of options) {
     const option = document.createElement("option");
     option.value = country.value;

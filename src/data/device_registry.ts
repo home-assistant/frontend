@@ -123,9 +123,12 @@ export const subscribeDeviceRegistry = (
     onChange
   );
 
-export const sortDeviceRegistryByName = (entries: DeviceRegistryEntry[]) =>
+export const sortDeviceRegistryByName = (
+  entries: DeviceRegistryEntry[],
+  language: string
+) =>
   entries.sort((entry1, entry2) =>
-    caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
+    caseInsensitiveStringCompare(entry1.name || "", entry2.name || "", language)
   );
 
 export const getDeviceEntityLookup = (
