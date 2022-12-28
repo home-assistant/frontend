@@ -18,6 +18,7 @@ import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-entities-toggle";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import { createRowElement } from "../create-element/create-row-element";
+import { UNAVAILABLE } from "../../../data/entity";
 import {
   EntityConfig,
   LovelaceRow,
@@ -61,6 +62,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   private _configEntities?: LovelaceRowConfig[];
 
   private _showHeaderToggle?: boolean;
+
+  private _sortByState?: boolean;
+
+  private _reverseSortOrder?: boolean;
 
   private _headerElement?: LovelaceHeaderFooter;
 
@@ -156,6 +161,12 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     } else {
       this._footerElement = undefined;
     }
+    this._sortByState =
+      config.sort_by_state === undefined ? false : config.sort_by_state;
+    this._reverseSortOrder =
+      config.reverse_sort_order === undefined
+        ? false
+        : config.reverse_sort_order;
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -218,7 +229,40 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
               </h1>
             `}
         <div id="states" class="card-content">
-          ${this._configEntities!.map((entityConf) =>
+          ${(this._sortByState
+            ? this._configEntities!.sort((confA, confB) => {
+                const reverseSortOrder = this._reverseSortOrder ? 1 : -1;
+                const aBeforeB = -1 * reverseSortOrder;
+                const bBeforeA = -aBeforeB;
+
+                if (
+                  !("entity" in confA) ||
+                  !this._hass!.states[confA.entity] ||
+                  this._hass!.states[confA.entity].state === UNAVAILABLE
+                ) {
+                  return bBeforeA;
+                }
+                if (
+                  !("entity" in confB) ||
+                  !this._hass!.states[confB.entity] ||
+                  this._hass!.states[confB.entity].state === UNAVAILABLE
+                ) {
+                  return aBeforeB;
+                }
+
+                const valA = Number(this._hass!.states[confA.entity].state);
+                const valB = Number(this._hass!.states[confB.entity].state);
+
+                if (isNaN(valA)) {
+                  return bBeforeA;
+                }
+                if (isNaN(valB)) {
+                  return aBeforeB;
+                }
+
+                return (valA - valB) * reverseSortOrder;
+              })
+            : this._configEntities)!.map((entityConf) =>
             this.renderEntity(entityConf)
           )}
         </div>

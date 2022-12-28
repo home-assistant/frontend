@@ -190,6 +190,8 @@ const cardConfigStruct = assign(
     theme: optional(string()),
     icon: optional(string()),
     show_header_toggle: optional(boolean()),
+    sort_by_state: optional(boolean()),
+    reverse_sort_order: optional(boolean()),
     state_color: optional(boolean()),
     entities: array(entitiesRowConfigStruct),
     header: optional(headerFooterConfigStructs),
@@ -286,6 +288,32 @@ export class HuiEntitiesCardEditor
             <ha-switch
               .checked=${this._config!.state_color}
               .configValue=${"state_color"}
+              @change=${this._valueChanged}
+            ></ha-switch>
+          </ha-formfield>
+        </div>
+        <div class="side-by-side">
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.entities.sort_by_state"
+            )}
+            .dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-switch
+              .checked=${this._config!.sort_by_state !== false}
+              .configValue=${"sort_by_state"}
+              @change=${this._valueChanged}
+            ></ha-switch>
+          </ha-formfield>
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.entities.reverse_sort_order"
+            )}
+            .dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-switch
+              .checked=${this._config!.reverse_sort_order !== false}
+              .configValue=${"reverse_sort_order"}
               @change=${this._valueChanged}
             ></ha-switch>
           </ha-formfield>

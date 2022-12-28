@@ -72,6 +72,8 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
 export interface EntitiesCardConfig extends LovelaceCardConfig {
   type: "entities";
   show_header_toggle?: boolean;
+  sort_by_state?: boolean;
+  reverse_sort_order?: boolean;
   title?: string;
   entities: Array<LovelaceRowConfig | string>;
   theme?: string;
