@@ -261,6 +261,7 @@ export class HaBaseTimeInput extends LitElement {
     this[textField.name] =
       textField.name === "amPm" ? textField.value : Number(textField.value);
     const value: TimeChangedEvent = {
+      days: this.enableDay ? this.days : undefined,
       hours: this.hours,
       minutes: this.minutes,
       seconds: this.seconds,
