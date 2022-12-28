@@ -34,7 +34,7 @@ class HaPanelDevMqtt extends LitElement {
   private _retain = false;
 
   @LocalStorage("panel-dev-mqtt-allow-template-ls", true, false)
-  private _allow_template = false;
+  private _allowTemplate = false;
 
   protected render(): TemplateResult {
     return html`
@@ -85,12 +85,12 @@ class HaPanelDevMqtt extends LitElement {
                 >
                   <ha-switch
                     @change=${this._handleAllowTemplate}
-                    .checked=${this._allow_template}
+                    .checked=${this._allowTemplate}
                   ></ha-switch>
                 </ha-formfield>
               </p>
               <p>
-                ${this._allow_template
+                ${this._allowTemplate
                   ? this.hass.localize("ui.panel.config.mqtt.payload")
                   : this.hass.localize(
                       "ui.panel.config.mqtt.payload_no_template"
@@ -141,7 +141,7 @@ class HaPanelDevMqtt extends LitElement {
   }
 
   private _handleAllowTemplate(ev: CustomEvent) {
-    this._allow_template = (ev.target! as any).checked;
+    this._allowTemplate = (ev.target! as any).checked;
   }
 
   private _publish(): void {
@@ -150,8 +150,8 @@ class HaPanelDevMqtt extends LitElement {
     }
     this.hass.callService("mqtt", "publish", {
       topic: this._topic,
-      payload: !this._allow_template ? this._payload : undefined,
-      payload_template: this._allow_template ? this._payload : undefined,
+      payload: !this._allowTemplate ? this._payload : undefined,
+      payload_template: this._allowTemplate ? this._payload : undefined,
       qos: parseInt(this._qos),
       retain: this._retain,
     });
