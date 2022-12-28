@@ -1,10 +1,6 @@
 // @ts-ignore
 import "@material/mwc-button/mwc-button";
-import {
-  mdiDevices,
-  mdiPlus,
-  mdiSofa,
-} from "@mdi/js";
+import { mdiDevices, mdiPlus, mdiSofa } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   HassEntity,
