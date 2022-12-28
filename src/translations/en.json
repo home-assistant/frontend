@@ -3216,7 +3216,6 @@
           "topic": "Topic",
           "payload": "Payload (template allowed)",
           "payload_no_template": "Payload",
-          "publish_payload": "Payload",
           "allow_template": "Allow template",
           "publish": "Publish",
           "description_listen": "Listen to a topic",
