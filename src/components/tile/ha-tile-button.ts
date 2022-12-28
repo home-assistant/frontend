@@ -41,7 +41,9 @@ export class HaTileButton extends LitElement {
         @touchcancel=${this.handleRippleDeactivate}
       >
         <slot></slot>
-        ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : ""}
+        ${this._shouldRenderRipple && !this.disabled
+          ? html`<mwc-ripple></mwc-ripple>`
+          : ""}
       </button>
     `;
   }
@@ -79,9 +81,10 @@ export class HaTileButton extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --icon-color: rgb(var(--color, var(--rgb-primary-text-color)));
-        --bg-color: rgba(var(--color, var(--rgb-disabled-color)), 0.2);
-        --mdc-ripple-color: rgba(var(--color, var(--rgb-disabled-color)));
+        --tile-button-icon-color: var(--primary-text-color);
+        --tile-button-background-color: rgb(var(--rgb-disabled-color));
+        --tile-button-background-opacity: 0.2;
+        --mdc-ripple-color: var(--tile-button-background-color);
         width: 40px;
         height: 40px;
         -webkit-tap-highlight-color: transparent;
@@ -97,25 +100,37 @@ export class HaTileButton extends LitElement {
         height: 100%;
         border-radius: 10px;
         border: none;
-        background-color: var(--bg-color);
-        transition: background-color 280ms ease-in-out, transform 180ms ease-out;
         margin: 0;
         padding: 0;
         box-sizing: border-box;
         line-height: 0;
         outline: none;
+        overflow: hidden;
+        background: none;
+      }
+      .button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-color: var(--tile-button-background-color);
+        transition: background-color 180ms ease-in-out,
+          opacity 180ms ease-in-out;
+        opacity: var(--tile-button-background-opacity);
       }
       .button ::slotted(*) {
         --mdc-icon-size: 20px;
-        color: var(--icon-color);
+        transition: color 180ms ease-in-out;
+        color: var(--tile-button-icon-color);
         pointer-events: none;
       }
       .button:disabled {
         cursor: not-allowed;
-        background-color: rgba(var(--rgb-disabled-color), 0.2);
-      }
-      .button:disabled ::slotted(*) {
-        color: rgb(var(--rgb-disabled-color));
+        --tile-button-background-color: rgb(var(--rgb-disabled-color));
+        --tile-button-icon-color: var(--disabled-text-color);
+        --tile-button-background-opacity: 0.2;
       }
     `;
   }

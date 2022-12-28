@@ -22,7 +22,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import {
   cleanupMediaTitle,
   computeMediaControls,
@@ -173,7 +173,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const isOffState = entityState === "off";
     const isUnavailable =
-      UNAVAILABLE_STATES.includes(entityState) ||
+      isUnavailableState(entityState) ||
       (entityState === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
     const controls = computeMediaControls(stateObj, false);

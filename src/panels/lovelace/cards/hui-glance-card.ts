@@ -17,7 +17,7 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-relative-time";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import {
   ActionHandlerEvent,
   CallServiceActionConfig,
@@ -315,7 +315,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                 ${computeDomain(entityConf.entity) === "sensor" &&
                 stateObj.attributes.device_class ===
                   SENSOR_DEVICE_CLASS_TIMESTAMP &&
-                !UNAVAILABLE_STATES.includes(stateObj.state)
+                !isUnavailableState(stateObj.state)
                   ? html`
                       <hui-timestamp-display
                         .hass=${this.hass}

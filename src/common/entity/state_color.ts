@@ -2,6 +2,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE } from "../../data/entity";
 import { alarmControlPanelColor } from "./color/alarm_control_panel_color";
+import { alertColor } from "./color/alert_color";
 import { binarySensorColor } from "./color/binary_sensor_color";
 import { climateColor } from "./color/climate_color";
 import { lockColor } from "./color/lock_color";
@@ -12,7 +13,6 @@ import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
 const STATIC_ACTIVE_COLORED_DOMAIN = new Set([
-  "alert",
   "automation",
   "calendar",
   "camera",
@@ -64,6 +64,9 @@ export const stateColor = (stateObj: HassEntity, state?: string) => {
   switch (domain) {
     case "alarm_control_panel":
       return alarmControlPanelColor(compareState);
+
+    case "alert":
+      return alertColor(compareState);
 
     case "binary_sensor":
       return binarySensorColor(stateObj, compareState);

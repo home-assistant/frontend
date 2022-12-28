@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
+import { mdiPencil } from "@mdi/js";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -26,6 +27,7 @@ import {
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
@@ -75,6 +77,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
+import { showEntityAliasesDialog } from "./entity-aliases/show-dialog-entity-aliases";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -116,15 +119,15 @@ const OVERRIDE_NUMBER_UNITS = {
 
 const OVERRIDE_SENSOR_UNITS = {
   distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
-  gas: ["ft³", "m³"],
+  gas: ["CCF", "ft³", "m³"],
   precipitation: ["cm", "in", "mm"],
   precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
   speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mm/h", "mph"],
   temperature: ["°C", "°F", "K"],
-  volume: ["fl. oz.", "ft³", "gal", "L", "mL", "m³"],
-  water: ["ft³", "gal", "L", "m³"],
-  weight: ["g", "kg", "lb", "mg", "oz", "µg"],
+  volume: ["CCF", "fl. oz.", "ft³", "gal", "L", "mL", "m³"],
+  water: ["CCF", "ft³", "gal", "L", "m³"],
+  weight: ["g", "kg", "lb", "mg", "oz", "st", "µg"],
   wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
 };
 
@@ -673,7 +676,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           <div class="label">
             ${this.hass.localize(
               "ui.dialogs.entity_registry.editor.entity_status"
-            )}:
+            )}
           </div>
           <div class="secondary">
             ${this._disabledBy &&
@@ -760,12 +763,43 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 </div>
               `
             : ""}
+
+          <div class="label">
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.aliases_section"
+            )}
+          </div>
+          <mwc-list class="aliases">
+            <mwc-list-item
+              .twoline=${this.entry.aliases.length > 0}
+              hasMeta
+              @click=${this._openAliasesSettings}
+            >
+              <span>
+                ${this.entry.aliases.length > 0
+                  ? this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.configured_aliases",
+                      { count: this.entry.aliases.length }
+                    )
+                  : this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.no_aliases"
+                    )}
+              </span>
+              <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+              <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
+            </mwc-list-item>
+          </mwc-list>
+          <div class="secondary">
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.aliases.description"
+            )}
+          </div>
           ${this.entry.device_id
             ? html`
                 <div class="label">
                   ${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.change_area"
-                  )}:
+                  )}
                 </div>
                 <ha-area-picker
                   .hass=${this.hass}
@@ -939,6 +973,20 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       device: this._device!,
       updateEntry: async (updates) => {
         await updateDeviceRegistryEntry(this.hass, this._device!.id, updates);
+      },
+    });
+  }
+
+  private _openAliasesSettings() {
+    showEntityAliasesDialog(this, {
+      entity: this.entry!,
+      updateEntry: async (updates) => {
+        const result = await updateEntityRegistryEntry(
+          this.hass,
+          this.entry.entity_id,
+          updates
+        );
+        fireEvent(this, "entity-entry-updated", result.entity_entry);
       },
     });
   }
@@ -1143,7 +1191,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           domain: entry,
           label: domainToName(localize, entry),
         }))
-        .sort((a, b) => stringCompare(a.label, b.label))
+        .sort((a, b) =>
+          stringCompare(a.label, b.label, this.hass.locale.language)
+        )
   );
 
   private _deviceClassesSorted = memoizeOne(
@@ -1155,7 +1205,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             `ui.dialogs.entity_registry.editor.device_classes.${domain}.${entry}`
           ),
         }))
-        .sort((a, b) => stringCompare(a.label, b.label))
+        .sort((a, b) =>
+          stringCompare(a.label, b.label, this.hass.locale.language)
+        )
   );
 
   static get styles(): CSSResultGroup {
@@ -1212,13 +1264,19 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         }
         .secondary {
           margin: 8px 0;
-          width: 340px;
         }
         li[divider] {
           border-bottom-color: var(--divider-color);
         }
         ha-alert mwc-button {
           width: max-content;
+        }
+        .aliases {
+          border-radius: 4px;
+          margin-top: 4px;
+          margin-bottom: 4px;
+          --mdc-icon-button-size: 24px;
+          overflow: hidden;
         }
       `,
     ];

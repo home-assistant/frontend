@@ -402,7 +402,8 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
       const stateB = this.hass.states[b.entity_id];
       return stringCompare(
         stateA ? computeStateName(stateA) : a.entity_id,
-        stateB ? computeStateName(stateB) : b.entity_id
+        stateB ? computeStateName(stateB) : b.entity_id,
+        this.hass.locale.language
       );
     });
     this._entities = entities;

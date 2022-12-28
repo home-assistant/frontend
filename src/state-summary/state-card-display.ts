@@ -7,7 +7,7 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/entity/state-info";
-import { UNAVAILABLE_STATES } from "../data/entity";
+import { isUnavailableState } from "../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
 import "../panels/lovelace/components/hui-timestamp-display";
 import { haStyle } from "../resources/styles";
@@ -42,7 +42,7 @@ export class StateCardDisplay extends LitElement {
           ${computeDomain(this.stateObj.entity_id) === "sensor" &&
           this.stateObj.attributes.device_class ===
             SENSOR_DEVICE_CLASS_TIMESTAMP &&
-          !UNAVAILABLE_STATES.includes(this.stateObj.state)
+          !isUnavailableState(this.stateObj.state)
             ? html` <hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(this.stateObj.state)}

@@ -230,7 +230,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             (conf1, conf2) =>
               caseInsensitiveStringCompare(
                 conf1.localized_domain_name + conf1.title,
-                conf2.localized_domain_name + conf2.title
+                conf2.localized_domain_name + conf2.title,
+                this.hass.locale.language
               )
           );
         },

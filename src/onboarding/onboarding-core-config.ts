@@ -156,13 +156,11 @@ class OnboardingCoreConfig extends LitElement {
           type="number"
           .disabled=${this._working}
           .value=${this._elevationValue}
+          .suffix=${this.hass.localize(
+            "ui.panel.config.core.section.core.core_config.elevation_meters"
+          )}
           @change=${this._handleChange}
         >
-          <span slot="suffix">
-            ${this.hass.localize(
-              "ui.panel.config.core.section.core.core_config.elevation_meters"
-            )}
-          </span>
         </ha-textfield>
       </div>
 
@@ -273,7 +271,9 @@ class OnboardingCoreConfig extends LitElement {
       "[name=currency]"
     ) as HaTextField;
     curInput.updateComplete.then(() => {
-      curInput.shadowRoot!.appendChild(createCurrencyListEl());
+      curInput.shadowRoot!.appendChild(
+        createCurrencyListEl(this.hass.locale.language)
+      );
       curInput.formElement.setAttribute("list", "currencies");
     });
 
@@ -281,7 +281,9 @@ class OnboardingCoreConfig extends LitElement {
       "[name=country]"
     ) as HaTextField;
     countryInput.updateComplete.then(() => {
-      countryInput.shadowRoot!.appendChild(createCountryListEl());
+      countryInput.shadowRoot!.appendChild(
+        createCountryListEl(this.hass.locale.language)
+      );
       countryInput.formElement.setAttribute("list", "countries");
     });
 
