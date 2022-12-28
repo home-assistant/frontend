@@ -88,7 +88,6 @@ export class RecurrenceRuleEditor extends LitElement {
       const selectElement = this._monthlyRepeatSelect;
       if (selectElement) {
         const oldSelected = selectElement.index;
-        // this._monthlyRepeat = undefined;
         selectElement.select(-1);
         this.updateComplete.then(() => {
           selectElement.select(changedProps.has("dtstart") ? 0 : oldSelected);
