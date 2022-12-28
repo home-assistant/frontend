@@ -22,16 +22,16 @@ class HaPanelDevMqtt extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @LocalStorage("panel-dev-mqtt-topic-ls", true, false)
-  private topic = "";
+  private _topic = "";
 
   @LocalStorage("panel-dev-mqtt-payload-ls", true, false)
-  private payload = "";
+  private _payload = "";
 
   @LocalStorage("panel-dev-mqtt-qos-ls", true, false)
-  private qos = "0";
+  private _qos = "0";
 
   @LocalStorage("panel-dev-mqtt-retain-ls", true, false)
-  private retain = false;
+  private _retain = false;
 
   protected render(): TemplateResult {
     return html`
@@ -53,12 +53,12 @@ class HaPanelDevMqtt extends LitElement {
               <div class="panel-dev-mqtt-fields">
                 <ha-textfield
                   .label=${this.hass.localize("ui.panel.config.mqtt.topic")}
-                  .value=${this.topic}
+                  .value=${this._topic}
                   @change=${this._handleTopic}
                 ></ha-textfield>
                 <ha-select
                   .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
-                  .value=${this.qos}
+                  .value=${this._qos}
                   @selected=${this._handleQos}
                   >${qosLevel.map(
                     (qos) =>
@@ -70,7 +70,7 @@ class HaPanelDevMqtt extends LitElement {
                 >
                   <ha-switch
                     @change=${this._handleRetain}
-                    .checked=${this.retain}
+                    .checked=${this._retain}
                   ></ha-switch>
                 </ha-formfield>
               </div>
@@ -80,7 +80,7 @@ class HaPanelDevMqtt extends LitElement {
                 autocomplete-entities
                 autocomplete-icons
                 .hass=${this.hass}
-                .value=${this.payload}
+                .value=${this._payload}
                 @value-changed=${this._handlePayload}
                 dir="ltr"
               ></ha-code-editor>
@@ -101,22 +101,22 @@ class HaPanelDevMqtt extends LitElement {
   }
 
   private _handleTopic(ev: CustomEvent) {
-    this.topic = (ev.target! as any).value;
+    this._topic = (ev.target! as any).value;
   }
 
   private _handlePayload(ev: CustomEvent) {
-    this.payload = ev.detail.value;
+    this._payload = ev.detail.value;
   }
 
   private _handleQos(ev: CustomEvent) {
     const newValue = (ev.target! as any).value;
-    if (newValue >= 0 && newValue !== this.qos) {
-      this.qos = newValue;
+    if (newValue >= 0 && newValue !== this._qos) {
+      this._qos = newValue;
     }
   }
 
   private _handleRetain(ev: CustomEvent) {
-    this.retain = (ev.target! as any).checked;
+    this._retain = (ev.target! as any).checked;
   }
 
   private _publish(): void {
@@ -124,10 +124,10 @@ class HaPanelDevMqtt extends LitElement {
       return;
     }
     this.hass.callService("mqtt", "publish", {
-      topic: this.topic,
-      payload_template: this.payload,
-      qos: parseInt(this.qos),
-      retain: this.retain,
+      topic: this._topic,
+      payload_template: this._payload,
+      qos: parseInt(this._qos),
+      retain: this._retain,
     });
   }
 
