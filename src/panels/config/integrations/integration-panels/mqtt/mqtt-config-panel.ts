@@ -33,6 +33,9 @@ class HaPanelDevMqtt extends LitElement {
   @LocalStorage("panel-dev-mqtt-retain-ls", true, false)
   private _retain = false;
 
+  @LocalStorage("panel-dev-mqtt-allow-template-ls", true, false)
+  private _allowTemplate = false;
+
   protected render(): TemplateResult {
     return html`
       <hass-subpage .narrow=${this.narrow} .hass=${this.hass}>
@@ -74,7 +77,25 @@ class HaPanelDevMqtt extends LitElement {
                   ></ha-switch>
                 </ha-formfield>
               </div>
-              <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
+              <p>
+                <ha-formfield
+                  .label=${this.hass!.localize(
+                    "ui.panel.config.mqtt.allow_template"
+                  )}
+                >
+                  <ha-switch
+                    @change=${this._handleAllowTemplate}
+                    .checked=${this._allowTemplate}
+                  ></ha-switch>
+                </ha-formfield>
+              </p>
+              <p>
+                ${this._allowTemplate
+                  ? this.hass.localize("ui.panel.config.mqtt.payload")
+                  : this.hass.localize(
+                      "ui.panel.config.mqtt.payload_no_template"
+                    )}
+              </p>
               <ha-code-editor
                 mode="jinja2"
                 autocomplete-entities
@@ -119,13 +140,18 @@ class HaPanelDevMqtt extends LitElement {
     this._retain = (ev.target! as any).checked;
   }
 
+  private _handleAllowTemplate(ev: CustomEvent) {
+    this._allowTemplate = (ev.target! as any).checked;
+  }
+
   private _publish(): void {
     if (!this.hass) {
       return;
     }
     this.hass.callService("mqtt", "publish", {
       topic: this._topic,
-      payload_template: this._payload,
+      payload: !this._allowTemplate ? this._payload : undefined,
+      payload_template: this._allowTemplate ? this._payload : undefined,
       qos: parseInt(this._qos),
       retain: this._retain,
     });
