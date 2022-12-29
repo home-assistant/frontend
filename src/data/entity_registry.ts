@@ -164,9 +164,12 @@ export const subscribeEntityRegistry = (
     onChange
   );
 
-export const sortEntityRegistryByName = (entries: EntityRegistryEntry[]) =>
+export const sortEntityRegistryByName = (
+  entries: EntityRegistryEntry[],
+  language: string
+) =>
   entries.sort((entry1, entry2) =>
-    caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
+    caseInsensitiveStringCompare(entry1.name || "", entry2.name || "", language)
   );
 
 export const entityRegistryById = memoizeOne(

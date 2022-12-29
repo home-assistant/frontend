@@ -68,7 +68,9 @@ class HassioRepositoriesDialog extends LitElement {
           repo.slug !== "a0d7b954" && // Home Assistant Community Add-ons
           repo.slug !== "5c53de3b" // The ESPHome repository
       )
-      .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(a.name, b.name, this.hass.locale.language)
+      )
   );
 
   private _filteredUsedRepositories = memoizeOne(
