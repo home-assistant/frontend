@@ -114,6 +114,8 @@ export const getRecentWithCache = (
         cache.data.timeline = [...cache.data.timeline];
       }
       pruneStartTime(startTime, cache.data);
+      // Replace the data object to force an update
+      cache.data = { ...cache.data };
     } else {
       cache.data = stateHistory;
     }
