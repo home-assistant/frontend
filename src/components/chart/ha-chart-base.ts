@@ -11,6 +11,7 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { clamp } from "../../common/number/clamp";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { HomeAssistant } from "../../types";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
