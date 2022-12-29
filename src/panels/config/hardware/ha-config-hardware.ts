@@ -305,7 +305,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                         .twoline=${Boolean(boardId)}
                       >
                         ${imageURL
-                          ? html`<img slot="graphic" src=${imageURL} />`
+                          ? html`<img alt="" slot="graphic" src=${imageURL} />`
                           : ""}
                         <span class="primary-text">
                           ${boardName ||

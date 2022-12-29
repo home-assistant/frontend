@@ -35,7 +35,13 @@ class HassioAddons extends LitElement {
                 </ha-card>
               `
             : this.supervisor.addon.addons
-                .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
+                .sort((a, b) =>
+                  caseInsensitiveStringCompare(
+                    a.name,
+                    b.name,
+                    this.hass.locale.language
+                  )
+                )
                 .map(
                   (addon) => html`
                     <ha-card

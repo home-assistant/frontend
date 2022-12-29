@@ -13,7 +13,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { SpeechRecognition } from "../../common/dom/speech-recognition";
-import { uid } from "../../common/util/uid";
 import "../../components/ha-dialog";
 import type { HaDialog } from "../../components/ha-dialog";
 import "../../components/ha-icon-button";
@@ -60,7 +59,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private recognition!: SpeechRecognition;
 
-  private _conversationId?: string;
+  private _conversationId: string | null = null;
 
   public async showDialog(): Promise<void> {
     this._opened = true;
@@ -175,7 +174,6 @@ export class HaVoiceCommandDialog extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    this._conversationId = uid();
     this._conversation = [
       {
         who: "hass",
@@ -211,18 +209,29 @@ export class HaVoiceCommandDialog extends LitElement {
   private _initRecognition() {
     this.recognition = new SpeechRecognition();
     this.recognition.interimResults = true;
-    this.recognition.lang = "en-US";
+    this.recognition.lang = this.hass.language;
 
-    this.recognition.onstart = () => {
+    this.recognition.addEventListener("start", () => {
       this.results = {
         final: false,
         transcript: "",
       };
-    };
-    this.recognition.onerror = (event) => {
+    });
+    this.recognition.addEventListener("nomatch", () => {
+      this._addMessage({
+        who: "user",
+        text: `<${this.hass.localize(
+          "ui.dialogs.voice_command.did_not_understand"
+        )}>`,
+        error: true,
+      });
+    });
+    this.recognition.addEventListener("error", (event) => {
+      // eslint-disable-next-line
+      console.error("Error recognizing text", event);
       this.recognition!.abort();
       // @ts-ignore
-      if (event.error !== "aborted") {
+      if (event.error !== "aborted" && event.error !== "no-speech") {
         const text =
           this.results && this.results.transcript
             ? this.results.transcript
@@ -232,8 +241,8 @@ export class HaVoiceCommandDialog extends LitElement {
         this._addMessage({ who: "user", text, error: true });
       }
       this.results = null;
-    };
-    this.recognition.onend = () => {
+    });
+    this.recognition.addEventListener("end", () => {
       // Already handled by onerror
       if (this.results == null) {
         return;
@@ -251,15 +260,14 @@ export class HaVoiceCommandDialog extends LitElement {
           error: true,
         });
       }
-    };
-
-    this.recognition.onresult = (event) => {
+    });
+    this.recognition.addEventListener("result", (event) => {
       const result = event.results[0];
       this.results = {
         transcript: result[0].transcript,
         final: result.isFinal,
       };
-    };
+    });
   }
 
   private async _processText(text: string) {
@@ -277,8 +285,10 @@ export class HaVoiceCommandDialog extends LitElement {
       const response = await processConversationInput(
         this.hass,
         text,
-        this._conversationId!
+        this._conversationId,
+        this.hass.language
       );
+      this._conversationId = response.conversation_id;
       const plain = response.response.speech?.plain;
       if (plain) {
         message.text = plain.speech;

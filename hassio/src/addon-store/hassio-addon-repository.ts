@@ -29,7 +29,9 @@ class HassioAddonRepositoryEl extends LitElement {
     if (filter) {
       return filterAndSort(addons, filter);
     }
-    return addons.sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
+    return addons.sort((a, b) =>
+      caseInsensitiveStringCompare(a.name, b.name, this.hass.locale.language)
+    );
   });
 
   protected render(): TemplateResult {

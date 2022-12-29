@@ -777,6 +777,7 @@
       },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
+        "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
         "how_can_i_help": "How can I help?",
@@ -790,7 +791,8 @@
         "close": "Close"
       },
       "image_cropper": {
-        "crop": "Crop"
+        "crop": "Crop",
+        "crop_image": "Picture to crop"
       },
       "date-picker": {
         "today": "Today"
@@ -1434,6 +1436,7 @@
           "confirm_remove_title": "Remove tag?",
           "confirm_remove": "Are you sure you want to remove tag {tag}?",
           "automation_title": "Tag {name} is scanned",
+          "qr_code_image": "QR code for tag {name}",
           "headers": {
             "icon": "Icon",
             "name": "Name",
@@ -3215,6 +3218,8 @@
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
+          "payload_no_template": "Payload",
+          "allow_template": "Allow template",
           "publish": "Publish",
           "description_listen": "Listen to a topic",
           "json_formatting": "Format JSON content",
@@ -4192,6 +4197,7 @@
               "description": "The Light card allows you to change the brightness of the light."
             },
             "generic": {
+              "alt_text": "Alternative Text",
               "aspect_ratio": "Aspect Ratio",
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
@@ -4595,7 +4601,8 @@
           "name": "Name",
           "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
-          "empty_state": "You have no long-lived access tokens yet."
+          "empty_state": "You have no long-lived access tokens yet.",
+          "qr_code_image": "QR code for token {name}"
         }
       },
       "shopping_list": {
