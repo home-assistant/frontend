@@ -118,8 +118,8 @@ const OVERRIDE_NUMBER_UNITS = {
 };
 
 const OVERRIDE_SENSOR_UNITS = {
+  current: ["A", "mA"],
   distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
-  electric_current: ["A", "mA"],
   gas: ["CCF", "ft³", "m³"],
   precipitation: ["cm", "in", "mm"],
   precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
