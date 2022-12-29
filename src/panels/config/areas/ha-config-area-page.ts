@@ -258,7 +258,8 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           <div class="column">
             ${area.picture
               ? html`<div class="img-container">
-                  <img src=${area.picture} /><ha-icon-button
+                  <img alt=${area.name} src=${area.picture} />
+                  <ha-icon-button
                     .path=${mdiPencil}
                     .entry=${area}
                     @click=${this._showSettings}

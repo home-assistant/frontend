@@ -52,6 +52,7 @@ class HaConfigRepairs extends LitElement {
               @click=${this._openShowMoreDialog}
             >
               <img
+                alt=${domainToName(this.hass.localize, issue.domain)}
                 loading="lazy"
                 src=${brandsUrl({
                   domain: issue.issue_domain || issue.domain,

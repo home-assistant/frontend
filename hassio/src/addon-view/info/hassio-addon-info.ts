@@ -404,6 +404,7 @@ class HassioAddonInfo extends LitElement {
                 ? html`
                     <img
                       class="logo"
+                      alt=""
                       src="/api/hassio/addons/${this.addon.slug}/logo"
                     />
                   `
