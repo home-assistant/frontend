@@ -33,6 +33,8 @@ export default class HaChartBase extends LitElement {
 
   @property({ type: Number }) public height?: number;
 
+  @property({ type: Number }) public paddingLeft = 0;
+
   @state() private _chartHeight?: number;
 
   @state() private _tooltip?: Tooltip;
@@ -128,6 +130,7 @@ export default class HaChartBase extends LitElement {
         style=${styleMap({
           height: `${this.height ?? this._chartHeight}px`,
           overflow: this._chartHeight ? "initial" : "hidden",
+          "padding-left": `${this.paddingLeft ?? 0}px`,
         })}
       >
         <canvas></canvas>

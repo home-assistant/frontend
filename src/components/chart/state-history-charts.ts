@@ -56,6 +56,10 @@ class StateHistoryCharts extends LitElement {
 
   @state() private _computedEndTime!: Date;
 
+  @state() private _maxYWidth = 0;
+
+  @state() private childYWidths: number[] = [];
+
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
@@ -130,7 +134,10 @@ class StateHistoryCharts extends LitElement {
           .identifier=${item.identifier}
           .showNames=${this.showNames}
           .endTime=${this._computedEndTime}
+          .paddingLeft=${this._maxYWidth}
           .names=${this.names}
+          .index=${index}
+          @y-width-changed=${this.yWidthChanged}
         ></state-history-chart-line>
       </div> `;
     }
@@ -144,12 +151,20 @@ class StateHistoryCharts extends LitElement {
         .names=${this.names}
         .narrow=${this.narrow}
         .chunked=${this.virtualize}
+        .paddingLeft=${this._maxYWidth}
+        .index=${index}
+        @y-width-changed=${this.yWidthChanged}
       ></state-history-chart-timeline>
     </div> `;
   };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return !(changedProps.size === 1 && changedProps.has("hass"));
+  }
+
+  yWidthChanged(e) {
+    this.childYWidths[e.detail.index] = e.detail.value;
+    this._maxYWidth = Math.max(...this.childYWidths);
   }
 
   private _isHistoryEmpty(): boolean {

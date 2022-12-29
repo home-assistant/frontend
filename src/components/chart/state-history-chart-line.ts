@@ -30,9 +30,15 @@ class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: false }) public endTime!: Date;
 
+  @property({ type: Number }) public paddingLeft = 0;
+
+  @property({ type: Number }) public index?;
+
   @state() private _chartData?: ChartData<"line">;
 
   @state() private _chartOptions?: ChartOptions;
+
+  @state() private _yWidth = 0;
 
   private _chartTime: Date = new Date();
 
@@ -41,6 +47,7 @@ class StateHistoryChartLine extends LitElement {
       <ha-chart-base
         .data=${this._chartData}
         .options=${this._chartOptions}
+        .paddingLeft=${this.paddingLeft - this._yWidth}
         chart-type="line"
       ></ha-chart-base>
     `;
@@ -83,6 +90,16 @@ class StateHistoryChartLine extends LitElement {
             title: {
               display: true,
               text: this.unit,
+            },
+            afterUpdate: (y) => {
+              if (this._yWidth !== Math.floor(y.width)) {
+                this._yWidth = Math.floor(y.width);
+                this.dispatchEvent(
+                  new CustomEvent("y-width-changed", {
+                    detail: { value: this._yWidth, index: this.index },
+                  })
+                );
+              }
             },
           },
         },

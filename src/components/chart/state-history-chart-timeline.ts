@@ -32,9 +32,15 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false }) public endTime!: Date;
 
+  @property({ type: Number }) public paddingLeft = 0;
+
+  @property({ type: Number }) public index?;
+
   @state() private _chartData?: ChartData<"timeline">;
 
   @state() private _chartOptions?: ChartOptions<"timeline">;
+
+  @state() private _yWidth = 0;
 
   private _chartTime: Date = new Date();
 
@@ -44,6 +50,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .data=${this._chartData}
         .options=${this._chartOptions}
         .height=${this.data.length * 30 + 30}
+        .paddingLeft=${this.paddingLeft - this._yWidth}
         chart-type="timeline"
       ></ha-chart-base>
     `;
@@ -129,6 +136,16 @@ export class StateHistoryChartTimeline extends LitElement {
             if (this.chunked) {
               // ensure all the chart labels are the same width
               scaleInstance.width = narrow ? 105 : 185;
+            }
+          },
+          afterUpdate: (y) => {
+            if (this._yWidth !== Math.floor(y.width)) {
+              this._yWidth = Math.floor(y.width);
+              this.dispatchEvent(
+                new CustomEvent("y-width-changed", {
+                  detail: { value: this._yWidth, index: this.index },
+                })
+              );
             }
           },
           position: computeRTL(this.hass) ? "right" : "left",
