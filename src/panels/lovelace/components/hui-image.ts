@@ -128,6 +128,7 @@ export class HuiImage extends LitElement {
     }
     if (this._loadState === LoadState.Loading && !this.cameraImage) {
       this._loadState = LoadState.Loaded;
+      this._lastImageHeight = 0;
     }
   }
 
@@ -206,9 +207,7 @@ export class HuiImage extends LitElement {
               : undefined,
         })}
         class="container ${classMap({
-          ratio:
-            useRatio ||
-            (this._lastImageHeight === undefined && imageSrc === undefined),
+          ratio: useRatio || this._lastImageHeight === undefined,
         })}"
       >
         ${this.cameraImage && this.cameraView === "live"
