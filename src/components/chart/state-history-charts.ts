@@ -58,7 +58,7 @@ class StateHistoryCharts extends LitElement {
 
   @state() private _maxYWidth = 0;
 
-  @state() private childYWidths: number[] = [];
+  @state() private _childYWidths: number[] = [];
 
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
@@ -163,8 +163,8 @@ class StateHistoryCharts extends LitElement {
   }
 
   yWidthChanged(e) {
-    this.childYWidths[e.detail.index] = e.detail.value;
-    this._maxYWidth = Math.max(...this.childYWidths);
+    this._childYWidths[e.detail.index] = e.detail.value;
+    this._maxYWidth = Math.max(...this._childYWidths);
   }
 
   private _isHistoryEmpty(): boolean {
