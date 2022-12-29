@@ -134,7 +134,7 @@ class StateHistoryCharts extends LitElement {
           .identifier=${item.identifier}
           .showNames=${this.showNames}
           .endTime=${this._computedEndTime}
-          .paddingLeft=${this._maxYWidth}
+          .paddingYAxis=${this._maxYWidth}
           .names=${this.names}
           .index=${index}
           @y-width-changed=${this.yWidthChanged}
@@ -151,7 +151,7 @@ class StateHistoryCharts extends LitElement {
         .names=${this.names}
         .narrow=${this.narrow}
         .chunked=${this.virtualize}
-        .paddingLeft=${this._maxYWidth}
+        .paddingYAxis=${this._maxYWidth}
         .index=${index}
         @y-width-changed=${this.yWidthChanged}
       ></state-history-chart-timeline>

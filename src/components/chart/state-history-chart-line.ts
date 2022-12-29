@@ -2,6 +2,7 @@ import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
+import { computeRTL } from "../../common/util/compute_rtl";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -30,7 +31,7 @@ class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: false }) public endTime!: Date;
 
-  @property({ type: Number }) public paddingLeft = 0;
+  @property({ type: Number }) public paddingYAxis = 0;
 
   @property({ type: Number }) public index?;
 
@@ -45,9 +46,10 @@ class StateHistoryChartLine extends LitElement {
   protected render() {
     return html`
       <ha-chart-base
+        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
-        .paddingLeft=${this.paddingLeft - this._yWidth}
+        .paddingYAxis=${this.paddingYAxis - this._yWidth}
         chart-type="line"
       ></ha-chart-base>
     `;
@@ -101,6 +103,7 @@ class StateHistoryChartLine extends LitElement {
                 );
               }
             },
+            position: computeRTL(this.hass) ? "right" : "left",
           },
         },
         plugins: {

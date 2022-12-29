@@ -10,6 +10,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { clamp } from "../../common/number/clamp";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
@@ -22,6 +23,8 @@ interface Tooltip extends TooltipModel<any> {
 export default class HaChartBase extends LitElement {
   public chart?: Chart;
 
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ attribute: "chart-type", reflect: true })
   public chartType: ChartType = "line";
 
@@ -33,7 +36,7 @@ export default class HaChartBase extends LitElement {
 
   @property({ type: Number }) public height?: number;
 
-  @property({ type: Number }) public paddingLeft = 0;
+  @property({ type: Number }) public paddingYAxis = 0;
 
   @state() private _chartHeight?: number;
 
@@ -130,7 +133,8 @@ export default class HaChartBase extends LitElement {
         style=${styleMap({
           height: `${this.height ?? this._chartHeight}px`,
           overflow: this._chartHeight ? "initial" : "hidden",
-          "padding-left": `${this.paddingLeft ?? 0}px`,
+          "padding-left": `${computeRTL(this.hass) ? 0 : this.paddingYAxis}px`,
+          "padding-right": `${computeRTL(this.hass) ? this.paddingYAxis : 0}px`,
         })}
       >
         <canvas></canvas>

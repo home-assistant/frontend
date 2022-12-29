@@ -32,7 +32,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false }) public endTime!: Date;
 
-  @property({ type: Number }) public paddingLeft = 0;
+  @property({ type: Number }) public paddingYAxis = 0;
 
   @property({ type: Number }) public index?;
 
@@ -47,10 +47,11 @@ export class StateHistoryChartTimeline extends LitElement {
   protected render() {
     return html`
       <ha-chart-base
+        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .height=${this.data.length * 30 + 30}
-        .paddingLeft=${this.paddingLeft - this._yWidth}
+        .paddingYAxis=${this.paddingYAxis - this._yWidth}
         chart-type="timeline"
       ></ha-chart-base>
     `;
