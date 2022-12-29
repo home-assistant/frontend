@@ -197,6 +197,7 @@ const createEntityRegistryEntries = (
     platform: "updater",
     has_entity_name: false,
     unique_id: "updater",
+    aliases: [],
   },
 ];
 

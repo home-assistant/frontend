@@ -1,12 +1,13 @@
-import "../../../../components/ha-form/ha-form";
+import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
-import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
+import { entityId } from "../../../../common/structs/is-entity-id";
+import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { EntityCardConfig } from "../../cards/types";
@@ -17,7 +18,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entity: optional(string()),
+    entity: optional(entityId()),
     name: optional(string()),
     icon: optional(string()),
     attribute: optional(string()),
