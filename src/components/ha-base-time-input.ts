@@ -266,6 +266,9 @@ export class HaBaseTimeInput extends LitElement {
       seconds: this.seconds,
       milliseconds: this.milliseconds,
     };
+    if (this.enableDay) {
+      value.days = this.days;
+    }
     if (this.format === 12) {
       value.amPm = this.amPm;
     }
