@@ -244,7 +244,14 @@ class DialogTagDetail
       canvas.height / 3
     );
 
-    this._qrCode = html`<img src=${canvas.toDataURL()}></img>`;
+    this._qrCode = html`<img
+        alt=${this.hass.localize(
+          "ui.panel.config.tag.qr_code_image",
+          "name",
+          this._name
+        )}
+        src=${canvas.toDataURL()}
+      ></img>`;
   }
 
   static get styles(): CSSResultGroup {
