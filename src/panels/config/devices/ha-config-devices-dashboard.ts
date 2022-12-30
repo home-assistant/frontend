@@ -324,8 +324,8 @@ export class HaConfigDeviceDashboard extends LitElement {
         sortable: true,
         filterable: true,
         type: "numeric",
-        width: narrow ? "95px" : "15%",
-        maxWidth: "95px",
+        width: narrow ? "105px" : "15%",
+        maxWidth: "105px",
         valueColumn: "battery_level",
         template: (batteryEntityPair: DeviceRowData["battery_entity"]) => {
           const battery =
