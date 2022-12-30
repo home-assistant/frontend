@@ -48,6 +48,7 @@ class HaDomainIntegrations extends LitElement {
                 hasMeta
               >
                 <img
+                  alt=""
                   slot="graphic"
                   loading="lazy"
                   src=${brandsUrl({
