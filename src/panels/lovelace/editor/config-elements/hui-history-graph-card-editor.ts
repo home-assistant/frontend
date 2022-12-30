@@ -39,7 +39,10 @@ const SCHEMA = [
     name: "",
     type: "grid",
     schema: [
-      { name: "hours_to_show", selector: { number: { min: 1, mode: "box" } } },
+      {
+        name: "hours_to_show",
+        selector: { number: { min: 0.01, mode: "box", step: 0.01 } },
+      },
       {
         name: "refresh_interval",
         selector: { number: { min: 1, mode: "box" } },

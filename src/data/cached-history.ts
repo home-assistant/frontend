@@ -106,7 +106,14 @@ export const getRecentWithCache = (
   const fullCacheKey = cacheKey + `_${cacheConfig.hoursToShow}`;
   const endTime = new Date();
   const startTime = new Date(endTime);
-  startTime.setHours(startTime.getHours() - cacheConfig.hoursToShow);
+  const hoursToShow = Math.trunc(cacheConfig.hoursToShow);
+  const minutesToShow = Math.round(
+    (cacheConfig.hoursToShow - hoursToShow) * 60
+  );
+  startTime.setHours(
+    startTime.getHours() - hoursToShow,
+    startTime.getMinutes() - minutesToShow
+  );
   let toFetchStartTime = startTime;
   let appendingToCache = false;
 
