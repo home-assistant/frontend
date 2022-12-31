@@ -227,7 +227,9 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         })}
         @click=${this._openMoreInfo}
       >
-        ${mediaArt ? html`<img src=${this.hass.hassUrl(mediaArt)} />` : ""}
+        ${mediaArt
+          ? html`<img alt="" src=${this.hass.hassUrl(mediaArt)} />`
+          : ""}
         <div class="media-info">
           <hui-marquee
             .text=${mediaTitleClean ||
