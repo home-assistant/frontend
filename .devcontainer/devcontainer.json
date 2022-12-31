@@ -4,7 +4,25 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
-  "appPort": "8124:8123",
+  "forwardPorts": [8123, 8100, 8090, 8080],
+  "portsAttributes": {
+    "8123": {
+      "label": "Home Assistant",
+      "onAutoForward": "silent"
+    },
+    "8100": {
+      "label": "Gallery",
+      "onAutoForward": "silent"
+    },
+    "8090": {
+      "label": "Demo",
+      "onAutoForward": "silent"
+    },
+    "8080": {
+      "label": "Cast",
+      "onAutoForward": "silent"
+    }
+  },
   "postCreateCommand": "script/bootstrap",
   "containerEnv": {
     "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"

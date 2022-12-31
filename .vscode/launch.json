@@ -4,9 +4,8 @@
     {
       "name": "Debug Frontend",
       "request": "launch",
-      "type": "pwa-chrome",
+      "type": "chrome",
       "url": "http://localhost:8123/",
-      "webRoot": "${workspaceFolder}/hass_frontend",
       "disableNetworkCache": true,
       "preLaunchTask": "Develop Frontend",
       "outFiles": [
@@ -16,7 +15,7 @@
     {
       "name": "Debug Gallery",
       "request": "launch",
-      "type": "pwa-chrome",
+      "type": "chrome",
       "url": "http://localhost:8100/",
       "webRoot": "${workspaceFolder}/gallery/dist",
       "disableNetworkCache": true,
@@ -25,7 +24,7 @@
     {
       "name": "Debug Demo",
       "request": "launch",
-      "type": "pwa-chrome",
+      "type": "chrome",
       "url": "http://localhost:8090/",
       "webRoot": "${workspaceFolder}/demo/dist",
       "disableNetworkCache": true,
@@ -34,7 +33,7 @@
     {
       "name": "Debug Cast",
       "request": "launch",
-      "type": "pwa-chrome",
+      "type": "chrome",
       "url": "http://localhost:8080/",
       "webRoot": "${workspaceFolder}/cast/dist",
       "disableNetworkCache": true,
