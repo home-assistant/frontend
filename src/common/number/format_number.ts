@@ -62,6 +62,24 @@ export const formatNumber = (
     Intl
   ) {
     try {
+      // If currency per unit (e.g. 99 USD/kWh), format the currency while
+      // retaining the unit (e.g. U$99.00/kWh)
+      if (options?.style === "currency" && options.currency) {
+        const parts = options.currency.split("/");
+        if (parts.length === 2) {
+          const currency = parts[0];
+          const unit = parts[1];
+          return `${formatNumber(
+            num,
+            localeOptions,
+            getDefaultFormatOptions(num, {
+              ...options,
+              currency,
+            })
+          )}/${unit}`;
+        }
+      }
+
       return new Intl.NumberFormat(
         locale,
         getDefaultFormatOptions(num, options)
