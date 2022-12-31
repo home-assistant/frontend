@@ -92,6 +92,7 @@ class HaDomainIntegrations extends LitElement {
               <img
                 slot="graphic"
                 loading="lazy"
+                alt=""
                 src=${brandsUrl({
                   domain,
                   type: "icon",
@@ -153,6 +154,7 @@ class HaDomainIntegrations extends LitElement {
             <img
               slot="graphic"
               loading="lazy"
+              alt=""
               src=${brandsUrl({
                 domain: this.domain,
                 type: "icon",
