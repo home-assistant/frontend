@@ -6,6 +6,7 @@ import type { Options, WeekdayStr } from "rrule";
 import { ByWeekday, RRule, Weekday } from "rrule";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-chip";
 import "../../components/ha-list-item";
 import "../../components/ha-select";
@@ -172,9 +173,7 @@ export class RecurrenceRuleEditor extends LitElement {
     return html`
       <ha-select
         id="freq"
-        label=${this.hass.localize(
-          "ui.components.calendar.event.repeat.label"
-        )}
+        label=${this.hass.localize("ui.components.calendar.event.repeat.label")}
         @selected=${this._onRepeatSelected}
         @closed=${stopPropagation}
         fixedMenuPosition
@@ -246,7 +245,7 @@ export class RecurrenceRuleEditor extends LitElement {
               class=${classMap({ active: this._weekday.has(item) })}
               @click=${this._onWeekdayToggle}
               >${this.hass.localize(
-                `ui.components.calendar.event.repeat.weekly.weekday.${item.toLowerCase()}`
+                `ui.components.calendar.event.repeat.weekly.weekday.${item.toLowerCase()}` as LocalizeKeys
               )}</ha-chip
             >
           `
@@ -270,7 +269,8 @@ export class RecurrenceRuleEditor extends LitElement {
         min="1"
         .value=${this._interval}
         .suffix=${this.hass.localize(
-          `ui.components.calendar.event.repeat.interval.${this._freq!}`
+          `ui.components.calendar.event.repeat.interval.${this
+            ._freq!}` as LocalizeKeys
         )}
         @change=${this._onIntervalChange}
       ></ha-textfield>
