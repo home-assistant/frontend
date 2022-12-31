@@ -367,6 +367,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       case "entity_id":
         return html`
           <ha-entity-picker
+            class=${this.horizontal ? "horizontal-entity-picker" : ""}
             .hass=${this.hass}
             id="input"
             .type=${"entity_id"}
@@ -656,6 +657,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       :host([disabled]) .mdc-chip {
         opacity: var(--light-disabled-opacity);
         pointer-events: none;
+      }
+      .horizontal-entity-picker {
+        flex-basis: 400px;
+        max-width: 400px;
       }
     `;
   }

@@ -130,7 +130,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         </app-header>
 
         <div class="flex content">
-          <div class="filters flex layout horizontal narrow-wrap">
+          <div class="filters flex layout horizontal wrap">
             <ha-date-range-picker
               .hass=${this.hass}
               ?disabled=${this._isLoading}
@@ -445,7 +445,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           height: 100%;
         }
 
-        :host([narrow]) .narrow-wrap {
+        :host .wrap {
           flex-wrap: wrap;
         }
 
@@ -493,15 +493,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           transform: translate(-50%, -50%);
         }
 
-        ha-entity-picker {
-          display: inline-block;
-          flex-grow: 1;
-          max-width: 400px;
-        }
-
-        :host([narrow]) ha-entity-picker {
-          max-width: none;
-          width: 100%;
+        ha-target-picker {
+          flex: 1;
+          flex-basis: 400px;
         }
 
         .start-search {
