@@ -42,16 +42,6 @@ export interface MonthlyRepeatItem {
   label: string;
 }
 
-export function intervalSuffix(freq: RepeatFrequency) {
-  if (freq === "monthly") {
-    return "months";
-  }
-  if (freq === "weekly") {
-    return "weeks";
-  }
-  return "days";
-}
-
 export function untilValue(freq: RepeatFrequency): Date {
   const today = new Date();
   const increment = DEFAULT_COUNT[freq];
@@ -100,16 +90,6 @@ export const convertRepeatFrequency = (
     default:
       return undefined;
   }
-};
-
-export const WEEKDAY_NAME = {
-  SU: "Sun",
-  MO: "Mon",
-  TU: "Tue",
-  WE: "Wed",
-  TH: "Thu",
-  FR: "Fri",
-  SA: "Sat",
 };
 
 export const WEEKDAYS = [

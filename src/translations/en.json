@@ -644,6 +644,33 @@
               "monthly": "months",
               "weekly": "weeks",
               "daily": "days"
+            },
+            "monthly": {
+              "label": "Repeat Monthly"
+            },
+            "weekly": {
+              "weekday": {
+                "su": "Sun",
+                "mo": "Mon",
+                "tu": "Tue",
+                "we": "Wed",
+                "th": "Thu",
+                "fr": "Fri",
+                "sa": "Sat"
+              }
+            },
+            "end": {
+              "label": "End",
+              "never": "Never",
+              "after": "After",
+              "on": "On"
+            },
+            "end_on": {
+              "label": "End On"
+            },
+            "end_after": {
+              "label": "End After",
+              "ocurrences": "ocurrences"
             }
           },
           "rrule": {
