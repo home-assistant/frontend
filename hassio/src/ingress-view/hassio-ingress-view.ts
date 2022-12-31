@@ -60,8 +60,8 @@ class HassioIngressView extends LitElement {
     }
 
     const iframe = html`<iframe
-      .title=${this._addon.name}
-      .src=${this._addon.ingress_url!}
+      title=${this._addon.name}
+      src=${this._addon.ingress_url!}
     >
     </iframe>`;
 
