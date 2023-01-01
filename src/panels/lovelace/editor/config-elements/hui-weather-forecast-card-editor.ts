@@ -1,6 +1,6 @@
-import { memoize } from "@fullcalendar/common";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { entityId } from "../../../../common/structs/is-entity-id";
@@ -66,7 +66,7 @@ export class HuiWeatherForecastCardEditor
     return undefined;
   }
 
-  private _schema = memoize(
+  private _schema = memoizeOne(
     (entity: string, localize: LocalizeFunc, hasForecast?: boolean) =>
       [
         {
