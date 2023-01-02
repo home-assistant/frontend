@@ -73,7 +73,7 @@ class DialogEntityAliases extends LitElement {
                     dialogInitialFocus=${index}
                     .index=${index}
                     class="flex-auto"
-                    label=${this.hass!.localize(
+                    .label=${this.hass!.localize(
                       "ui.dialogs.entity_registry.editor.aliases.input_label",
                       { number: index + 1 }
                     )}
