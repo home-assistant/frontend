@@ -245,7 +245,9 @@ export class RecurrenceRuleEditor extends LitElement {
               class=${classMap({ active: this._weekday.has(item) })}
               @click=${this._onWeekdayToggle}
               >${this.hass.localize(
-                `ui.components.calendar.event.repeat.weekly.weekday.${item.toLowerCase()}` as LocalizeKeys
+                `ui.components.calendar.event.repeat.weekly.weekday.${
+                  item.toLowerCase() as Lowercase<WeekdayStr>
+                }`
               )}</ha-chip
             >
           `
