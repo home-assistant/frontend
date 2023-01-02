@@ -771,12 +771,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               "ui.dialogs.entity_registry.editor.aliases_section"
             )}
           </div>
-          <mwc-list class="aliases">
-            <mwc-list-item
-              .twoline=${this.entry.aliases.length > 0}
-              hasMeta
-              @click=${this._openAliasesSettings}
-            >
+          <mwc-list class="aliases" @action=${this._handleAliasesClicked}>
+            <mwc-list-item .twoline=${this.entry.aliases.length > 0} hasMeta>
               <span>
                 ${this.entry.aliases.length > 0
                   ? this.hass.localize(
@@ -979,7 +975,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _openAliasesSettings() {
+  private _handleAliasesClicked(ev: CustomEvent) {
+    if (ev.detail.index !== 0) return;
     showEntityAliasesDialog(this, {
       entity: this.entry!,
       updateEntry: async (updates) => {
