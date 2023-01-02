@@ -59,7 +59,7 @@ class DialogEntityAliases extends LitElement {
           "ui.dialogs.entity_registry.editor.aliases.heading",
           { name }
         )}
-        disableEnterKeySubmit
+        .suppressDefaultPressSelector=${"input"}
       >
         <div>
           ${this._error
