@@ -119,6 +119,19 @@ const OVERRIDE_NUMBER_UNITS = {
 
 const OVERRIDE_SENSOR_UNITS = {
   current: ["A", "mA"],
+  data_rate: [
+    "bit/s",
+    "kbit/s",
+    "Mbit/s",
+    "Gbit/s",
+    "B/s",
+    "kB/s",
+    "MB/s",
+    "GB/s",
+    "KiB/s",
+    "MiB/s",
+    "GiB/s",
+  ],
   distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
   gas: ["CCF", "ft³", "m³"],
   precipitation: ["cm", "in", "mm"],
