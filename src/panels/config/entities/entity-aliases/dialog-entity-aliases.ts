@@ -64,7 +64,7 @@ class DialogEntityAliases extends LitElement {
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
             : ""}
-          <div class="form">
+          <div class="form" @keydown=${this._ignoreKeydown}>
             ${this._aliases.map(
               (alias, index) => html`
                 <div class="layout horizontal center-center row">
@@ -72,16 +72,21 @@ class DialogEntityAliases extends LitElement {
                     dialogInitialFocus=${index}
                     .index=${index}
                     class="flex-auto"
-                    label="Alias"
+                    label=${this.hass!.localize(
+                      "ui.dialogs.entity_registry.editor.aliases.input_label",
+                      { number: index + 1 }
+                    )}
                     .value=${alias}
                     ?data-last=${index === this._aliases.length - 1}
                     @change=${this._editAlias}
+                    @keydown=${this._keyDownAlias}
                   ></ha-textfield>
                   <ha-icon-button
                     .index=${index}
                     slot="navigationIcon"
                     label=${this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.aliases.remove_alias"
+                      "ui.dialogs.entity_registry.editor.aliases.remove_alias",
+                      { number: index + 1 }
                     )}
                     @click=${this._removeAlias}
                     .path=${mdiDeleteOutline}
@@ -119,6 +124,10 @@ class DialogEntityAliases extends LitElement {
     `;
   }
 
+  private _ignoreKeydown(ev: KeyboardEvent) {
+    ev.stopPropagation();
+  }
+
   private async _addAlias() {
     this._aliases = [...this._aliases, ""];
     await this.updateComplete;
@@ -131,6 +140,12 @@ class DialogEntityAliases extends LitElement {
   private async _editAlias(ev: Event) {
     const index = (ev.target as any).index;
     this._aliases[index] = (ev.target as any).value;
+  }
+
+  private async _keyDownAlias(ev: KeyboardEvent) {
+    if (ev.key === "Enter") {
+      this._addAlias();
+    }
   }
 
   private async _removeAlias(ev: Event) {

@@ -976,7 +976,8 @@
           "aliases": {
             "heading": "{name} aliases",
             "description": "Aliases are alternative names used in voice assistants to refer to this entity.",
-            "remove_alias": "Remove alias",
+            "remove_alias": "Remove alias {number}",
+            "input_label": "Alias {number}",
             "save": "Save",
             "add_alias": "Add alias",
             "no_aliases": "No aliases have been added yet",
