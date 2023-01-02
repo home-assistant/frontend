@@ -59,7 +59,6 @@ class DialogEntityAliases extends LitElement {
           "ui.dialogs.entity_registry.editor.aliases.heading",
           { name }
         )}
-        .suppressDefaultPressSelector=${"input"}
       >
         <div>
           ${this._error
@@ -141,6 +140,7 @@ class DialogEntityAliases extends LitElement {
 
   private async _keyDownAlias(ev: KeyboardEvent) {
     if (ev.key === "Enter") {
+      ev.stopPropagation();
       this._addAlias();
     }
   }
