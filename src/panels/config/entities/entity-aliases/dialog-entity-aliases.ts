@@ -72,16 +72,21 @@ class DialogEntityAliases extends LitElement {
                     dialogInitialFocus=${index}
                     .index=${index}
                     class="flex-auto"
-                    label="Alias"
+                    .label=${this.hass!.localize(
+                      "ui.dialogs.entity_registry.editor.aliases.input_label",
+                      { number: index + 1 }
+                    )}
                     .value=${alias}
                     ?data-last=${index === this._aliases.length - 1}
-                    @change=${this._editAlias}
+                    @input=${this._editAlias}
+                    @keydown=${this._keyDownAlias}
                   ></ha-textfield>
                   <ha-icon-button
                     .index=${index}
                     slot="navigationIcon"
                     label=${this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.aliases.remove_alias"
+                      "ui.dialogs.entity_registry.editor.aliases.remove_alias",
+                      { number: index + 1 }
                     )}
                     @click=${this._removeAlias}
                     .path=${mdiDeleteOutline}
@@ -131,6 +136,13 @@ class DialogEntityAliases extends LitElement {
   private async _editAlias(ev: Event) {
     const index = (ev.target as any).index;
     this._aliases[index] = (ev.target as any).value;
+  }
+
+  private async _keyDownAlias(ev: KeyboardEvent) {
+    if (ev.key === "Enter") {
+      ev.stopPropagation();
+      this._addAlias();
+    }
   }
 
   private async _removeAlias(ev: Event) {
