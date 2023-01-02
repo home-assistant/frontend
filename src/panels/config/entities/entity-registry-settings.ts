@@ -118,6 +118,20 @@ const OVERRIDE_NUMBER_UNITS = {
 };
 
 const OVERRIDE_SENSOR_UNITS = {
+  current: ["A", "mA"],
+  data_rate: [
+    "bit/s",
+    "kbit/s",
+    "Mbit/s",
+    "Gbit/s",
+    "B/s",
+    "kB/s",
+    "MB/s",
+    "GB/s",
+    "KiB/s",
+    "MiB/s",
+    "GiB/s",
+  ],
   distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
   gas: ["CCF", "ft³", "m³"],
   precipitation: ["cm", "in", "mm"],
@@ -125,6 +139,7 @@ const OVERRIDE_SENSOR_UNITS = {
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
   speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mm/h", "mph"],
   temperature: ["°C", "°F", "K"],
+  voltage: ["V", "mV"],
   volume: ["CCF", "fl. oz.", "ft³", "gal", "L", "mL", "m³"],
   water: ["CCF", "ft³", "gal", "L", "m³"],
   weight: ["g", "kg", "lb", "mg", "oz", "st", "µg"],

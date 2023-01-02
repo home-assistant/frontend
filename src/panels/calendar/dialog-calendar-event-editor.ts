@@ -250,6 +250,7 @@ class DialogCalendarEventEditor extends LitElement {
           <ha-recurrence-rule-editor
             .hass=${this.hass}
             .dtstart=${this._dtstart}
+            .allDay=${this._allDay}
             .locale=${this.hass.locale}
             .timezone=${this.hass.config.time_zone}
             .value=${this._rrule || ""}
