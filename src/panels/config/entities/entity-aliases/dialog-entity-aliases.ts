@@ -54,12 +54,12 @@ class DialogEntityAliases extends LitElement {
     return html`
       <ha-dialog
         open
-        hideActions
         @closed=${this.closeDialog}
         .heading=${this.hass.localize(
           "ui.dialogs.entity_registry.editor.aliases.heading",
           { name }
         )}
+        disableEnterKeySubmit
       >
         <div>
           ${this._error
@@ -79,7 +79,7 @@ class DialogEntityAliases extends LitElement {
                     )}
                     .value=${alias}
                     ?data-last=${index === this._aliases.length - 1}
-                    @input=${this._editAlias}
+                    @change=${this._editAlias}
                     @keydown=${this._keyDownAlias}
                   ></ha-textfield>
                   <ha-icon-button
@@ -105,16 +105,22 @@ class DialogEntityAliases extends LitElement {
             </div>
           </div>
         </div>
-        <div class="buttons">
-          <mwc-button @click=${this.closeDialog} .disabled=${this._submitting}>
-            ${this.hass.localize("ui.common.cancel")}
-          </mwc-button>
-          <mwc-button @click=${this._updateEntry} .disabled=${this._submitting}>
-            ${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.aliases.save"
-            )}
-          </mwc-button>
-        </div>
+        <mwc-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          .disabled=${this._submitting}
+        >
+          ${this.hass.localize("ui.common.cancel")}
+        </mwc-button>
+        <mwc-button
+          slot="primaryAction"
+          @click=${this._updateEntry}
+          .disabled=${this._submitting}
+        >
+          ${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.aliases.save"
+          )}
+        </mwc-button>
       </ha-dialog>
     `;
   }
@@ -182,9 +188,6 @@ class DialogEntityAliases extends LitElement {
         ha-icon-button {
           display: block;
         }
-        ha-dialog {
-          --dialog-content-padding: 0;
-        }
         mwc-button {
           margin-left: 8px;
         }
@@ -196,21 +199,6 @@ class DialogEntityAliases extends LitElement {
           border-radius: 4px;
           margin-top: 4px;
           --mdc-icon-button-size: 24px;
-        }
-        .form {
-          padding: 20px 24px;
-        }
-        .buttons {
-          box-sizing: border-box;
-          display: flex;
-          padding: 20px 24px;
-          padding-top: 16px;
-          justify-content: space-between;
-          padding-bottom: max(env(safe-area-inset-bottom), 20px);
-          background-color: var(--mdc-theme-surface, #fff);
-          border-top: 1px solid var(--divider-color);
-          position: sticky;
-          bottom: 0px;
         }
       `,
     ];

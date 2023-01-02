@@ -1,10 +1,10 @@
 import { DialogBase } from "@material/mwc-dialog/mwc-dialog-base";
 import { styles } from "@material/mwc-dialog/mwc-dialog.css";
 import { mdiClose } from "@mdi/js";
-import { css, html, TemplateResult } from "lit";
-import { customElement } from "lit/decorators";
-import type { HomeAssistant } from "../types";
+import { css, html, PropertyValues, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
 export const createCloseHeading = (
@@ -30,6 +30,17 @@ export class HaDialog extends DialogBase {
 
   protected renderHeading() {
     return html`<slot name="heading"> ${super.renderHeading()} </slot>`;
+  }
+
+  @property({ type: Boolean }) public disableEnterKeySubmit?: boolean;
+
+  override updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    if (changedProperties.has("disableEnterKeySubmit")) {
+      this.mdcFoundation.setSuppressDefaultPressSelector(
+        this.disableEnterKeySubmit ? "*" : ""
+      );
+    }
   }
 
   static override styles = [
