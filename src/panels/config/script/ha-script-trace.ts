@@ -527,14 +527,9 @@ export class HaScriptTrace extends LitElement {
         :host([narrow]) .graph {
           max-width: 100%;
         }
-
         .info {
           flex: 1;
           background-color: var(--card-background-color);
-        }
-
-        .linkButton {
-          color: var(--primary-text-color);
         }
         .trace-link {
           text-decoration: none;

@@ -1,11 +1,11 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import {
-  EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
+  ExtEntityRegistryEntry,
 } from "../../../../data/entity_registry";
 
 export interface EntityAliasesDialogParams {
-  entity: EntityRegistryEntry;
+  entity: ExtEntityRegistryEntry;
   updateEntry: (
     updates: Partial<EntityRegistryEntryUpdateParams>
   ) => Promise<unknown>;

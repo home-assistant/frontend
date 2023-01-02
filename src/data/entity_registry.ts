@@ -22,7 +22,6 @@ export interface EntityRegistryEntry {
   original_name?: string;
   unique_id: string;
   translation_key?: string;
-  aliases: string[];
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
@@ -30,6 +29,7 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   original_icon?: string;
   device_class?: string;
   original_device_class?: string;
+  aliases: string[];
 }
 
 export interface UpdateEntityRegistryEntryResult {
