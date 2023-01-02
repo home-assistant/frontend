@@ -1,5 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../components/hui-entity-editor";
 import {
   any,
   array,
@@ -22,7 +23,6 @@ import {
   isCustomType,
 } from "../../../../common/structs/is-custom-type";
 import { entityId } from "../../../../common/structs/is-entity-id";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
@@ -30,7 +30,7 @@ import "../../../../components/ha-textfield";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
-import type { EntitiesCardConfig } from "../../cards/types";
+import type { EntitiesCardConfig, SortConfig } from "../../cards/types";
 import "../../../../components/ha-theme-picker";
 import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
@@ -42,6 +42,7 @@ import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import {
   EditorTarget,
@@ -50,6 +51,7 @@ import {
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { buttonEntityConfigStruct } from "../structs/button-entity-struct";
+import "../../components/hui-sort-config-editor";
 
 const buttonEntitiesRowConfigStruct = object({
   type: literal("button"),
@@ -138,6 +140,72 @@ const customEntitiesRowConfigStruct = type({
   type: customType(),
 });
 
+const numericSortConfig = object({
+  type: literal("numeric"),
+  reverse: optional(boolean()),
+});
+
+const randomSortConfig = object({
+  type: literal("random"),
+  reverse: optional(boolean()),
+});
+
+const ipSortConfig = object({
+  type: literal("ip"),
+  reverse: optional(boolean()),
+});
+
+const alphaSortConfig = object({
+  type: literal("alpha"),
+  reverse: optional(boolean()),
+  ignore_case: optional(boolean()),
+});
+
+const lastChangedConfig = object({
+  type: literal("last_changed"),
+  reverse: optional(boolean()),
+});
+
+const lastUpdatedConfig = object({
+  type: literal("last_updated"),
+  reverse: optional(boolean()),
+});
+
+const lastTriggeredConfig = object({
+  type: literal("last_triggered"),
+  reverse: optional(boolean()),
+});
+
+const sortConfigsStruct = dynamic<any>((value: any) => {
+  if (value && typeof value === "object" && "type" in value) {
+    switch ((value as SortConfig).type!) {
+      case "numeric": {
+        return numericSortConfig;
+      }
+      case "random": {
+        return randomSortConfig;
+      }
+      case "ip": {
+        return ipSortConfig;
+      }
+      case "alpha": {
+        return alphaSortConfig;
+      }
+      case "last_changed": {
+        return lastChangedConfig;
+      }
+      case "last_updated": {
+        return lastUpdatedConfig;
+      }
+      case "last_triggered": {
+        return lastTriggeredConfig;
+      }
+    }
+  }
+  // No "type" property has been set. Return default (numeric).
+  return numericSortConfig;
+});
+
 const entitiesRowConfigStruct = dynamic<any>((value) => {
   if (value && typeof value === "object" && "type" in value) {
     if (isCustomType((value as LovelaceRowConfig).type!)) {
@@ -190,8 +258,8 @@ const cardConfigStruct = assign(
     theme: optional(string()),
     icon: optional(string()),
     show_header_toggle: optional(boolean()),
-    sort_by_state: optional(boolean()),
-    reverse_sort_order: optional(boolean()),
+    enable_sorting: optional(boolean()),
+    sort_configs: optional(array(sortConfigsStruct)),
     state_color: optional(boolean()),
     entities: array(entitiesRowConfigStruct),
     header: optional(headerFooterConfigStructs),
@@ -292,32 +360,27 @@ export class HuiEntitiesCardEditor
             ></ha-switch>
           </ha-formfield>
         </div>
-        <div class="side-by-side">
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.entities.sort_by_state"
-            )}
-            .dir=${computeRTLDirection(this.hass)}
-          >
-            <ha-switch
-              .checked=${this._config!.sort_by_state !== false}
-              .configValue=${"sort_by_state"}
-              @change=${this._valueChanged}
-            ></ha-switch>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.entities.reverse_sort_order"
-            )}
-            .dir=${computeRTLDirection(this.hass)}
-          >
-            <ha-switch
-              .checked=${this._config!.reverse_sort_order !== false}
-              .configValue=${"reverse_sort_order"}
-              @change=${this._valueChanged}
-            ></ha-switch>
-          </ha-formfield>
-        </div>
+        <ha-formfield
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.entities.enable_sorting"
+          )}
+          .dir=${computeRTLDirection(this.hass)}
+        >
+          <ha-switch
+            .checked=${this._config!.enable_sorting !== false}
+            .configValue=${"enable_sorting"}
+            @change=${this._valueChanged}
+          ></ha-switch>
+        </ha-formfield>
+        ${this._config!.enable_sorting
+          ? html`
+              <hui-sort-config-editor
+                .hass=${this.hass}
+                .config=${this._config!.sort_configs}
+                @value-changed=${this._sortConfigChanged}
+              ></hui-sort-config-editor>
+            `
+          : html``}
         <hui-header-footer-editor
           .hass=${this.hass}
           .configValue=${"header"}
@@ -340,6 +403,18 @@ export class HuiEntitiesCardEditor
         @edit-detail-element=${this._editDetailElement}
       ></hui-entities-card-row-editor>
     `;
+  }
+
+  private _sortConfigChanged(ev): void {
+    ev.stopPropagation();
+
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    this._config = { ...this._config!, sort_configs: ev.detail.value };
+
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   private _valueChanged(ev: CustomEvent): void {

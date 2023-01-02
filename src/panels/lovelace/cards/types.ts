@@ -69,11 +69,46 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   show_icon?: boolean;
 }
 
+export interface SortConfig {
+  type: string;
+  reverse?: boolean;
+  [key: string]: any;
+}
+
+export interface NumericSortConfig extends SortConfig {
+  type: "numeric";
+}
+
+export interface RandomSortConfig extends SortConfig {
+  type: "random";
+}
+
+export interface IPSortConfig extends SortConfig {
+  type: "ip";
+}
+
+export interface AlphaSortConfig extends SortConfig {
+  type: "alpha";
+  ignore_case?: boolean;
+}
+
+export interface LastChangedSortConfig extends SortConfig {
+  type: "last_changed";
+}
+
+export interface LastUpdatedSortConfig extends SortConfig {
+  type: "last_updated";
+}
+
+export interface LastTriggeredSortConfig extends SortConfig {
+  type: "last_triggered";
+}
+
 export interface EntitiesCardConfig extends LovelaceCardConfig {
   type: "entities";
   show_header_toggle?: boolean;
-  sort_by_state?: boolean;
-  reverse_sort_order?: boolean;
+  enable_sorting?: boolean;
+  sort_configs?: SortConfig[];
   title?: string;
   entities: Array<LovelaceRowConfig | string>;
   theme?: string;

@@ -4055,6 +4055,20 @@
               "none": "No Action"
             }
           },
+          "sort-config-picker": {
+            "title": "Sort type",
+            "reverse": "Reverse sort order",
+            "ignore_case": "Ignore case",
+            "types": {
+              "numeric": "Numeric",
+              "alpha": "Alpha",
+              "random": "Random",
+              "ip": "IP-Adress",
+              "last_changed": "Last changed",
+              "last_updated": "Last updated",
+              "last_triggered": "Last triggered"
+            }
+          },
           "card": {
             "alarm-panel": {
               "name": "Alarm Panel",
@@ -4096,7 +4110,8 @@
             "entities": {
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
-              "sort_by_state": "Sort by state?",
+              "enable_sorting": "Enable sorting?",
+              "sort_configuration": "Sort configuration",
               "reverse_sort_order": "Reversed sort order?",
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists.",

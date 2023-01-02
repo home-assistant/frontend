@@ -29,7 +29,7 @@ import {
   LovelaceCardEditor,
   LovelaceHeaderFooter,
 } from "../types";
-import { EntitiesCardConfig } from "./types";
+import { EntitiesCardConfig, SortConfig } from "./types";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -63,9 +63,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   private _showHeaderToggle?: boolean;
 
-  private _sortByState?: boolean;
+  private _enableSorting?: boolean;
 
-  private _reverseSortOrder?: boolean;
+  private _sortConfigs?: SortConfig[];
 
   private _headerElement?: LovelaceHeaderFooter;
 
@@ -161,12 +161,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     } else {
       this._footerElement = undefined;
     }
-    this._sortByState =
-      config.sort_by_state === undefined ? false : config.sort_by_state;
-    this._reverseSortOrder =
-      config.reverse_sort_order === undefined
-        ? false
-        : config.reverse_sort_order;
+    this._enableSorting =
+      config.enable_sorting === undefined ? false : config.enable_sorting;
+    this._sortConfigs = config.sort_configs;
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -229,38 +226,165 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
               </h1>
             `}
         <div id="states" class="card-content">
-          ${(this._sortByState
+          ${(this._enableSorting && this._sortConfigs !== undefined
             ? this._configEntities!.sort((confA, confB) => {
-                const reverseSortOrder = this._reverseSortOrder ? 1 : -1;
-                const aBeforeB = -1 * reverseSortOrder;
-                const bBeforeA = -aBeforeB;
-
-                if (
+                const doNotSort = 0;
+                const confAIsInvalid =
                   !("entity" in confA) ||
                   !this._hass!.states[confA.entity] ||
-                  this._hass!.states[confA.entity].state === UNAVAILABLE
-                ) {
-                  return bBeforeA;
-                }
-                if (
+                  this._hass!.states[confA.entity].state === UNAVAILABLE;
+                const confBIsInvalid =
                   !("entity" in confB) ||
                   !this._hass!.states[confB.entity] ||
-                  this._hass!.states[confB.entity].state === UNAVAILABLE
-                ) {
-                  return aBeforeB;
+                  this._hass!.states[confB.entity].state === UNAVAILABLE;
+
+                if (confAIsInvalid && confBIsInvalid) {
+                  return doNotSort;
                 }
 
-                const valA = Number(this._hass!.states[confA.entity].state);
-                const valB = Number(this._hass!.states[confB.entity].state);
+                const entityA = !confAIsInvalid
+                  ? this._hass!.states[confA.entity]
+                  : undefined;
 
-                if (isNaN(valA)) {
-                  return bBeforeA;
-                }
-                if (isNaN(valB)) {
-                  return aBeforeB;
+                const entityB = !confBIsInvalid
+                  ? this._hass!.states[confB.entity]
+                  : undefined;
+
+                const stateA = entityA?.state;
+
+                const stateB = entityB?.state;
+
+                if (stateA === stateB) {
+                  return doNotSort;
                 }
 
-                return (valA - valB) * reverseSortOrder;
+                for (const sortConf of this._sortConfigs!) {
+                  const reverseSortOrder = sortConf.reverse ? 1 : -1;
+                  const aBeforeB = -1 * reverseSortOrder;
+                  const bBeforeA = -aBeforeB;
+
+                  /* eslint no-else-return: ["error", {allowElseIf: true}] */
+                  if (confAIsInvalid) {
+                    return bBeforeA;
+                  } else if (confBIsInvalid) {
+                    return aBeforeB;
+                  }
+
+                  switch (sortConf.type!) {
+                    case "numeric": {
+                      const valA = Number(stateA);
+                      const valB = Number(stateB);
+
+                      /* eslint no-else-return: ["error", {allowElseIf: true}] */
+                      if (isNaN(valA) && isNaN(valB)) {
+                        // both states are non-numeric, try another sort config
+                        continue;
+                      } else if (isNaN(valA)) {
+                        return bBeforeA;
+                      } else if (isNaN(valB)) {
+                        return aBeforeB;
+                      }
+                      return (valA - valB) * reverseSortOrder;
+                    }
+                    case "last_changed": {
+                      /* eslint no-else-return: ["error", {allowElseIf: true}] */
+                      if (
+                        entityA?.last_changed === undefined &&
+                        entityB?.last_changed === undefined
+                      ) {
+                        continue;
+                      } else if (entityA === undefined) {
+                        return bBeforeA;
+                      } else if (entityB === undefined) {
+                        return aBeforeB;
+                      }
+
+                      return (
+                        new Date(entityA.last_changed).getTime() -
+                        new Date(entityB.last_changed).getTime()
+                      );
+                    }
+                    case "last_updated": {
+                      /* eslint no-else-return: ["error", {allowElseIf: true}] */
+                      if (
+                        entityA?.last_updated === undefined &&
+                        entityB?.last_updated === undefined
+                      ) {
+                        continue;
+                      } else if (entityA === undefined) {
+                        return bBeforeA;
+                      } else if (entityB === undefined) {
+                        return aBeforeB;
+                      }
+
+                      return (
+                        new Date(entityA.last_updated).getTime() -
+                        new Date(entityB.last_updated).getTime()
+                      );
+                    }
+                    case "last_triggered": {
+                      /* eslint no-else-return: ["error", {allowElseIf: true}] */
+                      if (
+                        entityA?.attributes?.last_triggered === undefined &&
+                        entityB?.attributes?.last_triggered === undefined
+                      ) {
+                        continue;
+                      } else if (entityA === undefined) {
+                        return bBeforeA;
+                      } else if (entityB === undefined) {
+                        return aBeforeB;
+                      }
+
+                      return (
+                        new Date(entityA.attributes?.last_triggered).getTime() -
+                        new Date(entityB.attributes?.last_triggered).getTime()
+                      );
+                    }
+                    case "random": {
+                      return Math.floor(Math.random() * 3) - 1;
+                    }
+                    case "ip": {
+                      const dotSplittedA = String(stateA!).split(".");
+                      const dotSplittedB = String(stateB!).split(".");
+                      const isValidIpv4A =
+                        dotSplittedA.length !== 4 ||
+                        dotSplittedA.some((ipBlock: string) =>
+                          isNaN(Number(ipBlock))
+                        );
+                      const isValidIpv4B =
+                        dotSplittedB.length !== 4 ||
+                        dotSplittedB.some((ipBlock: string) =>
+                          isNaN(Number(ipBlock))
+                        );
+
+                      if (!isValidIpv4A && !isValidIpv4B) {
+                        continue;
+                      } else if (!isValidIpv4A) {
+                        return bBeforeA;
+                      } else if (!isValidIpv4B) {
+                        return aBeforeB;
+                      }
+
+                      return (
+                        Number(dotSplittedA[0]) - Number(dotSplittedB[0]) ||
+                        Number(dotSplittedA[1]) - Number(dotSplittedB[1]) ||
+                        Number(dotSplittedA[2]) - Number(dotSplittedB[2]) ||
+                        Number(dotSplittedA[3]) - Number(dotSplittedB[3])
+                      );
+                    }
+                    case "alpha": {
+                      return String(stateA!).localeCompare(
+                        String(stateB!),
+                        undefined,
+                        sortConf.ignore_case !== undefined
+                          ? { ignorePunctuation: sortConf.ignore_case }
+                          : undefined
+                      );
+                    }
+                  }
+                }
+                // same value
+                return doNotSort;
               })
             : this._configEntities)!.map((entityConf) =>
             this.renderEntity(entityConf)
