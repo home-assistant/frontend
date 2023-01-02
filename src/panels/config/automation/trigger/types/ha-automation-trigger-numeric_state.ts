@@ -4,6 +4,7 @@ import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateTrigger } from "../../../../../data/automation";
@@ -18,7 +19,12 @@ export class HaNumericStateTrigger extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   private _schema = memoizeOne(
-    (entityId) =>
+    (
+      localize: LocalizeFunc,
+      entityId,
+      inputAboveIsEntity?: boolean,
+      inputBelowIsEntity?: boolean
+    ) =>
       [
         { name: "entity_id", required: true, selector: { entity: {} } },
         {
@@ -94,26 +100,69 @@ export class HaNumericStateTrigger extends LitElement {
           },
         },
         {
+          name: "mode_above",
+          type: "select",
+          required: true,
+          options: [
+            [
+              "value",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.numeric_state.type_value"
+              ),
+            ],
+            [
+              "input",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.numeric_state.type_input"
+              ),
+            ],
+          ],
+        },
+
+        {
           name: "above",
-          selector: {
-            number: {
-              mode: "box",
-              min: Number.MIN_SAFE_INTEGER,
-              max: Number.MAX_SAFE_INTEGER,
-              step: 0.1,
-            },
-          },
+          selector: inputAboveIsEntity
+            ? { entity: { domain: ["input_number", "number", "sensor"] } }
+            : {
+                number: {
+                  mode: "box",
+                  min: Number.MIN_SAFE_INTEGER,
+                  max: Number.MAX_SAFE_INTEGER,
+                  step: 0.1,
+                },
+              },
+        },
+        {
+          name: "mode_below",
+          type: "select",
+          required: true,
+          options: [
+            [
+              "value",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.numeric_state.type_value"
+              ),
+            ],
+            [
+              "input",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.numeric_state.type_input"
+              ),
+            ],
+          ],
         },
         {
           name: "below",
-          selector: {
-            number: {
-              mode: "box",
-              min: Number.MIN_SAFE_INTEGER,
-              max: Number.MAX_SAFE_INTEGER,
-              step: 0.1,
-            },
-          },
+          selector: inputBelowIsEntity
+            ? { entity: { domain: ["input_number", "number", "sensor"] } }
+            : {
+                number: {
+                  mode: "box",
+                  min: Number.MIN_SAFE_INTEGER,
+                  max: Number.MAX_SAFE_INTEGER,
+                  step: 0.1,
+                },
+              },
         },
         {
           name: "value_template",
@@ -146,8 +195,32 @@ export class HaNumericStateTrigger extends LitElement {
   public render() {
     const trgFor = createDurationData(this.trigger.for);
 
-    const data = { ...this.trigger, for: trgFor };
-    const schema = this._schema(this.trigger.entity_id);
+    const inputAboveIsEntity =
+      this._inputAboveIsEntity ??
+      (typeof this.trigger.above === "string" &&
+        (this.trigger.above?.startsWith("input_number.") ||
+          this.trigger.above?.startsWith("number.") ||
+          this.trigger.above?.startsWith("sensor.")));
+    const inputBelowIsEntity =
+      this._inputBelowIsEntity ??
+      (typeof this.trigger.below === "string" &&
+        (this.trigger.below?.startsWith("input_number.") ||
+          this.trigger.below?.startsWith("number.") ||
+          this.trigger.below?.startsWith("sensor.")));
+
+    const schema = this._schema(
+      this.hass.localize,
+      this.trigger.entity_id,
+      inputAboveIsEntity,
+      inputBelowIsEntity
+    );
+
+    const data = {
+      mode_above: inputAboveIsEntity ? "input" : "value",
+      mode_below: inputBelowIsEntity ? "input" : "value",
+      ...this.trigger,
+      for: trgFor,
+    };
 
     return html`
       <ha-form
@@ -164,6 +237,13 @@ export class HaNumericStateTrigger extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
+
+    this._inputAboveIsEntity = newTrigger.mode_above === "input";
+    this._inputBelowIsEntity = newTrigger.mode_below === "input";
+
+    delete newTrigger.mode_above;
+    delete newTrigger.mode_below;
+
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 

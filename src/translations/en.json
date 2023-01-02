@@ -2095,7 +2095,11 @@
                   "label": "Numeric state",
                   "above": "Above",
                   "below": "Below",
-                  "value_template": "Value template"
+                  "mode_above": "Above mode",
+                  "mode_below": "Below mode",
+                  "value_template": "Value template",
+                  "type_value": "Fixed number",
+                  "type_input": "Numeric value of another entity"
                 },
                 "sun": {
                   "label": "Sun",
@@ -2178,9 +2182,13 @@
                   "label": "Not"
                 },
                 "numeric_state": {
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_input%]",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
                   "above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::above%]",
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
+                  "mode_above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_above%]",
+                  "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]"
                 },
                 "or": {
