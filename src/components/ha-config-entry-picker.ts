@@ -59,6 +59,7 @@ class HaConfigEntryPicker extends LitElement {
     >
     <span slot="secondary">${item.localized_domain_name}</span>
     <img
+      alt=""
       slot="graphic"
       src=${brandsUrl({
         domain: item.domain,
