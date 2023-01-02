@@ -79,7 +79,7 @@ class DialogEntityAliases extends LitElement {
                     )}
                     .value=${alias}
                     ?data-last=${index === this._aliases.length - 1}
-                    @change=${this._editAlias}
+                    @input=${this._editAlias}
                     @keydown=${this._keyDownAlias}
                   ></ha-textfield>
                   <ha-icon-button
