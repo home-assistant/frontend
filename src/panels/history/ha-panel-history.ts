@@ -169,7 +169,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
-              horizontal
+              addOnTop
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
           </div>
@@ -558,15 +558,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           transform: translate(-50%, -50%);
         }
 
-        ha-entity-picker {
-          display: inline-block;
+        ha-target-picker {
           flex-grow: 1;
-          max-width: 400px;
-        }
-
-        :host([narrow]) ha-entity-picker {
-          max-width: none;
-          width: 100%;
         }
 
         .start-search {
