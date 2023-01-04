@@ -700,6 +700,11 @@ class CloudGoogleAssistant extends LitElement {
         }
         button.link {
           text-decoration: none;
+          width: 100%;
+          overflow: hidden;
+          white-space: nowrap;
+          display: block;
+          text-overflow: ellipsis;
         }
         button.link:hover,
         button.link:focus-visible {
