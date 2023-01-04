@@ -91,7 +91,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       stateObj.attributes.humidity !== null &&
       Number.isFinite(Number(stateObj.attributes.humidity))
         ? stateObj.attributes.humidity
-        : stateObj.attributes.min_humidity;
+        : null;
 
     const setHumidity = this._setHum ? this._setHum : targetHumidity;
 
@@ -101,7 +101,10 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       ? html` <round-slider disabled="true"></round-slider> `
       : html`
           <round-slider
-            class=${classMap({ "round-slider_off": stateObj.state === "off" })}
+            class=${classMap({
+              "round-slider_off":
+                stateObj.state === "off" || !stateObj.attributes.humidity,
+            })}
             .value=${targetHumidity}
             .min=${stateObj.attributes.min_humidity}
             .max=${stateObj.attributes.max_humidity}
