@@ -190,7 +190,11 @@ class CloudGoogleAssistant extends LitElement {
                         )}
                       >
                         ${aliases.length > 0
-                          ? [...aliases].sort().join(", ")
+                          ? [...aliases]
+                              .sort((a, b) =>
+                                stringCompare(a, b, this.hass.locale.language)
+                              )
+                              .join(", ")
                           : this.hass.localize(
                               "ui.panel.config.cloud.google.no_aliases"
                             )}

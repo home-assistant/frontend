@@ -820,7 +820,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                     )}
               </span>
               <span slot="secondary">
-                ${[...this.entry.aliases].sort().join(", ")}
+                ${[...this.entry.aliases]
+                  .sort((a, b) =>
+                    stringCompare(a, b, this.hass.locale.language)
+                  )
+                  .join(", ")}
               </span>
               <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
             </mwc-list-item>
