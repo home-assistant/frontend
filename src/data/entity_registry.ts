@@ -102,13 +102,22 @@ export const computeEntityRegistryName = (
   return entry.original_name ? entry.original_name : entry.entity_id;
 };
 
-export const getExtendedEntityRegistryEntry = (
+export const getExtendedEntityRegistryEntry = async (
   hass: HomeAssistant,
   entityId: string
 ): Promise<ExtEntityRegistryEntry> =>
-  hass.callWS({
+  hass.callWS<ExtEntityRegistryEntry>({
     type: "config/entity_registry/get",
     entity_id: entityId,
+  });
+
+export const getExtendedEntityRegistryEntries = (
+  hass: HomeAssistant,
+  entityIds: string[]
+): Promise<Record<string, ExtEntityRegistryEntry>> =>
+  hass.callWS({
+    type: "config/entity_registry/get_entries",
+    entity_ids: entityIds,
   });
 
 export const updateEntityRegistryEntry = (

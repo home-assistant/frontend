@@ -819,7 +819,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                       "ui.dialogs.entity_registry.editor.no_aliases"
                     )}
               </span>
-              <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+              <span slot="secondary"
+                >${[...this.entry.aliases].sort().join(", ")}</span
+              >
               <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
             </mwc-list-item>
           </mwc-list>

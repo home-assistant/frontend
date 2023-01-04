@@ -30,7 +30,7 @@ class DialogEntityAliases extends LitElement {
     this._error = undefined;
     this._aliases =
       this._params.entity.aliases?.length > 0
-        ? this._params.entity.aliases
+        ? [...this._params.entity.aliases].sort()
         : [""];
     await this.updateComplete;
   }
