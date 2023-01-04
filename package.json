@@ -59,7 +59,7 @@
     "@material/mwc-dialog": "0.25.3",
     "@material/mwc-drawer": "^0.25.3",
     "@material/mwc-fab": "0.25.3",
-    "@material/mwc-formfield": "0.25.3",
+    "@material/mwc-formfield": "0.27.0",
     "@material/mwc-icon-button": "patch:@material/mwc-icon-button@0.25.3#./.yarn/patches/@material/mwc-icon-button/remove-icon.patch",
     "@material/mwc-linear-progress": "0.25.3",
     "@material/mwc-list": "^0.25.3",
