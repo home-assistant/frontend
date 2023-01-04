@@ -333,6 +333,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   theme?: string;
+  alt_text?: string;
 }
 
 export interface PictureElementsCardConfig extends LovelaceCardConfig {

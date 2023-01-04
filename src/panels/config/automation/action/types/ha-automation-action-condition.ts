@@ -66,7 +66,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
               icon,
             ] as [string, string, string]
         )
-        .sort((a, b) => stringCompare(a[1], b[1]))
+        .sort((a, b) => stringCompare(a[1], b[1], this.hass.locale.language))
   );
 
   private _conditionChanged(ev: CustomEvent) {

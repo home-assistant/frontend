@@ -22,31 +22,6 @@
     }
   },
   "state_attributes": {
-    "climate": {
-      "fan_mode": {
-        "off": "Off",
-        "on": "On",
-        "auto": "Auto"
-      },
-      "preset_mode": {
-        "none": "None",
-        "eco": "Eco",
-        "away": "Away",
-        "boost": "Boost",
-        "comfort": "Comfort",
-        "home": "Home",
-        "sleep": "Sleep",
-        "activity": "Activity"
-      },
-      "hvac_action": {
-        "off": "Off",
-        "heating": "Heating",
-        "cooling": "Cooling",
-        "drying": "Drying",
-        "idle": "Idle",
-        "fan": "Fan"
-      }
-    },
     "humidifier": {
       "mode": {
         "normal": "Normal",
@@ -140,7 +115,6 @@
       "climate": {
         "currently": "Currently",
         "on_off": "On / off",
-        "target_temperature": "Target temperature",
         "target_temperature_entity": "{name} target temperature",
         "target_temperature_mode": "{name} target temperature {mode}",
         "current_temperature": "{name} current temperature",
@@ -148,13 +122,8 @@
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
-        "target_humidity": "Target humidity",
         "operation": "Operation",
-        "fan_mode": "Fan mode",
-        "swing_mode": "Swing mode",
-        "preset_mode": "Preset",
-        "away_mode": "Away mode",
-        "aux_heat": "Aux heat"
+        "away_mode": "Away mode"
       },
       "counter": {
         "actions": {
@@ -654,6 +623,12 @@
             "prompt": "Do you want to delete this event?",
             "recurring_prompt": "Do you want to delete only this event, or this and all future occurrences of the event?"
           },
+          "confirm_update": {
+            "update": "Update Event",
+            "update_this": "Update Only This Event",
+            "update_future": "Update All Future Events",
+            "recurring_prompt": "Do you want to update only this event, or this and all future occurrences of the event?"
+          },
           "repeat": {
             "label": "Repeat",
             "freq": {
@@ -669,6 +644,33 @@
               "monthly": "months",
               "weekly": "weeks",
               "daily": "days"
+            },
+            "monthly": {
+              "label": "Repeat Monthly"
+            },
+            "weekly": {
+              "weekday": {
+                "su": "Sun",
+                "mo": "Mon",
+                "tu": "Tue",
+                "we": "Wed",
+                "th": "Thu",
+                "fr": "Fri",
+                "sa": "Sat"
+              }
+            },
+            "end": {
+              "label": "End",
+              "never": "Never",
+              "after": "After",
+              "on": "On"
+            },
+            "end_on": {
+              "label": "End On"
+            },
+            "end_after": {
+              "label": "End After",
+              "ocurrences": "ocurrences"
             }
           },
           "rrule": {
@@ -802,6 +804,7 @@
       },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
+        "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
         "how_can_i_help": "How can I help?",
@@ -815,7 +818,8 @@
         "close": "Close"
       },
       "image_cropper": {
-        "crop": "Crop"
+        "crop": "Crop",
+        "crop_image": "Picture to crop"
       },
       "date-picker": {
         "today": "Today"
@@ -992,6 +996,20 @@
             "stream_orientation_6": "Rotate left",
             "stream_orientation_7": "Rotate right and flip",
             "stream_orientation_8": "Rotate right"
+          },
+          "aliases_section": "Aliases",
+          "no_aliases": "No configured aliases",
+          "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
+          "aliases": {
+            "heading": "{name} aliases",
+            "description": "Aliases are alternative names used in voice assistants to refer to this entity.",
+            "remove_alias": "Remove alias {number}",
+            "input_label": "Alias {number}",
+            "save": "Save",
+            "add_alias": "Add alias",
+            "no_aliases": "No aliases have been added yet",
+            "update": "Update",
+            "unknown_error": "Unknown error"
           }
         }
       },
@@ -1446,6 +1464,7 @@
           "confirm_remove_title": "Remove tag?",
           "confirm_remove": "Are you sure you want to remove tag {tag}?",
           "automation_title": "Tag {name} is scanned",
+          "qr_code_image": "QR code for tag {name}",
           "headers": {
             "icon": "Icon",
             "name": "Name",
@@ -2643,7 +2662,7 @@
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "state_reporting_error": "Unable to {enable_disable} report state.",
-              "manage_entities": "Manage Entities",
+              "manage_entities": "[%key:ui::panel::config::cloud::account::google::manage_entities%]",
               "enable": "enable",
               "disable": "disable",
               "not_configured_title": "Alexa is not activated",
@@ -2694,6 +2713,7 @@
             "follow_domain": "[%key:ui::panel::config::cloud::google::follow_domain%]",
             "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
             "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
+            "manage_aliases": "[%key:ui::panel::config::cloud::google::manage_aliases%]",
             "expose": "Expose to Alexa",
             "sync_entities": "Synchronize entities",
             "sync_entities_error": "Failed to sync entities:"
@@ -2719,6 +2739,7 @@
             "follow_domain": "Follow domain",
             "exposed": "{selected} exposed",
             "not_exposed": "{selected} not exposed",
+            "manage_aliases": "Manage aliases",
             "sync_to_google": "Synchronizing changes to Google.",
             "sync_entities": "Synchronize entities",
             "sync_entities_error": "Failed to sync entities:",
@@ -3224,11 +3245,16 @@
         },
         "mqtt": {
           "title": "MQTT",
+          "settings_title": "MQTT settings",
+          "reconfigure": "Re-configure MQTT",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
+          "payload_no_template": "Payload",
+          "allow_template": "Allow template",
           "publish": "Publish",
           "description_listen": "Listen to a topic",
+          "json_formatting": "Format JSON content",
           "listening_to": "Listening to",
           "subscribe_to": "Topic to subscribe to",
           "start_listening": "Start listening",
@@ -3808,6 +3834,7 @@
             "energy_sources_table": {
               "grid_total": "Grid total",
               "gas_total": "Gas total",
+              "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
               "energy": "Energy",
@@ -4202,6 +4229,7 @@
               "description": "The Light card allows you to change the brightness of the light."
             },
             "generic": {
+              "alt_text": "Alternative Text",
               "allow_open_top_navigation": "Allow open iframe links",
               "aspect_ratio": "Aspect Ratio",
               "attribute": "Attribute",
@@ -4606,7 +4634,8 @@
           "name": "Name",
           "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
-          "empty_state": "You have no long-lived access tokens yet."
+          "empty_state": "You have no long-lived access tokens yet.",
+          "qr_code_image": "QR code for token {name}"
         }
       },
       "shopping_list": {

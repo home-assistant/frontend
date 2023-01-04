@@ -16,7 +16,11 @@ const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (
   <span>${item.name}</span>
   <span slot="secondary">${item.slug}</span>
   ${item.icon
-    ? html`<img slot="graphic" .src="/api/hassio/addons/${item.slug}/icon" />`
+    ? html`<img
+        alt=""
+        slot="graphic"
+        .src="/api/hassio/addons/${item.slug}/icon"
+      />`
     : ""}
 </mwc-list-item>`;
 
@@ -80,7 +84,9 @@ class HaAddonPicker extends LitElement {
         const addonsInfo = await fetchHassioAddonsInfo(this.hass);
         this._addons = addonsInfo.addons
           .filter((addon) => addon.version)
-          .sort((a, b) => stringCompare(a.name, b.name));
+          .sort((a, b) =>
+            stringCompare(a.name, b.name, this.hass.locale.language)
+          );
       } else {
         showAlertDialog(this, {
           title: this.hass.localize(

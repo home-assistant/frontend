@@ -9,7 +9,6 @@ import {
   mdiFormatListChecks,
   mdiSync,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -43,20 +42,20 @@ import {
 } from "../../../../data/cloud";
 import {
   EntityRegistryEntry,
-  subscribeEntityRegistry,
+  getExtendedEntityRegistryEntry,
+  updateEntityRegistryEntry,
 } from "../../../../data/entity_registry";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { showEntityAliasesDialog } from "../../entities/entity-aliases/show-dialog-entity-aliases";
 
 const DEFAULT_CONFIG_EXPOSE = true;
-const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];
 
 @customElement("cloud-alexa")
-class CloudAlexa extends SubscribeMixin(LitElement) {
+class CloudAlexa extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property()
@@ -171,10 +170,17 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
                 secondary-line
                 @click=${this._showMoreInfo}
               >
-                ${entity.interfaces
-                  .filter((ifc) => !IGNORE_INTERFACES.includes(ifc))
-                  .map((ifc) => ifc.replace(/(Alexa.|Controller)/g, ""))
-                  .join(", ")}
+                ${entity.entity_id in this.hass.entities
+                  ? html`<button
+                      class="link"
+                      .entityId=${entity.entity_id}
+                      @click=${this._openAliasesSettings}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.cloud.alexa.manage_aliases"
+                      )}
+                    </button>`
+                  : ""}
               </state-info>
               ${!emptyFilter
                 ? html`${iconButton}`
@@ -323,23 +329,33 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
     if (changedProps.has("cloudStatus")) {
       this._entityConfigs = this.cloudStatus.prefs.alexa_entity_configs;
     }
+    if (
+      changedProps.has("hass") &&
+      changedProps.get("hass")?.entities !== this.hass.entities
+    ) {
+      const categories = {};
+
+      for (const entry of Object.values(this.hass.entities)) {
+        categories[entry.entity_id] = entry.entity_category;
+      }
+
+      this._entityCategories = categories;
+    }
   }
 
-  protected override hassSubscribe(): (
-    | UnsubscribeFunc
-    | Promise<UnsubscribeFunc>
-  )[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        const categories = {};
-
-        for (const entry of entries) {
-          categories[entry.entity_id] = entry.entity_category;
-        }
-
-        this._entityCategories = categories;
-      }),
-    ];
+  private async _openAliasesSettings(ev) {
+    ev.stopPropagation();
+    const entityId = ev.target.entityId;
+    const entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
+    if (!entry) {
+      return;
+    }
+    showEntityAliasesDialog(this, {
+      entity: entry,
+      updateEntry: async (updates) => {
+        await updateEntityRegistryEntry(this.hass, entry.entity_id, updates);
+      },
+    });
   }
 
   private async _fetchData() {
@@ -349,7 +365,8 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
       const stateB = this.hass.states[b.entity_id];
       return stringCompare(
         stateA ? computeStateName(stateA) : a.entity_id,
-        stateB ? computeStateName(stateB) : b.entity_id
+        stateB ? computeStateName(stateB) : b.entity_id,
+        this.hass.locale.language
       );
     });
     this._entities = entities;

@@ -192,13 +192,13 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
       devices.forEach((entry) => {
         entry.name = computeDeviceName(entry, this.hass);
       });
-      sortDeviceRegistryByName(devices);
+      sortDeviceRegistryByName(devices, this.hass.locale.language);
     }
     if (entities) {
       entities.forEach((entry) => {
         entry.name = computeEntityRegistryName(this.hass, entry);
       });
-      sortEntityRegistryByName(entities);
+      sortEntityRegistryByName(entities, this.hass.locale.language);
     }
 
     // Group entities by domain
@@ -258,7 +258,8 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           <div class="column">
             ${area.picture
               ? html`<div class="img-container">
-                  <img src=${area.picture} /><ha-icon-button
+                  <img alt=${area.name} src=${area.picture} />
+                  <ha-icon-button
                     .path=${mdiPencil}
                     .entry=${area}
                     @click=${this._showSettings}
@@ -507,7 +508,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         }
       });
       groupedEntities.sort((entry1, entry2) =>
-        caseInsensitiveStringCompare(entry1.name!, entry2.name!)
+        caseInsensitiveStringCompare(
+          entry1.name!,
+          entry2.name!,
+          this.hass.locale.language
+        )
       );
     }
     if (relatedEntityIds?.length) {
@@ -521,7 +526,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         }
       });
       relatedEntities.sort((entry1, entry2) =>
-        caseInsensitiveStringCompare(entry1.name!, entry2.name!)
+        caseInsensitiveStringCompare(
+          entry1.name!,
+          entry2.name!,
+          this.hass.locale.language
+        )
       );
     }
 

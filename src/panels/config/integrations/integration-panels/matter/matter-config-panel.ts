@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import {
@@ -13,6 +13,7 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-alert";
 import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { navigate } from "../../../../../common/navigate";
 
 @customElement("matter-config-panel")
 export class MatterConfigPanel extends LitElement {
@@ -21,6 +22,8 @@ export class MatterConfigPanel extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @state() private _error?: string;
+
+  private _curMatterDevices?: Set<string>;
 
   private get _canCommissionMatter() {
     return this.hass.auth.external?.config.canCommissionMatter;
@@ -68,7 +71,30 @@ export class MatterConfigPanel extends LitElement {
     `;
   }
 
+  protected override updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    if (!this._curMatterDevices || !changedProps.has("hass")) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.devices === this.hass.devices) {
+      return;
+    }
+
+    const newMatterDevices = Object.values(this.hass.devices).filter(
+      (device) =>
+        device.identifiers.find((identifier) => identifier[0] === "matter") &&
+        !this._curMatterDevices!.has(device.id)
+    );
+    if (newMatterDevices.length) {
+      navigate(`/config/devices/device/${newMatterDevices[0].id}`);
+    }
+  }
+
   private _startMobileCommissioning() {
+    this._redirectOnNewDevice();
     this.hass.auth.external!.fireMessage({
       type: "matter/commission",
     });
@@ -112,6 +138,7 @@ export class MatterConfigPanel extends LitElement {
       return;
     }
     this._error = undefined;
+    this._redirectOnNewDevice();
     try {
       await commissionMatterDevice(this.hass, code);
     } catch (err: any) {
@@ -130,6 +157,7 @@ export class MatterConfigPanel extends LitElement {
       return;
     }
     this._error = undefined;
+    this._redirectOnNewDevice();
     try {
       await acceptSharedMatterDevice(this.hass, Number(code));
     } catch (err: any) {
@@ -153,6 +181,19 @@ export class MatterConfigPanel extends LitElement {
     } catch (err: any) {
       this._error = err.message;
     }
+  }
+
+  private _redirectOnNewDevice() {
+    if (this._curMatterDevices) {
+      return;
+    }
+    this._curMatterDevices = new Set(
+      Object.values(this.hass.devices)
+        .filter((device) =>
+          device.identifiers.find((identifier) => identifier[0] === "matter")
+        )
+        .map((device) => device.id)
+    );
   }
 
   static styles = [

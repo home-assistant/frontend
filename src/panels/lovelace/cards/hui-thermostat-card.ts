@@ -24,6 +24,8 @@ import { classMap } from "lit/directives/class-map";
 import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
@@ -213,11 +215,17 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           >
             ${
               stateObj.attributes.hvac_action
-                ? this.hass!.localize(
-                    `state_attributes.climate.hvac_action.${stateObj.attributes.hvac_action}`
+                ? computeAttributeValueDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.entities,
+                    "hvac_action"
                   )
-                : this.hass!.localize(
-                    `component.climate.state._.${stateObj.state}`
+                : computeStateDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.entities
                   )
             }
             ${
@@ -225,9 +233,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
                 ? html`
                     -
-                    ${this.hass!.localize(
-                      `state_attributes.climate.preset_mode.${stateObj.attributes.preset_mode}`
-                    ) || stateObj.attributes.preset_mode}
+                    ${computeAttributeValueDisplay(
+                      this.hass.localize,
+                      stateObj,
+                      this.hass.entities,
+                      "preset_mode"
+                    )}
                   `
                 : ""
             }
