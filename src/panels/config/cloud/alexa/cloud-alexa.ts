@@ -42,8 +42,7 @@ import {
 } from "../../../../data/cloud";
 import {
   EntityRegistryEntry,
-  ExtEntityRegistryEntry,
-  getExtendedEntityRegistryEntries,
+  getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../../data/entity_registry";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
@@ -65,8 +64,6 @@ class CloudAlexa extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @state() private _entities?: AlexaEntity[];
-
-  @state() private _entries?: { [id: string]: ExtEntityRegistryEntry };
 
   @state() private _syncing = false;
 
@@ -163,8 +160,6 @@ class CloudAlexa extends LitElement {
           : mdiCloseBoxMultiple}
       ></ha-icon-button>`;
 
-      const aliases = this._entries?.[entity.entity_id]?.aliases;
-
       target.push(html`
         <ha-card outlined>
           <div class="card-content">
@@ -175,38 +170,17 @@ class CloudAlexa extends LitElement {
                 secondary-line
                 @click=${this._showMoreInfo}
               >
-                ${aliases
-                  ? html`
-                      <button
-                        class="link"
-                        .entityId=${entity.entity_id}
-                        @click=${this._openAliasesSettings}
-                        aria-label=${this.hass.localize(
-                          "ui.panel.config.cloud.alexa.manage_aliases"
-                        )}
-                      >
-                        ${aliases.length > 0
-                          ? [...aliases]
-                              .sort((a, b) =>
-                                stringCompare(a, b, this.hass.locale.language)
-                              )
-                              .join(", ")
-                          : this.hass.localize(
-                              "ui.panel.config.cloud.alexa.no_aliases"
-                            )}
-                      </button>
-                    `
-                  : html`
-                      <button
-                        class="link"
-                        .stateObj=${stateObj}
-                        @click=${this._showMoreInfoSettings}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.cloud.alexa.aliases_not_available"
-                        )}
-                      </button>
-                    `}
+                ${entity.entity_id in this.hass.entities
+                  ? html`<button
+                      class="link"
+                      .entityId=${entity.entity_id}
+                      @click=${this._openAliasesSettings}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.cloud.alexa.manage_aliases"
+                      )}
+                    </button>`
+                  : ""}
               </state-info>
               ${!emptyFilter
                 ? html`${iconButton}`
@@ -372,32 +346,20 @@ class CloudAlexa extends LitElement {
   private async _openAliasesSettings(ev) {
     ev.stopPropagation();
     const entityId = ev.target.entityId;
-    const entry = this._entries![entityId];
+    const entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
     if (!entry) {
       return;
     }
     showEntityAliasesDialog(this, {
       entity: entry,
       updateEntry: async (updates) => {
-        const { entity_entry } = await updateEntityRegistryEntry(
-          this.hass,
-          entry.entity_id,
-          updates
-        );
-        this._entries![entity_entry.entity_id] = entity_entry;
+        await updateEntityRegistryEntry(this.hass, entry.entity_id, updates);
       },
     });
   }
 
   private async _fetchData() {
     const entities = await fetchCloudAlexaEntities(this.hass);
-    this._entries = await getExtendedEntityRegistryEntries(
-      this.hass,
-      entities
-        .filter((ent) => this.hass.entities[ent.entity_id])
-        .map((e) => e.entity_id)
-    );
-
     entities.sort((a, b) => {
       const stateA = this.hass.states[a.entity_id];
       const stateB = this.hass.states[b.entity_id];
@@ -413,12 +375,6 @@ class CloudAlexa extends LitElement {
   private _showMoreInfo(ev) {
     const entityId = ev.currentTarget.stateObj.entity_id;
     fireEvent(this, "hass-more-info", { entityId });
-  }
-
-  private _showMoreInfoSettings(ev) {
-    ev.stopPropagation();
-    const entityId = ev.currentTarget.stateObj.entity_id;
-    fireEvent(this, "hass-more-info", { entityId, tab: "settings" });
   }
 
   private _configIsDomainExposed(
@@ -632,18 +588,6 @@ class CloudAlexa extends LitElement {
           ha-card {
             max-width: 100%;
           }
-        }
-        button.link {
-          text-decoration: none;
-          width: 100%;
-          overflow: hidden;
-          white-space: nowrap;
-          display: block;
-          text-overflow: ellipsis;
-        }
-        button.link:hover,
-        button.link:focus-visible {
-          text-decoration: underline;
         }
       `,
     ];

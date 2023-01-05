@@ -2714,9 +2714,6 @@
             "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
             "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
             "manage_aliases": "[%key:ui::panel::config::cloud::google::manage_aliases%]",
-            "no_aliases": "[%key:ui::panel::config::cloud::google::no_aliases%]",
-            "aliases_not_available": "[%key:ui::panel::config::cloud::google::aliases_not_available%]",
-            "aliases_not_available_more_info": "[%key:ui::panel::config::cloud::google::aliases_not_available_more_info%]",
             "expose": "Expose to Alexa",
             "sync_entities": "Synchronize entities",
             "sync_entities_error": "Failed to sync entities:"
