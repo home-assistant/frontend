@@ -181,14 +181,7 @@ class CloudGoogleAssistant extends LitElement {
               >
                 ${aliases
                   ? html`
-                      <button
-                        class="link"
-                        .entityId=${entity.entity_id}
-                        @click=${this._openAliasesSettings}
-                        aria-label=${this.hass.localize(
-                          "ui.panel.config.cloud.google.manage_aliases"
-                        )}
-                      >
+                      <span>
                         ${aliases.length > 0
                           ? [...aliases]
                               .sort((a, b) =>
@@ -198,16 +191,32 @@ class CloudGoogleAssistant extends LitElement {
                           : this.hass.localize(
                               "ui.panel.config.cloud.google.no_aliases"
                             )}
+                      </span>
+                      <br />
+                      <button
+                        class="link"
+                        .entityId=${entity.entity_id}
+                        @click=${this._openAliasesSettings}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.google.manage_aliases"
+                        )}
                       </button>
                     `
                   : html`
+                      <span>
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.google.aliases_not_available"
+                        )}
+                      </span>
+                      <br />
                       <button
                         class="link"
                         .stateObj=${stateObj}
                         @click=${this._showMoreInfoSettings}
                       >
                         ${this.hass.localize(
-                          "ui.panel.config.cloud.google.aliases_not_available"
+                          "ui.panel.config.cloud.google.aliases_not_available_more_info"
                         )}
                       </button>
                     `}
@@ -701,18 +710,6 @@ class CloudGoogleAssistant extends LitElement {
           ha-card {
             max-width: 100%;
           }
-        }
-        button.link {
-          text-decoration: none;
-          width: 100%;
-          overflow: hidden;
-          white-space: nowrap;
-          display: block;
-          text-overflow: ellipsis;
-        }
-        button.link:hover,
-        button.link:focus-visible {
-          text-decoration: underline;
         }
       `,
     ];
