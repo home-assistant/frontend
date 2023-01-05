@@ -2962,17 +2962,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdi/js@npm:7.0.96":
-  version: 7.0.96
-  resolution: "@mdi/js@npm:7.0.96"
-  checksum: 4bcc4542a2d8ba9e706a754333e90ce2677616709d3776016b83be59c7219e7514308dbca6e62c7dd38436b3c5d251b8769679c90e354f971b090fa2ebcbc4fe
+"@mdi/js@npm:7.1.96":
+  version: 7.1.96
+  resolution: "@mdi/js@npm:7.1.96"
+  checksum: cd3102a0120c06b4af7a153e30ee964807746ce55f84a35479d382841d0ab1a10f986059e0c6af0c240444393679b7330d306d0688e1193a23fc03bb8cee0b82
   languageName: node
   linkType: hard
 
-"@mdi/svg@npm:7.0.96":
-  version: 7.0.96
-  resolution: "@mdi/svg@npm:7.0.96"
-  checksum: 434994401283e4f790dd9d7061d5781fc8eec24f85b7be33d07a32a9fecb9a268437b35fa3c30ee4fe433d49f7f69674571494510aaa9efade05fb4e8e71755f
+"@mdi/svg@npm:7.1.96":
+  version: 7.1.96
+  resolution: "@mdi/svg@npm:7.1.96"
+  checksum: afbb0947cbf342ffb08d9b0069095db5e4d9a5dab741457eac2a0a8433217834bb96589be26b8abbf4ac315473870e07a14b0b759b5148efeedad193067ab67c
   languageName: node
   linkType: hard
 
@@ -9270,8 +9270,8 @@ fsevents@^1.2.7:
     "@material/mwc-textfield": 0.25.3
     "@material/mwc-top-app-bar-fixed": ^0.25.3
     "@material/top-app-bar": 14.0.0-canary.261f2db59.0
-    "@mdi/js": 7.0.96
-    "@mdi/svg": 7.0.96
+    "@mdi/js": 7.1.96
+    "@mdi/svg": 7.1.96
     "@octokit/auth-oauth-device": ^4.0.2
     "@octokit/rest": ^19.0.4
     "@open-wc/dev-server-hmr": ^0.0.2
