@@ -199,7 +199,11 @@ class CloudGoogleAssistant extends LitElement {
                         @click=${this._openAliasesSettings}
                       >
                         ${this.hass.localize(
-                          "ui.panel.config.cloud.google.manage_aliases"
+                          `ui.panel.config.cloud.google.${
+                            aliases.length > 0
+                              ? "manage_aliases"
+                              : "add_aliases"
+                          }`
                         )}
                       </button>
                     `
@@ -216,7 +220,7 @@ class CloudGoogleAssistant extends LitElement {
                         @click=${this._showMoreInfoSettings}
                       >
                         ${this.hass.localize(
-                          "ui.panel.config.cloud.google.aliases_not_available_more_info"
+                          "ui.panel.config.cloud.google.aliases_not_available_learn_more"
                         )}
                       </button>
                     `}
