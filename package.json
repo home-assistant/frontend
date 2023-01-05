@@ -71,8 +71,8 @@
     "@material/mwc-textfield": "^0.27.0",
     "@material/mwc-top-app-bar-fixed": "^0.27.0",
     "@material/top-app-bar": "^14.0.0",
-    "@mdi/js": "7.0.96",
-    "@mdi/svg": "7.0.96",
+    "@mdi/js": "7.1.96",
+    "@mdi/svg": "7.1.96",
     "@polymer/app-layout": "^3.1.0",
     "@polymer/iron-flex-layout": "^3.0.1",
     "@polymer/iron-icon": "^3.0.1",
@@ -137,12 +137,12 @@
     "vue": "^2.6.12",
     "vue2-daterange-picker": "^0.5.1",
     "weekstart": "^1.1.0",
-    "workbox-cacheable-response": "^6.4.2",
-    "workbox-core": "^6.4.2",
-    "workbox-expiration": "^6.4.2",
-    "workbox-precaching": "^6.4.2",
-    "workbox-routing": "^6.4.2",
-    "workbox-strategies": "^6.4.2",
+    "workbox-cacheable-response": "^6.5.4",
+    "workbox-core": "^6.5.4",
+    "workbox-expiration": "^6.5.4",
+    "workbox-precaching": "^6.5.4",
+    "workbox-routing": "^6.5.4",
+    "workbox-strategies": "^6.5.4",
     "xss": "^1.0.9"
   },
   "devDependencies": {
@@ -241,7 +241,7 @@
     "webpack-dev-server": "^4.3.0",
     "webpack-manifest-plugin": "^4.0.2",
     "webpackbar": "^5.0.0-3",
-    "workbox-build": "^6.4.2"
+    "workbox-build": "^6.5.4"
   },
   "_comment": "Polymer 3.2 contained a bug, fixed in https://github.com/Polymer/polymer/pull/5569, add as patch",
   "resolutions": {
