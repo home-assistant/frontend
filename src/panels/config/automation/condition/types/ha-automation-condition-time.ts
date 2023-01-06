@@ -152,7 +152,9 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     delete newValue.mode_before;
 
     Object.keys(newValue).forEach((key) =>
-      newValue[key] === undefined || newValue[key] === "" || (isArray(newValue[key]) && newValue[key].length === 0)
+      newValue[key] === undefined ||
+      newValue[key] === "" ||
+      (Array.isArray(newValue[key]) && newValue[key].length === 0)
         ? delete newValue[key]
         : {}
     );
