@@ -26,6 +26,7 @@ const STATIC_ACTIVE_COLORED_DOMAIN = new Set([
   "remote",
   "script",
   "siren",
+  "schedule",
   "switch",
   "timer",
   "vacuum",

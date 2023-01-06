@@ -185,6 +185,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-update-color: var(--rgb-green-color);
       --rgb-state-update-installing-color: var(--rgb-orange-color);
       --rgb-state-vacuum-color: var(--rgb-teal-color);
+      --rgb-state-schedule-color: var(--rgb-amber-color);
 
       /* input components */
       --input-idle-line-color: rgba(0, 0, 0, 0.42);
