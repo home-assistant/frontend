@@ -126,6 +126,24 @@ const OVERRIDE_WEATHER_UNITS = {
   wind_speed: ["ft/s", "km/h", "kn", "m/s", "mph"],
 };
 
+const CONVERTIBLE_UNITS_SENSOR_DEVICE_CLASS = new Set([
+  "current",
+  "data_rate",
+  "data_size",
+  "distance",
+  "gas",
+  "precipitation",
+  "precipitation_intensity",
+  "pressure",
+  "speed",
+  "temperature",
+  "voltage",
+  "volume",
+  "water",
+  "weight",
+  "wind_speed",
+]);
+
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
 @customElement("entity-registry-settings")
@@ -172,7 +190,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _cameraPrefs?: CameraPreferences;
 
-  @state() private _sensorDeviceClassUnits?: string[];
+  @state() private _sensorDeviceClassConvertibleUnits?: string[];
 
   private _origEntityId!: string;
 
@@ -281,12 +299,18 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     if (changedProps.has("_deviceClass")) {
       const domain = computeDomain(this.entry.entity_id);
 
-      if (domain === "sensor" && this._deviceClass) {
+      if (
+        domain === "sensor" &&
+        this._deviceClass &&
+        CONVERTIBLE_UNITS_SENSOR_DEVICE_CLASS.has(this._deviceClass)
+      ) {
         const { units } = await getSensorDeviceClassUnits(
           this.hass,
           this._deviceClass
         );
-        this._sensorDeviceClassUnits = units;
+        this._sensorDeviceClassConvertibleUnits = units;
+      } else {
+        this._sensorDeviceClassConvertibleUnits = [];
       }
     }
   }
@@ -435,10 +459,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ${domain === "sensor" &&
         this._deviceClass &&
         stateObj?.attributes.unit_of_measurement &&
-        this._sensorDeviceClassUnits?.includes(
+        this._sensorDeviceClassConvertibleUnits?.includes(
           stateObj?.attributes.unit_of_measurement
-        ) &&
-        this._sensorDeviceClassUnits.length > 1
+        )
           ? html`
               <ha-select
                 .label=${this.hass.localize(
@@ -450,7 +473,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._unitChanged}
                 @closed=${stopPropagation}
               >
-                ${this._sensorDeviceClassUnits.map(
+                ${this._sensorDeviceClassConvertibleUnits.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
