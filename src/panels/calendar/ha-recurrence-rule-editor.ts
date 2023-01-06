@@ -381,6 +381,7 @@ export class RecurrenceRuleEditor extends LitElement {
     } else {
       this._weekday.delete(value);
     }
+    this.requestUpdate("_weekday");
   }
 
   private _onEndSelected(e: CustomEvent<SelectedDetail<number>>) {
