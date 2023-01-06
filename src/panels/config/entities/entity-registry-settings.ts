@@ -67,6 +67,7 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
+import { getSensorDeviceClassUnits } from "../../../data/sensor";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -115,58 +116,6 @@ const OVERRIDE_DEVICE_CLASSES = {
 
 const OVERRIDE_NUMBER_UNITS = {
   temperature: ["°C", "°F", "K"],
-};
-
-const OVERRIDE_SENSOR_UNITS = {
-  current: ["A", "mA"],
-  data_rate: [
-    "bit/s",
-    "kbit/s",
-    "Mbit/s",
-    "Gbit/s",
-    "B/s",
-    "kB/s",
-    "MB/s",
-    "GB/s",
-    "KiB/s",
-    "MiB/s",
-    "GiB/s",
-  ],
-  data_size: [
-    "bit",
-    "kbit",
-    "Mbit",
-    "Gbit",
-    "B",
-    "kB",
-    "MB",
-    "GB",
-    "TB",
-    "PB",
-    "EB",
-    "ZB",
-    "YB",
-    "KiB",
-    "MiB",
-    "GiB",
-    "TiB",
-    "PiB",
-    "EiB",
-    "ZiB",
-    "YiB",
-  ],
-  distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
-  gas: ["CCF", "ft³", "m³"],
-  precipitation: ["cm", "in", "mm"],
-  precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
-  pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
-  speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mm/h", "mph"],
-  temperature: ["°C", "°F", "K"],
-  voltage: ["V", "mV"],
-  volume: ["CCF", "fl. oz.", "ft³", "gal", "L", "mL", "m³"],
-  water: ["CCF", "ft³", "gal", "L", "m³"],
-  weight: ["g", "kg", "lb", "mg", "oz", "st", "µg"],
-  wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
 };
 
 const OVERRIDE_WEATHER_UNITS = {
@@ -222,6 +171,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _submitting?: boolean;
 
   @state() private _cameraPrefs?: CameraPreferences;
+
+  @state() private _sensorDeviceClassUnits?: string[];
 
   private _origEntityId!: string;
 
@@ -322,6 +273,20 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         this._deviceClassOptions[0] = deviceClass;
       } else {
         this._deviceClassOptions[1].push(...deviceClass);
+      }
+    }
+  }
+
+  protected async updated(changedProps: PropertyValues): Promise<void> {
+    if (changedProps.has("_deviceClass")) {
+      const domain = computeDomain(this.entry.entity_id);
+
+      if (domain === "sensor" && this._deviceClass) {
+        const { units } = await getSensorDeviceClassUnits(
+          this.hass,
+          this._deviceClass
+        );
+        this._sensorDeviceClassUnits = units;
       }
     }
   }
@@ -470,9 +435,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ${domain === "sensor" &&
         this._deviceClass &&
         stateObj?.attributes.unit_of_measurement &&
-        OVERRIDE_SENSOR_UNITS[this._deviceClass]?.includes(
+        this._sensorDeviceClassUnits?.includes(
           stateObj?.attributes.unit_of_measurement
-        )
+        ) &&
+        this._sensorDeviceClassUnits.length > 1
           ? html`
               <ha-select
                 .label=${this.hass.localize(
@@ -484,7 +450,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._unitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_SENSOR_UNITS[this._deviceClass].map(
+                ${this._sensorDeviceClassUnits.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
