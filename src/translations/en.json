@@ -1033,7 +1033,7 @@
           "mode": "Display mode",
           "text": "Text",
           "password": "Password",
-          "pattern": "Regex pattern",
+          "pattern_label": "Regex pattern",
           "pattern_helper": "Used for client-side validation"
         },
         "input_number": {
