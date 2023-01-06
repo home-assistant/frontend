@@ -7,6 +7,7 @@ import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-radio";
@@ -285,7 +286,11 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
                     "ui.dialogs.entity_registry.editor.no_aliases"
                   )}
             </span>
-            <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+            <span slot="secondary">
+              ${[...this.entry.aliases]
+                .sort((a, b) => stringCompare(a, b, this.hass.locale.language))
+                .join(", ")}
+            </span>
             <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
           </mwc-list-item>
         </mwc-list>
