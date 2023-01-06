@@ -1,5 +1,5 @@
 import { DEFAULT_SCHEMA, dump, load, Schema } from "js-yaml";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
@@ -52,6 +52,13 @@ export class HaYamlEditor extends LitElement {
 
   protected firstUpdated(): void {
     if (this.defaultValue) {
+      this.setValue(this.defaultValue);
+    }
+  }
+
+  protected update(changedProps: PropertyValues) {
+    super.update(changedProps);
+    if (changedProps.has("defaultValue") && this.defaultValue !== this.value) {
       this.setValue(this.defaultValue);
     }
   }
