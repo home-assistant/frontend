@@ -58,7 +58,10 @@ export class HaYamlEditor extends LitElement {
 
   protected update(changedProps: PropertyValues) {
     super.update(changedProps);
-    if (changedProps.has("defaultValue") && this.defaultValue !== this.value) {
+    if (
+      changedProps.has("defaultValue") &&
+      JSON.stringify(this.defaultValue) !== JSON.stringify(this.value)
+    ) {
       this.setValue(this.defaultValue);
     }
   }
