@@ -40,7 +40,8 @@ import {
 } from "../../../../data/cloud";
 import {
   EntityRegistryEntry,
-  getExtendedEntityRegistryEntry,
+  ExtEntityRegistryEntry,
+  getExtendedEntityRegistryEntries,
   updateEntityRegistryEntry,
 } from "../../../../data/entity_registry";
 import {
@@ -67,6 +68,8 @@ class CloudGoogleAssistant extends LitElement {
   @property() public narrow!: boolean;
 
   @state() private _entities?: GoogleEntity[];
+
+  @state() private _entries?: { [id: string]: ExtEntityRegistryEntry };
 
   @state() private _syncing = false;
 
@@ -164,6 +167,8 @@ class CloudGoogleAssistant extends LitElement {
           : mdiCloseBoxMultiple}
       ></ha-icon-button>`;
 
+      const aliases = this._entries?.[entity.entity_id]?.aliases;
+
       target.push(html`
         <ha-card outlined>
           <div class="card-content">
@@ -174,17 +179,51 @@ class CloudGoogleAssistant extends LitElement {
                 secondary-line
                 @click=${this._showMoreInfo}
               >
-                ${entity.entity_id in this.hass.entities
-                  ? html`<button
-                      class="link"
-                      .entityId=${entity.entity_id}
-                      @click=${this._openAliasesSettings}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.cloud.google.manage_aliases"
-                      )}
-                    </button>`
-                  : ""}
+                ${aliases
+                  ? html`
+                      <span>
+                        ${aliases.length > 0
+                          ? [...aliases]
+                              .sort((a, b) =>
+                                stringCompare(a, b, this.hass.locale.language)
+                              )
+                              .join(", ")
+                          : this.hass.localize(
+                              "ui.panel.config.cloud.google.no_aliases"
+                            )}
+                      </span>
+                      <br />
+                      <button
+                        class="link"
+                        .entityId=${entity.entity_id}
+                        @click=${this._openAliasesSettings}
+                      >
+                        ${this.hass.localize(
+                          `ui.panel.config.cloud.google.${
+                            aliases.length > 0
+                              ? "manage_aliases"
+                              : "add_aliases"
+                          }`
+                        )}
+                      </button>
+                    `
+                  : html`
+                      <span>
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.google.aliases_not_available"
+                        )}
+                      </span>
+                      <br />
+                      <button
+                        class="link"
+                        .stateObj=${stateObj}
+                        @click=${this._showMoreInfoSettings}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.google.aliases_not_available_learn_more"
+                        )}
+                      </button>
+                    `}
               </state-info>
               ${!emptyFilter
                 ? html`${iconButton}`
@@ -379,14 +418,19 @@ class CloudGoogleAssistant extends LitElement {
   private async _openAliasesSettings(ev) {
     ev.stopPropagation();
     const entityId = ev.target.entityId;
-    const entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
+    const entry = this._entries![entityId];
     if (!entry) {
       return;
     }
     showEntityAliasesDialog(this, {
       entity: entry,
       updateEntry: async (updates) => {
-        await updateEntityRegistryEntry(this.hass, entry.entity_id, updates);
+        const { entity_entry } = await updateEntityRegistryEntry(
+          this.hass,
+          entry.entity_id,
+          updates
+        );
+        this._entries![entity_entry.entity_id] = entity_entry;
       },
     });
   }
@@ -415,6 +459,13 @@ class CloudGoogleAssistant extends LitElement {
 
   private async _fetchData() {
     const entities = await fetchCloudGoogleEntities(this.hass);
+    this._entries = await getExtendedEntityRegistryEntries(
+      this.hass,
+      entities
+        .filter((ent) => this.hass.entities[ent.entity_id])
+        .map((e) => e.entity_id)
+    );
+
     entities.sort((a, b) => {
       const stateA = this.hass.states[a.entity_id];
       const stateB = this.hass.states[b.entity_id];
@@ -429,7 +480,14 @@ class CloudGoogleAssistant extends LitElement {
 
   private _showMoreInfo(ev) {
     const entityId = ev.currentTarget.stateObj.entity_id;
-    fireEvent(this, "hass-more-info", { entityId });
+    const moreInfoTab = ev.currentTarget.moreInfoTab;
+    fireEvent(this, "hass-more-info", { entityId, tab: moreInfoTab });
+  }
+
+  private _showMoreInfoSettings(ev) {
+    ev.stopPropagation();
+    const entityId = ev.currentTarget.stateObj.entity_id;
+    fireEvent(this, "hass-more-info", { entityId, tab: "settings" });
   }
 
   private async _exposeChanged(ev: CustomEvent<ActionDetail>) {
