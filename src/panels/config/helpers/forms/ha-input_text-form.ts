@@ -147,6 +147,9 @@ class HaInputTextForm extends LitElement {
                 .label=${this.hass!.localize(
                   "ui.dialogs.helper_settings.input_text.pattern"
                 )}
+                .helper=${this.hass!.localize(
+                  "ui.dialogs.helper_settings.input_text.pattern_helper"
+                )}
               ></ha-textfield>
             `
           : ""}
