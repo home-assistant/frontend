@@ -151,17 +151,8 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     delete newValue.mode_after;
     delete newValue.mode_before;
 
-    if (
-      Array.isArray(this.condition.weekday) &&
-      this.condition.weekday.length &&
-      Array.isArray(newValue.weekday) &&
-      !newValue.weekday.length
-    ) {
-      delete newValue.weekday;
-    }
-
     Object.keys(newValue).forEach((key) =>
-      newValue[key] === undefined || newValue[key] === ""
+      newValue[key] === undefined || newValue[key] === "" || (isArray(newValue[key]) && newValue[key].length === 0)
         ? delete newValue[key]
         : {}
     );
