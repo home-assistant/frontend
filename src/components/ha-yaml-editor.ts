@@ -35,6 +35,8 @@ export class HaYamlEditor extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ type: Boolean }) public reloadDefault = false;
+
   @state() private _yaml = "";
 
   public setValue(value): void {
@@ -59,8 +61,8 @@ export class HaYamlEditor extends LitElement {
   protected update(changedProps: PropertyValues) {
     super.update(changedProps);
     if (
-      changedProps.has("defaultValue") &&
-      JSON.stringify(this.defaultValue) !== JSON.stringify(this.value)
+      this.reloadDefault &&
+      (changedProps.has("defaultValue") || changedProps.has("reloadDefault"))
     ) {
       this.setValue(this.defaultValue);
     }

@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
@@ -21,6 +21,8 @@ export class HaObjectSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  private valueChangedFromChild = false;
+
   protected render() {
     return html`<ha-yaml-editor
         .hass=${this.hass}
@@ -29,6 +31,7 @@ export class HaObjectSelector extends LitElement {
         .required=${this.required}
         .placeholder=${this.placeholder}
         .defaultValue=${this.value}
+        .reloadDefault=${!this.valueChangedFromChild}
         @value-changed=${this._handleChange}
       ></ha-yaml-editor>
       ${this.helper
@@ -36,7 +39,13 @@ export class HaObjectSelector extends LitElement {
         : ""} `;
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    this.valueChangedFromChild = false;
+  }
+
   private _handleChange(ev) {
+    this.valueChangedFromChild = true;
     const value = ev.target.value;
     if (!ev.target.isValid) {
       return;
