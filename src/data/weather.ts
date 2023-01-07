@@ -571,7 +571,11 @@ export const Forecast_type = (
   ) {
     return forecast_twice_daily;
   }
-  if (forecast_type === undefined && forecast?.length && forecast?.length > 2) {
+  if (
+    (forecast_type === "legacy" || forecast_type === undefined) &&
+    forecast?.length &&
+    forecast?.length > 2
+  ) {
     return forecast;
   }
 

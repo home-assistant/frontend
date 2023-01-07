@@ -4947,6 +4947,7 @@
               "show_only_current": "Show only current Weather",
               "show_only_forecast": "Show only Forecast",
               "forecast_type": "Select forecast type",
+              "no_type": "No type",
               "daily": "Daily",
               "hourly": "Hourly",
               "twice_daily": "Twice daily"
