@@ -197,6 +197,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       dayNight = dayDiff > DAY_IN_MILLISECONDS;
     }
 
+    const twice_daily =
+      this._config?.forecast_type === "twice_daily" ? true : undefined;
+    if (twice_daily) {
+      dayNight = true;
+    }
+
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
     const name = this._config.name ?? computeStateName(stateObj);
 
@@ -315,7 +321,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                     { weekday: "short" }
                                   )}
                                   <div class="daynight">
-                                    ${item.daytime === undefined || item.daytime
+                                    ${item.is_daytime === undefined ||
+                                    item.is_daytime
                                       ? this.hass!.localize(
                                           "ui.card.weather.day"
                                         )
@@ -347,7 +354,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                     item.condition!,
                                     this,
                                     !(
-                                      item.daytime || item.daytime === undefined
+                                      item.is_daytime ||
+                                      item.is_daytime === undefined
                                     )
                                   )}
                                 </div>

@@ -36,7 +36,7 @@ interface ForecastAttribute {
   precipitation_probability?: number;
   humidity?: number;
   condition?: string;
-  daytime?: boolean;
+  is_daytime?: boolean;
   pressure?: number;
   wind_speed?: string;
 }
