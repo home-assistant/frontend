@@ -71,6 +71,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   private _footerElement?: LovelaceHeaderFooter;
 
+  private _requestUpdateInterval?: NodeJS.Timeout;
+
   set hass(hass: HomeAssistant) {
     this._hass = hass;
     this.shadowRoot
@@ -182,6 +184,26 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         (!oldConfig || oldConfig.theme !== this._config.theme))
     ) {
       applyThemesOnElement(this, this._hass.themes, this._config.theme);
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    if (this._enableSorting ?? false) {
+      this._requestUpdateInterval = setInterval(
+        () => this.requestUpdate(),
+        1000
+      );
+    }
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this._requestUpdateInterval !== undefined) {
+      clearInterval(this._requestUpdateInterval!);
+      this._requestUpdateInterval = undefined;
     }
   }
 
