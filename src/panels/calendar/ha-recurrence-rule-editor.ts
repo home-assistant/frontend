@@ -97,15 +97,16 @@ export class RecurrenceRuleEditor extends LitElement {
     }
 
     if (
-      changedProps.has("timezone") ||
-      changedProps.has("_freq") ||
-      changedProps.has("_interval") ||
-      changedProps.has("_weekday") ||
-      changedProps.has("_monthlyRepeatWeekday") ||
-      changedProps.has("_monthday") ||
-      changedProps.has("_end") ||
-      changedProps.has("_count") ||
-      changedProps.has("_until")
+      !changedProps.has("value") &&
+      (changedProps.has("timezone") ||
+        changedProps.has("_freq") ||
+        changedProps.has("_interval") ||
+        changedProps.has("_weekday") ||
+        changedProps.has("_monthlyRepeatWeekday") ||
+        changedProps.has("_monthday") ||
+        changedProps.has("_end") ||
+        changedProps.has("_count") ||
+        changedProps.has("_until"))
     ) {
       this._updateRule();
       return;
