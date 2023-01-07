@@ -1,4 +1,5 @@
 import type { SelectedDetail } from "@material/mwc-list";
+import { formatInTimeZone } from "date-fns-tz";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -413,7 +414,20 @@ export class RecurrenceRuleEditor extends LitElement {
 
   private _onUntilChange(e: CustomEvent) {
     e.stopPropagation();
-    this._until = new Date(e.detail.value);
+    if (this.allDay) {
+      // Note there is additional code below to strip the time off once converted to rrule
+      this._until = new Date(e.detail.value);
+      return;
+    }
+    // The UNTIL value should be inclusive of the last event instance on the end date
+    const timeZone =
+      Intl.DateTimeFormat().resolvedOptions().timeZone ||
+      this.hass.config.time_zone;
+    this._until = new Date(
+      formatInTimeZone(e.detail.value, timeZone, "yyyy-MM-dd") +
+        "T" +
+        formatInTimeZone(this.dtstart, timeZone, "HH:mm:ss")
+    );
   }
 
   // Reset the weekday selected when there is only a single value
