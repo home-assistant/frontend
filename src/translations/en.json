@@ -4945,7 +4945,11 @@
               "weather_to_show": "Weather to Show",
               "show_both": "Show current Weather and Forecast",
               "show_only_current": "Show only current Weather",
-              "show_only_forecast": "Show only Forecast"
+              "show_only_forecast": "Show only Forecast",
+              "forecast_type": "Select forecast type",
+              "daily": "Daily",
+              "hourly": "Hourly",
+              "twice_daily": "Twice daily"
             }
           },
           "view": {

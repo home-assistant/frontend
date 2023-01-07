@@ -45,6 +45,10 @@ interface WeatherEntityAttributes extends HassEntityAttributeBase {
   attribution?: string;
   humidity?: number;
   forecast?: ForecastAttribute[];
+  forecast_daily?: ForecastAttribute[];
+  forecast_hourly?: ForecastAttribute[];
+  forecast_twice_daily?: ForecastAttribute[];
+  is_daytime?: boolean;
   pressure?: number;
   temperature?: number;
   visibility?: number;
@@ -538,3 +542,38 @@ export const getWeatherConvertibleUnits = (
   hass.callWS({
     type: "weather/convertible_units",
   });
+
+export const Forecast_type = (
+  forecast?: ForecastAttribute[],
+  forecast_daily?: ForecastAttribute[],
+  forecast_hourly?: ForecastAttribute[],
+  forecast_twice_daily?: ForecastAttribute[],
+  forecast_type?: string
+): ForecastAttribute[] | undefined => {
+  if (
+    forecast_type === "daily" &&
+    forecast_daily?.length &&
+    forecast_daily?.length > 2
+  ) {
+    return forecast_daily;
+  }
+  if (
+    forecast_type === "hourly" &&
+    forecast_hourly?.length &&
+    forecast_hourly?.length > 2
+  ) {
+    return forecast_hourly;
+  }
+  if (
+    forecast_type === "twice_daily" &&
+    forecast_twice_daily?.length &&
+    forecast_twice_daily?.length > 2
+  ) {
+    return forecast_twice_daily;
+  }
+  if (forecast_type === undefined && forecast?.length && forecast?.length > 2) {
+    return forecast;
+  }
+
+  return undefined;
+};

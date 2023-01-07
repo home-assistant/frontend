@@ -20,6 +20,7 @@ import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import {
+  Forecast_type,
   getSecondaryWeatherAttribute,
   getWeatherStateIcon,
   getWeatherUnit,
@@ -172,10 +173,16 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const forecast_type = Forecast_type(
+      stateObj.attributes.forecast,
+      stateObj.attributes.forecast_daily,
+      stateObj.attributes.forecast_hourly,
+      stateObj.attributes.forecast_twice_daily,
+      this._config?.forecast_type
+    );
     const forecast =
-      this._config?.show_forecast !== false &&
-      stateObj.attributes.forecast?.length
-        ? stateObj.attributes.forecast.slice(0, this._veryVeryNarrow ? 3 : 5)
+      this._config?.show_forecast !== false && forecast_type?.length
+        ? forecast_type.slice(0, this._veryVeryNarrow ? 3 : 5)
         : undefined;
     const weather = !forecast || this._config?.show_current !== false;
 

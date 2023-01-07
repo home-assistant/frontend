@@ -86,6 +86,33 @@ export class HuiWeatherForecastCardEditor
             { name: "theme", selector: { theme: {} } },
           ],
         },
+        {
+          name: "forecast_type",
+          selector: {
+            select: {
+              options: [
+                {
+                  value: "daily",
+                  label: localize(
+                    "ui.panel.lovelace.editor.card.weather-forecast.daily"
+                  ),
+                },
+                {
+                  value: "hourly",
+                  label: localize(
+                    "ui.panel.lovelace.editor.card.weather-forecast.hourly"
+                  ),
+                },
+                {
+                  value: "twice_daily",
+                  label: localize(
+                    "ui.panel.lovelace.editor.card.weather-forecast.twice_daily"
+                  ),
+                },
+              ],
+            },
+          },
+        },
         ...(hasForecast
           ? ([
               {
@@ -184,6 +211,10 @@ export class HuiWeatherForecastCardEditor
         )} (${this.hass!.localize(
           "ui.panel.lovelace.editor.card.config.optional"
         )})`;
+      case "forecast_type":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.weather-forecast.forecast_type"
+        );
       case "forecast":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.weather-forecast.weather_to_show"
