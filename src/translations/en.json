@@ -4055,6 +4055,10 @@
               "none": "No Action"
             }
           },
+          "sort-config-editor": {
+            "title": "Sort configurations",
+            "new_config": "New configuration"
+          },
           "sort-config-picker": {
             "title": "Sort type",
             "reverse": "Reverse sort order",

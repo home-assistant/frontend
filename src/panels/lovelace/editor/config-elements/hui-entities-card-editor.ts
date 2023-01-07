@@ -367,16 +367,16 @@ export class HuiEntitiesCardEditor
           .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
-            .checked=${this._config!.enable_sorting !== false}
+            .checked=${this._config!.enable_sorting ?? false}
             .configValue=${"enable_sorting"}
             @change=${this._valueChanged}
           ></ha-switch>
         </ha-formfield>
-        ${this._config!.enable_sorting
+        ${this._config!.enable_sorting ?? false
           ? html`
               <hui-sort-config-editor
                 .hass=${this.hass}
-                .config=${this._config!.sort_configs}
+                .config=${this._config!.sort_configs ?? []}
                 @value-changed=${this._sortConfigChanged}
               ></hui-sort-config-editor>
             `
@@ -414,7 +414,9 @@ export class HuiEntitiesCardEditor
 
     this._config = { ...this._config!, sort_configs: ev.detail.value };
 
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "config-changed", {
+      config: this._config,
+    });
   }
 
   private _valueChanged(ev: CustomEvent): void {

@@ -161,9 +161,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     } else {
       this._footerElement = undefined;
     }
-    this._enableSorting =
-      config.enable_sorting === undefined ? false : config.enable_sorting;
-    this._sortConfigs = config.sort_configs;
+    this._enableSorting = config.enable_sorting ?? false;
+    this._sortConfigs = config.sort_configs ?? [];
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -254,10 +253,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
                 const stateB = entityB?.state;
 
-                if (stateA === stateB) {
-                  return doNotSort;
-                }
-
                 for (const sortConf of this._sortConfigs!) {
                   const reverseSortOrder = sortConf.reverse ? 1 : -1;
                   const aBeforeB = -1 * reverseSortOrder;
@@ -300,8 +295,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                       }
 
                       return (
-                        new Date(entityA.last_changed).getTime() -
-                        new Date(entityB.last_changed).getTime()
+                        (new Date(entityA.last_changed).getTime() -
+                          new Date(entityB.last_changed).getTime()) *
+                        reverseSortOrder
                       );
                     }
                     case "last_updated": {
@@ -318,8 +314,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                       }
 
                       return (
-                        new Date(entityA.last_updated).getTime() -
-                        new Date(entityB.last_updated).getTime()
+                        (new Date(entityA.last_updated).getTime() -
+                          new Date(entityB.last_updated).getTime()) *
+                        reverseSortOrder
                       );
                     }
                     case "last_triggered": {
@@ -336,8 +333,13 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                       }
 
                       return (
-                        new Date(entityA.attributes?.last_triggered).getTime() -
-                        new Date(entityB.attributes?.last_triggered).getTime()
+                        (new Date(
+                          entityA.attributes?.last_triggered
+                        ).getTime() -
+                          new Date(
+                            entityB.attributes?.last_triggered
+                          ).getTime()) *
+                        reverseSortOrder
                       );
                     }
                     case "random": {
@@ -346,43 +348,47 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                     case "ip": {
                       const dotSplittedA = String(stateA!).split(".");
                       const dotSplittedB = String(stateB!).split(".");
-                      const isValidIpv4A =
+                      const isInvalidIpv4A =
                         dotSplittedA.length !== 4 ||
                         dotSplittedA.some((ipBlock: string) =>
                           isNaN(Number(ipBlock))
                         );
-                      const isValidIpv4B =
+                      const isInvalidIpv4B =
                         dotSplittedB.length !== 4 ||
                         dotSplittedB.some((ipBlock: string) =>
                           isNaN(Number(ipBlock))
                         );
 
-                      if (!isValidIpv4A && !isValidIpv4B) {
+                      if (isInvalidIpv4A && isInvalidIpv4B) {
                         continue;
-                      } else if (!isValidIpv4A) {
+                      } else if (isInvalidIpv4A) {
                         return bBeforeA;
-                      } else if (!isValidIpv4B) {
+                      } else if (isInvalidIpv4B) {
                         return aBeforeB;
                       }
 
                       return (
-                        Number(dotSplittedA[0]) - Number(dotSplittedB[0]) ||
-                        Number(dotSplittedA[1]) - Number(dotSplittedB[1]) ||
-                        Number(dotSplittedA[2]) - Number(dotSplittedB[2]) ||
-                        Number(dotSplittedA[3]) - Number(dotSplittedB[3])
+                        (Number(dotSplittedA[0]) - Number(dotSplittedB[0]) ||
+                          Number(dotSplittedA[1]) - Number(dotSplittedB[1]) ||
+                          Number(dotSplittedA[2]) - Number(dotSplittedB[2]) ||
+                          Number(dotSplittedA[3]) - Number(dotSplittedB[3])) *
+                        reverseSortOrder
                       );
                     }
                     case "alpha": {
-                      return String(stateA!).localeCompare(
-                        String(stateB!),
-                        undefined,
-                        sortConf.ignore_case !== undefined
-                          ? { ignorePunctuation: sortConf.ignore_case }
-                          : undefined
+                      return (
+                        String(stateA!).localeCompare(
+                          String(stateB!),
+                          undefined,
+                          sortConf.ignore_case !== undefined
+                            ? { ignorePunctuation: sortConf.ignore_case }
+                            : undefined
+                        ) * reverseSortOrder
                       );
                     }
                   }
                 }
+
                 // same value
                 return doNotSort;
               })
