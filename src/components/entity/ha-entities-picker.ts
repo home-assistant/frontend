@@ -92,7 +92,10 @@ class HaEntitiesPickerLight extends LitElement {
               .includeDomains=${this.includeDomains}
               .excludeDomains=${this.excludeDomains}
               .includeEntities=${this.includeEntities}
-              .excludeEntities=${this.excludeEntities}
+              .excludeEntities=${[
+                ...(this.excludeEntities || []),
+                ...(this._currentEntities.filter((e) => e !== entityId) || []),
+              ]}
               .includeDeviceClasses=${this.includeDeviceClasses}
               .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
               .entityFilter=${this._entityFilter}
@@ -111,7 +114,10 @@ class HaEntitiesPickerLight extends LitElement {
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
           .includeEntities=${this.includeEntities}
-          .excludeEntities=${this.excludeEntities}
+          .excludeEntities=${[
+            ...(this.excludeEntities || []),
+            ...(this._currentEntities || []),
+          ]}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
           .entityFilter=${this._entityFilter}
