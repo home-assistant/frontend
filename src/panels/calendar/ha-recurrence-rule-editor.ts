@@ -1,4 +1,5 @@
 import type { SelectedDetail } from "@material/mwc-list";
+import { formatInTimeZone, toDate } from "date-fns-tz";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -64,7 +65,7 @@ export class RecurrenceRuleEditor extends LitElement {
 
   @state() private _count?: number;
 
-  @state() private _until?: Date;
+  @state() private _untilDay?: Date;
 
   @query("#monthly") private _monthlyRepeatSelect!: HaSelect;
 
@@ -98,7 +99,8 @@ export class RecurrenceRuleEditor extends LitElement {
 
     if (
       !changedProps.has("value") &&
-      (changedProps.has("timezone") ||
+      (changedProps.has("dtstart") ||
+        changedProps.has("timezone") ||
         changedProps.has("_freq") ||
         changedProps.has("_interval") ||
         changedProps.has("_weekday") ||
@@ -106,7 +108,7 @@ export class RecurrenceRuleEditor extends LitElement {
         changedProps.has("_monthday") ||
         changedProps.has("_end") ||
         changedProps.has("_count") ||
-        changedProps.has("_until"))
+        changedProps.has("_untilDay"))
     ) {
       this._updateRule();
       return;
@@ -123,7 +125,7 @@ export class RecurrenceRuleEditor extends LitElement {
     this._monthlyRepeatWeekday = undefined;
     this._end = "never";
     this._count = undefined;
-    this._until = undefined;
+    this._untilDay = undefined;
 
     this._computedRRule = this.value;
     if (this.value === "") {
@@ -163,7 +165,7 @@ export class RecurrenceRuleEditor extends LitElement {
     }
     if (rrule.until) {
       this._end = "on";
-      this._until = rrule.until;
+      this._untilDay = toDate(rrule.until, { timeZone: this.timezone });
     } else if (rrule.count) {
       this._end = "after";
       this._count = rrule.count;
@@ -328,7 +330,7 @@ export class RecurrenceRuleEditor extends LitElement {
                 "ui.components.calendar.event.repeat.end_on.label"
               )}
               .locale=${this.locale}
-              .value=${this._until!.toISOString()}
+              .value=${this._formatDate(this._untilDay!)}
               @value-changed=${this._onUntilChange}
             ></ha-date-input>
           `
@@ -395,15 +397,15 @@ export class RecurrenceRuleEditor extends LitElement {
     switch (this._end) {
       case "after":
         this._count = DEFAULT_COUNT[this._freq!];
-        this._until = undefined;
+        this._untilDay = undefined;
         break;
       case "on":
         this._count = undefined;
-        this._until = untilValue(this._freq!);
+        this._untilDay = untilValue(this._freq!);
         break;
       default:
         this._count = undefined;
-        this._until = undefined;
+        this._untilDay = undefined;
     }
     e.stopPropagation();
   }
@@ -414,7 +416,9 @@ export class RecurrenceRuleEditor extends LitElement {
 
   private _onUntilChange(e: CustomEvent) {
     e.stopPropagation();
-    this._until = new Date(e.detail.value);
+    this._untilDay = toDate(e.detail.value + "T00:00:00", {
+      timeZone: this.timezone,
+    });
   }
 
   // Reset the weekday selected when there is only a single value
@@ -443,18 +447,27 @@ export class RecurrenceRuleEditor extends LitElement {
       freq: convertRepeatFrequency(this._freq!)!,
       interval: this._interval > 1 ? this._interval : undefined,
       count: this._count,
-      until: this._until,
-      tzid: this.timezone,
       byweekday: byweekday,
       bymonthday: bymonthday,
     };
     let contentline = RRule.optionsToString(options);
-    if (this._until && this.allDay) {
-      // rrule.js only computes UNTIL values as DATE-TIME however rfc5545 says
-      // The value of the UNTIL rule part MUST have the same value type as the
-      // "DTSTART" property. If needed, strip off any time values as a workaround
-      // This converts "UNTIL=20220512T060000" to "UNTIL=20220512"
-      contentline = contentline.replace(/(UNTIL=\d{8})T\d{6}Z?/, "$1");
+    if (this._untilDay) {
+      // The UNTIL value should be inclusive of the last event instance
+      const until = toDate(
+        this._formatDate(this._untilDay!) +
+          "T" +
+          this._formatTime(this.dtstart!),
+        { timeZone: this.timezone }
+      );
+      // rrule.js can't compute some UNTIL variations so we compute that ourself. Must be
+      // in the same format as dtstart.
+      const format = this.allDay ? "yyyyMMdd" : "yyyyMMdd'T'HHmmss";
+      const newUntilValue = formatInTimeZone(
+        until,
+        this.hass.config.time_zone,
+        format
+      );
+      contentline += `;UNTIL=${newUntilValue}`;
     }
     return contentline.slice(6); // Strip "RRULE:" prefix
   }
@@ -472,6 +485,16 @@ export class RecurrenceRuleEditor extends LitElement {
         detail: { value: rule },
       })
     );
+  }
+
+  // Formats a date in browser display timezone
+  private _formatDate(date: Date): string {
+    return formatInTimeZone(date, this.timezone, "yyyy-MM-dd");
+  }
+
+  // Formats a time in browser display timezone
+  private _formatTime(date: Date): string {
+    return formatInTimeZone(date, this.timezone, "HH:mm:ss");
   }
 
   static styles = css`
