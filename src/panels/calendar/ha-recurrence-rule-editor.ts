@@ -489,12 +489,12 @@ export class RecurrenceRuleEditor extends LitElement {
 
   // Formats a date in browser display timezone
   private _formatDate(date: Date): string {
-    return formatInTimeZone(date, this.timezone, "yyyy-MM-dd");
+    return formatInTimeZone(date, this.timezone!, "yyyy-MM-dd");
   }
 
   // Formats a time in browser display timezone
   private _formatTime(date: Date): string {
-    return formatInTimeZone(date, this.timezone, "HH:mm:ss");
+    return formatInTimeZone(date, this.timezone!, "HH:mm:ss");
   }
 
   static styles = css`
