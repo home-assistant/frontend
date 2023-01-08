@@ -298,7 +298,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                   )}
                                 `}
                           `
-                        : getSecondaryWeatherAttribute(this.hass, stateObj)}
+                        : getSecondaryWeatherAttribute(
+                            this.hass,
+                            stateObj,
+                            forecast!
+                          )}
                     </div>
                   </div>
                 </div>

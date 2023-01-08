@@ -229,9 +229,10 @@ export const getWeatherUnit = (
 
 export const getSecondaryWeatherAttribute = (
   hass: HomeAssistant,
-  stateObj: WeatherEntity
+  stateObj: WeatherEntity,
+  forecast: ForecastAttribute[]
 ): TemplateResult | undefined => {
-  const extrema = getWeatherExtrema(hass, stateObj);
+  const extrema = getWeatherExtrema(hass, stateObj, forecast);
 
   if (extrema) {
     return extrema;
@@ -241,11 +242,11 @@ export const getSecondaryWeatherAttribute = (
   let attribute: string;
 
   if (
-    stateObj.attributes.forecast?.length &&
-    stateObj.attributes.forecast[0].precipitation !== undefined &&
-    stateObj.attributes.forecast[0].precipitation !== null
+    forecast?.length &&
+    forecast[0].precipitation !== undefined &&
+    forecast[0].precipitation !== null
   ) {
-    value = stateObj.attributes.forecast[0].precipitation!;
+    value = forecast[0].precipitation!;
     attribute = "precipitation";
   } else if ("humidity" in stateObj.attributes) {
     value = stateObj.attributes.humidity!;
@@ -269,9 +270,10 @@ export const getSecondaryWeatherAttribute = (
 
 const getWeatherExtrema = (
   hass: HomeAssistant,
-  stateObj: WeatherEntity
+  stateObj: WeatherEntity,
+  forecast: ForecastAttribute[]
 ): TemplateResult | undefined => {
-  if (!stateObj.attributes.forecast?.length) {
+  if (!forecast?.length) {
     return undefined;
   }
 
@@ -279,18 +281,18 @@ const getWeatherExtrema = (
   let tempHigh: number | undefined;
   const today = new Date().getDate();
 
-  for (const forecast of stateObj.attributes.forecast!) {
-    if (new Date(forecast.datetime).getDate() !== today) {
+  for (const fc of forecast!) {
+    if (new Date(fc.datetime).getDate() !== today) {
       break;
     }
-    if (!tempHigh || forecast.temperature > tempHigh) {
-      tempHigh = forecast.temperature;
+    if (!tempHigh || fc.temperature > tempHigh) {
+      tempHigh = fc.temperature;
     }
-    if (!tempLow || (forecast.templow && forecast.templow < tempLow)) {
-      tempLow = forecast.templow;
+    if (!tempLow || (fc.templow && fc.templow < tempLow)) {
+      tempLow = fc.templow;
     }
-    if (!forecast.templow && (!tempLow || forecast.temperature < tempLow)) {
-      tempLow = forecast.temperature;
+    if (!fc.templow && (!tempLow || fc.temperature < tempLow)) {
+      tempLow = fc.temperature;
     }
   }
 
@@ -580,4 +582,23 @@ export const Forecast_type = (
   }
 
   return undefined;
+};
+
+export const Forecast_type_undefined = (
+  forecast?: ForecastAttribute[],
+  forecast_daily?: ForecastAttribute[],
+  forecast_hourly?: ForecastAttribute[],
+  forecast_twice_daily?: ForecastAttribute[]
+): ForecastAttribute[] | undefined => {
+  if (forecast_daily?.length && forecast_daily?.length > 2) {
+    return forecast_daily;
+  }
+  if (forecast_hourly?.length && forecast_hourly?.length > 2) {
+    return forecast_hourly;
+  }
+  if (forecast_twice_daily?.length && forecast_twice_daily?.length > 2) {
+    return forecast_twice_daily;
+  }
+
+  return forecast;
 };

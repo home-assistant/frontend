@@ -205,6 +205,149 @@ class MoreInfoWeather extends LitElement {
             )}
           `
         : ""}
+      ${this.stateObj.attributes.forecast_daily
+        ? html`
+            <div class="section">
+              ${this.hass.localize("ui.card.weather.forecast_daily")}:
+            </div>
+            ${this.stateObj.attributes.forecast_daily.map((item) =>
+              this._showValue(item.templow) || this._showValue(item.temperature)
+                ? html`<div class="flex">
+                    ${item.condition
+                      ? html`
+                          <ha-svg-icon
+                            .path=${weatherIcons[item.condition]}
+                          ></ha-svg-icon>
+                          <div class="main">
+                            ${formatDateWeekdayDay(
+                              new Date(item.datetime),
+                              this.hass.locale
+                            )}
+                          </div>
+                        `
+                      : ""}
+                    <div class="templow">
+                      ${this._showValue(item.templow)
+                        ? `${formatNumber(item.templow!, this.hass.locale)}
+                          ${getWeatherUnit(
+                            this.hass,
+                            this.stateObj!,
+                            "temperature"
+                          )}`
+                        : "—"}
+                    </div>
+                    <div class="temp">
+                      ${this._showValue(item.temperature)
+                        ? `${formatNumber(item.temperature!, this.hass.locale)}
+                        ${getWeatherUnit(
+                          this.hass,
+                          this.stateObj!,
+                          "temperature"
+                        )}`
+                        : "—"}
+                    </div>
+                  </div>`
+                : ""
+            )}
+          `
+        : ""}
+      ${this.stateObj.attributes.forecast_hourly
+        ? html`
+            <div class="section">
+              ${this.hass.localize("ui.card.weather.forecast_hourly")}:
+            </div>
+            ${this.stateObj.attributes.forecast_hourly.map((item) =>
+              this._showValue(item.templow) || this._showValue(item.temperature)
+                ? html`<div class="flex">
+                    ${item.condition
+                      ? html`
+                          <ha-svg-icon
+                            .path=${weatherIcons[item.condition]}
+                          ></ha-svg-icon>
+                          <div class="main">
+                            ${formatTimeWeekday(
+                              new Date(item.datetime),
+                              this.hass.locale
+                            )}
+                          </div>
+                        `
+                      : ""}
+                    <div class="templow">
+                      ${this._showValue(item.templow)
+                        ? `${formatNumber(item.templow!, this.hass.locale)}
+                          ${getWeatherUnit(
+                            this.hass,
+                            this.stateObj!,
+                            "temperature"
+                          )}`
+                        : ""}
+                    </div>
+                    <div class="temp">
+                      ${this._showValue(item.temperature)
+                        ? `${formatNumber(item.temperature!, this.hass.locale)}
+                        ${getWeatherUnit(
+                          this.hass,
+                          this.stateObj!,
+                          "temperature"
+                        )}`
+                        : "—"}
+                    </div>
+                  </div>`
+                : ""
+            )}
+          `
+        : ""}
+      ${this.stateObj.attributes.forecast_twice_daily
+        ? html`
+            <div class="section">
+              ${this.hass.localize("ui.card.weather.forecast_twice_daily")}:
+            </div>
+            ${this.stateObj.attributes.forecast_twice_daily.map((item) =>
+              this._showValue(item.templow) || this._showValue(item.temperature)
+                ? html`<div class="flex">
+                    ${item.condition
+                      ? html`
+                          <ha-svg-icon
+                            .path=${weatherIcons[item.condition]}
+                          ></ha-svg-icon>
+                          <div class="main">
+                            ${formatDateWeekdayDay(
+                              new Date(item.datetime),
+                              this.hass.locale
+                            )}
+                            ${item.is_daytime === undefined || item.is_daytime
+                              ? this.hass!.localize("ui.card.weather.day")
+                              : this.hass!.localize("ui.card.weather.night")}
+                          </div>
+                        `
+                      : ""}
+                    <div class="templow">
+                      ${this._showValue(item.templow)
+                        ? `${formatNumber(item.templow!, this.hass.locale)}
+                          ${getWeatherUnit(
+                            this.hass,
+                            this.stateObj!,
+                            "temperature"
+                          )}`
+                        : hourly
+                        ? ""
+                        : "—"}
+                    </div>
+                    <div class="temp">
+                      ${this._showValue(item.temperature)
+                        ? `${formatNumber(item.temperature!, this.hass.locale)}
+                        ${getWeatherUnit(
+                          this.hass,
+                          this.stateObj!,
+                          "temperature"
+                        )}`
+                        : "—"}
+                    </div>
+                  </div>`
+                : ""
+            )}
+          `
+        : ""}
       ${this.stateObj.attributes.attribution
         ? html`
             <div class="attribution">
