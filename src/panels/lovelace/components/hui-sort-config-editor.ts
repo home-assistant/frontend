@@ -13,7 +13,6 @@ import { SortableInstance } from "../../../resources/sortable";
 import { loadSortable } from "../../../resources/sortable.ondemand";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import "./hui-sort-config-picker";
-import type { HuiSortConfigPicker } from "./hui-sort-config-picker";
 
 @customElement("hui-sort-config-editor")
 export class HuiSortConfigEditor extends LitElement {
@@ -106,15 +105,15 @@ export class HuiSortConfigEditor extends LitElement {
             </div>
           `
         )}
-        <hui-sort-config-picker
-          .label=${this.hass!.localize(
-            "ui.panel.lovelace.editor.sort-config-editor.new_config"
-          )}
-          .hass=${this.hass}
-          @value-changed=${this._sortConfigAdded}
-        >
-        </hui-sort-config-picker>
       </div>
+      <hui-sort-config-picker
+        .label=${this.hass!.localize(
+          "ui.panel.lovelace.editor.sort-config-editor.new_config"
+        )}
+        .hass=${this.hass}
+        @value-changed=${this._sortConfigAdded}
+      >
+      </hui-sort-config-picker>
     `;
   }
 
@@ -183,9 +182,6 @@ export class HuiSortConfigEditor extends LitElement {
     const newSortConfigs =
       this.config !== undefined ? this.config!.concat(value) : [value];
 
-    // TODO: This should remove the currently selected type, but it does not work yet
-    (ev.target as HuiSortConfigPicker).config = undefined;
-
     fireEvent(this, "value-changed", {
       value: newSortConfigs,
     });
@@ -195,10 +191,6 @@ export class HuiSortConfigEditor extends LitElement {
     return [
       sortableStyles,
       css`
-        hui-sort-config-picker {
-          margin-top: 8px;
-        }
-
         .sort-config {
           display: flex;
           align-items: center;
@@ -223,6 +215,10 @@ export class HuiSortConfigEditor extends LitElement {
         .remove-icon {
           --mdc-icon-button-size: 36px;
           color: var(--secondary-text-color);
+        }
+
+        .sort-configs {
+          margin-bottom: 8px;
         }
       `,
     ];
