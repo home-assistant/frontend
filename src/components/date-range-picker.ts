@@ -5,7 +5,6 @@ import DateRangePicker from "vue2-daterange-picker";
 // @ts-ignore
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
-import { Constructor } from "../types";
 
 const Component = Vue.extend({
   props: {
@@ -47,35 +46,26 @@ const Component = Vue.extend({
     },
   },
   render(createElement) {
-    // @ts-ignore
+    // @ts-expect-error
     return createElement(DateRangePicker, {
       props: {
-        // @ts-ignore
         "time-picker": this.timePicker,
-        // @ts-ignore
         "auto-apply": this.autoApply,
         opens: "right",
         "show-dropdowns": false,
-        // @ts-ignore
         "time-picker24-hour": this.twentyfourHours,
-        // @ts-ignore
         disabled: this.disabled,
-        // @ts-ignore
         ranges: this.ranges ? {} : false,
         "locale-data": {
-          // @ts-ignore
           firstDay: this.firstDay,
         },
       },
       model: {
         value: {
-          // @ts-ignore
           startDate: this.startDate,
-          // @ts-ignore
           endDate: this.endDate,
         },
         callback: (value) => {
-          // @ts-ignore
           fireEvent(this.$el as HTMLElement, "change", value);
         },
         expression: "dateRange",
@@ -106,7 +96,11 @@ const Component = Vue.extend({
   },
 });
 
-const WrappedElement: Constructor<HTMLElement> = wrap(Vue, Component);
+// Assertion corrects HTMLElement type from package
+const WrappedElement = wrap(
+  Vue,
+  Component
+) as unknown as CustomElementConstructor;
 
 @customElement("date-range-picker")
 class DateRangePickerElement extends WrappedElement {
