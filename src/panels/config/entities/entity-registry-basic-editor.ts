@@ -7,6 +7,7 @@ import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-radio";
@@ -49,7 +50,8 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
 
   @state() private _submitting = false;
 
-  private _openAliasesSettings() {
+  private _handleAliasesClicked(ev: CustomEvent) {
+    if (ev.detail.index !== 0) return;
     showEntityAliasesDialog(this, {
       entity: this.entry!,
       updateEntry: async (updates) => {
@@ -272,12 +274,8 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
             "ui.dialogs.entity_registry.editor.aliases_section"
           )}
         </div>
-        <mwc-list class="aliases">
-          <mwc-list-item
-            .twoline=${this.entry.aliases.length > 0}
-            hasMeta
-            @click=${this._openAliasesSettings}
-          >
+        <mwc-list class="aliases" @action=${this._handleAliasesClicked}>
+          <mwc-list-item .twoline=${this.entry.aliases.length > 0} hasMeta>
             <span>
               ${this.entry.aliases.length > 0
                 ? this.hass.localize(
@@ -288,7 +286,11 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
                     "ui.dialogs.entity_registry.editor.no_aliases"
                   )}
             </span>
-            <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+            <span slot="secondary">
+              ${[...this.entry.aliases]
+                .sort((a, b) => stringCompare(a, b, this.hass.locale.language))
+                .join(", ")}
+            </span>
             <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
           </mwc-list-item>
         </mwc-list>

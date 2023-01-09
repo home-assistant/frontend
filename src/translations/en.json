@@ -644,6 +644,33 @@
               "monthly": "months",
               "weekly": "weeks",
               "daily": "days"
+            },
+            "monthly": {
+              "label": "Repeat Monthly"
+            },
+            "weekly": {
+              "weekday": {
+                "su": "Sun",
+                "mo": "Mon",
+                "tu": "Tue",
+                "we": "Wed",
+                "th": "Thu",
+                "fr": "Fri",
+                "sa": "Sat"
+              }
+            },
+            "end": {
+              "label": "End",
+              "never": "Never",
+              "after": "After",
+              "on": "On"
+            },
+            "end_on": {
+              "label": "End On"
+            },
+            "end_after": {
+              "label": "End After",
+              "ocurrences": "ocurrences"
             }
           },
           "rrule": {
@@ -976,7 +1003,8 @@
           "aliases": {
             "heading": "{name} aliases",
             "description": "Aliases are alternative names used in voice assistants to refer to this entity.",
-            "remove_alias": "Remove alias",
+            "remove_alias": "Remove alias {number}",
+            "input_label": "Alias {number}",
             "save": "Save",
             "add_alias": "Add alias",
             "no_aliases": "No aliases have been added yet",
@@ -2634,7 +2662,7 @@
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "state_reporting_error": "Unable to {enable_disable} report state.",
-              "manage_entities": "Manage Entities",
+              "manage_entities": "[%key:ui::panel::config::cloud::account::google::manage_entities%]",
               "enable": "enable",
               "disable": "disable",
               "not_configured_title": "Alexa is not activated",
@@ -2685,6 +2713,7 @@
             "follow_domain": "[%key:ui::panel::config::cloud::google::follow_domain%]",
             "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
             "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
+            "manage_aliases": "[%key:ui::panel::config::cloud::google::manage_aliases%]",
             "expose": "Expose to Alexa",
             "sync_entities": "Synchronize entities",
             "sync_entities_error": "Failed to sync entities:"
@@ -2710,6 +2739,11 @@
             "follow_domain": "Follow domain",
             "exposed": "{selected} exposed",
             "not_exposed": "{selected} not exposed",
+            "manage_aliases": "Manage aliases",
+            "add_aliases": "Add aliases",
+            "no_aliases": "No aliases",
+            "aliases_not_available": "Aliases not available",
+            "aliases_not_available_learn_more": "Learn more",
             "sync_to_google": "Synchronizing changes to Google.",
             "sync_entities": "Synchronize entities",
             "sync_entities_error": "Failed to sync entities:",
@@ -3215,6 +3249,8 @@
         },
         "mqtt": {
           "title": "MQTT",
+          "settings_title": "MQTT settings",
+          "reconfigure": "Re-configure MQTT",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",

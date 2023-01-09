@@ -223,6 +223,10 @@ export class HaStateLabelBadge extends LitElement {
     if (domainStateKey) {
       return this.hass!.localize(`state_badge.${domainStateKey}`);
     }
+    // Person and device tracker state can be zone name
+    if (domain === "person" || domain === "device_tracker") {
+      return entityState.state;
+    }
     if (domain === "timer") {
       return secondsToDuration(_timerTimeRemaining);
     }

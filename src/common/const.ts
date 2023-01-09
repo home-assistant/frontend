@@ -201,6 +201,7 @@ export const DOMAINS_WITH_CARD = [
 export const SENSOR_ENTITIES = [
   "sensor",
   "binary_sensor",
+  "calendar",
   "camera",
   "device_tracker",
   "weather",

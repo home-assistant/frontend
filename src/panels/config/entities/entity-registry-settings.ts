@@ -132,6 +132,29 @@ const OVERRIDE_SENSOR_UNITS = {
     "MiB/s",
     "GiB/s",
   ],
+  data_size: [
+    "bit",
+    "kbit",
+    "Mbit",
+    "Gbit",
+    "B",
+    "kB",
+    "MB",
+    "GB",
+    "TB",
+    "PB",
+    "EB",
+    "ZB",
+    "YB",
+    "KiB",
+    "MiB",
+    "GiB",
+    "TiB",
+    "PiB",
+    "EiB",
+    "ZiB",
+    "YiB",
+  ],
   distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
   gas: ["CCF", "ft³", "m³"],
   precipitation: ["cm", "in", "mm"],
@@ -784,12 +807,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               "ui.dialogs.entity_registry.editor.aliases_section"
             )}
           </div>
-          <mwc-list class="aliases">
-            <mwc-list-item
-              .twoline=${this.entry.aliases.length > 0}
-              hasMeta
-              @click=${this._openAliasesSettings}
-            >
+          <mwc-list class="aliases" @action=${this._handleAliasesClicked}>
+            <mwc-list-item .twoline=${this.entry.aliases.length > 0} hasMeta>
               <span>
                 ${this.entry.aliases.length > 0
                   ? this.hass.localize(
@@ -800,7 +819,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                       "ui.dialogs.entity_registry.editor.no_aliases"
                     )}
               </span>
-              <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+              <span slot="secondary">
+                ${[...this.entry.aliases]
+                  .sort((a, b) =>
+                    stringCompare(a, b, this.hass.locale.language)
+                  )
+                  .join(", ")}
+              </span>
               <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
             </mwc-list-item>
           </mwc-list>
@@ -992,7 +1017,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _openAliasesSettings() {
+  private _handleAliasesClicked(ev: CustomEvent) {
+    if (ev.detail.index !== 0) return;
     showEntityAliasesDialog(this, {
       entity: this.entry!,
       updateEntry: async (updates) => {
