@@ -83,7 +83,7 @@ export class HaVoiceCommandDialog extends LitElement {
       return html``;
     }
     return html`
-      <ha-dialog open @closed=${this.closeDialog} .heading=${"aaa"}>
+      <ha-dialog open @closed=${this.closeDialog}>
         <div slot="heading" class="heading">
           <ha-header-bar>
             <ha-icon-button
