@@ -32,6 +32,7 @@ export const showOptionsFlowDialog = (
         const [step] = await Promise.all([
           createOptionsFlow(hass, handler),
           hass.loadBackendTranslation("options", configEntry.domain),
+          hass.loadBackendTranslation("selector", configEntry.domain),
         ]);
         return step;
       },
@@ -39,6 +40,7 @@ export const showOptionsFlowDialog = (
         const [step] = await Promise.all([
           fetchOptionsFlow(hass, flowId),
           hass.loadBackendTranslation("options", configEntry.domain),
+          hass.loadBackendTranslation("selector", configEntry.domain),
         ]);
         return step;
       },

@@ -215,6 +215,8 @@ export interface SelectSelector {
     custom_value?: boolean;
     mode?: "list" | "dropdown";
     options: readonly string[] | readonly SelectOption[];
+    domain?: string;
+    translation_key?: string;
   } | null;
 }
 
