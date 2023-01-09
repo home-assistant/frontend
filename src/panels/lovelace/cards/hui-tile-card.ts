@@ -254,14 +254,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     this._rippleHandlers.endHover();
   }
 
-  private handleRippleFocus() {
-    this._rippleHandlers.startFocus();
-  }
-
-  private handleRippleBlur() {
-    this._rippleHandlers.endFocus();
-  }
-
   protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
@@ -361,8 +353,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .actionHandler=${actionHandler()}
             role="button"
             tabindex="0"
-            @focus=${this.handleRippleFocus}
-            @blur=${this.handleRippleBlur}
             @mousedown=${this.handleRippleActivate}
             @mouseup=${this.handleRippleDeactivate}
             @mouseenter=${this.handleRippleMouseEnter}
@@ -419,6 +409,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       :host {
         --tile-color: rgb(var(--rgb-state-inactive-color));
         -webkit-tap-highlight-color: transparent;
+      }
+      ha-card:has(ha-tile-info:focus-visible) {
+        border-color: var(--tile-color);
+        box-shadow: 0 0 0 1px var(--tile-color);
       }
       ha-card {
         --mdc-ripple-color: var(--tile-color);
