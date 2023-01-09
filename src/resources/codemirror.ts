@@ -1,25 +1,29 @@
 import { indentLess, indentMore } from "@codemirror/commands";
-import { HighlightStyle, tags } from "@codemirror/highlight";
+import {
+  HighlightStyle,
+  StreamLanguage,
+  syntaxHighlighting,
+} from "@codemirror/language";
 import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 import { Compartment } from "@codemirror/state";
-import { StreamLanguage } from "@codemirror/stream-parser";
 import { EditorView, KeyBinding } from "@codemirror/view";
+import { tags } from "@lezer/highlight";
 
-export { defaultKeymap } from "@codemirror/commands";
-export { lineNumbers } from "@codemirror/gutter";
-export { HighlightStyle, tags } from "@codemirror/highlight";
-export { history, historyKeymap } from "@codemirror/history";
-export { rectangularSelection } from "@codemirror/rectangular-selection";
-export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
-export { EditorState, Prec } from "@codemirror/state";
 export { autocompletion } from "@codemirror/autocomplete";
+export { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
+export { highlightingFor } from "@codemirror/language";
+export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
+export { EditorState } from "@codemirror/state";
 export {
   drawSelection,
   EditorView,
   highlightActiveLine,
   keymap,
+  lineNumbers,
+  rectangularSelection,
 } from "@codemirror/view";
+export { tags } from "@lezer/highlight";
 
 export const langs = {
   jinja2: StreamLanguage.define(jinja2),
@@ -37,7 +41,7 @@ export const tabKeyBindings: KeyBinding[] = [
   },
 ];
 
-export const theme = EditorView.theme({
+export const haTheme = EditorView.theme({
   "&": {
     color: "var(--primary-text-color)",
     backgroundColor:
@@ -186,7 +190,7 @@ export const theme = EditorView.theme({
   ".cm-gutterElement.lineNumber": { color: "inherit" },
 });
 
-export const highlightStyle = HighlightStyle.define([
+const haHighlightStyle = HighlightStyle.define([
   { tag: tags.keyword, color: "var(--codemirror-keyword, #6262FF)" },
   {
     tag: [
@@ -259,3 +263,5 @@ export const highlightStyle = HighlightStyle.define([
   { tag: tags.inserted, color: "var(--codemirror-string2, #07a)" },
   { tag: tags.invalid, color: "var(--error-color)" },
 ]);
+
+export const haSyntaxHighlighting = syntaxHighlighting(haHighlightStyle);
