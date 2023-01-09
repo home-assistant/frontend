@@ -79,7 +79,7 @@ export class HaTargetSelector extends LitElement {
         ? [this.selector.target?.entity.device_class]
         : undefined}
       .includeDomains=${this.selector.target?.entity?.domain
-        ? ensureArray(this.selector.target.entity.domain)
+        ? ensureArray(this.selector.target.entity.domain as string | string[])
         : undefined}
       .disabled=${this.disabled}
     ></ha-target-picker>`;
