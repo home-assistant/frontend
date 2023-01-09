@@ -87,7 +87,7 @@
     "@polymer/paper-toast": "^3.0.1",
     "@polymer/paper-tooltip": "^3.0.1",
     "@polymer/polymer": "3.4.1",
-    "@thomasloven/round-slider": "0.5.4",
+    "@thomasloven/round-slider": "0.6.0",
     "@vaadin/combo-box": "^23.2.9",
     "@vaadin/vaadin-themable-mixin": "^23.2.9",
     "@vibrant/color": "^3.2.1-alpha.1",
