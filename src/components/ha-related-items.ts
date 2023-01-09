@@ -1,4 +1,4 @@
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -9,23 +9,16 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import {
-  AreaRegistryEntry,
-  subscribeAreaRegistry,
-} from "../data/area_registry";
+import { AreaRegistryEntry } from "../data/area_registry";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../data/device_registry";
+import { DeviceRegistryEntry } from "../data/device_registry";
 import { SceneEntity } from "../data/scene";
 import { findRelated, ItemType, RelatedResult } from "../data/search";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { HomeAssistant } from "../types";
 import "./ha-switch";
 
 @customElement("ha-related-items")
-export class HaRelatedItems extends SubscribeMixin(LitElement) {
+export class HaRelatedItems extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public itemType!: ItemType;
@@ -34,22 +27,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
 
   @state() private _entries?: ConfigEntry[];
 
-  @state() private _devices?: DeviceRegistryEntry[];
-
-  @state() private _areas?: AreaRegistryEntry[];
-
   @state() private _related?: RelatedResult;
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeDeviceRegistry(this.hass.connection!, (devices) => {
-        this._devices = devices;
-      }),
-      subscribeAreaRegistry(this.hass.connection!, (areas) => {
-        this._areas = areas;
-      }),
-    ];
-  }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -104,11 +82,10 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             `;
           })
         : ""}
-      ${this._related.device && this._devices
+      ${this._related.device
         ? this._related.device.map((relatedDeviceId) => {
-            const device: DeviceRegistryEntry | undefined = this._devices!.find(
-              (dev) => dev.id === relatedDeviceId
-            );
+            const device: DeviceRegistryEntry | undefined =
+              this.hass.devices[relatedDeviceId];
             if (!device) {
               return "";
             }
@@ -125,11 +102,10 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             `;
           })
         : ""}
-      ${this._related.area && this._areas
+      ${this._related.area
         ? this._related.area.map((relatedAreaId) => {
-            const area: AreaRegistryEntry | undefined = this._areas!.find(
-              (ar) => ar.area_id === relatedAreaId
-            );
+            const area: AreaRegistryEntry | undefined =
+              this.hass.areas[relatedAreaId];
             if (!area) {
               return "";
             }

@@ -2,10 +2,7 @@ import "@material/mwc-button";
 import { mdiImagePlus, mdiPencil } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  HassEntity,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket/dist/types";
+import { HassEntity } from "home-assistant-js-websocket/dist/types";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -22,7 +19,6 @@ import "../../../components/ha-icon-next";
 import {
   AreaRegistryEntry,
   deleteAreaRegistryEntry,
-  subscribeAreaRegistry,
   updateAreaRegistryEntry,
 } from "../../../data/area_registry";
 import { AutomationEntity } from "../../../data/automation";
@@ -30,20 +26,19 @@ import {
   computeDeviceName,
   DeviceRegistryEntry,
   sortDeviceRegistryByName,
-  subscribeDeviceRegistry,
 } from "../../../data/device_registry";
 import {
   computeEntityRegistryName,
   EntityRegistryEntry,
   sortEntityRegistryByName,
-  subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import { SceneEntity } from "../../../data/scene";
 import { ScriptEntity } from "../../../data/script";
 import { findRelated, RelatedResult } from "../../../data/search";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
@@ -51,8 +46,6 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
-import "../../../layouts/hass-error-screen";
-import "../../../layouts/hass-subpage";
 
 declare type NameAndEntity<EntityType extends HassEntity> = {
   name: string;
@@ -60,7 +53,7 @@ declare type NameAndEntity<EntityType extends HassEntity> = {
 };
 
 @customElement("ha-config-area-page")
-class HaConfigAreaPage extends SubscribeMixin(LitElement) {
+class HaConfigAreaPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public areaId!: string;
@@ -71,33 +64,19 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public showAdvanced!: boolean;
 
-  @state() public _areas!: AreaRegistryEntry[];
-
-  @state() public _devices!: DeviceRegistryEntry[];
-
-  @state() public _entities!: EntityRegistryEntry[];
-
   @state() private _related?: RelatedResult;
 
   private _logbookTime = { recent: 86400 };
 
-  private _area = memoizeOne(
-    (
-      areaId: string,
-      areas: AreaRegistryEntry[]
-    ): AreaRegistryEntry | undefined =>
-      areas.find((area) => area.area_id === areaId)
-  );
-
   private _memberships = memoizeOne(
     (
       areaId: string,
-      registryDevices: DeviceRegistryEntry[],
-      registryEntities: EntityRegistryEntry[]
+      registryDevices: HomeAssistant["devices"],
+      registryEntities: HomeAssistant["entities"]
     ) => {
       const devices = new Map<string, DeviceRegistryEntry>();
 
-      for (const device of registryDevices) {
+      for (const device of Object.values(registryDevices)) {
         if (device.area_id === areaId) {
           devices.set(device.id, device);
         }
@@ -106,7 +85,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
       const entities: EntityRegistryEntry[] = [];
       const indirectEntities: EntityRegistryEntry[] = [];
 
-      for (const entity of registryEntities) {
+      for (const entity of Object.values(registryEntities)) {
         if (entity.area_id) {
           if (entity.area_id === areaId) {
             entities.push(entity);
@@ -150,26 +129,8 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeAreaRegistry(this.hass.connection, (areas) => {
-        this._areas = areas;
-      }),
-      subscribeDeviceRegistry(this.hass.connection, (entries) => {
-        this._devices = entries;
-      }),
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        this._entities = entries;
-      }),
-    ];
-  }
-
   protected render(): TemplateResult {
-    if (!this._areas || !this._devices || !this._entities) {
-      return html``;
-    }
-
-    const area = this._area(this.areaId, this._areas);
+    const area = this.hass.areas[this.areaId];
 
     if (!area) {
       return html`
@@ -182,8 +143,8 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
 
     const memberships = this._memberships(
       this.areaId,
-      this._devices,
-      this._entities
+      this.hass.devices,
+      this.hass.entities
     );
     const { devices, entities } = memberships;
 

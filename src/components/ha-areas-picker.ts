@@ -2,13 +2,12 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { EntityRegistryEntry } from "../data/entity_registry";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-area-picker";
 
 @customElement("ha-areas-picker")
-export class HaAreasPicker extends SubscribeMixin(LitElement) {
+export class HaAreasPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;

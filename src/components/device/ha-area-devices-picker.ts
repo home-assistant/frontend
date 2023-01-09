@@ -1,26 +1,15 @@
 import "@material/mwc-button/mwc-button";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { stringCompare } from "../../common/string/compare";
 import {
-  AreaRegistryEntry,
-  subscribeAreaRegistry,
-} from "../../data/area_registry";
-import {
   DeviceEntityLookup,
   DeviceRegistryEntry,
-  subscribeDeviceRegistry,
 } from "../../data/device_registry";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../data/entity_registry";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
@@ -45,7 +34,7 @@ const rowRenderer: ComboBoxLitRenderer<AreaDevices> = (
 </mwc-list-item>`;
 
 @customElement("ha-area-devices-picker")
-export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
+export class HaAreaDevicesPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
@@ -82,25 +71,22 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
 
   @state() private _areaPicker = true;
 
-  @state() private _devices?: DeviceRegistryEntry[];
-
-  @state() private _areas?: AreaRegistryEntry[];
-
-  @state() private _entities?: EntityRegistryEntry[];
-
   private _selectedDevices: string[] = [];
 
   private _filteredDevices: DeviceRegistryEntry[] = [];
 
   private _getAreasWithDevices = memoizeOne(
     (
-      devices: DeviceRegistryEntry[],
-      areas: AreaRegistryEntry[],
-      entities: EntityRegistryEntry[],
+      deviceReg: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      entityReg: HomeAssistant["entities"],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"]
     ): AreaDevices[] => {
+      const devices = Object.values(deviceReg);
+      const entities = Object.values(entityReg);
+
       if (!devices.length) {
         return [];
       }
@@ -164,11 +150,6 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
 
       this._filteredDevices = inputDevices;
 
-      const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
-      for (const area of areas) {
-        areaLookup[area.area_id] = area;
-      }
-
       const devicesByArea: DevicesByArea = {};
 
       for (const device of inputDevices) {
@@ -177,7 +158,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
           if (!(areaId in devicesByArea)) {
             devicesByArea[areaId] = {
               id: areaId,
-              name: areaLookup[areaId].name,
+              name: areas[areaId].name,
               devices: [],
             };
           }
@@ -199,20 +180,6 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
     }
   );
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeDeviceRegistry(this.hass.connection!, (devices) => {
-        this._devices = devices;
-      }),
-      subscribeAreaRegistry(this.hass.connection!, (areas) => {
-        this._areas = areas;
-      }),
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities;
-      }),
-    ];
-  }
-
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("area") && this.area) {
@@ -231,13 +198,10 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    if (!this._devices || !this._areas || !this._entities) {
-      return html``;
-    }
     const areas = this._getAreasWithDevices(
-      this._devices,
-      this._areas,
-      this._entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.entities,
       this.includeDomains,
       this.excludeDomains,
       this.includeDeviceClasses
