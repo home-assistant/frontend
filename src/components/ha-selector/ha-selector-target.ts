@@ -9,6 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../common/array/ensure-array";
 import {
   DeviceRegistryEntry,
   getDeviceIntegrationLookup,
@@ -78,7 +79,7 @@ export class HaTargetSelector extends LitElement {
         ? [this.selector.target?.entity.device_class]
         : undefined}
       .includeDomains=${this.selector.target?.entity?.domain
-        ? [this.selector.target?.entity.domain]
+        ? ensureArray(this.selector.target.entity.domain)
         : undefined}
       .disabled=${this.disabled}
     ></ha-target-picker>`;
