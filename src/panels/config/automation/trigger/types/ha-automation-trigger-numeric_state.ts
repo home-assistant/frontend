@@ -1,5 +1,5 @@
 import { html, LitElement, PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -17,6 +17,10 @@ export class HaNumericStateTrigger extends LitElement {
   @property({ attribute: false }) public trigger!: NumericStateTrigger;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @state() private _inputAboveIsEntity?: boolean;
+
+  @state() private _inputBelowIsEntity?: boolean;
 
   private _schema = memoizeOne(
     (
@@ -118,20 +122,28 @@ export class HaNumericStateTrigger extends LitElement {
             ],
           ],
         },
-
-        {
-          name: "above",
-          selector: inputAboveIsEntity
-            ? { entity: { domain: ["input_number", "number", "sensor"] } }
-            : {
-                number: {
-                  mode: "box",
-                  min: Number.MIN_SAFE_INTEGER,
-                  max: Number.MAX_SAFE_INTEGER,
-                  step: 0.1,
+        ...(inputAboveIsEntity
+          ? ([
+              {
+                name: "above",
+                selector: {
+                  entity: { domain: ["input_number", "number", "sensor"] },
                 },
               },
-        },
+            ] as const)
+          : ([
+              {
+                name: "above",
+                selector: {
+                  number: {
+                    mode: "box",
+                    min: Number.MIN_SAFE_INTEGER,
+                    max: Number.MAX_SAFE_INTEGER,
+                    step: 0.1,
+                  },
+                },
+              },
+            ] as const)),
         {
           name: "mode_below",
           type: "select",
@@ -151,19 +163,28 @@ export class HaNumericStateTrigger extends LitElement {
             ],
           ],
         },
-        {
-          name: "below",
-          selector: inputBelowIsEntity
-            ? { entity: { domain: ["input_number", "number", "sensor"] } }
-            : {
-                number: {
-                  mode: "box",
-                  min: Number.MIN_SAFE_INTEGER,
-                  max: Number.MAX_SAFE_INTEGER,
-                  step: 0.1,
+        ...(inputBelowIsEntity
+          ? ([
+              {
+                name: "below",
+                selector: {
+                  entity: { domain: ["input_number", "number", "sensor"] },
                 },
               },
-        },
+            ] as const)
+          : ([
+              {
+                name: "below",
+                selector: {
+                  number: {
+                    mode: "box",
+                    min: Number.MIN_SAFE_INTEGER,
+                    max: Number.MAX_SAFE_INTEGER,
+                    step: 0.1,
+                  },
+                },
+              },
+            ] as const)),
         {
           name: "value_template",
           selector: { template: {} },
@@ -198,15 +219,15 @@ export class HaNumericStateTrigger extends LitElement {
     const inputAboveIsEntity =
       this._inputAboveIsEntity ??
       (typeof this.trigger.above === "string" &&
-        (this.trigger.above?.startsWith("input_number.") ||
-          this.trigger.above?.startsWith("number.") ||
-          this.trigger.above?.startsWith("sensor.")));
+        ((this.trigger.above as string).startsWith("input_number.") ||
+          (this.trigger.above as string).startsWith("number.") ||
+          (this.trigger.above as string).startsWith("sensor.")));
     const inputBelowIsEntity =
       this._inputBelowIsEntity ??
       (typeof this.trigger.below === "string" &&
-        (this.trigger.below?.startsWith("input_number.") ||
-          this.trigger.below?.startsWith("number.") ||
-          this.trigger.below?.startsWith("sensor.")));
+        ((this.trigger.below as string).startsWith("input_number.") ||
+          (this.trigger.below as string).startsWith("number.") ||
+          (this.trigger.below as string).startsWith("sensor.")));
 
     const schema = this._schema(
       this.hass.localize,

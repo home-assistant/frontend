@@ -1,5 +1,5 @@
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
@@ -15,6 +15,10 @@ export default class HaNumericStateCondition extends LitElement {
   @property({ attribute: false }) public condition!: NumericStateCondition;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @state() private _inputAboveIsEntity?: boolean;
+
+  @state() private _inputBelowIsEntity?: boolean;
 
   public static get defaultConfig() {
     return {
@@ -122,20 +126,28 @@ export default class HaNumericStateCondition extends LitElement {
             ],
           ],
         },
-
-        {
-          name: "above",
-          selector: inputAboveIsEntity
-            ? { entity: { domain: ["input_number", "number", "sensor"] } }
-            : {
-                number: {
-                  mode: "box",
-                  min: Number.MIN_SAFE_INTEGER,
-                  max: Number.MAX_SAFE_INTEGER,
-                  step: 0.1,
+        ...(inputAboveIsEntity
+          ? ([
+              {
+                name: "above",
+                selector: {
+                  entity: { domain: ["input_number", "number", "sensor"] },
                 },
               },
-        },
+            ] as const)
+          : ([
+              {
+                name: "above",
+                selector: {
+                  number: {
+                    mode: "box",
+                    min: Number.MIN_SAFE_INTEGER,
+                    max: Number.MAX_SAFE_INTEGER,
+                    step: 0.1,
+                  },
+                },
+              },
+            ] as const)),
         {
           name: "mode_below",
           type: "select",
@@ -155,19 +167,28 @@ export default class HaNumericStateCondition extends LitElement {
             ],
           ],
         },
-        {
-          name: "below",
-          selector: inputBelowIsEntity
-            ? { entity: { domain: ["input_number", "number", "sensor"] } }
-            : {
-                number: {
-                  mode: "box",
-                  min: Number.MIN_SAFE_INTEGER,
-                  max: Number.MAX_SAFE_INTEGER,
-                  step: 0.1,
+        ...(inputBelowIsEntity
+          ? ([
+              {
+                name: "below",
+                selector: {
+                  entity: { domain: ["input_number", "number", "sensor"] },
                 },
               },
-        },
+            ] as const)
+          : ([
+              {
+                name: "below",
+                selector: {
+                  number: {
+                    mode: "box",
+                    min: Number.MIN_SAFE_INTEGER,
+                    max: Number.MAX_SAFE_INTEGER,
+                    step: 0.1,
+                  },
+                },
+              },
+            ] as const)),
         {
           name: "value_template",
           selector: { template: {} },
@@ -179,15 +200,15 @@ export default class HaNumericStateCondition extends LitElement {
     const inputAboveIsEntity =
       this._inputAboveIsEntity ??
       (typeof this.condition.above === "string" &&
-        (this.condition.above?.startsWith("input_number.") ||
-          this.condition.above?.startsWith("number.") ||
-          this.condition.above?.startsWith("sensor.")));
+        ((this.condition.above as string).startsWith("input_number.") ||
+          (this.condition.above as string).startsWith("number.") ||
+          (this.condition.above as string).startsWith("sensor.")));
     const inputBelowIsEntity =
       this._inputBelowIsEntity ??
       (typeof this.condition.below === "string" &&
-        (this.condition.below?.startsWith("input_number.") ||
-          this.condition.below?.startsWith("number.") ||
-          this.condition.below?.startsWith("sensor.")));
+        ((this.condition.below as string).startsWith("input_number.") ||
+          (this.condition.below as string).startsWith("number.") ||
+          (this.condition.below as string).startsWith("sensor.")));
 
     const schema = this._schema(
       this.hass.localize,
