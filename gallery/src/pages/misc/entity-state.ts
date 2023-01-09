@@ -209,9 +209,15 @@ const ENTITIES: HassEntity[] = [
   createEntity("media_player.speaker_playing", "playing", "speaker"),
   createEntity("media_player.speaker_paused", "paused", "speaker"),
   createEntity("media_player.speaker_standby", "standby", "speaker"),
+  // Plant
+  createEntity("plant.ok", "ok"),
+  createEntity("plant.problem", "problem"),
   // Remote
   createEntity("remote.off", "off"),
   createEntity("remote.on", "on"),
+  // Schedule
+  createEntity("schedule.off", "off"),
+  createEntity("schedule.on", "on"),
   // Script
   createEntity("script.off", "off"),
   createEntity("script.on", "on"),

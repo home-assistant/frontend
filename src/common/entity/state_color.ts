@@ -16,6 +16,7 @@ const STATE_COLORED_DOMAIN = new Set([
   "camera",
   "climate",
   "cover",
+  "device_tracker",
   "fan",
   "group",
   "humidifier",
@@ -23,7 +24,10 @@ const STATE_COLORED_DOMAIN = new Set([
   "light",
   "lock",
   "media_player",
+  "person",
+  "plant",
   "remote",
+  "schedule",
   "script",
   "siren",
   "sun",
@@ -31,8 +35,6 @@ const STATE_COLORED_DOMAIN = new Set([
   "timer",
   "update",
   "vacuum",
-  "device_tracker",
-  "person",
 ]);
 
 export const stateColorCss = (stateObj: HassEntity, state?: string) => {
