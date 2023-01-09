@@ -201,8 +201,15 @@ const sortConfigsStruct = dynamic<any>((value: any) => {
       }
     }
   }
-  // No "type" property has been set. Return default (numeric).
-  return numericSortConfig;
+  return union([
+    numericSortConfig,
+    randomSortConfig,
+    ipSortConfig,
+    alphaSortConfig,
+    lastChangedConfig,
+    lastUpdatedConfig,
+    lastTriggeredConfig,
+  ]);
 });
 
 const entitiesRowConfigStruct = dynamic<any>((value) => {
