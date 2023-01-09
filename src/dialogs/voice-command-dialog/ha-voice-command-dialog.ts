@@ -1,6 +1,6 @@
 /* eslint-disable lit/prefer-static-styles */
 import "@material/mwc-button/mwc-button";
-import { mdiMicrophone } from "@mdi/js";
+import { mdiClose, mdiMicrophone } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -15,6 +15,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { SpeechRecognition } from "../../common/dom/speech-recognition";
 import "../../components/ha-dialog";
 import type { HaDialog } from "../../components/ha-dialog";
+import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
@@ -82,7 +83,17 @@ export class HaVoiceCommandDialog extends LitElement {
       return html``;
     }
     return html`
-      <ha-dialog open @closed=${this.closeDialog}>
+      <ha-dialog open @closed=${this.closeDialog} .heading=${"aaa"}>
+        <div slot="heading" class="heading">
+          <ha-header-bar>
+            <ha-icon-button
+              slot="navigationIcon"
+              dialogAction="cancel"
+              .label=${this.hass.localize("ui.common.close")}
+              .path=${mdiClose}
+            ></ha-icon-button>
+          </ha-header-bar>
+        </div>
         <div>
           ${this._agentInfo && this._agentInfo.onboarding
             ? html`
@@ -357,6 +368,18 @@ export class HaVoiceCommandDialog extends LitElement {
           --secondary-action-button-flex: 0;
           --mdc-dialog-max-width: 450px;
         }
+        ha-header-bar {
+          display: none;
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-header-bar {
+            --mdc-theme-on-primary: var(--primary-text-color);
+            --mdc-theme-primary: var(--mdc-theme-surface);
+            flex-shrink: 0;
+            display: block;
+          }
+        }
+
         ha-textfield {
           display: block;
         }
