@@ -32,13 +32,13 @@ jobs:
       sha: ${{ steps.get-sha.outputs.sha }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.2.0
+        uses: actions/checkout@v3.3.0
         with:
           # Checkout PR head instead of merge commit
           # Use ref, not SHA, so reruns get the dedupe commit
           ref: ${{ github.event.pull_request.head.ref }}
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.6.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -81,11 +81,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.2.0
+        uses: actions/checkout@v3.3.0
         with:
           ref: ${{ needs.dedupe.outputs.sha }}
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.6.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -109,11 +109,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.2.0
+        uses: actions/checkout@v3.3.0
         with:
           ref: ${{ needs.dedupe.outputs.sha }}
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.6.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -131,11 +131,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.2.0
+        uses: actions/checkout@v3.3.0
         with:
           ref: ${{ needs.dedupe.outputs.sha }}
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.6.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -153,11 +153,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v3.2.0
+        uses: actions/checkout@v3.3.0
         with:
           ref: ${{ needs.dedupe.outputs.sha }}
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.6.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn

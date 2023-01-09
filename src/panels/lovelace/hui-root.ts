@@ -266,7 +266,7 @@ class HUIRoot extends LitElement {
                                         ((Array.isArray(view.visible) &&
                                           !view.visible.some(
                                             (e) =>
-                                              e.user === this.hass!.user!.id
+                                              e.user === this.hass!.user?.id
                                           )) ||
                                           view.visible === false))
                                   ),
@@ -470,7 +470,7 @@ class HUIRoot extends LitElement {
                                 view.visible !== undefined &&
                                 ((Array.isArray(view.visible) &&
                                   !view.visible.some(
-                                    (e) => e.user === this.hass!.user!.id
+                                    (e) => e.user === this.hass!.user?.id
                                   )) ||
                                   view.visible === false)
                             ),

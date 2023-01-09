@@ -25,6 +25,8 @@ import {
   CalendarEventMutableParams,
   createCalendarEvent,
   deleteCalendarEvent,
+  updateCalendarEvent,
+  RecurrenceRange,
 } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -49,7 +51,7 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _summary = "";
 
-  @state() private _description = "";
+  @state() private _description? = "";
 
   @state() private _rrule?: string;
 
@@ -85,12 +87,13 @@ class DialogCalendarEventEditor extends LitElement {
       const entry = params.entry!;
       this._allDay = isDate(entry.dtstart);
       this._summary = entry.summary;
+      this._description = entry.description;
       this._rrule = entry.rrule;
       if (this._allDay) {
-        this._dtstart = new Date(entry.dtstart);
+        this._dtstart = new Date(entry.dtstart + "T00:00:00");
         // Calendar event end dates are exclusive, but not shown that way in the UI. The
         // reverse happens when persisting the event.
-        this._dtend = addDays(new Date(entry.dtend), -1);
+        this._dtend = addDays(new Date(entry.dtend + "T00:00:00"), -1);
       } else {
         this._dtstart = new Date(entry.dtstart);
         this._dtend = new Date(entry.dtend);
@@ -168,6 +171,7 @@ class DialogCalendarEventEditor extends LitElement {
             class="summary"
             name="summary"
             .label=${this.hass.localize("ui.components.calendar.event.summary")}
+            .value=${this._summary}
             required
             @change=${this._handleSummaryChanged}
             error-message=${this.hass.localize("ui.common.error_required")}
@@ -179,6 +183,7 @@ class DialogCalendarEventEditor extends LitElement {
             .label=${this.hass.localize(
               "ui.components.calendar.event.description"
             )}
+            .value=${this._description}
             @change=${this._handleDescriptionChanged}
             autogrow
           ></ha-textarea>
@@ -244,6 +249,9 @@ class DialogCalendarEventEditor extends LitElement {
             </div>
           </div>
           <ha-recurrence-rule-editor
+            .hass=${this.hass}
+            .dtstart=${this._dtstart}
+            .allDay=${this._allDay}
             .locale=${this.hass.locale}
             .timezone=${this.hass.config.time_zone}
             .value=${this._rrule || ""}
@@ -412,6 +420,13 @@ class DialogCalendarEventEditor extends LitElement {
     this._calendarId = ev.detail.value;
   }
 
+  private _isValidStartEnd(): boolean {
+    if (this._allDay) {
+      return this._dtend! >= this._dtstart!;
+    }
+    return this._dtend! > this._dtstart!;
+  }
+
   private async _createEvent() {
     if (!this._summary || !this._calendarId) {
       this._error = this.hass.localize(
@@ -420,7 +435,7 @@ class DialogCalendarEventEditor extends LitElement {
       return;
     }
 
-    if (this._dtend! <= this._dtstart!) {
+    if (!this._isValidStartEnd()) {
       this._error = this.hass.localize(
         "ui.components.calendar.event.invalid_duration"
       );
@@ -445,7 +460,61 @@ class DialogCalendarEventEditor extends LitElement {
   }
 
   private async _saveEvent() {
-    // to be implemented
+    if (!this._summary || !this._calendarId) {
+      this._error = this.hass.localize(
+        "ui.components.calendar.event.not_all_required_fields"
+      );
+      return;
+    }
+
+    if (!this._isValidStartEnd()) {
+      this._error = this.hass.localize(
+        "ui.components.calendar.event.invalid_duration"
+      );
+      return;
+    }
+
+    this._submitting = true;
+    const entry = this._params!.entry!;
+    let range: RecurrenceRange | undefined = RecurrenceRange.THISEVENT;
+    if (entry.recurrence_id) {
+      range = await showConfirmEventDialog(this, {
+        title: this.hass.localize(
+          "ui.components.calendar.event.confirm_update.update"
+        ),
+        text: this.hass.localize(
+          "ui.components.calendar.event.confirm_update.recurring_prompt"
+        ),
+        confirmText: this.hass.localize(
+          "ui.components.calendar.event.confirm_update.update_this"
+        ),
+        confirmFutureText: this.hass.localize(
+          "ui.components.calendar.event.confirm_update.update_future"
+        ),
+      });
+    }
+    if (range === undefined) {
+      // Cancel
+      this._submitting = false;
+      return;
+    }
+    try {
+      await updateCalendarEvent(
+        this.hass!,
+        this._calendarId!,
+        entry.uid!,
+        this._calculateData(),
+        entry.recurrence_id || "",
+        range!
+      );
+    } catch (err: any) {
+      this._error = err ? err.message : "Unknown error";
+      return;
+    } finally {
+      this._submitting = false;
+    }
+    await this._params!.updated();
+    this.closeDialog();
   }
 
   private async _deleteEvent() {
