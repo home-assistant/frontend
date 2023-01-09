@@ -30,6 +30,7 @@ import {
   LovelaceHeaderFooter,
 } from "../types";
 import { EntitiesCardConfig, SortConfig } from "./types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -57,7 +58,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: EntitiesCardConfig;
 
-  private _hass?: HomeAssistant;
+  @state() private _hass?: HomeAssistant;
 
   private _configEntities?: LovelaceRowConfig[];
 
@@ -72,8 +73,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   private _headerElement?: LovelaceHeaderFooter;
 
   private _footerElement?: LovelaceHeaderFooter;
-
-  private _requestUpdateInterval?: NodeJS.Timeout;
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
@@ -189,25 +188,11 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-
-    if (this._enableSorting ?? false) {
-      this._requestUpdateInterval = setInterval(() => {
-        if (this._checkIfSortOrderChanged()) {
-          this.requestUpdate();
-        }
-      }, 1000);
-    }
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-
-    if (this._requestUpdateInterval !== undefined) {
-      clearInterval(this._requestUpdateInterval!);
-      this._requestUpdateInterval = undefined;
-    }
+  protected shouldUpdate(changedProps: PropertyValues) {
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      this._checkIfSortOrderChanged()
+    );
   }
 
   private _checkIfSortOrderChanged(): boolean {
