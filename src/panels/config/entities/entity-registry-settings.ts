@@ -67,7 +67,7 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
-import { getSensorDeviceClassUnits } from "../../../data/sensor";
+import { getSensorDeviceClassConvertibleUnits } from "../../../data/sensor";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -125,24 +125,6 @@ const OVERRIDE_WEATHER_UNITS = {
   visibility: ["km", "mi"],
   wind_speed: ["ft/s", "km/h", "kn", "m/s", "mph"],
 };
-
-const CONVERTIBLE_UNITS_SENSOR_DEVICE_CLASS = new Set([
-  "current",
-  "data_rate",
-  "data_size",
-  "distance",
-  "gas",
-  "precipitation",
-  "precipitation_intensity",
-  "pressure",
-  "speed",
-  "temperature",
-  "voltage",
-  "volume",
-  "water",
-  "weight",
-  "wind_speed",
-]);
 
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
@@ -299,12 +281,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     if (changedProps.has("_deviceClass")) {
       const domain = computeDomain(this.entry.entity_id);
 
-      if (
-        domain === "sensor" &&
-        this._deviceClass &&
-        CONVERTIBLE_UNITS_SENSOR_DEVICE_CLASS.has(this._deviceClass)
-      ) {
-        const { units } = await getSensorDeviceClassUnits(
+      if (domain === "sensor" && this._deviceClass) {
+        const { units } = await getSensorDeviceClassConvertibleUnits(
           this.hass,
           this._deviceClass
         );
