@@ -147,7 +147,6 @@ const numericSortConfig = object({
 
 const randomSortConfig = object({
   type: literal("random"),
-  reverse: optional(boolean()),
 });
 
 const ipSortConfig = object({

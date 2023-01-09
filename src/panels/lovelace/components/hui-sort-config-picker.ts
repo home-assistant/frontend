@@ -73,7 +73,7 @@ export class HuiSortConfigPicker extends LitElement {
           )}
         </ha-select>
         <div class="sort-config-picker-options">
-          ${this.config?.type !== undefined
+          ${this.config?.type !== undefined && this.config?.type !== "random"
             ? html`
                 <ha-formfield
                   .label=${this.hass.localize(
@@ -130,7 +130,7 @@ export class HuiSortConfigPicker extends LitElement {
     }
 
     if (target.configValue === "type") {
-      this.config = { type: this._type, reverse: this._reverse };
+      this.config = { type: this._type };
     }
 
     fireEvent(this, "value-changed", {

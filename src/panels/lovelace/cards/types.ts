@@ -71,12 +71,12 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
 
 export interface SortConfig {
   type: string;
-  reverse?: boolean;
   [key: string]: any;
 }
 
 export interface NumericSortConfig extends SortConfig {
   type: "numeric";
+  reverse?: boolean;
 }
 
 export interface RandomSortConfig extends SortConfig {
@@ -85,6 +85,7 @@ export interface RandomSortConfig extends SortConfig {
 
 export interface IPSortConfig extends SortConfig {
   type: "ip";
+  reverse?: boolean;
 }
 
 export interface AlphaSortConfig extends SortConfig {
@@ -94,14 +95,17 @@ export interface AlphaSortConfig extends SortConfig {
 
 export interface LastChangedSortConfig extends SortConfig {
   type: "last_changed";
+  reverse?: boolean;
 }
 
 export interface LastUpdatedSortConfig extends SortConfig {
   type: "last_updated";
+  reverse?: boolean;
 }
 
 export interface LastTriggeredSortConfig extends SortConfig {
   type: "last_triggered";
+  reverse?: boolean;
 }
 
 export interface EntitiesCardConfig extends LovelaceCardConfig {

@@ -29,8 +29,12 @@ import {
   LovelaceCardEditor,
   LovelaceHeaderFooter,
 } from "../types";
-import { EntitiesCardConfig, SortConfig } from "./types";
+import { AlphaSortConfig, EntitiesCardConfig, SortConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import {
+  stringCompare,
+  caseInsensitiveStringCompare,
+} from "../../../common/string/compare";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -238,7 +242,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       const stateB = entityB?.state;
 
       for (const sortConf of this._sortConfigs!) {
-        const reverseSortOrder = sortConf.reverse ? 1 : -1;
+        const reverseSortOrder =
+          sortConf.reverse !== undefined ? (sortConf.reverse ? 1 : -1) : -1;
         const aBeforeB = -1 * reverseSortOrder;
         const bBeforeA = -aBeforeB;
 
@@ -352,27 +357,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
             );
           }
           case "alpha": {
-            const numValA = Number(stateA);
-            const numValB = Number(stateB);
-
-            /* eslint no-else-return: ["error", {allowElseIf: true}] */
-            if (!isNaN(numValA) && !isNaN(numValB)) {
-              continue;
-            } else if (!isNaN(numValA)) {
-              return bBeforeA;
-            } else if (!isNaN(numValB)) {
-              return aBeforeB;
-            }
-
-            return (
-              String(stateA!).localeCompare(
-                String(stateB!),
-                undefined,
-                sortConf.ignore_case !== undefined
-                  ? { ignorePunctuation: sortConf.ignore_case }
-                  : undefined
-              ) * reverseSortOrder
-            );
+            return (sortConf as AlphaSortConfig).ignore_case ?? false
+              ? caseInsensitiveStringCompare(String(stateA!), String(stateB!))
+              : stringCompare(String(stateA!), String(stateB!));
           }
         }
       }
