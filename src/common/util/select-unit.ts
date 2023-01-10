@@ -1,3 +1,6 @@
+import { FrontendLocaleData } from "../../data/translation";
+import { firstWeekdayIndex } from "../datetime/first_weekday";
+
 export type Unit =
   | "second"
   | "minute"
@@ -18,6 +21,7 @@ const SECS_PER_WEEK = SECS_PER_DAY * 7;
 export function selectUnit(
   from: Date | number,
   to: Date | number = Date.now(),
+  locale: FrontendLocaleData,
   thresholds: Partial<Thresholds> = {}
 ): { value: number; unit: Unit } {
   const resolvedThresholds: Thresholds = {
@@ -49,29 +53,53 @@ export function selectUnit(
     };
   }
 
-  const days = secs / SECS_PER_DAY;
-  if (Math.abs(days) < resolvedThresholds.day) {
+  const fromDate = new Date(from);
+  const toDate = new Date(to);
+
+  // Set time component to zero, which allows us to compare only the days
+  fromDate.setHours(0, 0, 0, 0);
+  toDate.setHours(0, 0, 0, 0);
+
+  const days = (+fromDate - +toDate) / MS_PER_SECOND / SECS_PER_DAY;
+  if (days === 0) {
     return {
-      value: Math.round(days),
+      value: Math.round(hours),
+      unit: "hour",
+    };
+  } if (Math.abs(days) < resolvedThresholds.day) {
+    return {
+      value: days,
       unit: "day",
     };
   }
 
-  const weeks = secs / SECS_PER_WEEK;
-  if (Math.abs(weeks) < resolvedThresholds.week) {
+  const firstWeekday = firstWeekdayIndex(locale);
+  const fromWeek = getFirstDayOfTheWeek(fromDate, firstWeekday);
+  const toWeek = getFirstDayOfTheWeek(toDate, firstWeekday);
+
+  const weeks = (+fromWeek - +toWeek) / MS_PER_SECOND / SECS_PER_WEEK;
+  if (weeks === 0) {
     return {
-      value: Math.round(weeks),
+      value: days,
+      unit: "day",
+    };
+  } if (Math.abs(weeks) < resolvedThresholds.week) {
+    return {
+      value: weeks,
       unit: "week",
     };
   }
 
-  const fromDate = new Date(from);
-  const toDate = new Date(to);
   const years = fromDate.getFullYear() - toDate.getFullYear();
   const months = years * 12 + fromDate.getMonth() - toDate.getMonth();
-  if (Math.round(Math.abs(months)) < resolvedThresholds.month) {
+  if (months === 0) {
     return {
-      value: Math.round(months),
+      value: weeks,
+      unit: "week",
+    };
+  } if (Math.abs(months) < resolvedThresholds.month || years === 0) {
+    return {
+      value: months,
       unit: "month",
     };
   }
@@ -80,6 +108,20 @@ export function selectUnit(
     value: Math.round(years),
     unit: "year",
   };
+}
+
+function getFirstDayOfTheWeek(date: Date, firstWeekday: number) {
+  const dayOfTheWeek = date.getDay();
+  const firstDayOfTheWeek = new Date(date);
+
+  if (dayOfTheWeek > firstWeekday) {
+    firstDayOfTheWeek.setHours((firstWeekday - dayOfTheWeek) * 24);
+  } else if (dayOfTheWeek < firstWeekday) {
+    // The day falls on the previous week
+    firstDayOfTheWeek.setHours((firstWeekday - dayOfTheWeek - 7) * 24);
+  }
+
+  return firstDayOfTheWeek;
 }
 
 type Thresholds = Record<
