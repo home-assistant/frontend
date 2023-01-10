@@ -37,10 +37,7 @@ export class HaSelectSelector extends LitElement {
   private _filter = "";
 
   protected render() {
-    const options =
-      this.selector.select?.options.map((option) =>
-        typeof option === "object" ? option : { value: option, label: option }
-      ) || [];
+    const options = this._getOptions();
 
     if (!this.selector.select?.custom_value && this._mode === "list") {
       if (!this.selector.select?.multiple) {
@@ -180,6 +177,31 @@ export class HaSelectSelector extends LitElement {
         )}
       </ha-select>
     `;
+  }
+
+  private _getOptions() {
+    let options =
+      this.selector.select?.options.map((option) =>
+        typeof option === "object" ? option : { value: option, label: option }
+      ) || [];
+    if (
+      this.selector.select?.translation_key &&
+      this.selector.select?.translation_domain
+    ) {
+      options = options.map((option) =>
+        typeof option === "object"
+          ? {
+              value: option.value,
+              label:
+                this.hass.localize(
+                  `component.${this.selector.select?.translation_domain}.selector.${this.selector.select?.translation_key}.options.${option.value}`
+                ) || option.label,
+              disabled: option.disabled ? option.disabled : false,
+            }
+          : null
+      );
+    }
+    return options;
   }
 
   private _renderHelper() {
