@@ -186,8 +186,8 @@ export interface EnergyInfo {
 
 export interface EnergyValidationIssue {
   type: string;
-  identifier: string;
-  value?: unknown;
+  affected_entities: [string, unknown][];
+  translation_placeholders: Record<string, string>;
 }
 
 export interface EnergyPreferencesValidation {
@@ -200,10 +200,12 @@ export const getEnergyInfo = (hass: HomeAssistant) =>
     type: "energy/info",
   });
 
-export const getEnergyPreferenceValidation = (hass: HomeAssistant) =>
-  hass.callWS<EnergyPreferencesValidation>({
+export const getEnergyPreferenceValidation = async (hass: HomeAssistant) => {
+  await hass.loadBackendTranslation("issues", "energy");
+  return hass.callWS<EnergyPreferencesValidation>({
     type: "energy/validate",
   });
+};
 
 export const getEnergyPreferences = (hass: HomeAssistant) =>
   hass.callWS<EnergyPreferences>({
