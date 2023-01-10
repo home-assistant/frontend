@@ -40,17 +40,12 @@ import {
   updateCloudAlexaEntityConfig,
   updateCloudPref,
 } from "../../../../data/cloud";
-import {
-  EntityRegistryEntry,
-  getExtendedEntityRegistryEntry,
-  updateEntityRegistryEntry,
-} from "../../../../data/entity_registry";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { showEntityAliasesDialog } from "../../entities/entity-aliases/show-dialog-entity-aliases";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
@@ -167,20 +162,8 @@ class CloudAlexa extends LitElement {
               <state-info
                 .hass=${this.hass}
                 .stateObj=${stateObj}
-                secondary-line
                 @click=${this._showMoreInfo}
               >
-                ${entity.entity_id in this.hass.entities
-                  ? html`<button
-                      class="link"
-                      .entityId=${entity.entity_id}
-                      @click=${this._openAliasesSettings}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.cloud.alexa.manage_aliases"
-                      )}
-                    </button>`
-                  : ""}
               </state-info>
               ${!emptyFilter
                 ? html`${iconButton}`
@@ -341,21 +324,6 @@ class CloudAlexa extends LitElement {
 
       this._entityCategories = categories;
     }
-  }
-
-  private async _openAliasesSettings(ev) {
-    ev.stopPropagation();
-    const entityId = ev.target.entityId;
-    const entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
-    if (!entry) {
-      return;
-    }
-    showEntityAliasesDialog(this, {
-      entity: entry,
-      updateEntry: async (updates) => {
-        await updateEntityRegistryEntry(this.hass, entry.entity_id, updates);
-      },
-    });
   }
 
   private async _fetchData() {
@@ -558,6 +526,7 @@ class CloudAlexa extends LitElement {
         }
         state-info {
           cursor: pointer;
+          height: 40px;
         }
         ha-switch {
           padding: 8px 0;
