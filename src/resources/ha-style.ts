@@ -172,7 +172,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-state-person-home-color: var(--rgb-green-color);
       --rgb-state-person-not-home-color: var(--rgb-grey-color);
       --rgb-state-person-zone-color: var(--rgb-blue-color);
+      --rgb-state-plant-color: var(--rgb-red-color);
       --rgb-state-remote-color: var(--rgb-amber-color);
+      --rgb-state-schedule-color: var(--rgb-amber-color);
       --rgb-state-script-color: var(--rgb-amber-color);
       --rgb-state-sensor-battery-high-color: var(--rgb-green-color);
       --rgb-state-sensor-battery-low-color: var(--rgb-red-color);
