@@ -181,7 +181,6 @@ documentContainer.innerHTML = `<custom-style>
       --state-sensor-battery-high-color: var(--green-color);
       --state-sensor-battery-low-color: var(--red-color);
       --state-sensor-battery-medium-color: var(--orange-color);
-      --state-sensor-battery-unknown-color: var(--dark-grey-color);
 
       /* history colors */
       --history-unavailable-color: transparent;

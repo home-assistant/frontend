@@ -90,7 +90,9 @@ export const stateColorProperties = (
   // Special rules for battery coloring
   if (domain === "sensor" && dc === "battery") {
     const property = batteryStateColorProperty(compareState);
-    return [property];
+    if (property) {
+      return [property];
+    }
   }
 
   if (STATE_COLORED_DOMAIN.has(domain)) {

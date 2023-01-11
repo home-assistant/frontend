@@ -1,7 +1,9 @@
-export const batteryStateColorProperty = (state: string): string => {
+export const batteryStateColorProperty = (
+  state: string
+): string | undefined => {
   const value = Number(state);
   if (isNaN(value)) {
-    return "--state-sensor-battery-unknown-color";
+    return undefined;
   }
   if (value >= 70) {
     return "--state-sensor-battery-high-color";
