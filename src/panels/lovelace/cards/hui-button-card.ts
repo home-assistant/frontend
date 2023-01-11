@@ -21,7 +21,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { CLIMATE_HVAC_ACTION_COLORS } from "../../../common/entity/color/climate_action_colors";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -31,6 +30,7 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
+import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -325,7 +325,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
       if (["heating", "cooling", "drying", "fan"].includes(hvacAction)) {
-        return CLIMATE_HVAC_ACTION_COLORS[hvacAction];
+        return stateColorCss(stateObj, HVAC_ACTION_TO_MODE[hvacAction]);
       }
       return undefined;
     }

@@ -6,8 +6,12 @@ import {
   mdiSnowflake,
   mdiWaterPercent,
 } from "@mdi/js";
-import { CLIMATE_HVAC_ACTION_COLORS } from "../../../../../common/entity/color/climate_action_colors";
-import { ClimateEntity, HvacAction } from "../../../../../data/climate";
+import { stateColorCss } from "../../../../../common/entity/state_color";
+import {
+  ClimateEntity,
+  HvacAction,
+  HvacMode,
+} from "../../../../../data/climate";
 import { ComputeBadgeFunction } from "./tile-badge";
 
 export const CLIMATE_HVAC_ACTION_ICONS: Record<HvacAction, string> = {
@@ -19,6 +23,15 @@ export const CLIMATE_HVAC_ACTION_ICONS: Record<HvacAction, string> = {
   off: mdiPower,
 };
 
+export const CLIMATE_HVAC_ACTION_MODE: Record<HvacAction, HvacMode> = {
+  cooling: "cool",
+  drying: "dry",
+  fan: "fan_only",
+  heating: "heat",
+  idle: "off",
+  off: "off",
+};
+
 export const computeClimateBadge: ComputeBadgeFunction = (stateObj) => {
   const hvacAction = (stateObj as ClimateEntity).attributes.hvac_action;
 
@@ -28,6 +41,6 @@ export const computeClimateBadge: ComputeBadgeFunction = (stateObj) => {
 
   return {
     iconPath: CLIMATE_HVAC_ACTION_ICONS[hvacAction],
-    color: CLIMATE_HVAC_ACTION_COLORS[hvacAction],
+    color: stateColorCss(stateObj, CLIMATE_HVAC_ACTION_MODE[hvacAction]),
   };
 };

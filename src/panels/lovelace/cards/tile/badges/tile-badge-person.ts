@@ -1,5 +1,6 @@
 import { mdiHome, mdiHomeExportOutline } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
+import { stateColorCss } from "../../../../../common/entity/state_color";
 import { HomeAssistant } from "../../../../../types";
 import { ComputeBadgeFunction } from "./tile-badge";
 
@@ -19,23 +20,12 @@ function personBadgeIcon(entity: HassEntity) {
   return state === "not_home" ? mdiHomeExportOutline : mdiHome;
 }
 
-function personBadgeColor(entity: HassEntity) {
-  switch (entity.state) {
-    case "home":
-      return "var(--state-person-home-color)";
-    case "not_home":
-      return "var(--state-person-not-home-color)";
-    default:
-      return "var(--state-person-zone-color)";
-  }
-}
-
 export const computePersonBadge: ComputeBadgeFunction = (stateObj, hass) => {
   const zone = getZone(stateObj, hass);
 
   return {
     iconPath: personBadgeIcon(stateObj),
     icon: zone?.attributes.icon,
-    color: personBadgeColor(stateObj),
+    color: stateColorCss(stateObj),
   };
 };

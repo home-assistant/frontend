@@ -7,7 +7,7 @@ import { computeClimateBadge } from "./tile-badge-climate";
 import { computePersonBadge } from "./tile-badge-person";
 
 export type TileBadge = {
-  color: string;
+  color?: string;
   icon?: string;
   iconPath?: string;
 };
