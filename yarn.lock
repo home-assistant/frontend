@@ -1957,12 +1957,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/animation@npm:14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/animation@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: 9b5190654c3752468db00345d947ce68b95877734846cc33e73f85e3b13f9bc41bc8fdf588cbf22e17bec80d021d43597f638f811946555d2e11b383f4cb3812
+  languageName: node
+  linkType: hard
+
 "@material/base@npm:14.0.0-canary.261f2db59.0, @material/base@npm:=14.0.0-canary.261f2db59.0":
   version: 14.0.0-canary.261f2db59.0
   resolution: "@material/base@npm:14.0.0-canary.261f2db59.0"
   dependencies:
     tslib: ^2.1.0
   checksum: 9e4074a14ba8055437589bd9be67c03627e61711a4757f2723e7d07559a3abf1374718592620bf2efa8f4dd80718cd3e2e6ab8d0c7b2f65ff279eeab5249b96a
+  languageName: node
+  linkType: hard
+
+"@material/base@npm:14.0.0-canary.53b3cad2f.0, @material/base@npm:=14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/base@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: 9f4928d115809d4eac7688b1bc77f961b057ea4c1b494b9ff23d561aaccb8c6b2be00e0afce295a5447fae870b7946d6955726b5c3732a9299abdb18e7bf0f4f
   languageName: node
   linkType: hard
 
@@ -2109,6 +2127,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/dom@npm:14.0.0-canary.53b3cad2f.0, @material/dom@npm:=14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/dom@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    "@material/feature-targeting": 14.0.0-canary.53b3cad2f.0
+    tslib: ^2.1.0
+  checksum: f5817f76dd2bed58dbbc3c13678b25d8b25b73e199bff92bb7ef57677afd71fe084c6c4b26fa82645a585b77ac86458455170cfb4e44389e7cbc9c8a664f0533
+  languageName: node
+  linkType: hard
+
 "@material/drawer@npm:=14.0.0-canary.261f2db59.0":
   version: 14.0.0-canary.261f2db59.0
   resolution: "@material/drawer@npm:14.0.0-canary.261f2db59.0"
@@ -2149,6 +2177,15 @@ __metadata:
   dependencies:
     tslib: ^2.1.0
   checksum: e73f98c59b1b2bb0753368d5257b81ac0c836e14db82524c5897c58d95dbbaef4f936f711b4d3f9e07adfef8c68cb9c0bc095e2a3f42f50cb3c9f0f7a4c4e00e
+  languageName: node
+  linkType: hard
+
+"@material/feature-targeting@npm:14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/feature-targeting@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: e7a1ed68f9d7685940849abaea5e66eb6ba51b142dadd63f0ba15fcece9ae0f0439939ebf7eac83ed1ac546adb04a7d3cb1952c55bc7a75ce33e9d8485d5ff37
   languageName: node
   linkType: hard
 
@@ -2293,6 +2330,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/mwc-base@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "@material/mwc-base@npm:0.27.0"
+  dependencies:
+    "@material/base": =14.0.0-canary.53b3cad2f.0
+    "@material/dom": =14.0.0-canary.53b3cad2f.0
+    lit: ^2.0.0
+    tslib: ^2.0.1
+  checksum: 07af17edfc7d6a9e2e4dc471b02792deccb6ddb28b09177202807c58aa165baebad4619c545995f8589a001ca24dc4f3fc1443a6d384f6390d092d3fa0fe7e7a
+  languageName: node
+  linkType: hard
+
 "@material/mwc-button@npm:0.25.3, @material/mwc-button@npm:^0.25.3":
   version: 0.25.3
   resolution: "@material/mwc-button@npm:0.25.3"
@@ -2305,7 +2354,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-checkbox@npm:0.25.3, @material/mwc-checkbox@npm:^0.25.3":
+"@material/mwc-checkbox@npm:0.27.0":
+  version: 0.27.0
+  resolution: "@material/mwc-checkbox@npm:0.27.0"
+  dependencies:
+    "@material/mwc-base": ^0.27.0
+    "@material/mwc-ripple": ^0.27.0
+    lit: ^2.0.0
+    tslib: ^2.0.1
+  checksum: ba53a6ea8ca7d8729f1e3abd5d5ba52573e73e84725c57fe1033d278f4413d41a78fb352603afafac71c8fe5b352b80698887869052c5b971c10bb2b20ba8b3a
+  languageName: node
+  linkType: hard
+
+"@material/mwc-checkbox@npm:^0.25.3":
   version: 0.25.3
   resolution: "@material/mwc-checkbox@npm:0.25.3"
   dependencies:
@@ -2521,6 +2582,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/mwc-ripple@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "@material/mwc-ripple@npm:0.27.0"
+  dependencies:
+    "@material/dom": =14.0.0-canary.53b3cad2f.0
+    "@material/mwc-base": ^0.27.0
+    "@material/ripple": =14.0.0-canary.53b3cad2f.0
+    lit: ^2.0.0
+    tslib: ^2.0.1
+  checksum: 9cd73fdfe46f92b97991323489cea644d9d7b1dccb94145ee3398b73ef540d99a9253664690779714d070312c8aec513d562a395fdb1d8033d75b66b6d26bdd7
+  languageName: node
+  linkType: hard
+
 "@material/mwc-select@npm:0.25.3":
   version: 0.25.3
   resolution: "@material/mwc-select@npm:0.25.3"
@@ -2733,6 +2807,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/ripple@npm:=14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/ripple@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    "@material/animation": 14.0.0-canary.53b3cad2f.0
+    "@material/base": 14.0.0-canary.53b3cad2f.0
+    "@material/dom": 14.0.0-canary.53b3cad2f.0
+    "@material/feature-targeting": 14.0.0-canary.53b3cad2f.0
+    "@material/rtl": 14.0.0-canary.53b3cad2f.0
+    "@material/theme": 14.0.0-canary.53b3cad2f.0
+    tslib: ^2.1.0
+  checksum: 08b71917e237803bd75de147018ee6fe321e84d13cfa8d7e0f5aa391b54a7aea50d9005f12d26692331affba676cf4b7de987ca7dc234f87f5ae25d72f80b9cd
+  languageName: node
+  linkType: hard
+
 "@material/rtl@npm:14.0.0-canary.261f2db59.0":
   version: 14.0.0-canary.261f2db59.0
   resolution: "@material/rtl@npm:14.0.0-canary.261f2db59.0"
@@ -2740,6 +2829,16 @@ __metadata:
     "@material/theme": 14.0.0-canary.261f2db59.0
     tslib: ^2.1.0
   checksum: 48aced264f8818e0dcf7c5f57b523e955b70cb1127126285b03a896bd214057c3338a0150f29441b9d791404878c99c3b7a019d3fd17a79720635e3d80dce44c
+  languageName: node
+  linkType: hard
+
+"@material/rtl@npm:14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/rtl@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    "@material/theme": 14.0.0-canary.53b3cad2f.0
+    tslib: ^2.1.0
+  checksum: 3c1b8b48c675a7d5b119e4880f32a808d07f45ab7f358b439a04c69a75b7216e979b76aaee98033a39858b8cf25abb177eaf5550cdf063c423e8f6cc7b02ed09
   languageName: node
   linkType: hard
 
@@ -2910,6 +3009,16 @@ __metadata:
     "@material/feature-targeting": 14.0.0-canary.261f2db59.0
     tslib: ^2.1.0
   checksum: 5029cc6c7937981d4dc90a49f7e765f563edd7bf77e3d30ae5088add40193c8d4c26fb050bf32a9ff525e75ef934e4642bf9ecb4905bb5eb2e366fd4fee639ec
+  languageName: node
+  linkType: hard
+
+"@material/theme@npm:14.0.0-canary.53b3cad2f.0":
+  version: 14.0.0-canary.53b3cad2f.0
+  resolution: "@material/theme@npm:14.0.0-canary.53b3cad2f.0"
+  dependencies:
+    "@material/feature-targeting": 14.0.0-canary.53b3cad2f.0
+    tslib: ^2.1.0
+  checksum: fd44e929171863ceaafb991e289d893d5273c5262a234dfd85fc5d9ac7e6fc7e190631919ea309cdfcbf78317070fa7bda4782f4eaf9453eed942767bfd9086d
   languageName: node
   linkType: hard
 
@@ -9249,7 +9358,7 @@ fsevents@^1.2.7:
     "@material/chips": 14.0.0-canary.261f2db59.0
     "@material/data-table": 14.0.0-canary.261f2db59.0
     "@material/mwc-button": 0.25.3
-    "@material/mwc-checkbox": 0.25.3
+    "@material/mwc-checkbox": 0.27.0
     "@material/mwc-circular-progress": 0.25.3
     "@material/mwc-dialog": 0.25.3
     "@material/mwc-drawer": ^0.25.3

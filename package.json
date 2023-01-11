@@ -50,7 +50,7 @@
     "@material/chips": "14.0.0-canary.261f2db59.0",
     "@material/data-table": "14.0.0-canary.261f2db59.0",
     "@material/mwc-button": "0.25.3",
-    "@material/mwc-checkbox": "0.25.3",
+    "@material/mwc-checkbox": "0.27.0",
     "@material/mwc-circular-progress": "0.25.3",
     "@material/mwc-dialog": "0.25.3",
     "@material/mwc-drawer": "^0.25.3",
