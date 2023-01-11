@@ -56,7 +56,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @state() private _agentInfo?: AgentInfo;
 
-  @query("ha-dialog", true) private _dialog!: HaDialog;
+  @query("ha-dialog") private _dialog!: HaDialog;
 
   private recognition!: SpeechRecognition;
 
@@ -65,6 +65,7 @@ export class HaVoiceCommandDialog extends LitElement {
   public async showDialog(): Promise<void> {
     this._opened = true;
     this._agentInfo = await getAgentInfo(this.hass);
+    this._scrollMessagesBottom();
   }
 
   public async closeDialog(): Promise<void> {
@@ -84,6 +85,7 @@ export class HaVoiceCommandDialog extends LitElement {
         open
         @closed=${this.closeDialog}
         .heading=${this.hass.localize("ui.dialogs.voice_command.title")}
+        flexContent
       >
         <div slot="heading">
           <ha-header-bar>
@@ -98,7 +100,7 @@ export class HaVoiceCommandDialog extends LitElement {
             ></ha-icon-button>
           </ha-header-bar>
         </div>
-        <div>
+        <div class="messages">
           ${this._agentInfo && this._agentInfo.onboarding
             ? html`
                 <div class="onboarding">
@@ -379,6 +381,8 @@ export class HaVoiceCommandDialog extends LitElement {
           --primary-action-button-flex: 1;
           --secondary-action-button-flex: 0;
           --mdc-dialog-max-width: 450px;
+          --mdc-dialog-max-height: 550px;
+          --dialog-content-padding: 0;
         }
         ha-header-bar {
           display: none;
@@ -415,6 +419,10 @@ export class HaVoiceCommandDialog extends LitElement {
         }
         .attribution {
           color: var(--secondary-text-color);
+        }
+        .messages {
+          padding: 24px;
+          display: block;
         }
         .message {
           font-size: 18px;
