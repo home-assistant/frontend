@@ -8,13 +8,15 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
+import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-chip";
-import type { HaTextField } from "../../../components/ha-textfield";
 import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
@@ -155,6 +157,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           stateLabel}
           <ha-chip
             hasIcon
+            style=${styleMap({
+              "--alarm-state-color": stateColorCss(stateObj),
+            })}
             class=${classMap({ [stateObj.state]: true })}
             @click=${this._handleMoreInfo}
           >
@@ -269,7 +274,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         flex-direction: column;
         align-items: center;
         box-sizing: border-box;
-        --alarm-state-color: var(--state-alarm_control_panel-armed_home-color);
+        --alarm-state-color: var(--state-inactive-color);
       }
 
       ha-chip {
@@ -286,46 +291,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         box-sizing: border-box;
       }
 
-      .unavailable {
-        --alarm-state-color: var(--state-unavailable-color);
-      }
-
-      .armed_home {
-        --alarm-state-color: var(--state-alarm_control_panel-armed_home-color);
-      }
-      .armed_away {
-        --alarm-state-color: var(--state-alarm_control_panel-armed_away-color);
-      }
-      .armed_vacation {
-        --alarm-state-color: var(
-          --state-alarm_control_panel-armed_vacation-color
-        );
-      }
-      .armed_night {
-        --alarm-state-color: var(--state-alarm_control_panel-armed_night-color);
-      }
-      .armed_custom_bypass {
-        --alarm-state-color: var(
-          --state-alarm_control_panel-armed_custom_bypass-color
-        );
-      }
-
-      .disarmed {
-        --alarm-state-color: var(--state-alarm_control_panel-disarmed-color);
-      }
-
-      .triggered {
-        --alarm-state-color: var(--state-alarm_control_panel-triggered-color);
-        animation: pulse 1s infinite;
-      }
-
-      .arming {
-        --alarm-state-color: var(--state-alarm_control_panel-arming-color);
-        animation: pulse 1s infinite;
-      }
-
+      .triggered,
+      .arming,
       .pending {
-        --alarm-state-color: var(--state-alarm_control_panel-pending-color);
         animation: pulse 1s infinite;
       }
 
