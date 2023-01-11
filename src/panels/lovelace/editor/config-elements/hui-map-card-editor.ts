@@ -116,7 +116,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   private _entitiesValueChanged(ev: EntitiesEditorEvent): void {
     if (ev.detail && ev.detail.entities) {
-      this._config = { ...this._config!, entities: ev.detail.entities };
+      this._config = {
+        ...this._config!,
+        entities: ev.detail.entities.map((e) => e.entity),
+      };
 
       this._configEntities = processEditorEntities(this._config.entities);
       fireEvent(this, "config-changed", { config: this._config! });
