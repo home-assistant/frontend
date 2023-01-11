@@ -1033,7 +1033,8 @@
           "mode": "Display mode",
           "text": "Text",
           "password": "Password",
-          "pattern": "Regex pattern for client-side validation"
+          "pattern_label": "Regex pattern",
+          "pattern_helper": "Used for client-side validation"
         },
         "input_number": {
           "min": "Minimum value",
