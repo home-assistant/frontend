@@ -803,6 +803,7 @@
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
+        "title": "Assistant",
         "did_not_hear": "Home Assistant did not hear anything",
         "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
@@ -3916,7 +3917,7 @@
           "configure_ui": "Edit Dashboard",
           "help": "Help",
           "search": "Search",
-          "start_conversation": "Start conversation",
+          "assist": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close"

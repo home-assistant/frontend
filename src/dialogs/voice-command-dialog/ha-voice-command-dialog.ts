@@ -64,9 +64,6 @@ export class HaVoiceCommandDialog extends LitElement {
 
   public async showDialog(): Promise<void> {
     this._opened = true;
-    if (SpeechRecognition) {
-      this._startListening();
-    }
     this._agentInfo = await getAgentInfo(this.hass);
   }
 
@@ -83,9 +80,16 @@ export class HaVoiceCommandDialog extends LitElement {
       return html``;
     }
     return html`
-      <ha-dialog open @closed=${this.closeDialog}>
-        <div slot="heading" class="heading">
+      <ha-dialog
+        open
+        @closed=${this.closeDialog}
+        .heading=${this.hass.localize("ui.dialogs.voice_command.title")}
+      >
+        <div slot="heading">
           <ha-header-bar>
+            <span slot="title">
+              ${this.hass.localize("ui.dialogs.voice_command.title")}
+            </span>
             <ha-icon-button
               slot="navigationIcon"
               dialogAction="cancel"
@@ -159,6 +163,7 @@ export class HaVoiceCommandDialog extends LitElement {
                         `
                       : ""}
                     <ha-icon-button
+                      class="listening-icon"
                       .path=${mdiMicrophone}
                       @click=${this._toggleListening}
                     >
@@ -221,6 +226,7 @@ export class HaVoiceCommandDialog extends LitElement {
     this.recognition = new SpeechRecognition();
     this.recognition.interimResults = true;
     this.recognition.lang = this.hass.language;
+    this.recognition.continuous = false;
 
     this.recognition.addEventListener("start", () => {
       this.results = {
@@ -319,7 +325,13 @@ export class HaVoiceCommandDialog extends LitElement {
     if (!this.results) {
       this._startListening();
     } else {
-      this.recognition!.stop();
+      this._stopListening();
+    }
+  }
+
+  private _stopListening() {
+    if (this.recognition) {
+      this.recognition.stop();
     }
   }
 
@@ -351,7 +363,7 @@ export class HaVoiceCommandDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-icon-button {
+        ha-icon-button.listening-icon {
           color: var(--secondary-text-color);
           margin-right: -24px;
           margin-inline-end: -24px;
@@ -359,7 +371,7 @@ export class HaVoiceCommandDialog extends LitElement {
           direction: var(--direction);
         }
 
-        ha-icon-button[active] {
+        ha-icon-button.listening-icon[active] {
           color: var(--primary-color);
         }
 
@@ -375,13 +387,14 @@ export class HaVoiceCommandDialog extends LitElement {
           ha-header-bar {
             --mdc-theme-on-primary: var(--primary-text-color);
             --mdc-theme-primary: var(--mdc-theme-surface);
+            display: flex;
             flex-shrink: 0;
-            display: block;
           }
         }
 
         ha-textfield {
           display: block;
+          overflow: hidden;
         }
         a.button {
           text-decoration: none;
