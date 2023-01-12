@@ -8,7 +8,7 @@ export class HaTileSlider extends LitElement {
   public disabled = false;
 
   @property()
-  public mode?: "start" | "end" | "indicator" = "start";
+  public mode?: "start" | "end" | "cursor" = "start";
 
   @property()
   public valueFormatter?: (value?: number) => string | TemplateResult;
@@ -24,6 +24,9 @@ export class HaTileSlider extends LitElement {
 
   @property({ type: Number })
   public max = 100;
+
+  @property({ type: Boolean, attribute: "show-handle" })
+  public showHandle = false;
 
   @property() public label = "";
 
@@ -41,6 +44,7 @@ export class HaTileSlider extends LitElement {
           .step=${this.step}
           .min=${this.min}
           .max=${this.max}
+          .showHandle=${this.showHandle}
           aria-labelledby="label"
         >
         </ha-bar-slider>
@@ -66,7 +70,11 @@ export class HaTileSlider extends LitElement {
         );
         --slider-bar-background: var(
           --more-info-slider-bar-background,
-          rgba(var(--rgb-disabled-color), 0.2)
+          rgb(var(--rgb-disabled-color))
+        );
+        --slider-bar-background-opacity: var(
+          --more-info-slider-bar-background-opacity,
+          0.2
         );
       }
       p {

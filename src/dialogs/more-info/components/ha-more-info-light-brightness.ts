@@ -2,6 +2,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { hsv2rgb, rgb2hsv } from "../../../common/color/convert-color";
+import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
@@ -72,6 +73,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
         label=${this.hass.localize("ui.card.light.brightness")}
         min="1"
         max="100"
+        .showHandle=${stateActive(this.stateObj)}
         .value=${this.value}
         @value-changed=${this._valueChanged}
         @slider-moved=${this._sliderMoved}

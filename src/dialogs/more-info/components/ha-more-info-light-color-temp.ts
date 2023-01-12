@@ -46,7 +46,7 @@ export class HaMoreInfoLightColorTemp extends LitElement {
         label=${this.hass.localize("ui.card.light.color_temperature")}
         min="1"
         max="100"
-        mode="indicator"
+        mode="cursor"
         .value=${this.value}
         .valueFormatter=${this._valueFormatter}
         @value-changed=${this._valueChanged}
@@ -67,6 +67,7 @@ export class HaMoreInfoLightColorTemp extends LitElement {
           white 50%,
           rgb(255, 160, 0) 100%
         );
+        --more-info-slider-bar-background-opacity: 1;
       }
     `;
   }
