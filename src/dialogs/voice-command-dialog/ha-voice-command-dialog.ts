@@ -156,11 +156,7 @@ export class HaVoiceCommandDialog extends LitElement {
             id="message-input"
             @keyup=${this._handleKeyUp}
             @input=${this._handleInput}
-            .label=${this.hass.localize(
-              `ui.dialogs.voice_command.${
-                SpeechRecognition ? "label_voice" : "label"
-              }`
-            )}
+            .label=${this.hass.localize(`ui.dialogs.voice_command.input_label`)}
             dialogInitialFocus
             iconTrailing
           >
