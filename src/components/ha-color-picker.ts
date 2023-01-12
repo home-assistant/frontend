@@ -89,7 +89,10 @@ class HaColorPicker extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (changedProps.has("hueSegments") || changedProps.has("saturationSegments")) {
+    if (
+      changedProps.has("hueSegments") ||
+      changedProps.has("saturationSegments")
+    ) {
       this.segmentationChange();
     }
     if (changedProps.has("desiredHsColor") && this.desiredHsColor) {
@@ -99,7 +102,7 @@ class HaColorPicker extends LitElement {
       this.applyRgbColor(this.desiredRgbColor);
     }
   }
-   
+
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     this.setupLayers();
