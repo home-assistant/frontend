@@ -810,7 +810,9 @@
         "error": "Oops, an error has occurred",
         "how_can_i_help": "How can I help?",
         "label": "Type a question and press 'Enter'",
-        "label_voice": "Type and press 'Enter' or tap the microphone to speak"
+        "label_voice": "Type and press 'Enter' or tap the microphone to speak",
+        "send_text": "Send text",
+        "start_listening": "Start listening"
       },
       "generic": {
         "cancel": "Cancel",

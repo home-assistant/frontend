@@ -1,6 +1,6 @@
 /* eslint-disable lit/prefer-static-styles */
 import "@material/mwc-button/mwc-button";
-import { mdiClose, mdiMicrophone } from "@mdi/js";
+import { mdiClose, mdiMicrophone, mdiSend } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -56,7 +56,11 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @state() private _agentInfo?: AgentInfo;
 
-  @query("[data-scroll-container]") private _scrollContainer!: HaDialog;
+  @state() private _showSendButton = false;
+
+  @query("#scroll-container") private _scrollContainer!: HaDialog;
+
+  @query("#message-input") private _messageInput!: HaTextField;
 
   private recognition!: SpeechRecognition;
 
@@ -101,7 +105,7 @@ export class HaVoiceCommandDialog extends LitElement {
           </ha-header-bar>
         </div>
         <div class="messages">
-          <div class="messages-container" data-scroll-container>
+          <div class="messages-container" id="scroll-container">
             ${this._agentInfo && this._agentInfo.onboarding
               ? html`
                   <div class="onboarding">
@@ -149,7 +153,9 @@ export class HaVoiceCommandDialog extends LitElement {
         </div>
         <div class="input" slot="primaryAction">
           <ha-textfield
+            id="message-input"
             @keyup=${this._handleKeyUp}
+            @input=${this._handleInput}
             .label=${this.hass.localize(
               `ui.dialogs.voice_command.${
                 SpeechRecognition ? "label_voice" : "label"
@@ -158,9 +164,21 @@ export class HaVoiceCommandDialog extends LitElement {
             dialogInitialFocus
             iconTrailing
           >
-            ${SpeechRecognition
-              ? html`
-                  <span slot="trailingIcon">
+            <span slot="trailingIcon">
+              ${this._showSendButton
+                ? html`
+                    <ha-icon-button
+                      class="listening-icon"
+                      .path=${mdiSend}
+                      @click=${this._handleSendMessage}
+                      .label=${this.hass.localize(
+                        "ui.dialogs.voice_command.send_text"
+                      )}
+                    >
+                    </ha-icon-button>
+                  `
+                : SpeechRecognition
+                ? html`
                     ${this.results
                       ? html`
                           <div class="bouncer">
@@ -173,11 +191,14 @@ export class HaVoiceCommandDialog extends LitElement {
                       class="listening-icon"
                       .path=${mdiMicrophone}
                       @click=${this._toggleListening}
+                      .label=${this.hass.localize(
+                        "ui.dialogs.voice_command.start_listening"
+                      )}
                     >
                     </ha-icon-button>
-                  </span>
-                `
-              : ""}
+                  `
+                : ""}
+            </span>
           </ha-textfield>
           ${this._agentInfo && this._agentInfo.attribution
             ? html`
@@ -221,6 +242,24 @@ export class HaVoiceCommandDialog extends LitElement {
     if (ev.keyCode === 13 && input.value) {
       this._processText(input.value);
       input.value = "";
+      this._showSendButton = false;
+    }
+  }
+
+  private _handleInput(ev: InputEvent) {
+    const value = (ev.target as HaTextField).value;
+    if (value && !this._showSendButton) {
+      this._showSendButton = true;
+    } else if (!value && this._showSendButton) {
+      this._showSendButton = false;
+    }
+  }
+
+  private _handleSendMessage() {
+    if (this._messageInput.value) {
+      this._processText(this._messageInput.value);
+      this._messageInput.value = "";
+      this._showSendButton = false;
     }
   }
 
