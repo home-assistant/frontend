@@ -135,7 +135,7 @@ class MoreInfoLight extends LitElement {
                     <div class="segmentationContainer">
                       <ha-color-picker
                         class="color"
-                        @colorselected=${this._colorPicked}
+                        @color-selected=${this._colorPicked}
                         .desiredRgbColor=${this._colorPickerColor}
                         throttle="500"
                         .hueSegments=${this._hueSegments}
