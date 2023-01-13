@@ -803,13 +803,15 @@
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
+        "title": "Assistant",
         "did_not_hear": "Home Assistant did not hear anything",
         "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
         "how_can_i_help": "How can I help?",
-        "label": "Type a question and press 'Enter'",
-        "label_voice": "Type and press 'Enter' or tap the microphone to speak"
+        "input_label": "Enter a request",
+        "send_text": "Send text",
+        "start_listening": "Start listening"
       },
       "generic": {
         "cancel": "Cancel",
@@ -3856,7 +3858,7 @@
           "configure_ui": "Edit Dashboard",
           "help": "Help",
           "search": "Search",
-          "start_conversation": "Start conversation",
+          "assist": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close"
