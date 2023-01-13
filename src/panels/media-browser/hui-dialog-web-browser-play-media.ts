@@ -1,6 +1,12 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-hls-player";
@@ -78,7 +84,7 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
             `
           : mediaType === "image"
           ? html`<img
-              alt=${ifDefined(this._params.title)}
+              alt=${this._params.title || nothing}
               src=${this._params.sourceUrl}
             />`
           : html`${this.hass.localize(
