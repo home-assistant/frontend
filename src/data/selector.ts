@@ -112,7 +112,7 @@ export interface DeviceSelector {
   device: {
     integration?: string;
     manufacturer?: string;
-    model?: string;
+    model?: string | [string];
     entity?: SelectorEntity;
     multiple?: boolean;
   } | null;
@@ -290,12 +290,27 @@ export const filterSelectorDevices = (
     integration: filterIntegration,
   } = filterDevice;
 
-  if (filterManufacturer && device.manufacturer !== filterManufacturer) {
-    return false;
+  if (filterManufacturer) {
+    if (
+      Array.isArray(filterManufacturer)
+        ? !(
+            device.manufacturer &&
+            filterManufacturer.includes(device.manufacturer)
+          )
+        : device.manufacturer !== filterManufacturer
+    ) {
+      return false;
+    }
   }
 
-  if (filterModel && device.model !== filterModel) {
-    return false;
+  if (filterModel) {
+    if (
+      Array.isArray(filterModel)
+        ? !(device.model && filterModel.includes(device.model))
+        : device.model !== filterModel
+    ) {
+      return false;
+    }
   }
 
   if (filterIntegration && deviceIntegrationLookup) {
