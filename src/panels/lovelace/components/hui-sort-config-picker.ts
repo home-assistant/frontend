@@ -56,7 +56,7 @@ export class HuiSortConfigPicker extends LitElement {
             "ui.panel.lovelace.editor.sort-config-picker.title"
           )}
           .configValue=${"type"}
-          .value=${this.config?.type ?? ""}
+          .value=${this._type}
           @selected=${this._valueChanged}
           @closed=${stopPropagation}
           fixedMenuPosition
@@ -73,7 +73,7 @@ export class HuiSortConfigPicker extends LitElement {
           )}
         </ha-select>
         <div class="sort-config-picker-options">
-          ${this.config?.type !== undefined && this.config?.type !== "random"
+          ${this._type !== "" && this._type !== "random"
             ? html`
                 <ha-formfield
                   .label=${this.hass.localize(
@@ -82,14 +82,14 @@ export class HuiSortConfigPicker extends LitElement {
                   .dir=${computeRTLDirection(this.hass)}
                 >
                   <ha-switch
-                    .checked=${this.config.reverse ?? false}
+                    .checked=${this._reverse}
                     .configValue=${"reverse"}
                     @change=${this._valueChanged}
                   ></ha-switch>
                 </ha-formfield>
               `
             : ""}
-          ${this.config?.type === "alpha"
+          ${this._type === "alpha"
             ? html`
                 <ha-formfield
                   .label=${this.hass.localize(
@@ -98,7 +98,7 @@ export class HuiSortConfigPicker extends LitElement {
                   .dir=${computeRTLDirection(this.hass)}
                 >
                   <ha-switch
-                    .checked=${this.config?.ignore_case ?? false}
+                    .checked=${this._ignore_case}
                     .configValue=${"ignore_case"}
                     @change=${this._valueChanged}
                   ></ha-switch>
