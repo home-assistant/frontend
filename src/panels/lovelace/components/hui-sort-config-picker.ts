@@ -11,13 +11,13 @@ import { SortConfig, AlphaSortConfig } from "../cards/types";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 const POSSIBLE_SORT_CONFIG_TYPES: string[] = [
-  "numeric",
   "alpha",
   "ip",
-  "random",
   "last_changed",
   "last_triggered",
   "last_updated",
+  "numeric",
+  "random",
 ];
 
 @customElement("hui-sort-config-picker")
