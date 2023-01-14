@@ -155,7 +155,7 @@ export class HuiSortConfigPicker extends LitElement {
         }
 
         .sort-config-picker-options > * {
-          margin: 8px;
+          margin: 4px 8px;
         }
       `,
     ];
