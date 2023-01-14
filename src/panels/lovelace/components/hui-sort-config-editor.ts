@@ -197,6 +197,7 @@ export class HuiSortConfigEditor extends LitElement {
         .sort-config {
           display: flex;
           align-items: center;
+          margin-bottom: 8px;
         }
 
         .sort-config .handle {
@@ -218,10 +219,6 @@ export class HuiSortConfigEditor extends LitElement {
         .remove-icon {
           --mdc-icon-button-size: 36px;
           color: var(--secondary-text-color);
-        }
-
-        .sort-configs {
-          margin-bottom: 8px;
         }
       `,
     ];
