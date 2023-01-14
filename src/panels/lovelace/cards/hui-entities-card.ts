@@ -200,17 +200,14 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   private _checkIfSortOrderChanged(): boolean {
-    if (
+    return (
       this._lastUsedSortedEntities === undefined ||
       this._lastUsedSortedEntities.length !==
         this._sortedConfigEntities.length ||
       this._lastUsedSortedEntities.some(
         (oldEntity, index) => oldEntity !== this._sortedConfigEntities[index]
       )
-    ) {
-      return true;
-    }
-    return false;
+    );
   }
 
   get _sortedConfigEntities(): LovelaceRowConfig[] {
