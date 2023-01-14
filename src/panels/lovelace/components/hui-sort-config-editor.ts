@@ -13,6 +13,7 @@ import { SortableInstance } from "../../../resources/sortable";
 import { loadSortable } from "../../../resources/sortable.ondemand";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import "./hui-sort-config-picker";
+import type { HuiSortConfigPicker } from "./hui-sort-config-picker";
 
 @customElement("hui-sort-config-editor")
 export class HuiSortConfigEditor extends LitElement {
@@ -181,6 +182,8 @@ export class HuiSortConfigEditor extends LitElement {
 
     const newSortConfigs =
       this.config !== undefined ? this.config!.concat(value) : [value];
+
+    (ev.target as HuiSortConfigPicker).config = undefined;
 
     fireEvent(this, "value-changed", {
       value: newSortConfigs,
