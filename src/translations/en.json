@@ -4115,8 +4115,6 @@
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
               "enable_sorting": "Enable sorting?",
-              "sort_configuration": "Sort configuration",
-              "reverse_sort_order": "Reversed sort order?",
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists.",
               "special_row": "special row",
