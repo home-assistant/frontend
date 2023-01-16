@@ -79,12 +79,12 @@ interface EntityHistoryState {
   lu: number;
 }
 
-interface StateDict<T> {
-  [Key: string]: T;
+interface EntityStateDict<T> {
+  [entity_id: string]: T;
 }
 
 export interface HistoryStreamMessage {
-  states: StateDict<EntityHistoryState[]>;
+  states: EntityStateDict<EntityHistoryState[]>;
   start_time?: number; // Start time of this historical chunk
   end_time?: number; // End time of this historical chunk
 }
