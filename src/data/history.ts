@@ -187,9 +187,8 @@ export const subscribeHistory = (
   endTime: Date,
   entityIds: string[]
 ): Promise<() => Promise<void>> => {
-  // If all specified filters are empty lists, we can return an empty list.
   const params = {
-    type: "history/history_during_period",
+    type: "history/stream",
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
     minimal_response: true,
@@ -206,16 +205,13 @@ export const subscribeHistory = (
 class HistoryStream {
   hass: HomeAssistant;
 
-  startTime: Date;
-
-  endTime: Date;
+  hoursToShow: number;
 
   combinedHistory: HistoryStates;
 
-  constructor(hass: HomeAssistant, startTime: Date, endTime: Date) {
+  constructor(hass: HomeAssistant, hoursToShow: number) {
     this.hass = hass;
-    this.startTime = startTime;
-    this.endTime = endTime;
+    this.hoursToShow = hoursToShow;
     this.combinedHistory = {};
   }
 
@@ -231,7 +227,8 @@ class HistoryStream {
       // indicate no more historical events
       return this.combinedHistory;
     }
-    const purgeBeforePythonTime = this.startTime.getTime() / 1000;
+    const purgeBeforePythonTime =
+      (new Date().getTime() - 60 * 60 * this.hoursToShow * 1000) / 1000;
     const newHistory: HistoryStates = {};
     Object.keys(streamMessage.states).forEach((entityId) => {
       newHistory[entityId] = [];
@@ -260,24 +257,23 @@ class HistoryStream {
   }
 }
 
-export const subscribeHistoryStates = (
+export const subscribeHistoryStatesWindow = (
   hass: HomeAssistant,
   callbackFunction: (data: HistoryStates) => void,
-  startTime: Date,
-  endTime: Date,
+  hoursToShow: number,
   entityIds: string[]
 ): Promise<() => Promise<void>> => {
-  // If all specified filters are empty lists, we can return an empty list.
   const params = {
-    type: "history/history_during_period",
-    start_time: startTime.toISOString(),
-    end_time: endTime.toISOString(),
+    type: "history/stream",
+    start_time: new Date(
+      new Date().getTime() - 60 * 60 * hoursToShow * 1000
+    ).toISOString(),
     minimal_response: true,
     no_attributes: !entityIds.some((entityId) =>
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
   };
-  const stream = new HistoryStream(hass, startTime, endTime);
+  const stream = new HistoryStream(hass, hoursToShow);
   return hass.connection.subscribeMessage<HistoryStreamMessage>(
     (message) => callbackFunction(stream.processMessage(message)),
     params
