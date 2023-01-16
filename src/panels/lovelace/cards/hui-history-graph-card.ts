@@ -102,9 +102,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     this._subscribed = subscribeHistoryStatesWindow(
       this.hass!,
       (combinedHistory) => {
-        // "recent" means start time is a sliding window
-        // so we need to calculate an expireTime to
-        // purge old events
         if (!this._subscribed) {
           // Message came in before we had a chance to unload
           return;
