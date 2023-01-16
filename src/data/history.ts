@@ -79,6 +79,16 @@ interface EntityHistoryState {
   lu: number;
 }
 
+interface StateDict<T> {
+  [Key: string]: T;
+}
+
+export interface HistoryStreamMessage {
+  states: StateDict<EntityHistoryState[]>;
+  start_time?: number; // Start time of this historical chunk
+  end_time?: number; // End time of this historical chunk
+}
+
 export const entityIdHistoryNeedsAttributes = (
   hass: HomeAssistant,
   entityId: string
@@ -172,6 +182,29 @@ export const fetchDateWS = (
     return hass.callWS<HistoryStates>({ ...params, entity_ids: entityIds });
   }
   return hass.callWS<HistoryStates>(params);
+};
+
+export const subscribeHistory = (
+  hass: HomeAssistant,
+  callbackFunction: (message: HistoryStreamMessage) => void,
+  startTime: Date,
+  endTime: Date,
+  entityIds: string[]
+): Promise<() => Promise<void>> => {
+  // If all specified filters are empty lists, we can return an empty list.
+  const params = {
+    type: "history/history_during_period",
+    start_time: startTime.toISOString(),
+    end_time: endTime.toISOString(),
+    minimal_response: true,
+    no_attributes: !entityIds.some((entityId) =>
+      entityIdHistoryNeedsAttributes(hass, entityId)
+    ),
+  };
+  return hass.connection.subscribeMessage<HistoryStreamMessage>(
+    (message) => callbackFunction(message),
+    params
+  );
 };
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
