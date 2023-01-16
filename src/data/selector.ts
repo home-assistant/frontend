@@ -111,8 +111,8 @@ export interface DateTimeSelector {
 export interface DeviceSelector {
   device: {
     integration?: string;
-    manufacturer?: string | [string];
-    model?: string | [string];
+    manufacturer?: string | string[];
+    model?: string | string[];
     entity?: SelectorEntity;
     multiple?: boolean;
   } | null;
