@@ -2,14 +2,10 @@
 import { expose } from "comlink";
 import { marked } from "marked";
 import "proxy-polyfill";
-import { filterXSS, getDefaultWhiteList } from "xss";
+import { filterXSS, getDefaultWhiteList, IWhiteList } from "xss";
 
-interface WhiteList {
-  [tag: string]: string[];
-}
-
-let whiteListNormal: WhiteList | undefined;
-let whiteListSvg: WhiteList | undefined;
+let whiteListNormal: IWhiteList | undefined;
+let whiteListSvg: IWhiteList | undefined;
 
 // Override the default `onTagAttr` behavior to only render
 // our markdown checkboxes.
@@ -43,7 +39,7 @@ const renderMarkdown = (
 ): string => {
   if (!whiteListNormal) {
     whiteListNormal = {
-      ...(getDefaultWhiteList() as WhiteList),
+      ...getDefaultWhiteList(),
       input: ["type", "disabled", "checked"],
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
@@ -51,7 +47,7 @@ const renderMarkdown = (
     };
   }
 
-  let whiteList: WhiteList | undefined;
+  let whiteList: IWhiteList | undefined;
 
   if (hassOptions.allowSvg) {
     if (!whiteListSvg) {
