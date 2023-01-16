@@ -513,15 +513,11 @@ class MoreInfoLight extends LitElement {
    */
   private _colorPicked(
     ev: CustomEvent<{
-      hs: { h: number; s: number };
-      rgb: { r: number; g: number; b: number };
+      hs: [number, number];
+      rgb: [number, number, number];
     }>
   ) {
-    this._colorPickerColor = [
-      ev.detail.rgb.r,
-      ev.detail.rgb.g,
-      ev.detail.rgb.b,
-    ];
+    this._colorPickerColor = ev.detail.rgb;
 
     if (
       lightSupportsColorMode(this.stateObj!, LightColorMode.RGBWW) ||
@@ -530,17 +526,13 @@ class MoreInfoLight extends LitElement {
       this._setRgbWColor(
         this._colorBrightnessSliderValue
           ? this._adjustColorBrightness(
-              [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b],
+              ev.detail.rgb,
               (this._colorBrightnessSliderValue * 255) / 100
             )
-          : [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b]
+          : ev.detail.rgb
       );
     } else if (lightSupportsColorMode(this.stateObj!, LightColorMode.RGB)) {
-      const rgb_color: [number, number, number] = [
-        ev.detail.rgb.r,
-        ev.detail.rgb.g,
-        ev.detail.rgb.b,
-      ];
+      const rgb_color = ev.detail.rgb;
       if (this._brightnessAdjusted) {
         this.hass.callService("light", "turn_on", {
           entity_id: this.stateObj!.entity_id,
@@ -560,7 +552,7 @@ class MoreInfoLight extends LitElement {
     } else {
       this.hass.callService("light", "turn_on", {
         entity_id: this.stateObj!.entity_id,
-        hs_color: [ev.detail.hs.h, ev.detail.hs.s * 100],
+        hs_color: [ev.detail.hs[0], ev.detail.hs[1] * 100],
       });
     }
   }

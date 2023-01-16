@@ -3,7 +3,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { hs2rgb, rgb2hs } from "../common/color/convert-color";
 import { fireEvent } from "../common/dom/fire_event";
 
-type HsColor = { h: number; s: number };
+type HsColor = [number, number];
 type RgbColor = [number, number, number];
 
 @customElement("ha-color-picker")
@@ -218,10 +218,9 @@ class HaColorPicker extends LitElement {
   processUserSelect(ev) {
     const canvasXY = this.convertToCanvasCoordinates(ev.clientX, ev.clientY);
     const hs = this.getColor(canvasXY.x, canvasXY.y);
-    let rgb;
+    let rgb: RgbColor;
     if (!this.isInWheel(canvasXY.x, canvasXY.y)) {
-      const [r, g, b] = hs2rgb([hs.h, hs.s]);
-      rgb = { r, g, b };
+      rgb = hs2rgb(hs);
     } else {
       rgb = this.getRgbColor(canvasXY.x, canvasXY.y);
     }
@@ -231,7 +230,7 @@ class HaColorPicker extends LitElement {
   private ensureFinalSelect?: NodeJS.Timeout;
 
   // apply color to marker position and canvas
-  onColorSelect(hs, rgb) {
+  onColorSelect(hs: HsColor, rgb: RgbColor): void {
     this.setMarkerOnColor(hs); // marker always follows mouse 'raw' hs value (= mouse position)
     if (!this.ignoreSegments) {
       // apply segments if needed
@@ -258,7 +257,7 @@ class HaColorPicker extends LitElement {
   }
 
   // set color values and fire colorselected event
-  fireColorSelected(hs, rgb) {
+  fireColorSelected(hs: HsColor, rgb: RgbColor): void {
     this.hsColor = hs;
     fireEvent(this, "color-selected", { hs, rgb });
   }
@@ -268,12 +267,12 @@ class HaColorPicker extends LitElement {
    */
 
   // set marker position to the given color
-  setMarkerOnColor(hs) {
+  setMarkerOnColor(hs: HsColor): void {
     if (!this.marker || !this.tooltip) {
       return;
     }
-    const dist = hs.s * this.radius;
-    const theta = ((hs.h - 180) / 180) * Math.PI;
+    const dist = hs[1] * this.radius;
+    const theta = ((hs[0] - 180) / 180) * Math.PI;
     const markerdX = -dist * Math.cos(theta);
     const markerdY = -dist * Math.sin(theta);
     const translateString = `translate(${markerdX},${markerdY})`;
@@ -282,20 +281,24 @@ class HaColorPicker extends LitElement {
   }
 
   // apply given color to interface elements
-  applyColorToCanvas(hs) {
+  applyColorToCanvas(hs: HsColor): void {
     if (!this.interactionLayer) {
       return;
     }
     // we're not really converting hs to hsl here, but we keep it cheap
     // setting the color on the interactionLayer, the svg elements can inherit
-    this.interactionLayer.style.color = `hsl(${hs.h}, 100%, ${
-      100 - hs.s * 50
+    this.interactionLayer.style.color = `hsl(${hs[0]}, 100%, ${
+      100 - hs[1] * 50
     }%)`;
   }
 
-  applyHsColor(hs: HsColor) {
+  applyHsColor(hs: HsColor): void {
     // do nothing is we already have the same color
-    if (this.hsColor && this.hsColor.h === hs.h && this.hsColor.s === hs.s) {
+    if (
+      this.hsColor &&
+      this.hsColor[0] === hs[0] &&
+      this.hsColor[1] === hs[1]
+    ) {
       return;
     }
     this.setMarkerOnColor(hs); // marker is always set on 'raw' hs position
@@ -308,9 +311,8 @@ class HaColorPicker extends LitElement {
     this.applyColorToCanvas(hs);
   }
 
-  applyRgbColor(rgb: RgbColor) {
-    const [h, s] = rgb2hs(rgb);
-    this.applyHsColor({ h, s });
+  applyRgbColor(rgb: RgbColor): void {
+    this.applyHsColor(rgb2hs(rgb));
   }
 
   /*
@@ -318,19 +320,19 @@ class HaColorPicker extends LitElement {
    */
 
   // get angle (degrees)
-  getAngle(dX, dY) {
+  getAngle(dX: number, dY: number): number {
     const theta = Math.atan2(-dY, -dX); // radians from the left edge, clockwise = positive
     const angle = (theta / Math.PI) * 180 + 180; // degrees, clockwise from right
     return angle;
   }
 
   // returns true when coordinates are in the colorwheel
-  isInWheel(x, y) {
+  isInWheel(x: number, y: number): boolean {
     return this.getDistance(x, y) <= 1;
   }
 
   // returns distance from wheel center, 0 = center, 1 = edge, >1 = outside
-  getDistance(dX, dY) {
+  getDistance(dX: number, dY: number): number {
     return Math.sqrt(dX * dX + dY * dY) / this.radius;
   }
 
@@ -338,44 +340,44 @@ class HaColorPicker extends LitElement {
    * Getting colors
    */
 
-  getColor(x, y) {
+  getColor(x: number, y: number): HsColor {
     const hue = this.getAngle(x, y); // degrees, clockwise from right
     const relativeDistance = this.getDistance(x, y); // edge of radius = 1
     const sat = Math.min(relativeDistance, 1); // Distance from center
-    return { h: hue, s: sat };
+    return [hue, sat];
   }
 
-  getRgbColor(x, y) {
+  getRgbColor(x: number, y: number): RgbColor {
     // get current pixel
     const imageData = this.backgroundLayer
       .getContext("2d")!
       .getImageData(x + 250, y + 250, 1, 1);
     const pixel = imageData.data;
-    return { r: pixel[0], g: pixel[1], b: pixel[2] };
+    return [pixel[0], pixel[1], pixel[2]];
   }
 
-  applySegmentFilter(hs) {
+  applySegmentFilter(hs: HsColor): HsColor {
     // apply hue segment steps
     if (this.hueSegments) {
       const angleStep = 360 / this.hueSegments;
       const halfAngleStep = angleStep / 2;
-      hs.h -= halfAngleStep; // take the 'centered segemnts' into account
-      if (hs.h < 0) {
-        hs.h += 360;
+      hs[0] -= halfAngleStep; // take the 'centered segemnts' into account
+      if (hs[0] < 0) {
+        hs[0] += 360;
       } // don't end up below 0
-      const rest = hs.h % angleStep;
-      hs.h -= rest - angleStep;
+      const rest = hs[0] % angleStep;
+      hs[0] -= rest - angleStep;
     }
 
     // apply saturation segment steps
     if (this.saturationSegments) {
       if (this.saturationSegments === 1) {
-        hs.s = 1;
+        hs[1] = 1;
       } else {
         const segmentSize = 1 / this.saturationSegments;
         const saturationStep = 1 / (this.saturationSegments - 1);
-        const calculatedSat = Math.floor(hs.s / segmentSize) * saturationStep;
-        hs.s = Math.min(calculatedSat, 1);
+        const calculatedSat = Math.floor(hs[1] / segmentSize) * saturationStep;
+        hs[1] = Math.min(calculatedSat, 1);
       }
     }
     return hs;
@@ -385,7 +387,7 @@ class HaColorPicker extends LitElement {
    * Drawing related stuff
    */
 
-  setupLayers() {
+  setupLayers(): void {
     // coordinate origin position (center of the wheel)
     this.originX = this.width / 2;
     this.originY = this.originX;
@@ -399,7 +401,7 @@ class HaColorPicker extends LitElement {
     );
   }
 
-  drawColorWheel() {
+  drawColorWheel(): void {
     /*
      *  Setting up all paremeters
      */
@@ -533,7 +535,7 @@ class HaColorPicker extends LitElement {
    *   on the interactionLayer)
    */
 
-  drawMarker() {
+  drawMarker(): void {
     const svgElement = this.interactionLayer;
     const markerradius = this.radius * 0.08;
     const tooltipradius = this.radius * 0.15;
@@ -561,7 +563,7 @@ class HaColorPicker extends LitElement {
     svgElement.appendChild(tooltip);
   }
 
-  segmentationChange() {
+  segmentationChange(): void {
     if (this.backgroundLayer) {
       this.drawColorWheel();
     }
