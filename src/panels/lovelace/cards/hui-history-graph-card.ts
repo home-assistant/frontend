@@ -50,6 +50,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _error?: string;
 
+  private _interval?: number;
+
   private _subscribed?: Promise<(() => Promise<void>) | void>;
 
   public getCardSize(): number {
@@ -97,7 +99,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _subscribeHistoryWindow() {
     if (this._subscribed) {
-      return true;
+      return;
     }
     this._subscribed = subscribeHistoryStatesWindow(
       this.hass!,
@@ -118,13 +120,26 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       this._subscribed = undefined;
       this._error = err;
     });
-    return true;
+    this._setRedrawTimer();
+  }
+
+  private _redrawGraph() {
+    if (this._stateHistory) {
+      this._stateHistory = { ...this._stateHistory };
+    }
+  }
+
+  private _setRedrawTimer() {
+    // redraw the graph every minute to update the time axis
+    clearInterval(this._interval);
+    this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
   }
 
   private _unsubscribeHistoryWindow() {
     if (!this._subscribed) {
       return;
     }
+    clearInterval(this._interval);
     this._subscribed.then((unsubscribe) => {
       if (unsubscribe) {
         unsubscribe();
