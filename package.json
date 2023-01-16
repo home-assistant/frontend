@@ -217,7 +217,7 @@
     "map-stream": "^0.0.7",
     "merge-stream": "^1.0.1",
     "mocha": "^8.4.0",
-    "object-hash": "^2.0.3",
+    "object-hash": "^3.0.0",
     "open": "^8.4.0",
     "pinst": "^3.0.0",
     "prettier": "^2.8.1",
