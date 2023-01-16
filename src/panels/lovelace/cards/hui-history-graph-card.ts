@@ -12,7 +12,7 @@ import "../../../components/ha-card";
 import "../../../components/chart/state-history-charts";
 import {
   HistoryResult,
-  subscribeHistoryStatesWindow,
+  subscribeHistoryStatesTimeWindow,
   computeHistory,
 } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
@@ -88,20 +88,20 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
-      this._subscribeHistoryWindow();
+      this._subscribeHistoryTimeWindow();
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeHistoryWindow();
+    this._unsubscribeHistoryTimeWindow();
   }
 
-  private _subscribeHistoryWindow() {
+  private _subscribeHistoryTimeWindow() {
     if (this._subscribed) {
       return;
     }
-    this._subscribed = subscribeHistoryStatesWindow(
+    this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
         if (!this._subscribed) {
@@ -135,7 +135,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
   }
 
-  private _unsubscribeHistoryWindow() {
+  private _unsubscribeHistoryTimeWindow() {
     if (!this._subscribed) {
       return;
     }
@@ -179,8 +179,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       (oldConfig?.entities !== this._config.entities ||
         oldConfig?.hours_to_show !== this._hoursToShow)
     ) {
-      this._unsubscribeHistoryWindow();
-      this._subscribeHistoryWindow();
+      this._unsubscribeHistoryTimeWindow();
+      this._subscribeHistoryTimeWindow();
     }
   }
 

@@ -281,7 +281,7 @@ class HistoryStream {
   }
 }
 
-export const subscribeHistoryStatesWindow = (
+export const subscribeHistoryStatesTimeWindow = (
   hass: HomeAssistant,
   callbackFunction: (data: HistoryStates) => void,
   hoursToShow: number,
