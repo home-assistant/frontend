@@ -9475,7 +9475,7 @@ fsevents@^1.2.7:
     workbox-precaching: ^6.5.4
     workbox-routing: ^6.5.4
     workbox-strategies: ^6.5.4
-    xss: ^1.0.9
+    xss: ^1.0.14
   languageName: unknown
   linkType: soft
 
@@ -16608,15 +16608,15 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"xss@npm:^1.0.9":
-  version: 1.0.9
-  resolution: "xss@npm:1.0.9"
+"xss@npm:^1.0.14":
+  version: 1.0.14
+  resolution: "xss@npm:1.0.14"
   dependencies:
     commander: ^2.20.3
     cssfilter: 0.0.10
   bin:
     xss: bin/xss
-  checksum: fdb5e60e51be4edd3a694f92a910f3cd55e3d4746fcf53133863e4d40572c9b4ab1ce8e0011645c776c61f86c5a2ff9fc3e02554766e987bc0bf27d16cd3b407
+  checksum: 77c6a60a5f96490098ef837c3b49321c0f31963f323c748cb0a01bc02fc6e465a6accbe4c54cad62f8d6ffe647d984be173879433af861883f6213d9416d3f53
   languageName: node
   linkType: hard
 
