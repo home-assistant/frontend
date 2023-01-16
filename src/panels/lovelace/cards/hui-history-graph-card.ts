@@ -10,6 +10,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
 import "../../../components/chart/state-history-charts";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   HistoryResult,
   subscribeHistoryStatesTimeWindow,
@@ -98,7 +99,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   private _subscribeHistoryTimeWindow() {
-    if (this._subscribed) {
+    if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
       return;
     }
     this._subscribed = subscribeHistoryStatesTimeWindow(
@@ -176,7 +177,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
     if (
       changedProps.has("_config") &&
-      (oldConfig?.entities !== this._config.entities ||
+      (!this._subscribed ||
+        oldConfig?.entities !== this._config.entities ||
         oldConfig?.hours_to_show !== this._hoursToShow)
     ) {
       this._unsubscribeHistoryTimeWindow();
