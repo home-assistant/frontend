@@ -9426,7 +9426,7 @@ fsevents@^1.2.7:
     merge-stream: ^1.0.1
     mocha: ^8.4.0
     node-vibrant: 3.2.1-alpha.1
-    object-hash: ^2.0.3
+    object-hash: ^3.0.0
     open: ^8.4.0
     pinst: ^3.0.0
     prettier: ^2.8.1
@@ -12170,10 +12170,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"object-hash@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "object-hash@npm:2.0.3"
-  checksum: ba6a1e48534adafafc98e2f5ea65833dbb721a4945932e2e6cf1710cfe2f9a2fdbc7c037d3a7d8d0c2d5195efc8b11b7b6e57884e3fb1333f377d90e44299b86
+"object-hash@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "object-hash@npm:3.0.0"
+  checksum: 80b4904bb3857c52cc1bfd0b52c0352532ca12ed3b8a6ff06a90cd209dfda1b95cee059a7625eb9da29537027f68ac4619363491eedb2f5d3dddbba97494fd6c
   languageName: node
   linkType: hard
 
