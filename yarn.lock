@@ -9443,7 +9443,7 @@ fsevents@^1.2.7:
     magic-string: ^0.25.7
     map-stream: ^0.0.7
     marked: ^4.0.12
-    memoize-one: ^5.2.1
+    memoize-one: ^6.0.0
     merge-stream: ^1.0.1
     mocha: ^8.4.0
     node-vibrant: 3.2.1-alpha.1
@@ -11425,10 +11425,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"memoize-one@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "memoize-one@npm:5.2.1"
-  checksum: a3cba7b824ebcf24cdfcd234aa7f86f3ad6394b8d9be4c96ff756dafb8b51c7f71320785fbc2304f1af48a0467cbbd2a409efc9333025700ed523f254cb52e3d
+"memoize-one@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "memoize-one@npm:6.0.0"
+  checksum: f185ea69f7cceae5d1cb596266dcffccf545e8e7b4106ec6aa93b71ab9d16460dd118ac8b12982c55f6d6322fcc1485de139df07eacffaae94888b9b3ad7675f
   languageName: node
   linkType: hard
 
