@@ -1,5 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../components/ha-color-picker";
 import "../../../components/ha-icon-button";
 import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
