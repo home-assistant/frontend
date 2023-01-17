@@ -238,7 +238,7 @@
     "vinyl-source-stream": "^2.0.0",
     "webpack": "^5.55.1",
     "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "^4.3.0",
+    "webpack-dev-server": "^4.11.1",
     "webpack-manifest-plugin": "^4.0.2",
     "webpackbar": "^5.0.0-3",
     "workbox-build": "^6.5.4"
