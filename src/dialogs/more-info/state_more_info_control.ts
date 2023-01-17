@@ -1,9 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  DOMAINS_WITH_MORE_INFO,
-  DOMAINS_HIDE_DEFAULT_MORE_INFO,
-} from "./const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { LightColorMode, lightSupportsColorMode } from "../../data/light";
+import {
+  DOMAINS_HIDE_DEFAULT_MORE_INFO,
+  DOMAINS_WITH_MORE_INFO,
+} from "./const";
 
 const LAZY_LOADED_MORE_INFO_CONTROL = {
   alarm_control_panel: () => import("./controls/more-info-alarm_control_panel"),
@@ -18,6 +19,7 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
   humidifier: () => import("./controls/more-info-humidifier"),
   input_datetime: () => import("./controls/more-info-input_datetime"),
   light: () => import("./controls/more-info-light"),
+  light_old: () => import("./controls/more-info-light_old"),
   lock: () => import("./controls/more-info-lock"),
   media_player: () => import("./controls/more-info-media_player"),
   person: () => import("./controls/more-info-person"),
@@ -33,6 +35,15 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
 
 export const stateMoreInfoType = (stateObj: HassEntity): string => {
   const domain = computeStateDomain(stateObj);
+
+  // Use old light more info for rgbw and rgbww lights
+  if (
+    domain === "light" &&
+    (lightSupportsColorMode(stateObj, LightColorMode.RGBW) ||
+      lightSupportsColorMode(stateObj, LightColorMode.RGBWW))
+  ) {
+    return `light_old`;
+  }
 
   return domainMoreInfoType(domain);
 };

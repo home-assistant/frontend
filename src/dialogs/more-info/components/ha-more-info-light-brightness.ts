@@ -46,7 +46,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
   }
 
   private _valueFormatter(value?: number) {
-    if (value == null) return "-";
+    if (value == null) return "Off";
     return `${Math.round(value)}%`;
   }
 
