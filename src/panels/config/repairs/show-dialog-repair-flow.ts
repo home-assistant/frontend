@@ -33,6 +33,7 @@ export const showRepairsFlowDialog = (
           createRepairsFlow(hass, handler, issue.issue_id),
           hass.loadBackendTranslation("issues", issue.domain),
         ]);
+        step.domain = issue.domain;
         return step;
       },
       fetchFlow: async (hass, flowId) => {
@@ -40,6 +41,7 @@ export const showRepairsFlowDialog = (
           fetchRepairsFlow(hass, flowId),
           hass.loadBackendTranslation("issues", issue.domain),
         ]);
+        step.domain = issue.domain;
         return step;
       },
       handleFlowStep: handleRepairsFlowStep,

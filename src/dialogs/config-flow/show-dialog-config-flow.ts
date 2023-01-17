@@ -28,12 +28,14 @@ export const showConfigFlowDialog = (
         // Used as fallback if no header defined for step
         hass.loadBackendTranslation("title", handler),
       ]);
+      step.domain = step.handler;
       return step;
     },
     fetchFlow: async (hass, flowId) => {
       const step = await fetchConfigFlow(hass, flowId);
       await hass.loadBackendTranslation("config", step.handler);
       await hass.loadBackendTranslation("selector", step.handler);
+      step.domain = step.handler;
       return step;
     },
     handleFlowStep: handleConfigFlowStep,

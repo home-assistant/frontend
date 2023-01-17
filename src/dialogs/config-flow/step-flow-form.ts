@@ -91,7 +91,7 @@ class StepFlowForm extends LitElement {
         field.selector.select &&
         !field.selector.select.translation_domain
       ) {
-        field.selector.select.translation_domain = this.step.handler;
+        field.selector.select.translation_domain = this.step.domain;
       }
     });
 

@@ -34,6 +34,7 @@ export const showOptionsFlowDialog = (
           hass.loadBackendTranslation("options", configEntry.domain),
           hass.loadBackendTranslation("selector", configEntry.domain),
         ]);
+        step.domain = configEntry.domain;
         return step;
       },
       fetchFlow: async (hass, flowId) => {
@@ -42,6 +43,7 @@ export const showOptionsFlowDialog = (
           hass.loadBackendTranslation("options", configEntry.domain),
           hass.loadBackendTranslation("selector", configEntry.domain),
         ]);
+        step.domain = configEntry.domain;
         return step;
       },
       handleFlowStep: handleOptionsFlowStep,
