@@ -3934,18 +3934,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express-serve-static-core@npm:*":
-  version: 4.17.13
-  resolution: "@types/express-serve-static-core@npm:4.17.13"
-  dependencies:
-    "@types/node": "*"
-    "@types/qs": "*"
-    "@types/range-parser": "*"
-  checksum: 9e8f75956c214fccaac8e4370a19cc4494f9f6c0326360a8a198161f92e9845c6a845002978b1e57a4bd6c0c1a5820d6be58b6796214bd7fcc6216baa7366d7b
-  languageName: node
-  linkType: hard
-
-"@types/express-serve-static-core@npm:^4.17.31":
+"@types/express-serve-static-core@npm:*, @types/express-serve-static-core@npm:^4.17.31":
   version: 4.17.32
   resolution: "@types/express-serve-static-core@npm:4.17.32"
   dependencies:
@@ -3956,19 +3945,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*":
-  version: 4.17.9
-  resolution: "@types/express@npm:4.17.9"
-  dependencies:
-    "@types/body-parser": "*"
-    "@types/express-serve-static-core": "*"
-    "@types/qs": "*"
-    "@types/serve-static": "*"
-  checksum: e1d6388ec28ab67db5559011d16c63d6fcfb128f27daf217a02ecdb2ede968d2187e83ef3f7c54cbd050686aaed4c80585b64f055c76e79c055d7d4efb7bc3b1
-  languageName: node
-  linkType: hard
-
-"@types/express@npm:^4.17.13":
+"@types/express@npm:*, @types/express@npm:^4.17.13":
   version: 4.17.15
   resolution: "@types/express@npm:4.17.15"
   dependencies:
@@ -4264,17 +4241,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/serve-static@npm:*":
-  version: 1.13.7
-  resolution: "@types/serve-static@npm:1.13.7"
-  dependencies:
-    "@types/mime": "*"
-    "@types/node": "*"
-  checksum: 44adb2da288f84e15bd025cb16b94d99e20008809a4eb8429788f9e66440783c2900eef665ef9451ea76866156ea28770f14ae678bf7865ee586c12719fc2f88
-  languageName: node
-  linkType: hard
-
-"@types/serve-static@npm:^1.13.10":
+"@types/serve-static@npm:*, @types/serve-static@npm:^1.13.10":
   version: 1.15.0
   resolution: "@types/serve-static@npm:1.15.0"
   dependencies:
@@ -6345,26 +6312,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:^3.4.3":
-  version: 3.5.2
-  resolution: "chokidar@npm:3.5.2"
-  dependencies:
-    anymatch: ~3.1.2
-    braces: ~3.0.2
-    fsevents: ~2.3.2
-    glob-parent: ~5.1.2
-    is-binary-path: ~2.1.0
-    is-glob: ~4.0.1
-    normalize-path: ~3.0.0
-    readdirp: ~3.6.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  checksum: d1fda32fcd67d9f6170a8468ad2630a3c6194949c9db3f6a91b16478c328b2800f433fb5d2592511b6cb145a47c013ea1cce60b432b1a001ae3ee978a8bffc2d
-  languageName: node
-  linkType: hard
-
-"chokidar@npm:^3.5.3":
+"chokidar@npm:^3.4.3, chokidar@npm:^3.5.3":
   version: 3.5.3
   resolution: "chokidar@npm:3.5.3"
   dependencies:
@@ -8656,7 +8604,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-monkey@npm:1.0.3, fs-monkey@npm:^1.0.3":
+"fs-monkey@npm:^1.0.3":
   version: 1.0.3
   resolution: "fs-monkey@npm:1.0.3"
   checksum: cf50804833f9b88a476911ae911fe50f61a98d986df52f890bd97e7262796d023698cb2309fa9b74fdd8974f04315b648748a0a8ee059e7d5257b293bfc409c0
@@ -11415,16 +11363,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"memfs@npm:^3.2.2":
-  version: 3.3.0
-  resolution: "memfs@npm:3.3.0"
-  dependencies:
-    fs-monkey: 1.0.3
-  checksum: 9e9eb71cfc077fd5e14ad2f497f5a8791689b64f307cf379ed6737c5781652a7af0509395c0dfba43c4e413dbc7cd7010e9ca002168ec329e6df178414b96268
-  languageName: node
-  linkType: hard
-
-"memfs@npm:^3.4.3":
+"memfs@npm:^3.2.2, memfs@npm:^3.4.3":
   version: 3.4.13
   resolution: "memfs@npm:3.4.13"
   dependencies:
