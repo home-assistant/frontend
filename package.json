@@ -97,7 +97,7 @@
     "@webcomponents/scoped-custom-element-registry": "^0.0.5",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "app-datepicker": "^5.1.0",
-    "chart.js": "^3.3.2",
+    "chart.js": "^4.1.2",
     "comlink": "^4.3.1",
     "core-js": "^3.15.2",
     "cropperjs": "^1.5.12",
