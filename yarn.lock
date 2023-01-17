@@ -1947,41 +1947,46 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/motion@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@lit-labs/motion@npm:1.0.2"
+"@lit-labs/motion@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@lit-labs/motion@npm:1.0.3"
   dependencies:
     lit: ^2.0.0
-  checksum: 598e0be22a3f931ec971fa001e863c5a4dd82f572d8d0214211bde1d6403b00e3c8fafa92f30b0c02b7272bc12510ec40060bf2c8ab18151bdb264cf32f0ef71
+  checksum: 126fd10df999e10e669d82e3961a01d750ffa7597f32427ea452ab92a24fbb7070358fb3a6a19147bb76652aa2d452ba3d73fd7fca49e381f42858ed4baf482d
   languageName: node
   linkType: hard
 
-"@lit-labs/virtualizer@0.7.0-pre.2":
-  version: 0.7.0-pre.2
-  resolution: "@lit-labs/virtualizer@npm:0.7.0-pre.2"
-  dependencies:
-    event-target-shim: ^5.0.1
-    lit: ^2.0.0
-    tslib: ^1.10.0
-  checksum: 88d5fffe73213c305160257e4e3a63a93087a90e63ca6640a81d156faacb68a8f84a82b94153b9364aeab3f5de45484acad1f8dcc2673e8464e394672358a3cc
+"@lit-labs/ssr-dom-shim@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@lit-labs/ssr-dom-shim@npm:1.0.0"
+  checksum: ccba6675ad631c6f7360af4e12e328e88d877a52ec992ae9254a1be9902ef699b7916d851b073803dd91244d0f709de2c0539a7db643889cfe341ff6e1a74eb5
   languageName: node
   linkType: hard
 
-"@lit-labs/virtualizer@patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch::locator=home-assistant-frontend%40workspace%3A.":
-  version: 0.7.0-pre.2
-  resolution: "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@npm%3A0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch::version=0.7.0-pre.2&hash=b7346d&locator=home-assistant-frontend%40workspace%3A."
+"@lit-labs/virtualizer@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@lit-labs/virtualizer@npm:1.0.1"
   dependencies:
-    event-target-shim: ^5.0.1
-    lit: ^2.0.0
-    tslib: ^1.10.0
-  checksum: b879a6f571d25c28092c516e0dc648128457a8fa57558733de8f2ba15de88b426106f88bc06543b99a2e13ccc0d1cabb4d1f65a2f51de00c912b0f3d997df61a
+    event-target-shim: ^6.0.2
+    lit: ^2.5.0
+    tslib: ^2.0.3
+  checksum: e20ab1cefb48768e8b757147a4eb97c2dd5db686b452eb1cf3d6c9ea178c23ed55540f57117597599c2b5abfb9266f068c782fdbf6b4286637ff8d2e6fd9ff0a
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:1.2.1":
-  version: 1.2.1
-  resolution: "@lit/reactive-element@npm:1.2.1"
-  checksum: 58f1b62c54b1899180b11cd44009ee91ac35099f9016259d3b9cc2f969fc920ab7e7ec32a816986ce89a27c632e25568542c93fdfed6730c19c850f7db0ba4cf
+"@lit/reactive-element@npm:1.0.0-rc.4":
+  version: 1.0.0-rc.4
+  resolution: "@lit/reactive-element@npm:1.0.0-rc.4"
+  checksum: 89bf91f68e264e5ce12d5bd7e903bca53cd07886e644c5fc5c475b5261a76fd47433f561f2827aa60fc0f92a11936fa60d51cd6690fdd883a32c7053cc9a9314
+  languageName: node
+  linkType: hard
+
+"@lit/reactive-element@npm:^1.3.0, @lit/reactive-element@npm:^1.6.0":
+  version: 1.6.1
+  resolution: "@lit/reactive-element@npm:1.6.1"
+  dependencies:
+    "@lit-labs/ssr-dom-shim": ^1.0.0
+  checksum: fab0bcfdade9c26af2ad5115fb564bcf8ba0732a3a8be86c157851c2771e3fdc65ab38f2cd60fa121946058bf6e487461fd217f87b01f96e88ee7a95d5d866ba
   languageName: node
   linkType: hard
 
@@ -8130,10 +8135,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"event-target-shim@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "event-target-shim@npm:5.0.1"
-  checksum: 1ffe3bb22a6d51bdeb6bf6f7cf97d2ff4a74b017ad12284cc9e6a279e727dc30a5de6bb613e5596ff4dc3e517841339ad09a7eec44266eccb1aa201a30448166
+"event-target-shim@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "event-target-shim@npm:6.0.2"
+  checksum: 9be93437e5b84056a7dc70af8b8962f4ef7f6fd41a988efcd39dfa2853e33242a4058e0dac9cc589cb16ed7409010590ac8cbcc2e3f823100cd337e13be953a0
   languageName: node
   linkType: hard
 
@@ -9446,8 +9451,8 @@ fsevents@^1.2.7:
     "@fullcalendar/timegrid": 5.9.0
     "@koa/cors": ^3.1.0
     "@lezer/highlight": ^1.1.3
-    "@lit-labs/motion": ^1.0.2
-    "@lit-labs/virtualizer": "patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch"
+    "@lit-labs/motion": ^1.0.3
+    "@lit-labs/virtualizer": ^1.0.1
     "@material/chips": =14.0.0-canary.53b3cad2f.0
     "@material/data-table": =14.0.0-canary.53b3cad2f.0
     "@material/mwc-button": ^0.27.0
@@ -9568,7 +9573,7 @@ fsevents@^1.2.7:
     leaflet: ^1.7.1
     leaflet-draw: ^1.0.4
     lint-staged: ^13.1.0
-    lit: ^2.1.2
+    lit: ^2.6.1
     lit-analyzer: ^1.2.1
     lodash.template: ^4.5.0
     magic-string: ^0.25.7
@@ -11167,22 +11172,22 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.1.2":
-  version: 3.1.2
-  resolution: "lit-element@npm:3.1.2"
+"lit-element@npm:^3.2.0":
+  version: 3.2.2
+  resolution: "lit-element@npm:3.2.2"
   dependencies:
-    "@lit/reactive-element": ^1.1.0
-    lit-html: ^2.1.0
-  checksum: 56ae568369af7c51cfe7187136ffb0782308ed3a12aa664085bd6761ff89fb60d3ac2ef286ce15154a2eb179d89f8655f7adaa18b8c083091c03dc75dd2ebf16
+    "@lit/reactive-element": ^1.3.0
+    lit-html: ^2.2.0
+  checksum: e1df57c02ad5ae4c42b49a5066b3b623bccf7fa6610bbc3f65bc22cbbe1546ecd6a7f717b1f01863929262f416c4b8b7a39ff166114215f93cc22f4e5b3825c3
   languageName: node
   linkType: hard
 
-"lit-html@npm:2.1.2":
-  version: 2.1.2
-  resolution: "lit-html@npm:2.1.2"
+"lit-html@npm:^2.2.0, lit-html@npm:^2.6.0":
+  version: 2.6.1
+  resolution: "lit-html@npm:2.6.1"
   dependencies:
     "@types/trusted-types": ^2.0.2
-  checksum: 0c87d83b3577dbb0a2c50743296b6600a6872eac2f23b48da7ba3e604b8c72a8b0e1e48cfe0e00dd6f4ca921ab57f97e20709756f2115077478ffb05efa6cea0
+  checksum: 32291eb5bcaa7fcc1d433522a9a62c3c3d240e49bb8c57ccea5c10014823d94f62f17e2d5361781cb6ee0b3c9078ef839de6164d5374371d650471904515e48e
   languageName: node
   linkType: hard
 
@@ -11197,14 +11202,14 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "lit@npm:2.1.2"
+"lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.5.0, lit@npm:^2.6.1":
+  version: 2.6.1
+  resolution: "lit@npm:2.6.1"
   dependencies:
-    "@lit/reactive-element": ^1.1.0
-    lit-element: ^3.1.0
-    lit-html: ^2.1.0
-  checksum: dc3d6f30d508e48ad665a5777383c26055ae6514a7bd6a5745ac75cfeeeff8db49aa3b0f32db1a19e43bd7eec2bccd7db8523d5ed445ca0035fe37fddd9fb646
+    "@lit/reactive-element": ^1.6.0
+    lit-element: ^3.2.0
+    lit-html: ^2.6.0
+  checksum: 74f2813152a48f195784f01b6b4ff7e4e7d8fa90ac272b725d1953fa3e1d6c9dca60b77da435f34144fcdd38705480889a8ea986835676932a8559c897cea517
   languageName: node
   linkType: hard
 
@@ -15357,14 +15362,14 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.10.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0":
+"tslib@npm:^1.8.1, tslib@npm:^1.9.0":
   version: 1.10.0
   resolution: "tslib@npm:1.10.0"
   checksum: 1d0450dc6f64b918b14acaf3b956ebe1c72d7401c632adce932a60e3cd8d2a70f6040ceef6a7c3561146c3f29bcf584c41c2e09a5d20a27d6c3057f0d5f2a836
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.1, tslib@npm:^2.0.2, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
+"tslib@npm:^2.0.1, tslib@npm:^2.0.2, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
   version: 2.4.1
   resolution: "tslib@npm:2.4.1"
   checksum: 19480d6e0313292bd6505d4efe096a6b31c70e21cf08b5febf4da62e95c265c8f571f7b36fcc3d1a17e068032f59c269fab3459d6cd3ed6949eafecf64315fca

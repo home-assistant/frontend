@@ -1,5 +1,4 @@
-import "@lit-labs/virtualizer";
-import { VisibilityChangedEvent } from "@lit-labs/virtualizer/Virtualizer";
+import { VisibilityChangedEvent } from "@lit-labs/virtualizer";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,

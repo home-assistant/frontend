@@ -45,8 +45,8 @@
     "@fullcalendar/list": "5.9.0",
     "@fullcalendar/timegrid": "5.9.0",
     "@lezer/highlight": "^1.1.3",
-    "@lit-labs/motion": "^1.0.2",
-    "@lit-labs/virtualizer": "patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch",
+    "@lit-labs/motion": "^1.0.3",
+    "@lit-labs/virtualizer": "^1.0.1",
     "@material/chips": "=14.0.0-canary.53b3cad2f.0",
     "@material/data-table": "=14.0.0-canary.53b3cad2f.0",
     "@material/mwc-button": "^0.27.0",
@@ -115,7 +115,7 @@
     "js-yaml": "^4.1.0",
     "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
-    "lit": "^2.1.2",
+    "lit": "^2.6.1",
     "marked": "^4.0.12",
     "memoize-one": "^6.0.0",
     "node-vibrant": "3.2.1-alpha.1",
@@ -246,11 +246,7 @@
   "_comment": "Polymer 3.2 contained a bug, fixed in https://github.com/Polymer/polymer/pull/5569, add as patch",
   "resolutions": {
     "@polymer/polymer": "patch:@polymer/polymer@3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch",
-    "@webcomponents/webcomponentsjs": "^2.2.10",
-    "lit": "^2.1.2",
-    "lit-html": "2.1.2",
-    "lit-element": "3.1.2",
-    "@lit/reactive-element": "1.2.1"
+    "@webcomponents/webcomponentsjs": "^2.2.10"
   },
   "main": "src/home-assistant.js",
   "prettier": {
