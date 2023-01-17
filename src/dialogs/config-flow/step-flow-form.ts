@@ -52,7 +52,7 @@ class StepFlowForm extends LitElement {
           .data=${stepData}
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
-          .schema=${autocompleteLoginFields(step.data_schema)}
+          .schema=${this._enrichFields(step.data_schema)}
           .error=${step.errors}
           .computeLabel=${this._labelCallback}
           .computeHelper=${this._helperCallback}
@@ -79,6 +79,23 @@ class StepFlowForm extends LitElement {
             `}
       </div>
     `;
+  }
+
+  private _enrichFields(schema: HaFormSchema[]): HaFormSchema[] {
+    const fields = autocompleteLoginFields(schema);
+
+    fields.forEach((field) => {
+      if (
+        "selector" in field &&
+        "select" in field.selector &&
+        field.selector.select &&
+        !field.selector.select.translation_domain
+      ) {
+        field.selector.select.translation_domain = this.step.handler;
+      }
+    });
+
+    return fields;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
