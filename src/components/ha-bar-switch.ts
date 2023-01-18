@@ -104,6 +104,14 @@ export class HaBarSwitch extends LitElement {
         box-sizing: border-box;
         user-select: none;
         cursor: pointer;
+        border-radius: var(--switch-bar-border-radius);
+        outline: none;
+      }
+      :host(:focus-visible) {
+        box-shadow: 0 0 0 2px var(--switch-bar-off-color);
+      }
+      :host([checked]:focus-visible) {
+        box-shadow: 0 0 0 2px var(--switch-bar-on-color);
       }
       .switch {
         box-sizing: border-box;
