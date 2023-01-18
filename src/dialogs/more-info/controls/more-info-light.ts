@@ -1,9 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
+import "@material/web/iconbutton/outlined-icon-button";
+import "@material/web/iconbutton/outlined-icon-button-toggle";
+import { mdiPalette, mdiShimmer } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-select";
 import {
   LightColorMode,
@@ -37,6 +41,11 @@ class MoreInfoLight extends LitElement {
 
     const supportsBrightness = lightSupportsBrightness(this.stateObj);
 
+    const supportsEffects = supportsFeature(
+      this.stateObj,
+      LightEntityFeature.EFFECT
+    );
+
     return html`
       <div class="content">
         ${supportsBrightness
@@ -48,33 +57,46 @@ class MoreInfoLight extends LitElement {
               </ha-more-info-light-brightness>
             `
           : ""}
-        ${supportsColorTemp || supportsColor
-          ? html`<div class="color-container">
-              <mwc-button @click=${this._showLightColorPickerDialog}
-                >Choose color</mwc-button
-              >
-            </div>`
-          : null}
-        ${supportsFeature(this.stateObj, LightEntityFeature.EFFECT) &&
-        this.stateObj!.attributes.effect_list?.length
+        ${supportsColorTemp || supportsColor || supportsEffects
           ? html`
-              <hr />
-              <ha-select
-                .label=${this.hass.localize("ui.card.light.effect")}
-                .value=${this.stateObj.attributes.effect || ""}
-                fixedMenuPosition
-                naturalMenuWidth
-                @selected=${this._effectChanged}
-                @closed=${stopPropagation}
-              >
-                ${this.stateObj.attributes.effect_list.map(
-                  (effect: string) => html`
-                    <mwc-list-item .value=${effect}>${effect}</mwc-list-item>
-                  `
-                )}
-              </ha-select>
+              <div class="buttons">
+                ${supportsColorTemp || supportsColor
+                  ? html`
+                      <md-outlined-icon-button
+                        @click=${this._showLightColorPickerDialog}
+                      >
+                        <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
+                      </md-outlined-icon-button>
+                    `
+                  : null}
+                ${supportsEffects
+                  ? html`
+                      <ha-button-menu
+                        corner="BOTTOM_START"
+                        @action=${this._handleEffectButton}
+                        @closed=${stopPropagation}
+                        fixed
+                      >
+                        <md-outlined-icon-button slot="trigger">
+                          <ha-svg-icon .path=${mdiShimmer}></ha-svg-icon>
+                        </md-outlined-icon-button>
+                        ${this.stateObj.attributes.effect_list!.map(
+                          (effect: string) => html`
+                            <mwc-list-item
+                              .value=${effect}
+                              .activated=${this.stateObj!.attributes.effect ===
+                              effect}
+                            >
+                              ${effect}
+                            </mwc-list-item>
+                          `
+                        )}
+                      </ha-button-menu>
+                    `
+                  : null}
+              </div>
             `
-          : ""}
+          : null}
         <ha-attributes
           .hass=${this.hass}
           .stateObj=${this.stateObj}
@@ -88,16 +110,20 @@ class MoreInfoLight extends LitElement {
     showLightColorPickerDialog(this, { entityId: this.stateObj!.entity_id });
   };
 
-  private _effectChanged(ev) {
-    const newVal = ev.target.value;
+  private _handleEffectButton(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
 
-    if (!newVal || this.stateObj!.attributes.effect === newVal) {
+    const index = ev.detail.index;
+    const effect = this.stateObj!.attributes.effect_list![index];
+
+    if (!effect || this.stateObj!.attributes.effect === effect) {
       return;
     }
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      effect: newVal,
+      effect,
     });
   }
 
@@ -113,10 +139,13 @@ class MoreInfoLight extends LitElement {
         width: 100%;
       }
 
-      .color-container {
+      .buttons {
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+      .buttons > * {
+        margin: 4px;
       }
 
       hr {
