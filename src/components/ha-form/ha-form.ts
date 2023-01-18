@@ -43,7 +43,7 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public computeHelper?: (schema: any) => string | undefined;
 
-  @property() public localizeValue?: (key: string) => string | undefined;
+  @property() public localizeValue?: (key: string) => string;
 
   public focus() {
     const root = this.shadowRoot?.querySelector(".root");
