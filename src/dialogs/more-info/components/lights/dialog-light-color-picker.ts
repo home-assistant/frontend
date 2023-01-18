@@ -89,9 +89,6 @@ class DialogLightColorPicker extends LitElement {
               `
             : null}
         </div>
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
-          Cancel
-        </mwc-button>
         <mwc-button @click=${this.closeDialog} slot="primaryAction">
           Ok
         </mwc-button>

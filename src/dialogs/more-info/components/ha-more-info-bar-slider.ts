@@ -1,5 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-bar-slider";
 
 @customElement("ha-more-info-bar-slider")
@@ -30,12 +31,24 @@ export class HaTileSlider extends LitElement {
 
   @property() public label = "";
 
+  @property({ type: Boolean, attribute: "show-label" })
+  public showLabel = false;
+
+  @property({ type: Boolean, attribute: "show-value" })
+  public showValue = false;
+
   protected render(): TemplateResult {
     return html`
       <div class="container">
-        <p>
-          ${this.valueFormatter ? this.valueFormatter(this.value) : this.value}
-        </p>
+        ${this.showValue
+          ? html`
+              <p>
+                ${this.valueFormatter
+                  ? this.valueFormatter(this.value)
+                  : this.value}
+              </p>
+            `
+          : null}
         <ha-bar-slider
           vertical
           .disabled=${this.disabled}
@@ -45,10 +58,13 @@ export class HaTileSlider extends LitElement {
           .min=${this.min}
           .max=${this.max}
           .showHandle=${this.showHandle}
-          aria-labelledby="label"
+          aria-labelledby=${ifDefined(this.showLabel ? "label" : undefined)}
+          aria-label=${ifDefined(
+            !this.showLabel && this.label ? this.label : undefined
+          )}
         >
         </ha-bar-slider>
-        <p id="label">${this.label}</p>
+        ${this.showLabel ? html`<p id="label">${this.label}</p>` : null}
       </div>
     `;
   }

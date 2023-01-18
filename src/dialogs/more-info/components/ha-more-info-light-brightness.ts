@@ -70,6 +70,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
 
     return html`
       <ha-more-info-bar-slider
+        show-value
         label=${this.hass.localize("ui.card.light.brightness")}
         min="1"
         max="100"

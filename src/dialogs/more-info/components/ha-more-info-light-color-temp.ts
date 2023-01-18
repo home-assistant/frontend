@@ -43,6 +43,8 @@ export class HaMoreInfoLightColorTemp extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-more-info-bar-slider
+        show-value
+        show-label
         label=${this.hass.localize("ui.card.light.color_temperature")}
         min="1"
         max="100"

@@ -148,10 +148,8 @@ class MoreInfoLight extends LitElement {
         margin: 4px;
       }
 
-      hr {
-        border-color: var(--divider-color);
-        border-bottom: none;
-        margin: 16px 0;
+      ha-more-info-light-brightness {
+        margin-bottom: 16px;
       }
     `;
   }
