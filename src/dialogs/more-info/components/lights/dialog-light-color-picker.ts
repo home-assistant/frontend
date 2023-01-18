@@ -12,9 +12,9 @@ import {
 } from "../../../../data/light";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant, ToggleButton } from "../../../../types";
-import "../ha-more-info-light-color-temp";
-import "../ha-more-info-light-hs";
 import { LightColorPickerDialogParams } from "./show-dialog-light-color-picker";
+import "./modes/light-color-picker-mode-color-temp";
+import "./modes/light-color-picker-mode-color";
 
 const COLOR_MODES = [LightColorMode.COLOR_TEMP, LightColorMode.HS] as const;
 type ColorMode = typeof COLOR_MODES[number];
@@ -75,17 +75,20 @@ class DialogLightColorPicker extends LitElement {
             : null}
           ${this._mode === "color_temp"
             ? html`
-                <ha-more-info-light-color-temp
+                <light-color-picker-mode-color-temp
                   .stateObj=${stateObj}
                   .hass=${this.hass}
                 >
-                </ha-more-info-light-color-temp>
+                </light-color-picker-mode-color-temp>
               `
             : null}
           ${this._mode === "hs"
             ? html`
-                <ha-more-info-light-hs .stateObj=${stateObj} .hass=${this.hass}>
-                </ha-more-info-light-hs>
+                <light-color-picker-mode-color
+                  .stateObj=${stateObj}
+                  .hass=${this.hass}
+                >
+                </light-color-picker-mode-color>
               `
             : null}
         </div>

@@ -1,11 +1,11 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { LightEntity } from "../../../data/light";
-import { HomeAssistant } from "../../../types";
-import "./ha-more-info-bar-slider";
+import { LightEntity } from "../../../../../data/light";
+import { HomeAssistant } from "../../../../../types";
+import "../../ha-more-info-bar-slider";
 
-@customElement("ha-more-info-light-color-temp")
-export class HaMoreInfoLightColorTemp extends LitElement {
+@customElement("light-color-picker-mode-color-temp")
+export class LightColorPickerModeColorTemp extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: LightEntity;
@@ -77,6 +77,6 @@ export class HaMoreInfoLightColorTemp extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-light-color-temp": HaMoreInfoLightColorTemp;
+    "light-color-picker-mode-color-temp": LightColorPickerModeColorTemp;
   }
 }
