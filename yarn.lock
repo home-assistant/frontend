@@ -9592,7 +9592,7 @@ fsevents@^1.2.7:
     object-hash: ^3.0.0
     open: ^8.4.0
     pinst: ^3.0.0
-    prettier: ^2.8.1
+    prettier: ^2.8.3
     proxy-polyfill: ^0.3.2
     punycode: ^2.1.1
     qr-scanner: ^1.3.0
@@ -13117,12 +13117,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.8.1":
-  version: 2.8.1
-  resolution: "prettier@npm:2.8.1"
+"prettier@npm:^2.8.3":
+  version: 2.8.3
+  resolution: "prettier@npm:2.8.3"
   bin:
     prettier: bin-prettier.js
-  checksum: 4f21a0f1269f76fb36f54e9a8a1ea4c11e27478958bf860661fb4b6d7ac69aac1581f8724fa98ea3585e56d42a2ea317a17ff6e3324f40cb11ff9e20b73785cc
+  checksum: 92f2ceb522d454370e02082aa74ad27388672f7cee8975028b59517c069fe643bdc73e322675c8faf2ff173d7a626d1a6389f26b474000308e793aa25fff46e5
   languageName: node
   linkType: hard
 

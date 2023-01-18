@@ -26,7 +26,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
 
   private _params!: AutomationModeDialog;
 
-  @state() private _newMode: typeof MODES[number] = AUTOMATION_DEFAULT_MODE;
+  @state() private _newMode: (typeof MODES)[number] = AUTOMATION_DEFAULT_MODE;
 
   @state() private _newMax?: number;
 
