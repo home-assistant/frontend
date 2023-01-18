@@ -122,6 +122,10 @@ export const showRepairsFlowDialog = (
         );
       },
 
+      renderShowFormStepFieldLocalizeValue(hass, _step, key) {
+        return hass.localize(`component.${issue.domain}.selector.${key}`);
+      },
+
       renderExternalStepHeader(_hass, _step) {
         return "";
       },

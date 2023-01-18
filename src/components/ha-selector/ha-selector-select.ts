@@ -28,6 +28,8 @@ export class HaSelectSelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property() public localizeValue?: (key: string) => string | undefined;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -44,15 +46,13 @@ export class HaSelectSelector extends LitElement {
           : ({ value: option, label: option } as SelectOption)
       ) || [];
 
-    const domain = this.selector.select?.translation_domain;
-    const key = this.selector.select?.translation_key;
+    const translationKey = this.selector.select?.translation_key;
 
-    if (domain && key) {
+    if (this.localizeValue && translationKey) {
       options.forEach((option) => {
         option.label =
-          this.hass.localize(
-            `component.${domain}.selector.${key}.options.${option.value}`
-          ) || option.label;
+          this.localizeValue!(`${translationKey}.options.${option.value}`) ||
+          option.label;
       });
     }
 

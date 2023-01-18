@@ -61,6 +61,12 @@ export interface FlowConfig {
     error: string
   ): string;
 
+  renderShowFormStepFieldLocalizeValue(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm,
+    key: string
+  ): string | undefined;
+
   renderExternalStepHeader(
     hass: HomeAssistant,
     step: DataEntryFlowStepExternal

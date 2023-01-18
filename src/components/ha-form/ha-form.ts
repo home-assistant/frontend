@@ -43,6 +43,8 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public computeHelper?: (schema: any) => string | undefined;
 
+  @property() public localizeValue?: (key: string) => string | undefined;
+
   public focus() {
     const root = this.shadowRoot?.querySelector(".root");
     if (!root) {
@@ -87,6 +89,7 @@ export class HaForm extends LitElement implements HaFormElement {
                   .label=${this._computeLabel(item, this.data)}
                   .disabled=${item.disabled || this.disabled || false}
                   .helper=${this._computeHelper(item)}
+                  .localizeValue=${this.localizeValue}
                   .required=${item.required || false}
                   .context=${this._generateContext(item)}
                 ></ha-selector>`

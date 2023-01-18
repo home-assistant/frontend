@@ -52,11 +52,12 @@ class StepFlowForm extends LitElement {
           .data=${stepData}
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
-          .schema=${this._enrichFields(step.data_schema)}
+          .schema=${autocompleteLoginFields(step.data_schema)}
           .error=${step.errors}
           .computeLabel=${this._labelCallback}
           .computeHelper=${this._helperCallback}
           .computeError=${this._errorCallback}
+          .localizeValue=${this._localizeValueCallback}
         ></ha-form>
       </div>
       <div class="buttons">
@@ -79,23 +80,6 @@ class StepFlowForm extends LitElement {
             `}
       </div>
     `;
-  }
-
-  private _enrichFields(schema: HaFormSchema[]): HaFormSchema[] {
-    const fields = autocompleteLoginFields(schema);
-
-    fields.forEach((field) => {
-      if (
-        "selector" in field &&
-        "select" in field.selector &&
-        field.selector.select &&
-        !field.selector.select.translation_domain
-      ) {
-        field.selector.select.translation_domain = this.step.domain;
-      }
-    });
-
-    return fields;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -190,6 +174,13 @@ class StepFlowForm extends LitElement {
 
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);
+
+  private _localizeValueCallback = (key: string) =>
+    this.flowConfig.renderShowFormStepFieldLocalizeValue(
+      this.hass,
+      this.step,
+      key
+    );
 
   static get styles(): CSSResultGroup {
     return [

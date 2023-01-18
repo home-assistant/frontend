@@ -51,6 +51,8 @@ export class HaSelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property() public localizeValue?: (key: string) => string | undefined;
+
   @property() public placeholder?: any;
 
   @property({ type: Boolean }) public disabled = false;
@@ -86,6 +88,7 @@ export class HaSelector extends LitElement {
         required: this.required,
         helper: this.helper,
         context: this.context,
+        localizeValue: this.localizeValue,
         id: "selector",
       })}
     `;

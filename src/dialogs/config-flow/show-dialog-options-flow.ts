@@ -34,7 +34,6 @@ export const showOptionsFlowDialog = (
           hass.loadBackendTranslation("options", configEntry.domain),
           hass.loadBackendTranslation("selector", configEntry.domain),
         ]);
-        step.domain = configEntry.domain;
         return step;
       },
       fetchFlow: async (hass, flowId) => {
@@ -43,7 +42,6 @@ export const showOptionsFlowDialog = (
           hass.loadBackendTranslation("options", configEntry.domain),
           hass.loadBackendTranslation("selector", configEntry.domain),
         ]);
-        step.domain = configEntry.domain;
         return step;
       },
       handleFlowStep: handleOptionsFlowStep,
@@ -111,6 +109,10 @@ export const showOptionsFlowDialog = (
           `component.${configEntry.domain}.options.error.${error}`,
           step.description_placeholders
         );
+      },
+
+      renderShowFormStepFieldLocalizeValue(hass, _step, key) {
+        return hass.localize(`component.${configEntry.domain}.selector.${key}`);
       },
 
       renderExternalStepHeader(_hass, _step) {
