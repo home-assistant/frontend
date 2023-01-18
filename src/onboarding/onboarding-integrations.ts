@@ -63,7 +63,6 @@ class OnboardingIntegrations extends LitElement {
         }
       }
       this.hass.loadBackendTranslation("config", Array.from(integrations));
-      this.hass.loadBackendTranslation("selector", Array.from(integrations));
     });
   }
 
