@@ -95,7 +95,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     (
       hasID: boolean,
       useBluePrint?: boolean,
-      currentMode?: typeof MODES[number]
+      currentMode?: (typeof MODES)[number]
     ) =>
       [
         {
@@ -528,7 +528,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         // Mode must be one of max modes per schema definition above
         return this.hass.localize(
           `ui.panel.config.script.editor.max.${
-            data.mode as typeof MODES_MAX[number]
+            data.mode as (typeof MODES_MAX)[number]
           }`
         );
       default:
