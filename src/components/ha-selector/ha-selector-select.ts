@@ -164,10 +164,11 @@ export class HaSelectSelector extends LitElement {
       <ha-select
         fixedMenuPosition
         naturalMenuWidth
-        .label=${this.label}
-        .value=${this.value}
-        .helper=${this.helper}
+        .label=${this.label ?? ""}
+        .value=${this.value ?? ""}
+        .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
+        .required=${this.required}
         @closed=${stopPropagation}
         @selected=${this._valueChanged}
       >
