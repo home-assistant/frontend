@@ -32,6 +32,7 @@ export const showRepairsFlowDialog = (
         const [step] = await Promise.all([
           createRepairsFlow(hass, handler, issue.issue_id),
           hass.loadBackendTranslation("issues", issue.domain),
+          hass.loadBackendTranslation("selector", issue.domain),
         ]);
         return step;
       },
@@ -39,6 +40,7 @@ export const showRepairsFlowDialog = (
         const [step] = await Promise.all([
           fetchRepairsFlow(hass, flowId),
           hass.loadBackendTranslation("issues", issue.domain),
+          hass.loadBackendTranslation("selector", issue.domain),
         ]);
         return step;
       },
