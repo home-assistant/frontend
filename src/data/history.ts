@@ -17,6 +17,8 @@ const NEED_ATTRIBUTE_DOMAINS = [
   "input_datetime",
   "thermostat",
   "water_heater",
+  "person",
+  "device_tracker",
 ];
 const LINE_ATTRIBUTES_TO_KEEP = [
   "temperature",
@@ -68,7 +70,7 @@ export interface HistoryStates {
   [entityId: string]: EntityHistoryState[];
 }
 
-interface EntityHistoryState {
+export interface EntityHistoryState {
   /** state */
   s: string;
   /** attributes */
@@ -285,7 +287,9 @@ export const subscribeHistoryStatesTimeWindow = (
   hass: HomeAssistant,
   callbackFunction: (data: HistoryStates) => void,
   hoursToShow: number,
-  entityIds: string[]
+  entityIds: string[],
+  minimalResponse = true,
+  significantChangesOnly = true
 ): Promise<() => Promise<void>> => {
   const params = {
     type: "history/stream",
@@ -293,7 +297,8 @@ export const subscribeHistoryStatesTimeWindow = (
     start_time: new Date(
       new Date().getTime() - 60 * 60 * hoursToShow * 1000
     ).toISOString(),
-    minimal_response: true,
+    minimal_response: minimalResponse,
+    significant_changes_only: significantChangesOnly,
     no_attributes: !entityIds.some((entityId) =>
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
