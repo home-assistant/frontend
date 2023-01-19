@@ -22,6 +22,7 @@ import type { HaTextField } from "../../components/ha-textfield";
 import {
   AgentInfo,
   getAgentInfo,
+  prepareConversation,
   processConversationInput,
   setConversationOnboarding,
 } from "../../data/conversation";
@@ -220,6 +221,7 @@ export class HaVoiceCommandDialog extends LitElement {
         text: this.hass.localize("ui.dialogs.voice_command.how_can_i_help"),
       },
     ];
+    prepareConversation(this.hass, this.hass.language);
   }
 
   protected updated(changedProps: PropertyValues) {
