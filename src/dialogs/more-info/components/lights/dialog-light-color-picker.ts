@@ -16,14 +16,26 @@ import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "./modes/light-color-picker-mode-color";
 import "./modes/light-color-picker-mode-color-temp";
+import "./modes/light-color-picker-mode-color-advanced";
 import { LightColorPickerDialogParams } from "./show-dialog-light-color-picker";
 
-const MODES = ["color_temp", "color"] as const;
-type Mode = typeof MODES[number];
+const MODES = ["color_temp", "color", "color_advanced"] as const;
+type Mode = (typeof MODES)[number];
 
 const supportedModes: Record<Mode, LightColorMode[]> = {
   color_temp: [LightColorMode.COLOR_TEMP],
   color: [LightColorMode.HS],
+  color_advanced: [
+    LightColorMode.RGB,
+    LightColorMode.RGBW,
+    LightColorMode.RGBWW,
+  ],
+};
+
+const modesLabels: Record<Mode, string> = {
+  color_temp: "Temperature",
+  color: "Color",
+  color_advanced: "Advanced",
 };
 
 @customElement("dialog-light-color-picker")
@@ -89,7 +101,8 @@ class DialogLightColorPicker extends LitElement {
                   @MDCTabBar:activated=${this._handleTabChanged}
                 >
                   ${this._modes.map(
-                    (mode) => html` <mwc-tab .label=${mode}></mwc-tab> `
+                    (mode) =>
+                      html` <mwc-tab .label=${modesLabels[mode]}></mwc-tab> `
                   )}
                 </mwc-tab-bar>
               `
@@ -110,6 +123,15 @@ class DialogLightColorPicker extends LitElement {
                   .hass=${this.hass}
                 >
                 </light-color-picker-mode-color>
+              `
+            : null}
+          ${this._mode === "color_advanced"
+            ? html`
+                <light-color-picker-mode-color-advanced
+                  .stateObj=${stateObj}
+                  .hass=${this.hass}
+                >
+                </light-color-picker-mode-color-advanced>
               `
             : null}
         </div>
