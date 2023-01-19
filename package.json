@@ -236,7 +236,7 @@
     "typescript": "^4.9.4",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
-    "webpack": "^5.75.0",
+    "webpack": "^5.55.1",
     "webpack-cli": "^4.8.0",
     "webpack-dev-server": "^4.11.1",
     "webpack-manifest-plugin": "^4.0.2",
