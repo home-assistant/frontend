@@ -44,6 +44,7 @@
     "@fullcalendar/interaction": "5.9.0",
     "@fullcalendar/list": "5.9.0",
     "@fullcalendar/timegrid": "5.9.0",
+    "@jaames/iro": "^5.5.2",
     "@lezer/highlight": "^1.1.3",
     "@lit-labs/motion": "^1.0.3",
     "@lit-labs/virtualizer": "^1.0.1",
