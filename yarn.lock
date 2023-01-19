@@ -7940,15 +7940,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-wc@npm:^1.3.2":
-  version: 1.3.2
-  resolution: "eslint-plugin-wc@npm:1.3.2"
+"eslint-plugin-wc@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "eslint-plugin-wc@npm:1.4.0"
   dependencies:
     is-valid-element-name: ^1.0.0
     js-levenshtein-esm: ^1.2.0
   peerDependencies:
     eslint: ">=5"
-  checksum: 0661d8b61abc3e29396de3b78cbaa71517dca769f6ad19d43db3055659667b941b2a4e7757865c71924ea5febb2fde7ee4ff6d0f7ba41587ff5136f60f661503
+  checksum: 64e7174f47197c91e57702a739db94d6803a817bd40ad6ac82260653430442649140e20f7fbc789ec6758da3ce3eaefd15266e5cbeb344b6500fcbcec596ba05
   languageName: node
   linkType: hard
 
@@ -9554,7 +9554,7 @@ fsevents@^1.2.7:
     eslint-plugin-import: ^2.24.2
     eslint-plugin-lit: ^1.6.1
     eslint-plugin-unused-imports: ^1.1.5
-    eslint-plugin-wc: ^1.3.2
+    eslint-plugin-wc: ^1.4.0
     fancy-log: ^2.0.0
     fs-extra: ^11.1.0
     fuse.js: ^6.0.0
