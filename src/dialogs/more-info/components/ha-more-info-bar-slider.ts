@@ -77,9 +77,9 @@ export class HaTileSlider extends LitElement {
         flex-direction: column;
       }
       ha-bar-slider {
+        height: var(--more-info-slider-bar-height, 330px);
         --slider-bar-thickness: 100px;
         --slider-bar-border-radius: 24px;
-        height: 320px;
         --slider-bar-color: var(
           --more-info-slider-bar-color,
           rgb(var(--rgb-primary-color))

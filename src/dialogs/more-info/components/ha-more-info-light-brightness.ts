@@ -88,7 +88,11 @@ export class HaMoreInfoLightBrightness extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css``;
+    return css`
+      ha-more-info-bar-slider {
+        --more-info-slider-bar-height: 250px;
+      }
+    `;
   }
 }
 
