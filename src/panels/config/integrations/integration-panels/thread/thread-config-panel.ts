@@ -5,7 +5,7 @@ import "../../../../../components/ha-card";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import { threadGetInfo, ThreadInfo } from "../../../../../data/thread";
+import { getOTBRInfo, OTBRInfo } from "../../../../../data/otbr";
 
 @customElement("thread-config-panel")
 export class ThreadConfigPanel extends LitElement {
@@ -13,7 +13,7 @@ export class ThreadConfigPanel extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @state() private _info?: ThreadInfo;
+  @state() private _info?: OTBRInfo;
 
   protected render(): TemplateResult {
     return html`
@@ -45,7 +45,7 @@ export class ThreadConfigPanel extends LitElement {
   protected override firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    threadGetInfo(this.hass).then((info) => {
+    getOTBRInfo(this.hass).then((info) => {
       this._info = info;
     });
   }
