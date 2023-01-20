@@ -6,6 +6,8 @@ import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { getOTBRInfo, OTBRInfo } from "../../../../../data/otbr";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 
 @customElement("thread-config-panel")
 export class ThreadConfigPanel extends LitElement {
@@ -19,23 +21,37 @@ export class ThreadConfigPanel extends LitElement {
     return html`
       <hass-subpage .narrow=${this.narrow} .hass=${this.hass} header="Thread">
         <div class="content">
-          <ha-card header="Thread Border Router">
-            <div class="card-content">
-              ${!this._info
-                ? html`<ha-circular-progress active></ha-circular-progress>`
-                : html`
-                    <table>
-                      <tr>
-                        <td>URL</td>
-                        <td>${this._info.url}</td>
-                      </tr>
-                      <tr>
-                        <td>Active Dataset TLVs</td>
-                        <td>${this._info.active_dataset_tlvs || "-"}</td>
-                      </tr>
-                    </table>
-                  `}
-            </div>
+          <ha-card header="Open Thread Border Router">
+            ${isComponentLoaded(this.hass, "otbr")
+              ? html`
+                  <div class="card-content">
+                    ${!this._info
+                      ? html`<ha-circular-progress
+                          active
+                        ></ha-circular-progress>`
+                      : html`
+                          <table>
+                            <tr>
+                              <td>URL</td>
+                              <td>${this._info.url}</td>
+                            </tr>
+                            <tr>
+                              <td>Active Dataset TLVs</td>
+                              <td>${this._info.active_dataset_tlvs || "-"}</td>
+                            </tr>
+                          </table>
+                        `}
+                  </div>
+                `
+              : html`
+                  <div class="card-content">No border routers found.</div>
+                  <div class="card-actions">
+                    <mwc-button
+                      @click=${this._addOTBR}
+                      label="Add border router"
+                    ></mwc-button>
+                  </div>
+                `}
           </ha-card>
         </div>
       </hass-subpage>
@@ -45,8 +61,24 @@ export class ThreadConfigPanel extends LitElement {
   protected override firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    getOTBRInfo(this.hass).then((info) => {
-      this._info = info;
+    this._refresh();
+  }
+
+  private _refresh() {
+    if (isComponentLoaded(this.hass, "otbr")) {
+      getOTBRInfo(this.hass).then((info) => {
+        this._info = info;
+      });
+    }
+  }
+
+  private _addOTBR() {
+    showConfigFlowDialog(this, {
+      dialogClosedCallback: () => {
+        this._refresh();
+      },
+      startFlowHandler: "otbr",
+      showAdvanced: this.hass.userData?.showAdvanced,
     });
   }
 
