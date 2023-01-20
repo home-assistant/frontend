@@ -86,10 +86,10 @@ class DialogLightColorPicker extends LitElement {
     );
 
     const modes: Mode[] = [];
+    modes.push("color");
     if (supportsTemp) {
       modes.push("color_temp");
     }
-    modes.push("color");
     if (supportsWhite) {
       modes.push("white");
     }
