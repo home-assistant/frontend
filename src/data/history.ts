@@ -196,20 +196,27 @@ class HistoryStream {
       }
       // Remove old history
       if (entityId in this.combinedHistory) {
-        const entityHistory = newHistory[entityId];
-        while (entityHistory[0].lu < purgeBeforePythonTime) {
-          if (entityHistory.length > 1) {
-            if (entityHistory[1].lu < purgeBeforePythonTime) {
-              newHistory[entityId].shift();
-              continue;
-            }
-          }
-          // Update the first entry to the start time state
-          // as we need to preserve the start time state and
-          // only expire the rest of the history as it ages.
-          entityHistory[0].lu = purgeBeforePythonTime;
-          break;
+        const expiredStates = newHistory[entityId].filter(
+          (state) => state.lu < purgeBeforePythonTime
+        );
+        if (!expiredStates.length) {
+          continue;
         }
+        newHistory[entityId] = newHistory[entityId].filter(
+          (state) => state.lu >= purgeBeforePythonTime
+        );
+        if (
+          newHistory[entityId].length &&
+          newHistory[entityId][0].lu === purgeBeforePythonTime
+        ) {
+          continue;
+        }
+        // Update the first entry to the start time state
+        // as we need to preserve the start time state and
+        // only expire the rest of the history as it ages.
+        const lastExpiredState = expiredStates[expiredStates.length - 1];
+        lastExpiredState.lu = purgeBeforePythonTime;
+        newHistory[entityId].unshift(lastExpiredState);
       }
     }
     this.combinedHistory = newHistory;
