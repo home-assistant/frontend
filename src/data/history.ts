@@ -231,9 +231,9 @@ class HistoryStream {
     const purgeBeforePythonTime =
       (new Date().getTime() - 60 * 60 * this.hoursToShow * 1000) / 1000;
     const newHistory: HistoryStates = {};
-    Object.keys(this.combinedHistory).forEach((entityId) => {
+    for (const entityId of Object.keys(this.combinedHistory)) {
       newHistory[entityId] = [];
-    });
+    };
     Object.keys(streamMessage.states).forEach((entityId) => {
       newHistory[entityId] = [];
     });
