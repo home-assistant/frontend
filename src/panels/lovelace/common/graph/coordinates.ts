@@ -1,4 +1,5 @@
 import { strokeWidth } from "../../../../data/graph";
+import { EntityHistoryState } from "../../../../data/history";
 
 const average = (items: any[]): number =>
   items.reduce((sum, entry) => sum + parseFloat(entry.state), 0) / items.length;
@@ -104,4 +105,26 @@ export const coordinates = (
   }
 
   return calcPoints(history, hours, width, detail, min, max);
+};
+
+interface NumericEntityHistoryState {
+  state: number;
+  last_changed: number;
+}
+
+export const coordinatesMinimalResponseCompressedState = (
+  history: EntityHistoryState[],
+  hours: number,
+  width: number,
+  detail: number,
+  limits?: { min?: number; max?: number }
+): number[][] | undefined => {
+  const numericHistory: NumericEntityHistoryState[] = history.map((item) => ({
+    state: Number(item.s),
+    // With minimal response and compressed state, we don't have last_changed,
+    // so we use last_updated since its always the same as last_changed since
+    // we already filtered out states that are the same.
+    last_changed: item.lu * 1000,
+  }));
+  return coordinates(numericHistory, hours, width, detail, limits);
 };
