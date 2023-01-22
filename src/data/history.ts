@@ -243,12 +243,11 @@ class HistoryStream {
         entityId in this.combinedHistory &&
         entityId in streamMessage.states
       ) {
+        const lastCombined = this.combinedHistory[entityId][-1];
         newHistory[entityId] = this.combinedHistory[entityId].concat(
           streamMessage.states[entityId]
         );
-        if (
-          streamMessage.states[entityId][0] > this.combinedHistory[entityId][-1]
-        ) {
+        if (streamMessage.states[entityId][0] > lastCombined) {
           // If the history is out of order we have to sort it.
           newHistory[entityId] = newHistory[entityId].sort(
             (a, b) => a.lu - b.lu
