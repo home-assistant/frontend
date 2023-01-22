@@ -238,7 +238,7 @@ class HistoryStream {
       newHistory[entityId] = [];
     });
     Object.keys(newHistory).forEach((entityId) => {
-      let purgeOld = false;
+      let purgeOld = entityId in this.combinedHistory;
       if (
         entityId in this.combinedHistory &&
         entityId in streamMessage.states
