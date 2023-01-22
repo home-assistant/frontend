@@ -264,19 +264,18 @@ class HistoryStream {
       // Remove old history
       if (entityId in this.combinedHistory) {
         const entityHistory = newHistory[entityId];
-        while (entityHistory[0].lu < purgeBeforePythonTime) {
-          if (entityHistory.length > 1) {
-            if (entityHistory[1].lu < purgeBeforePythonTime) {
-              newHistory[entityId].shift();
-              continue;
-            }
-          }
-          // Update the first entry to the start time state
-          // as we need to preserve the start time state and
-          // only expire the rest of the history as it ages.
-          entityHistory[0].lu = purgeBeforePythonTime;
-          break;
+        const lastEntry = entityHistory[entityHistory.length - 1];
+        const filtered = entityHistory.filter(
+          (ent) => ent.lu < purgeBeforePythonTime
+        );
+        if (filtered.length === 0) {
+          filtered.push(lastEntry);
         }
+        // Update the first entry to the start time state
+        // as we need to preserve the start time state and
+        // only expire the rest of the history as it ages.
+        filtered[0].lu = purgeBeforePythonTime;
+        newHistory[entityId] = filtered;
       }
     }
     this.combinedHistory = newHistory;
