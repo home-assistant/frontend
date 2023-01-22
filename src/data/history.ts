@@ -233,11 +233,11 @@ class HistoryStream {
     const newHistory: HistoryStates = {};
     for (const entityId of Object.keys(this.combinedHistory)) {
       newHistory[entityId] = [];
-    };
-    Object.keys(streamMessage.states).forEach((entityId) => {
+    }
+    for (const entityId of Object.keys(streamMessage.states)) {
       newHistory[entityId] = [];
-    });
-    Object.keys(newHistory).forEach((entityId) => {
+    }
+    for (const entityId of Object.keys(newHistory)) {
       let purgeOld = entityId in this.combinedHistory;
       if (
         entityId in this.combinedHistory &&
@@ -277,7 +277,7 @@ class HistoryStream {
           break;
         }
       }
-    });
+    }
     this.combinedHistory = newHistory;
     return this.combinedHistory;
   }
