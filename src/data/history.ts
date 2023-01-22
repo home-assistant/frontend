@@ -238,7 +238,6 @@ class HistoryStream {
       newHistory[entityId] = [];
     }
     for (const entityId of Object.keys(newHistory)) {
-      let purgeOld = entityId in this.combinedHistory;
       if (
         entityId in this.combinedHistory &&
         entityId in streamMessage.states
@@ -257,14 +256,13 @@ class HistoryStream {
             (a, b) => a.lu - b.lu
           );
         }
-        purgeOld = true;
       } else if (entityId in this.combinedHistory) {
         newHistory[entityId] = this.combinedHistory[entityId];
-        purgeOld = true;
       } else {
         newHistory[entityId] = streamMessage.states[entityId];
       }
-      if (purgeOld) {
+      // Remove old history
+      if (entityId in this.combinedHistory) {
         const entityHistory = newHistory[entityId];
         while (entityHistory[0].lu < purgeBeforePythonTime) {
           if (entityHistory.length > 1) {
