@@ -244,7 +244,8 @@ class HistoryStream {
         entityId in streamMessage.states
       ) {
         const entityCombinedHistory = this.combinedHistory[entityId];
-        const lastEntityCombinedHistory = entityCombinedHistory[-1];
+        const lastEntityCombinedHistory =
+          entityCombinedHistory[entityCombinedHistory.length - 1];
         newHistory[entityId] = entityCombinedHistory.concat(
           streamMessage.states[entityId]
         );
