@@ -39,6 +39,7 @@ import {
   rebootHost,
   shutdownHost,
 } from "../../../data/hassio/host";
+import { scanUSBDevices } from "../../../data/usb";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -219,6 +220,10 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    if (!this._configEntries) {
+      return html``;
+    }
+
     let boardId: string | undefined;
     let boardName: string | undefined;
     let imageURL: string | undefined;
@@ -230,13 +235,22 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     );
 
     const dongles = this._hardwareInfo?.hardware.filter(
-      (hw) => hw.dongle !== null
+      (hw) =>
+        hw.dongle !== null &&
+        (!hw.config_entries.length ||
+          hw.config_entries.some(
+            (entryId) =>
+              this._configEntries![entryId] &&
+              !this._configEntries![entryId].disabled_by
+          ))
     );
 
     if (boardData) {
       boardConfigEntries = boardData.config_entries
-        .map((id) => this._configEntries?.[id])
-        .filter((entry) => entry?.supports_options) as ConfigEntry[];
+        .map((id) => this._configEntries![id])
+        .filter(
+          (entry) => entry?.supports_options && !entry.disabled_by
+        ) as ConfigEntry[];
       boardId = boardData.board!.hassio_board_id;
       boardName = boardData.name;
       documentationURL = boardData.url;
@@ -362,8 +376,10 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             ? html`<ha-card>
                 ${dongles.map((dongle) => {
                   const configEntry = dongle.config_entries
-                    .map((id) => this._configEntries?.[id])
-                    .filter((entry) => entry?.supports_options)[0];
+                    .map((id) => this._configEntries![id])
+                    .filter(
+                      (entry) => entry?.supports_options && !entry.disabled_by
+                    )[0];
                   return html`<div class="row">
                     ${dongle.name}${configEntry
                       ? html`<mwc-button
@@ -444,6 +460,10 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   }
 
   private async _load() {
+    if (isComponentLoaded(this.hass, "usb")) {
+      await scanUSBDevices(this.hass);
+    }
+
     const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
     try {
       if (isComponentLoaded(this.hass, "hardware")) {
