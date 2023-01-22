@@ -332,38 +332,36 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
       for (const entityId of Object.keys(history)) {
         const entityStates = history[entityId];
-        if (entityStates?.length > 1) {
-          // filter location data from states and remove all invalid locations
-          const points = entityStates.reduce(
-            (accumulator: HaMapPathPoint[], entityState) => {
-              const latitude = entityState.a.latitude;
-              const longitude = entityState.a.longitude;
-              if (latitude && longitude) {
-                const p = {} as HaMapPathPoint;
-                p.point = [latitude, longitude] as LatLngTuple;
-                const t = new Date(entityState.lu * 1000);
-                if (config.hours_to_show! || DEFAULT_HOURS_TO_SHOW > 144) {
-                  // if showing > 6 days in the history trail, show the full
-                  // date and time
-                  p.tooltip = formatDateTime(t, this.hass.locale);
-                } else if (isToday(t)) {
-                  p.tooltip = formatTime(t, this.hass.locale);
-                } else {
-                  p.tooltip = formatTimeWeekday(t, this.hass.locale);
-                }
-                accumulator.push(p);
-              }
-              return accumulator;
-            },
-            []
-          ) as HaMapPathPoint[];
-
-          paths.push({
-            points,
-            color: this._getColor(entityId),
-            gradualOpacity: 0.8,
-          });
+        if (!entityStates?.length) {
+          continue;
         }
+        // filter location data from states and remove all invalid locations
+        const points: HaMapPathPoint[] = [];
+        for (const entityState of entityStates) {
+          const latitude = entityState.a.latitude;
+          const longitude = entityState.a.longitude;
+          if (!latitude || !longitude) {
+            continue;
+          }
+          const p = {} as HaMapPathPoint;
+          p.point = [latitude, longitude] as LatLngTuple;
+          const t = new Date(entityState.lu * 1000);
+          if (config.hours_to_show! || DEFAULT_HOURS_TO_SHOW > 144) {
+            // if showing > 6 days in the history trail, show the full
+            // date and time
+            p.tooltip = formatDateTime(t, this.hass.locale);
+          } else if (isToday(t)) {
+            p.tooltip = formatTime(t, this.hass.locale);
+          } else {
+            p.tooltip = formatTimeWeekday(t, this.hass.locale);
+          }
+          points.push(p);
+        }
+        paths.push({
+          points,
+          color: this._getColor(entityId),
+          gradualOpacity: 0.8,
+        });
       }
       return paths;
     }
