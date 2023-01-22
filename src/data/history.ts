@@ -17,6 +17,8 @@ const NEED_ATTRIBUTE_DOMAINS = [
   "input_datetime",
   "thermostat",
   "water_heater",
+  "person",
+  "device_tracker",
 ];
 const LINE_ATTRIBUTES_TO_KEEP = [
   "temperature",
@@ -68,7 +70,7 @@ export interface HistoryStates {
   [entityId: string]: EntityHistoryState[];
 }
 
-interface EntityHistoryState {
+export interface EntityHistoryState {
   /** state */
   s: string;
   /** attributes */
@@ -77,6 +79,12 @@ interface EntityHistoryState {
   lc: number;
   /** last_updated */
   lu: number;
+}
+
+export interface HistoryStreamMessage {
+  states: HistoryStates;
+  start_time?: number; // Start time of this historical chunk
+  end_time?: number; // End time of this historical chunk
 }
 
 export const entityIdHistoryNeedsAttributes = (
@@ -172,6 +180,135 @@ export const fetchDateWS = (
     return hass.callWS<HistoryStates>({ ...params, entity_ids: entityIds });
   }
   return hass.callWS<HistoryStates>(params);
+};
+
+export const subscribeHistory = (
+  hass: HomeAssistant,
+  callbackFunction: (message: HistoryStreamMessage) => void,
+  startTime: Date,
+  endTime: Date,
+  entityIds: string[]
+): Promise<() => Promise<void>> => {
+  const params = {
+    type: "history/stream",
+    entity_ids: entityIds,
+    start_time: startTime.toISOString(),
+    end_time: endTime.toISOString(),
+    minimal_response: true,
+    no_attributes: !entityIds.some((entityId) =>
+      entityIdHistoryNeedsAttributes(hass, entityId)
+    ),
+  };
+  return hass.connection.subscribeMessage<HistoryStreamMessage>(
+    (message) => callbackFunction(message),
+    params
+  );
+};
+
+class HistoryStream {
+  hass: HomeAssistant;
+
+  hoursToShow: number;
+
+  combinedHistory: HistoryStates;
+
+  constructor(hass: HomeAssistant, hoursToShow: number) {
+    this.hass = hass;
+    this.hoursToShow = hoursToShow;
+    this.combinedHistory = {};
+  }
+
+  processMessage(streamMessage: HistoryStreamMessage): HistoryStates {
+    if (!this.combinedHistory || !Object.keys(this.combinedHistory).length) {
+      this.combinedHistory = streamMessage.states;
+      return this.combinedHistory;
+    }
+    if (!Object.keys(streamMessage.states).length) {
+      // Empty messages are still sent to
+      // indicate no more historical events
+      return this.combinedHistory;
+    }
+    const purgeBeforePythonTime =
+      (new Date().getTime() - 60 * 60 * this.hoursToShow * 1000) / 1000;
+    const newHistory: HistoryStates = {};
+    for (const entityId of Object.keys(this.combinedHistory)) {
+      newHistory[entityId] = [];
+    }
+    for (const entityId of Object.keys(streamMessage.states)) {
+      newHistory[entityId] = [];
+    }
+    for (const entityId of Object.keys(newHistory)) {
+      if (
+        entityId in this.combinedHistory &&
+        entityId in streamMessage.states
+      ) {
+        const entityCombinedHistory = this.combinedHistory[entityId];
+        const lastEntityCombinedHistory =
+          entityCombinedHistory[entityCombinedHistory.length - 1];
+        newHistory[entityId] = entityCombinedHistory.concat(
+          streamMessage.states[entityId]
+        );
+        if (
+          streamMessage.states[entityId][0].lu < lastEntityCombinedHistory.lu
+        ) {
+          // If the history is out of order we have to sort it.
+          newHistory[entityId] = newHistory[entityId].sort(
+            (a, b) => a.lu - b.lu
+          );
+        }
+      } else if (entityId in this.combinedHistory) {
+        newHistory[entityId] = this.combinedHistory[entityId];
+      } else {
+        newHistory[entityId] = streamMessage.states[entityId];
+      }
+      // Remove old history
+      if (entityId in this.combinedHistory) {
+        const entityHistory = newHistory[entityId];
+        while (entityHistory[0].lu < purgeBeforePythonTime) {
+          if (entityHistory.length > 1) {
+            if (entityHistory[1].lu < purgeBeforePythonTime) {
+              newHistory[entityId].shift();
+              continue;
+            }
+          }
+          // Update the first entry to the start time state
+          // as we need to preserve the start time state and
+          // only expire the rest of the history as it ages.
+          entityHistory[0].lu = purgeBeforePythonTime;
+          break;
+        }
+      }
+    }
+    this.combinedHistory = newHistory;
+    return this.combinedHistory;
+  }
+}
+
+export const subscribeHistoryStatesTimeWindow = (
+  hass: HomeAssistant,
+  callbackFunction: (data: HistoryStates) => void,
+  hoursToShow: number,
+  entityIds: string[],
+  minimalResponse = true,
+  significantChangesOnly = true
+): Promise<() => Promise<void>> => {
+  const params = {
+    type: "history/stream",
+    entity_ids: entityIds,
+    start_time: new Date(
+      new Date().getTime() - 60 * 60 * hoursToShow * 1000
+    ).toISOString(),
+    minimal_response: minimalResponse,
+    significant_changes_only: significantChangesOnly,
+    no_attributes: !entityIds.some((entityId) =>
+      entityIdHistoryNeedsAttributes(hass, entityId)
+    ),
+  };
+  const stream = new HistoryStream(hass, hoursToShow);
+  return hass.connection.subscribeMessage<HistoryStreamMessage>(
+    (message) => callbackFunction(stream.processMessage(message)),
+    params
+  );
 };
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
