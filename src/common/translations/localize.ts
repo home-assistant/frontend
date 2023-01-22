@@ -29,11 +29,9 @@ export type LocalizeKeys =
   | `ui.panel.config.devices.${string}`
   | `ui.panel.config.energy.${string}`
   | `ui.panel.config.info.${string}`
-  | `ui.panel.config.logs.${string}`
   | `ui.panel.config.lovelace.${string}`
   | `ui.panel.config.network.${string}`
   | `ui.panel.config.scene.${string}`
-  | `ui.panel.config.url.${string}`
   | `ui.panel.config.zha.${string}`
   | `ui.panel.config.zwave_js.${string}`
   | `ui.panel.lovelace.card.${string}`
