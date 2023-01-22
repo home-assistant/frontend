@@ -231,37 +231,38 @@ class HistoryStream {
     const purgeBeforePythonTime =
       (new Date().getTime() - 60 * 60 * this.hoursToShow * 1000) / 1000;
     const newHistory: HistoryStates = {};
-    Object.keys(this.combinedHistory).forEach((entityId) => {
+    for (const entityId of Object.keys(this.combinedHistory)) {
       newHistory[entityId] = [];
-    });
-    Object.keys(streamMessage.states).forEach((entityId) => {
+    }
+    for (const entityId of Object.keys(streamMessage.states)) {
       newHistory[entityId] = [];
-    });
-    Object.keys(newHistory).forEach((entityId) => {
-      let purgeOld = false;
+    }
+    for (const entityId of Object.keys(newHistory)) {
       if (
         entityId in this.combinedHistory &&
         entityId in streamMessage.states
       ) {
-        newHistory[entityId] = this.combinedHistory[entityId].concat(
+        const entityCombinedHistory = this.combinedHistory[entityId];
+        const lastEntityCombinedHistory =
+          entityCombinedHistory[entityCombinedHistory.length - 1];
+        newHistory[entityId] = entityCombinedHistory.concat(
           streamMessage.states[entityId]
         );
         if (
-          streamMessage.states[entityId][0] > this.combinedHistory[entityId][-1]
+          streamMessage.states[entityId][0].lu < lastEntityCombinedHistory.lu
         ) {
           // If the history is out of order we have to sort it.
           newHistory[entityId] = newHistory[entityId].sort(
             (a, b) => a.lu - b.lu
           );
         }
-        purgeOld = true;
       } else if (entityId in this.combinedHistory) {
         newHistory[entityId] = this.combinedHistory[entityId];
-        purgeOld = true;
       } else {
         newHistory[entityId] = streamMessage.states[entityId];
       }
-      if (purgeOld) {
+      // Remove old history
+      if (entityId in this.combinedHistory) {
         const entityHistory = newHistory[entityId];
         while (entityHistory[0].lu < purgeBeforePythonTime) {
           if (entityHistory.length > 1) {
@@ -277,7 +278,7 @@ class HistoryStream {
           break;
         }
       }
-    });
+    }
     this.combinedHistory = newHistory;
     return this.combinedHistory;
   }
