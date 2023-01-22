@@ -249,7 +249,9 @@ class HistoryStream {
         newHistory[entityId] = entityCombinedHistory.concat(
           streamMessage.states[entityId]
         );
-        if (streamMessage.states[entityId][0] > lastEntityCombinedHistory) {
+        if (
+          streamMessage.states[entityId][0].lu > lastEntityCombinedHistory.lu
+        ) {
           // If the history is out of order we have to sort it.
           newHistory[entityId] = newHistory[entityId].sort(
             (a, b) => a.lu - b.lu
