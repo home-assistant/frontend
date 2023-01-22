@@ -164,6 +164,9 @@ export class MoreInfoHistory extends LitElement {
     if (!isComponentLoaded(this.hass, "history") || this._subscribed) {
       return;
     }
+    if (this._subscribed) {
+      this._unsubscribeHistoryTimeWindow();
+    }
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
