@@ -66,7 +66,8 @@ export function selectUnit(
       value: Math.round(hours),
       unit: "hour",
     };
-  } if (Math.abs(days) < resolvedThresholds.day) {
+  }
+  if (Math.abs(days) < resolvedThresholds.day) {
     return {
       value: days,
       unit: "day",
@@ -83,7 +84,8 @@ export function selectUnit(
       value: days,
       unit: "day",
     };
-  } if (Math.abs(weeks) < resolvedThresholds.week) {
+  }
+  if (Math.abs(weeks) < resolvedThresholds.week) {
     return {
       value: weeks,
       unit: "week",
@@ -97,7 +99,8 @@ export function selectUnit(
       value: weeks,
       unit: "week",
     };
-  } if (Math.abs(months) < resolvedThresholds.month || years === 0) {
+  }
+  if (Math.abs(months) < resolvedThresholds.month || years === 0) {
     return {
       value: months,
       unit: "month",
