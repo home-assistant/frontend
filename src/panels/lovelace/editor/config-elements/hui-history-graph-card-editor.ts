@@ -28,7 +28,7 @@ const cardConfigStruct = assign(
     entities: array(entitiesConfigStruct),
     title: optional(string()),
     hours_to_show: optional(number()),
-    refresh_interval: optional(number()),
+    refresh_interval: optional(number()), // deprecated
     show_names: optional(boolean()),
   })
 );
