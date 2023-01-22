@@ -79,6 +79,7 @@ const integrationsWithPanel = {
   zha: "/config/zha/dashboard",
   zwave_js: "/config/zwave_js/dashboard",
   matter: "/config/matter",
+  otbr: "/config/thread",
 };
 
 @customElement("ha-integration-card")
