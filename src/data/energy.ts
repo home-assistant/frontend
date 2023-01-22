@@ -671,7 +671,7 @@ export const getEnergySolarForecasts = (hass: HomeAssistant) =>
   });
 
 const energyGasUnitClass = ["volume", "energy"] as const;
-export type EnergyGasUnitClass = typeof energyGasUnitClass[number];
+export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,

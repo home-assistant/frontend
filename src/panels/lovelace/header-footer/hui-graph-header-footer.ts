@@ -186,10 +186,10 @@ export class HuiGraphHeaderFooter
   }
 
   private _unsubscribeHistoryTimeWindow() {
+    clearInterval(this._interval);
     if (!this._subscribed) {
       return;
     }
-    clearInterval(this._interval);
     this._subscribed.then((unsubscribe) => {
       if (unsubscribe) {
         unsubscribe();

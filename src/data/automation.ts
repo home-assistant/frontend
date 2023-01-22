@@ -8,7 +8,7 @@ import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action, MODES } from "./script";
 
-export const AUTOMATION_DEFAULT_MODE: typeof MODES[number] = "single";
+export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
 
 export interface AutomationEntity extends HassEntityBase {
@@ -29,7 +29,7 @@ export interface ManualAutomationConfig {
   trigger: Trigger | Trigger[];
   condition?: Condition | Condition[];
   action: Action | Action[];
-  mode?: typeof MODES[number];
+  mode?: (typeof MODES)[number];
   max?: number;
   max_exceeded?:
     | "silent"
