@@ -330,7 +330,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
       const paths: HaMapPaths[] = [];
 
-      Object.keys(history).forEach((entityId) => {
+      for (const entityId of Object.keys(history)) {
         const entityStates = history[entityId];
         if (entityStates?.length > 1) {
           // filter location data from states and remove all invalid locations
@@ -364,7 +364,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             gradualOpacity: 0.8,
           });
         }
-      });
+      }
       return paths;
     }
   );
