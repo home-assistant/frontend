@@ -27,7 +27,6 @@ const SCHEMA = [
     schema: [
       { name: "url", required: true, selector: { text: {} } },
       { name: "aspect_ratio", selector: { text: {} } },
-      { name: "allow_open_top_navigation", selector: { boolean: {} } },
     ],
   },
 ] as const;

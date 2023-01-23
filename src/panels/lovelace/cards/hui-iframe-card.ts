@@ -21,7 +21,6 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       type: "iframe",
       url: "https://www.home-assistant.io",
       aspect_ratio: "50%",
-      allow_open_top_navigation: false,
     };
   }
 

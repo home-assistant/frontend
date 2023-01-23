@@ -4177,7 +4177,6 @@
             },
             "generic": {
               "alt_text": "Alternative Text",
-              "allow_open_top_navigation": "Allow open iframe links",
               "aspect_ratio": "Aspect Ratio",
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
