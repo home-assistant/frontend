@@ -85,7 +85,7 @@ export class HaNumberSelector extends LitElement {
     ev.stopPropagation();
     const value =
       ev.target.value === "" || isNaN(ev.target.value)
-        ? ""
+        ? undefined
         : Number(ev.target.value);
     if (this.value === value) {
       return;
