@@ -86,6 +86,7 @@ export class HaForm extends LitElement implements HaFormElement {
                   .value=${getValue(this.data, item)}
                   .label=${this._computeLabel(item, this.data)}
                   .disabled=${item.disabled || this.disabled || false}
+                  .placeholder=${item.required ? "" : item.default}
                   .helper=${this._computeHelper(item)}
                   .required=${item.required || false}
                   .context=${this._generateContext(item)}
