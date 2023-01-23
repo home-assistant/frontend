@@ -151,6 +151,14 @@ export class HaServiceControl extends LitElement {
             updatedDefaultValue = true;
             this._value!.data![field.key] = false;
           }
+          if (
+            field.selector &&
+            field.default !== undefined &&
+            this._value!.data![field.key] === undefined
+          ) {
+            updatedDefaultValue = true;
+            this._value!.data![field.key] = field.default;
+          }
         });
       }
       if (updatedDefaultValue) {
