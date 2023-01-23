@@ -92,8 +92,8 @@ export class HaBarSwitch extends LitElement {
     return css`
       :host {
         display: block;
-        --switch-bar-on-color: rgb(var(--rgb-primary-color));
-        --switch-bar-off-color: rgb(var(--rgb-disabled-color));
+        --switch-bar-on-color: var(--primary-color);
+        --switch-bar-off-color: var(--disabled-color);
         --switch-bar-background-opacity: 0.2;
         --switch-bar-thickness: 40px;
         --switch-bar-border-radius: 12px;
