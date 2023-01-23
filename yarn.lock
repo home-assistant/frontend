@@ -9616,7 +9616,7 @@ fsevents@^1.2.7:
     pinst: ^3.0.0
     prettier: ^2.8.3
     proxy-polyfill: ^0.3.2
-    punycode: ^2.1.1
+    punycode: ^2.3.0
     qr-scanner: ^1.3.0
     qrcode: ^1.4.4
     regenerator-runtime: ^0.13.11
@@ -13295,6 +13295,13 @@ fsevents@^1.2.7:
   version: 2.1.1
   resolution: "punycode@npm:2.1.1"
   checksum: 823bf443c6dd14f669984dea25757b37993f67e8d94698996064035edd43bed8a5a17a9f12e439c2b35df1078c6bec05a6c86e336209eb1061e8025c481168e8
+  languageName: node
+  linkType: hard
+
+"punycode@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "punycode@npm:2.3.0"
+  checksum: 39f760e09a2a3bbfe8f5287cf733ecdad69d6af2fe6f97ca95f24b8921858b91e9ea3c9eeec6e08cede96181b3bb33f95c6ffd8c77e63986508aa2e8159fa200
   languageName: node
   linkType: hard
 
