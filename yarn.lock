@@ -1969,7 +1969,7 @@ __metadata:
 
 "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch::locator=home-assistant-frontend%40workspace%3A.":
   version: 0.7.0-pre.2
-  resolution: "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@npm%3A0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch::version=0.7.0-pre.2&hash=b7346d&locator=home-assistant-frontend%40workspace%3A."
+  resolution: "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@npm%3A0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch::version=0.7.0-pre.2&hash=7117f7&locator=home-assistant-frontend%40workspace%3A."
   dependencies:
     event-target-shim: ^5.0.1
     lit: ^2.0.0
@@ -3781,7 +3781,7 @@ __metadata:
 
 "@polymer/polymer@patch:@polymer/polymer@3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::locator=home-assistant-frontend%40workspace%3A.":
   version: 3.4.1
-  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.4.1&hash=1ca270&locator=home-assistant-frontend%40workspace%3A."
+  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.4.1&hash=0f00db&locator=home-assistant-frontend%40workspace%3A."
   dependencies:
     "@webcomponents/shadycss": ^1.9.1
   checksum: 3d8ffd3a55808269016785db20758e71e32d17bee45a8055720cefbbef2c24d86939ef743e1416276facab6ef1748b819f9af617a89550293397a27977e7a6d4
@@ -8842,7 +8842,7 @@ fsevents@^1.2.7:
 
 "fsevents@patch:fsevents@^1.2.7#~builtin<compat/fsevents>":
   version: 1.2.9
-  resolution: "fsevents@patch:fsevents@npm%3A1.2.9#~builtin<compat/fsevents>::version=1.2.9&hash=18f3a7"
+  resolution: "fsevents@patch:fsevents@npm%3A1.2.9#~builtin<compat/fsevents>::version=1.2.9&hash=d11327"
   dependencies:
     nan: ^2.12.1
     node-pre-gyp: ^0.12.0
@@ -8852,7 +8852,7 @@ fsevents@^1.2.7:
 
 "fsevents@patch:fsevents@~2.3.1#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
   dependencies:
     node-gyp: latest
   conditions: os=darwin
@@ -13813,7 +13813,7 @@ fsevents@^1.2.7:
 
 "resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.11.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.4.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.9.0#~builtin<compat/resolve>":
   version: 1.20.0
-  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=07638b"
+  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=c3c19d"
   dependencies:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
@@ -15517,7 +15517,7 @@ typescript@^3.8.3:
 
 "typescript@patch:typescript@^3.8.3#~builtin<compat/typescript>":
   version: 3.8.3
-  resolution: "typescript@patch:typescript@npm%3A3.8.3#~builtin<compat/typescript>::version=3.8.3&hash=a1c5e5"
+  resolution: "typescript@patch:typescript@npm%3A3.8.3#~builtin<compat/typescript>::version=3.8.3&hash=c44097"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
@@ -15527,11 +15527,11 @@ typescript@^3.8.3:
 
 "typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
   version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=a1c5e5"
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=ad5954"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 37f6e2c3c5e2aa5934b85b0fddbf32eeac8b1bacf3a5b51d01946936d03f5377fe86255d4e5a4ae628fd0cd553386355ad362c57f13b4635064400f3e8e05b9d
+  checksum: 1caaea6cb7f813e64345190fddc4e6c924d0b698ab81189b503763c4a18f7f5501c69362979d36e19c042d89d936443e768a78b0675690b35eb663d19e0eae71
   languageName: node
   linkType: hard
 
