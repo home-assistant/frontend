@@ -1,4 +1,4 @@
-import { differenceInDays, differenceInWeeks } from "date-fns/esm";
+import { differenceInDays, differenceInWeeks, startOfWeek } from "date-fns/esm";
 import { FrontendLocaleData } from "../../data/translation";
 import { firstWeekdayIndex } from "../datetime/first_weekday";
 
@@ -74,8 +74,8 @@ export function selectUnit(
   }
 
   const firstWeekday = firstWeekdayIndex(locale);
-  const fromWeek = getFirstDayOfTheWeek(fromDate, firstWeekday);
-  const toWeek = getFirstDayOfTheWeek(toDate, firstWeekday);
+  const fromWeek = startOfWeek(fromDate, { weekStartsOn: firstWeekday });
+  const toWeek = startOfWeek(toDate, { weekStartsOn: firstWeekday });
 
   const weeks = differenceInWeeks(fromWeek, toWeek);
   if (weeks === 0) {
@@ -110,20 +110,6 @@ export function selectUnit(
     value: Math.round(years),
     unit: "year",
   };
-}
-
-function getFirstDayOfTheWeek(date: Date, firstWeekday: number) {
-  const dayOfTheWeek = date.getDay();
-  const firstDayOfTheWeek = new Date(date);
-
-  if (dayOfTheWeek > firstWeekday) {
-    firstDayOfTheWeek.setHours((firstWeekday - dayOfTheWeek) * 24);
-  } else if (dayOfTheWeek < firstWeekday) {
-    // The day falls on the previous week
-    firstDayOfTheWeek.setHours((firstWeekday - dayOfTheWeek - 7) * 24);
-  }
-
-  return firstDayOfTheWeek;
 }
 
 type Thresholds = Record<
