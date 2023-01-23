@@ -137,7 +137,7 @@ class StateHistoryCharts extends LitElement {
           .paddingYAxis=${this._maxYWidth}
           .names=${this.names}
           .chartIndex=${index}
-          @y-width-changed=${this.yWidthChanged}
+          @y-width-changed=${this._yWidthChanged}
         ></state-history-chart-line>
       </div> `;
     }
