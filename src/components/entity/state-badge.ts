@@ -11,13 +11,13 @@ import {
 import { property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
-import { CLIMATE_HVAC_ACTION_COLORS } from "../../common/entity/color/climate_color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
+import { HVAC_ACTION_TO_MODE } from "../../data/climate";
 import type { HomeAssistant } from "../../types";
 import "../ha-state-icon";
 
@@ -115,7 +115,7 @@ export class StateBadge extends LitElement {
       } else if (this._stateColor && stateActive(stateObj)) {
         const color = stateColorCss(stateObj);
         if (color) {
-          iconStyle.color = `rgb(${color})`;
+          iconStyle.color = color;
         }
         if (stateObj.attributes.rgb_color) {
           iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
@@ -134,8 +134,11 @@ export class StateBadge extends LitElement {
         }
         if (stateObj.attributes.hvac_action) {
           const hvacAction = stateObj.attributes.hvac_action;
-          if (["heating", "cooling", "drying"].includes(hvacAction)) {
-            iconStyle.color = `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+          if (["heating", "cooling", "drying", "fan"].includes(hvacAction)) {
+            iconStyle.color = stateColorCss(
+              stateObj,
+              HVAC_ACTION_TO_MODE[hvacAction]
+            )!;
           } else {
             delete iconStyle.color;
           }

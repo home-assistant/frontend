@@ -3,9 +3,11 @@ import { styles } from "@material/mwc-dialog/mwc-dialog.css";
 import { mdiClose } from "@mdi/js";
 import { css, html, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
-import type { HomeAssistant } from "../types";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
+
+const SUPPRESS_DEFAULT_PRESS_SELECTOR = ["button"];
 
 export const createCloseHeading = (
   hass: HomeAssistant,
@@ -30,6 +32,14 @@ export class HaDialog extends DialogBase {
 
   protected renderHeading() {
     return html`<slot name="heading"> ${super.renderHeading()} </slot>`;
+  }
+
+  protected firstUpdated(): void {
+    super.firstUpdated();
+    this.suppressDefaultPressSelector = [
+      this.suppressDefaultPressSelector,
+      SUPPRESS_DEFAULT_PRESS_SELECTOR,
+    ].join(", ");
   }
 
   static override styles = [

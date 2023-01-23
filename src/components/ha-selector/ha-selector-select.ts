@@ -88,6 +88,10 @@ export class HaSelectSelector extends LitElement {
       const value =
         !this.value || this.value === "" ? [] : (this.value as string[]);
 
+      const optionItems = options.filter(
+        (option) => !option.disabled && !value?.includes(option.value)
+      );
+
       return html`
         ${value?.length
           ? html`<ha-chip-set>
@@ -118,13 +122,11 @@ export class HaSelectSelector extends LitElement {
           .disabled=${this.disabled}
           .required=${this.required && !value.length}
           .value=${this._filter}
-          .items=${options}
-          .filteredItems=${options.filter(
-            (option) => !option.disabled && !value?.includes(option.value)
-          )}
+          .items=${optionItems}
           .allowCustomValue=${this.selector.select.custom_value ?? false}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
+          @opened-changed=${this._openedChanged}
         ></ha-combo-box>
       `;
     }
@@ -132,10 +134,13 @@ export class HaSelectSelector extends LitElement {
     if (this.selector.select?.custom_value) {
       if (
         this.value !== undefined &&
+        !Array.isArray(this.value) &&
         !options.find((option) => option.value === this.value)
       ) {
         options.unshift({ value: this.value, label: this.value });
       }
+
+      const optionItems = options.filter((option) => !option.disabled);
 
       return html`
         <ha-combo-box
@@ -146,10 +151,11 @@ export class HaSelectSelector extends LitElement {
           .helper=${this.helper}
           .disabled=${this.disabled}
           .required=${this.required}
-          .items=${options.filter((item) => !item.disabled)}
+          .items=${optionItems}
           .value=${this.value}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
+          @opened-changed=${this._openedChanged}
         ></ha-combo-box>
       `;
     }
@@ -158,10 +164,11 @@ export class HaSelectSelector extends LitElement {
       <ha-select
         fixedMenuPosition
         naturalMenuWidth
-        .label=${this.label}
-        .value=${this.value}
-        .helper=${this.helper}
+        .label=${this.label ?? ""}
+        .value=${this.value ?? ""}
+        .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
+        .required=${this.required}
         @closed=${stopPropagation}
         @selected=${this._valueChanged}
       >
@@ -192,7 +199,7 @@ export class HaSelectSelector extends LitElement {
   private _valueChanged(ev) {
     ev.stopPropagation();
     const value = ev.detail?.value || ev.target.value;
-    if (this.disabled || !value) {
+    if (this.disabled || value === undefined) {
       return;
     }
     fireEvent(this, "value-changed", {
@@ -273,13 +280,16 @@ export class HaSelectSelector extends LitElement {
     });
   }
 
+  private _openedChanged(ev?: CustomEvent): void {
+    if (ev?.detail.value) {
+      this._filterChanged();
+    }
+  }
+
   private _filterChanged(ev?: CustomEvent): void {
     this._filter = ev?.detail.value || "";
 
     const filteredItems = this.comboBox.items?.filter((item) => {
-      if (this.selector.select?.multiple && this.value?.includes(item.value)) {
-        return false;
-      }
       const label = item.label || item.value;
       return label.toLowerCase().includes(this._filter?.toLowerCase());
     });

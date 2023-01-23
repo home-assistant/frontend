@@ -485,6 +485,13 @@ class HaPanelConfig extends HassRouterPage {
             "./integrations/integration-panels/matter/matter-config-panel"
           ),
       },
+      thread: {
+        tag: "thread-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/thread/thread-config-panel"
+          ),
+      },
       application_credentials: {
         tag: "ha-config-application-credentials",
         load: () =>

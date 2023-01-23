@@ -1,4 +1,4 @@
-import { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import { HassEntities } from "home-assistant-js-websocket";
 import { LatLngTuple } from "leaflet";
 import {
   css,
@@ -12,11 +12,15 @@ import { customElement, property, query, state } from "lit/decorators";
 import { mdiImageFilterCenterFocus } from "@mdi/js";
 import memoizeOne from "memoize-one";
 import { isToday } from "date-fns";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import { fetchRecent } from "../../../data/history";
+import {
+  HistoryStates,
+  subscribeHistoryStatesTimeWindow,
+} from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -36,8 +40,7 @@ import {
   formatTimeWeekday,
 } from "../../../common/datetime/format_time";
 
-const MINUTE = 60000;
-
+const DEFAULT_HOURS_TO_SHOW = 24;
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -45,8 +48,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
 
-  @state()
-  private _history?: HassEntity[][];
+  @state() private _stateHistory?: HistoryStates;
 
   @state()
   private _config?: MapCardConfig;
@@ -54,13 +56,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @query("ha-map")
   private _map?: HaMap;
 
-  private _date?: Date;
-
   private _configEntities?: string[];
 
   private _colorDict: Record<string, string> = {};
 
   private _colorIndex = 0;
+
+  private _error?: string;
+
+  private _subscribed?: Promise<(() => Promise<void>) | void>;
 
   public setConfig(config: MapCardConfig): void {
     if (!config) {
@@ -79,7 +83,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       config.geo_location_sources &&
       !Array.isArray(config.geo_location_sources)
     ) {
-      throw new Error("Geo_location_sources needs to be an array");
+      throw new Error("Parameter geo_location_sources needs to be an array");
     }
 
     this._config = config;
@@ -88,8 +92,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         ? processConfigEntities<EntityConfig>(config.entities)
         : []
     ).map((entity) => entity.entity);
-
-    this._cleanupHistory();
   }
 
   public getCardSize(): number {
@@ -102,6 +104,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ratio && ratio.w > 0 && ratio.h > 0
         ? `${((100 * ratio.h) / ratio.w).toFixed(2)}`
         : "100";
+
     return 1 + Math.floor(Number(ar) / 25) || 3;
   }
 
@@ -132,6 +135,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (!this._config) {
       return html``;
     }
+    if (this._error) {
+      return html`<div class="error">${this._error}</div>`;
+    }
     return html`
       <ha-card id="card" .header=${this._config.title}>
         <div id="root">
@@ -143,7 +149,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._configEntities
             )}
             .zoom=${this._config.default_zoom ?? 14}
-            .paths=${this._getHistoryPaths(this._config, this._history)}
+            .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit}
             .darkMode=${this._config.dark_mode}
           ></ha-map>
@@ -175,20 +181,76 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return true;
     }
 
-    // Check if any state has changed
-    for (const entity of this._configEntities) {
-      if (oldHass.states[entity] !== this.hass!.states[entity]) {
-        return true;
-      }
+    if (changedProps.has("_stateHistory")) {
+      return true;
     }
 
     return false;
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    const root = this.shadowRoot!.getElementById("root");
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated && this._configEntities?.length) {
+      this._subscribeHistoryTimeWindow();
+    }
+  }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeHistoryTimeWindow();
+  }
+
+  private _subscribeHistoryTimeWindow() {
+    if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
+      return;
+    }
+    this._subscribed = subscribeHistoryStatesTimeWindow(
+      this.hass!,
+      (combinedHistory) => {
+        if (!this._subscribed) {
+          // Message came in before we had a chance to unload
+          return;
+        }
+        this._stateHistory = combinedHistory;
+      },
+      this._config!.hours_to_show! || DEFAULT_HOURS_TO_SHOW,
+      this._configEntities!,
+      false,
+      false
+    ).catch((err) => {
+      this._subscribed = undefined;
+      this._error = err;
+    });
+  }
+
+  private _unsubscribeHistoryTimeWindow() {
+    if (!this._subscribed) {
+      return;
+    }
+    this._subscribed.then((unsubscribe) => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+      this._subscribed = undefined;
+    });
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (this._configEntities?.length) {
+      if (!this._subscribed || changedProps.has("_config")) {
+        this._unsubscribeHistoryTimeWindow();
+        this._subscribeHistoryTimeWindow();
+      }
+    } else {
+      this._unsubscribeHistoryTimeWindow();
+    }
+    if (changedProps.has("_config")) {
+      this._computePadding();
+    }
+  }
+
+  private _computePadding(): void {
+    const root = this.shadowRoot!.getElementById("root");
     if (!this._config || this.isPanel || !root) {
       return;
     }
@@ -204,16 +266,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ratio && ratio.w > 0 && ratio.h > 0
         ? `${((100 * ratio.h) / ratio.w).toFixed(2)}%`
         : (root.style.paddingBottom = "100%");
-  }
-
-  protected updated(changedProps: PropertyValues): void {
-    if (this._config?.hours_to_show && this._configEntities?.length) {
-      if (changedProps.has("_config")) {
-        this._getHistory();
-      } else if (Date.now() - this._date!.getTime() >= MINUTE) {
-        this._getHistory();
-      }
-    }
   }
 
   private _fitMap() {
@@ -270,104 +322,50 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _getHistoryPaths = memoizeOne(
     (
       config: MapCardConfig,
-      history?: HassEntity[][]
+      history?: HistoryStates
     ): HaMapPaths[] | undefined => {
-      if (!config.hours_to_show || !history) {
+      if (!history) {
         return undefined;
       }
 
       const paths: HaMapPaths[] = [];
 
-      for (const entityStates of history) {
-        if (entityStates?.length <= 1) {
+      for (const entityId of Object.keys(history)) {
+        const entityStates = history[entityId];
+        if (!entityStates?.length) {
           continue;
         }
         // filter location data from states and remove all invalid locations
-        const points = entityStates.reduce(
-          (accumulator: HaMapPathPoint[], entityState) => {
-            const latitude = entityState.attributes.latitude;
-            const longitude = entityState.attributes.longitude;
-            if (latitude && longitude) {
-              const p = {} as HaMapPathPoint;
-              p.point = [latitude, longitude] as LatLngTuple;
-              const t = new Date(entityState.last_updated);
-              if (config.hours_to_show! > 144) {
-                // if showing > 6 days in the history trail, show the full
-                // date and time
-                p.tooltip = formatDateTime(t, this.hass.locale);
-              } else if (isToday(t)) {
-                p.tooltip = formatTime(t, this.hass.locale);
-              } else {
-                p.tooltip = formatTimeWeekday(t, this.hass.locale);
-              }
-              accumulator.push(p);
-            }
-            return accumulator;
-          },
-          []
-        ) as HaMapPathPoint[];
-
+        const points: HaMapPathPoint[] = [];
+        for (const entityState of entityStates) {
+          const latitude = entityState.a.latitude;
+          const longitude = entityState.a.longitude;
+          if (!latitude || !longitude) {
+            continue;
+          }
+          const p = {} as HaMapPathPoint;
+          p.point = [latitude, longitude] as LatLngTuple;
+          const t = new Date(entityState.lu * 1000);
+          if (config.hours_to_show! || DEFAULT_HOURS_TO_SHOW > 144) {
+            // if showing > 6 days in the history trail, show the full
+            // date and time
+            p.tooltip = formatDateTime(t, this.hass.locale);
+          } else if (isToday(t)) {
+            p.tooltip = formatTime(t, this.hass.locale);
+          } else {
+            p.tooltip = formatTimeWeekday(t, this.hass.locale);
+          }
+          points.push(p);
+        }
         paths.push({
           points,
-          color: this._getColor(entityStates[0].entity_id),
+          color: this._getColor(entityId),
           gradualOpacity: 0.8,
         });
       }
       return paths;
     }
   );
-
-  private async _getHistory(): Promise<void> {
-    this._date = new Date();
-
-    if (!this._configEntities) {
-      return;
-    }
-
-    const entityIds = this._configEntities!.join(",");
-    const endTime = new Date();
-    const startTime = new Date();
-    startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
-    const skipInitialState = false;
-    const significantChangesOnly = false;
-    const minimalResponse = false;
-
-    const stateHistory = await fetchRecent(
-      this.hass,
-      entityIds,
-      startTime,
-      endTime,
-      skipInitialState,
-      significantChangesOnly,
-      minimalResponse
-    );
-
-    if (stateHistory.length < 1) {
-      return;
-    }
-    this._history = stateHistory;
-  }
-
-  private _cleanupHistory() {
-    if (!this._history) {
-      return;
-    }
-    if (this._config!.hours_to_show! <= 0) {
-      this._history = undefined;
-    } else {
-      // remove unused entities
-      this._history = this._history!.reduce(
-        (accumulator: HassEntity[][], entityStates) => {
-          const entityId = entityStates[0].entity_id;
-          if (this._configEntities?.includes(entityId)) {
-            accumulator.push(entityStates);
-          }
-          return accumulator;
-        },
-        []
-      ) as HassEntity[][];
-    }
-  }
 
   static get styles(): CSSResultGroup {
     return css`

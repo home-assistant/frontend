@@ -299,7 +299,6 @@ export interface MediaControlCardConfig extends LovelaceCardConfig {
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   entities: Array<EntityConfig | string>;
   hours_to_show?: number;
-  refresh_interval?: number;
   title?: string;
   show_names?: boolean;
 }
@@ -332,6 +331,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   theme?: string;
+  alt_text?: string;
 }
 
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
