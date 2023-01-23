@@ -1,3 +1,4 @@
+import { differenceInDays, differenceInWeeks } from "date-fns/esm";
 import { FrontendLocaleData } from "../../data/translation";
 import { firstWeekdayIndex } from "../datetime/first_weekday";
 
@@ -14,8 +15,6 @@ export type Unit =
 const MS_PER_SECOND = 1e3;
 const SECS_PER_MIN = 60;
 const SECS_PER_HOUR = SECS_PER_MIN * 60;
-const SECS_PER_DAY = SECS_PER_HOUR * 24;
-const SECS_PER_WEEK = SECS_PER_DAY * 7;
 
 // Adapted from https://github.com/formatjs/formatjs/blob/186cef62f980ec66252ee232f438a42d0b51b9f9/packages/intl-utils/src/diff.ts
 export function selectUnit(
@@ -60,7 +59,7 @@ export function selectUnit(
   fromDate.setHours(0, 0, 0, 0);
   toDate.setHours(0, 0, 0, 0);
 
-  const days = (+fromDate - +toDate) / MS_PER_SECOND / SECS_PER_DAY;
+  const days = differenceInDays(fromDate, toDate);
   if (days === 0) {
     return {
       value: Math.round(hours),
@@ -78,7 +77,7 @@ export function selectUnit(
   const fromWeek = getFirstDayOfTheWeek(fromDate, firstWeekday);
   const toWeek = getFirstDayOfTheWeek(toDate, firstWeekday);
 
-  const weeks = (+fromWeek - +toWeek) / MS_PER_SECOND / SECS_PER_WEEK;
+  const weeks = differenceInWeeks(fromWeek, toWeek);
   if (weeks === 0) {
     return {
       value: days,
