@@ -11,9 +11,10 @@ import {
   queryAsync,
   state,
 } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { hsv2rgb, rgb2hsv } from "../../../common/color/convert-color";
+import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -148,7 +149,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       computeDomain(entity.entity_id) === "person" ||
       computeDomain(entity.entity_id) === "device_tracker"
     ) {
-      return "rgb(var(--rgb-state-default-color))";
+      return undefined;
     }
 
     // Use light color if the light support rgb
@@ -167,13 +168,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           hsvColor[1] = 0.4;
         }
       }
-      return `rgb(${hsv2rgb(hsvColor).join(",")})`;
+      return rgb2hex(hsv2rgb(hsvColor));
     }
 
     // Fallback to state color
-    const stateColor =
-      stateColorCss(entity) ?? "var(--rgb-state-default-color)";
-    return `rgb(${stateColor})`;
+    return stateColorCss(entity);
   });
 
   private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
@@ -271,7 +270,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                 class="badge"
                 .iconPath=${mdiExclamationThick}
                 style=${styleMap({
-                  "--tile-badge-background-color": `rgb(var(--rgb-red-color))`,
+                  "--tile-badge-background-color": `var(--red-color)`,
                 })}
               ></ha-tile-badge>
             </div>
@@ -292,6 +291,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const stateDisplay = this._computeStateDisplay(stateObj);
 
+    const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
 
     const style = {
@@ -308,7 +308,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
 
     return html`
-      <ha-card style=${styleMap(style)}>
+      <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : null}
         <div class="tile">
           <div
@@ -339,7 +339,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                     .icon=${badge.icon}
                     .iconPath=${badge.iconPath}
                     style=${styleMap({
-                      "--tile-badge-background-color": `rgb(${badge.color})`,
+                      "--tile-badge-background-color": badge.color,
                     })}
                   ></ha-tile-badge>
                 `
@@ -407,7 +407,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --tile-color: rgb(var(--rgb-state-inactive-color));
+        --tile-color: var(--state-inactive-color);
         -webkit-tap-highlight-color: transparent;
       }
       ha-card:has(ha-tile-info:focus-visible) {
@@ -421,8 +421,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         // For safari overflow hidden
         z-index: 0;
       }
-      ha-card.disabled {
-        --tile-color: rgb(var(--rgb-disabled-color));
+      ha-card.active {
+        --tile-color: var(--state-icon-color);
       }
       [role="button"] {
         cursor: pointer;

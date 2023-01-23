@@ -271,8 +271,8 @@ export class HaBarSlider extends LitElement {
     return css`
       :host {
         display: block;
-        --slider-bar-color: rgb(var(--rgb-primary-color));
-        --slider-bar-background: rgb(var(--rgb-disabled-color));
+        --slider-bar-color: var(--primary-color);
+        --slider-bar-background: var(--disabled-color);
         --slider-bar-background-opacity: 0.2;
         --slider-bar-thickness: 40px;
         --slider-bar-border-radius: 10px;
@@ -401,7 +401,7 @@ export class HaBarSlider extends LitElement {
       .slider .slider-track-cursor:after {
         display: block;
         content: "";
-        background-color: rgb(var(--rgb-secondary-text-color));
+        background-color: var(--secondary-text-color);
         position: absolute;
         top: 0;
         left: 0;
