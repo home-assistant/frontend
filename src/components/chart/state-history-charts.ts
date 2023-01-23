@@ -60,6 +60,8 @@ class StateHistoryCharts extends LitElement {
 
   @state() private _childYWidths: number[] = [];
 
+  @state() private _chartCount = 0;
+
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
@@ -103,6 +105,8 @@ class StateHistoryCharts extends LitElement {
         ).concat(this.historyData.line)
       : this.historyData.line;
 
+    this._chartCount = combinedItems.length;
+
     return this.virtualize
       ? html`<div class="container ha-scrollbar" @scroll=${this._saveScrollPos}>
           <lit-virtualizer
@@ -137,7 +141,7 @@ class StateHistoryCharts extends LitElement {
           .paddingYAxis=${this._maxYWidth}
           .names=${this.names}
           .chartIndex=${index}
-          @y-width-changed=${this.yWidthChanged}
+          @y-width-changed=${this._yWidthChanged}
         ></state-history-chart-line>
       </div> `;
     }
@@ -153,7 +157,7 @@ class StateHistoryCharts extends LitElement {
         .chunked=${this.virtualize}
         .paddingYAxis=${this._maxYWidth}
         .chartIndex=${index}
-        @y-width-changed=${this.yWidthChanged}
+        @y-width-changed=${this._yWidthChanged}
       ></state-history-chart-timeline>
     </div> `;
   };
@@ -162,7 +166,17 @@ class StateHistoryCharts extends LitElement {
     return !(changedProps.size === 1 && changedProps.has("hass"));
   }
 
-  yWidthChanged(e) {
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("historyData")) {
+      if (this._chartCount < this._childYWidths.length) {
+        this._childYWidths.length = this._chartCount;
+        this._maxYWidth =
+          this._childYWidths.length === 0 ? 0 : Math.max(...this._childYWidths);
+      }
+    }
+  }
+
+  private _yWidthChanged(e) {
     this._childYWidths[e.detail.chartIndex] = e.detail.value;
     this._maxYWidth = Math.max(...this._childYWidths);
   }
