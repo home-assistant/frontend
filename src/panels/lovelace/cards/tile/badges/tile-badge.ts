@@ -7,7 +7,7 @@ import { computeClimateBadge } from "./tile-badge-climate";
 import { computePersonBadge } from "./tile-badge-person";
 
 export type TileBadge = {
-  color: string;
+  color?: string;
   icon?: string;
   iconPath?: string;
 };
@@ -23,7 +23,7 @@ export const computeTileBadge: ComputeBadgeFunction = (stateObj, hass) => {
   }
   if (stateObj.state === UNAVAILABLE) {
     return {
-      color: "var(--rgb-orange-color)",
+      color: "var(--orange-color)",
       iconPath: mdiExclamationThick,
     };
   }

@@ -50,7 +50,7 @@ export class ZHAManageClusters extends LitElement {
 
   @state() private _selectedCluster?: Cluster;
 
-  @state() private _currTab: typeof tabs[number] = "attributes";
+  @state() private _currTab: (typeof tabs)[number] = "attributes";
 
   @state() private _clustersLoaded = false;
 

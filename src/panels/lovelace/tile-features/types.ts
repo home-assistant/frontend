@@ -18,7 +18,7 @@ export const VACUUM_COMMANDS = [
   "return_home",
 ] as const;
 
-export type VacuumCommand = typeof VACUUM_COMMANDS[number];
+export type VacuumCommand = (typeof VACUUM_COMMANDS)[number];
 
 export interface VacuumCommandsTileFeatureConfig {
   type: "vacuum-commands";

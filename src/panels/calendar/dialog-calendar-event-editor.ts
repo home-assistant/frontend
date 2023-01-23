@@ -51,7 +51,7 @@ class DialogCalendarEventEditor extends LitElement {
 
   @state() private _summary = "";
 
-  @state() private _description = "";
+  @state() private _description? = "";
 
   @state() private _rrule?: string;
 
@@ -87,6 +87,7 @@ class DialogCalendarEventEditor extends LitElement {
       const entry = params.entry!;
       this._allDay = isDate(entry.dtstart);
       this._summary = entry.summary;
+      this._description = entry.description;
       this._rrule = entry.rrule;
       if (this._allDay) {
         this._dtstart = new Date(entry.dtstart + "T00:00:00");
@@ -250,6 +251,7 @@ class DialogCalendarEventEditor extends LitElement {
           <ha-recurrence-rule-editor
             .hass=${this.hass}
             .dtstart=${this._dtstart}
+            .allDay=${this._allDay}
             .locale=${this.hass.locale}
             .timezone=${this.hass.config.time_zone}
             .value=${this._rrule || ""}

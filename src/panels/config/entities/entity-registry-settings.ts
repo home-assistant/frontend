@@ -67,6 +67,7 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
+import { getSensorDeviceClassConvertibleUnits } from "../../../data/sensor";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -115,20 +116,6 @@ const OVERRIDE_DEVICE_CLASSES = {
 
 const OVERRIDE_NUMBER_UNITS = {
   temperature: ["°C", "°F", "K"],
-};
-
-const OVERRIDE_SENSOR_UNITS = {
-  distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
-  gas: ["CCF", "ft³", "m³"],
-  precipitation: ["cm", "in", "mm"],
-  precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
-  pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
-  speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mm/h", "mph"],
-  temperature: ["°C", "°F", "K"],
-  volume: ["CCF", "fl. oz.", "ft³", "gal", "L", "mL", "m³"],
-  water: ["CCF", "ft³", "gal", "L", "m³"],
-  weight: ["g", "kg", "lb", "mg", "oz", "st", "µg"],
-  wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
 };
 
 const OVERRIDE_WEATHER_UNITS = {
@@ -184,6 +171,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _submitting?: boolean;
 
   @state() private _cameraPrefs?: CameraPreferences;
+
+  @state() private _sensorDeviceClassConvertibleUnits?: string[];
 
   private _origEntityId!: string;
 
@@ -284,6 +273,22 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         this._deviceClassOptions[0] = deviceClass;
       } else {
         this._deviceClassOptions[1].push(...deviceClass);
+      }
+    }
+  }
+
+  protected async updated(changedProps: PropertyValues): Promise<void> {
+    if (changedProps.has("_deviceClass")) {
+      const domain = computeDomain(this.entry.entity_id);
+
+      if (domain === "sensor" && this._deviceClass) {
+        const { units } = await getSensorDeviceClassConvertibleUnits(
+          this.hass,
+          this._deviceClass
+        );
+        this._sensorDeviceClassConvertibleUnits = units;
+      } else {
+        this._sensorDeviceClassConvertibleUnits = [];
       }
     }
   }
@@ -432,7 +437,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ${domain === "sensor" &&
         this._deviceClass &&
         stateObj?.attributes.unit_of_measurement &&
-        OVERRIDE_SENSOR_UNITS[this._deviceClass]?.includes(
+        this._sensorDeviceClassConvertibleUnits?.includes(
           stateObj?.attributes.unit_of_measurement
         )
           ? html`
@@ -446,7 +451,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._unitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_SENSOR_UNITS[this._deviceClass].map(
+                ${this._sensorDeviceClassConvertibleUnits.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
@@ -769,12 +774,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               "ui.dialogs.entity_registry.editor.aliases_section"
             )}
           </div>
-          <mwc-list class="aliases">
-            <mwc-list-item
-              .twoline=${this.entry.aliases.length > 0}
-              hasMeta
-              @click=${this._openAliasesSettings}
-            >
+          <mwc-list class="aliases" @action=${this._handleAliasesClicked}>
+            <mwc-list-item .twoline=${this.entry.aliases.length > 0} hasMeta>
               <span>
                 ${this.entry.aliases.length > 0
                   ? this.hass.localize(
@@ -785,7 +786,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                       "ui.dialogs.entity_registry.editor.no_aliases"
                     )}
               </span>
-              <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+              <span slot="secondary">
+                ${[...this.entry.aliases]
+                  .sort((a, b) =>
+                    stringCompare(a, b, this.hass.locale.language)
+                  )
+                  .join(", ")}
+              </span>
               <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
             </mwc-list-item>
           </mwc-list>
@@ -977,7 +984,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _openAliasesSettings() {
+  private _handleAliasesClicked(ev: CustomEvent) {
+    if (ev.detail.index !== 0) return;
     showEntityAliasesDialog(this, {
       entity: this.entry!,
       updateEntry: async (updates) => {

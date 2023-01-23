@@ -108,7 +108,7 @@ export const domainIconWithoutDefault = (
       return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
 
     case "humidifier":
-      return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
+      return compareState === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
 
     case "input_boolean":
       return compareState === "on"

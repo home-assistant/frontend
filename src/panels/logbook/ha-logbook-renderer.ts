@@ -1,5 +1,4 @@
-import "@lit-labs/virtualizer";
-import { VisibilityChangedEvent } from "@lit-labs/virtualizer/Virtualizer";
+import { VisibilityChangedEvent } from "@lit-labs/virtualizer";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -577,7 +576,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .indicator {
-          background-color: rgb(var(--rgb-disabled-color));
+          background-color: var(--disabled-color);
           height: 8px;
           width: 8px;
           border-radius: 4px;

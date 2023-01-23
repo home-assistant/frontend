@@ -7,8 +7,8 @@ import { TranslationDict } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
 type HumidifierState =
-  | typeof FIXED_DOMAIN_STATES.humidifier[number]
-  | typeof UNAVAILABLE_STATES[number];
+  | (typeof FIXED_DOMAIN_STATES.humidifier)[number]
+  | (typeof UNAVAILABLE_STATES)[number];
 type HumidifierMode =
   keyof TranslationDict["state_attributes"]["humidifier"]["mode"];
 
