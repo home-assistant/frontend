@@ -1,7 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { hsv2rgb, rgb2hsv } from "../../../common/color/convert-color";
+import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { LightEntity } from "../../../data/light";
@@ -51,7 +51,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
   }
 
   protected render(): TemplateResult {
-    let rgbColor = stateColorCss(this.stateObj);
+    let color = stateColorCss(this.stateObj);
 
     if (this.stateObj.attributes.rgb_color) {
       const hsvColor = rgb2hsv(this.stateObj.attributes.rgb_color);
@@ -65,7 +65,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
           hsvColor[1] = 0.4;
         }
       }
-      rgbColor = hsv2rgb(hsvColor).join(",");
+      color = rgb2hex(hsv2rgb(hsvColor));
     }
 
     return html`
@@ -80,7 +80,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
         @slider-moved=${this._sliderMoved}
         .valueFormatter=${this._valueFormatter}
         style=${styleMap({
-          "--more-info-slider-bar-color": `rgb(${rgbColor})`,
+          "--more-info-slider-bar-color": color,
         })}
       >
       </ha-more-info-bar-slider>

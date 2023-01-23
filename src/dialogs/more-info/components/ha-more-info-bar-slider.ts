@@ -82,11 +82,11 @@ export class HaTileSlider extends LitElement {
         --slider-bar-border-radius: 24px;
         --slider-bar-color: var(
           --more-info-slider-bar-color,
-          rgb(var(--rgb-primary-color))
+          var(--primary-color)
         );
         --slider-bar-background: var(
           --more-info-slider-bar-background,
-          rgb(var(--rgb-disabled-color))
+          var(--disabled-color)
         );
         --slider-bar-background-opacity: var(
           --more-info-slider-bar-background-opacity,
