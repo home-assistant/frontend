@@ -34,7 +34,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ type: Number }) public paddingYAxis = 0;
 
-  @property({ type: Number }) public index?;
+  @property({ type: Number }) public chartIndex?;
 
   @state() private _chartData?: ChartData<"timeline">;
 
@@ -144,7 +144,7 @@ export class StateHistoryChartTimeline extends LitElement {
               this._yWidth = Math.floor(y.width);
               this.dispatchEvent(
                 new CustomEvent("y-width-changed", {
-                  detail: { value: this._yWidth, index: this.index },
+                  detail: { value: this._yWidth, chartIndex: this.chartIndex },
                 })
               );
             }
