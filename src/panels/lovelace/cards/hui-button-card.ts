@@ -272,6 +272,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           align-items: center;
           text-align: center;
           padding: 4% 0;
+          font-size: 16.8px;
           height: 100%;
           box-sizing: border-box;
           justify-content: center;
