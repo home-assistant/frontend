@@ -236,13 +236,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
           <li divider role="separator"></li>
 
-          <mwc-list-item
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.editor.edit_ui"
-            )}
-            graphic="icon"
-            @click=${this._switchUiMode}
-          >
+          <mwc-list-item graphic="icon" @click=${this._switchUiMode}>
             ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
             ${this._mode === "gui"
               ? html`
@@ -254,13 +248,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 `
               : ``}
           </mwc-list-item>
-          <mwc-list-item
-            aria-label=${this.hass.localize(
-              "ui.panel.config.automation.editor.edit_yaml"
-            )}
-            graphic="icon"
-            @click=${this._switchYamlMode}
-          >
+          <mwc-list-item graphic="icon" @click=${this._switchYamlMode}>
             ${this.hass.localize("ui.panel.config.automation.editor.edit_yaml")}
             ${this._mode === "yaml"
               ? html`
@@ -277,11 +265,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
           <mwc-list-item
             .disabled=${!this._readOnly && !this.scriptId}
-            .label=${this.hass.localize(
-              this._readOnly
-                ? "ui.panel.config.script.editor.migrate"
-                : "ui.panel.config.script.editor.duplicate"
-            )}
             graphic="icon"
             @click=${this._duplicate}
           >
@@ -298,9 +281,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
           <mwc-list-item
             .disabled=${this._readOnly || !this.scriptId}
-            aria-label=${this.hass.localize(
-              "ui.panel.config.script.picker.delete"
-            )}
             class=${classMap({ warning: Boolean(this.scriptId) })}
             graphic="icon"
             @click=${this._deleteConfirm}
