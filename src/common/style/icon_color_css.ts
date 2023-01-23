@@ -22,6 +22,6 @@ export const iconColorCSS = css`
 
   /* Color the icon if unavailable */
   ha-state-icon[data-state="unavailable"] {
-    color: rgb(var(--rgb-state-unavailable-color));
+    color: var(--state-unavailable-color);
   }
 `;

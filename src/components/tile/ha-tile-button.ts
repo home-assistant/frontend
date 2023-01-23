@@ -82,9 +82,8 @@ export class HaTileButton extends LitElement {
     return css`
       :host {
         --tile-button-icon-color: var(--primary-text-color);
-        --tile-button-background-color: rgb(var(--rgb-disabled-color));
+        --tile-button-background-color: var(--disabled-color);
         --tile-button-background-opacity: 0.2;
-        --mdc-ripple-color: var(--tile-button-background-color);
         width: 40px;
         height: 40px;
         -webkit-tap-highlight-color: transparent;
@@ -107,6 +106,7 @@ export class HaTileButton extends LitElement {
         outline: none;
         overflow: hidden;
         background: none;
+        --mdc-ripple-color: var(--tile-button-background-color);
       }
       .button::before {
         content: "";
@@ -128,7 +128,7 @@ export class HaTileButton extends LitElement {
       }
       .button:disabled {
         cursor: not-allowed;
-        --tile-button-background-color: rgb(var(--rgb-disabled-color));
+        --tile-button-background-color: var(--disabled-color);
         --tile-button-icon-color: var(--disabled-text-color);
         --tile-button-background-opacity: 0.2;
       }

@@ -72,3 +72,12 @@ const hvacModeOrdering: { [key in HvacMode]: number } = {
 
 export const compareClimateHvacModes = (mode1: HvacMode, mode2: HvacMode) =>
   hvacModeOrdering[mode1] - hvacModeOrdering[mode2];
+
+export const HVAC_ACTION_TO_MODE: Record<HvacAction, HvacMode> = {
+  cooling: "cool",
+  drying: "dry",
+  fan: "fan_only",
+  heating: "heat",
+  idle: "off",
+  off: "off",
+};

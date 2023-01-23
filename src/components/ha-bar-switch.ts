@@ -92,8 +92,8 @@ export class HaBarSwitch extends LitElement {
     return css`
       :host {
         display: block;
-        --switch-bar-on-color: rgb(var(--rgb-primary-color));
-        --switch-bar-off-color: rgb(var(--rgb-disabled-color));
+        --switch-bar-on-color: var(--primary-color);
+        --switch-bar-off-color: var(--disabled-color);
         --switch-bar-background-opacity: 0.2;
         --switch-bar-thickness: 40px;
         --switch-bar-border-radius: 12px;
@@ -104,6 +104,14 @@ export class HaBarSwitch extends LitElement {
         box-sizing: border-box;
         user-select: none;
         cursor: pointer;
+        border-radius: var(--switch-bar-border-radius);
+        outline: none;
+      }
+      :host(:focus-visible) {
+        box-shadow: 0 0 0 2px var(--switch-bar-off-color);
+      }
+      :host([checked]:focus-visible) {
+        box-shadow: 0 0 0 2px var(--switch-bar-on-color);
       }
       .switch {
         box-sizing: border-box;
