@@ -153,7 +153,7 @@ class StateHistoryCharts extends LitElement {
         .chunked=${this.virtualize}
         .paddingYAxis=${this._maxYWidth}
         .chartIndex=${index}
-        @y-width-changed=${this.yWidthChanged}
+        @y-width-changed=${this._yWidthChanged}
       ></state-history-chart-timeline>
     </div> `;
   };
