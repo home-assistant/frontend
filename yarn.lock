@@ -7081,10 +7081,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cropperjs@npm:^1.5.12":
-  version: 1.5.12
-  resolution: "cropperjs@npm:1.5.12"
-  checksum: 8dcbceb3659ad72d421038abf7f9d08ca13a061dc6c643497efc043033e22b17411b5558db29a841cb4f0a3b7943a20e6a3d9fecf3901185b7cd027f8097442b
+"cropperjs@npm:^1.5.13":
+  version: 1.5.13
+  resolution: "cropperjs@npm:1.5.13"
+  checksum: 5a3d0f8b2aa41eb711371696ccbac040d7ef81a5fc9cc0304aaf5691f9aa5c243b539c3d8aec0f938e8fa11e73507ae082875b262ff7fd069892acfcd5d5b567
   languageName: node
   linkType: hard
 
@@ -9561,7 +9561,7 @@ fsevents@^1.2.7:
     chart.js: ^3.3.2
     comlink: ^4.3.1
     core-js: ^3.15.2
-    cropperjs: ^1.5.12
+    cropperjs: ^1.5.13
     date-fns: ^2.23.0
     date-fns-tz: ^1.3.7
     deep-clone-simple: ^1.1.1
