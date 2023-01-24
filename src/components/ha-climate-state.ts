@@ -58,7 +58,7 @@ class HaClimateState extends LitElement {
       ${formatNumber(
         this.stateObj.attributes.current_humidity,
         this.hass.locale
-      )} %`;
+      )}${blankBeforePercent(this.hass.locale)}%`;
     }
 
     if (this.stateObj.attributes.current_temperature != null) {
