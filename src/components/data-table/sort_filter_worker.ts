@@ -55,11 +55,16 @@ const sortData = (
       ? b[column.valueColumn || sortColumn][column.filterKey]
       : b[column.valueColumn || sortColumn];
 
-    if (typeof valA === "string") {
-      valA = valA.toUpperCase();
-    }
-    if (typeof valB === "string") {
-      valB = valB.toUpperCase();
+    if (column.type === "numeric") {
+      valA = isNaN(valA) ? undefined : Number(valA);
+      valB = isNaN(valB) ? undefined : Number(valB);
+    } else {
+      if (typeof valA === "string") {
+        valA = valA.toUpperCase();
+      }
+      if (typeof valB === "string") {
+        valB = valB.toUpperCase();
+      }
     }
 
     // Ensure "undefined" is always sorted to the bottom

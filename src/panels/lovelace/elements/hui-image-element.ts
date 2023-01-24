@@ -46,6 +46,8 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
         .stateFilter=${this._config.state_filter}
         .title=${computeTooltip(this.hass, this._config)}
         .aspectRatio=${this._config.aspect_ratio}
+        .darkModeImage=${this._config.dark_mode_image}
+        .darkModeFilter=${this._config.dark_mode_filter}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

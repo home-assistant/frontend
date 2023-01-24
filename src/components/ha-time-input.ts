@@ -58,20 +58,32 @@ export class HaTimeInput extends LitElement {
     const eventValue = ev.detail.value;
 
     const useAMPM = useAmPm(this.locale);
-    let hours = eventValue.hours || 0;
-    if (eventValue && useAMPM) {
-      if (eventValue.amPm === "PM" && hours < 12) {
-        hours += 12;
+    let value;
+
+    if (
+      !isNaN(eventValue.hours) ||
+      !isNaN(eventValue.minutes) ||
+      !isNaN(eventValue.seconds)
+    ) {
+      let hours = eventValue.hours || 0;
+      if (eventValue && useAMPM) {
+        if (eventValue.amPm === "PM" && hours < 12) {
+          hours += 12;
+        }
+        if (eventValue.amPm === "AM" && hours === 12) {
+          hours = 0;
+        }
       }
-      if (eventValue.amPm === "AM" && hours === 12) {
-        hours = 0;
-      }
+      value = `${hours.toString().padStart(2, "0")}:${
+        eventValue.minutes
+          ? eventValue.minutes.toString().padStart(2, "0")
+          : "00"
+      }:${
+        eventValue.seconds
+          ? eventValue.seconds.toString().padStart(2, "0")
+          : "00"
+      }`;
     }
-    const value = `${hours.toString().padStart(2, "0")}:${
-      eventValue.minutes ? eventValue.minutes.toString().padStart(2, "0") : "00"
-    }:${
-      eventValue.seconds ? eventValue.seconds.toString().padStart(2, "0") : "00"
-    }`;
 
     if (value === this.value) {
       return;

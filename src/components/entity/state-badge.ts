@@ -13,7 +13,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
@@ -112,7 +111,7 @@ export class StateBadge extends LitElement {
       } else if (this.color) {
         // Externally provided overriding color wins over state color
         iconStyle.color = this.color;
-      } else if (this._stateColor && stateActive(stateObj)) {
+      } else if (this._stateColor) {
         const color = stateColorCss(stateObj);
         if (color) {
           iconStyle.color = color;
@@ -173,6 +172,7 @@ export class StateBadge extends LitElement {
           line-height: 40px;
           vertical-align: middle;
           box-sizing: border-box;
+          --state-inactive-color: initial;
         }
         :host(:focus) {
           outline: none;

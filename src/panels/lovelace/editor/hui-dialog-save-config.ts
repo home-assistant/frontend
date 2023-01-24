@@ -122,17 +122,12 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
         </div>
         ${this._params.mode === "storage"
           ? html`
-              <mwc-button
-                slot="primaryAction"
-                .label=${this.hass!.localize("ui.common.cancel")}
-                @click=${this.closeDialog}
-              ></mwc-button>
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                ${this.hass!.localize("ui.common.cancel")}
+              </mwc-button>
               <mwc-button
                 slot="primaryAction"
                 ?disabled=${this._saving}
-                aria-label=${this.hass!.localize(
-                  "ui.panel.lovelace.editor.save_config.save"
-                )}
                 @click=${this._saveConfig}
               >
                 ${this._saving
@@ -148,13 +143,11 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
               </mwc-button>
             `
           : html`
-              <mwc-button
-                slot="primaryAction"
-                .label=${this.hass!.localize(
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                ${this.hass!.localize(
                   "ui.panel.lovelace.editor.save_config.close"
-                )}
-                @click=${this.closeDialog}
-              ></mwc-button>
+                )}</mwc-button
+              >
             `}
       </ha-dialog>
     `;
