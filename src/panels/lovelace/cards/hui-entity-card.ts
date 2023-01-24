@@ -15,7 +15,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import {
@@ -134,8 +133,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name || computeStateName(stateObj);
 
-    const active = stateObj && stateActive(stateObj);
-    const colored = active && this.getStateColor(stateObj, this._config);
+    const colored = stateObj && this.getStateColor(stateObj, this._config);
 
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
@@ -202,7 +200,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       }
       return undefined;
     }
-    if (stateObj.attributes.rgb_color && stateActive(stateObj)) {
+    if (stateObj.attributes.rgb_color) {
       return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
     }
     const iconColor = stateColorCss(stateObj);
@@ -213,7 +211,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   private _computeBrightness(stateObj: HassEntity | LightEntity): string {
-    if (stateObj.attributes.brightness && stateActive(stateObj)) {
+    if (stateObj.attributes.brightness) {
       const brightness = stateObj.attributes.brightness;
       return `brightness(${(brightness + 245) / 5}%)`;
     }
@@ -284,7 +282,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         }
 
         .icon {
-          color: var(--state-icon-color, #44739e);
+          color: var(--paper-item-icon-color, #44739e);
+          --state-inactive-color: var(--paper-item-icon-color, #44739e);
           line-height: 40px;
         }
 
