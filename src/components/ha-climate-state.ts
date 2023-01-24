@@ -1,9 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import {
-  computeAttributeNameDisplay,
-  computeAttributeValueDisplay,
-} from "../common/entity/compute_attribute_display";
+import { computeAttributeValueDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { formatNumber } from "../common/number/format_number";
 import { ClimateEntity, CLIMATE_PRESET_NONE } from "../data/climate";
@@ -18,7 +15,6 @@ class HaClimateState extends LitElement {
 
   protected render(): TemplateResult {
     const currentStatus = this._computeCurrentStatus();
-    const currentHumidityStatus = this._computeCurrentHumidityStatus();
 
     return html`<div class="target">
         ${!isUnavailableState(this.stateObj.state)
@@ -44,23 +40,25 @@ class HaClimateState extends LitElement {
             ${this.hass.localize("ui.card.climate.currently")}:
             <div class="unit">${currentStatus}</div>
           </div>`
-        : ""}
-      ${currentHumidityStatus && !isUnavailableState(this.stateObj.state)
-        ? html`<div class="current">
-            ${computeAttributeNameDisplay(
-              this.hass.localize,
-              this.stateObj,
-              this.hass.entities,
-              "current_humidity"
-            )}:
-            <div class="unit">${currentHumidityStatus}</div>
-          </div>`
         : ""}`;
   }
 
   private _computeCurrentStatus(): string | undefined {
     if (!this.hass || !this.stateObj) {
       return undefined;
+    }
+    if (
+      this.stateObj.attributes.current_temperature != null &&
+      this.stateObj.attributes.current_humidity != null
+    ) {
+      return `${formatNumber(
+        this.stateObj.attributes.current_temperature,
+        this.hass.locale
+      )} ${this.hass.config.unit_system.temperature}/
+      ${formatNumber(
+        this.stateObj.attributes.current_humidity,
+        this.hass.locale
+      )} %`;
     }
 
     if (this.stateObj.attributes.current_temperature != null) {
@@ -71,20 +69,6 @@ class HaClimateState extends LitElement {
     }
 
     if (this.stateObj.attributes.current_humidity != null) {
-      return `${formatNumber(
-        this.stateObj.attributes.current_humidity,
-        this.hass.locale
-      )} %`;
-    }
-
-    return undefined;
-  }
-
-  private _computeCurrentHumidityStatus(): string | undefined {
-    if (
-      this.stateObj.attributes.current_temperature != null &&
-      this.stateObj.attributes.current_humidity != null
-    ) {
       return `${formatNumber(
         this.stateObj.attributes.current_humidity,
         this.hass.locale
