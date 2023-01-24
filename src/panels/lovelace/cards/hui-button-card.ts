@@ -21,16 +21,15 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { CLIMATE_HVAC_ACTION_COLORS } from "../../../common/entity/color/climate_color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
+import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -157,8 +156,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       ? this._config.name || (stateObj ? computeStateName(stateObj) : "")
       : "";
 
-    const active = stateObj && stateActive(stateObj);
-    const colored = active && this.getStateColor(stateObj, this._config);
+    const colored = stateObj && this.getStateColor(stateObj, this._config);
 
     return html`
       <ha-card
@@ -274,7 +272,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           align-items: center;
           text-align: center;
           padding: 4% 0;
-          font-size: 1.2rem;
+          font-size: 16.8px;
           height: 100%;
           box-sizing: border-box;
           justify-content: center;
@@ -291,6 +289,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           height: auto;
           color: var(--paper-item-icon-color, #44739e);
           --mdc-icon-size: 100%;
+          --state-inactive-color: var(--paper-item-icon-color, #44739e);
         }
 
         ha-state-icon + span {
@@ -324,14 +323,14 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     }
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
-      if (["heating", "cooling", "drying"].includes(hvacAction)) {
-        return `rgb(${CLIMATE_HVAC_ACTION_COLORS[hvacAction]})`;
+      if (["heating", "cooling", "drying", "fan"].includes(hvacAction)) {
+        return stateColorCss(stateObj, HVAC_ACTION_TO_MODE[hvacAction]);
       }
       return undefined;
     }
     const iconColor = stateColorCss(stateObj);
     if (iconColor) {
-      return `rgb(${iconColor})`;
+      return iconColor;
     }
     return undefined;
   }

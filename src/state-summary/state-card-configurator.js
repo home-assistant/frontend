@@ -31,7 +31,7 @@ class StateCardConfigurator extends LocalizeMixin(PolymerElement) {
 
       <!-- pre load the image so the dialog is rendered the proper size -->
       <template is="dom-if" if="[[stateObj.attributes.description_image]]">
-        <img hidden="" src="[[stateObj.attributes.description_image]]" />
+        <img hidden="" alt="" src="[[stateObj.attributes.description_image]]" />
       </template>
     `;
   }

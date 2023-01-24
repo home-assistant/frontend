@@ -84,3 +84,12 @@ export const setConversationOnboarding = (
     type: "conversation/onboarding/set",
     shown: value,
   });
+
+export const prepareConversation = (
+  hass: HomeAssistant,
+  language?: string
+): Promise<void> =>
+  hass.callWS({
+    type: "conversation/prepare",
+    language,
+  });

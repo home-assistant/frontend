@@ -247,6 +247,7 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
 }
 
 export interface IframeCardConfig extends LovelaceCardConfig {
+  allow_open_top_navigation?: boolean;
   aspect_ratio?: string;
   title?: string;
   url: string;
@@ -299,7 +300,6 @@ export interface MediaControlCardConfig extends LovelaceCardConfig {
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   entities: Array<EntityConfig | string>;
   hours_to_show?: number;
-  refresh_interval?: number;
   title?: string;
   show_names?: boolean;
 }

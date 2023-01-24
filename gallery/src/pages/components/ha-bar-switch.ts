@@ -115,8 +115,8 @@ export class DemoHaBarSwitch extends LitElement {
         font-weight: 600;
       }
       .custom {
-        --switch-bar-on-color: rgb(var(--rgb-green-color));
-        --switch-bar-off-color: rgb(var(--rgb-red-color));
+        --switch-bar-on-color: var(--green-color);
+        --switch-bar-off-color: var(--red-color);
         --switch-bar-thickness: 100px;
         --switch-bar-border-radius: 24px;
         --switch-bar-padding: 6px;
