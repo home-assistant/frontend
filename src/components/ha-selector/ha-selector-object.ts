@@ -43,11 +43,7 @@ export class HaObjectSelector extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (
-      changedProps.has("value") &&
-      changedProps.get("value") &&
-      !this._valueChangedFromChild
-    ) {
+    if (changedProps.has("value") && !this._valueChangedFromChild) {
       this._yamlEditor.setValue(this.value);
     }
     this._valueChangedFromChild = false;
