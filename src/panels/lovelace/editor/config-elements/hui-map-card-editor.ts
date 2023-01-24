@@ -11,7 +11,6 @@ import {
   string,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { entityId } from "../../../../common/structs/is-entity-id";
 import "../../../../components/ha-form/ha-form";
 import { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-formfield";
@@ -24,6 +23,7 @@ import "../../components/hui-input-list-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
+import { entitiesConfigStruct } from "../structs/entities-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
@@ -35,7 +35,7 @@ const cardConfigStruct = assign(
     aspect_ratio: optional(string()),
     default_zoom: optional(number()),
     dark_mode: optional(boolean()),
-    entities: array(entityId()),
+    entities: array(entitiesConfigStruct),
     hours_to_show: optional(number()),
     geo_location_sources: optional(array(string())),
     auto_fit: optional(boolean()),
