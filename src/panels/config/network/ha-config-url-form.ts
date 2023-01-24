@@ -229,7 +229,7 @@ class ConfigUrlForm extends LitElement {
                       ? "info"
                       : "warning"}
                     .title=${this.hass.localize(
-                      "ui.panel.config.url.intenral_url_https_error_title"
+                      "ui.panel.config.url.internal_url_https_error_title"
                     )}
                   >
                     ${this.hass.localize(

@@ -1,4 +1,8 @@
-import { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import {
+  HassEntities,
+  HassEntity,
+  HassEntityAttributeBase,
+} from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
@@ -13,6 +17,8 @@ const NEED_ATTRIBUTE_DOMAINS = [
   "input_datetime",
   "thermostat",
   "water_heater",
+  "person",
+  "device_tracker",
 ];
 const LINE_ATTRIBUTES_TO_KEEP = [
   "temperature",
@@ -64,7 +70,7 @@ export interface HistoryStates {
   [entityId: string]: EntityHistoryState[];
 }
 
-interface EntityHistoryState {
+export interface EntityHistoryState {
   /** state */
   s: string;
   /** attributes */
@@ -75,79 +81,18 @@ interface EntityHistoryState {
   lu: number;
 }
 
+export interface HistoryStreamMessage {
+  states: HistoryStates;
+  start_time?: number; // Start time of this historical chunk
+  end_time?: number; // End time of this historical chunk
+}
+
 export const entityIdHistoryNeedsAttributes = (
   hass: HomeAssistant,
   entityId: string
 ) =>
   !hass.states[entityId] ||
   NEED_ATTRIBUTE_DOMAINS.includes(computeDomain(entityId));
-
-export const fetchRecent = (
-  hass: HomeAssistant,
-  entityId: string,
-  startTime: Date,
-  endTime: Date,
-  skipInitialState = false,
-  significantChangesOnly?: boolean,
-  minimalResponse = true,
-  noAttributes?: boolean
-): Promise<HassEntity[][]> => {
-  let url = "history/period";
-  if (startTime) {
-    url += "/" + startTime.toISOString();
-  }
-  url += "?filter_entity_id=" + entityId;
-  if (endTime) {
-    url += "&end_time=" + endTime.toISOString();
-  }
-  if (skipInitialState) {
-    url += "&skip_initial_state";
-  }
-  if (significantChangesOnly !== undefined) {
-    url += `&significant_changes_only=${Number(significantChangesOnly)}`;
-  }
-  if (minimalResponse) {
-    url += "&minimal_response";
-  }
-  if (noAttributes) {
-    url += "&no_attributes";
-  }
-  return hass.callApi("GET", url);
-};
-
-export const fetchRecentWS = (
-  hass: HomeAssistant,
-  entityId: string, // This may be CSV
-  startTime: Date,
-  endTime: Date,
-  skipInitialState = false,
-  significantChangesOnly?: boolean,
-  minimalResponse = true,
-  noAttributes?: boolean
-) =>
-  hass.callWS<HistoryStates>({
-    type: "history/history_during_period",
-    start_time: startTime.toISOString(),
-    end_time: endTime.toISOString(),
-    significant_changes_only: significantChangesOnly || false,
-    include_start_time_state: !skipInitialState,
-    minimal_response: minimalResponse,
-    no_attributes: noAttributes || false,
-    entity_ids: entityId.split(","),
-  });
-
-export const fetchDate = (
-  hass: HomeAssistant,
-  startTime: Date,
-  endTime: Date,
-  entityIds: string[]
-): Promise<HassEntity[][]> =>
-  hass.callApi(
-    "GET",
-    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}&minimal_response${
-      entityIds ? `&filter_entity_id=${entityIds.join(",")}` : ``
-    }`
-  );
 
 export const fetchDateWS = (
   hass: HomeAssistant,
@@ -160,14 +105,150 @@ export const fetchDateWS = (
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
     minimal_response: true,
-    no_attributes: !entityIds
-      .map((entityId) => entityIdHistoryNeedsAttributes(hass, entityId))
-      .reduce((cur, next) => cur || next, false),
+    no_attributes: !entityIds.some((entityId) =>
+      entityIdHistoryNeedsAttributes(hass, entityId)
+    ),
   };
   if (entityIds.length !== 0) {
     return hass.callWS<HistoryStates>({ ...params, entity_ids: entityIds });
   }
   return hass.callWS<HistoryStates>(params);
+};
+
+export const subscribeHistory = (
+  hass: HomeAssistant,
+  callbackFunction: (message: HistoryStreamMessage) => void,
+  startTime: Date,
+  endTime: Date,
+  entityIds: string[]
+): Promise<() => Promise<void>> => {
+  const params = {
+    type: "history/stream",
+    entity_ids: entityIds,
+    start_time: startTime.toISOString(),
+    end_time: endTime.toISOString(),
+    minimal_response: true,
+    no_attributes: !entityIds.some((entityId) =>
+      entityIdHistoryNeedsAttributes(hass, entityId)
+    ),
+  };
+  return hass.connection.subscribeMessage<HistoryStreamMessage>(
+    (message) => callbackFunction(message),
+    params
+  );
+};
+
+class HistoryStream {
+  hass: HomeAssistant;
+
+  hoursToShow: number;
+
+  combinedHistory: HistoryStates;
+
+  constructor(hass: HomeAssistant, hoursToShow: number) {
+    this.hass = hass;
+    this.hoursToShow = hoursToShow;
+    this.combinedHistory = {};
+  }
+
+  processMessage(streamMessage: HistoryStreamMessage): HistoryStates {
+    if (!this.combinedHistory || !Object.keys(this.combinedHistory).length) {
+      this.combinedHistory = streamMessage.states;
+      return this.combinedHistory;
+    }
+    if (!Object.keys(streamMessage.states).length) {
+      // Empty messages are still sent to
+      // indicate no more historical events
+      return this.combinedHistory;
+    }
+    const purgeBeforePythonTime =
+      (new Date().getTime() - 60 * 60 * this.hoursToShow * 1000) / 1000;
+    const newHistory: HistoryStates = {};
+    for (const entityId of Object.keys(this.combinedHistory)) {
+      newHistory[entityId] = [];
+    }
+    for (const entityId of Object.keys(streamMessage.states)) {
+      newHistory[entityId] = [];
+    }
+    for (const entityId of Object.keys(newHistory)) {
+      if (
+        entityId in this.combinedHistory &&
+        entityId in streamMessage.states
+      ) {
+        const entityCombinedHistory = this.combinedHistory[entityId];
+        const lastEntityCombinedHistory =
+          entityCombinedHistory[entityCombinedHistory.length - 1];
+        newHistory[entityId] = entityCombinedHistory.concat(
+          streamMessage.states[entityId]
+        );
+        if (
+          streamMessage.states[entityId][0].lu < lastEntityCombinedHistory.lu
+        ) {
+          // If the history is out of order we have to sort it.
+          newHistory[entityId] = newHistory[entityId].sort(
+            (a, b) => a.lu - b.lu
+          );
+        }
+      } else if (entityId in this.combinedHistory) {
+        newHistory[entityId] = this.combinedHistory[entityId];
+      } else {
+        newHistory[entityId] = streamMessage.states[entityId];
+      }
+      // Remove old history
+      if (entityId in this.combinedHistory) {
+        const expiredStates = newHistory[entityId].filter(
+          (state) => state.lu < purgeBeforePythonTime
+        );
+        if (!expiredStates.length) {
+          continue;
+        }
+        newHistory[entityId] = newHistory[entityId].filter(
+          (state) => state.lu >= purgeBeforePythonTime
+        );
+        if (
+          newHistory[entityId].length &&
+          newHistory[entityId][0].lu === purgeBeforePythonTime
+        ) {
+          continue;
+        }
+        // Update the first entry to the start time state
+        // as we need to preserve the start time state and
+        // only expire the rest of the history as it ages.
+        const lastExpiredState = expiredStates[expiredStates.length - 1];
+        lastExpiredState.lu = purgeBeforePythonTime;
+        newHistory[entityId].unshift(lastExpiredState);
+      }
+    }
+    this.combinedHistory = newHistory;
+    return this.combinedHistory;
+  }
+}
+
+export const subscribeHistoryStatesTimeWindow = (
+  hass: HomeAssistant,
+  callbackFunction: (data: HistoryStates) => void,
+  hoursToShow: number,
+  entityIds: string[],
+  minimalResponse = true,
+  significantChangesOnly = true
+): Promise<() => Promise<void>> => {
+  const params = {
+    type: "history/stream",
+    entity_ids: entityIds,
+    start_time: new Date(
+      new Date().getTime() - 60 * 60 * hoursToShow * 1000
+    ).toISOString(),
+    minimal_response: minimalResponse,
+    significant_changes_only: significantChangesOnly,
+    no_attributes: !entityIds.some((entityId) =>
+      entityIdHistoryNeedsAttributes(hass, entityId)
+    ),
+  };
+  const stream = new HistoryStream(hass, hoursToShow);
+  return hass.connection.subscribeMessage<HistoryStreamMessage>(
+    (message) => callbackFunction(stream.processMessage(message)),
+    params
+  );
 };
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
@@ -195,13 +276,22 @@ const processTimelineEntity = (
     if (data.length > 0 && state.s === data[data.length - 1].state) {
       continue;
     }
+
+    const currentAttributes: HassEntityAttributeBase = {};
+    if (current_state?.attributes.device_class) {
+      currentAttributes.device_class = current_state?.attributes.device_class;
+    }
+
     data.push({
       state_localize: computeStateDisplayFromEntityAttributes(
         localize,
         language,
         entities,
         entityId,
-        state.a || first.a,
+        {
+          ...(state.a || first.a),
+          ...currentAttributes,
+        },
         state.s
       ),
       state: state.s,

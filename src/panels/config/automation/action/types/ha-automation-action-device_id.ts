@@ -158,6 +158,7 @@ export class HaDeviceAction extends LitElement {
     }
 
     ha-form {
+      display: block;
       margin-top: 24px;
     }
   `;

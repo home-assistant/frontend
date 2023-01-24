@@ -50,6 +50,7 @@ export enum RecurrenceRange {
 export const enum CalendarEntityFeature {
   CREATE_EVENT = 1,
   DELETE_EVENT = 2,
+  UPDATE_EVENT = 4,
 }
 
 export const fetchCalendarEvents = async (
@@ -161,12 +162,18 @@ export const createCalendarEvent = (
 export const updateCalendarEvent = (
   hass: HomeAssistant,
   entityId: string,
-  event: CalendarEventMutableParams
+  uid: string,
+  event: CalendarEventMutableParams,
+  recurrence_id?: string,
+  recurrence_range?: RecurrenceRange
 ) =>
   hass.callWS<void>({
     type: "calendar/event/update",
     entity_id: entityId,
-    event: event,
+    uid,
+    recurrence_id,
+    recurrence_range,
+    event,
   });
 
 export const deleteCalendarEvent = (

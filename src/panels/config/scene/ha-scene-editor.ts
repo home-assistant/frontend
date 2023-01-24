@@ -239,13 +239,7 @@ export class HaSceneEditor extends SubscribeMixin(
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <mwc-list-item
-            .disabled=${!this.sceneId}
-            aria-label=${this.hass.localize(
-              "ui.panel.config.scene.picker.duplicate_scene"
-            )}
-            graphic="icon"
-          >
+          <mwc-list-item .disabled=${!this.sceneId} graphic="icon">
             ${this.hass.localize(
               "ui.panel.config.scene.picker.duplicate_scene"
             )}
@@ -257,9 +251,6 @@ export class HaSceneEditor extends SubscribeMixin(
 
           <mwc-list-item
             .disabled=${!this.sceneId}
-            aria-label=${this.hass.localize(
-              "ui.panel.config.scene.picker.delete_scene"
-            )}
             class=${classMap({ warning: Boolean(this.sceneId) })}
             graphic="icon"
           >

@@ -147,7 +147,13 @@ class AddIntegrationDialog extends LitElement {
           is_built_in: true,
           is_add: true,
         }))
-        .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
+        .sort((a, b) =>
+          caseInsensitiveStringCompare(
+            a.name,
+            b.name,
+            this.hass.locale.language
+          )
+        );
 
       const integrations: IntegrationListItem[] = [];
       const yamlIntegrations: IntegrationListItem[] = [];
@@ -242,7 +248,11 @@ class AddIntegrationDialog extends LitElement {
       return [
         ...addDeviceRows,
         ...integrations.sort((a, b) =>
-          caseInsensitiveStringCompare(a.name || "", b.name || "")
+          caseInsensitiveStringCompare(
+            a.name || "",
+            b.name || "",
+            this.hass.locale.language
+          )
         ),
       ];
     }

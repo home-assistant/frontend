@@ -22,7 +22,7 @@ export class HaTileIcon extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --tile-icon-color: rgb(var(--rgb-disabled-color));
+        --tile-icon-color: var(--disabled-color);
         --mdc-icon-size: 24px;
       }
       .shape::before {

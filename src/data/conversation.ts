@@ -61,12 +61,14 @@ export const processConversationInput = (
   hass: HomeAssistant,
   text: string,
   // eslint-disable-next-line: variable-name
-  conversation_id: string
+  conversation_id: string | null,
+  language: string
 ): Promise<ConversationResult> =>
   hass.callWS({
     type: "conversation/process",
     text,
     conversation_id,
+    language,
   });
 
 export const getAgentInfo = (hass: HomeAssistant): Promise<AgentInfo> =>
@@ -81,4 +83,13 @@ export const setConversationOnboarding = (
   hass.callWS({
     type: "conversation/onboarding/set",
     shown: value,
+  });
+
+export const prepareConversation = (
+  hass: HomeAssistant,
+  language?: string
+): Promise<void> =>
+  hass.callWS({
+    type: "conversation/prepare",
+    language,
   });

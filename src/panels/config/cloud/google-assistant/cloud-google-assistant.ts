@@ -9,7 +9,6 @@ import {
   mdiFormatListChecks,
   mdiSync,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -41,7 +40,9 @@ import {
 } from "../../../../data/cloud";
 import {
   EntityRegistryEntry,
-  subscribeEntityRegistry,
+  ExtEntityRegistryEntry,
+  getExtendedEntityRegistryEntries,
+  updateEntityRegistryEntry,
 } from "../../../../data/entity_registry";
 import {
   fetchCloudGoogleEntities,
@@ -51,15 +52,15 @@ import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { haStyle } from "../../../../resources/styles";
+import { buttonLinkStyle, haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
+import { showEntityAliasesDialog } from "../../entities/entity-aliases/show-dialog-entity-aliases";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
 @customElement("cloud-google-assistant")
-class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
+class CloudGoogleAssistant extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public cloudStatus!: CloudStatusLoggedIn;
@@ -67,6 +68,8 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
   @property() public narrow!: boolean;
 
   @state() private _entities?: GoogleEntity[];
+
+  @state() private _entries?: { [id: string]: ExtEntityRegistryEntry };
 
   @state() private _syncing = false;
 
@@ -164,6 +167,8 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
           : mdiCloseBoxMultiple}
       ></ha-icon-button>`;
 
+      const aliases = this._entries?.[entity.entity_id]?.aliases;
+
       target.push(html`
         <ha-card outlined>
           <div class="card-content">
@@ -174,15 +179,57 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
                 secondary-line
                 @click=${this._showMoreInfo}
               >
-                ${entity.traits
-                  .map((trait) => trait.substr(trait.lastIndexOf(".") + 1))
-                  .join(", ")}
+                ${aliases
+                  ? html`
+                      <span>
+                        ${aliases.length > 0
+                          ? [...aliases]
+                              .sort((a, b) =>
+                                stringCompare(a, b, this.hass.locale.language)
+                              )
+                              .join(", ")
+                          : this.hass.localize(
+                              "ui.panel.config.cloud.google.no_aliases"
+                            )}
+                      </span>
+                      <br />
+                      <button
+                        class="link"
+                        .entityId=${entity.entity_id}
+                        @click=${this._openAliasesSettings}
+                      >
+                        ${this.hass.localize(
+                          `ui.panel.config.cloud.google.${
+                            aliases.length > 0
+                              ? "manage_aliases"
+                              : "add_aliases"
+                          }`
+                        )}
+                      </button>
+                    `
+                  : html`
+                      <span>
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.google.aliases_not_available"
+                        )}
+                      </span>
+                      <br />
+                      <button
+                        class="link"
+                        .stateObj=${stateObj}
+                        @click=${this._showMoreInfoSettings}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.google.aliases_not_available_learn_more"
+                        )}
+                      </button>
+                    `}
               </state-info>
               ${!emptyFilter
                 ? html`${iconButton}`
                 : html`<ha-button-menu
                     corner="BOTTOM_START"
-                    .entityId=${stateObj.entity_id}
+                    .entityId=${entity.entity_id}
                     @action=${this._exposeChanged}
                   >
                     ${iconButton}
@@ -308,7 +355,7 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
                     </h3>
                     ${!this.narrow
                       ? this.hass!.localize(
-                          "ui.panel.config.cloud.alexa.exposed",
+                          "ui.panel.config.cloud.google.exposed",
                           "selected",
                           selected
                         )
@@ -329,7 +376,7 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
                     </h3>
                     ${!this.narrow
                       ? this.hass!.localize(
-                          "ui.panel.config.cloud.alexa.not_exposed",
+                          "ui.panel.config.cloud.google.not_exposed",
                           "selected",
                           this._entities.length - selected
                         )
@@ -354,23 +401,38 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
     if (changedProps.has("cloudStatus")) {
       this._entityConfigs = this.cloudStatus.prefs.google_entity_configs;
     }
+    if (
+      changedProps.has("hass") &&
+      changedProps.get("hass")?.entities !== this.hass.entities
+    ) {
+      const categories = {};
+
+      for (const entry of Object.values(this.hass.entities)) {
+        categories[entry.entity_id] = entry.entity_category;
+      }
+
+      this._entityCategories = categories;
+    }
   }
 
-  protected override hassSubscribe(): (
-    | UnsubscribeFunc
-    | Promise<UnsubscribeFunc>
-  )[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        const categories = {};
-
-        for (const entry of entries) {
-          categories[entry.entity_id] = entry.entity_category;
-        }
-
-        this._entityCategories = categories;
-      }),
-    ];
+  private async _openAliasesSettings(ev) {
+    ev.stopPropagation();
+    const entityId = ev.target.entityId;
+    const entry = this._entries![entityId];
+    if (!entry) {
+      return;
+    }
+    showEntityAliasesDialog(this, {
+      entity: entry,
+      updateEntry: async (updates) => {
+        const { entity_entry } = await updateEntityRegistryEntry(
+          this.hass,
+          entry.entity_id,
+          updates
+        );
+        this._entries![entity_entry.entity_id] = entity_entry;
+      },
+    });
   }
 
   private _configIsDomainExposed(
@@ -397,12 +459,20 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
 
   private async _fetchData() {
     const entities = await fetchCloudGoogleEntities(this.hass);
+    this._entries = await getExtendedEntityRegistryEntries(
+      this.hass,
+      entities
+        .filter((ent) => this.hass.entities[ent.entity_id])
+        .map((e) => e.entity_id)
+    );
+
     entities.sort((a, b) => {
       const stateA = this.hass.states[a.entity_id];
       const stateB = this.hass.states[b.entity_id];
       return stringCompare(
         stateA ? computeStateName(stateA) : a.entity_id,
-        stateB ? computeStateName(stateB) : b.entity_id
+        stateB ? computeStateName(stateB) : b.entity_id,
+        this.hass.locale.language
       );
     });
     this._entities = entities;
@@ -410,7 +480,14 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
 
   private _showMoreInfo(ev) {
     const entityId = ev.currentTarget.stateObj.entity_id;
-    fireEvent(this, "hass-more-info", { entityId });
+    const moreInfoTab = ev.currentTarget.moreInfoTab;
+    fireEvent(this, "hass-more-info", { entityId, tab: moreInfoTab });
+  }
+
+  private _showMoreInfoSettings(ev) {
+    ev.stopPropagation();
+    const entityId = ev.currentTarget.stateObj.entity_id;
+    fireEvent(this, "hass-more-info", { entityId, tab: "settings" });
   }
 
   private async _exposeChanged(ev: CustomEvent<ActionDetail>) {
@@ -582,6 +659,7 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      buttonLinkStyle,
       css`
         mwc-list-item > [slot="meta"] {
           margin-left: 4px;
