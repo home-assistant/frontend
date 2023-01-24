@@ -156,6 +156,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _unit_of_measurement?: string | null;
 
+  @state() private _precision?: number | null;
+
   @state() private _precipitation_unit?: string | null;
 
   @state() private _pressure_unit?: string | null;
@@ -249,6 +251,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
       this._unit_of_measurement = stateObj?.attributes?.unit_of_measurement;
+    }
+
+    if (domain === "sensor") {
+      this._precision = this.entry.options?.sensor?.precision;
     }
 
     if (domain === "weather") {
@@ -457,6 +463,27 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                   `
                 )}
               </ha-select>
+            `
+          : ""}
+        ${domain === "sensor" &&
+        // Allow customizing the precision for a sensor with numerical device class,
+        // a unit of measurement or state class
+        ((this._deviceClass &&
+          this._deviceClass !== "date" &&
+          this._deviceClass !== "enum" &&
+          this._deviceClass !== "timestamp") ||
+          stateObj?.attributes.unit_of_measurement ||
+          stateObj?.attributes.state_class)
+          ? html`
+              <ha-textfield
+                .value=${this._precision}
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.precision"
+                )}
+                .invalid=${invalidDomainUpdate}
+                .disabled=${this._submitting}
+                @input=${this._precisionChanged}
+              ></ha-textfield>
             `
           : ""}
         ${domain === "weather"
@@ -884,6 +911,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._precipitation_unit = ev.target.value;
   }
 
+  private _precisionChanged(ev): void {
+    this._error = undefined;
+    this._precision = ev.target.value;
+  }
+
   private _pressureUnitChanged(ev): void {
     this._error = undefined;
     this._pressure_unit = ev.target.value;
@@ -1069,11 +1101,28 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       params.hidden_by = this._hiddenBy;
     }
     if (
-      (domain === "number" || domain === "sensor") &&
-      stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
+      ((domain === "number" || domain === "sensor") &&
+        stateObj?.attributes?.unit_of_measurement !==
+          this._unit_of_measurement) ||
+      (domain === "sensor" &&
+        this.entry.options?.[domain]?.precision !== this._precision)
     ) {
       params.options_domain = domain;
-      params.options = { unit_of_measurement: this._unit_of_measurement };
+      params.options = this.entry.options?.[domain] || {};
+      if (
+        stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
+      ) {
+        params.options = {
+          ...params.options,
+          unit_of_measurement: this._unit_of_measurement,
+        };
+      }
+      if (
+        domain === "sensor" &&
+        this.entry.options?.[domain]?.precision !== this._precision
+      ) {
+        params.options = { ...params.options, precision: this._precision };
+      }
     }
     if (
       domain === "weather" &&
