@@ -2,6 +2,7 @@ import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import { fireEvent } from "../../common/dom/fire_event";
 import { numberFormatToLocale } from "../../common/number/format_number";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { TimelineEntity } from "../../data/history";
@@ -142,11 +143,10 @@ export class StateHistoryChartTimeline extends LitElement {
           afterUpdate: (y) => {
             if (this._yWidth !== Math.floor(y.width)) {
               this._yWidth = Math.floor(y.width);
-              this.dispatchEvent(
-                new CustomEvent("y-width-changed", {
-                  detail: { value: this._yWidth, chartIndex: this.chartIndex },
-                })
-              );
+              fireEvent(this, "y-width-changed", {
+                value: this._yWidth,
+                chartIndex: this.chartIndex,
+              });
             }
           },
           position: computeRTL(this.hass) ? "right" : "left",

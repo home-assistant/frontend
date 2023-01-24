@@ -2,6 +2,7 @@ import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
 import {
   formatNumber,
@@ -96,14 +97,10 @@ class StateHistoryChartLine extends LitElement {
             afterUpdate: (y) => {
               if (this._yWidth !== Math.floor(y.width)) {
                 this._yWidth = Math.floor(y.width);
-                this.dispatchEvent(
-                  new CustomEvent("y-width-changed", {
-                    detail: {
-                      value: this._yWidth,
-                      chartIndex: this.chartIndex,
-                    },
-                  })
-                );
+                fireEvent(this, "y-width-changed", {
+                  value: this._yWidth,
+                  chartIndex: this.chartIndex,
+                });
               }
             },
             position: computeRTL(this.hass) ? "right" : "left",

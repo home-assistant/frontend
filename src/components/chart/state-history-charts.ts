@@ -31,6 +31,12 @@ const chunkData = (inputArray: any[], chunks: number) =>
     return results;
   }, []);
 
+declare global {
+  interface HASSDomEvents {
+    "y-width-changed": { value: number; chartIndex: number };
+  }
+}
+
 @customElement("state-history-charts")
 class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
