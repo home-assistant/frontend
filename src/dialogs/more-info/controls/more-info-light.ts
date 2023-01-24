@@ -1,6 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/web/iconbutton/outlined-icon-button";
-import "@material/web/iconbutton/outlined-icon-button-toggle";
 import { mdiPalette, mdiShimmer } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";

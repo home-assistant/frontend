@@ -245,14 +245,16 @@ export class HaBarSlider extends LitElement {
       >
         <div class="slider-track-background"></div>
         ${this.mode === "cursor"
-          ? html`
-              <div
-                class=${classMap({
-                  "slider-track-cursor": true,
-                  vertical: this.vertical,
-                })}
-              ></div>
-            `
+          ? this.value != null
+            ? html`
+                <div
+                  class=${classMap({
+                    "slider-track-cursor": true,
+                    vertical: this.vertical,
+                  })}
+                ></div>
+              `
+            : null
           : html`
               <div
                 class=${classMap({
