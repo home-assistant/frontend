@@ -130,8 +130,11 @@ const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
 const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
 
-function precisionLabel(_state: string, precision: number) {
-  const state_float = isNaN(parseFloat(_state)) ? 0.0 : parseFloat(_state);
+function precisionLabel(precision: number, _state?: string) {
+  const state_float =
+    _state === undefined || isNaN(parseFloat(_state))
+      ? 0.0
+      : parseFloat(_state);
   return state_float.toFixed(precision);
 }
 
@@ -502,8 +505,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                   (precision) => html`
                     <mwc-list-item .value=${precision}>
                       ${precisionLabel(
-                        this.hass.states[this.entry.entity_id]?.state,
-                        precision
+                        precision,
+                        this.hass.states[this.entry.entity_id]?.state
                       )}
                     </mwc-list-item>
                   `
