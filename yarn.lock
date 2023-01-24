@@ -7392,13 +7392,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deprecate@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "deprecate@npm:1.1.0"
-  checksum: 4931671bb9d1f8d5d29591da4dd2903cb0375d352116f34700145fb1c8d3c581dab827678292e37869c4821bb8b1e8e0bf36dfe62290d38c5a61eba730bfbed4
-  languageName: node
-  linkType: hard
-
 "deprecation@npm:^2.0.0, deprecation@npm:^2.3.1":
   version: 2.3.1
   resolution: "deprecation@npm:2.3.1"
@@ -9257,17 +9250,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"gulp-merge-json@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "gulp-merge-json@npm:1.3.1"
+"gulp-merge-json@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "gulp-merge-json@npm:2.1.2"
   dependencies:
-    deprecate: ^1.0.0
-    json5: ^1.0.1
+    json5: ^2.2.1
     lodash.mergewith: ^4.6.1
     plugin-error: ^1.0.1
     through: ^2.3.8
-    vinyl: ^2.1.0
-  checksum: 327b4bd8c385f775e6ead94727506494798118e863c05bcf48760f9ab24cdeb2b5c39d07461f3308698dd24c3bf5a183b046347446d49bfaa5e134dce3c37b01
+    vinyl: ^2.2.1
+  checksum: 21325538cf882306e13aa4079913eb17d22605b91361d400ea9b7c8917c3b2782020199b219dfbac582205d8104ea283a9c385e32c25125cd456f01e0b0c04e6
   languageName: node
   linkType: hard
 
@@ -9583,7 +9575,7 @@ fsevents@^1.2.7:
     gulp: ^4.0.2
     gulp-flatmap: ^1.0.2
     gulp-json-transform: ^0.4.6
-    gulp-merge-json: ^1.3.1
+    gulp-merge-json: ^2.1.2
     gulp-rename: ^2.0.0
     gulp-zopfli-green: ^3.0.1
     hammerjs: ^2.0.8
@@ -15934,6 +15926,20 @@ typescript@^3.8.3:
     remove-trailing-separator: ^1.0.1
     replace-ext: ^1.0.0
   checksum: ff24138314485c0a4b3e8a629ae3530a6017e8c2ddeebda1a465f15211197981f953f2670889181090f0abfa82f682297909fb0c2b79e7d38abb92f72591d136
+  languageName: node
+  linkType: hard
+
+"vinyl@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "vinyl@npm:2.2.1"
+  dependencies:
+    clone: ^2.1.1
+    clone-buffer: ^1.0.0
+    clone-stats: ^1.0.0
+    cloneable-readable: ^1.0.0
+    remove-trailing-separator: ^1.0.1
+    replace-ext: ^1.0.0
+  checksum: 1f663973f1362f2d074b554f79ff7673187667082373b3d3e628beb1fc2a7ff33024f10b492fbd8db421a09ea3b7b22c3d3de4a0f0e73ead7b4685af570b906f
   languageName: node
   linkType: hard
 
