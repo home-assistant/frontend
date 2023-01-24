@@ -167,7 +167,7 @@ class StateHistoryCharts extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("historyData")) {
+    if (changedProps.has("_chartCount")) {
       if (this._chartCount < this._childYWidths.length) {
         this._childYWidths.length = this._chartCount;
         this._maxYWidth =
