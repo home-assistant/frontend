@@ -33,7 +33,7 @@
     "@codemirror/state": "^6.2.0",
     "@codemirror/view": "^6.7.1",
     "@formatjs/intl-datetimeformat": "^4.2.5",
-    "@formatjs/intl-getcanonicallocales": "^1.8.0",
+    "@formatjs/intl-getcanonicallocales": "^2.0.5",
     "@formatjs/intl-locale": "^3.0.11",
     "@formatjs/intl-numberformat": "^7.2.5",
     "@formatjs/intl-pluralrules": "^4.1.5",

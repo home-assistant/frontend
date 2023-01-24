@@ -1543,23 +1543,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-getcanonicallocales@npm:2.0.5":
+"@formatjs/intl-getcanonicallocales@npm:2.0.5, @formatjs/intl-getcanonicallocales@npm:^2.0.5":
   version: 2.0.5
   resolution: "@formatjs/intl-getcanonicallocales@npm:2.0.5"
   dependencies:
     tslib: ^2.4.0
   checksum: 8276c055fe35c48cdc2125f1b32b04275b2a19df228c82fbb4b9eae0f2684e50f353c60e228fad15e6134097078e513c961088c257d97bc076fd81dbec203d10
-  languageName: node
-  linkType: hard
-
-"@formatjs/intl-getcanonicallocales@npm:^1.8.0":
-  version: 1.8.0
-  resolution: "@formatjs/intl-getcanonicallocales@npm:1.8.0"
-  dependencies:
-    tslib: ^2.1.0
-  peerDependencies:
-    "@types/node": 14 || 16
-  checksum: 7a14001445d2680c552f4b835b7280e8f9404f195ad6af19d17ec73a4ff4b7fa240a2e524d40d0c2e95f9dbe68c87fcf21a5e173651cebbe143dffbf404d3632
   languageName: node
   linkType: hard
 
@@ -9464,7 +9453,7 @@ fsevents@^1.2.7:
     "@codemirror/state": ^6.2.0
     "@codemirror/view": ^6.7.1
     "@formatjs/intl-datetimeformat": ^4.2.5
-    "@formatjs/intl-getcanonicallocales": ^1.8.0
+    "@formatjs/intl-getcanonicallocales": ^2.0.5
     "@formatjs/intl-locale": ^3.0.11
     "@formatjs/intl-numberformat": ^7.2.5
     "@formatjs/intl-pluralrules": ^4.1.5
