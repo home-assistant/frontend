@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { computeAttributeValueDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { formatNumber } from "../common/number/format_number";
+import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { ClimateEntity, CLIMATE_PRESET_NONE } from "../data/climate";
 import { isUnavailableState } from "../data/entity";
 import type { HomeAssistant } from "../types";
@@ -47,6 +48,19 @@ class HaClimateState extends LitElement {
     if (!this.hass || !this.stateObj) {
       return undefined;
     }
+    if (
+      this.stateObj.attributes.current_temperature != null &&
+      this.stateObj.attributes.current_humidity != null
+    ) {
+      return `${formatNumber(
+        this.stateObj.attributes.current_temperature,
+        this.hass.locale
+      )} ${this.hass.config.unit_system.temperature}/
+      ${formatNumber(
+        this.stateObj.attributes.current_humidity,
+        this.hass.locale
+      )}${blankBeforePercent(this.hass.locale)}%`;
+    }
 
     if (this.stateObj.attributes.current_temperature != null) {
       return `${formatNumber(
@@ -59,7 +73,7 @@ class HaClimateState extends LitElement {
       return `${formatNumber(
         this.stateObj.attributes.current_humidity,
         this.hass.locale
-      )} %`;
+      )}${blankBeforePercent(this.hass.locale)}%`;
     }
 
     return undefined;
