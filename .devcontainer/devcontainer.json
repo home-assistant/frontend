@@ -7,20 +7,16 @@
   "forwardPorts": [8123, 8100, 8090, 8080],
   "portsAttributes": {
     "8123": {
-      "label": "Home Assistant",
-      "onAutoForward": "silent"
+      "label": "Home Assistant"
     },
     "8100": {
-      "label": "Gallery",
-      "onAutoForward": "silent"
+      "label": "Gallery"
     },
     "8090": {
-      "label": "Demo",
-      "onAutoForward": "silent"
+      "label": "Demo"
     },
     "8080": {
-      "label": "Cast",
-      "onAutoForward": "silent"
+      "label": "Cast"
     }
   },
   "postCreateCommand": "script/bootstrap",
