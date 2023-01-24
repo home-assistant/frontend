@@ -324,8 +324,8 @@ export class HaConfigDeviceDashboard extends LitElement {
         sortable: true,
         filterable: true,
         type: "numeric",
-        width: narrow ? "105px" : "15%",
-        maxWidth: "105px",
+        width: narrow ? "95px" : "15%",
+        maxWidth: "95px",
         valueColumn: "battery_level",
         template: (batteryEntityPair: DeviceRowData["battery_entity"]) => {
           const battery =
@@ -338,11 +338,24 @@ export class HaConfigDeviceDashboard extends LitElement {
               : undefined;
           const batteryIsBinary =
             battery && computeStateDomain(battery) === "binary_sensor";
+
+          let battery_state_display = battery?.state;
+          if (
+            typeof battery?.state === "string" &&
+            battery.state.trim() &&
+            !isNaN(Number(battery.state))
+          ) {
+            // Remove trailing 0s from battery decimal
+            battery_state_display = Number(battery.state).toString();
+          }
+
           return battery && (batteryIsBinary || !isNaN(battery.state as any))
             ? html`
                 ${batteryIsBinary
                   ? ""
-                  : battery.state + blankBeforePercent(this.hass.locale) + "%"}
+                  : battery_state_display +
+                    blankBeforePercent(this.hass.locale) +
+                    "%"}
                 <ha-battery-icon
                   .hass=${this.hass!}
                   .batteryStateObj=${battery}
