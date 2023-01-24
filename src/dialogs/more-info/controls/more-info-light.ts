@@ -63,6 +63,12 @@ class MoreInfoLight extends LitElement {
                 ${supportsColorTemp || supportsColor
                   ? html`
                       <md-outlined-icon-button
+                        .title=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.change_color"
+                        )}
+                        .ariaLabel=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.change_color"
+                        )}
                         @click=${this._showLightColorPickerDialog}
                       >
                         <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
@@ -77,7 +83,15 @@ class MoreInfoLight extends LitElement {
                         @closed=${stopPropagation}
                         fixed
                       >
-                        <md-outlined-icon-button slot="trigger">
+                        <md-outlined-icon-button
+                          slot="trigger"
+                          .title=${this.hass.localize(
+                            "ui.dialogs.more_info_control.light.select_effect"
+                          )}
+                          .ariaLabel=${this.hass.localize(
+                            "ui.dialogs.more_info_control.light.select_effect"
+                          )}
+                        >
                           <ha-svg-icon .path=${mdiShimmer}></ha-svg-icon>
                         </md-outlined-icon-button>
                         ${this.stateObj.attributes.effect_list!.map(

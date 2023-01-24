@@ -32,13 +32,6 @@ import { LightColorPickerDialogParams } from "./show-dialog-light-color-picker";
 
 type Mode = "color_temp" | "color" | "white";
 
-// TODO replace with localize
-const LABELS: Record<Mode, string> = {
-  color: "Color",
-  color_temp: "Temperature",
-  white: "White",
-};
-
 @customElement("dialog-light-color-picker")
 class DialogLightColorPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -142,7 +135,9 @@ class DialogLightColorPicker extends LitElement {
         open
         @closed=${this._close}
         hideActions
-        .heading=${"Change Color"}
+        .heading=${this.hass.localize(
+          "ui.dialogs.more_info_control.light.color_picker.title"
+        )}
       >
         <div slot="heading">
           <ha-header-bar>
@@ -167,8 +162,12 @@ class DialogLightColorPicker extends LitElement {
                   @MDCTabBar:activated=${this._handleTabChanged}
                 >
                   ${this._modes.map(
-                    (value: string) =>
-                      html`<mwc-tab .label=${LABELS[value]}></mwc-tab>`
+                    (value) =>
+                      html`<mwc-tab
+                        .label=${this.hass.localize(
+                          `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
+                        )}
+                      ></mwc-tab>`
                   )}
                 </mwc-tab-bar>
               `
