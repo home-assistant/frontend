@@ -67,6 +67,7 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
+import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
 import { getSensorDeviceClassConvertibleUnits } from "../../../data/sensor";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
@@ -112,10 +113,6 @@ const OVERRIDE_DEVICE_CLASSES = {
       "moisture",
     ], // Alarm
   ],
-};
-
-const OVERRIDE_NUMBER_UNITS = {
-  temperature: ["°C", "°F", "K"],
 };
 
 const OVERRIDE_WEATHER_UNITS = {
@@ -171,6 +168,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _submitting?: boolean;
 
   @state() private _cameraPrefs?: CameraPreferences;
+
+  @state() private _numberDeviceClassConvertibleUnits?: string[];
 
   @state() private _sensorDeviceClassConvertibleUnits?: string[];
 
@@ -281,6 +280,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     if (changedProps.has("_deviceClass")) {
       const domain = computeDomain(this.entry.entity_id);
 
+      if (domain === "number" && this._deviceClass) {
+        const { units } = await getNumberDeviceClassConvertibleUnits(
+          this.hass,
+          this._deviceClass
+        );
+        this._numberDeviceClassConvertibleUnits = units;
+      } else {
+        this._numberDeviceClassConvertibleUnits = [];
+      }
       if (domain === "sensor" && this._deviceClass) {
         const { units } = await getSensorDeviceClassConvertibleUnits(
           this.hass,
@@ -412,7 +420,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ${domain === "number" &&
         this._deviceClass &&
         stateObj?.attributes.unit_of_measurement &&
-        OVERRIDE_NUMBER_UNITS[this._deviceClass]?.includes(
+        this._numberDeviceClassConvertibleUnits?.includes(
           stateObj?.attributes.unit_of_measurement
         )
           ? html`
@@ -426,7 +434,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._unitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_NUMBER_UNITS[this._deviceClass].map(
+                ${this._numberDeviceClassConvertibleUnits.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
