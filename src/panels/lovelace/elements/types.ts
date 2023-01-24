@@ -43,6 +43,8 @@ export interface ImageElementConfig extends LovelaceElementConfigBase {
   image?: string;
   state_image?: string;
   camera_image?: string;
+  dark_mode_image?: string;
+  dark_mode_filter?: string;
   filter?: string;
   state_filter?: string;
   aspect_ratio?: string;
