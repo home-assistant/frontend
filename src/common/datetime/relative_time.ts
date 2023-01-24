@@ -18,7 +18,7 @@ export const relativeTime = (
   to?: Date,
   includeTense = true
 ): string => {
-  const diff = selectUnit(from, to);
+  const diff = selectUnit(from, to, locale);
   if (includeTense) {
     return formatRelTimeMem(locale).format(diff.value, diff.unit);
   }
