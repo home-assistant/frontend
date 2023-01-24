@@ -487,10 +487,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.precision"
                 )}
-                .value=${this._precision === null ||
-                this._precision === undefined
-                  ? "default"
-                  : this._precision}
+                .value=${this._precision == null ? "default" : this._precision}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._precisionChanged}
