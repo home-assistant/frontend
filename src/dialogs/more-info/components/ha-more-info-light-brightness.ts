@@ -2,8 +2,10 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import "./ha-more-info-bar-slider";
@@ -45,10 +47,16 @@ export class HaMoreInfoLightBrightness extends LitElement {
     this.value = value;
   }
 
-  private _valueFormatter(value?: number) {
-    if (value == null) return "Off";
-    return `${Math.round(value)}%`;
-  }
+  private _valueFormatter = (value?: number) => {
+    if (value == null)
+      return computeStateDisplay(
+        this.hass.localize,
+        this.stateObj,
+        this.hass.locale,
+        this.hass.entities
+      );
+    return `${Math.round(value)}${blankBeforePercent(this.hass!.locale)}%`;
+  };
 
   protected render(): TemplateResult {
     let color = stateColorCss(this.stateObj);
