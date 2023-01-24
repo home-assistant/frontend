@@ -469,21 +469,38 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         // Allow customizing the precision for a sensor with numerical device class,
         // a unit of measurement or state class
         ((this._deviceClass &&
-          this._deviceClass !== "date" &&
-          this._deviceClass !== "enum" &&
-          this._deviceClass !== "timestamp") ||
+          !["date", "enum", "timestamp"].includes(this._deviceClass)) ||
           stateObj?.attributes.unit_of_measurement ||
           stateObj?.attributes.state_class)
           ? html`
-              <ha-textfield
-                .value=${this._precision}
+              <ha-select
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.precision"
                 )}
-                .invalid=${invalidDomainUpdate}
-                .disabled=${this._submitting}
-                @input=${this._precisionChanged}
-              ></ha-textfield>
+                .value=${this._precision === null ||
+                this._precision === undefined
+                  ? "default"
+                  : this._precision}
+                naturalMenuWidth
+                fixedMenuPosition
+                @selected=${this._precisionChanged}
+                @closed=${stopPropagation}
+              >
+                <mwc-list-item .value=${"default"}
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.precision_default"
+                  )}</mwc-list-item
+                >
+                ${this._precisionOptions(
+                  this.hass.states[this.entry.entity_id]?.state
+                ).map(
+                  (entry) => html`
+                    <mwc-list-item .value=${entry.value}>
+                      ${entry.label}
+                    </mwc-list-item>
+                  `
+                )}
+              </ha-select>
             `
           : ""}
         ${domain === "weather"
@@ -913,7 +930,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private _precisionChanged(ev): void {
     this._error = undefined;
-    this._precision = ev.target.value;
+    this._precision = ev.target.value === "default" ? null : ev.target.value;
   }
 
   private _pressureUnitChanged(ev): void {
@@ -1266,6 +1283,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           stringCompare(a.label, b.label, this.hass.locale.language)
         )
   );
+
+  private _precisionOptions = memoizeOne((_state: string) => {
+    const state_float = isNaN(parseFloat(_state)) ? 0.0 : parseFloat(_state);
+    const options: { value: number; label: string }[] = [];
+    for (let i = 0; i <= 6; i++) {
+      options.push({ value: i, label: state_float.toFixed(i) });
+    }
+    return options;
+  });
 
   static get styles(): CSSResultGroup {
     return [
