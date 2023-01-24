@@ -339,21 +339,11 @@ export class HaConfigDeviceDashboard extends LitElement {
           const batteryIsBinary =
             battery && computeStateDomain(battery) === "binary_sensor";
 
-          let battery_state_display = battery?.state;
-          if (
-            typeof battery?.state === "string" &&
-            battery.state.trim() &&
-            !isNaN(Number(battery.state))
-          ) {
-            // Remove trailing 0s from battery decimal
-            battery_state_display = Number(battery.state).toString();
-          }
-
           return battery && (batteryIsBinary || !isNaN(battery.state as any))
             ? html`
                 ${batteryIsBinary
                   ? ""
-                  : battery_state_display +
+                  : Number(battery.state).toFixed() +
                     blankBeforePercent(this.hass.locale) +
                     "%"}
                 <ha-battery-icon
