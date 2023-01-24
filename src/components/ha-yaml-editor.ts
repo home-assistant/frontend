@@ -1,5 +1,5 @@
 import { DEFAULT_SCHEMA, dump, load, Schema } from "js-yaml";
-import { html, LitElement, TemplateResult, PropertyValues } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
