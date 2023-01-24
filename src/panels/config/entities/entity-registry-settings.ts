@@ -128,6 +128,13 @@ const OVERRIDE_WEATHER_UNITS = {
 
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
+const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
+
+function precisionLabel(_state: string, precision: number) {
+  const state_float = isNaN(parseFloat(_state)) ? 0.0 : parseFloat(_state);
+  return state_float.toFixed(precision);
+}
+
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -491,12 +498,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                     "ui.dialogs.entity_registry.editor.precision_default"
                   )}</mwc-list-item
                 >
-                ${this._precisionOptions(
-                  this.hass.states[this.entry.entity_id]?.state
-                ).map(
-                  (entry) => html`
-                    <mwc-list-item .value=${entry.value}>
-                      ${entry.label}
+                ${PRECISIONS.map(
+                  (precision) => html`
+                    <mwc-list-item .value=${precision}>
+                      ${precisionLabel(
+                        this.hass.states[this.entry.entity_id]?.state,
+                        precision
+                      )}
                     </mwc-list-item>
                   `
                 )}
@@ -1118,28 +1126,23 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       params.hidden_by = this._hiddenBy;
     }
     if (
-      ((domain === "number" || domain === "sensor") &&
-        stateObj?.attributes?.unit_of_measurement !==
-          this._unit_of_measurement) ||
-      (domain === "sensor" &&
-        this.entry.options?.[domain]?.precision !== this._precision)
+      (domain === "number" || domain === "sensor") &&
+      stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
     ) {
       params.options_domain = domain;
       params.options = this.entry.options?.[domain] || {};
-      if (
-        stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
-      ) {
-        params.options = {
-          ...params.options,
-          unit_of_measurement: this._unit_of_measurement,
-        };
-      }
-      if (
-        domain === "sensor" &&
-        this.entry.options?.[domain]?.precision !== this._precision
-      ) {
-        params.options = { ...params.options, precision: this._precision };
-      }
+      params.options = {
+        ...params.options,
+        unit_of_measurement: this._unit_of_measurement,
+      };
+    }
+    if (
+      domain === "sensor" &&
+      this.entry.options?.[domain]?.precision !== this._precision
+    ) {
+      params.options_domain = domain;
+      params.options = params.options || this.entry.options?.[domain] || {};
+      params.options = { ...params.options, precision: this._precision };
     }
     if (
       domain === "weather" &&
@@ -1283,15 +1286,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           stringCompare(a.label, b.label, this.hass.locale.language)
         )
   );
-
-  private _precisionOptions = memoizeOne((_state: string) => {
-    const state_float = isNaN(parseFloat(_state)) ? 0.0 : parseFloat(_state);
-    const options: { value: number; label: string }[] = [];
-    for (let i = 0; i <= 6; i++) {
-      options.push({ value: i, label: state_float.toFixed(i) });
-    }
-    return options;
-  });
 
   static get styles(): CSSResultGroup {
     return [
