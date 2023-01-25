@@ -16,6 +16,7 @@ import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateActive } from "../../../common/entity/state_active";
@@ -260,12 +261,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const entityId = this._config.entity;
     const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
-    const vertical = this._config.vertical ? "tile-vertical" : "";
+    const tileClasses = { vertical: Boolean(this._config.vertical) };
 
     if (!stateObj) {
       return html`
         <ha-card class="disabled">
-          <div class="tile ${vertical}">
+          <div class="tile ${classMap(tileClasses)}">
             <div class="icon-container">
               <ha-tile-icon class="icon" .iconPath=${mdiHelp}></ha-tile-icon>
               <ha-tile-badge
@@ -312,13 +313,33 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : null}
-        <div class="tile ${vertical}">
+        <div
+          class="tile ${classMap(tileClasses)}"
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler()}
+          role="button"
+          tabindex="0"
+          @mousedown=${this.handleRippleActivate}
+          @mouseup=${this.handleRippleDeactivate}
+          @mouseenter=${this.handleRippleMouseEnter}
+          @mouseleave=${this.handleRippleMouseLeave}
+          @touchstart=${this.handleRippleActivate}
+          @touchend=${this.handleRippleDeactivate}
+          @touchcancel=${this.handleRippleDeactivate}
+        >
           <div
             class="icon-container"
             role="button"
             tabindex="0"
             @action=${this._handleIconAction}
             .actionHandler=${actionHandler()}
+            @mousedown=${stopPropagation}
+            @mouseup=${stopPropagation}
+            @mouseenter=${stopPropagation}
+            @mouseleave=${stopPropagation}
+            @touchstart=${stopPropagation}
+            @touchend=${stopPropagation}
+            @touchcancel=${stopPropagation}
           >
             ${imageUrl
               ? html`
@@ -351,17 +372,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             class="info"
             .primary=${name}
             .secondary=${stateDisplay}
-            @action=${this._handleAction}
-            .actionHandler=${actionHandler()}
-            role="button"
-            tabindex="0"
-            @mousedown=${this.handleRippleActivate}
-            @mouseup=${this.handleRippleDeactivate}
-            @mouseenter=${this.handleRippleMouseEnter}
-            @mouseleave=${this.handleRippleMouseLeave}
-            @touchstart=${this.handleRippleActivate}
-            @touchend=${this.handleRippleDeactivate}
-            @touchcancel=${this.handleRippleDeactivate}
           ></ha-tile-info>
         </div>
         ${supportedFeatures?.length
@@ -412,7 +422,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         --tile-color: var(--state-inactive-color);
         -webkit-tap-highlight-color: transparent;
       }
-      ha-card:has(ha-tile-info:focus-visible) {
+      ha-card:has(.tile:focus-visible) {
         border-color: var(--tile-color);
         box-shadow: 0 0 0 1px var(--tile-color);
       }
@@ -437,9 +447,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         flex-direction: row;
         align-items: center;
       }
-      .tile-vertical {
+      .vertical {
         flex-direction: column;
         text-align: center;
+      }
+      .vertical .icon-container {
+        margin-top: 12px;
+        margin-right: 0;
+        margin-inline-start: initial;
+        margin-inline-end: initial;
+      }
+      .vertical .info {
+        width: 100%;
       }
       .icon-container {
         position: relative;
@@ -469,6 +488,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         min-width: 0;
         min-height: 40px;
         transition: background-color 180ms ease-in-out;
+        box-sizing: border-box;
       }
     `;
   }
