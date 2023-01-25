@@ -428,7 +428,7 @@ class CloudGoogleAssistant extends LitElement {
     showAliasesDialog(this, {
       name,
       aliases: entry.aliases,
-      updateEntry: async (aliases: string[]) => {
+      updateAliases: async (aliases: string[]) => {
         const result = await updateEntityRegistryEntry(this.hass, entityId, {
           aliases,
         });

@@ -172,7 +172,7 @@ class DialogAreaDetail extends LitElement {
     showAliasesDialog(this, {
       name: this._name,
       aliases: this._aliases,
-      updateEntry: async (aliases: string[]) => {
+      updateAliases: async (aliases: string[]) => {
         this._aliases = aliases;
       },
     });

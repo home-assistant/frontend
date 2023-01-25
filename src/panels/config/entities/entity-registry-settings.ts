@@ -1064,7 +1064,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     showAliasesDialog(this, {
       name,
       aliases: this.entry!.aliases,
-      updateEntry: async (aliases: string[]) => {
+      updateAliases: async (aliases: string[]) => {
         const result = await updateEntityRegistryEntry(
           this.hass,
           this.entry.entity_id,
