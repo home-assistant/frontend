@@ -260,10 +260,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const entityId = this._config.entity;
     const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
+    const vertical = this._config.vertical ? "tile-vertical" : "";
+
     if (!stateObj) {
       return html`
         <ha-card class="disabled">
-          <div class="tile">
+          <div class="tile ${vertical}">
             <div class="icon-container">
               <ha-tile-icon class="icon" .iconPath=${mdiHelp}></ha-tile-icon>
               <ha-tile-badge
@@ -310,7 +312,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : null}
-        <div class="tile">
+        <div class="tile ${vertical}">
           <div
             class="icon-container"
             role="button"
@@ -434,6 +436,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: row;
         align-items: center;
+      }
+      .tile-vertical {
+        flex-direction: column;
+        text-align: center;
       }
       .icon-container {
         position: relative;
