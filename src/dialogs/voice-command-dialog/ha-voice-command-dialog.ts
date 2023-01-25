@@ -24,7 +24,6 @@ import {
   getAgentInfo,
   prepareConversation,
   processConversationInput,
-  setConversationOnboarding,
 } from "../../data/conversation";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -107,30 +106,6 @@ export class HaVoiceCommandDialog extends LitElement {
         </div>
         <div class="messages">
           <div class="messages-container" id="scroll-container">
-            ${this._agentInfo && this._agentInfo.onboarding
-              ? html`
-                  <div class="onboarding">
-                    ${this._agentInfo.onboarding.text}
-                    <div
-                      class="side-by-side"
-                      @click=${this._completeOnboarding}
-                    >
-                      <a
-                        class="button"
-                        href=${this._agentInfo.onboarding.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        ><mwc-button unelevated
-                          >${this.hass.localize("ui.common.yes")}!</mwc-button
-                        ></a
-                      >
-                      <mwc-button outlined
-                        >${this.hass.localize("ui.common.no")}</mwc-button
-                      >
-                    </div>
-                  </div>
-                `
-              : ""}
             ${this._conversation.map(
               (message) => html`
                 <div class=${this._computeMessageClasses(message)}>
@@ -259,11 +234,6 @@ export class HaVoiceCommandDialog extends LitElement {
       this._messageInput.value = "";
       this._showSendButton = false;
     }
-  }
-
-  private _completeOnboarding() {
-    setConversationOnboarding(this.hass, true);
-    this._agentInfo! = { ...this._agentInfo, onboarding: undefined };
   }
 
   private _initRecognition() {
@@ -442,9 +412,6 @@ export class HaVoiceCommandDialog extends LitElement {
         }
         a.button > mwc-button {
           width: 100%;
-        }
-        .onboarding {
-          border-bottom: 1px solid var(--divider-color);
         }
         .side-by-side {
           display: flex;

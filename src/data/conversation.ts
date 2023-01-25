@@ -54,7 +54,6 @@ interface ConversationResult {
 
 export interface AgentInfo {
   attribution?: { name: string; url: string };
-  onboarding?: { text: string; url: string };
 }
 
 export const processConversationInput = (
@@ -74,15 +73,6 @@ export const processConversationInput = (
 export const getAgentInfo = (hass: HomeAssistant): Promise<AgentInfo> =>
   hass.callWS({
     type: "conversation/agent/info",
-  });
-
-export const setConversationOnboarding = (
-  hass: HomeAssistant,
-  value: boolean
-): Promise<boolean> =>
-  hass.callWS({
-    type: "conversation/onboarding/set",
-    shown: value,
   });
 
 export const prepareConversation = (
