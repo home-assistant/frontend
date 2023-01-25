@@ -1,9 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  DOMAINS_WITH_MORE_INFO,
-  DOMAINS_HIDE_DEFAULT_MORE_INFO,
-} from "./const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import {
+  DOMAINS_HIDE_DEFAULT_MORE_INFO,
+  DOMAINS_WITH_MORE_INFO,
+} from "./const";
 
 const LAZY_LOADED_MORE_INFO_CONTROL = {
   alarm_control_panel: () => import("./controls/more-info-alarm_control_panel"),
@@ -33,7 +33,6 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
 
 export const stateMoreInfoType = (stateObj: HassEntity): string => {
   const domain = computeStateDomain(stateObj);
-
   return domainMoreInfoType(domain);
 };
 

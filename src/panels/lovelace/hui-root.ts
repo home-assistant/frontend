@@ -3,13 +3,13 @@ import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiCodeBraces,
+  mdiCommentProcessingOutline,
   mdiDotsVertical,
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
   mdiHelp,
   mdiHelpCircle,
   mdiMagnify,
-  mdiMicrophone,
   mdiPencil,
   mdiPlus,
   mdiRefresh,
@@ -38,9 +38,11 @@ import { fireEvent } from "../../common/dom/fire_event";
 import scrollToTarget from "../../common/dom/scroll-to-target";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
+import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
-  extractSearchParam,
+  extractSearchParamsObject,
+  removeSearchParam,
 } from "../../common/url/search-params";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
@@ -174,9 +176,6 @@ class HUIRoot extends LitElement {
                       : html`
                           <mwc-list-item
                             graphic="icon"
-                            aria-label=${this.hass!.localize(
-                              "ui.panel.lovelace.unused_entities.title"
-                            )}
                             @request-selected=${this._handleUnusedEntities}
                           >
                             <ha-svg-icon
@@ -267,7 +266,7 @@ class HUIRoot extends LitElement {
                                         ((Array.isArray(view.visible) &&
                                           !view.visible.some(
                                             (e) =>
-                                              e.user === this.hass!.user!.id
+                                              e.user === this.hass!.user?.id
                                           )) ||
                                           view.visible === false))
                                   ),
@@ -303,9 +302,9 @@ class HUIRoot extends LitElement {
                     ? html`
                         <ha-icon-button
                           .label=${this.hass!.localize(
-                            "ui.panel.lovelace.menu.start_conversation"
+                            "ui.panel.lovelace.menu.assist"
                           )}
-                          .path=${mdiMicrophone}
+                          .path=${mdiCommentProcessingOutline}
                           @click=${this._showVoiceCommandDialog}
                         ></ha-icon-button>
                       `
@@ -324,17 +323,13 @@ class HUIRoot extends LitElement {
                           ${this.narrow
                             ? html`
                                 <mwc-list-item
-                                  .label=${this.hass!.localize(
+                                  graphic="icon"
+                                  @request-selected=${this._handleShowQuickBar}
+                                >
+                                  ${this.hass!.localize(
                                     "ui.panel.lovelace.menu.search"
                                   )}
-                                  graphic="icon"
-                                  @request-selected=${this._showQuickBar}
-                                >
-                                  <span
-                                    >${this.hass!.localize(
-                                      "ui.panel.lovelace.menu.search"
-                                    )}</span
-                                  >
+
                                   <ha-svg-icon
                                     slot="graphic"
                                     .path=${mdiMagnify}
@@ -346,21 +341,17 @@ class HUIRoot extends LitElement {
                           this._conversation(this.hass.config.components)
                             ? html`
                                 <mwc-list-item
-                                  .label=${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.start_conversation"
-                                  )}
                                   graphic="icon"
                                   @request-selected=${this
-                                    ._showVoiceCommandDialog}
+                                    ._handleShowVoiceCommandDialog}
                                 >
-                                  <span
-                                    >${this.hass!.localize(
-                                      "ui.panel.lovelace.menu.start_conversation"
-                                    )}</span
-                                  >
+                                  ${this.hass!.localize(
+                                    "ui.panel.lovelace.menu.assist"
+                                  )}
+
                                   <ha-svg-icon
                                     slot="graphic"
-                                    .path=${mdiMicrophone}
+                                    .path=${mdiCommentProcessingOutline}
                                   ></ha-svg-icon>
                                 </mwc-list-item>
                               `
@@ -368,35 +359,25 @@ class HUIRoot extends LitElement {
                           ${this._yamlMode
                             ? html`
                                 <mwc-list-item
-                                  aria-label=${this.hass!.localize(
-                                    "ui.common.refresh"
-                                  )}
                                   graphic="icon"
                                   @request-selected=${this._handleRefresh}
                                 >
-                                  <span
-                                    >${this.hass!.localize(
-                                      "ui.common.refresh"
-                                    )}</span
-                                  >
+                                  ${this.hass!.localize("ui.common.refresh")}
+
                                   <ha-svg-icon
                                     slot="graphic"
                                     .path=${mdiRefresh}
                                   ></ha-svg-icon>
                                 </mwc-list-item>
                                 <mwc-list-item
-                                  aria-label=${this.hass!.localize(
-                                    "ui.panel.lovelace.unused_entities.title"
-                                  )}
                                   graphic="icon"
                                   @request-selected=${this
                                     ._handleUnusedEntities}
                                 >
-                                  <span
-                                    >${this.hass!.localize(
-                                      "ui.panel.lovelace.unused_entities.title"
-                                    )}</span
-                                  >
+                                  ${this.hass!.localize(
+                                    "ui.panel.lovelace.unused_entities.title"
+                                  )}
+
                                   <ha-svg-icon
                                     slot="graphic"
                                     .path=${mdiShape}
@@ -411,9 +392,6 @@ class HUIRoot extends LitElement {
                             ? html`
                                 <mwc-list-item
                                   graphic="icon"
-                                  aria-label=${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.reload_resources"
-                                  )}
                                   @request-selected=${this
                                     ._handleReloadResources}
                                 >
@@ -432,9 +410,6 @@ class HUIRoot extends LitElement {
                             ? html`
                                 <mwc-list-item
                                   graphic="icon"
-                                  aria-label=${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.configure_ui"
-                                  )}
                                   @request-selected=${this
                                     ._handleEnableEditMode}
                                 >
@@ -459,12 +434,7 @@ class HUIRoot extends LitElement {
                                   class="menu-link"
                                   target="_blank"
                                 >
-                                  <mwc-list-item
-                                    graphic="icon"
-                                    aria-label=${this.hass!.localize(
-                                      "ui.panel.lovelace.menu.help"
-                                    )}
-                                  >
+                                  <mwc-list-item graphic="icon">
                                     ${this.hass!.localize(
                                       "ui.panel.lovelace.menu.help"
                                     )}
@@ -500,7 +470,7 @@ class HUIRoot extends LitElement {
                                 view.visible !== undefined &&
                                 ((Array.isArray(view.visible) &&
                                   !view.visible.some(
-                                    (e) => e.user === this.hass!.user!.id
+                                    (e) => e.user === this.hass!.user?.id
                                   )) ||
                                   view.visible === false)
                             ),
@@ -588,8 +558,16 @@ class HUIRoot extends LitElement {
 
   protected firstUpdated() {
     // Check for requested edit mode
-    if (extractSearchParam("edit") === "1") {
+    const searchParams = extractSearchParamsObject();
+    if (searchParams.edit === "1") {
       this.lovelace!.setEditMode(true);
+    } else if (searchParams.conversation === "1") {
+      showVoiceCommandDialog(this);
+      window.history.replaceState(
+        null,
+        "",
+        constructUrlCurrentPath(removeSearchParam("conversation"))
+      );
     }
   }
 
@@ -733,6 +711,13 @@ class HUIRoot extends LitElement {
     });
   }
 
+  private _handleShowQuickBar(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._showQuickBar();
+  }
+
   private _showQuickBar(): void {
     showQuickBar(this, {
       commandMode: false,
@@ -782,6 +767,15 @@ class HUIRoot extends LitElement {
       return;
     }
     navigate(`${this.route?.prefix}/hass-unused-entities`);
+  }
+
+  private _handleShowVoiceCommandDialog(
+    ev: CustomEvent<RequestSelectedDetail>
+  ): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._showVoiceCommandDialog();
   }
 
   private _showVoiceCommandDialog(): void {

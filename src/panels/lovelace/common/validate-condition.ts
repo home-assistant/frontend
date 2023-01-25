@@ -16,12 +16,14 @@ export function checkConditionsMet(
       ? hass!.states[c.entity].state
       : UNAVAILABLE;
 
-    return c.state ? state === c.state : state !== c.state_not;
+    return c.state != null ? state === c.state : state !== c.state_not;
   });
 }
 
 export function validateConditionalConfig(conditions: Condition[]): boolean {
   return conditions.every(
-    (c) => (c.entity && (c.state || c.state_not)) as unknown as boolean
+    (c) =>
+      (c.entity &&
+        (c.state != null || c.state_not != null)) as unknown as boolean
   );
 }

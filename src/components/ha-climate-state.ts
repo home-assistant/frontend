@@ -1,37 +1,42 @@
-import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { computeAttributeValueDisplay } from "../common/entity/compute_attribute_display";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { formatNumber } from "../common/number/format_number";
-import { CLIMATE_PRESET_NONE } from "../data/climate";
-import { UNAVAILABLE_STATES } from "../data/entity";
+import { blankBeforePercent } from "../common/translations/blank_before_percent";
+import { ClimateEntity, CLIMATE_PRESET_NONE } from "../data/climate";
+import { isUnavailableState } from "../data/entity";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-climate-state")
 class HaClimateState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj!: HassEntity;
+  @property({ attribute: false }) public stateObj!: ClimateEntity;
 
   protected render(): TemplateResult {
     const currentStatus = this._computeCurrentStatus();
 
     return html`<div class="target">
-        ${!UNAVAILABLE_STATES.includes(this.stateObj.state)
+        ${!isUnavailableState(this.stateObj.state)
           ? html`<span class="state-label">
                 ${this._localizeState()}
                 ${this.stateObj.attributes.preset_mode &&
                 this.stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
                   ? html`-
-                    ${this.hass.localize(
-                      `state_attributes.climate.preset_mode.${this.stateObj.attributes.preset_mode}`
-                    ) || this.stateObj.attributes.preset_mode}`
+                    ${computeAttributeValueDisplay(
+                      this.hass.localize,
+                      this.stateObj,
+                      this.hass.entities,
+                      "preset_mode"
+                    )}`
                   : ""}
               </span>
               <div class="unit">${this._computeTarget()}</div>`
           : this._localizeState()}
       </div>
 
-      ${currentStatus && !UNAVAILABLE_STATES.includes(this.stateObj.state)
+      ${currentStatus && !isUnavailableState(this.stateObj.state)
         ? html`<div class="current">
             ${this.hass.localize("ui.card.climate.currently")}:
             <div class="unit">${currentStatus}</div>
@@ -42,6 +47,19 @@ class HaClimateState extends LitElement {
   private _computeCurrentStatus(): string | undefined {
     if (!this.hass || !this.stateObj) {
       return undefined;
+    }
+    if (
+      this.stateObj.attributes.current_temperature != null &&
+      this.stateObj.attributes.current_humidity != null
+    ) {
+      return `${formatNumber(
+        this.stateObj.attributes.current_temperature,
+        this.hass.locale
+      )} ${this.hass.config.unit_system.temperature}/
+      ${formatNumber(
+        this.stateObj.attributes.current_humidity,
+        this.hass.locale
+      )}${blankBeforePercent(this.hass.locale)}%`;
     }
 
     if (this.stateObj.attributes.current_temperature != null) {
@@ -55,7 +73,7 @@ class HaClimateState extends LitElement {
       return `${formatNumber(
         this.stateObj.attributes.current_humidity,
         this.hass.locale
-      )} %`;
+      )}${blankBeforePercent(this.hass.locale)}%`;
     }
 
     return undefined;
@@ -109,17 +127,23 @@ class HaClimateState extends LitElement {
   }
 
   private _localizeState(): string {
-    if (UNAVAILABLE_STATES.includes(this.stateObj.state)) {
+    if (isUnavailableState(this.stateObj.state)) {
       return this.hass.localize(`state.default.${this.stateObj.state}`);
     }
 
-    const stateString = this.hass.localize(
-      `component.climate.state._.${this.stateObj.state}`
+    const stateString = computeStateDisplay(
+      this.hass.localize,
+      this.stateObj,
+      this.hass.locale,
+      this.hass.entities
     );
 
     return this.stateObj.attributes.hvac_action
-      ? `${this.hass.localize(
-          `state_attributes.climate.hvac_action.${this.stateObj.attributes.hvac_action}`
+      ? `${computeAttributeValueDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.entities,
+          "hvac_action"
         )} (${stateString})`
       : stateString;
   }

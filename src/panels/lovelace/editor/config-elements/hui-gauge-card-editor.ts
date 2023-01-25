@@ -1,6 +1,6 @@
-import "../../../../components/ha-form/ha-form";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   array,
   assert,
@@ -11,8 +11,9 @@ import {
   optional,
   string,
 } from "superstruct";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { entityId } from "../../../../common/structs/is-entity-id";
+import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { GaugeCardConfig } from "../../cards/types";
@@ -29,7 +30,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     name: optional(string()),
-    entity: optional(string()),
+    entity: optional(entityId()),
     unit: optional(string()),
     min: optional(number()),
     max: optional(number()),
@@ -78,8 +79,8 @@ export class HuiGaugeCardEditor
           name: "",
           type: "grid",
           schema: [
-            { name: "min", selector: { number: { min: 1, mode: "box" } } },
-            { name: "max", selector: { number: { min: 1, mode: "box" } } },
+            { name: "min", selector: { number: { mode: "box" } } },
+            { name: "max", selector: { number: { mode: "box" } } },
           ],
         },
         {

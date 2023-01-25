@@ -18,7 +18,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { HumidifierEntity } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -93,9 +93,11 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         ? stateObj.attributes.humidity
         : stateObj.attributes.min_humidity;
 
+    const setHumidity = this._setHum ? this._setHum : targetHumidity;
+
     const rtlDirection = computeRTLDirection(this.hass);
 
-    const slider = UNAVAILABLE_STATES.includes(stateObj.state)
+    const slider = isUnavailableState(stateObj.state)
       ? html` <round-slider disabled="true"></round-slider> `
       : html`
           <round-slider
@@ -113,12 +115,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     const setValues = html`
       <svg viewBox="0 0 24 20">
         <text x="50%" dx="1" y="73%" text-anchor="middle" id="set-values">
-          ${UNAVAILABLE_STATES.includes(stateObj.state) ||
-          this._setHum === undefined ||
-          this._setHum === null
+          ${isUnavailableState(stateObj.state) ||
+          setHumidity === undefined ||
+          setHumidity === null
             ? ""
             : svg`
-                    ${this._setHum.toFixed()}
+                    ${setHumidity.toFixed()}
                     <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                       %
                     </tspan>
@@ -130,8 +132,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       <svg viewBox="0 0 40 10" id="humidity">
         <text x="50%" y="50%" text-anchor="middle" id="set-mode">
           ${this.hass!.localize(`state.default.${stateObj.state}`)}
-          ${stateObj.attributes.mode &&
-          !UNAVAILABLE_STATES.includes(stateObj.state)
+          ${stateObj.attributes.mode && !isUnavailableState(stateObj.state)
             ? html`
                 -
                 ${this.hass!.localize(
@@ -159,7 +160,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
               <div id="slider-center">
                 <ha-icon-button
                   class="toggle-button"
-                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  .disabled=${isUnavailableState(stateObj.state)}
                   @click=${this._toggle}
                   tabindex="0"
                 >
@@ -223,7 +224,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
   }
 
   private _getSetHum(stateObj: HassEntity): undefined | number {
-    if (UNAVAILABLE_STATES.includes(stateObj.state)) {
+    if (isUnavailableState(stateObj.state)) {
       return undefined;
     }
 
@@ -293,6 +294,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         justify-content: center;
         padding: 16px;
         position: relative;
+        direction: ltr;
       }
 
       #slider {

@@ -3,10 +3,12 @@ import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
-import { throttle } from "../../common/util/throttle";
 import "../../components/chart/state-history-charts";
-import { getRecentWithCache } from "../../data/cached-history";
-import { HistoryResult } from "../../data/history";
+import {
+  HistoryResult,
+  subscribeHistoryStatesTimeWindow,
+  computeHistory,
+} from "../../data/history";
 import {
   fetchStatistics,
   getStatisticMetadata,
@@ -39,9 +41,11 @@ export class MoreInfoHistory extends LitElement {
 
   private _statNames?: Record<string, string>;
 
-  private _throttleGetStateHistory = throttle(() => {
-    this._getStateHistory();
-  }, 10000);
+  private _interval?: number;
+
+  private _subscribed?: Promise<(() => Promise<void>) | void>;
+
+  private _error?: string;
 
   protected render(): TemplateResult {
     if (!this.entityId) {
@@ -59,7 +63,9 @@ export class MoreInfoHistory extends LitElement {
               )}</a
             >
           </div>
-          ${this._statistics
+          ${this._error
+            ? html`<div class="errors">${this._error}</div>`
+            : this._statistics
             ? html`<statistics-chart
                 .hass=${this.hass}
                 .isLoadingData=${!this._statistics}
@@ -94,24 +100,45 @@ export class MoreInfoHistory extends LitElement {
         this.entityId
       }&start_date=${startOfYesterday().toISOString()}`;
 
-      this._throttleGetStateHistory();
+      this._getStateHistory();
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated && this.entityId) {
+      this._getStateHistory();
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeHistoryTimeWindow();
+  }
+
+  private _unsubscribeHistoryTimeWindow() {
+    if (!this._subscribed) {
       return;
     }
+    clearInterval(this._interval);
+    this._subscribed.then((unsubscribe) => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+      this._subscribed = undefined;
+    });
+  }
 
-    if (this._statistics || !this.entityId || !changedProps.has("hass")) {
-      // Don't update statistics on a state update, as they only update every 5 minutes.
-      return;
+  private _redrawGraph() {
+    if (this._stateHistory) {
+      this._stateHistory = { ...this._stateHistory };
     }
+  }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    if (
-      oldHass &&
-      this.hass.states[this.entityId] !== oldHass?.states[this.entityId]
-    ) {
-      // wait for commit of data (we only account for the default setting of 1 sec)
-      setTimeout(this._throttleGetStateHistory, 1000);
-    }
+  private _setRedrawTimer() {
+    // redraw the graph every minute to update the time axis
+    clearInterval(this._interval);
+    this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
   }
 
   private async _getStateHistory(): Promise<void> {
@@ -134,19 +161,32 @@ export class MoreInfoHistory extends LitElement {
         return;
       }
     }
-    if (!isComponentLoaded(this.hass, "history")) {
+    if (!isComponentLoaded(this.hass, "history") || this._subscribed) {
       return;
     }
-    this._stateHistory = await getRecentWithCache(
+    if (this._subscribed) {
+      this._unsubscribeHistoryTimeWindow();
+    }
+    this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
-      this.entityId,
-      {
-        cacheKey: `more_info.${this.entityId}`,
-        hoursToShow: 24,
+      (combinedHistory) => {
+        if (!this._subscribed) {
+          // Message came in before we had a chance to unload
+          return;
+        }
+        this._stateHistory = computeHistory(
+          this.hass!,
+          combinedHistory,
+          this.hass!.localize
+        );
       },
-      this.hass!.localize,
-      this.hass!.language
-    );
+      24,
+      [this.entityId]
+    ).catch((err) => {
+      this._subscribed = undefined;
+      this._error = err;
+    });
+    this._setRedrawTimer();
   }
 
   private _close(): void {

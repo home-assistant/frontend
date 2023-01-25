@@ -10,20 +10,45 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { arrayLiteralIncludes } from "../../common/array/literal-includes";
 import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
 import {
   formatNumber,
   getNumberFormatOptions,
   isNumericState,
 } from "../../common/number/format_number";
-import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { EntityRegistryEntry } from "../../data/entity_registry";
 import { timerTimeRemaining } from "../../data/timer";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
 import "../ha-state-icon";
+
+// Define the domains whose states have special truncated strings
+const TRUNCATED_DOMAINS = [
+  "alarm_control_panel",
+  "device_tracker",
+  "person",
+] as const satisfies ReadonlyArray<keyof typeof FIXED_DOMAIN_STATES>;
+
+type TruncatedDomain = (typeof TRUNCATED_DOMAINS)[number];
+type TruncatedKey = {
+  [T in TruncatedDomain]: `${T}.${(typeof FIXED_DOMAIN_STATES)[T][number]}`;
+}[TruncatedDomain];
+
+const getTruncatedKey = (domainKey: string, stateKey: string) => {
+  if (
+    arrayLiteralIncludes(TRUNCATED_DOMAINS)(domainKey) &&
+    arrayLiteralIncludes(FIXED_DOMAIN_STATES[domainKey])(stateKey)
+  ) {
+    return `${domainKey}.${stateKey}` as TruncatedKey;
+  }
+  return null;
+};
 
 @customElement("ha-state-label-badge")
 export class HaStateLabelBadge extends LitElement {
@@ -79,8 +104,10 @@ export class HaStateLabelBadge extends LitElement {
     // 4. Icon determined via entity state
     // 5. Value string as fallback
     const domain = computeStateDomain(entityState);
+    const entry = this.hass?.entities[entityState.entity_id];
 
-    const showIcon = this.icon || this._computeShowIcon(domain, entityState);
+    const showIcon =
+      this.icon || this._computeShowIcon(domain, entityState, entry);
     const image = this.icon
       ? ""
       : this.image
@@ -88,7 +115,9 @@ export class HaStateLabelBadge extends LitElement {
       : entityState.attributes.entity_picture_local ||
         entityState.attributes.entity_picture;
     const value =
-      !image && !showIcon ? this._computeValue(domain, entityState) : undefined;
+      !image && !showIcon
+        ? this._computeValue(domain, entityState, entry)
+        : undefined;
 
     return html`
       <ha-label-badge
@@ -128,7 +157,11 @@ export class HaStateLabelBadge extends LitElement {
     }
   }
 
-  private _computeValue(domain: string, entityState: HassEntity) {
+  private _computeValue(
+    domain: string,
+    entityState: HassEntity,
+    entry?: EntityRegistryEntry
+  ) {
     switch (domain) {
       case "alarm_control_panel":
       case "binary_sensor":
@@ -141,7 +174,7 @@ export class HaStateLabelBadge extends LitElement {
         return null;
       // @ts-expect-error we don't break and go to default
       case "sensor":
-        if (entityState.attributes.device_class === "moon__phase") {
+        if (entry?.platform === "moon") {
           return null;
         }
       // eslint-disable-next-line: disable=no-fallthrough
@@ -164,7 +197,11 @@ export class HaStateLabelBadge extends LitElement {
     }
   }
 
-  private _computeShowIcon(domain: string, entityState: HassEntity): boolean {
+  private _computeShowIcon(
+    domain: string,
+    entityState: HassEntity,
+    entry?: EntityRegistryEntry
+  ): boolean {
     if (entityState.state === UNAVAILABLE) {
       return false;
     }
@@ -180,25 +217,28 @@ export class HaStateLabelBadge extends LitElement {
       case "timer":
         return true;
       case "sensor":
-        return entityState.attributes.device_class === "moon__phase";
+        return entry?.platform === "moon";
       default:
         return false;
     }
   }
 
-  private _computeLabel(domain, entityState, _timerTimeRemaining) {
-    if (
-      entityState.state === UNAVAILABLE ||
-      ["device_tracker", "alarm_control_panel", "person"].includes(domain)
-    ) {
-      // Localize the state with a special state_badge namespace, which has variations of
-      // the state translations that are truncated to fit within the badge label. Translations
-      // are only added for device_tracker, alarm_control_panel and person.
-      return (
-        this.hass!.localize(`state_badge.${domain}.${entityState.state}`) ||
-        this.hass!.localize(`state_badge.default.${entityState.state}`) ||
-        entityState.state
-      );
+  private _computeLabel(
+    domain: string,
+    entityState: HassEntity,
+    _timerTimeRemaining = 0
+  ) {
+    // For unavailable states or certain domains, use a special translation that is truncated to fit within the badge label
+    if (isUnavailableState(entityState.state)) {
+      return this.hass!.localize(`state_badge.default.${entityState.state}`);
+    }
+    const domainStateKey = getTruncatedKey(domain, entityState.state);
+    if (domainStateKey) {
+      return this.hass!.localize(`state_badge.${domainStateKey}`);
+    }
+    // Person and device tracker state can be zone name
+    if (domain === "person" || domain === "device_tracker") {
+      return entityState.state;
     }
     if (domain === "timer") {
       return secondsToDuration(_timerTimeRemaining);

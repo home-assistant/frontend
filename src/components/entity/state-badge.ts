@@ -13,10 +13,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
+import { HVAC_ACTION_TO_MODE } from "../../data/climate";
 import type { HomeAssistant } from "../../types";
 import "../ha-state-icon";
 
@@ -31,10 +31,12 @@ export class StateBadge extends LitElement {
 
   @property({ type: Boolean }) public stateColor?: boolean;
 
+  @property() public color?: string;
+
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
-  @state() private _iconStyle: { [name: string]: string } = {};
+  @state() private _iconStyle: { [name: string]: string | undefined } = {};
 
   private get _stateColor() {
     const domain = this.stateObj
@@ -58,11 +60,9 @@ export class StateBadge extends LitElement {
     }
 
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
-    const active = this._stateColor && stateObj ? stateActive(stateObj) : false;
 
     return html`<ha-state-icon
       style=${styleMap(this._iconStyle)}
-      ?data-active=${active}
       data-domain=${ifDefined(domain)}
       data-state=${ifDefined(stateObj?.state)}
       .icon=${this.overrideIcon}
@@ -76,7 +76,8 @@ export class StateBadge extends LitElement {
       !changedProps.has("stateObj") &&
       !changedProps.has("overrideImage") &&
       !changedProps.has("overrideIcon") &&
-      !changedProps.has("stateColor")
+      !changedProps.has("stateColor") &&
+      !changedProps.has("color")
     ) {
       return;
     }
@@ -107,10 +108,13 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
-      } else if (this._stateColor && stateActive(stateObj)) {
+      } else if (this.color) {
+        // Externally provided overriding color wins over state color
+        iconStyle.color = this.color;
+      } else if (this._stateColor) {
         const color = stateColorCss(stateObj);
         if (color) {
-          iconStyle.color = `rgb(${color})`;
+          iconStyle.color = color;
         }
         if (stateObj.attributes.rgb_color) {
           iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
@@ -126,6 +130,17 @@ export class StateBadge extends LitElement {
           }
           // lowest brightness will be around 50% (that's pretty dark)
           iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+        }
+        if (stateObj.attributes.hvac_action) {
+          const hvacAction = stateObj.attributes.hvac_action;
+          if (["heating", "cooling", "drying", "fan"].includes(hvacAction)) {
+            iconStyle.color = stateColorCss(
+              stateObj,
+              HVAC_ACTION_TO_MODE[hvacAction]
+            )!;
+          } else {
+            delete iconStyle.color;
+          }
         }
       }
     } else if (this.overrideImage) {
@@ -157,6 +172,7 @@ export class StateBadge extends LitElement {
           line-height: 40px;
           vertical-align: middle;
           box-sizing: border-box;
+          --state-inactive-color: initial;
         }
         :host(:focus) {
           outline: none;

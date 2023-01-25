@@ -21,8 +21,8 @@ export class HaTileBadge extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --tile-badge-background-color: rgb(var(--rgb-primary-color));
-        --tile-badge-icon-color: rgb(var(--rgb-white-color));
+        --tile-badge-background-color: var(--primary-color);
+        --tile-badge-icon-color: var(--white-color);
         --mdc-icon-size: 12px;
       }
       .badge {

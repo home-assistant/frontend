@@ -8,7 +8,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
@@ -70,8 +70,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
           })}
         >
           ${stateObj.attributes.device_class ===
-            SENSOR_DEVICE_CLASS_TIMESTAMP &&
-          !UNAVAILABLE_STATES.includes(stateObj.state)
+            SENSOR_DEVICE_CLASS_TIMESTAMP && !isUnavailableState(stateObj.state)
             ? html`
                 <hui-timestamp-display
                   .hass=${this.hass}

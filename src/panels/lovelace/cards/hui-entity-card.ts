@@ -15,7 +15,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import {
@@ -26,7 +25,8 @@ import {
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
+import { isUnavailableState } from "../../../data/entity";
 import { formatAttributeValue } from "../../../data/entity_attributes";
 import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
@@ -129,12 +129,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     const domain = computeStateDomain(stateObj);
     const showUnit = this._config.attribute
       ? this._config.attribute in stateObj.attributes
-      : !UNAVAILABLE_STATES.includes(stateObj.state);
+      : !isUnavailableState(stateObj.state);
 
     const name = this._config.name || computeStateName(stateObj);
 
-    const active = stateObj && stateActive(stateObj);
-    const colored = active && this.getStateColor(stateObj, this._config);
+    const colored = stateObj && this.getStateColor(stateObj, this._config);
 
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
@@ -144,11 +143,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
             <ha-state-icon
               .icon=${this._config.icon}
               .state=${stateObj}
-              ?data-active=${active}
               data-domain=${ifDefined(domain)}
               data-state=${stateObj.state}
               style=${styleMap({
                 color: colored ? this._computeColor(stateObj) : undefined,
+                filter: colored ? this._computeBrightness(stateObj) : undefined,
                 height: this._config.icon_height
                   ? this._config.icon_height
                   : "",
@@ -193,14 +192,30 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _computeColor(
-    stateObj: HassEntity | LightEntity
-  ): string | undefined {
+  private _computeColor(stateObj: HassEntity): string | undefined {
+    if (stateObj.attributes.hvac_action) {
+      const hvacAction = stateObj.attributes.hvac_action;
+      if (["heating", "cooling", "drying", "fan"].includes(hvacAction)) {
+        return stateColorCss(stateObj, HVAC_ACTION_TO_MODE[hvacAction]);
+      }
+      return undefined;
+    }
+    if (stateObj.attributes.rgb_color) {
+      return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+    }
     const iconColor = stateColorCss(stateObj);
     if (iconColor) {
-      return `rgb(${iconColor})`;
+      return iconColor;
     }
     return undefined;
+  }
+
+  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
+    if (stateObj.attributes.brightness) {
+      const brightness = stateObj.attributes.brightness;
+      return `brightness(${(brightness + 245) / 5}%)`;
+    }
+    return "";
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -267,7 +282,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         }
 
         .icon {
-          color: var(--state-icon-color, #44739e);
+          color: var(--paper-item-icon-color, #44739e);
+          --state-inactive-color: var(--paper-item-icon-color, #44739e);
           line-height: 40px;
         }
 

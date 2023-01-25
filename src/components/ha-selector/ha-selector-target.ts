@@ -1,8 +1,4 @@
-import {
-  HassEntity,
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
+import { HassEntity, HassServiceTarget } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -13,12 +9,12 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../common/array/ensure-array";
 import {
   DeviceRegistryEntry,
   getDeviceIntegrationLookup,
 } from "../../data/device_registry";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../data/entity_registry";
+import { EntityRegistryEntry } from "../../data/entity_registry";
 import {
   EntitySources,
   fetchEntitySourcesWithCache,
@@ -28,12 +24,11 @@ import {
   filterSelectorEntities,
   TargetSelector,
 } from "../../data/selector";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
 import "../ha-target-picker";
 
 @customElement("ha-selector-target")
-export class HaTargetSelector extends SubscribeMixin(LitElement) {
+export class HaTargetSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() public selector!: TargetSelector;
@@ -48,17 +43,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   @state() private _entitySources?: EntitySources;
 
-  @state() private _entities?: EntityRegistryEntry[];
-
   private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities.filter((entity) => entity.device_id !== null);
-      }),
-    ];
-  }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -88,12 +73,19 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
       .value=${this.value}
       .helper=${this.helper}
       .deviceFilter=${this._filterDevices}
-      .entityFilter=${this._filterEntities}
+      .entityFilter=${this._filterStates}
+      .entityRegFilter=${this._filterRegEntities}
+      .includeDeviceClasses=${this.selector.target?.entity?.device_class
+        ? [this.selector.target?.entity.device_class]
+        : undefined}
+      .includeDomains=${this.selector.target?.entity?.domain
+        ? ensureArray(this.selector.target.entity.domain as string | string[])
+        : undefined}
       .disabled=${this.disabled}
     ></ha-target-picker>`;
   }
 
-  private _filterEntities = (entity: HassEntity): boolean => {
+  private _filterStates = (entity: HassEntity): boolean => {
     if (!this.selector.target?.entity) {
       return true;
     }
@@ -105,15 +97,26 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     );
   };
 
+  private _filterRegEntities = (entity: EntityRegistryEntry): boolean => {
+    if (this.selector.target?.entity?.integration) {
+      if (entity.platform !== this.selector.target.entity.integration) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {
     if (!this.selector.target?.device) {
       return true;
     }
 
-    const deviceIntegrations =
-      this._entitySources && this._entities
-        ? this._deviceIntegrationLookup(this._entitySources, this._entities)
-        : undefined;
+    const deviceIntegrations = this._entitySources
+      ? this._deviceIntegrationLookup(
+          this._entitySources,
+          Object.values(this.hass.entities)
+        )
+      : undefined;
 
     return filterSelectorDevices(
       this.selector.target.device,

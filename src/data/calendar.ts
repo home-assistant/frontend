@@ -2,7 +2,7 @@ import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
-import { UNAVAILABLE_STATES } from "./entity";
+import { isUnavailableState } from "./entity";
 
 export interface Calendar {
   entity_id: string;
@@ -50,6 +50,7 @@ export enum RecurrenceRange {
 export const enum CalendarEntityFeature {
   CREATE_EVENT = 1,
   DELETE_EVENT = 2,
+  UPDATE_EVENT = 4,
 }
 
 export const fetchCalendarEvents = async (
@@ -138,7 +139,7 @@ export const getCalendars = (hass: HomeAssistant): Calendar[] =>
     .filter(
       (eid) =>
         computeDomain(eid) === "calendar" &&
-        !UNAVAILABLE_STATES.includes(hass.states[eid].state)
+        !isUnavailableState(hass.states[eid].state)
     )
     .sort()
     .map((eid, idx) => ({
@@ -161,12 +162,18 @@ export const createCalendarEvent = (
 export const updateCalendarEvent = (
   hass: HomeAssistant,
   entityId: string,
-  event: CalendarEventMutableParams
+  uid: string,
+  event: CalendarEventMutableParams,
+  recurrence_id?: string,
+  recurrence_range?: RecurrenceRange
 ) =>
   hass.callWS<void>({
     type: "calendar/event/update",
     entity_id: entityId,
-    event: event,
+    uid,
+    recurrence_id,
+    recurrence_range,
+    event,
   });
 
 export const deleteCalendarEvent = (

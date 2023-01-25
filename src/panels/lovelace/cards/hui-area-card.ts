@@ -42,7 +42,7 @@ import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
@@ -181,8 +181,7 @@ export class HuiAreaCard
         : entities
     ).some(
       (entity) =>
-        !UNAVAILABLE_STATES.includes(entity.state) &&
-        !STATES_OFF.includes(entity.state)
+        !isUnavailableState(entity.state) && !STATES_OFF.includes(entity.state)
     );
   }
 
@@ -564,7 +563,7 @@ export class HuiAreaCard
         --mdc-icon-button-size: 44px;
       }
       .on {
-        color: rgb(var(--rgb-state-light-color));
+        color: var(--state-light-color);
       }
     `;
   }

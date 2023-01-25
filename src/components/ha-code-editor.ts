@@ -4,6 +4,7 @@ import type {
   CompletionResult,
   CompletionSource,
 } from "@codemirror/autocomplete";
+import type { Extension } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import { HassEntities } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
@@ -72,9 +73,9 @@ export class HaCodeEditor extends ReactiveElement {
     if (!this.codemirror || !this._loadedCodeMirror) {
       return false;
     }
-    const className = this._loadedCodeMirror.HighlightStyle.get(
+    const className = this._loadedCodeMirror.highlightingFor(
       this.codemirror.state,
-      this._loadedCodeMirror.tags.comment
+      [this._loadedCodeMirror.tags.comment]
     );
     return !!this.shadowRoot!.querySelector(`span.${className}`);
   }
@@ -136,7 +137,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   private async _load(): Promise<void> {
     this._loadedCodeMirror = await loadCodeMirror();
-    const extensions = [
+    const extensions: Extension[] = [
       this._loadedCodeMirror.lineNumbers(),
       this._loadedCodeMirror.EditorState.allowMultipleSelections.of(true),
       this._loadedCodeMirror.history(),
@@ -152,10 +153,8 @@ export class HaCodeEditor extends ReactiveElement {
         saveKeyBinding,
       ] as KeyBinding[]),
       this._loadedCodeMirror.langCompartment.of(this._mode),
-      this._loadedCodeMirror.theme,
-      this._loadedCodeMirror.Prec.fallback(
-        this._loadedCodeMirror.highlightStyle
-      ),
+      this._loadedCodeMirror.haTheme,
+      this._loadedCodeMirror.haSyntaxHighlighting,
       this._loadedCodeMirror.readonlyCompartment.of(
         this._loadedCodeMirror.EditorView.editable.of(!this.readOnly)
       ),
@@ -227,7 +226,7 @@ export class HaCodeEditor extends ReactiveElement {
     return {
       from: Number(entityWord.from),
       options: states,
-      span: /^[a-z_]{3,}\.\w*$/,
+      validFor: /^[a-z_]{3,}\.\w*$/,
     };
   }
 
@@ -268,7 +267,7 @@ export class HaCodeEditor extends ReactiveElement {
     return {
       from: Number(match.from),
       options: iconItems,
-      span: /^mdi:\S*$/,
+      validFor: /^mdi:\S*$/,
     };
   }
 

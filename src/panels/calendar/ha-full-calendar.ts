@@ -200,7 +200,7 @@ export class HAFullCalendar extends LitElement {
         : ""}
 
       <div id="calendar"></div>
-      ${this._mutableCalendars.length > 0
+      ${this._hasMutableCalendars
         ? html`<ha-fab
             slot="fab"
             .label=${this.hass.localize("ui.components.calendar.event.add")}
@@ -270,17 +270,15 @@ export class HAFullCalendar extends LitElement {
     this._fireViewChanged();
   }
 
-  // Return calendars that support creating events
-  private get _mutableCalendars(): CalendarData[] {
-    return this.calendars
-      .filter((selCal) => {
-        const entityStateObj = this.hass.states[selCal.entity_id];
-        return (
-          entityStateObj &&
-          supportsFeature(entityStateObj, CalendarEntityFeature.CREATE_EVENT)
-        );
-      })
-      .map((cal) => cal);
+  // Return if there are calendars that support creating events
+  private get _hasMutableCalendars(): boolean {
+    return this.calendars.some((selCal) => {
+      const entityStateObj = this.hass.states[selCal.entity_id];
+      return (
+        entityStateObj &&
+        supportsFeature(entityStateObj, CalendarEntityFeature.CREATE_EVENT)
+      );
+    });
   }
 
   private _createEvent(_info) {
@@ -289,7 +287,6 @@ export class HAFullCalendar extends LitElement {
     // current actual month, as for that one the current day is automatically highlighted and
     // defaulting to a different day in the event creation dialog would be weird.
     showCalendarEventEditDialog(this, {
-      calendars: this._mutableCalendars,
       selectedDate:
         this._activeView === "dayGridWeek" ||
         this._activeView === "dayGridDay" ||
@@ -305,16 +302,20 @@ export class HAFullCalendar extends LitElement {
 
   private _handleEventClick(info): void {
     const entityStateObj = this.hass.states[info.event.extendedProps.calendar];
+    const canEdit =
+      entityStateObj &&
+      supportsFeature(entityStateObj, CalendarEntityFeature.UPDATE_EVENT);
     const canDelete =
       entityStateObj &&
       supportsFeature(entityStateObj, CalendarEntityFeature.DELETE_EVENT);
     showCalendarEventDetailDialog(this, {
-      calendars: this.calendars,
       calendarId: info.event.extendedProps.calendar,
       entry: info.event.extendedProps.eventData,
+      color: info.event.backgroundColor,
       updated: () => {
         this._fireViewChanged();
       },
+      canEdit: canEdit,
       canDelete: canDelete,
     });
   }

@@ -45,7 +45,7 @@ import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -116,7 +116,7 @@ class HaSceneDashboard extends LitElement {
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
             return html`
-              ${last_activated && !UNAVAILABLE_STATES.includes(last_activated)
+              ${last_activated && !isUnavailableState(last_activated)
                 ? dayDifference > 3
                   ? formatShortDateTime(date, this.hass.locale)
                   : relativeTime(date, this.hass.locale)

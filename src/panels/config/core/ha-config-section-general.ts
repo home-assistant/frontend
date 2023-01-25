@@ -118,13 +118,11 @@ class HaConfigSectionGeneral extends LitElement {
                 type="number"
                 .disabled=${disabled}
                 .value=${this._elevation}
+                .suffix=${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.elevation_meters"
+                )}
                 @change=${this._handleChange}
               >
-                <span slot="suffix">
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.elevation_meters"
-                  )}
-                </span>
               </ha-textfield>
               <div>
                 <div>
@@ -306,7 +304,11 @@ class HaConfigSectionGeneral extends LitElement {
     }
     this._languages = Object.entries(this.hass.translationMetadata.translations)
       .sort((a, b) =>
-        caseInsensitiveStringCompare(a[1].nativeName, b[1].nativeName)
+        caseInsensitiveStringCompare(
+          a[1].nativeName,
+          b[1].nativeName,
+          this.hass.locale.language
+        )
       )
       .map(([value, metaData]) => ({
         value,
@@ -391,7 +393,7 @@ class HaConfigSectionGeneral extends LitElement {
   );
 
   private _editLocation() {
-    navigate("/config/zone");
+    navigate("/config/zone/edit/zone.home");
   }
 
   static styles = [

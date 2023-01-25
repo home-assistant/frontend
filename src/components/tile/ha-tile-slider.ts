@@ -47,13 +47,14 @@ export class HaTileSlider extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       ha-bar-slider {
-        --slider-bar-color: var(
-          --tile-slider-bar-color,
-          rgb(var(--rgb-primary-color))
-        );
+        --slider-bar-color: var(--tile-slider-color, var(--primary-color));
         --slider-bar-background: var(
-          --tile-slider-bar-background,
-          rgba(var(--rgb-disabled-color), 0.2)
+          --tile-slider-background,
+          var(--disabled-color)
+        );
+        --slider-bar-background-opacity: var(
+          --tile-slider-background-opacity,
+          0.2
         );
         --slider-bar-thickness: 40px;
         --slider-bar-border-radius: 10px;

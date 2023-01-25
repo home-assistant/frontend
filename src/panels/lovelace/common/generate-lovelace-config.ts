@@ -47,6 +47,7 @@ interface SplittedByAreaDevice {
 }
 
 const splitByAreaDevice = (
+  areaEntries: HomeAssistant["areas"],
   deviceEntries: HomeAssistant["devices"],
   entityEntries: HomeAssistant["entities"],
   entities: HassEntities
@@ -55,25 +56,21 @@ const splitByAreaDevice = (
   const areasWithEntities: SplittedByAreaDevice["areasWithEntities"] = {};
   const devicesWithEntities: SplittedByAreaDevice["devicesWithEntities"] = {};
 
-  const areaDevices = new Set(
-    Object.values(deviceEntries)
-      .filter((device) => device.area_id)
-      .map((device) => device.id)
-  );
   for (const entity of Object.values(entityEntries)) {
-    if (
-      (entity.area_id ||
-        (entity.device_id && areaDevices.has(entity.device_id))) &&
-      entity.entity_id in allEntities
-    ) {
-      const areaId =
-        entity.area_id || deviceEntries[entity.device_id!].area_id!;
+    const areaId =
+      entity.area_id ||
+      (entity.device_id && deviceEntries[entity.device_id]?.area_id);
+    if (areaId && areaId in areaEntries && entity.entity_id in allEntities) {
       if (!(areaId in areasWithEntities)) {
         areasWithEntities[areaId] = [];
       }
       areasWithEntities[areaId].push(allEntities[entity.entity_id]);
       delete allEntities[entity.entity_id];
-    } else if (entity.device_id && entity.entity_id in allEntities) {
+    } else if (
+      entity.device_id &&
+      entity.device_id in deviceEntries &&
+      entity.entity_id in allEntities
+    ) {
       if (!(entity.device_id in devicesWithEntities)) {
         devicesWithEntities[entity.device_id] = [];
       }
@@ -164,7 +161,7 @@ export const computeCards = (
       renderFooterEntities &&
       (domain === "scene" || domain === "script")
     ) {
-      const conf: typeof footerEntities[0] = {
+      const conf: (typeof footerEntities)[0] = {
         entity: entityId,
         show_icon: true,
         show_name: true,
@@ -304,19 +301,13 @@ export const generateViewConfig = (
   path: string,
   title: string | undefined,
   icon: string | undefined,
-  entities: HassEntities,
-  groupOrders: { [entityId: string]: number }
+  entities: HassEntities
 ): LovelaceViewConfig => {
-  const splitted = splitByGroups(entities);
-  splitted.groups.sort(
-    (gr1, gr2) => groupOrders[gr1.entity_id] - groupOrders[gr2.entity_id]
-  );
-
   const ungroupedEntitites: { [domain: string]: string[] } = {};
 
   // Organize ungrouped entities in ungrouped things
-  for (const entityId of Object.keys(splitted.ungrouped)) {
-    const state = splitted.ungrouped[entityId];
+  for (const entityId of Object.keys(entities)) {
+    const state = entities[entityId];
     const domain = computeStateDomain(state);
 
     if (!(domain in ungroupedEntitites)) {
@@ -382,15 +373,6 @@ export const generateViewConfig = (
     }
 
     delete ungroupedEntitites.person;
-  }
-
-  for (const groupEntity of splitted.groups) {
-    cards.push(
-      ...computeCards(entities, groupEntity.attributes.entity_id, {
-        title: computeStateName(groupEntity),
-        show_header_toggle: groupEntity.attributes.control !== "hidden",
-      })
-    );
   }
 
   // Group helper entities in a single card
@@ -475,18 +457,34 @@ export const generateDefaultViewConfig = (
   }
 
   const splittedByAreaDevice = splitByAreaDevice(
+    areaEntries,
     deviceEntries,
     entityEntries,
     states
   );
+
+  const splittedByGroups = splitByGroups(splittedByAreaDevice.otherEntities);
+  splittedByGroups.groups.sort(
+    (gr1, gr2) => groupOrders[gr1.entity_id] - groupOrders[gr2.entity_id]
+  );
+
+  const groupCards: LovelaceCardConfig[] = [];
+
+  for (const groupEntity of splittedByGroups.groups) {
+    groupCards.push(
+      ...computeCards(entities, groupEntity.attributes.entity_id, {
+        title: computeStateName(groupEntity),
+        show_header_toggle: groupEntity.attributes.control !== "hidden",
+      })
+    );
+  }
 
   const config = generateViewConfig(
     localize,
     path,
     title,
     icon,
-    splittedByAreaDevice.otherEntities,
-    groupOrders
+    splittedByGroups.ungrouped
   );
 
   const areaCards: LovelaceCardConfig[] = [];
@@ -568,9 +566,11 @@ export const generateDefaultViewConfig = (
 
   config.cards!.unshift(
     ...areaCards,
-    ...(energyCard ? [energyCard] : []),
-    ...deviceCards
+    ...groupCards,
+    ...(energyCard ? [energyCard] : [])
   );
+
+  config.cards!.push(...deviceCards);
 
   return config;
 };

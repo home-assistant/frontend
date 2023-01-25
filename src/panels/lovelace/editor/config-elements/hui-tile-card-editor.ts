@@ -16,6 +16,7 @@ import {
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
+import { entityId } from "../../../../common/structs/is-entity-id";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -35,7 +36,7 @@ import "./hui-tile-card-features-editor";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entity: optional(string()),
+    entity: optional(entityId()),
     name: optional(string()),
     icon: optional(string()),
     color: optional(string()),

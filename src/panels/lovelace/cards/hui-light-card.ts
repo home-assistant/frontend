@@ -18,7 +18,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
-import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
 import { LightEntity, lightSupportsBrightness } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -118,7 +118,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 min="1"
                 max="100"
                 .value=${brightness}
-                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                .disabled=${isUnavailableState(stateObj.state)}
                 @value-changing=${this._dragEvent}
                 @value-changed=${this._setBrightness}
                 style=${styleMap({
@@ -133,7 +133,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
-                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                .disabled=${isUnavailableState(stateObj.state)}
                 style=${styleMap({
                   filter: this._computeBrightness(stateObj),
                   color: this._computeColor(stateObj),
@@ -154,7 +154,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           </div>
 
           <div id="info" .title=${name}>
-            ${UNAVAILABLE_STATES.includes(stateObj.state)
+            ${isUnavailableState(stateObj.state)
               ? html`
                   <div>
                     ${computeStateDisplay(
@@ -330,7 +330,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       }
 
       .light-button.state-on {
-        color: rgb(var(--rgb-state-light-color));
+        color: var(--state-light-color);
       }
 
       .light-button.state-unavailable {
