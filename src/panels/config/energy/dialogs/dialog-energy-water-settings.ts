@@ -88,7 +88,8 @@ export class DialogEnergyWaterSettings
       : undefined;
 
     const externalSource =
-      this._source.stat_cost && isExternalStatistic(this._source.stat_cost);
+      this._source.stat_energy_from &&
+      isExternalStatistic(this._source.stat_energy_from);
 
     return html`
       <ha-dialog
