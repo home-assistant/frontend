@@ -803,13 +803,15 @@
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
+        "title": "Assistant",
         "did_not_hear": "Home Assistant did not hear anything",
         "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
-        "how_can_i_help": "How can I help?",
-        "label": "Type a question and press 'Enter'",
-        "label_voice": "Type and press 'Enter' or tap the microphone to speak"
+        "how_can_i_help": "How can I assist?",
+        "input_label": "Enter a request",
+        "send_text": "Send text",
+        "start_listening": "Start listening"
       },
       "generic": {
         "cancel": "Cancel",
@@ -903,6 +905,8 @@
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of Measurement",
           "precipitation_unit": "Precipitation unit",
+          "precision": "Precision",
+          "precision_default": "Use default",
           "pressure_unit": "Barometric pressure unit",
           "temperature_unit": "Temperature unit",
           "visibility_unit": "Visibility unit",
@@ -1000,18 +1004,18 @@
           "aliases_section": "Aliases",
           "no_aliases": "No configured aliases",
           "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-          "aliases": {
-            "heading": "{name} aliases",
-            "description": "Aliases are alternative names used in voice assistants to refer to this entity.",
-            "remove_alias": "Remove alias {number}",
-            "input_label": "Alias {number}",
-            "save": "Save",
-            "add_alias": "Add alias",
-            "no_aliases": "No aliases have been added yet",
-            "update": "Update",
-            "unknown_error": "Unknown error"
-          }
+          "aliases_description": "Aliases are alternative names used in voice assistants to refer to this entity."
         }
+      },
+      "aliases": {
+        "heading": "{name} aliases",
+        "remove_alias": "Remove alias {number}",
+        "input_label": "Alias {number}",
+        "save": "Save",
+        "add_alias": "Add alias",
+        "no_aliases": "No aliases have been added yet",
+        "update": "Update",
+        "unknown_error": "Unknown error"
       },
       "helper_settings": {
         "platform_not_loaded": "The {platform} integration is not loaded. Please add it to your configuration either by adding 'default_config:' or ''{platform}:''.",
@@ -1033,7 +1037,8 @@
           "mode": "Display mode",
           "text": "Text",
           "password": "Password",
-          "pattern": "Regex pattern for client-side validation"
+          "pattern_label": "Regex pattern",
+          "pattern_helper": "Used for client-side validation"
         },
         "input_number": {
           "min": "Minimum value",
@@ -1418,7 +1423,11 @@
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
             "linked_entities_caption": "Entities",
-            "no_linked_entities": "There are no entities linked to this area."
+            "no_linked_entities": "There are no entities linked to this area.",
+            "aliases_section": "Aliases",
+            "no_aliases": "No configured aliases",
+            "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area."
           },
           "delete": {
             "confirmation_title": "Delete {name}?",
@@ -1632,66 +1641,6 @@
               "header": "Add a device",
               "device_consumption_energy": "Device consumption energy (kWh)",
               "selected_stat_intro": "Select the entity that represents the device energy usage."
-            }
-          },
-          "validation": {
-            "issues": {
-              "entity_not_defined": {
-                "title": "Entity not defined",
-                "description": "Check the integration or your configuration that provides:"
-              },
-              "recorder_untracked": {
-                "title": "Entity not tracked",
-                "description": "The recorder has been configured to exclude these configured entities:"
-              },
-              "entity_unavailable": {
-                "title": "Entity unavailable",
-                "description": "The state of these configured entities are currently not available:"
-              },
-              "entity_state_non_numeric": {
-                "title": "Entity has non-numeric state",
-                "description": "The following entities have a state that cannot be parsed as a number:"
-              },
-              "entity_negative_state": {
-                "title": "Entity has a negative state",
-                "description": "The following entities have a negative state while a positive state is expected:"
-              },
-              "entity_unexpected_unit_energy": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ':"
-              },
-              "entity_unexpected_unit_gas": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ' for an energy sensor or 'm³' or 'ft³' for a gas sensor:"
-              },
-              "entity_unexpected_unit_water": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'm³' or 'ft³' for a water sensor:"
-              },
-              "entity_unexpected_unit_energy_price": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'' or ''{currency}/GJ'':"
-              },
-              "entity_unexpected_unit_gas_price": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'', ''{currency}/GJ'', ''{currency}/m³'' or ''{currency}/ft³'':"
-              },
-              "entity_unexpected_unit_water_price": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/m³'' or ''{currency}/ft³'':"
-              },
-              "entity_unexpected_state_class": {
-                "title": "Unexpected state class",
-                "description": "The following entities do not have the expected state class:"
-              },
-              "entity_unexpected_device_class": {
-                "title": "Unexpected device class",
-                "description": "The following entities do not have the expected device class:"
-              },
-              "entity_state_class_measurement_no_last_reset": {
-                "title": "Last reset missing",
-                "description": "The following entities have state class 'measurement' but 'last_reset' is missing:"
-              }
             }
           }
         },
@@ -2123,7 +2072,11 @@
                   "label": "Numeric state",
                   "above": "Above",
                   "below": "Below",
-                  "value_template": "Value template"
+                  "mode_above": "Above mode",
+                  "mode_below": "Below mode",
+                  "value_template": "Value template",
+                  "type_value": "Fixed number",
+                  "type_input": "Numeric value of another entity"
                 },
                 "sun": {
                   "label": "Sun",
@@ -2206,9 +2159,13 @@
                   "label": "Not"
                 },
                 "numeric_state": {
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_input%]",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
                   "above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::above%]",
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
+                  "mode_above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_above%]",
+                  "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]"
                 },
                 "or": {
@@ -2740,6 +2697,10 @@
             "exposed": "{selected} exposed",
             "not_exposed": "{selected} not exposed",
             "manage_aliases": "Manage aliases",
+            "add_aliases": "Add aliases",
+            "no_aliases": "No aliases",
+            "aliases_not_available": "Aliases not available",
+            "aliases_not_available_learn_more": "Learn more",
             "sync_to_google": "Synchronizing changes to Google.",
             "sync_entities": "Synchronize entities",
             "sync_entities_error": "Failed to sync entities:",
@@ -3911,7 +3872,7 @@
           "configure_ui": "Edit Dashboard",
           "help": "Help",
           "search": "Search",
-          "start_conversation": "Start conversation",
+          "assist": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close"
@@ -4324,6 +4285,7 @@
               "appearance": "Appearance",
               "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
+              "vertical": "Vertical",
               "features": {
                 "name": "Features",
                 "not_compatible": "Not compatible",
@@ -4397,7 +4359,9 @@
               "orange": "Orange",
               "deep-orange": "Deep orange",
               "brown": "Brown",
+              "light-grey": "Light grey",
               "grey": "Grey",
+              "dark-grey": "Dark grey",
               "blue-grey": "Blue grey",
               "black": "Black",
               "white": "White"

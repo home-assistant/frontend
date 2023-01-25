@@ -8,7 +8,7 @@ dist/
 /translations/
 
 # yarn
-.yarn/**
+.yarn/*
 !.yarn/patches
 !.yarn/releases
 !.yarn/plugins
@@ -31,7 +31,7 @@ pip-selfcheck.json
 .venv
 
 # vscode
-.vscode/**
+.vscode/*
 !.vscode/extensions.json
 !.vscode/launch.json
 !.vscode/tasks.json

@@ -21,12 +21,14 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateColorCss } from "../../../common/entity/state_color";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import type { HaCard } from "../../../components/ha-card";
@@ -249,8 +251,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        class=${classMap({
-          [mode]: true,
+        style=${styleMap({
+          "--mode-color": stateColorCss(stateObj),
         })}
       >
         <ha-icon-button
@@ -470,37 +472,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         --name-font-size: 1.2rem;
         --brightness-font-size: 1.2rem;
         --rail-border-color: transparent;
-      }
-      .auto,
-      .heat_cool {
-        --mode-color: var(--state-climate-auto-color);
-      }
-      .cool {
-        --mode-color: var(--state-climate-cool-color);
-      }
-      .heat {
-        --mode-color: var(--state-climate-heat-color);
-      }
-      .manual {
-        --mode-color: var(--state-climate-manual-color);
-      }
-      .off {
-        --mode-color: var(--state-climate-off-color);
-      }
-      .fan_only {
-        --mode-color: var(--state-climate-fan_only-color);
-      }
-      .eco {
-        --mode-color: var(--state-climate-eco-color);
-      }
-      .dry {
-        --mode-color: var(--state-climate-dry-color);
-      }
-      .idle {
-        --mode-color: var(--state-climate-idle-color);
-      }
-      .unknown-mode {
-        --mode-color: var(--state-unknown-color);
+        --mode-color: var(--state-inactive-color);
       }
 
       .more-info {

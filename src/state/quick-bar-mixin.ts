@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import tinykeys from "tinykeys";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
+import { HaSelect } from "../components/ha-select";
 import {
   QuickBarParams,
   showQuickBar,
@@ -133,17 +134,17 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _canOverrideAlphanumericInput(e: KeyboardEvent) {
-      const el = e.composedPath()[0] as any;
+      const el = e.composedPath()[0];
 
-      if (el.tagName === "TEXTAREA") {
+      if (el instanceof HTMLTextAreaElement) {
         return false;
       }
 
-      if (el.parentElement.tagName === "HA-SELECT") {
+      if (el instanceof Element && el.parentElement instanceof HaSelect) {
         return false;
       }
 
-      if (el.tagName !== "INPUT") {
+      if (!(el instanceof HTMLInputElement)) {
         return true;
       }
 

@@ -77,7 +77,7 @@ const activateSceneActionStruct: Describe<ServiceSceneAction> = assign(
 export interface ScriptEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     last_triggered: string;
-    mode: typeof MODES[number];
+    mode: (typeof MODES)[number];
     current?: number;
     max?: number;
   };
@@ -89,7 +89,7 @@ export interface ManualScriptConfig {
   alias: string;
   sequence: Action | Action[];
   icon?: string;
-  mode?: typeof MODES[number];
+  mode?: (typeof MODES)[number];
   max?: number;
 }
 

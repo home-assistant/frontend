@@ -1,11 +1,11 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { getGraphColorByIndex } from "../../../common/color/colors";
-import { lab2hex, rgb2hex, rgb2lab } from "../../../common/color/convert-color";
+import { hex2rgb, lab2hex, rgb2lab } from "../../../common/color/convert-color";
 import { labBrighten } from "../../../common/color/lab";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateActive } from "../../../common/entity/state_active";
-import { stateColor } from "../../../common/entity/state_color";
-import { UNAVAILABLE } from "../../../data/entity";
+import { stateColorProperties } from "../../../common/entity/state_color";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { computeCssValue } from "../../../resources/css-variables";
 
 const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
   media_player: {
@@ -17,61 +17,35 @@ const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
   },
 };
 
-const cssColorMap: Map<string, [number, number, number]> = new Map();
-
-function cssToRgb(
-  cssVariable: string,
-  computedStyles: CSSStyleDeclaration
-): [number, number, number] | undefined {
-  if (!cssVariable.startsWith("--rgb")) {
-    return undefined;
-  }
-
-  if (cssColorMap.has(cssVariable)) {
-    return cssColorMap.get(cssVariable)!;
-  }
-
-  const value = computedStyles.getPropertyValue(cssVariable);
-
-  if (!value) return undefined;
-
-  const rgb = value.split(",").map((v) => Number(v)) as [
-    number,
-    number,
-    number
-  ];
-  cssColorMap.set(cssVariable, rgb);
-
-  return rgb;
-}
-
 function computeTimelineStateColor(
   state: string,
   computedStyles: CSSStyleDeclaration,
   stateObj?: HassEntity
 ): string | undefined {
   if (!stateObj || state === UNAVAILABLE) {
-    return "transparent";
+    return computeCssValue("--history-unavailable-color", computedStyles);
   }
 
-  const color = stateColor(stateObj, state);
-
-  if (!color && !stateActive(stateObj, state)) {
-    const rgb = cssToRgb("--rgb-state-inactive-color", computedStyles);
-    if (!rgb) return undefined;
-    return rgb2hex(rgb);
+  if (state === UNKNOWN) {
+    return computeCssValue("--history-unknown-color", computedStyles);
   }
 
-  const rgb = cssToRgb(`--rgb-state-${color}-color`, computedStyles);
+  const properties = stateColorProperties(stateObj, state);
+
+  if (!properties) {
+    return undefined;
+  }
+
+  const rgb = computeCssValue(properties, computedStyles);
 
   if (!rgb) return undefined;
 
   const domain = computeDomain(stateObj.entity_id);
   const shade = DOMAIN_STATE_SHADES[domain]?.[state] as number | number;
   if (!shade) {
-    return rgb2hex(rgb);
+    return rgb;
   }
-  return lab2hex(labBrighten(rgb2lab(rgb), shade));
+  return lab2hex(labBrighten(rgb2lab(hex2rgb(rgb)), shade));
 }
 
 let colorIndex = 0;

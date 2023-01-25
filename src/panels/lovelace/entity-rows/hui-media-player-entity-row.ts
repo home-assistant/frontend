@@ -163,7 +163,9 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ></ha-icon-button>
           `
         : ""}
-      ${assumedState && supportsFeature(stateObj, SUPPORT_STOP)
+      ${assumedState &&
+      supportsFeature(stateObj, SUPPORT_STOP) &&
+      !supportsFeature(stateObj, SUPPORT_VOLUME_SET)
         ? html`
             <ha-icon-button
               .path=${mdiStop}
@@ -172,7 +174,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ></ha-icon-button>
           `
         : ""}
-      ${(entityState === "playing" || assumedState) &&
+      ${(entityState === "playing" ||
+        (assumedState && !supportsFeature(stateObj, SUPPORT_VOLUME_SET))) &&
       supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
         ? html`
             <ha-icon-button
