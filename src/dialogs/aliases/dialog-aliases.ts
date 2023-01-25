@@ -104,7 +104,7 @@ class DialogAliases extends LitElement {
         </mwc-button>
         <mwc-button
           slot="primaryAction"
-          @click=${this._updateEntry}
+          @click=${this._updateAliases}
           .disabled=${this._submitting}
         >
           ${this.hass.localize("ui.dialogs.aliases.save")}
@@ -141,14 +141,14 @@ class DialogAliases extends LitElement {
     this._aliases = aliases;
   }
 
-  private async _updateEntry(): Promise<void> {
+  private async _updateAliases(): Promise<void> {
     this._submitting = true;
     const noEmptyAliases = this._aliases
       .map((alias) => alias.trim())
       .filter((alias) => alias);
 
     try {
-      await this._params!.updateEntry(noEmptyAliases);
+      await this._params!.updateAliases(noEmptyAliases);
       this.closeDialog();
     } catch (err: any) {
       this._error =
