@@ -55,7 +55,7 @@ import "../../../../layouts/hass-subpage";
 import { buttonLinkStyle, haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import { showEntityAliasesDialog } from "../../entities/entity-aliases/show-dialog-entity-aliases";
+import { showAliasesDialog } from "../../../../dialogs/aliases/show-dialog-aliases";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
@@ -422,15 +422,17 @@ class CloudGoogleAssistant extends LitElement {
     if (!entry) {
       return;
     }
-    showEntityAliasesDialog(this, {
-      entity: entry,
-      updateEntry: async (updates) => {
-        const { entity_entry } = await updateEntityRegistryEntry(
-          this.hass,
-          entry.entity_id,
-          updates
-        );
-        this._entries![entity_entry.entity_id] = entity_entry;
+    const stateObj = this.hass.states[entityId];
+    const name = (stateObj && computeStateName(stateObj)) || entityId;
+
+    showAliasesDialog(this, {
+      name,
+      aliases: entry.aliases,
+      updateEntry: async (aliases: string[]) => {
+        const result = await updateEntityRegistryEntry(this.hass, entityId, {
+          aliases,
+        });
+        this._entries![entityId] = result.entity_entry;
       },
     });
   }

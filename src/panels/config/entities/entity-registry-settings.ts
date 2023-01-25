@@ -17,6 +17,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stringCompare } from "../../../common/string/compare";
@@ -80,7 +81,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { showEntityAliasesDialog } from "./entity-aliases/show-dialog-entity-aliases";
+import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -861,7 +862,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           </mwc-list>
           <div class="secondary">
             ${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.aliases.description"
+              "ui.dialogs.entity_registry.editor.aliases_description"
             )}
           </div>
           ${this.entry.device_id
@@ -1055,13 +1056,19 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private _handleAliasesClicked(ev: CustomEvent) {
     if (ev.detail.index !== 0) return;
-    showEntityAliasesDialog(this, {
-      entity: this.entry!,
-      updateEntry: async (updates) => {
+
+    const stateObj = this.hass.states[this.entry.entity_id];
+    const name =
+      (stateObj && computeStateName(stateObj)) || this.entry.entity_id;
+
+    showAliasesDialog(this, {
+      name,
+      aliases: this.entry!.aliases,
+      updateEntry: async (aliases: string[]) => {
         const result = await updateEntityRegistryEntry(
           this.hass,
           this.entry.entity_id,
-          updates
+          { aliases }
         );
         fireEvent(this, "entity-entry-updated", result.entity_entry);
       },

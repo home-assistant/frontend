@@ -2,35 +2,34 @@ import "@material/mwc-button/mwc-button";
 import { mdiDeleteOutline, mdiPlus } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-area-picker";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../components/ha-textfield";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-import { EntityAliasesDialogParams } from "./show-dialog-entity-aliases";
+import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-alert";
+import "../../components/ha-area-picker";
+import "../../components/ha-dialog";
+import "../../components/ha-textfield";
+import type { HaTextField } from "../../components/ha-textfield";
+import { haStyle, haStyleDialog } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
+import { AliasesDialogParams } from "./show-dialog-aliases";
 
-@customElement("dialog-entity-aliases")
-class DialogEntityAliases extends LitElement {
+@customElement("dialog-aliases")
+class DialogAliases extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
 
-  @state() private _params?: EntityAliasesDialogParams;
+  @state() private _params?: AliasesDialogParams;
 
   @state() private _aliases!: string[];
 
   @state() private _submitting = false;
 
-  public async showDialog(params: EntityAliasesDialogParams): Promise<void> {
+  public async showDialog(params: AliasesDialogParams): Promise<void> {
     this._params = params;
     this._error = undefined;
     this._aliases =
-      this._params.entity.aliases?.length > 0
-        ? [...this._params.entity.aliases].sort()
+      this._params.aliases?.length > 0
+        ? [...this._params.aliases].sort()
         : [""];
     await this.updateComplete;
   }
@@ -46,23 +45,17 @@ class DialogEntityAliases extends LitElement {
       return html``;
     }
 
-    const entityId = this._params.entity.entity_id;
-    const stateObj = entityId ? this.hass.states[entityId] : undefined;
-
-    const name = (stateObj && computeStateName(stateObj)) || entityId;
-
     return html`
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${this.hass.localize(
-          "ui.dialogs.entity_registry.editor.aliases.heading",
-          { name }
-        )}
+        .heading=${this.hass.localize("ui.dialogs.aliases.heading", {
+          name: this._params.name,
+        })}
       >
         <div>
           ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
           <div class="form">
             ${this._aliases.map(
@@ -73,7 +66,7 @@ class DialogEntityAliases extends LitElement {
                     .index=${index}
                     class="flex-auto"
                     .label=${this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.aliases.input_label",
+                      "ui.dialogs.aliases.input_label",
                       { number: index + 1 }
                     )}
                     .value=${alias}
@@ -85,7 +78,7 @@ class DialogEntityAliases extends LitElement {
                     .index=${index}
                     slot="navigationIcon"
                     label=${this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.aliases.remove_alias",
+                      "ui.dialogs.aliases.remove_alias",
                       { number: index + 1 }
                     )}
                     @click=${this._removeAlias}
@@ -96,9 +89,7 @@ class DialogEntityAliases extends LitElement {
             )}
             <div class="layout horizontal center-center">
               <mwc-button @click=${this._addAlias}>
-                ${this.hass!.localize(
-                  "ui.dialogs.entity_registry.editor.aliases.add_alias"
-                )}
+                ${this.hass!.localize("ui.dialogs.aliases.add_alias")}
                 <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
               </mwc-button>
             </div>
@@ -116,9 +107,7 @@ class DialogEntityAliases extends LitElement {
           @click=${this._updateEntry}
           .disabled=${this._submitting}
         >
-          ${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.aliases.save"
-          )}
+          ${this.hass.localize("ui.dialogs.aliases.save")}
         </mwc-button>
       </ha-dialog>
     `;
@@ -159,16 +148,11 @@ class DialogEntityAliases extends LitElement {
       .filter((alias) => alias);
 
     try {
-      await this._params!.updateEntry({
-        aliases: noEmptyAliases,
-      });
+      await this._params!.updateEntry(noEmptyAliases);
       this.closeDialog();
     } catch (err: any) {
       this._error =
-        err.message ||
-        this.hass.localize(
-          "ui.dialogs.entity_registry.editor.aliases.unknown_error"
-        );
+        err.message || this.hass.localize("ui.dialogs.aliases.unknown_error");
     } finally {
       this._submitting = false;
     }
@@ -207,6 +191,6 @@ class DialogEntityAliases extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-entity-aliases": DialogEntityAliases;
+    "dialog-aliases": DialogAliases;
   }
 }

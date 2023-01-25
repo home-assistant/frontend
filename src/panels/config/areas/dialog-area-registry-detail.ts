@@ -1,13 +1,17 @@
 import "@material/mwc-button";
+import "@material/mwc-list/mwc-list";
+import { mdiPencil } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-alert";
-import "../../../components/ha-textfield";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
+import "../../../components/ha-textfield";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
+import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
@@ -26,6 +30,8 @@ class DialogAreaDetail extends LitElement {
 
   @state() private _name!: string;
 
+  @state() private _aliases!: string[];
+
   @state() private _picture!: string | null;
 
   @state() private _error?: string;
@@ -40,6 +46,7 @@ class DialogAreaDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._name = this._params.entry ? this._params.entry.name : "";
+    this._aliases = this._params.entry ? this._params.entry.aliases : [];
     this._picture = this._params.entry?.picture || null;
     await this.updateComplete;
   }
@@ -93,6 +100,40 @@ class DialogAreaDetail extends LitElement {
               .invalid=${nameInvalid}
               dialogInitialFocus
             ></ha-textfield>
+
+            <div class="label">
+              ${this.hass.localize(
+                "ui.panel.config.areas.editor.aliases_section"
+              )}
+            </div>
+            <mwc-list class="aliases" @action=${this._handleAliasesClicked}>
+              <mwc-list-item .twoline=${this._aliases.length > 0} hasMeta>
+                <span>
+                  ${this._aliases.length > 0
+                    ? this.hass.localize(
+                        "ui.panel.config.areas.editor.configured_aliases",
+                        { count: this._aliases.length }
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.areas.editor.no_aliases"
+                      )}
+                </span>
+                <span slot="secondary">
+                  ${[...this._aliases]
+                    .sort((a, b) =>
+                      stringCompare(a, b, this.hass.locale.language)
+                    )
+                    .join(", ")}
+                </span>
+                <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
+              </mwc-list-item>
+            </mwc-list>
+            <div class="secondary">
+              ${this.hass.localize(
+                "ui.panel.config.areas.editor.aliases_description"
+              )}
+            </div>
+
             <ha-picture-upload
               .hass=${this.hass}
               .value=${this._picture}
@@ -127,6 +168,16 @@ class DialogAreaDetail extends LitElement {
     `;
   }
 
+  private _handleAliasesClicked() {
+    showAliasesDialog(this, {
+      name: this._name,
+      aliases: this._aliases,
+      updateEntry: async (aliases: string[]) => {
+        this._aliases = aliases;
+      },
+    });
+  }
+
   private _isNameValid() {
     return this._name.trim() !== "";
   }
@@ -147,6 +198,7 @@ class DialogAreaDetail extends LitElement {
       const values: AreaRegistryEntryMutableParams = {
         name: this._name.trim(),
         picture: this._picture,
+        aliases: this._aliases,
       };
       if (this._params!.entry) {
         await this._params!.updateEntry!(values);

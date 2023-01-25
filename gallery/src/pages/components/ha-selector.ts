@@ -95,16 +95,19 @@ const AREAS = [
     area_id: "backyard",
     name: "Backyard",
     picture: null,
+    aliases: [],
   },
   {
     area_id: "bedroom",
     name: "Bedroom",
     picture: null,
+    aliases: [],
   },
   {
     area_id: "livingroom",
     name: "Livingroom",
     picture: null,
+    aliases: [],
   },
 ];
 
