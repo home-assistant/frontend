@@ -80,12 +80,12 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
         return;
       }
 
-      const { language, data } = await getTranslation(
+      const { data } = await getTranslation(
         this.translationFragment!,
         this.language!
       );
       this.resources = {
-        [language]: data,
+        [this.language!]: data,
       };
     }
   }
