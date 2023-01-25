@@ -182,7 +182,7 @@ class StateHistoryCharts extends LitElement {
     }
   }
 
-  private _yWidthChanged(e) {
+  private _yWidthChanged(e: CustomEvent<HASSDomEvents["y-width-changed"]>) {
     this._childYWidths[e.detail.chartIndex] = e.detail.value;
     this._maxYWidth = Math.max(...this._childYWidths);
   }
