@@ -134,8 +134,12 @@ export default class HaChartBase extends LitElement {
         style=${styleMap({
           height: `${this.height ?? this._chartHeight}px`,
           overflow: this._chartHeight ? "initial" : "hidden",
-          "padding-left": `${computeRTL(this.hass) ? 0 : this.paddingYAxis}px`,
-          "padding-right": `${computeRTL(this.hass) ? this.paddingYAxis : 0}px`,
+          "padding-left": `${
+            this.hass && computeRTL(this.hass) ? 0 : this.paddingYAxis
+          }px`,
+          "padding-right": `${
+            this.hass && computeRTL(this.hass) ? this.paddingYAxis : 0
+          }px`,
         })}
       >
         <canvas></canvas>
