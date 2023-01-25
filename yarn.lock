@@ -9619,7 +9619,7 @@ fsevents@^1.2.7:
     sinon: ^15.0.1
     sortablejs: ^1.14.0
     source-map-url: ^0.4.0
-    superstruct: ^0.15.2
+    superstruct: ^1.0.3
     systemjs: ^6.3.2
     tar: ^6.1.11
     terser-webpack-plugin: ^5.2.4
@@ -14939,10 +14939,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"superstruct@npm:^0.15.2":
-  version: 0.15.2
-  resolution: "superstruct@npm:0.15.2"
-  checksum: 237b25ed14eda63d9549ef4475508a864304a398c99001cc2436e716b746cddab2be233dc90f93c1b10b4c5d0a08ee7efd7ecdb73b91064276440f2d30f94560
+"superstruct@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "superstruct@npm:1.0.3"
+  checksum: 761790bb111e6e21ddd608299c252f3be35df543263a7ebbc004e840d01fcf8046794c274bcb351bdf3eae4600f79d317d085cdbb19ca05803a4361840cc9bb1
   languageName: node
   linkType: hard
 
