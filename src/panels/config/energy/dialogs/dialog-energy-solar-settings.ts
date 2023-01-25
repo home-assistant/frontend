@@ -21,6 +21,7 @@ import type { HaRadio } from "../../../../components/ha-radio";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import { ConfigEntry, getConfigEntries } from "../../../../data/config_entries";
 import { brandsUrl } from "../../../../util/brands-url";
+import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 
 const energyUnitClasses = ["energy"];
 
@@ -39,6 +40,8 @@ export class DialogEnergySolarSettings
 
   @state() private _forecast?: boolean;
 
+  @state() private _energy_units?: string[];
+
   @state() private _error?: string;
 
   public async showDialog(
@@ -50,6 +53,9 @@ export class DialogEnergySolarSettings
       ? { ...params.source }
       : emptySolarEnergyPreference();
     this._forecast = this._source.config_entry_solar_forecast !== null;
+    this._energy_units = (
+      await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
+    ).units;
   }
 
   public closeDialog(): void {
@@ -64,6 +70,8 @@ export class DialogEnergySolarSettings
       return html``;
     }
 
+    const pickableUnit = this._energy_units?.join(", ") || "";
+
     return html`
       <ha-dialog
         open
@@ -75,6 +83,12 @@ export class DialogEnergySolarSettings
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
+        <div>
+          ${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.entity_para",
+            { unit: pickableUnit }
+          )}
+        </div>
 
         <ha-statistic-picker
           .hass=${this.hass}
