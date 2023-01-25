@@ -3,6 +3,8 @@ import {
   mdiAccountArrowRight,
   mdiAirHumidifier,
   mdiAirHumidifierOff,
+  mdiAudioVideo,
+  mdiAudioVideoOff,
   mdiBluetooth,
   mdiBluetoothConnect,
   mdiCalendar,
@@ -25,8 +27,6 @@ import {
   mdiPackageUp,
   mdiPowerPlug,
   mdiPowerPlugOff,
-  mdiAudioVideo,
-  mdiAudioVideoOff,
   mdiRestart,
   mdiSpeaker,
   mdiSpeakerOff,
@@ -53,6 +53,7 @@ import { DEFAULT_DOMAIN_ICON, FIXED_DOMAIN_ICONS } from "../const";
 import { alarmPanelIcon } from "./alarm_panel_icon";
 import { binarySensorIcon } from "./binary_sensor_icon";
 import { coverIcon } from "./cover_icon";
+import { numberIcon } from "./number_icon";
 import { sensorIcon } from "./sensor_icon";
 
 export const domainIcon = (
@@ -179,6 +180,15 @@ export const domainIconWithoutDefault = (
               return mdiCast;
           }
       }
+
+    case "number": {
+      const icon = numberIcon(stateObj);
+      if (icon) {
+        return icon;
+      }
+
+      break;
+    }
 
     case "person":
       return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
