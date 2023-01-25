@@ -889,6 +889,18 @@
         },
         "zone": {
           "graph_unit": "People home"
+        },
+        "light": {
+          "change_color": "Change color",
+          "select_effect": "Select effect",
+          "color_picker": {
+            "title": "Change color",
+            "mode": {
+              "color": "Color",
+              "color_temp": "Temperature",
+              "white": "White"
+            }
+          }
         }
       },
       "entity_registry": {
