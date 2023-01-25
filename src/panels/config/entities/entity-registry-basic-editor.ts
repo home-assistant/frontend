@@ -7,6 +7,8 @@ import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-radio";
@@ -25,7 +27,7 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
-import { showEntityAliasesDialog } from "./entity-aliases/show-dialog-entity-aliases";
+import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 
 @customElement("ha-registry-basic-editor")
 export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
@@ -51,13 +53,18 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
 
   private _handleAliasesClicked(ev: CustomEvent) {
     if (ev.detail.index !== 0) return;
-    showEntityAliasesDialog(this, {
-      entity: this.entry!,
-      updateEntry: async (updates) => {
+    const stateObj = this.hass.states[this.entry.entity_id];
+    const name =
+      (stateObj && computeStateName(stateObj)) || this.entry.entity_id;
+
+    showAliasesDialog(this, {
+      name,
+      aliases: this.entry!.aliases,
+      updateAliases: async (aliases: string[]) => {
         const result = await updateEntityRegistryEntry(
           this.hass,
           this.entry.entity_id,
-          updates
+          { aliases }
         );
         fireEvent(this, "entity-entry-updated", result.entity_entry);
       },
@@ -285,13 +292,17 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
                     "ui.dialogs.entity_registry.editor.no_aliases"
                   )}
             </span>
-            <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+            <span slot="secondary">
+              ${[...this.entry.aliases]
+                .sort((a, b) => stringCompare(a, b, this.hass.locale.language))
+                .join(", ")}
+            </span>
             <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
           </mwc-list-item>
         </mwc-list>
         <div class="secondary">
           ${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.aliases.description"
+            "ui.dialogs.entity_registry.editor.aliases_description"
           )}
         </div>
       </ha-expansion-panel>

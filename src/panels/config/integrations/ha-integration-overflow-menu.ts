@@ -18,23 +18,13 @@ export class HaIntegrationOverflowMenu extends LitElement {
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
-        <ha-clickable-list-item
-          @click=${this._entryClicked}
-          href="/config/application_credentials"
-          aria-label=${this.hass.localize(
-            "ui.panel.config.application_credentials.caption"
-          )}
-        >
+        <ha-clickable-list-item href="/config/application_credentials">
           ${this.hass.localize(
             "ui.panel.config.application_credentials.caption"
           )}
         </ha-clickable-list-item>
       </ha-button-menu>
     `;
-  }
-
-  private _entryClicked(ev) {
-    ev.currentTarget.blur();
   }
 }
 

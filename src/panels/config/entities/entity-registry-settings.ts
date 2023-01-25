@@ -17,6 +17,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stringCompare } from "../../../common/string/compare";
@@ -62,11 +63,14 @@ import {
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
+  SensorEntityOptions,
   fetchEntityRegistry,
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
+import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
+import { getSensorDeviceClassConvertibleUnits } from "../../../data/sensor";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -77,7 +81,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { showEntityAliasesDialog } from "./entity-aliases/show-dialog-entity-aliases";
+import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -113,62 +117,6 @@ const OVERRIDE_DEVICE_CLASSES = {
   ],
 };
 
-const OVERRIDE_NUMBER_UNITS = {
-  temperature: ["°C", "°F", "K"],
-};
-
-const OVERRIDE_SENSOR_UNITS = {
-  current: ["A", "mA"],
-  data_rate: [
-    "bit/s",
-    "kbit/s",
-    "Mbit/s",
-    "Gbit/s",
-    "B/s",
-    "kB/s",
-    "MB/s",
-    "GB/s",
-    "KiB/s",
-    "MiB/s",
-    "GiB/s",
-  ],
-  data_size: [
-    "bit",
-    "kbit",
-    "Mbit",
-    "Gbit",
-    "B",
-    "kB",
-    "MB",
-    "GB",
-    "TB",
-    "PB",
-    "EB",
-    "ZB",
-    "YB",
-    "KiB",
-    "MiB",
-    "GiB",
-    "TiB",
-    "PiB",
-    "EiB",
-    "ZiB",
-    "YiB",
-  ],
-  distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
-  gas: ["CCF", "ft³", "m³"],
-  precipitation: ["cm", "in", "mm"],
-  precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
-  pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
-  speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mm/h", "mph"],
-  temperature: ["°C", "°F", "K"],
-  voltage: ["V", "mV"],
-  volume: ["CCF", "fl. oz.", "ft³", "gal", "L", "mL", "m³"],
-  water: ["CCF", "ft³", "gal", "L", "m³"],
-  weight: ["g", "kg", "lb", "mg", "oz", "st", "µg"],
-  wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
-};
-
 const OVERRIDE_WEATHER_UNITS = {
   precipitation: ["mm", "in"],
   pressure: ["hPa", "mbar", "mmHg", "inHg"],
@@ -178,6 +126,16 @@ const OVERRIDE_WEATHER_UNITS = {
 };
 
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
+
+const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
+
+function precisionLabel(precision: number, _state?: string) {
+  const state_float =
+    _state === undefined || isNaN(parseFloat(_state))
+      ? 0.0
+      : parseFloat(_state);
+  return state_float.toFixed(precision);
+}
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -207,6 +165,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _unit_of_measurement?: string | null;
 
+  @state() private _precision?: number | null;
+
   @state() private _precipitation_unit?: string | null;
 
   @state() private _pressure_unit?: string | null;
@@ -222,6 +182,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _submitting?: boolean;
 
   @state() private _cameraPrefs?: CameraPreferences;
+
+  @state() private _numberDeviceClassConvertibleUnits?: string[];
+
+  @state() private _sensorDeviceClassConvertibleUnits?: string[];
 
   private _origEntityId!: string;
 
@@ -300,6 +264,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       this._unit_of_measurement = stateObj?.attributes?.unit_of_measurement;
     }
 
+    if (domain === "sensor") {
+      this._precision = this.entry.options?.sensor?.precision;
+    }
+
     if (domain === "weather") {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
@@ -322,6 +290,31 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         this._deviceClassOptions[0] = deviceClass;
       } else {
         this._deviceClassOptions[1].push(...deviceClass);
+      }
+    }
+  }
+
+  protected async updated(changedProps: PropertyValues): Promise<void> {
+    if (changedProps.has("_deviceClass")) {
+      const domain = computeDomain(this.entry.entity_id);
+
+      if (domain === "number" && this._deviceClass) {
+        const { units } = await getNumberDeviceClassConvertibleUnits(
+          this.hass,
+          this._deviceClass
+        );
+        this._numberDeviceClassConvertibleUnits = units;
+      } else {
+        this._numberDeviceClassConvertibleUnits = [];
+      }
+      if (domain === "sensor" && this._deviceClass) {
+        const { units } = await getSensorDeviceClassConvertibleUnits(
+          this.hass,
+          this._deviceClass
+        );
+        this._sensorDeviceClassConvertibleUnits = units;
+      } else {
+        this._sensorDeviceClassConvertibleUnits = [];
       }
     }
   }
@@ -445,7 +438,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ${domain === "number" &&
         this._deviceClass &&
         stateObj?.attributes.unit_of_measurement &&
-        OVERRIDE_NUMBER_UNITS[this._deviceClass]?.includes(
+        this._numberDeviceClassConvertibleUnits?.includes(
           stateObj?.attributes.unit_of_measurement
         )
           ? html`
@@ -459,7 +452,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._unitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_NUMBER_UNITS[this._deviceClass].map(
+                ${this._numberDeviceClassConvertibleUnits.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
@@ -470,7 +463,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ${domain === "sensor" &&
         this._deviceClass &&
         stateObj?.attributes.unit_of_measurement &&
-        OVERRIDE_SENSOR_UNITS[this._deviceClass]?.includes(
+        this._sensorDeviceClassConvertibleUnits?.includes(
           stateObj?.attributes.unit_of_measurement
         )
           ? html`
@@ -484,9 +477,47 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._unitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_SENSOR_UNITS[this._deviceClass].map(
+                ${this._sensorDeviceClassConvertibleUnits.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
+                  `
+                )}
+              </ha-select>
+            `
+          : ""}
+        ${domain === "sensor" &&
+        // Allow customizing the precision for a sensor with numerical device class,
+        // a unit of measurement or state class
+        ((this._deviceClass &&
+          !["date", "enum", "timestamp"].includes(this._deviceClass)) ||
+          stateObj?.attributes.unit_of_measurement ||
+          stateObj?.attributes.state_class)
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.precision"
+                )}
+                .value=${this._precision == null
+                  ? "default"
+                  : this._precision.toString()}
+                naturalMenuWidth
+                fixedMenuPosition
+                @selected=${this._precisionChanged}
+                @closed=${stopPropagation}
+              >
+                <mwc-list-item .value=${"default"}
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.precision_default"
+                  )}</mwc-list-item
+                >
+                ${PRECISIONS.map(
+                  (precision) => html`
+                    <mwc-list-item .value=${precision.toString()}>
+                      ${precisionLabel(
+                        precision,
+                        this.hass.states[this.entry.entity_id]?.state
+                      )}
+                    </mwc-list-item>
                   `
                 )}
               </ha-select>
@@ -819,13 +850,19 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                       "ui.dialogs.entity_registry.editor.no_aliases"
                     )}
               </span>
-              <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+              <span slot="secondary">
+                ${[...this.entry.aliases]
+                  .sort((a, b) =>
+                    stringCompare(a, b, this.hass.locale.language)
+                  )
+                  .join(", ")}
+              </span>
               <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
             </mwc-list-item>
           </mwc-list>
           <div class="secondary">
             ${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.aliases.description"
+              "ui.dialogs.entity_registry.editor.aliases_description"
             )}
           </div>
           ${this.entry.device_id
@@ -909,6 +946,12 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private _precipitationUnitChanged(ev): void {
     this._error = undefined;
     this._precipitation_unit = ev.target.value;
+  }
+
+  private _precisionChanged(ev): void {
+    this._error = undefined;
+    this._precision =
+      ev.target.value === "default" ? null : Number(ev.target.value);
   }
 
   private _pressureUnitChanged(ev): void {
@@ -1013,13 +1056,19 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private _handleAliasesClicked(ev: CustomEvent) {
     if (ev.detail.index !== 0) return;
-    showEntityAliasesDialog(this, {
-      entity: this.entry!,
-      updateEntry: async (updates) => {
+
+    const stateObj = this.hass.states[this.entry.entity_id];
+    const name =
+      (stateObj && computeStateName(stateObj)) || this.entry.entity_id;
+
+    showAliasesDialog(this, {
+      name,
+      aliases: this.entry!.aliases,
+      updateAliases: async (aliases: string[]) => {
         const result = await updateEntityRegistryEntry(
           this.hass,
           this.entry.entity_id,
-          updates
+          { aliases }
         );
         fireEvent(this, "entity-entry-updated", result.entity_entry);
       },
@@ -1100,7 +1149,16 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
     ) {
       params.options_domain = domain;
-      params.options = { unit_of_measurement: this._unit_of_measurement };
+      params.options = this.entry.options?.[domain] || {};
+      params.options.unit_of_measurement = this._unit_of_measurement;
+    }
+    if (
+      domain === "sensor" &&
+      this.entry.options?.[domain]?.precision !== this._precision
+    ) {
+      params.options_domain = domain;
+      params.options = params.options || this.entry.options?.[domain] || {};
+      (params.options as SensorEntityOptions).precision = this._precision;
     }
     if (
       domain === "weather" &&

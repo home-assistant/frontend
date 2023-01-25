@@ -35,9 +35,9 @@ const TRUNCATED_DOMAINS = [
   "person",
 ] as const satisfies ReadonlyArray<keyof typeof FIXED_DOMAIN_STATES>;
 
-type TruncatedDomain = typeof TRUNCATED_DOMAINS[number];
+type TruncatedDomain = (typeof TRUNCATED_DOMAINS)[number];
 type TruncatedKey = {
-  [T in TruncatedDomain]: `${T}.${typeof FIXED_DOMAIN_STATES[T][number]}`;
+  [T in TruncatedDomain]: `${T}.${(typeof FIXED_DOMAIN_STATES)[T][number]}`;
 }[TruncatedDomain];
 
 const getTruncatedKey = (domainKey: string, stateKey: string) => {

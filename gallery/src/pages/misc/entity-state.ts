@@ -104,16 +104,17 @@ const ENTITIES: HassEntity[] = [
   createEntity("alarm_control_panel.disarming", "disarming"),
   createEntity("alarm_control_panel.triggered", "triggered"),
   // Alert
+  createEntity("alert.idle", "idle"),
   createEntity("alert.off", "off"),
   createEntity("alert.on", "on"),
-  createEntity("alert.idle", "idle"),
   // Automation
   createEntity("automation.off", "off"),
   createEntity("automation.on", "on"),
   // Binary Sensor
-  ...BINARY_SENSOR_DEVICE_CLASSES.map((dc) =>
-    createEntity(`binary_sensor.${dc}`, "on", dc)
-  ),
+  ...BINARY_SENSOR_DEVICE_CLASSES.map((dc) => [
+    createEntity(`binary_sensor.${dc}`, "off", dc),
+    createEntity(`binary_sensor.${dc}`, "on", dc),
+  ]).reduce((arr, item) => [...arr, ...item], []),
   // Button
   createEntity("button.restart", "unknown", "restart"),
   createEntity("button.update", "unknown", "update"),
@@ -141,6 +142,9 @@ const ENTITIES: HassEntity[] = [
   }),
   createEntity("climate.auto_dry", "auto", undefined, {
     hvac_action: "drying",
+  }),
+  createEntity("climate.auto_fan", "auto", undefined, {
+    hvac_action: "fan",
   }),
   // Cover
   createEntity("cover.closing", "closing"),
@@ -180,8 +184,8 @@ const ENTITIES: HassEntity[] = [
   createEntity("light.off", "off"),
   createEntity("light.on", "on"),
   // Locks
-  createEntity("lock.unlocked", "unlocked"),
   createEntity("lock.locked", "locked"),
+  createEntity("lock.unlocked", "unlocked"),
   createEntity("lock.locking", "locking"),
   createEntity("lock.unlocking", "unlocking"),
   createEntity("lock.jammed", "jammed"),
@@ -205,17 +209,24 @@ const ENTITIES: HassEntity[] = [
   createEntity("media_player.speaker_playing", "playing", "speaker"),
   createEntity("media_player.speaker_paused", "paused", "speaker"),
   createEntity("media_player.speaker_standby", "standby", "speaker"),
+  // Plant
+  createEntity("plant.ok", "ok"),
+  createEntity("plant.problem", "problem"),
   // Remote
   createEntity("remote.off", "off"),
   createEntity("remote.on", "on"),
+  // Schedule
+  createEntity("schedule.off", "off"),
+  createEntity("schedule.on", "on"),
   // Script
   createEntity("script.off", "off"),
   createEntity("script.on", "on"),
   // Sensor
   ...SENSOR_DEVICE_CLASSES.map((dc) => createEntity(`sensor.${dc}`, "10", dc)),
   // Battery sensor
-  ...[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((value) =>
-    createEntity(`sensor.battery_${value}`, value.toString(), "battery")
+  ...[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, "unknown", "not_valid"].map(
+    (value) =>
+      createEntity(`sensor.battery_${value}`, value.toString(), "battery")
   ),
   // Siren
   createEntity("siren.off", "off"),

@@ -61,7 +61,6 @@ class IntegrationsStartupTime extends LitElement {
               twoline
               hasMeta
               openNewTab
-              @click=${this._entryClicked}
               href=${docLink}
             >
               <img
@@ -112,10 +111,6 @@ class IntegrationsStartupTime extends LitElement {
       }
       return b.seconds - a.seconds;
     });
-  }
-
-  private _entryClicked(ev) {
-    ev.currentTarget.blur();
   }
 
   static get styles(): CSSResultGroup {
