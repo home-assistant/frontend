@@ -429,8 +429,6 @@ export class HaVoiceCommandDialog extends LitElement {
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
           --mdc-theme-primary: var(--mdc-theme-surface);
-          display: flex;
-          flex-shrink: 0;
         }
 
         ha-textfield {
@@ -473,6 +471,7 @@ export class HaVoiceCommandDialog extends LitElement {
           right: 0px;
           left: 0px;
           padding: 24px;
+          box-sizing: border-box;
           overflow-y: auto;
           max-height: 100%;
         }
