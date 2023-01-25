@@ -62,6 +62,7 @@ import {
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
+  SensorEntityOptions,
   fetchEntityRegistry,
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
@@ -487,7 +488,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.precision"
                 )}
-                .value=${this._precision == null ? "default" : this._precision}
+                .value=${this._precision == null
+                  ? "default"
+                  : this._precision.toString()}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._precisionChanged}
@@ -500,7 +503,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 >
                 ${PRECISIONS.map(
                   (precision) => html`
-                    <mwc-list-item .value=${precision}>
+                    <mwc-list-item .value=${precision.toString()}>
                       ${precisionLabel(
                         precision,
                         this.hass.states[this.entry.entity_id]?.state
@@ -938,7 +941,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private _precisionChanged(ev): void {
     this._error = undefined;
-    this._precision = ev.target.value === "default" ? null : ev.target.value;
+    this._precision =
+      ev.target.value === "default" ? null : Number(ev.target.value);
   }
 
   private _pressureUnitChanged(ev): void {
@@ -1131,10 +1135,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     ) {
       params.options_domain = domain;
       params.options = this.entry.options?.[domain] || {};
-      params.options = {
-        ...params.options,
-        unit_of_measurement: this._unit_of_measurement,
-      };
+      params.options.unit_of_measurement = this._unit_of_measurement;
     }
     if (
       domain === "sensor" &&
@@ -1142,7 +1143,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     ) {
       params.options_domain = domain;
       params.options = params.options || this.entry.options?.[domain] || {};
-      params.options = { ...params.options, precision: this._precision };
+      (params.options as SensorEntityOptions).precision = this._precision;
     }
     if (
       domain === "weather" &&
