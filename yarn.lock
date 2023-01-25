@@ -1622,7 +1622,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/common@npm:5.9.0, @fullcalendar/common@npm:~5.9.0":
+"@fullcalendar/common@npm:5.11.4":
+  version: 5.11.4
+  resolution: "@fullcalendar/common@npm:5.11.4"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: 8fc0e05539ba83d310eb5a7163dcd10582d83465393cccb525022b20c954e29e6361b289a2d2eec1ae5b5d950700333739b81cb5e81bc8cb72f682484ca697af
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/common@npm:~5.9.0":
   version: 5.9.0
   resolution: "@fullcalendar/common@npm:5.9.0"
   dependencies:
@@ -9458,7 +9467,7 @@ fsevents@^1.2.7:
     "@formatjs/intl-numberformat": ^7.2.5
     "@formatjs/intl-pluralrules": ^4.1.5
     "@formatjs/intl-relativetimeformat": ^9.3.2
-    "@fullcalendar/common": 5.9.0
+    "@fullcalendar/common": 5.11.4
     "@fullcalendar/core": 5.9.0
     "@fullcalendar/daygrid": 5.9.0
     "@fullcalendar/interaction": 5.9.0
