@@ -1016,18 +1016,18 @@
           "aliases_section": "Aliases",
           "no_aliases": "No configured aliases",
           "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-          "aliases": {
-            "heading": "{name} aliases",
-            "description": "Aliases are alternative names used in voice assistants to refer to this entity.",
-            "remove_alias": "Remove alias {number}",
-            "input_label": "Alias {number}",
-            "save": "Save",
-            "add_alias": "Add alias",
-            "no_aliases": "No aliases have been added yet",
-            "update": "Update",
-            "unknown_error": "Unknown error"
-          }
+          "aliases_description": "Aliases are alternative names used in voice assistants to refer to this entity."
         }
+      },
+      "aliases": {
+        "heading": "{name} aliases",
+        "remove_alias": "Remove alias {number}",
+        "input_label": "Alias {number}",
+        "save": "Save",
+        "add_alias": "Add alias",
+        "no_aliases": "No aliases have been added yet",
+        "update": "Update",
+        "unknown_error": "Unknown error"
       },
       "helper_settings": {
         "platform_not_loaded": "The {platform} integration is not loaded. Please add it to your configuration either by adding 'default_config:' or ''{platform}:''.",
@@ -1435,7 +1435,11 @@
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
             "linked_entities_caption": "Entities",
-            "no_linked_entities": "There are no entities linked to this area."
+            "no_linked_entities": "There are no entities linked to this area.",
+            "aliases_section": "Aliases",
+            "no_aliases": "No configured aliases",
+            "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area."
           },
           "delete": {
             "confirmation_title": "Delete {name}?",
