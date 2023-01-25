@@ -44,7 +44,7 @@ const getPercentageFromEvent = (e: HammerInput, vertical: boolean) => {
 
 @customElement("ha-bar-slider")
 export class HaBarSlider extends LitElement {
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   public disabled = false;
 
   @property()
@@ -245,14 +245,16 @@ export class HaBarSlider extends LitElement {
       >
         <div class="slider-track-background"></div>
         ${this.mode === "cursor"
-          ? html`
-              <div
-                class=${classMap({
-                  "slider-track-cursor": true,
-                  vertical: this.vertical,
-                })}
-              ></div>
-            `
+          ? this.value != null
+            ? html`
+                <div
+                  class=${classMap({
+                    "slider-track-cursor": true,
+                    vertical: this.vertical,
+                  })}
+                ></div>
+              `
+            : null
           : html`
               <div
                 class=${classMap({
@@ -318,7 +320,8 @@ export class HaBarSlider extends LitElement {
         height: 100%;
         width: 100%;
         background-color: var(--slider-bar-color);
-        transition: transform 180ms ease-in-out;
+        transition: transform 180ms ease-in-out,
+          background-color 180ms ease-in-out;
       }
       .slider .slider-track-bar.show-handle {
         --slider-size: calc(
@@ -444,6 +447,9 @@ export class HaBarSlider extends LitElement {
       :host([pressed]) .slider-track-bar,
       :host([pressed]) .slider-track-cursor {
         transition: none;
+      }
+      :host(:disabled) .slider {
+        cursor: not-allowed;
       }
     `;
   }
