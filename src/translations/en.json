@@ -905,6 +905,8 @@
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of Measurement",
           "precipitation_unit": "Precipitation unit",
+          "precision": "Precision",
+          "precision_default": "Use default",
           "pressure_unit": "Barometric pressure unit",
           "temperature_unit": "Temperature unit",
           "visibility_unit": "Visibility unit",
