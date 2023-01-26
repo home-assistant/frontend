@@ -15915,21 +15915,7 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"vinyl@npm:^2.0.0, vinyl@npm:^2.1.0":
-  version: 2.2.0
-  resolution: "vinyl@npm:2.2.0"
-  dependencies:
-    clone: ^2.1.1
-    clone-buffer: ^1.0.0
-    clone-stats: ^1.0.0
-    cloneable-readable: ^1.0.0
-    remove-trailing-separator: ^1.0.1
-    replace-ext: ^1.0.0
-  checksum: ff24138314485c0a4b3e8a629ae3530a6017e8c2ddeebda1a465f15211197981f953f2670889181090f0abfa82f682297909fb0c2b79e7d38abb92f72591d136
-  languageName: node
-  linkType: hard
-
-"vinyl@npm:^2.2.1":
+"vinyl@npm:^2.0.0, vinyl@npm:^2.1.0, vinyl@npm:^2.2.1":
   version: 2.2.1
   resolution: "vinyl@npm:2.2.1"
   dependencies:
