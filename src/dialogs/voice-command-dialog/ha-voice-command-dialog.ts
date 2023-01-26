@@ -507,6 +507,11 @@ export class HaVoiceCommandDialog extends LitElement {
           color: var(--text-primary-color);
         }
 
+        .input {
+          margin-left: 0;
+          margin-right: 0;
+        }
+
         .interimTranscript {
           color: var(--secondary-text-color);
         }
