@@ -19,7 +19,6 @@ import {
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { HistoryGraphCardConfig } from "./types";
 
@@ -41,8 +40,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: HistoryGraphCardConfig;
 
-  private _configEntities?: EntityConfig[];
-
   private _names: Record<string, string> = {};
 
   private _entityIds: string[] = [];
@@ -56,9 +53,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _subscribed?: Promise<(() => Promise<void>) | void>;
 
   public getCardSize(): number {
-    return this._config?.title
-      ? 2
-      : 0 + 2 * (this._configEntities?.length || 1);
+    return this._config?.title ? 2 : 0 + 2 * (this._entityIds?.length || 1);
   }
 
   public setConfig(config: HistoryGraphCardConfig): void {
@@ -70,11 +65,12 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       throw new Error("You must include at least one entity");
     }
 
-    this._configEntities = config.entities
+    const configEntities = config.entities
       ? processConfigEntities(config.entities)
       : [];
 
-    this._configEntities.forEach((entity) => {
+    this._entityIds = [];
+    configEntities.forEach((entity) => {
       this._entityIds.push(entity.entity);
       if (entity.name) {
         this._names[entity.entity] = entity.name;
@@ -136,17 +132,16 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
   }
 
-  private _unsubscribeHistoryTimeWindow() {
+  private async _unsubscribeHistoryTimeWindow() {
     if (!this._subscribed) {
       return;
     }
     clearInterval(this._interval);
-    this._subscribed.then((unsubscribe) => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-      this._subscribed = undefined;
-    });
+    const unsubscribe = await this._subscribed;
+    if (unsubscribe) {
+      unsubscribe();
+    }
+    this._subscribed = undefined;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -156,7 +151,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected async updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (
       !this._config ||
@@ -177,11 +172,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
     if (
       changedProps.has("_config") &&
-      (!this._subscribed ||
-        oldConfig?.entities !== this._config.entities ||
-        oldConfig?.hours_to_show !== this._hoursToShow)
+      (oldConfig?.entities !== this._config.entities ||
+        oldConfig?.hours_to_show !== this._config.hours_to_show)
     ) {
-      this._unsubscribeHistoryTimeWindow();
+      await this._unsubscribeHistoryTimeWindow();
       this._subscribeHistoryTimeWindow();
     }
   }
