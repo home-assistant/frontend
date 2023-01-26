@@ -239,7 +239,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._subscribeHistoryTimeWindow();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues): void {
     if (this._configEntities?.length) {
       if (!this._subscribed || changedProps.has("_config")) {
         this._updateSubscriptionHistoryTimeWindow();
