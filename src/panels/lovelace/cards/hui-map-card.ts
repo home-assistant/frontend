@@ -231,8 +231,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       if (unsubscribe) {
         unsubscribe();
       }
-      this._subscribed = undefined;
     });
+    this._subscribed = undefined;
   }
 
   protected updated(changedProps: PropertyValues): void {
