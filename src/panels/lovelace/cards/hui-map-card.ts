@@ -40,7 +40,7 @@ import {
   formatTimeWeekday,
 } from "../../../common/datetime/format_time";
 
-const DEFAULT_HOURS_TO_SHOW = 24;
+const DEFAULT_HOURS_TO_SHOW = 0;
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
