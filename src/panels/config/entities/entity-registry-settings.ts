@@ -71,6 +71,10 @@ import {
 import { domainToName } from "../../../data/integration";
 import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
 import { getSensorDeviceClassConvertibleUnits } from "../../../data/sensor";
+import {
+  WeatherUnits,
+  getWeatherConvertibleUnits,
+} from "../../../data/weather";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -115,14 +119,6 @@ const OVERRIDE_DEVICE_CLASSES = {
       "moisture",
     ], // Alarm
   ],
-};
-
-const OVERRIDE_WEATHER_UNITS = {
-  precipitation: ["mm", "in"],
-  pressure: ["hPa", "mbar", "mmHg", "inHg"],
-  temperature: ["°C", "°F"],
-  visibility: ["km", "mi"],
-  wind_speed: ["ft/s", "km/h", "kn", "m/s", "mph"],
 };
 
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
@@ -186,6 +182,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _numberDeviceClassConvertibleUnits?: string[];
 
   @state() private _sensorDeviceClassConvertibleUnits?: string[];
+
+  @state() private _weatherConvertibleUnits?: WeatherUnits;
 
   private _origEntityId!: string;
 
@@ -315,6 +313,16 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         this._sensorDeviceClassConvertibleUnits = units;
       } else {
         this._sensorDeviceClassConvertibleUnits = [];
+      }
+    }
+    if (changedProps.has("_entityId")) {
+      const domain = computeDomain(this.entry.entity_id);
+
+      if (domain === "weather") {
+        const { units } = await getWeatherConvertibleUnits(this.hass);
+        this._weatherConvertibleUnits = units;
+      } else {
+        this._weatherConvertibleUnits = undefined;
       }
     }
   }
@@ -535,7 +543,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._precipitationUnitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_WEATHER_UNITS.precipitation.map(
+                ${this._weatherConvertibleUnits?.precipitation_unit.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
@@ -551,7 +559,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._pressureUnitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_WEATHER_UNITS.pressure.map(
+                ${this._weatherConvertibleUnits?.pressure_unit.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
@@ -567,7 +575,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._temperatureUnitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_WEATHER_UNITS.temperature.map(
+                ${this._weatherConvertibleUnits?.temperature_unit.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
@@ -583,7 +591,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._visibilityUnitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_WEATHER_UNITS.visibility.map(
+                ${this._weatherConvertibleUnits?.visibility_unit.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
@@ -599,7 +607,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._windSpeedUnitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_WEATHER_UNITS.wind_speed.map(
+                ${this._weatherConvertibleUnits?.wind_speed_unit.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
