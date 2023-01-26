@@ -234,11 +234,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._subscribed = undefined;
   }
 
-  protected async updated(changedProps: PropertyValues) {
+  private async _updateSubscriptionHistoryTimeWindow() {
+    await this._unsubscribeHistoryTimeWindow();
+    this._subscribeHistoryTimeWindow();
+  }
+
+  protected updated(changedProps: PropertyValues) {
     if (this._configEntities?.length) {
       if (!this._subscribed || changedProps.has("_config")) {
-        await this._unsubscribeHistoryTimeWindow();
-        this._subscribeHistoryTimeWindow();
+        this._updateSubscriptionHistoryTimeWindow();
       }
     } else {
       this._unsubscribeHistoryTimeWindow();
