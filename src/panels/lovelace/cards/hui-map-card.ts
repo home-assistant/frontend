@@ -223,22 +223,21 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _unsubscribeHistoryTimeWindow() {
+  private async _unsubscribeHistoryTimeWindow() {
     if (!this._subscribed) {
       return;
     }
-    this._subscribed.then((unsubscribe) => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    });
+    const unsubscribe = await this._subscribed;
+    if (unsubscribe) {
+      unsubscribe();
+    }
     this._subscribed = undefined;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected async updated(changedProps: PropertyValues) {
     if (this._configEntities?.length) {
       if (!this._subscribed || changedProps.has("_config")) {
-        this._unsubscribeHistoryTimeWindow();
+        await this._unsubscribeHistoryTimeWindow();
         this._subscribeHistoryTimeWindow();
       }
     } else {
