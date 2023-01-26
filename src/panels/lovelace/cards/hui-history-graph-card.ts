@@ -151,7 +151,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
-  protected async updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (
       !this._config ||
@@ -175,9 +175,13 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       (oldConfig?.entities !== this._config.entities ||
         oldConfig?.hours_to_show !== this._config.hours_to_show)
     ) {
-      await this._unsubscribeHistoryTimeWindow();
-      this._subscribeHistoryTimeWindow();
+      this._updateSubscriptionHistoryTimeWindow();
     }
+  }
+
+  private async _updateSubscriptionHistoryTimeWindow() {
+    await this._unsubscribeHistoryTimeWindow();
+    this._subscribeHistoryTimeWindow();
   }
 
   protected render(): TemplateResult {
