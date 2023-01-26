@@ -410,6 +410,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   </div>
                   <div class="card-content">
                     <ha-chart-base
+                      .hass=${this.hass}
                       .data=${{
                         datasets: [
                           {
@@ -441,6 +442,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   </div>
                   <div class="card-content">
                     <ha-chart-base
+                      .hass=${this.hass}
                       .data=${{
                         datasets: [
                           {
