@@ -87,6 +87,7 @@ export class HuiEnergyDevicesGraphCard
           })}"
         >
           <ha-chart-base
+            .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(this.hass.locale)}
             .height=${(this._chartData?.datasets[0]?.data.length || 0) * 28 +
