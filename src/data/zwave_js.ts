@@ -92,6 +92,22 @@ enum NodeType {
   "End Node" = 1,
 }
 
+enum RFRegion {
+  "Europe" = 0x00,
+  "USA" = 0x01,
+  "Australia/New Zealand" = 0x02,
+  "Hong Kong" = 0x03,
+  "India" = 0x05,
+  "Israel" = 0x06,
+  "Russia" = 0x07,
+  "China" = 0x08,
+  "USA (Long Range)" = 0x09,
+  "Japan" = 0x20,
+  "Korea" = 0x21,
+  "Unknown" = 0xfe,
+  "Default (EU)" = 0xff,
+}
+
 export enum FirmwareUpdateStatus {
   Error_Timeout = -1,
   Error_Checksum = 0,
@@ -149,6 +165,7 @@ export interface ZWaveJSController {
   sdk_version: string;
   type: number;
   own_node_id: number;
+  rf_region: RFRegion | null;
   is_primary: boolean;
   is_using_home_id_from_other_network: boolean;
   is_sis_present: boolean;
