@@ -8794,10 +8794,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"fuse.js@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "fuse.js@npm:6.0.0"
-  checksum: 97efcdfac13d2a7a4e8bcf06d161680fe83ddc6e8b2fa7f44230070adce124ee9cc9e3eed84bbe37697e9d20f4c795c55203ca1ab7f32acfc2516434f82e0e78
+"fuse.js@npm:^6.6.2":
+  version: 6.6.2
+  resolution: "fuse.js@npm:6.6.2"
+  checksum: 17ae758ce205276ebd88bd9c9f088a100be0b4896abac9f6b09847151269d1690f41d7f98ff5813d4a58973162dbd99d0072ce807020fee6f9de60170f6b08eb
   languageName: node
   linkType: hard
 
@@ -9489,7 +9489,7 @@ fsevents@^1.2.7:
     eslint-plugin-wc: ^1.4.0
     fancy-log: ^2.0.0
     fs-extra: ^11.1.0
-    fuse.js: ^6.0.0
+    fuse.js: ^6.6.2
     glob: ^8.1.0
     google-timezones-json: ^1.0.2
     gulp: ^4.0.2
