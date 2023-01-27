@@ -3984,10 +3984,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chromecast-caf-receiver@npm:5.0.12":
-  version: 5.0.12
-  resolution: "@types/chromecast-caf-receiver@npm:5.0.12"
-  checksum: 2b3c2e85935b3617ceffdb08e336ad6b9e18a9049dad1866f72284df022986cc5f73cc20a561bddc6351df0408e1e4bb946aad2f2cd2c33a8aea872fbbfa4a1f
+"@types/chromecast-caf-receiver@npm:6.0.8":
+  version: 6.0.8
+  resolution: "@types/chromecast-caf-receiver@npm:6.0.8"
+  checksum: b143ba12c4cc80a001ad817fe3876fc36b96ae0e55f3a687d0e2a26c46b93371f1c12ecf2cd155c5268e0a0de3f38167b51020774c0c808eadf0794255662c04
   languageName: node
   linkType: hard
 
@@ -9440,7 +9440,7 @@ fsevents@^1.2.7:
     "@rollup/plugin-node-resolve": ^7.1.3
     "@rollup/plugin-replace": ^2.3.2
     "@thomasloven/round-slider": 0.6.0
-    "@types/chromecast-caf-receiver": 5.0.12
+    "@types/chromecast-caf-receiver": 6.0.8
     "@types/chromecast-caf-sender": ^1.0.3
     "@types/glob": ^8
     "@types/hammerjs": ^2.0.41
