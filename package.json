@@ -240,7 +240,7 @@
     "webpack-cli": "^4.8.0",
     "webpack-dev-server": "^4.11.1",
     "webpack-manifest-plugin": "^4.0.2",
-    "webpackbar": "^5.0.0-3",
+    "webpackbar": "^5.0.2",
     "workbox-build": "^6.5.4"
   },
   "_comment": "Polymer 3.2 contained a bug, fixed in https://github.com/Polymer/polymer/pull/5569, add as patch",
