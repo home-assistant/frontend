@@ -14,6 +14,7 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
       <ha-progress-button
         id="progress"
         progress="[[progress]]"
+        disabled="[[disabled]]"
         on-click="buttonTapped"
         tabindex="0"
         ><slot></slot
@@ -47,6 +48,10 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
 
       confirmation: {
         type: String,
+      },
+
+      disabled: {
+        type: Boolean,
       },
     };
   }

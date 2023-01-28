@@ -6,11 +6,13 @@ export interface ConfigUpdateValues {
   latitude: number;
   longitude: number;
   elevation: number;
-  unit_system: "metric" | "imperial";
+  unit_system: "metric" | "us_customary";
   time_zone: string;
   external_url?: string | null;
   internal_url?: string | null;
   currency?: string | null;
+  country?: string | null;
+  language?: string | null;
 }
 
 export interface CheckConfigResult {

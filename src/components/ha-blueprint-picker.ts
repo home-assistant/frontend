@@ -46,7 +46,9 @@ class HaBluePrintPicker extends LitElement {
         ...(blueprint as Blueprint).metadata,
         path,
       }));
-    return result.sort((a, b) => stringCompare(a.name, b.name));
+    return result.sort((a, b) =>
+      stringCompare(a.name, b.name, this.hass!.locale.language)
+    );
   });
 
   protected render(): TemplateResult {

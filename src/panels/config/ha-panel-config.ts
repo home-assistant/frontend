@@ -478,6 +478,20 @@ class HaPanelConfig extends HassRouterPage {
             "./integrations/integration-panels/zwave_js/zwave_js-config-router"
           ),
       },
+      matter: {
+        tag: "matter-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/matter/matter-config-panel"
+          ),
+      },
+      thread: {
+        tag: "thread-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/thread/thread-config-panel"
+          ),
+      },
       application_credentials: {
         tag: "ha-config-application-credentials",
         load: () =>
@@ -541,10 +555,6 @@ class HaPanelConfig extends HassRouterPage {
     this.style.setProperty(
       "--app-header-border-bottom",
       "1px solid var(--divider-color)"
-    );
-    this.style.setProperty(
-      "--ha-card-border-radius",
-      "var(--ha-config-card-border-radius, 8px)"
     );
   }
 

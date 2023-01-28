@@ -60,7 +60,7 @@ export const getCloudTtsSupportedGenders = (
       genders.push([
         gender,
         gender === "male" || gender === "female"
-          ? localize(`ui.panel.config.cloud.account.tts.${gender}`)
+          ? localize(`ui.components.media-browser.tts.gender_${gender}`)
           : gender,
       ]);
     }

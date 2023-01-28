@@ -270,7 +270,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
       ha-card:focus {
         outline: none;
-        background: var(--divider-color);
       }
 
       ha-gauge {

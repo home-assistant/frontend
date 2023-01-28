@@ -35,11 +35,11 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Without State",
+    heading: "With State",
     config: `
 - type: button
   entity: light.bed_light
-  show_state: false
+  show_state: true
     `,
   },
   {

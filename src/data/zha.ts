@@ -36,6 +36,8 @@ export interface Neighbor {
   ieee: string;
   nwk: string;
   lqi: string;
+  depth: string;
+  relationship: string;
 }
 
 export interface ZHADeviceEndpoint {
@@ -106,6 +108,7 @@ export interface Command {
   name: string;
   id: number;
   type: string;
+  schema: HaFormSchema[];
 }
 
 export interface ReadAttributeServiceData {

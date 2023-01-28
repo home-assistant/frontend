@@ -30,15 +30,9 @@ export class HuiDialogSuggestCard extends LitElement {
     this._params = params;
     this._cardConfig =
       params.cardConfig ||
-      computeCards(
-        params.entities.map((entityId) => [
-          entityId,
-          this.hass.states[entityId],
-        ]),
-        {
-          title: params.cardTitle,
-        }
-      );
+      computeCards(this.hass.states, params.entities, {
+        title: params.cardTitle,
+      });
     if (!Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }

@@ -283,7 +283,7 @@ export class DemoIntegrationCard extends LitElement {
               .deviceRegistryEntries=${createDeviceRegistryEntries(
                 info.items[0]
               )}
-              ?disabled=${info.disabled}
+              ?entryDisabled=${info.disabled}
               .selectedConfigEntryId=${info.highlight}
             ></ha-integration-card>
           `

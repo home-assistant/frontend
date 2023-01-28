@@ -16,8 +16,9 @@ import {
 } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
+import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { LocalStorage } from "../../common/decorators/local-storage";
-import { ensureArray } from "../../common/ensure-array";
+import { ensureArray } from "../../common/array/ensure-array";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -162,7 +163,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   .historyData=${this._stateHistory}
                   .endTime=${this._endDate}
-                  no-single
                 >
                 </state-history-charts>
               `}
@@ -179,8 +179,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     }
 
     const today = new Date();
-    const weekStart = startOfWeek(today);
-    const weekEnd = endOfWeek(today);
+    const weekStartsOn = firstWeekdayIndex(this.hass.locale);
+    const weekStart = startOfWeek(today, { weekStartsOn });
+    const weekEnd = endOfWeek(today, { weekStartsOn });
 
     this._ranges = {
       [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [

@@ -19,7 +19,9 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property() public data!: HaFormSelectData;
 
-  @property() public label!: string;
+  @property() public label?: string;
+
+  @property() public helper?: string;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -41,6 +43,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
         .schema=${this.schema}
         .value=${this.data}
         .label=${this.label}
+        .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.schema.required}
         .selector=${this._selectSchema(this.schema.options)}

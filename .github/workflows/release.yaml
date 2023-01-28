@@ -24,7 +24,7 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
 
       - name: Verify version
         uses: home-assistant/actions/helpers/verify-version@master
@@ -35,7 +35,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3.6.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
@@ -52,11 +52,11 @@ jobs:
           python3 -m pip install twine build
           export TWINE_USERNAME="__token__"
           export TWINE_PASSWORD="${{ secrets.TWINE_TOKEN }}"
-
+          export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/release
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@v0.1.14
+        uses: softprops/action-gh-release@v0.1.15
         with:
           files: |
             dist/*.whl
@@ -75,7 +75,7 @@ jobs:
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       - name: Build wheels
-        uses: home-assistant/wheels@2022.06.7
+        uses: home-assistant/wheels@2022.10.1
         with:
           abi: cp310
           tag: musllinux_1_2

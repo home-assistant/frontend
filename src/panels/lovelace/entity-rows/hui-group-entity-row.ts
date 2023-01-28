@@ -69,7 +69,8 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
                 ${computeStateDisplay(
                   this.hass!.localize,
                   stateObj,
-                  this.hass.locale
+                  this.hass.locale,
+                  this.hass.entities
                 )}
               </div>
             `}

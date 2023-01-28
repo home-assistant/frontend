@@ -32,4 +32,6 @@ export const demoConfig: HassConfig = {
   internal_url: "http://homeassistant.local:8123",
   external_url: null,
   currency: "USD",
+  language: "en",
+  country: "NL",
 };

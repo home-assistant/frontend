@@ -8,7 +8,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -51,7 +51,7 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <mwc-button
           @click=${this._callService}
-          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+          .disabled=${isUnavailableState(stateObj.state)}
           class="text-content"
         >
           ${stateObj.state === "locked"

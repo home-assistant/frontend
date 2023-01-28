@@ -44,18 +44,18 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             text:
               this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
             action: () => {
-              this._unsubscribeBootstrapIntergrations();
+              this._unsubscribeBootstrapIntegrations();
             },
           },
         });
-        this._subscribeBootstrapIntergrations();
+        this._subscribeBootstrapIntegrations();
       } else if (
         oldHass?.config &&
         oldHass.config.state === STATE_NOT_RUNNING &&
         (this.hass!.config.state === STATE_STARTING ||
           this.hass!.config.state === STATE_RUNNING)
       ) {
-        this._unsubscribeBootstrapIntergrations();
+        this._unsubscribeBootstrapIntegrations();
         showToast(this, {
           message: this.hass!.localize("ui.notification_toast.started"),
           duration: 5000,
@@ -97,7 +97,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             text:
               this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
             action: () => {
-              this._unsubscribeBootstrapIntergrations();
+              this._unsubscribeBootstrapIntegrations();
             },
           },
         });
@@ -123,20 +123,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           text:
             this.hass!.localize("ui.notification_toast.dismiss") || "Dismiss",
           action: () => {
-            this._unsubscribeBootstrapIntergrations();
+            this._unsubscribeBootstrapIntegrations();
           },
         },
       });
     }
 
-    private _unsubscribeBootstrapIntergrations() {
+    private _unsubscribeBootstrapIntegrations() {
       if (this._subscribedBootstrapIntegrations) {
         this._subscribedBootstrapIntegrations.then((unsub) => unsub());
         this._subscribedBootstrapIntegrations = undefined;
       }
     }
 
-    private _subscribeBootstrapIntergrations() {
+    private _subscribeBootstrapIntegrations() {
       if (!this.hass) {
         return;
       }

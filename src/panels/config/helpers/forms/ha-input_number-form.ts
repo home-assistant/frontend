@@ -101,6 +101,7 @@ class HaInputNumberForm extends LitElement {
           .value=${this._min}
           .configValue=${"min"}
           type="number"
+          step="any"
           @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.input_number.min"
@@ -110,6 +111,7 @@ class HaInputNumberForm extends LitElement {
           .value=${this._max}
           .configValue=${"max"}
           type="number"
+          step="any"
           @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.input_number.max"
@@ -150,6 +152,7 @@ class HaInputNumberForm extends LitElement {
                 .value=${this._step}
                 .configValue=${"step"}
                 type="number"
+                step="any"
                 @input=${this._valueChanged}
                 .label=${this.hass!.localize(
                   "ui.dialogs.helper_settings.input_number.step"

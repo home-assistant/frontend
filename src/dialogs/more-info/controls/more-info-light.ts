@@ -121,8 +121,8 @@ class MoreInfoLight extends LitElement {
                         "ui.card.light.color_temperature"
                       )}
                       icon="hass:thermometer"
-                      .min=${this.stateObj.attributes.min_mireds}
-                      .max=${this.stateObj.attributes.max_mireds}
+                      .min=${this.stateObj.attributes.min_color_temp_kelvin}
+                      .max=${this.stateObj.attributes.max_color_temp_kelvin}
                       .value=${this._ctSliderValue}
                       @change=${this._ctSliderChanged}
                       pin
@@ -231,7 +231,7 @@ class MoreInfoLight extends LitElement {
         <ha-attributes
           .hass=${this.hass}
           .stateObj=${this.stateObj}
-          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,entity_id,supported_color_modes,color_mode"
+          extra-filters="brightness,color_temp,color_temp_kelvin,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,min_color_temp_kelvin,max_color_temp_kelvin,entity_id,supported_color_modes,color_mode"
         ></ha-attributes>
       </div>
     `;
@@ -273,7 +273,7 @@ class MoreInfoLight extends LitElement {
       this._brightnessSliderValue = Math.round(
         ((stateObj.attributes.brightness || 0) * brightnessAdjust) / 255
       );
-      this._ctSliderValue = stateObj.attributes.color_temp;
+      this._ctSliderValue = stateObj.attributes.color_temp_kelvin;
       this._wvSliderValue =
         stateObj.attributes.color_mode === LightColorMode.RGBW
           ? Math.round((stateObj.attributes.rgbw_color![3] * 100) / 255)
@@ -384,7 +384,7 @@ class MoreInfoLight extends LitElement {
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
-      color_temp: ct,
+      color_temp_kelvin: ct,
     });
   }
 
@@ -580,9 +580,9 @@ class MoreInfoLight extends LitElement {
       .color_temp {
         --ha-slider-background: -webkit-linear-gradient(
           var(--float-end),
-          rgb(255, 160, 0) 0%,
+          rgb(166, 209, 255) 0%,
           white 50%,
-          rgb(166, 209, 255) 100%
+          rgb(255, 160, 0) 100%
         );
         /* The color temp minimum value shouldn't be rendered differently. It's not "off". */
         --paper-slider-knob-start-border-color: var(--primary-color);

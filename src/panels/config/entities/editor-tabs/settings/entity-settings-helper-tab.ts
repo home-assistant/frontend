@@ -57,7 +57,13 @@ export class EntityRegistrySettingsHelper extends LitElement {
     super.updated(changedProperties);
     if (changedProperties.has("entry")) {
       this._error = undefined;
-      this._item = undefined;
+      if (
+        this.entry.unique_id !==
+        (changedProperties.get("entry") as ExtEntityRegistryEntry)?.unique_id
+      ) {
+        this._item = undefined;
+      }
+
       this._getItem();
     }
   }

@@ -255,7 +255,8 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           title=${`${computeStateName(stateObj)} : ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
-            this.hass!.locale
+            this.hass!.locale,
+            this.hass!.entities
           )}`}
         >
           <ha-state-icon
@@ -277,7 +278,8 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                   : computeStateDisplay(
                       this.hass!.localize,
                       stateObj,
-                      this.hass!.locale
+                      this.hass!.locale,
+                      this.hass!.entities
                     )}
               </div>
             `}

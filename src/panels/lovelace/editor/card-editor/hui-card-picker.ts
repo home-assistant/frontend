@@ -17,7 +17,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/search-input";
 import "../../../../components/ha-circular-progress";
-import { UNAVAILABLE_STATES } from "../../../../data/entity";
+import { isUnavailableState } from "../../../../data/entity";
 import type {
   LovelaceCardConfig,
   LovelaceConfig,
@@ -163,12 +163,12 @@ export class HuiCardPicker extends LitElement {
     this._usedEntities = [...usedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !UNAVAILABLE_STATES.includes(this.hass!.states[eid].state)
+        !isUnavailableState(this.hass!.states[eid].state)
     );
     this._unusedEntities = [...unusedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !UNAVAILABLE_STATES.includes(this.hass!.states[eid].state)
+        !isUnavailableState(this.hass!.states[eid].state)
     );
 
     this._loadCards();
@@ -352,7 +352,7 @@ export class HuiCardPicker extends LitElement {
           max-width: 500px;
           display: flex;
           flex-direction: column;
-          border-radius: var(--ha-card-border-radius, 4px);
+          border-radius: var(--ha-card-border-radius, 12px);
           background: var(--primary-background-color, #fafafa);
           cursor: pointer;
           position: relative;
@@ -407,7 +407,7 @@ export class HuiCardPicker extends LitElement {
           box-sizing: border-box;
           border: var(--ha-card-border-width, 1px) solid
             var(--ha-card-border-color, var(--divider-color));
-          border-radius: var(--ha-card-border-radius, 4px);
+          border-radius: var(--ha-card-border-radius, 12px);
         }
 
         .manual {

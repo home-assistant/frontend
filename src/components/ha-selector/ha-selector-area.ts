@@ -55,8 +55,8 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
   protected updated(changedProperties: PropertyValues): void {
     if (
       changedProperties.has("selector") &&
-      (this.selector.area.device?.integration ||
-        this.selector.area.entity?.integration) &&
+      (this.selector.area?.device?.integration ||
+        this.selector.area?.entity?.integration) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -67,14 +67,14 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     if (
-      (this.selector.area.device?.integration ||
-        this.selector.area.entity?.integration) &&
+      (this.selector.area?.device?.integration ||
+        this.selector.area?.entity?.integration) &&
       !this._entitySources
     ) {
       return html``;
     }
 
-    if (!this.selector.area.multiple) {
+    if (!this.selector.area?.multiple) {
       return html`
         <ha-area-picker
           .hass=${this.hass}
@@ -106,7 +106,7 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
   }
 
   private _filterEntities = (entity: HassEntity): boolean => {
-    if (!this.selector.area.entity) {
+    if (!this.selector.area?.entity) {
       return true;
     }
 
@@ -118,7 +118,7 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
   };
 
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {
-    if (!this.selector.area.device) {
+    if (!this.selector.area?.device) {
       return true;
     }
 

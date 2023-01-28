@@ -10,7 +10,7 @@ import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 import "../../../../../components/ha-duration-input";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { TimeChangedEvent } from "../../../../../components/ha-base-time-input";
-import { ensureArray } from "../../../../../common/ensure-array";
+import { ensureArray } from "../../../../../common/array/ensure-array";
 
 @customElement("ha-automation-action-wait_for_trigger")
 export class HaWaitForTriggerAction
@@ -22,6 +22,8 @@ export class HaWaitForTriggerAction
   @property({ attribute: false }) public action!: WaitForTriggerAction;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public reOrderMode = false;
 
   public static get defaultConfig() {
     return { wait_for_trigger: [] };
@@ -53,10 +55,12 @@ export class HaWaitForTriggerAction
         ></ha-switch>
       </ha-formfield>
       <ha-automation-trigger
+        nested
         .triggers=${ensureArray(this.action.wait_for_trigger)}
         .hass=${this.hass}
         .disabled=${this.disabled}
         .name=${"wait_for_trigger"}
+        .reOrderMode=${this.reOrderMode}
         @value-changed=${this._valueChanged}
       ></ha-automation-trigger>
     `;

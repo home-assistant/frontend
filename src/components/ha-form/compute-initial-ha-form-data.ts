@@ -39,11 +39,11 @@ export const computeInitialHaFormData = (
       const selector: Selector = field.selector;
 
       if ("device" in selector) {
-        data[field.name] = selector.device.multiple ? [] : "";
+        data[field.name] = selector.device?.multiple ? [] : "";
       } else if ("entity" in selector) {
-        data[field.name] = selector.entity.multiple ? [] : "";
+        data[field.name] = selector.entity?.multiple ? [] : "";
       } else if ("area" in selector) {
-        data[field.name] = selector.area.multiple ? [] : "";
+        data[field.name] = selector.area?.multiple ? [] : "";
       } else if ("boolean" in selector) {
         data[field.name] = false;
       } else if (
@@ -56,9 +56,9 @@ export const computeInitialHaFormData = (
       ) {
         data[field.name] = "";
       } else if ("number" in selector) {
-        data[field.name] = selector.number.min ?? 0;
+        data[field.name] = selector.number?.min ?? 0;
       } else if ("select" in selector) {
-        if (selector.select.options.length) {
+        if (selector.select?.options.length) {
           data[field.name] = selector.select.options[0][0];
         }
       } else if ("duration" in selector) {
@@ -75,7 +75,7 @@ export const computeInitialHaFormData = (
       } else if ("color_rgb" in selector) {
         data[field.name] = [0, 0, 0];
       } else if ("color_temp" in selector) {
-        data[field.name] = selector.color_temp.min_mireds ?? 153;
+        data[field.name] = selector.color_temp?.min_mireds ?? 153;
       } else if (
         "action" in selector ||
         "media" in selector ||

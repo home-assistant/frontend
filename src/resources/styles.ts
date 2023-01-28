@@ -48,6 +48,7 @@ export const darkStyles = {
   "energy-grid-return-color": "#a280db",
   "map-filter":
     "invert(.9) hue-rotate(170deg) brightness(1.5) contrast(1.2) saturate(.3)",
+  "disabled-color": "#464646",
 };
 
 export const derivedStyles = {
@@ -74,6 +75,7 @@ export const derivedStyles = {
   "paper-listbox-background-color": "var(--card-background-color)",
   "paper-item-icon-color": "var(--state-icon-color)",
   "paper-item-icon-active-color": "var(--state-icon-active-color)",
+  "table-header-background-color": "var(--input-fill-color)",
   "table-row-background-color": "var(--primary-background-color)",
   "table-row-alternative-background-color": "var(--secondary-background-color)",
   "paper-slider-knob-color": "var(--slider-color)",
@@ -336,7 +338,7 @@ export const haStyleDialog = css`
       );
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
-      --vertial-align-dialog: flex-end;
+      --vertical-align-dialog: flex-end;
       --ha-dialog-border-radius: 0px;
     }
   }

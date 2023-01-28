@@ -25,18 +25,14 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
-import { showFixStatisticsUnsupportedUnitMetadataDialog } from "./show-dialog-statistics-fix-unsupported-unit-meta";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 const FIX_ISSUES_ORDER = {
   no_state: 0,
   entity_no_longer_recorded: 1,
   entity_not_recorded: 1,
-  unsupported_unit_state: 2,
-  unsupported_state_class: 3,
-  units_changed_can_convert: 4,
-  units_changed: 5,
-  unsupported_unit_metadata_can_convert: 6,
-  unsupported_unit_metadata: 7,
+  unsupported_state_class: 2,
+  units_changed: 3,
 };
 @customElement("developer-tools-statistics")
 class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
@@ -79,6 +75,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         width: "10%",
+        forceLTR: true,
       },
       source: {
         title: "Source",
@@ -148,6 +145,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         id="statistic_id"
         clickable
         @row-click=${this._rowClicked}
+        .dir=${computeRTLDirection(this.hass)}
       ></ha-data-table>
     `;
   }
@@ -310,51 +308,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           },
         });
         break;
-      case "unsupported_unit_metadata":
-        showFixStatisticsUnsupportedUnitMetadataDialog(this, {
-          issue,
-          fixedCallback: () => {
-            this._validateStatistics();
-          },
-        });
-        break;
-      case "unsupported_unit_metadata_can_convert":
-        showFixStatisticsUnsupportedUnitMetadataDialog(this, {
-          issue,
-          fixedCallback: () => {
-            this._validateStatistics();
-          },
-        });
-        break;
-      case "unsupported_unit_state":
-        showAlertDialog(this, {
-          title: "Unsupported unit",
-          text: html`The unit of your entity is not a supported unit for the
-            device class of the entity, ${issue.data.device_class}.
-            <br />Statistics can not be generated until this entity has a
-            supported unit.<br /><br />If this unit was provided by an
-            integration, this is a bug. Please report an issue.<br /><br />If
-            you have set this unit yourself, and want to have statistics
-            generated, make sure the unit matches the device class. The
-            supported units are documented in the
-            <a
-              href="https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              developer documentation</a
-            >.`,
-        });
-        break;
       case "units_changed":
-        showFixStatisticsUnitsChangedDialog(this, {
-          issue,
-          fixedCallback: () => {
-            this._validateStatistics();
-          },
-        });
-        break;
-      case "units_changed_can_convert":
         showFixStatisticsUnitsChangedDialog(this, {
           issue,
           fixedCallback: () => {
@@ -376,6 +330,10 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
       css`
         .content {
           padding: 16px;
+          padding: max(16px, env(safe-area-inset-top))
+            max(16px, env(safe-area-inset-right))
+            max(16px, env(safe-area-inset-bottom))
+            max(16px, env(safe-area-inset-left));
         }
 
         th {

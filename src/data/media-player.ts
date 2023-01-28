@@ -35,7 +35,7 @@ import type {
 import { supportsFeature } from "../common/entity/supports-feature";
 import { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant, TranslationDict } from "../types";
-import { UNAVAILABLE_STATES } from "./entity";
+import { isUnavailableState } from "./entity";
 import { isTTSMediaSource } from "./tts";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
@@ -210,7 +210,10 @@ export const getCurrentProgress = (stateObj: MediaPlayerEntity): number => {
     (Date.now() -
       new Date(stateObj.attributes.media_position_updated_at!).getTime()) /
     1000.0;
-  return progress;
+  // Prevent negative values, so we do not go back to 59:59 at the start
+  // for example if there are slight clock sync deltas between backend and frontend and
+  // therefore media_position_updated_at might be slightly larger than Date.now().
+  return progress < 0 ? 0 : progress;
 };
 
 export const computeMediaDescription = (
@@ -256,7 +259,7 @@ export const computeMediaControls = (
 
   const state = stateObj.state;
 
-  if (UNAVAILABLE_STATES.includes(state)) {
+  if (isUnavailableState(state)) {
     return undefined;
   }
 
@@ -402,7 +405,13 @@ export const cleanupMediaTitle = (title?: string): string | undefined => {
   }
 
   const index = title.indexOf("?authSig=");
-  return index > 0 ? title.slice(0, index) : title;
+  let cleanTitle = index > 0 ? title.slice(0, index) : title;
+
+  if (cleanTitle.startsWith("http")) {
+    cleanTitle = decodeURIComponent(cleanTitle.split("/").pop()!);
+  }
+
+  return cleanTitle;
 };
 
 /**

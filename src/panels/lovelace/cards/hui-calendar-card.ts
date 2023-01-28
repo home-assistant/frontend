@@ -10,11 +10,15 @@ import { customElement, property, state, query } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import { Calendar, fetchCalendarEvents } from "../../../data/calendar";
-import type {
+import {
+  Calendar,
   CalendarEvent,
+  fetchCalendarEvents,
+} from "../../../data/calendar";
+import type {
   CalendarViewChanged,
   FullCalendarView,
   HomeAssistant,
@@ -62,9 +66,13 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @state() private _calendars: Calendar[] = [];
 
+  @state() private _eventDisplay = "list-item";
+
   @state() private _narrow = false;
 
   @state() private _veryNarrow = false;
+
+  @state() private _error?: string = undefined;
 
   @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
 
@@ -116,8 +124,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
 
     const views: FullCalendarView[] = this._veryNarrow
-      ? ["list"]
-      : ["list", "dayGridMonth", "dayGridDay"];
+      ? ["listWeek"]
+      : ["dayGridMonth", "dayGridDay", "listWeek"];
 
     return html`
       <ha-card>
@@ -128,6 +136,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .hass=${this.hass}
           .views=${views}
           .initialView=${this._config.initial_view!}
+          .eventDisplay=${this._eventDisplay}
+          .error=${this._error}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
@@ -156,6 +166,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   }
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
+    this._eventDisplay =
+      ev.detail.view === "dayGridMonth" ? "list-item" : "auto";
     this._startDate = ev.detail.start;
     this._endDate = ev.detail.end;
     this._fetchCalendarEvents();
@@ -166,12 +178,28 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._events = await fetchCalendarEvents(
+    this._error = undefined;
+    const result = await fetchCalendarEvents(
       this.hass!,
       this._startDate,
       this._endDate,
       this._calendars
     );
+    this._events = result.events;
+
+    if (result.errors.length > 0) {
+      const nameList = result.errors
+        .map((error_entity_id) =>
+          this.hass!.states[error_entity_id]
+            ? computeStateName(this.hass!.states[error_entity_id])
+            : error_entity_id
+        )
+        .join(", ");
+
+      this._error = `${this.hass!.localize(
+        "ui.components.calendar.event_retrieval_error"
+      )} ${nameList}`;
+    }
   }
 
   private _measureCard() {

@@ -42,12 +42,6 @@ type EMOutgoingMessageWithAnswer = {
     request: EMOutgoingMessageConfigGet;
     response: ExternalConfig;
   };
-  "matter/commission": {
-    request: EMOutgoingMessageMatterCommission;
-    response: {
-      code: string;
-    };
-  };
 };
 
 interface EMOutgoingMessageExoplayerPlayHLS extends EMMessage {
@@ -112,7 +106,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageExoplayerStop
   | EMOutgoingMessageThemeUpdate
   | EMMessageResultSuccess
-  | EMMessageResultError;
+  | EMMessageResultError
+  | EMOutgoingMessageMatterCommission;
 
 interface EMIncomingMessageRestart {
   id: number;

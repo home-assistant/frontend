@@ -87,6 +87,7 @@ export class HuiEnergyDevicesGraphCard
           })}"
         >
           <ha-chart-base
+            .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(this.hass.locale)}
             .height=${(this._chartData?.datasets[0]?.data.length || 0) * 28 +
@@ -202,8 +203,8 @@ export class HuiEnergyDevicesGraphCard
       if (stat.length && new Date(stat[0].start) > startMinHour) {
         stat.unshift({
           ...stat[0],
-          start: startMinHour.toISOString(),
-          end: startMinHour.toISOString(),
+          start: startMinHour.getTime(),
+          end: startMinHour.getTime(),
           sum: 0,
           state: 0,
         });
@@ -228,8 +229,8 @@ export class HuiEnergyDevicesGraphCard
         if (stat.length && new Date(stat[0].start) > startMinHour) {
           stat.unshift({
             ...stat[0],
-            start: startCompareMinHour.toISOString(),
-            end: startCompareMinHour.toISOString(),
+            start: startCompareMinHour.getTime(),
+            end: startCompareMinHour.getTime(),
             sum: 0,
             state: 0,
           });

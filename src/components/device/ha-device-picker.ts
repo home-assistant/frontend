@@ -84,6 +84,14 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  /**
+   * List of devices to be excluded.
+   * @type {Array}
+   * @attr exclude-devices
+   */
+  @property({ type: Array, attribute: "exclude-devices" })
+  public excludeDevices?: string[];
+
   @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
   @property({ type: Boolean }) public disabled?: boolean;
@@ -104,7 +112,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
-      deviceFilter: this["deviceFilter"]
+      deviceFilter: this["deviceFilter"],
+      excludeDevices: this["excludeDevices"]
     ): Device[] => {
       if (!devices.length) {
         return [
@@ -164,6 +173,12 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         });
       }
 
+      if (excludeDevices) {
+        inputDevices = inputDevices.filter(
+          (device) => !excludeDevices!.includes(device.id)
+        );
+      }
+
       if (includeDeviceClasses) {
         inputDevices = inputDevices.filter((device) => {
           const devEntities = deviceEntityLookup[device.id];
@@ -216,17 +231,19 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         return outputDevices;
       }
       return outputDevices.sort((a, b) =>
-        stringCompare(a.name || "", b.name || "")
+        stringCompare(a.name || "", b.name || "", this.hass.locale.language)
       );
     }
   );
 
-  public open() {
-    this.comboBox?.open();
+  public async open() {
+    await this.updateComplete;
+    await this.comboBox?.open();
   }
 
-  public focus() {
-    this.comboBox?.focus();
+  public async focus() {
+    await this.updateComplete;
+    await this.comboBox?.focus();
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -246,7 +263,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   protected updated(changedProps: PropertyValues) {
     if (
       (!this._init && this.devices && this.areas && this.entities) ||
-      (changedProps.has("_opened") && this._opened)
+      (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
       (this.comboBox as any).items = this._getDevices(
@@ -256,15 +273,13 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         this.includeDomains,
         this.excludeDomains,
         this.includeDeviceClasses,
-        this.deviceFilter
+        this.deviceFilter,
+        this.excludeDevices
       );
     }
   }
 
   protected render(): TemplateResult {
-    if (!this.devices || !this.areas || !this.entities) {
-      return html``;
-    }
     return html`
       <ha-combo-box
         .hass=${this.hass}

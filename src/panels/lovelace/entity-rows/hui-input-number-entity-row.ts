@@ -12,7 +12,7 @@ import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import "../../../components/ha-textfield";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -85,7 +85,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
           ? html`
               <div class="flex">
                 <ha-slider
-                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  .disabled=${isUnavailableState(stateObj.state)}
                   .dir=${computeRTLDirection(this.hass)}
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
@@ -100,6 +100,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                     this.hass.localize,
                     stateObj,
                     this.hass.locale,
+                    this.hass.entities,
                     stateObj.state
                   )}
                 </span>
@@ -108,13 +109,13 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
           : html`
               <div class="flex state">
                 <ha-textfield
-                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  .disabled=${isUnavailableState(stateObj.state)}
                   pattern="[0-9]+([\\.][0-9]+)?"
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
                   .max=${Number(stateObj.attributes.max)}
-                  .value=${stateObj.state}
-                  .suffix=${stateObj.attributes.unit_of_measurement}
+                  .value=${Number(stateObj.state).toString()}
+                  .suffix=${stateObj.attributes.unit_of_measurement || ""}
                   type="number"
                   @change=${this._selectedValueChanged}
                 >
@@ -179,11 +180,15 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     }
   }
 
-  private _selectedValueChanged(ev): void {
+  private _selectedValueChanged(ev: Event): void {
     const stateObj = this.hass!.states[this._config!.entity];
 
-    if (ev.target.value !== stateObj.state) {
-      setValue(this.hass!, stateObj.entity_id, ev.target.value);
+    if ((ev.target as HTMLInputElement).value !== stateObj.state) {
+      setValue(
+        this.hass!,
+        stateObj.entity_id,
+        (ev.target as HTMLInputElement).value
+      );
     }
   }
 }

@@ -8,6 +8,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
@@ -22,6 +23,8 @@ class HaHLSPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public url!: string;
+
+  @property() public posterUrl!: string;
 
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
@@ -78,10 +81,12 @@ class HaHLSPlayer extends LitElement {
         : ""}
       ${!this._errorIsFatal
         ? html`<video
+            .poster=${this.posterUrl}
             ?autoplay=${this.autoPlay}
             .muted=${this.muted}
             ?playsinline=${this.playsInline}
             ?controls=${this.controls}
+            @loadeddata=${this._loadedData}
           ></video>`
         : ""}
     `;
@@ -313,6 +318,11 @@ class HaHLSPlayer extends LitElement {
   private _setRetryableError(errorMessage: string) {
     this._error = errorMessage;
     this._errorIsFatal = false;
+  }
+
+  private _loadedData() {
+    // @ts-ignore
+    fireEvent(this, "load");
   }
 
   static get styles(): CSSResultGroup {

@@ -5,14 +5,12 @@ import { classMap } from "lit/directives/class-map";
 import { computeCloseIcon, computeOpenIcon } from "../common/entity/cover_icon";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
+  canClose,
+  canOpen,
+  canStop,
   CoverEntity,
   CoverEntityFeature,
-  isClosing,
-  isFullyClosed,
-  isFullyOpen,
-  isOpening,
 } from "../data/cover";
-import { UNAVAILABLE } from "../data/entity";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
@@ -37,7 +35,7 @@ class HaCoverControls extends LitElement {
             "ui.dialogs.more_info_control.cover.open_cover"
           )}
           @click=${this._onOpenTap}
-          .disabled=${this._computeOpenDisabled()}
+          .disabled=${!canOpen(this.stateObj)}
           .path=${computeOpenIcon(this.stateObj)}
         >
         </ha-icon-button>
@@ -50,7 +48,7 @@ class HaCoverControls extends LitElement {
           )}
           .path=${mdiStop}
           @click=${this._onStopTap}
-          .disabled=${this.stateObj.state === UNAVAILABLE}
+          .disabled=${!canStop(this.stateObj)}
         ></ha-icon-button>
         <ha-icon-button
           class=${classMap({
@@ -60,33 +58,12 @@ class HaCoverControls extends LitElement {
             "ui.dialogs.more_info_control.cover.close_cover"
           )}
           @click=${this._onCloseTap}
-          .disabled=${this._computeClosedDisabled()}
+          .disabled=${!canClose(this.stateObj)}
           .path=${computeCloseIcon(this.stateObj)}
         >
         </ha-icon-button>
       </div>
     `;
-  }
-
-  private _computeOpenDisabled(): boolean {
-    if (this.stateObj.state === UNAVAILABLE) {
-      return true;
-    }
-    const assumedState = this.stateObj.attributes.assumed_state === true;
-    return (
-      (isFullyOpen(this.stateObj) || isOpening(this.stateObj)) && !assumedState
-    );
-  }
-
-  private _computeClosedDisabled(): boolean {
-    if (this.stateObj.state === UNAVAILABLE) {
-      return true;
-    }
-    const assumedState = this.stateObj.attributes.assumed_state === true;
-    return (
-      (isFullyClosed(this.stateObj) || isClosing(this.stateObj)) &&
-      !assumedState
-    );
   }
 
   private _onOpenTap(ev): void {

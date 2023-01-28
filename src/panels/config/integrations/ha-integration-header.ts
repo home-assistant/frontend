@@ -1,4 +1,4 @@
-import { mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
+import { mdiBugPlay, mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -23,6 +23,8 @@ export class HaIntegrationHeader extends LitElement {
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   @property({ attribute: false }) public configEntry?: ConfigEntry;
+
+  @property({ attribute: false }) public debugLoggingEnabled?: boolean;
 
   protected render(): TemplateResult {
     let primary: string;
@@ -76,11 +78,21 @@ export class HaIntegrationHeader extends LitElement {
       }
     }
 
+    if (this.debugLoggingEnabled) {
+      icons.push([
+        mdiBugPlay,
+        this.hass.localize(
+          "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+        ),
+      ]);
+    }
+
     return html`
       ${!this.banner ? "" : html`<div class="banner">${this.banner}</div>`}
       <slot name="above-header"></slot>
       <div class="header">
         <img
+          alt=""
           src=${brandsUrl({
             domain: this.domain,
             type: "icon",
@@ -129,8 +141,10 @@ export class HaIntegrationHeader extends LitElement {
       color: var(--text-on-state-color);
       text-align: center;
       padding: 2px;
-      border-top-left-radius: var(--ha-card-border-radius, 4px);
-      border-top-right-radius: var(--ha-card-border-radius, 4px);
+
+      /* Padding is subtracted for nested elements with border radiuses */
+      border-top-left-radius: calc(var(--ha-card-border-radius, 12px) - 2px);
+      border-top-right-radius: calc(var(--ha-card-border-radius, 12px) - 2px);
     }
     .header {
       display: flex;

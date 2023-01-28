@@ -42,7 +42,9 @@ export class HuiViewVisibilityEditor extends LitElement {
   @state() private _visible!: boolean | ShowViewConfig[];
 
   private _sortedUsers = memoizeOne((users: User[]) =>
-    users.sort((a, b) => stringCompare(a.name, b.name))
+    users.sort((a, b) =>
+      stringCompare(a.name, b.name, this.hass.locale.language)
+    )
   );
 
   protected firstUpdated(changedProps: PropertyValues) {

@@ -20,6 +20,7 @@ import { mockHistory } from "./stubs/history";
 import { mockLovelace } from "./stubs/lovelace";
 import { mockMediaPlayer } from "./stubs/media_player";
 import { mockPersistentNotification } from "./stubs/persistent_notification";
+import { mockRecorder } from "./stubs/recorder";
 import { mockShoppingList } from "./stubs/shopping_list";
 import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
@@ -45,6 +46,7 @@ class HaDemo extends HomeAssistantAppEl {
     mockAuth(hass);
     mockTranslations(hass);
     mockHistory(hass);
+    mockRecorder(hass);
     mockShoppingList(hass);
     mockSystemLog(hass);
     mockTemplate(hass);
@@ -120,3 +122,9 @@ class HaDemo extends HomeAssistantAppEl {
 }
 
 customElements.define("ha-demo", HaDemo);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-demo": HaDemo;
+  }
+}

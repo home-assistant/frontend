@@ -1,7 +1,5 @@
 // Generate service worker.
 // Based on manifest, create a file with the content as service_worker.js
-/* eslint-disable import/no-dynamic-require */
-/* eslint-disable global-require */
 const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs-extra");

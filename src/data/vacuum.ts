@@ -2,21 +2,63 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { UNAVAILABLE } from "./entity";
 
-export const VACUUM_SUPPORT_PAUSE = 4;
-export const VACUUM_SUPPORT_STOP = 8;
-export const VACUUM_SUPPORT_RETURN_HOME = 16;
-export const VACUUM_SUPPORT_FAN_SPEED = 32;
-export const VACUUM_SUPPORT_BATTERY = 64;
-export const VACUUM_SUPPORT_STATUS = 128;
-export const VACUUM_SUPPORT_LOCATE = 512;
-export const VACUUM_SUPPORT_CLEAN_SPOT = 1024;
-export const VACUUM_SUPPORT_START = 8192;
+export type VacuumEntityState =
+  | "on"
+  | "off"
+  | "cleaning"
+  | "docked"
+  | "idle"
+  | "paused"
+  | "returning"
+  | "error";
 
-export type VacuumEntity = HassEntityBase & {
-  attributes: HassEntityAttributeBase & {
-    battery_level: number;
-    fan_speed: any;
-    [key: string]: any;
-  };
-};
+export const enum VacuumEntityFeature {
+  TURN_ON = 1,
+  TURN_OFF = 2,
+  PAUSE = 4,
+  STOP = 8,
+  RETURN_HOME = 16,
+  FAN_SPEED = 32,
+  BATTERY = 64,
+  STATUS = 128,
+  SEND_COMMAND = 256,
+  LOCATE = 512,
+  CLEAN_SPOT = 1024,
+  MAP = 2048,
+  STATE = 4096,
+  START = 8192,
+}
+
+interface VacuumEntityAttributes extends HassEntityAttributeBase {
+  battery_level?: number;
+  fan_speed?: any;
+  [key: string]: any;
+}
+
+export interface VacuumEntity extends HassEntityBase {
+  attributes: VacuumEntityAttributes;
+}
+
+export function isCleaning(stateObj: VacuumEntity): boolean {
+  return ["cleaning", "on"].includes(stateObj.state);
+}
+
+export function canStart(stateObj: VacuumEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  return !isCleaning(stateObj);
+}
+
+export function canStop(stateObj: VacuumEntity): boolean {
+  return !["docked", "off", "idle"].includes(stateObj.state);
+}
+
+export function canReturnHome(stateObj: VacuumEntity): boolean {
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  return stateObj.state !== "returning";
+}

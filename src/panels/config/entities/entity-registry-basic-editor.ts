@@ -1,8 +1,14 @@
 import "@material/mwc-formfield/mwc-formfield";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
+import { mdiPencil } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-radio";
@@ -21,6 +27,7 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
+import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 
 @customElement("ha-registry-basic-editor")
 export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
@@ -43,6 +50,26 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
   @state() private _device?: DeviceRegistryEntry;
 
   @state() private _submitting = false;
+
+  private _handleAliasesClicked(ev: CustomEvent) {
+    if (ev.detail.index !== 0) return;
+    const stateObj = this.hass.states[this.entry.entity_id];
+    const name =
+      (stateObj && computeStateName(stateObj)) || this.entry.entity_id;
+
+    showAliasesDialog(this, {
+      name,
+      aliases: this.entry!.aliases,
+      updateAliases: async (aliases: string[]) => {
+        const result = await updateEntityRegistryEntry(
+          this.hass,
+          this.entry.entity_id,
+          { aliases }
+        );
+        fireEvent(this, "entity-entry-updated", result.entity_entry);
+      },
+    });
+  }
 
   public async updateEntry(): Promise<void> {
     this._submitting = true;
@@ -247,6 +274,37 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
               </div>
             `
           : ""}
+
+        <div class="label">
+          ${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.aliases_section"
+          )}
+        </div>
+        <mwc-list class="aliases" @action=${this._handleAliasesClicked}>
+          <mwc-list-item .twoline=${this.entry.aliases.length > 0} hasMeta>
+            <span>
+              ${this.entry.aliases.length > 0
+                ? this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.configured_aliases",
+                    { count: this.entry.aliases.length }
+                  )
+                : this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.no_aliases"
+                  )}
+            </span>
+            <span slot="secondary">
+              ${[...this.entry.aliases]
+                .sort((a, b) => stringCompare(a, b, this.hass.locale.language))
+                .join(", ")}
+            </span>
+            <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
+          </mwc-list-item>
+        </mwc-list>
+        <div class="secondary">
+          ${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.aliases_description"
+          )}
+        </div>
       </ha-expansion-panel>
     `;
   }
@@ -299,6 +357,13 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
       }
       .label {
         margin-top: 16px;
+      }
+      .aliases {
+        border-radius: 4px;
+        margin-top: 4px;
+        margin-bottom: 4px;
+        --mdc-icon-button-size: 24px;
+        overflow: hidden;
       }
     `;
   }

@@ -54,11 +54,13 @@ export class HaMoreInfoSettings extends LitElement {
     }
 
     return html`
-      ${dynamicElement(this._settingsElementTag, {
-        hass: this.hass,
-        entry: this._entry,
-        entityId: this.entityId,
-      })}
+      <div @entity-entry-updated=${this._entryUpdated}>
+        ${dynamicElement(this._settingsElementTag, {
+          hass: this.hass,
+          entry: this._entry,
+          entityId: this.entityId,
+        })}
+      </div>
     `;
   }
 
@@ -82,6 +84,10 @@ export class HaMoreInfoSettings extends LitElement {
     } catch {
       this._entry = null;
     }
+  }
+
+  private _entryUpdated(ev: CustomEvent<ExtEntityRegistryEntry>) {
+    this._entry = ev.detail;
   }
 
   private async _loadPlatformSettingTabs(): Promise<void> {

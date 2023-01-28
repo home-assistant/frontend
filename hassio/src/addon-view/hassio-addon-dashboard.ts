@@ -53,7 +53,13 @@ class HassioAddonDashboard extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @state() _error?: string;
+  @state() private _error?: string;
+
+  private _backPath = new URLSearchParams(window.parent.location.search).get(
+    "store"
+  )
+    ? "/hassio/store"
+    : "/hassio/dashboard";
 
   private _computeTail = memoizeOne((route: Route) => {
     const dividerPos = route.path.indexOf("/", 1);
@@ -119,6 +125,7 @@ class HassioAddonDashboard extends LitElement {
         .narrow=${this.narrow}
         .route=${route}
         .tabs=${addonTabs}
+        .backPath=${this._backPath}
         supervisor
       >
         <span slot="header">${this.addon.name}</span>

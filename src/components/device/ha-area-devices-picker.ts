@@ -189,7 +189,8 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
         .sort((a, b) =>
           stringCompare(
             devicesByArea[a].name || "",
-            devicesByArea[b].name || ""
+            devicesByArea[b].name || "",
+            this.hass.locale.language
           )
         )
         .map((key) => devicesByArea[key]);

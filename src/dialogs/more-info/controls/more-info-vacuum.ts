@@ -18,18 +18,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
-  VacuumEntity,
-  VACUUM_SUPPORT_BATTERY,
-  VACUUM_SUPPORT_CLEAN_SPOT,
-  VACUUM_SUPPORT_FAN_SPEED,
-  VACUUM_SUPPORT_LOCATE,
-  VACUUM_SUPPORT_PAUSE,
-  VACUUM_SUPPORT_RETURN_HOME,
-  VACUUM_SUPPORT_START,
-  VACUUM_SUPPORT_STATUS,
-  VACUUM_SUPPORT_STOP,
-} from "../../../data/vacuum";
+import { VacuumEntity, VacuumEntityFeature } from "../../../data/vacuum";
 import { HomeAssistant } from "../../../types";
 
 interface VacuumCommand {
@@ -44,7 +33,8 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
     translationKey: "start",
     icon: mdiPlay,
     serviceName: "start",
-    isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_START),
+    isVisible: (stateObj) =>
+      supportsFeature(stateObj, VacuumEntityFeature.START),
   },
   {
     translationKey: "pause",
@@ -52,8 +42,8 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
     serviceName: "pause",
     isVisible: (stateObj) =>
       // We need also to check if Start is supported because if not we show play-pause
-      supportsFeature(stateObj, VACUUM_SUPPORT_START) &&
-      supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE),
+      supportsFeature(stateObj, VacuumEntityFeature.START) &&
+      supportsFeature(stateObj, VacuumEntityFeature.PAUSE),
   },
   {
     translationKey: "start_pause",
@@ -61,34 +51,36 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
     serviceName: "start_pause",
     isVisible: (stateObj) =>
       // If start is supported, we don't show this button
-      !supportsFeature(stateObj, VACUUM_SUPPORT_START) &&
-      supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE),
+      !supportsFeature(stateObj, VacuumEntityFeature.START) &&
+      supportsFeature(stateObj, VacuumEntityFeature.PAUSE),
   },
   {
     translationKey: "stop",
     icon: mdiStop,
     serviceName: "stop",
-    isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_STOP),
+    isVisible: (stateObj) =>
+      supportsFeature(stateObj, VacuumEntityFeature.STOP),
   },
   {
     translationKey: "clean_spot",
     icon: mdiTargetVariant,
     serviceName: "clean_spot",
     isVisible: (stateObj) =>
-      supportsFeature(stateObj, VACUUM_SUPPORT_CLEAN_SPOT),
+      supportsFeature(stateObj, VacuumEntityFeature.CLEAN_SPOT),
   },
   {
     translationKey: "locate",
     icon: mdiMapMarker,
     serviceName: "locate",
-    isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE),
+    isVisible: (stateObj) =>
+      supportsFeature(stateObj, VacuumEntityFeature.LOCATE),
   },
   {
     translationKey: "return_home",
     icon: mdiHomeMapMarker,
     serviceName: "return_to_base",
     isVisible: (stateObj) =>
-      supportsFeature(stateObj, VACUUM_SUPPORT_RETURN_HOME),
+      supportsFeature(stateObj, VacuumEntityFeature.RETURN_HOME),
   },
 ];
 
@@ -111,7 +103,7 @@ class MoreInfoVacuum extends LitElement {
     return html`
       ${stateObj.state !== UNAVAILABLE
         ? html` <div class="flex-horizontal">
-            ${supportsFeature(stateObj, VACUUM_SUPPORT_STATUS)
+            ${supportsFeature(stateObj, VacuumEntityFeature.STATUS)
               ? html`
                   <div>
                     <span class="status-subtitle"
@@ -131,7 +123,7 @@ class MoreInfoVacuum extends LitElement {
                   </div>
                 `
               : ""}
-            ${supportsFeature(stateObj, VACUUM_SUPPORT_BATTERY) &&
+            ${supportsFeature(stateObj, VacuumEntityFeature.BATTERY) &&
             stateObj.attributes.battery_level
               ? html`
                   <div>
@@ -177,7 +169,7 @@ class MoreInfoVacuum extends LitElement {
             </div>
           `
         : ""}
-      ${supportsFeature(stateObj, VACUUM_SUPPORT_FAN_SPEED)
+      ${supportsFeature(stateObj, VacuumEntityFeature.FAN_SPEED)
         ? html`
             <div>
               <div class="flex-horizontal">

@@ -12,7 +12,7 @@ export const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 /**
  * Entity Domains that should always be editable; {@see shouldShowEditIcon}.
  * */
-export const EDITABLE_DOMAINS = ["script"];
+export const EDITABLE_DOMAINS_WITH_UNIQUE_ID = ["script"];
 
 /** Domains with separate more info dialog. */
 export const DOMAINS_WITH_MORE_INFO = [
@@ -50,8 +50,9 @@ export const DOMAINS_HIDE_DEFAULT_MORE_INFO = [
   "input_text",
   "number",
   "scene",
-  "update",
   "select",
+  "text",
+  "update",
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */

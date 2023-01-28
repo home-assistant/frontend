@@ -2,8 +2,6 @@
 title: "Logo"
 ---
 
-![Using our logo](/images/using-our-logo.png)
-
 # Using our logo
 
 As a community, we are proud of our logo. Follow these guidelines to ensure it always looks its best. Our logo follows Google's material design spec and uses the blue interface color.

@@ -5,9 +5,9 @@ const rollup = require("rollup");
 const handler = require("serve-handler");
 const http = require("http");
 const log = require("fancy-log");
+const open = require("open");
 const rollupConfig = require("../rollup");
 const paths = require("../paths");
-const open = require("open");
 
 const bothBuilds = (createConfigFunc, params) =>
   gulp.series(
@@ -30,11 +30,11 @@ const bothBuilds = (createConfigFunc, params) =>
   );
 
 function createServer(serveOptions) {
-  const server = http.createServer((request, response) => {
-    return handler(request, response, {
+  const server = http.createServer((request, response) =>
+    handler(request, response, {
       public: serveOptions.root,
-    });
-  });
+    })
+  );
 
   server.listen(
     serveOptions.port,

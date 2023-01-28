@@ -192,13 +192,13 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
       devices.forEach((entry) => {
         entry.name = computeDeviceName(entry, this.hass);
       });
-      sortDeviceRegistryByName(devices);
+      sortDeviceRegistryByName(devices, this.hass.locale.language);
     }
     if (entities) {
       entities.forEach((entry) => {
         entry.name = computeEntityRegistryName(this.hass, entry);
       });
-      sortEntityRegistryByName(entities);
+      sortEntityRegistryByName(entities, this.hass.locale.language);
     }
 
     // Group entities by domain
@@ -258,7 +258,8 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           <div class="column">
             ${area.picture
               ? html`<div class="img-container">
-                  <img src=${area.picture} /><ha-icon-button
+                  <img alt=${area.name} src=${area.picture} />
+                  <ha-icon-button
                     .path=${mdiPencil}
                     .entry=${area}
                     @click=${this._showSettings}
@@ -507,7 +508,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         }
       });
       groupedEntities.sort((entry1, entry2) =>
-        caseInsensitiveStringCompare(entry1.name!, entry2.name!)
+        caseInsensitiveStringCompare(
+          entry1.name!,
+          entry2.name!,
+          this.hass.locale.language
+        )
       );
     }
     if (relatedEntityIds?.length) {
@@ -521,7 +526,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         }
       });
       relatedEntities.sort((entry1, entry2) =>
-        caseInsensitiveStringCompare(entry1.name!, entry2.name!)
+        caseInsensitiveStringCompare(
+          entry1.name!,
+          entry2.name!,
+          this.hass.locale.language
+        )
       );
     }
 
@@ -639,21 +648,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        h1 {
-          margin: 0;
-          font-family: var(--paper-font-headline_-_font-family);
-          -webkit-font-smoothing: var(
-            --paper-font-headline_-_-webkit-font-smoothing
-          );
-          font-size: var(--paper-font-headline_-_font-size);
-          font-weight: var(--paper-font-headline_-_font-weight);
-          letter-spacing: var(--paper-font-headline_-_letter-spacing);
-          line-height: var(--paper-font-headline_-_line-height);
-          opacity: var(--dark-primary-opacity);
-          display: flex;
-          align-items: center;
-        }
-
         h3 {
           margin: 0;
           padding: 0 16px;
@@ -662,7 +656,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         }
 
         img {
-          border-radius: var(--ha-card-border-radius, 4px);
+          border-radius: var(--ha-card-border-radius, 12px);
           width: 100%;
         }
 

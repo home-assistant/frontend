@@ -1,9 +1,11 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
+import { LocalStorage } from "../../../../../common/decorators/local-storage";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-switch";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-subpage";
@@ -11,58 +13,99 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "./mqtt-subscribe-card";
 
+const qosLevel = ["0", "1", "2"];
+
 @customElement("mqtt-config-panel")
 class HaPanelDevMqtt extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @state() private topic = "";
+  @LocalStorage("panel-dev-mqtt-topic-ls", true, false)
+  private _topic = "";
 
-  @state() private payload = "";
+  @LocalStorage("panel-dev-mqtt-payload-ls", true, false)
+  private _payload = "";
 
-  private inited = false;
+  @LocalStorage("panel-dev-mqtt-qos-ls", true, false)
+  private _qos = "0";
 
-  protected firstUpdated() {
-    if (localStorage && localStorage["panel-dev-mqtt-topic"]) {
-      this.topic = localStorage["panel-dev-mqtt-topic"];
-    }
-    if (localStorage && localStorage["panel-dev-mqtt-payload"]) {
-      this.payload = localStorage["panel-dev-mqtt-payload"];
-    }
-    this.inited = true;
-  }
+  @LocalStorage("panel-dev-mqtt-retain-ls", true, false)
+  private _retain = false;
+
+  @LocalStorage("panel-dev-mqtt-allow-template-ls", true, false)
+  private _allowTemplate = false;
 
   protected render(): TemplateResult {
     return html`
       <hass-subpage .narrow=${this.narrow} .hass=${this.hass}>
         <div class="content">
-          <ha-card header="MQTT settings">
+          <ha-card
+            .header=${this.hass.localize("ui.panel.config.mqtt.settings_title")}
+          >
             <div class="card-actions">
               <mwc-button @click=${this._openOptionFlow}
-                >Re-configure MQTT</mwc-button
+                >${this.hass.localize(
+                  "ui.panel.config.mqtt.reconfigure"
+                )}</mwc-button
               >
             </div>
           </ha-card>
           <ha-card
-            header=${this.hass.localize(
+            .header=${this.hass.localize(
               "ui.panel.config.mqtt.description_publish"
             )}
           >
             <div class="card-content">
-              <paper-input
-                label=${this.hass.localize("ui.panel.config.mqtt.topic")}
-                .value=${this.topic}
-                @value-changed=${this._handleTopic}
-              ></paper-input>
-
-              <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
+              <div class="panel-dev-mqtt-fields">
+                <ha-textfield
+                  .label=${this.hass.localize("ui.panel.config.mqtt.topic")}
+                  .value=${this._topic}
+                  @change=${this._handleTopic}
+                ></ha-textfield>
+                <ha-select
+                  .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
+                  .value=${this._qos}
+                  @selected=${this._handleQos}
+                  >${qosLevel.map(
+                    (qos) =>
+                      html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
+                  )}
+                </ha-select>
+                <ha-formfield
+                  label=${this.hass!.localize("ui.panel.config.mqtt.retain")}
+                >
+                  <ha-switch
+                    @change=${this._handleRetain}
+                    .checked=${this._retain}
+                  ></ha-switch>
+                </ha-formfield>
+              </div>
+              <p>
+                <ha-formfield
+                  .label=${this.hass!.localize(
+                    "ui.panel.config.mqtt.allow_template"
+                  )}
+                >
+                  <ha-switch
+                    @change=${this._handleAllowTemplate}
+                    .checked=${this._allowTemplate}
+                  ></ha-switch>
+                </ha-formfield>
+              </p>
+              <p>
+                ${this._allowTemplate
+                  ? this.hass.localize("ui.panel.config.mqtt.payload")
+                  : this.hass.localize(
+                      "ui.panel.config.mqtt.payload_no_template"
+                    )}
+              </p>
               <ha-code-editor
                 mode="jinja2"
                 autocomplete-entities
                 autocomplete-icons
                 .hass=${this.hass}
-                .value=${this.payload}
+                .value=${this._payload}
                 @value-changed=${this._handlePayload}
                 dir="ltr"
               ></ha-code-editor>
@@ -83,17 +126,26 @@ class HaPanelDevMqtt extends LitElement {
   }
 
   private _handleTopic(ev: CustomEvent) {
-    this.topic = ev.detail.value;
-    if (localStorage && this.inited) {
-      localStorage["panel-dev-mqtt-topic"] = this.topic;
-    }
+    this._topic = (ev.target! as any).value;
   }
 
   private _handlePayload(ev: CustomEvent) {
-    this.payload = ev.detail.value;
-    if (localStorage && this.inited) {
-      localStorage["panel-dev-mqtt-payload"] = this.payload;
+    this._payload = ev.detail.value;
+  }
+
+  private _handleQos(ev: CustomEvent) {
+    const newValue = (ev.target! as any).value;
+    if (newValue >= 0 && newValue !== this._qos) {
+      this._qos = newValue;
     }
+  }
+
+  private _handleRetain(ev: CustomEvent) {
+    this._retain = (ev.target! as any).checked;
+  }
+
+  private _handleAllowTemplate(ev: CustomEvent) {
+    this._allowTemplate = (ev.target! as any).checked;
   }
 
   private _publish(): void {
@@ -101,8 +153,11 @@ class HaPanelDevMqtt extends LitElement {
       return;
     }
     this.hass.callService("mqtt", "publish", {
-      topic: this.topic,
-      payload_template: this.payload,
+      topic: this._topic,
+      payload: !this._allowTemplate ? this._payload : undefined,
+      payload_template: this._allowTemplate ? this._payload : undefined,
+      qos: parseInt(this._qos),
+      retain: this._retain,
     });
   }
 
@@ -136,6 +191,28 @@ class HaPanelDevMqtt extends LitElement {
           max-width: 600px;
           margin: 0 auto;
           direction: ltr;
+        }
+        .panel-dev-mqtt-fields {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+        }
+        ha-select {
+          width: 96px;
+          margin: 0 8px;
+        }
+        ha-textfield {
+          flex: 1;
+        }
+        @media screen and (max-width: 600px) {
+          ha-select {
+            margin-left: 0px;
+            margin-top: 8px;
+          }
+          ha-textfield {
+            flex: auto;
+            width: 100%;
+          }
         }
         ha-card:first-child {
           margin-bottom: 16px;

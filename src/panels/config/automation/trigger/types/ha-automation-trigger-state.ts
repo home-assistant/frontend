@@ -11,7 +11,7 @@ import {
   union,
 } from "superstruct";
 import memoizeOne from "memoize-one";
-import { ensureArray } from "../../../../../common/ensure-array";
+import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import { StateTrigger } from "../../../../../data/automation";

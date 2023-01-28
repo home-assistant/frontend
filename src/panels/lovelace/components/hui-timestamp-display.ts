@@ -103,7 +103,7 @@ class HuiTimestampDisplay extends LitElement {
   }
 
   private _updateRelative(): void {
-    if (this.ts && this.hass!.localize) {
+    if (this.ts && this.hass?.localize) {
       this._relative =
         this._format === "relative"
           ? relativeTime(this.ts, this.hass!.locale)

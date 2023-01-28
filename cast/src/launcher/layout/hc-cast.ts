@@ -88,7 +88,7 @@ class HcCast extends LitElement {
               >
                 ${(this.lovelaceConfig
                   ? this.lovelaceConfig.views
-                  : [generateDefaultViewConfig([], [], [], {}, () => "")]
+                  : [generateDefaultViewConfig({}, {}, {}, {}, () => "")]
                 ).map(
                   (view, idx) => html`
                     <paper-icon-item
@@ -181,7 +181,7 @@ class HcCast extends LitElement {
   private async _handlePickView(ev: Event) {
     const path = (ev.currentTarget as any).getAttribute("data-path");
     await ensureConnectedCastSession(this.castManager!, this.auth!);
-    castSendShowLovelaceView(this.castManager, path);
+    castSendShowLovelaceView(this.castManager, path, this.auth.data.hassUrl);
   }
 
   private async _handleLogout() {

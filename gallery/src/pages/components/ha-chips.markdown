@@ -1,3 +1,3 @@
 ---
-title: Chips
+title: Chip
 ---

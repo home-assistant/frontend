@@ -12,6 +12,7 @@ import {
 } from "date-fns/esm";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -108,8 +109,9 @@ export class HaPanelLogbook extends LitElement {
     }
 
     const today = new Date();
-    const weekStart = startOfWeek(today);
-    const weekEnd = endOfWeek(today);
+    const weekStartsOn = firstWeekdayIndex(this.hass.locale);
+    const weekStart = startOfWeek(today, { weekStartsOn });
+    const weekEnd = endOfWeek(today, { weekStartsOn });
 
     this._ranges = {
       [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [

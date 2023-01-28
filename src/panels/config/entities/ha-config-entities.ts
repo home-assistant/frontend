@@ -182,6 +182,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         `,
       },
       name: {
+        main: true,
         title: this.hass.localize(
           "ui.panel.config.entities.picker.headers.name"
         ),
@@ -933,6 +934,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._showDisabled = true;
     this._showReadOnly = true;
     this._showUnavailable = true;
+    this._showHidden = true;
   }
 
   static get styles(): CSSResultGroup {

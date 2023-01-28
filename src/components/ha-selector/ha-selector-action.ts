@@ -18,11 +18,13 @@ export class HaActionSelector extends LitElement {
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   protected render() {
-    return html`<ha-automation-action
-      .disabled=${this.disabled}
-      .actions=${this.value || []}
-      .hass=${this.hass}
-    ></ha-automation-action>`;
+    return html`
+      <ha-automation-action
+        .disabled=${this.disabled}
+        .actions=${this.value || []}
+        .hass=${this.hass}
+      ></ha-automation-action>
+    `;
   }
 
   static get styles(): CSSResultGroup {

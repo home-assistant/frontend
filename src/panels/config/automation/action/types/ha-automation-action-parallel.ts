@@ -29,6 +29,7 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
     return html`
       <ha-automation-action
+        nested
         .actions=${action.parallel}
         .reOrderMode=${this.reOrderMode}
         .disabled=${this.disabled}

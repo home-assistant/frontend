@@ -35,7 +35,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
-import { HELPER_DOMAINS } from "./const";
+import { HelperDomain, isHelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 
 // This groups items by a key but only returns last entry per key.
@@ -91,6 +91,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         },
         name: {
           title: localize("ui.panel.config.helpers.picker.headers.name"),
+          main: true,
           sortable: true,
           filterable: true,
           grows: true,
@@ -117,7 +118,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         sortable: true,
         width: "25%",
         filterable: true,
-        template: (type, row) =>
+        template: (type: HelperDomain, row) =>
           row.configEntry
             ? domainToName(localize, type)
             : html`
@@ -242,19 +243,20 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     if (!domain) {
       return;
     }
-    if (HELPER_DOMAINS.includes(domain)) {
+    if (isHelperDomain(domain)) {
       showHelperDetailDialog(this, {
         domain,
       });
       return;
     }
-    const handlers = await getConfigFlowHandlers(this.hass, "helper");
+    const handlers = await getConfigFlowHandlers(this.hass, ["helper"]);
 
     if (!handlers.includes(domain)) {
-      const integrations = await getConfigFlowHandlers(
-        this.hass,
-        "integration"
-      );
+      const integrations = await getConfigFlowHandlers(this.hass, [
+        "device",
+        "hub",
+        "service",
+      ]);
       if (integrations.includes(domain)) {
         navigate(`/config/integrations/add?domain=${domain}`, {
           replace: true,
@@ -328,7 +330,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const newStates = Object.values(this.hass!.states).filter(
       (entity) =>
         extraEntities.has(entity.entity_id) ||
-        HELPER_DOMAINS.includes(computeStateDomain(entity))
+        isHelperDomain(computeStateDomain(entity))
     );
 
     if (
@@ -349,7 +351,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private async _getConfigEntries() {
     this._configEntries = groupByOne(
-      await getConfigEntries(this.hass, { type: "helper" }),
+      await getConfigEntries(this.hass, { type: ["helper"] }),
       (entry) => entry.entry_id
     );
   }

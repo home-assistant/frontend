@@ -39,6 +39,13 @@ class HaStatisticsPicker extends LitElement {
   public includeUnitClass?: string | string[];
 
   /**
+   * Show only statistics with these device classes.
+   * @attr include-device-class
+   */
+  @property({ attribute: "include-device-class" })
+  public includeDeviceClass?: string | string[];
+
+  /**
    * Ignore filtering of statistics type and units when only a single statistic is selected.
    * @type {boolean}
    * @attr ignore-restrictions-on-first-statistic
@@ -92,6 +99,7 @@ class HaStatisticsPicker extends LitElement {
           .includeStatisticsUnitOfMeasurement=${this
             .includeStatisticsUnitOfMeasurement}
           .includeUnitClass=${this.includeUnitClass}
+          .includeDeviceClass=${this.includeDeviceClass}
           .statisticTypes=${this.statisticTypes}
           .statisticIds=${this.statisticIds}
           .label=${this.pickStatisticLabel}

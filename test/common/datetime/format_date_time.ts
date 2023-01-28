@@ -4,7 +4,11 @@ import {
   formatDateTime,
   formatDateTimeWithSeconds,
 } from "../../../src/common/datetime/format_date_time";
-import { NumberFormat, TimeFormat } from "../../../src/data/translation";
+import {
+  NumberFormat,
+  TimeFormat,
+  FirstWeekday,
+} from "../../../src/data/translation";
 
 describe("formatDateTime", () => {
   const dateObj = new Date(2017, 10, 18, 23, 12, 13, 400);
@@ -15,6 +19,7 @@ describe("formatDateTime", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.am_pm,
+        first_weekday: FirstWeekday.language,
       }),
       "November 18, 2017 at 11:12 PM"
     );
@@ -23,6 +28,7 @@ describe("formatDateTime", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.twenty_four,
+        first_weekday: FirstWeekday.language,
       }),
       "November 18, 2017 at 23:12"
     );
@@ -38,6 +44,7 @@ describe("formatDateTimeWithSeconds", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.am_pm,
+        first_weekday: FirstWeekday.language,
       }),
       "November 18, 2017 at 11:12:13 PM"
     );
@@ -46,6 +53,7 @@ describe("formatDateTimeWithSeconds", () => {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.twenty_four,
+        first_weekday: FirstWeekday.language,
       }),
       "November 18, 2017 at 23:12:13"
     );

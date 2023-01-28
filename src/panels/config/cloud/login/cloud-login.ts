@@ -113,7 +113,9 @@ export class CloudLogin extends LitElement {
                     "ui.panel.config.cloud.login.email"
                   )}
                   id="email"
+                  name="username"
                   type="email"
+                  autocomplete="username"
                   required
                   .value=${this.email}
                   @keydown=${this._keyDown}
@@ -124,11 +126,13 @@ export class CloudLogin extends LitElement {
                 ></ha-textfield>
                 <ha-textfield
                   id="password"
+                  name="password"
                   .label=${this.hass.localize(
                     "ui.panel.config.cloud.login.password"
                   )}
                   .value=${this._password || ""}
                   type="password"
+                  autocomplete="current-password"
                   required
                   minlength="8"
                   @keydown=${this._keyDown}

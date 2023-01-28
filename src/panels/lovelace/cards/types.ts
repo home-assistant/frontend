@@ -1,4 +1,4 @@
-import { StatisticType } from "../../../data/recorder";
+import { Statistic } from "../../../data/recorder";
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { FullCalendarView, TranslationDict } from "../../../types";
 import { Condition } from "../common/validate-condition";
@@ -10,6 +10,9 @@ import {
   LovelaceRowConfig,
 } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { ExtendedStatisticType } from "../../../components/chart/statistics-chart";
+import { HaDurationData } from "../../../components/ha-duration-input";
+import { LovelaceTileFeatureConfig } from "../tile-features/types";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -133,6 +136,12 @@ export interface EnergyGasGraphCardConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
+export interface EnergyWaterGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-water-graph";
+  title?: string;
+  collection_key?: string;
+}
+
 export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
   type: "energy-devices-graph";
   title?: string;
@@ -238,6 +247,7 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
 }
 
 export interface IframeCardConfig extends LovelaceCardConfig {
+  allow_open_top_navigation?: boolean;
   aspect_ratio?: string;
   title?: string;
   url: string;
@@ -290,17 +300,30 @@ export interface MediaControlCardConfig extends LovelaceCardConfig {
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   entities: Array<EntityConfig | string>;
   hours_to_show?: number;
-  refresh_interval?: number;
   title?: string;
+  show_names?: boolean;
 }
 
 export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   title?: string;
   entities: Array<EntityConfig | string>;
+  unit?: string;
   days_to_show?: number;
   period?: "5minute" | "hour" | "day" | "month";
-  stat_types?: StatisticType | StatisticType[];
+  stat_types?: ExtendedStatisticType | ExtendedStatisticType[];
   chart_type?: "line" | "bar";
+}
+
+export interface StatisticCardConfig extends LovelaceCardConfig {
+  name?: string;
+  entities: Array<EntityConfig | string>;
+  period: {
+    fixed_period?: { start: string; end: string };
+    calendar?: { period: string; offset: number };
+    rolling_window?: { duration: HaDurationData; offset: HaDurationData };
+  };
+  stat_type: keyof Statistic;
+  theme?: string;
 }
 
 export interface PictureCardConfig extends LovelaceCardConfig {
@@ -309,6 +332,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   theme?: string;
+  alt_text?: string;
 }
 
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
@@ -471,4 +495,16 @@ export interface EnergyFlowCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+}
+
+export interface TileCardConfig extends LovelaceCardConfig {
+  entity: string;
+  name?: string;
+  icon?: string;
+  color?: string;
+  show_entity_picture?: string;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  icon_tap_action?: ActionConfig;
+  features?: LovelaceTileFeatureConfig[];
 }

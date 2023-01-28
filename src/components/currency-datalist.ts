@@ -1,4 +1,7 @@
-export const currencies = [
+import memoizeOne from "memoize-one";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
+
+export const CURRENCIES = [
   "AED",
   "AFN",
   "ALL",
@@ -154,17 +157,35 @@ export const currencies = [
   "XPF",
   "YER",
   "ZAR",
-  "ZMK",
+  "ZMW",
   "ZWL",
 ];
 
-export const createCurrencyListEl = () => {
+export const getCurrencyOptions = memoizeOne((language?: string) => {
+  const currencyDisplayNames =
+    Intl && "DisplayNames" in Intl
+      ? new Intl.DisplayNames(language, {
+          type: "currency",
+          fallback: "code",
+        })
+      : undefined;
+  const options = CURRENCIES.map((currency) => ({
+    value: currency,
+    label: currencyDisplayNames ? currencyDisplayNames.of(currency)! : currency,
+  }));
+  options.sort((a, b) =>
+    caseInsensitiveStringCompare(a.label, b.label, language)
+  );
+  return options;
+});
+
+export const createCurrencyListEl = (language: string) => {
   const list = document.createElement("datalist");
   list.id = "currencies";
-  for (const currency of currencies) {
+  for (const currency of getCurrencyOptions(language)) {
     const option = document.createElement("option");
-    option.value = currency;
-    option.innerHTML = currency;
+    option.value = currency.value;
+    option.innerText = currency.label;
     list.appendChild(option);
   }
   return list;

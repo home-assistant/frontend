@@ -112,17 +112,6 @@ export interface Panels {
   [name: string]: PanelInfo;
 }
 
-export interface CalendarEvent {
-  summary: string;
-  title: string;
-  start: string;
-  end?: string;
-  backgroundColor?: string;
-  borderColor?: string;
-  calendar: string;
-  [key: string]: any;
-}
-
 export interface CalendarViewChanged {
   end: Date;
   start: Date;
@@ -133,7 +122,7 @@ export type FullCalendarView =
   | "dayGridMonth"
   | "dayGridWeek"
   | "dayGridDay"
-  | "list";
+  | "listWeek";
 
 export interface ToggleButton {
   label: string;

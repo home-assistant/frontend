@@ -109,6 +109,7 @@ class HaBlueprintOverview extends LitElement {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.headers.name"
         ),
+        main: true,
         sortable: true,
         filterable: true,
         direction: "asc",

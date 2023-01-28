@@ -117,7 +117,7 @@ class OnboardingIntegrations extends LitElement {
       }
     );
     const content = [...entries, ...discovered]
-      .sort((a, b) => stringCompare(a[0], b[0]))
+      .sort((a, b) => stringCompare(a[0], b[0], this.hass.locale.language))
       .map((item) => item[1]);
 
     return html`
@@ -180,7 +180,9 @@ class OnboardingIntegrations extends LitElement {
   }
 
   private async _loadConfigEntries() {
-    const entries = await getConfigEntries(this.hass!, { type: "integration" });
+    const entries = await getConfigEntries(this.hass!, {
+      type: ["device", "hub", "service"],
+    });
     // We filter out the config entries that are automatically created during onboarding.
     // It is one that we create automatically and it will confuse the user
     // if it starts showing up during onboarding.

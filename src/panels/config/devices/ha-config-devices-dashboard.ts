@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import {
@@ -35,6 +36,7 @@ import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showZWaveJSAddNodeDialog } from "../integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
@@ -215,6 +217,9 @@ export class HaConfigDeviceDashboard extends LitElement {
           : this.hass.localize(
               "ui.panel.config.devices.data_table.no_integration"
             ),
+        domains: device.config_entries
+          .filter((entId) => entId in entryLookup)
+          .map((entId) => entryLookup[entId].domain),
         battery_entity: [
           this._batteryEntity(device.id, deviceEntityLookup),
           this._batteryChargingEntity(device.id, deviceEntityLookup),
@@ -235,35 +240,52 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _columns = memoizeOne(
     (narrow: boolean, showDisabled: boolean): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = narrow
-        ? {
-            name: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.device"
-              ),
-              sortable: true,
-              filterable: true,
-              direction: "asc",
-              grows: true,
-              template: (name, device: DataTableRowData) => html`
-                ${name}
-                <div class="secondary">
-                  ${device.area} | ${device.integration}
-                </div>
-              `,
-            },
-          }
-        : {
-            name: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.device"
-              ),
-              sortable: true,
-              filterable: true,
-              grows: true,
-              direction: "asc",
-            },
-          };
+      const columns: DataTableColumnContainer = {
+        icon: {
+          title: "",
+          type: "icon",
+          template: (_icon, device) =>
+            device.domains.length
+              ? html`<img
+                  alt=""
+                  referrerpolicy="no-referrer"
+                  src=${brandsUrl({
+                    domain: device.domains[0],
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                />`
+              : "",
+        },
+      };
+
+      if (narrow) {
+        columns.name = {
+          title: this.hass.localize(
+            "ui.panel.config.devices.data_table.device"
+          ),
+          main: true,
+          sortable: true,
+          filterable: true,
+          direction: "asc",
+          grows: true,
+          template: (name, device: DataTableRowData) => html`
+            ${name}
+            <div class="secondary">${device.area} | ${device.integration}</div>
+          `,
+        };
+      } else {
+        columns.name = {
+          title: this.hass.localize(
+            "ui.panel.config.devices.data_table.device"
+          ),
+          main: true,
+          sortable: true,
+          filterable: true,
+          grows: true,
+          direction: "asc",
+        };
+      }
 
       columns.manufacturer = {
         title: this.hass.localize(
@@ -316,9 +338,14 @@ export class HaConfigDeviceDashboard extends LitElement {
               : undefined;
           const batteryIsBinary =
             battery && computeStateDomain(battery) === "binary_sensor";
+
           return battery && (batteryIsBinary || !isNaN(battery.state as any))
             ? html`
-                ${batteryIsBinary ? "" : battery.state + " %"}
+                ${batteryIsBinary
+                  ? ""
+                  : Number(battery.state).toFixed() +
+                    blankBeforePercent(this.hass.locale) +
+                    "%"}
                 <ha-battery-icon
                   .hass=${this.hass!}
                   .batteryStateObj=${battery}

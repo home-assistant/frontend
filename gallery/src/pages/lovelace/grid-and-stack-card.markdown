@@ -1,3 +1,3 @@
 ---
-title: Grid And Stack Card
+title: Grid and Stack Card
 ---

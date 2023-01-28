@@ -15,6 +15,7 @@ import {
   CAMERA_SUPPORT_STREAM,
   computeMJPEGStreamUrl,
   fetchStreamUrl,
+  fetchThumbnailUrlWithCache,
   STREAM_TYPE_HLS,
   STREAM_TYPE_WEB_RTC,
 } from "../data/camera";
@@ -23,7 +24,7 @@ import "./ha-hls-player";
 import "./ha-web-rtc-player";
 
 @customElement("ha-camera-stream")
-class HaCameraStream extends LitElement {
+export class HaCameraStream extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: CameraEntity;
@@ -36,6 +37,9 @@ class HaCameraStream extends LitElement {
 
   @property({ type: Boolean, attribute: "allow-exoplayer" })
   public allowExoPlayer = false;
+
+  // Video background image before its loaded
+  @state() private _posterUrl?: string;
 
   // We keep track if we should force MJPEG if there was a failure
   // to get the HLS stream url. This is reset if we change entities.
@@ -51,12 +55,14 @@ class HaCameraStream extends LitElement {
       !this._shouldRenderMJPEG &&
       this.stateObj &&
       (changedProps.get("stateObj") as CameraEntity | undefined)?.entity_id !==
-        this.stateObj.entity_id &&
-      this.stateObj!.attributes.frontend_stream_type === STREAM_TYPE_HLS
+        this.stateObj.entity_id
     ) {
-      this._forceMJPEG = undefined;
-      this._url = undefined;
-      this._getStreamUrl();
+      this._getPosterUrl();
+      if (this.stateObj!.attributes.frontend_stream_type === STREAM_TYPE_HLS) {
+        this._forceMJPEG = undefined;
+        this._url = undefined;
+        this._getStreamUrl();
+      }
     }
   }
 
@@ -75,7 +81,7 @@ class HaCameraStream extends LitElement {
       return html``;
     }
     if (__DEMO__ || this._shouldRenderMJPEG) {
-      return html` <img
+      return html`<img
         .src=${__DEMO__
           ? this.stateObj.attributes.entity_picture!
           : this._connected
@@ -94,6 +100,7 @@ class HaCameraStream extends LitElement {
             .controls=${this.controls}
             .hass=${this.hass}
             .url=${this._url}
+            .posterUrl=${this._posterUrl}
           ></ha-hls-player>`
         : html``;
     }
@@ -105,6 +112,7 @@ class HaCameraStream extends LitElement {
         .controls=${this.controls}
         .hass=${this.hass}
         .entityid=${this.stateObj.entity_id}
+        .posterUrl=${this._posterUrl}
       ></ha-web-rtc-player>`;
     }
     return html``;
@@ -127,6 +135,20 @@ class HaCameraStream extends LitElement {
     }
     // Server side stream component required for HLS
     return !isComponentLoaded(this.hass!, "stream");
+  }
+
+  private async _getPosterUrl(): Promise<void> {
+    try {
+      this._posterUrl = await fetchThumbnailUrlWithCache(
+        this.hass!,
+        this.stateObj!.entity_id,
+        this.clientWidth,
+        this.clientHeight
+      );
+    } catch (err: any) {
+      // poster url is optional
+      this._posterUrl = undefined;
+    }
   }
 
   private async _getStreamUrl(): Promise<void> {

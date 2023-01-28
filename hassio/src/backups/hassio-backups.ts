@@ -119,6 +119,7 @@ export class HassioBackups extends LitElement {
     (narrow: boolean): DataTableColumnContainer => ({
       name: {
         title: this.supervisor.localize("backup.name"),
+        main: true,
         sortable: true,
         filterable: true,
         grows: true,

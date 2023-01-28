@@ -25,6 +25,7 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
   protected render() {
     return html`
       <ha-automation-condition
+        nested
         .conditions=${this.condition.conditions || []}
         @value-changed=${this._valueChanged}
         .hass=${this.hass}

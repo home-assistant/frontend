@@ -1,7 +1,7 @@
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { ensureArray } from "../../common/ensure-array";
+import { ensureArray } from "../../common/array/ensure-array";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
@@ -65,6 +65,9 @@ export class HaLogbook extends LitElement {
   @property({ type: Boolean, attribute: "no-name" })
   public noName = false;
 
+  @property({ type: Boolean, attribute: "show-indicator" })
+  public showIndicator = false;
+
   @property({ type: Boolean, attribute: "relative-time" })
   public relativeTime = false;
 
@@ -126,6 +129,7 @@ export class HaLogbook extends LitElement {
         .virtualize=${this.virtualize}
         .noIcon=${this.noIcon}
         .noName=${this.noName}
+        .showIndicator=${this.showIndicator}
         .relativeTime=${this.relativeTime}
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}

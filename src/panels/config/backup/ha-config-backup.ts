@@ -51,6 +51,7 @@ class HaConfigBackup extends LitElement {
     (narrow, _language): DataTableColumnContainer => ({
       name: {
         title: this.hass.localize("ui.panel.config.backup.name"),
+        main: true,
         sortable: true,
         filterable: true,
         grows: true,

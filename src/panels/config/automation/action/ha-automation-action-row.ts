@@ -9,6 +9,7 @@ import {
   mdiPlayCircleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
+  mdiSort,
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -192,6 +193,12 @@ export default class HaAutomationActionRow extends LitElement {
                   </mwc-list-item>
                   <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.re_order"
+                    )}
+                    <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
+                  </mwc-list-item>
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.duplicate"
                     )}
                     <ha-svg-icon
@@ -348,20 +355,23 @@ export default class HaAutomationActionRow extends LitElement {
         await this._renameAction();
         break;
       case 2:
-        fireEvent(this, "duplicate");
+        fireEvent(this, "re-order");
         break;
       case 3:
+        fireEvent(this, "duplicate");
+        break;
+      case 4:
         this._switchUiMode();
         this.expand();
         break;
-      case 4:
+      case 5:
         this._switchYamlMode();
         this.expand();
         break;
-      case 5:
+      case 6:
         this._onDisable();
         break;
-      case 6:
+      case 7:
         this._onDelete();
         break;
     }

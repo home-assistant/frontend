@@ -6,9 +6,11 @@ import memoizeOne from "memoize-one";
 import { UNIT_C } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { navigate } from "../../../common/navigate";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
-import { currencies } from "../../../components/currency-datalist";
+import { getCountryOptions } from "../../../components/country-datalist";
+import { getCurrencyOptions } from "../../../components/currency-datalist";
 import "../../../components/ha-card";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
@@ -23,6 +25,7 @@ import { SYMBOL_TO_ISO } from "../../../data/currency";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-alert";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
@@ -36,6 +39,10 @@ class HaConfigSectionGeneral extends LitElement {
 
   @state() private _currency?: string;
 
+  @state() private _language?: string;
+
+  @state() private _country?: string | null;
+
   @state() private _name?: string;
 
   @state() private _elevation?: number;
@@ -43,6 +50,10 @@ class HaConfigSectionGeneral extends LitElement {
   @state() private _timeZone?: string;
 
   @state() private _location?: [number, number];
+
+  @state() private _languages?: { value: string; label: string }[];
+
+  @state() private _error?: string;
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
@@ -57,6 +68,9 @@ class HaConfigSectionGeneral extends LitElement {
         .header=${this.hass.localize("ui.panel.config.core.caption")}
       >
         <div class="content">
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           <ha-card outlined>
             <div class="card-content">
               ${!canEdit
@@ -104,13 +118,11 @@ class HaConfigSectionGeneral extends LitElement {
                 type="number"
                 .disabled=${disabled}
                 .value=${this._elevation}
+                .suffix=${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.elevation_meters"
+                )}
                 @change=${this._handleChange}
               >
-                <span slot="suffix">
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.elevation_meters"
-                  )}
-                </span>
               </ha-textfield>
               <div>
                 <div>
@@ -144,20 +156,20 @@ class HaConfigSectionGeneral extends LitElement {
                   .label=${html`
                     <span style="font-size: 14px">
                       ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.imperial_example"
+                        "ui.panel.config.core.section.core.core_config.us_customary_example"
                       )}
                     </span>
                     <div style="color: var(--secondary-text-color)">
                       ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.unit_system_imperial"
+                        "ui.panel.config.core.section.core.core_config.unit_system_us_customary"
                       )}
                     </div>
                   `}
                 >
                   <ha-radio
                     name="unit_system"
-                    value="imperial"
-                    .checked=${this._unitSystem === "imperial"}
+                    value="us_customary"
+                    .checked=${this._unitSystem === "us_customary"}
                     @change=${this._unitSystemChanged}
                     .disabled=${this._submitting}
                   ></ha-radio>
@@ -176,11 +188,11 @@ class HaConfigSectionGeneral extends LitElement {
                   @closed=${stopPropagation}
                   @change=${this._handleChange}
                 >
-                  ${currencies.map(
-                    (currency) =>
-                      html`<mwc-list-item .value=${currency}
-                        >${currency}</mwc-list-item
-                      >`
+                  ${getCurrencyOptions(this.hass.locale.language).map(
+                    ({ value, label }) =>
+                      html`<mwc-list-item .value=${value}>
+                        ${label}
+                      </mwc-list-item>`
                   )}</ha-select
                 >
                 <a
@@ -193,6 +205,44 @@ class HaConfigSectionGeneral extends LitElement {
                   )}</a
                 >
               </div>
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.country"
+                )}
+                name="country"
+                fixedMenuPosition
+                naturalMenuWidth
+                .disabled=${disabled}
+                .value=${this._country}
+                @closed=${stopPropagation}
+                @change=${this._handleChange}
+              >
+                ${getCountryOptions(this.hass.locale.language).map(
+                  ({ value, label }) =>
+                    html`<mwc-list-item .value=${value}>
+                      ${label}
+                    </mwc-list-item>`
+                )}</ha-select
+              >
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.language"
+                )}
+                name="language"
+                fixedMenuPosition
+                naturalMenuWidth
+                .disabled=${disabled}
+                .value=${this._language}
+                @closed=${stopPropagation}
+                @change=${this._handleChange}
+              >
+                ${this._languages?.map(
+                  ({ value, label }) =>
+                    html`<mwc-list-item .value=${value}
+                      >${label}</mwc-list-item
+                    >`
+                )}</ha-select
+              >
             </div>
             ${this.narrow
               ? html`
@@ -238,11 +288,32 @@ class HaConfigSectionGeneral extends LitElement {
     this._unitSystem =
       this.hass.config.unit_system.temperature === UNIT_C
         ? "metric"
-        : "imperial";
+        : "us_customary";
     this._currency = this.hass.config.currency;
+    this._country = this.hass.config.country;
+    this._language = this.hass.config.language;
     this._elevation = this.hass.config.elevation;
-    this._timeZone = this.hass.config.time_zone;
+    this._timeZone = this.hass.config.time_zone || "Etc/GMT";
     this._name = this.hass.config.location_name;
+    this._computeLanguages();
+  }
+
+  private _computeLanguages() {
+    if (!this.hass.translationMetadata?.translations) {
+      return;
+    }
+    this._languages = Object.entries(this.hass.translationMetadata.translations)
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a[1].nativeName,
+          b[1].nativeName,
+          this.hass.locale.language
+        )
+      )
+      .map(([value, metaData]) => ({
+        value,
+        label: metaData.nativeName,
+      }));
   }
 
   private _handleChange(ev) {
@@ -259,7 +330,9 @@ class HaConfigSectionGeneral extends LitElement {
   }
 
   private _unitSystemChanged(ev: CustomEvent) {
-    this._unitSystem = (ev.target as HaRadio).value as "metric" | "imperial";
+    this._unitSystem = (ev.target as HaRadio).value as
+      | "metric"
+      | "us_customary";
   }
 
   private _locationChanged(ev: CustomEvent) {
@@ -282,6 +355,8 @@ class HaConfigSectionGeneral extends LitElement {
       };
     }
 
+    this._error = undefined;
+
     try {
       await saveCoreConfig(this.hass, {
         currency: this._currency,
@@ -289,12 +364,14 @@ class HaConfigSectionGeneral extends LitElement {
         unit_system: this._unitSystem,
         time_zone: this._timeZone,
         location_name: this._name,
+        language: this._language,
+        country: this._country,
         ...locationConfig,
       });
       button.actionSuccess();
     } catch (err: any) {
       button.actionError();
-      alert(`Error saving config: ${err.message}`);
+      this._error = err.message;
     } finally {
       button.progress = false;
     }
@@ -316,7 +393,7 @@ class HaConfigSectionGeneral extends LitElement {
   );
 
   private _editLocation() {
-    navigate("/config/zone");
+    navigate("/config/zone/edit/zone.home");
   }
 
   static styles = [

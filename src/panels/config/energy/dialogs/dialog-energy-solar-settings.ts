@@ -130,6 +130,7 @@ export class DialogEnergySolarSettings
                     style="display: flex; align-items: center;"
                   >
                     <img
+                      alt=""
                       referrerpolicy="no-referrer"
                       style="height: 24px; margin-right: 16px;"
                       src=${brandsUrl({
@@ -179,10 +180,10 @@ export class DialogEnergySolarSettings
         ? []
         : domains.length === 1
         ? await getConfigEntries(this.hass, {
-            type: "integration",
+            type: ["service"],
             domain: domains[0],
           })
-        : (await getConfigEntries(this.hass, { type: "integration" })).filter(
+        : (await getConfigEntries(this.hass, { type: ["service"] })).filter(
             (entry) => domains.includes(entry.domain)
           );
   }

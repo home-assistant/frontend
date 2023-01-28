@@ -5,10 +5,13 @@ import DateRangePicker from "vue2-daterange-picker";
 // @ts-ignore
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
-import { Constructor } from "../types";
 
 const Component = Vue.extend({
   props: {
+    timePicker: {
+      type: Boolean,
+      default: true,
+    },
     twentyfourHours: {
       type: Boolean,
       default: true,
@@ -33,31 +36,36 @@ const Component = Vue.extend({
         return new Date();
       },
     },
+    firstDay: {
+      type: Number,
+      default: 1,
+    },
+    autoApply: {
+      type: Boolean,
+      default: false,
+    },
   },
   render(createElement) {
-    // @ts-ignore
+    // @ts-expect-error
     return createElement(DateRangePicker, {
       props: {
-        "time-picker": true,
-        "auto-apply": false,
+        "time-picker": this.timePicker,
+        "auto-apply": this.autoApply,
         opens: "right",
         "show-dropdowns": false,
-        // @ts-ignore
         "time-picker24-hour": this.twentyfourHours,
-        // @ts-ignore
         disabled: this.disabled,
-        // @ts-ignore
         ranges: this.ranges ? {} : false,
+        "locale-data": {
+          firstDay: this.firstDay,
+        },
       },
       model: {
         value: {
-          // @ts-ignore
           startDate: this.startDate,
-          // @ts-ignore
           endDate: this.endDate,
         },
         callback: (value) => {
-          // @ts-ignore
           fireEvent(this.$el as HTMLElement, "change", value);
         },
         expression: "dateRange",
@@ -88,7 +96,11 @@ const Component = Vue.extend({
   },
 });
 
-const WrappedElement: Constructor<HTMLElement> = wrap(Vue, Component);
+// Assertion corrects HTMLElement type from package
+const WrappedElement = wrap(
+  Vue,
+  Component
+) as unknown as CustomElementConstructor;
 
 @customElement("date-range-picker")
 class DateRangePickerElement extends WrappedElement {
@@ -103,14 +115,14 @@ class DateRangePickerElement extends WrappedElement {
           .daterangepicker {
             left: 0px !important;
             top: auto;
+            box-shadow: var(--ha-card-box-shadow, none);
             background-color: var(--card-background-color);
-            border: none;
-            border-radius: var(--ha-card-border-radius, 4px);
-            box-shadow: var(
-              --ha-card-box-shadow,
-              0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-              0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-              0px 1px 3px 0px rgba(0, 0, 0, 0.12)
+            border-radius: var(--ha-card-border-radius, 12px);
+            border-width: var(--ha-card-border-width, 1px);
+            border-style: solid;
+            border-color: var(
+              --ha-card-border-color,
+              var(--divider-color, #e0e0e0)
             );
             color: var(--primary-text-color);
             min-width: initial !important;

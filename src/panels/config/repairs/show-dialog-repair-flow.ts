@@ -32,6 +32,7 @@ export const showRepairsFlowDialog = (
         const [step] = await Promise.all([
           createRepairsFlow(hass, handler, issue.issue_id),
           hass.loadBackendTranslation("issues", issue.domain),
+          hass.loadBackendTranslation("selector", issue.domain),
         ]);
         return step;
       },
@@ -39,6 +40,7 @@ export const showRepairsFlowDialog = (
         const [step] = await Promise.all([
           fetchRepairsFlow(hass, flowId),
           hass.loadBackendTranslation("issues", issue.domain),
+          hass.loadBackendTranslation("selector", issue.domain),
         ]);
         return step;
       },
@@ -47,7 +49,9 @@ export const showRepairsFlowDialog = (
 
       renderAbortDescription(hass, step) {
         const description = hass.localize(
-          `component.${issue.domain}.issues.abort.${step.reason}`,
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.abort.${step.reason}`,
           step.description_placeholders
         );
 
@@ -118,6 +122,10 @@ export const showRepairsFlowDialog = (
           }.fix_flow.error.${error}`,
           step.description_placeholders
         );
+      },
+
+      renderShowFormStepFieldLocalizeValue(hass, _step, key) {
+        return hass.localize(`component.${issue.domain}.selector.${key}`);
       },
 
       renderExternalStepHeader(_hass, _step) {
@@ -206,9 +214,11 @@ export const showRepairsFlowDialog = (
               issue.translation_key || issue.issue_id
             }.fix_flow.loading`
           ) ||
-          hass.localize(`ui.dialogs.repair_flow.loading.${reason}`, {
-            integration: domainToName(hass.localize, issue.domain),
-          })
+          (reason === "loading_flow" || reason === "loading_step"
+            ? hass.localize(`ui.dialogs.repair_flow.loading.${reason}`, {
+                integration: domainToName(hass.localize, issue.domain),
+              })
+            : "")
         );
       },
     }

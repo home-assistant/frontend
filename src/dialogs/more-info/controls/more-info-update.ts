@@ -9,7 +9,7 @@ import "../../../components/ha-checkbox";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import {
   UpdateEntity,
   updateIsInstalling,
@@ -37,7 +37,7 @@ class MoreInfoUpdate extends LitElement {
     if (
       !this.hass ||
       !this.stateObj ||
-      UNAVAILABLE_STATES.includes(this.stateObj.state)
+      isUnavailableState(this.stateObj.state)
     ) {
       return html``;
     }
@@ -259,6 +259,9 @@ class MoreInfoUpdate extends LitElement {
       mwc-linear-progress {
         margin-bottom: -8px;
         margin-top: 4px;
+      }
+      ha-markdown {
+        direction: ltr;
       }
     `;
   }

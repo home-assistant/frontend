@@ -66,6 +66,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         },
         display_name: {
           title: this.hass.localize("ui.panel.config.tag.headers.name"),
+          main: true,
           sortable: true,
           filterable: true,
           grows: true,

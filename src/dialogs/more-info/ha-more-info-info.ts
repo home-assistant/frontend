@@ -30,7 +30,14 @@ export class MoreInfoInfo extends LitElement {
     const domain = computeDomain(entityId);
 
     return html`
-      ${stateObj.attributes.restored && this._entityEntry
+      ${!stateObj
+        ? html`<ha-alert alert-type="warning">
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.unavailable"
+            )}
+          </ha-alert>`
+        : ""}
+      ${stateObj?.attributes.restored && this._entityEntry
         ? html`<ha-alert alert-type="warning">
             ${this.hass.localize(
               "ui.dialogs.more_info_control.restored.no_longer_provided",

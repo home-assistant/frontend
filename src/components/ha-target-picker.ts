@@ -18,7 +18,7 @@ import { css, CSSResultGroup, html, LitElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
-import { ensureArray } from "../common/ensure-array";
+import { ensureArray } from "../common/array/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import {
@@ -251,10 +251,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private async _showPicker(ev) {
     this._addMode = ev.currentTarget.type;
     await this.updateComplete;
-    setTimeout(() => {
-      this._inputElement?.open();
-      this._inputElement?.focus();
-    }, 0);
+    await this._inputElement?.focus();
+    await this._inputElement?.open();
   }
 
   private _renderChip(
@@ -347,6 +345,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             .entityFilter=${this.entityRegFilter}
             .includeDeviceClasses=${this.includeDeviceClasses}
             .includeDomains=${this.includeDomains}
+            .excludeAreas=${ensureArray(this.value?.area_id)}
             @value-changed=${this._targetPicked}
           ></ha-area-picker>
         `;
@@ -360,9 +359,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               "ui.components.target-picker.add_device_id"
             )}
             .deviceFilter=${this.deviceFilter}
-            .entityFilter=${this.entityRegFilter}
             .includeDeviceClasses=${this.includeDeviceClasses}
             .includeDomains=${this.includeDomains}
+            .excludeDevices=${ensureArray(this.value?.device_id)}
             @value-changed=${this._targetPicked}
           ></ha-device-picker>
         `;
@@ -378,6 +377,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             .entityFilter=${this.entityFilter}
             .includeDeviceClasses=${this.includeDeviceClasses}
             .includeDomains=${this.includeDomains}
+            .excludeEntities=${ensureArray(this.value?.entity_id)}
             @value-changed=${this._targetPicked}
             allow-custom-entity
           ></ha-entity-picker>
@@ -395,6 +395,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     const target = ev.currentTarget;
     target.value = "";
     this._addMode = undefined;
+    if (
+      this.value &&
+      this.value[target.type] &&
+      ensureArray(this.value[target.type]).includes(value)
+    ) {
+      return;
+    }
     fireEvent(this, "value-changed", {
       value: this.value
         ? {

@@ -3,7 +3,6 @@ import { mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { Action, ScriptConfig } from "../../../data/script";
@@ -24,9 +23,6 @@ export class HaManualScriptEditor extends LitElement {
 
   @property({ attribute: false }) public config!: ScriptConfig;
 
-  @property({ type: Boolean, reflect: true, attribute: "re-order-mode" })
-  public reOrderMode = false;
-
   protected render() {
     return html`
       ${this.disabled
@@ -37,26 +33,6 @@ export class HaManualScriptEditor extends LitElement {
             </mwc-button>
           </ha-alert>`
         : ""}
-      ${this.reOrderMode
-        ? html`
-            <ha-alert
-              alert-type="info"
-              .title=${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.title"
-              )}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.re_order_mode.description"
-              )}
-              <mwc-button slot="action" @click=${this._exitReOrderMode}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.re_order_mode.exit"
-                )}
-              </mwc-button>
-            </ha-alert>
-          `
-        : ""}
-
       <div class="header">
         <h2 id="sequence-heading" class="name">
           ${this.hass.localize("ui.panel.config.script.editor.sequence")}
@@ -83,7 +59,6 @@ export class HaManualScriptEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
-        .reOrderMode=${this.reOrderMode}
       ></ha-automation-action>
     `;
   }
@@ -93,10 +68,6 @@ export class HaManualScriptEditor extends LitElement {
     fireEvent(this, "value-changed", {
       value: { ...this.config!, sequence: ev.detail.value as Action[] },
     });
-  }
-
-  private _exitReOrderMode() {
-    this.reOrderMode = !this.reOrderMode;
   }
 
   private _duplicate() {
@@ -133,10 +104,6 @@ export class HaManualScriptEditor extends LitElement {
         }
         .header a {
           color: var(--secondary-text-color);
-        }
-        ha-alert {
-          display: block;
-          margin-bottom: 16px;
         }
       `,
     ];

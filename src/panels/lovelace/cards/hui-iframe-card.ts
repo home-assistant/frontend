@@ -1,12 +1,13 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import "../../../components/ha-card";
 import "../../../components/ha-alert";
+import "../../../components/ha-card";
+import type { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { IframeCardConfig } from "./types";
-import type { HomeAssistant } from "../../../types";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
@@ -79,6 +80,11 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    let sandbox_user_params = "";
+    if (this._config.allow_open_top_navigation) {
+      sandbox_user_params += "allow-top-navigation-by-user-activation";
+    }
+
     return html`
       <ha-card .header=${this._config.title}>
         <div
@@ -88,9 +94,10 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
           })}
         >
           <iframe
+            title=${ifDefined(this._config.title)}
             src=${this._config.url}
-            sandbox="allow-forms allow-modals allow-popups allow-pointer-lock allow-same-origin allow-scripts"
-            allowfullscreen="true"
+            sandbox="${sandbox_user_params} allow-forms allow-modals allow-popups allow-pointer-lock allow-same-origin allow-scripts"
+            allow="fullscreen"
           ></iframe>
         </div>
       </ha-card>

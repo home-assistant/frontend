@@ -47,6 +47,7 @@ export class HaIntegrationListItem extends ListItemBase {
       )}"
     >
       <img
+        alt=""
         loading="lazy"
         src=${brandsUrl({
           domain: this.integration.domain,
@@ -93,7 +94,10 @@ export class HaIntegrationListItem extends ListItemBase {
               >${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.yaml_only"
               )}</paper-tooltip
-            ><ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon
+            ><ha-svg-icon
+              .path=${mdiOpenInNew}
+              class="open-in-new"
+            ></ha-svg-icon
           ></span>`
         : html`<ha-icon-next></ha-icon-next>`}
     </span>`;
@@ -104,8 +108,8 @@ export class HaIntegrationListItem extends ListItemBase {
       styles,
       css`
         :host {
-          padding-left: var(--mdc-list-side-padding, 20px);
-          padding-right: var(--mdc-list-side-padding, 20px);
+          --mdc-list-side-padding: 24px;
+          --mdc-list-item-graphic-size: 40px;
         }
         :host([graphic="avatar"]:not([twoLine])),
         :host([graphic="icon"]:not([twoLine])) {
@@ -140,6 +144,10 @@ export class HaIntegrationListItem extends ListItemBase {
         }
         ha-icon-next {
           margin-right: 8px;
+        }
+        .open-in-new {
+          --mdc-icon-size: 22px;
+          padding: 1px;
         }
       `,
     ];

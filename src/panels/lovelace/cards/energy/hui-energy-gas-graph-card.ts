@@ -106,6 +106,7 @@ export class HuiEnergyGasGraphCard
           })}"
         >
           <ha-chart-base
+            .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(
               this._start,
@@ -348,7 +349,7 @@ export class HuiEnergyGasGraphCard
         : gasColor;
 
       let prevValue: number | null = null;
-      let prevStart: string | null = null;
+      let prevStart: number | null = null;
 
       const gasConsumptionData: ScatterDataPoint[] = [];
 
@@ -357,10 +358,10 @@ export class HuiEnergyGasGraphCard
         const stats = statistics[source.stat_energy_from];
 
         for (const point of stats) {
-          if (point.sum === null) {
+          if (point.sum === null || point.sum === undefined) {
             continue;
           }
-          if (prevValue === null) {
+          if (prevValue === null || prevValue === undefined) {
             prevValue = point.sum;
             continue;
           }

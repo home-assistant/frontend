@@ -32,6 +32,7 @@ export const showOptionsFlowDialog = (
         const [step] = await Promise.all([
           createOptionsFlow(hass, handler),
           hass.loadBackendTranslation("options", configEntry.domain),
+          hass.loadBackendTranslation("selector", configEntry.domain),
         ]);
         return step;
       },
@@ -39,6 +40,7 @@ export const showOptionsFlowDialog = (
         const [step] = await Promise.all([
           fetchOptionsFlow(hass, flowId),
           hass.loadBackendTranslation("options", configEntry.domain),
+          hass.loadBackendTranslation("selector", configEntry.domain),
         ]);
         return step;
       },
@@ -107,6 +109,10 @@ export const showOptionsFlowDialog = (
           `component.${configEntry.domain}.options.error.${error}`,
           step.description_placeholders
         );
+      },
+
+      renderShowFormStepFieldLocalizeValue(hass, _step, key) {
+        return hass.localize(`component.${configEntry.domain}.selector.${key}`);
       },
 
       renderExternalStepHeader(_hass, _step) {
@@ -181,9 +187,11 @@ export const showOptionsFlowDialog = (
       renderLoadingDescription(hass, reason) {
         return (
           hass.localize(`component.${configEntry.domain}.options.loading`) ||
-          hass.localize(`ui.dialogs.options_flow.loading.${reason}`, {
-            integration: domainToName(hass.localize, configEntry.domain),
-          })
+          (reason === "loading_flow" || reason === "loading_step"
+            ? hass.localize(`ui.dialogs.options_flow.loading.${reason}`, {
+                integration: domainToName(hass.localize, configEntry.domain),
+              })
+            : "")
         );
       },
     }

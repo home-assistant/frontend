@@ -1,6 +1,7 @@
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
+import { HumidifierEntity } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -30,7 +31,7 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
       return html``;
     }
 
-    const stateObj = this.hass.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity] as HumidifierEntity;
 
     if (!stateObj) {
       return html`

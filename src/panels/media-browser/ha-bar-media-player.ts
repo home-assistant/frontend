@@ -212,7 +212,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     const mediaDescription = computeMediaDescription(stateObj);
     const mediaDuration = formatMediaTime(stateObj.attributes.media_duration);
     const mediaTitleClean = cleanupMediaTitle(
-      stateObj.attributes.media_title || ""
+      stateObj.attributes.media_title || stateObj.attributes.media_content_id
     );
     const mediaArt =
       stateObj.attributes.entity_picture_local ||
@@ -227,12 +227,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         })}
         @click=${this._openMoreInfo}
       >
-        ${mediaArt ? html`<img src=${this.hass.hassUrl(mediaArt)} />` : ""}
+        ${mediaArt
+          ? html`<img alt="" src=${this.hass.hassUrl(mediaArt)} />`
+          : ""}
         <div class="media-info">
           <hui-marquee
             .text=${mediaTitleClean ||
             mediaDescription ||
-            cleanupMediaTitle(stateObj.attributes.media_content_id) ||
             (stateObj.state !== "playing" && stateObj.state !== "on"
               ? this.hass.localize(`ui.card.media_player.nothing_playing`)
               : "")}
@@ -573,6 +574,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
           var(--card-background-color, white)
         );
         border-top: 1px solid var(--divider-color);
+        padding-bottom: env(safe-area-inset-bottom);
       }
 
       mwc-linear-progress {

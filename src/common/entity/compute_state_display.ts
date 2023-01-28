@@ -1,15 +1,21 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { EntityRegistryEntry } from "../../data/entity_registry";
 import { FrontendLocaleData } from "../../data/translation";
 import {
   updateIsInstallingFromAttributes,
   UPDATE_SUPPORT_PROGRESS,
 } from "../../data/update";
+import { HomeAssistant } from "../../types";
 import { formatDuration, UNIT_TO_SECOND_CONVERT } from "../datetime/duration";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
-import { formatNumber, isNumericFromAttributes } from "../number/format_number";
+import {
+  formatNumber,
+  getNumberFormatOptions,
+  isNumericFromAttributes,
+} from "../number/format_number";
 import { blankBeforePercent } from "../translations/blank_before_percent";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
@@ -19,11 +25,13 @@ export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
+  entities: HomeAssistant["entities"],
   state?: string
 ): string =>
   computeStateDisplayFromEntityAttributes(
     localize,
     locale,
+    entities,
     stateObj.entity_id,
     stateObj.attributes,
     state !== undefined ? state : stateObj.state
@@ -32,6 +40,7 @@ export const computeStateDisplay = (
 export const computeStateDisplayFromEntityAttributes = (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
+  entities: HomeAssistant["entities"],
   entityId: string,
   attributes: any,
   state: string
@@ -70,7 +79,11 @@ export const computeStateDisplayFromEntityAttributes = (
       : attributes.unit_of_measurement === "%"
       ? blankBeforePercent(locale) + "%"
       : ` ${attributes.unit_of_measurement}`;
-    return `${formatNumber(state, locale)}${unit}`;
+    return `${formatNumber(
+      state,
+      locale,
+      getNumberFormatOptions({ state, attributes } as HassEntity)
+    )}${unit}`;
   }
 
   const domain = computeDomain(entityId);
@@ -143,7 +156,12 @@ export const computeStateDisplayFromEntityAttributes = (
     domain === "number" ||
     domain === "input_number"
   ) {
-    return formatNumber(state, locale);
+    // Format as an integer if the value and step are integers
+    return formatNumber(
+      state,
+      locale,
+      getNumberFormatOptions({ state, attributes } as HassEntity)
+    );
   }
 
   // state of button is a timestamp
@@ -169,7 +187,8 @@ export const computeStateDisplayFromEntityAttributes = (
     // When update is not available and there is no latest_version show "Unavailable"
     return state === "on"
       ? updateIsInstallingFromAttributes(attributes)
-        ? supportsFeatureFromAttributes(attributes, UPDATE_SUPPORT_PROGRESS)
+        ? supportsFeatureFromAttributes(attributes, UPDATE_SUPPORT_PROGRESS) &&
+          typeof attributes.in_progress === "number"
           ? localize("ui.card.update.installing_with_progress", {
               progress: attributes.in_progress,
             })
@@ -180,7 +199,13 @@ export const computeStateDisplayFromEntityAttributes = (
       : localize("ui.card.update.up_to_date");
   }
 
+  const entity = entities[entityId] as EntityRegistryEntry | undefined;
+
   return (
+    (entity?.translation_key &&
+      localize(
+        `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${state}`
+      )) ||
     // Return device class translation
     (attributes.device_class &&
       localize(

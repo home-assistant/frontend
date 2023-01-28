@@ -38,6 +38,9 @@ class DialogRepairsIssue extends LitElement {
       return html``;
     }
 
+    const learnMoreUrlIsHomeAssistant =
+      this._issue.learn_more_url?.startsWith("homeassistant://") || false;
+
     return html`
       <ha-dialog
         open
@@ -57,7 +60,7 @@ class DialogRepairsIssue extends LitElement {
         <div>
           ${this._issue.breaks_in_ha_version
             ? html`
-                <ha-alert alert-type="error">
+                <ha-alert alert-type="warning">
                   ${this.hass.localize(
                     "ui.panel.config.repairs.dialog.breaks_in_version",
                     { version: this._issue.breaks_in_ha_version }
@@ -103,12 +106,17 @@ class DialogRepairsIssue extends LitElement {
         ${this._issue.learn_more_url
           ? html`
               <a
-                href=${this._issue.learn_more_url}
-                target="_blank"
+                .href=${learnMoreUrlIsHomeAssistant
+                  ? this._issue.learn_more_url.replace("homeassistant://", "/")
+                  : this._issue.learn_more_url}
+                .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
                 slot="primaryAction"
                 rel="noopener noreferrer"
               >
                 <mwc-button
+                  @click=${learnMoreUrlIsHomeAssistant
+                    ? this.closeDialog
+                    : undefined}
                   .label=${this.hass!.localize(
                     "ui.panel.config.repairs.dialog.learn"
                   )}

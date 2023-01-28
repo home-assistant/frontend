@@ -138,7 +138,7 @@ if (!window.cardTools) {
       return cardTools.createThing("row", config);
 
     const domain = config.entity.split(".", 1)[0];
-    Object.assign(config, { type: DEFAULT_ROWS[domain] || "text" });
+    Object.assign(config, { type: DEFAULT_ROWS[domain] || "simple" });
     return cardTools.createThing("entity-row", config);
   };
 

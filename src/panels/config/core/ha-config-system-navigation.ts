@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-card";
 import "../../../components/ha-navigation-list";
 import "../../../components/ha-tip";
@@ -84,7 +85,7 @@ class HaConfigSystemNavigation extends LitElement {
                   "percent_used",
                   `${Math.round(
                     (this._storageInfo.used / this._storageInfo.total) * 100
-                  )}%`,
+                  )}${blankBeforePercent(this.hass.locale)}%`,
                   "free_space",
                   `${this._storageInfo.free} GB`
                 )
@@ -206,7 +207,9 @@ class HaConfigSystemNavigation extends LitElement {
       const hardwareInfo: HardwareInfo = await this.hass.callWS({
         type: "hardware/info",
       });
-      this._boardName = hardwareInfo?.hardware?.[0]?.name;
+      this._boardName = hardwareInfo?.hardware.find(
+        (hw) => hw.board !== null
+      )?.name;
     } else if (isHassioLoaded) {
       const osData: HassioHassOSInfo = await fetchHassioHassOsInfo(this.hass);
       if (osData.board) {

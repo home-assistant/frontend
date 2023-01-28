@@ -23,7 +23,7 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
           color: var(--secondary-text-color);
         }
         .icon {
-          text-align: right;
+          text-align: var(--float-end);
         }
       </style>
       <ha-dialog

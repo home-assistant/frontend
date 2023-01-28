@@ -1,16 +1,11 @@
-const del = require("del");
 const gulp = require("gulp");
-const fs = require("fs");
+const fs = require("fs/promises");
 const mapStream = require("map-stream");
 
 const inDirFrontend = "translations/frontend";
 const inDirBackend = "translations/backend";
-const downloadDir = "translations/downloads";
 const srcMeta = "src/translations/translationMetadata.json";
-
 const encoding = "utf8";
-
-const tasks = [];
 
 function hasHtml(data) {
   return /<[a-z][\s\S]*>/i.test(data);
@@ -46,50 +41,29 @@ function checkHtml() {
   });
 }
 
-let taskName = "clean-downloaded-translations";
-gulp.task(taskName, function () {
-  return del([`${downloadDir}/**`]);
+// Backend translations do not currently pass HTML check so are excluded here for now
+gulp.task("check-translations-html", function () {
+  return gulp.src([`${inDirFrontend}/*.json`]).pipe(checkHtml());
 });
-tasks.push(taskName);
 
-taskName = "check-translations-html";
-gulp.task(taskName, function () {
-  return gulp.src(`${downloadDir}/*.json`).pipe(checkHtml());
-});
-tasks.push(taskName);
-
-taskName = "check-all-files-exist";
-gulp.task(taskName, function () {
-  const file = fs.readFileSync(srcMeta, { encoding });
+gulp.task("check-all-files-exist", async function () {
+  const file = await fs.readFile(srcMeta, { encoding });
   const meta = JSON.parse(file);
+  const writings = [];
   Object.keys(meta).forEach((lang) => {
-    if (!fs.existsSync(`${inDirFrontend}/${lang}.json`)) {
-      fs.writeFileSync(`${inDirFrontend}/${lang}.json`, JSON.stringify({}));
-    }
-    if (!fs.existsSync(`${inDirBackend}/${lang}.json`)) {
-      fs.writeFileSync(`${inDirBackend}/${lang}.json`, JSON.stringify({}));
-    }
+    writings.push(
+      fs.writeFile(`${inDirFrontend}/${lang}.json`, JSON.stringify({}), {
+        flag: "wx",
+      }),
+      fs.writeFile(`${inDirBackend}/${lang}.json`, JSON.stringify({}), {
+        flag: "wx",
+      })
+    );
   });
-  return Promise.resolve();
+  await Promise.allSettled(writings);
 });
-tasks.push(taskName);
 
-taskName = "move-downloaded-translations";
-gulp.task(taskName, function () {
-  return gulp.src(`${downloadDir}/*.json`).pipe(gulp.dest(inDirFrontend));
-});
-tasks.push(taskName);
-
-taskName = "check-downloaded-translations";
 gulp.task(
-  taskName,
-  gulp.series(
-    "check-translations-html",
-    "move-downloaded-translations",
-    "check-all-files-exist",
-    "clean-downloaded-translations"
-  )
+  "check-downloaded-translations",
+  gulp.series("check-translations-html", "check-all-files-exist")
 );
-tasks.push(taskName);
-
-module.exports = tasks;
