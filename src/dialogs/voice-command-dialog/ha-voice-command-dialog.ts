@@ -1,6 +1,11 @@
 /* eslint-disable lit/prefer-static-styles */
 import "@material/mwc-button/mwc-button";
-import { mdiClose, mdiMicrophone, mdiSend } from "@mdi/js";
+import {
+  mdiClose,
+  mdiHelpCircleOutline,
+  mdiMicrophone,
+  mdiSend,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -27,6 +32,7 @@ import {
 } from "../../data/conversation";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 
 interface Message {
   who: string;
@@ -102,6 +108,17 @@ export class HaVoiceCommandDialog extends LitElement {
               .label=${this.hass.localize("ui.common.close")}
               .path=${mdiClose}
             ></ha-icon-button>
+            <a
+              href=${documentationUrl(this.hass, "/docs/assist/")}
+              slot="actionItems"
+              target="_blank"
+              rel="noopener noreferer"
+            >
+              <ha-icon-button
+                .label=${this.hass.localize("ui.common.help")}
+                .path=${mdiHelpCircleOutline}
+              ></ha-icon-button>
+            </a>
           </ha-header-bar>
         </div>
         <div class="messages">
@@ -400,6 +417,9 @@ export class HaVoiceCommandDialog extends LitElement {
           --mdc-theme-on-primary: var(--primary-text-color);
           --mdc-theme-primary: var(--mdc-theme-surface);
         }
+        ha-header-bar a {
+          color: var(--primary-text-color);
+        }
 
         ha-textfield {
           display: block;
@@ -485,6 +505,11 @@ export class HaVoiceCommandDialog extends LitElement {
         .message.error {
           background-color: var(--error-color);
           color: var(--text-primary-color);
+        }
+
+        .input {
+          margin-left: 0;
+          margin-right: 0;
         }
 
         .interimTranscript {
