@@ -1,13 +1,20 @@
 {
   "name": "Home Assistant Frontend",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
-  },
+  "image": "mcr.microsoft.com/devcontainers/python:0-3.10",
   "appPort": "8124:8123",
   "postCreateCommand": "script/bootstrap",
   "containerEnv": {
-    "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"
+    "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}",
+    "DEVCONTAINER": "true"
+  },
+  "remoteUser": "vscode",
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}/node_modules/.bin:/home/vscode/.local/bin"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "16"
+    }
   },
   "customizations": {
     "vscode": {
@@ -32,8 +39,7 @@
         "[javascript]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
-        "files.trimTrailingWhitespace": true,
-        "terminal.integrated.shell.linux": "/usr/bin/zsh",
+        "terminal.integrated.defaultProfile.linux": "zsh",
         "gitlens.showWelcomeOnInstall": false,
         "gitlens.showWhatsNewAfterUpgrades": false,
         "workbench.startupEditor": "none"
