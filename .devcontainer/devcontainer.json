@@ -4,6 +4,7 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
+  "containerUser": "vscode",
   "forwardPorts": [8123, 8100, 8090, 8080],
   "portsAttributes": {
     "8123": {
@@ -33,6 +34,7 @@
         "eamodio.gitlens"
       ],
       "settings": {
+        "remote.autoForwardPorts": false,
         "files.eol": "\n",
         "editor.tabSize": 2,
         "editor.formatOnPaste": false,
@@ -47,7 +49,6 @@
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
         "files.trimTrailingWhitespace": true,
-        "terminal.integrated.shell.linux": "/usr/bin/zsh",
         "gitlens.showWelcomeOnInstall": false,
         "gitlens.showWhatsNewAfterUpgrades": false,
         "workbench.startupEditor": "none"
