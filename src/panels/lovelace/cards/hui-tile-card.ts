@@ -1,12 +1,22 @@
 import { memoize } from "@fullcalendar/common";
+import { Ripple } from "@material/mwc-ripple";
+import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  queryAsync,
+  state,
+} from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { hsv2rgb, rgb2hsv } from "../../../common/color/convert-color";
+import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateActive } from "../../../common/entity/state_active";
@@ -105,7 +115,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  private _handleIconAction() {
+  private _handleIconAction(ev: CustomEvent) {
+    ev.stopPropagation();
     const config = {
       entity: this._config!.entity,
       tap_action: this._config!.icon_tap_action,
@@ -139,7 +150,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       computeDomain(entity.entity_id) === "person" ||
       computeDomain(entity.entity_id) === "device_tracker"
     ) {
-      return "rgb(var(--rgb-state-default-color))";
+      return undefined;
     }
 
     // Use light color if the light support rgb
@@ -158,13 +169,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           hsvColor[1] = 0.4;
         }
       }
-      return `rgb(${hsv2rgb(hsvColor).join(",")})`;
+      return rgb2hex(hsv2rgb(hsvColor));
     }
 
     // Fallback to state color
-    const stateColor =
-      stateColorCss(entity) ?? "var(--rgb-state-default-color)";
-    return `rgb(${stateColor})`;
+    return stateColorCss(entity);
   });
 
   private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
@@ -219,6 +228,32 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return stateDisplay;
   }
 
+  @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
+
+  @state() private _shouldRenderRipple = false;
+
+  private _rippleHandlers: RippleHandlers = new RippleHandlers(() => {
+    this._shouldRenderRipple = true;
+    return this._ripple;
+  });
+
+  @eventOptions({ passive: true })
+  private handleRippleActivate(evt?: Event) {
+    this._rippleHandlers.startPress(evt);
+  }
+
+  private handleRippleDeactivate() {
+    this._rippleHandlers.endPress();
+  }
+
+  private handleRippleMouseEnter() {
+    this._rippleHandlers.startHover();
+  }
+
+  private handleRippleMouseLeave() {
+    this._rippleHandlers.endHover();
+  }
+
   protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
@@ -226,17 +261,19 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const entityId = this._config.entity;
     const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
+    const tileClasses = { vertical: Boolean(this._config.vertical) };
+
     if (!stateObj) {
       return html`
         <ha-card class="disabled">
-          <div class="tile">
+          <div class="tile ${classMap(tileClasses)}">
             <div class="icon-container">
               <ha-tile-icon class="icon" .iconPath=${mdiHelp}></ha-tile-icon>
               <ha-tile-badge
                 class="badge"
                 .iconPath=${mdiExclamationThick}
                 style=${styleMap({
-                  "--tile-badge-background-color": `rgb(var(--rgb-red-color))`,
+                  "--tile-badge-background-color": `var(--red-color)`,
                 })}
               ></ha-tile-badge>
             </div>
@@ -257,6 +294,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const stateDisplay = this._computeStateDisplay(stateObj);
 
+    const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
 
     const style = {
@@ -273,14 +311,35 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
 
     return html`
-      <ha-card style=${styleMap(style)}>
-        <div class="tile">
+      <ha-card style=${styleMap(style)} class=${classMap({ active })}>
+        ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : null}
+        <div
+          class="tile ${classMap(tileClasses)}"
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler()}
+          role="button"
+          tabindex="0"
+          @mousedown=${this.handleRippleActivate}
+          @mouseup=${this.handleRippleDeactivate}
+          @mouseenter=${this.handleRippleMouseEnter}
+          @mouseleave=${this.handleRippleMouseLeave}
+          @touchstart=${this.handleRippleActivate}
+          @touchend=${this.handleRippleDeactivate}
+          @touchcancel=${this.handleRippleDeactivate}
+        >
           <div
             class="icon-container"
             role="button"
             tabindex="0"
             @action=${this._handleIconAction}
             .actionHandler=${actionHandler()}
+            @mousedown=${stopPropagation}
+            @mouseup=${stopPropagation}
+            @mouseenter=${stopPropagation}
+            @mouseleave=${stopPropagation}
+            @touchstart=${stopPropagation}
+            @touchend=${stopPropagation}
+            @touchcancel=${stopPropagation}
           >
             ${imageUrl
               ? html`
@@ -303,7 +362,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                     .icon=${badge.icon}
                     .iconPath=${badge.iconPath}
                     style=${styleMap({
-                      "--tile-badge-background-color": `rgb(${badge.color})`,
+                      "--tile-badge-background-color": badge.color,
                     })}
                   ></ha-tile-badge>
                 `
@@ -313,10 +372,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             class="info"
             .primary=${name}
             .secondary=${stateDisplay}
-            role="button"
-            tabindex="0"
-            @action=${this._handleAction}
-            .actionHandler=${actionHandler()}
           ></ha-tile-info>
         </div>
         ${supportedFeatures?.length
@@ -364,15 +419,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --tile-color: rgb(var(--rgb-state-inactive-color));
-        --tile-tap-padding: 6px;
+        --tile-color: var(--state-inactive-color);
         -webkit-tap-highlight-color: transparent;
       }
-      ha-card {
-        height: 100%;
+      ha-card:has(.tile:focus-visible) {
+        border-color: var(--tile-color);
+        box-shadow: 0 0 0 1px var(--tile-color);
       }
-      ha-card.disabled {
-        --tile-color: rgb(var(--rgb-disabled-color));
+      ha-card {
+        --mdc-ripple-color: var(--tile-color);
+        height: 100%;
+        overflow: hidden;
+        // For safari overflow hidden
+        z-index: 0;
+      }
+      ha-card.active {
+        --tile-color: var(--state-icon-color);
       }
       [role="button"] {
         cursor: pointer;
@@ -381,18 +443,29 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         outline: none;
       }
       .tile {
-        padding: calc(12px - var(--tile-tap-padding));
         display: flex;
         flex-direction: row;
         align-items: center;
       }
+      .vertical {
+        flex-direction: column;
+        text-align: center;
+      }
+      .vertical .icon-container {
+        margin-top: 12px;
+        margin-right: 0;
+        margin-inline-start: initial;
+        margin-inline-end: initial;
+      }
+      .vertical .info {
+        width: 100%;
+      }
       .icon-container {
         position: relative;
-        padding: var(--tile-tap-padding);
         flex: none;
-        margin-right: calc(12px - 2 * var(--tile-tap-padding));
-        margin-inline-end: calc(12px - 2 * var(--tile-tap-padding));
-        margin-inline-start: initial;
+        margin-right: 12px;
+        margin-inline-start: 12px;
+        margin-inline-end: initial;
         direction: var(--direction);
         transition: transform 180ms ease-in-out;
       }
@@ -401,8 +474,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       .icon-container .badge {
         position: absolute;
-        top: calc(-3px + var(--tile-tap-padding));
-        right: calc(-3px + var(--tile-tap-padding));
+        top: -3px;
+        right: -3px;
       }
       .icon-container[role="button"]:focus-visible,
       .icon-container[role="button"]:active {
@@ -410,26 +483,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       .info {
         position: relative;
-        padding: var(--tile-tap-padding);
+        padding: 12px;
         flex: 1;
         min-width: 0;
         min-height: 40px;
         transition: background-color 180ms ease-in-out;
-      }
-      .info::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        border-radius: calc(var(--ha-card-border-radius, 10px) - 2px);
-        background-color: transparent;
-        opacity: 0.1;
-        transition: background-color ease-in-out 180ms;
-      }
-      .info:focus-visible::before {
-        background-color: var(--tile-color);
+        box-sizing: border-box;
       }
     `;
   }

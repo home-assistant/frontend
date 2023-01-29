@@ -1,7 +1,15 @@
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, literal, object, optional, string, union } from "superstruct";
+import {
+  assert,
+  boolean,
+  literal,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
@@ -18,6 +26,7 @@ const stateConditionStruct = object({
   attribute: optional(string()),
   state: optional(string()),
   for: optional(union([string(), forDictStruct])),
+  enabled: optional(boolean()),
 });
 
 @customElement("ha-automation-condition-state")

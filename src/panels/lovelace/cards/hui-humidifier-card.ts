@@ -294,6 +294,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         justify-content: center;
         padding: 16px;
         position: relative;
+        direction: ltr;
       }
 
       #slider {

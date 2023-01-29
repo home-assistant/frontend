@@ -2,6 +2,8 @@ import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
+import { fireEvent } from "../../common/dom/fire_event";
+import { computeRTL } from "../../common/util/compute_rtl";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -30,17 +32,25 @@ class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: false }) public endTime!: Date;
 
+  @property({ type: Number }) public paddingYAxis = 0;
+
+  @property({ type: Number }) public chartIndex?;
+
   @state() private _chartData?: ChartData<"line">;
 
   @state() private _chartOptions?: ChartOptions;
+
+  @state() private _yWidth = 0;
 
   private _chartTime: Date = new Date();
 
   protected render() {
     return html`
       <ha-chart-base
+        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
+        .paddingYAxis=${this.paddingYAxis - this._yWidth}
         chart-type="line"
       ></ha-chart-base>
     `;
@@ -84,6 +94,16 @@ class StateHistoryChartLine extends LitElement {
               display: true,
               text: this.unit,
             },
+            afterUpdate: (y) => {
+              if (this._yWidth !== Math.floor(y.width)) {
+                this._yWidth = Math.floor(y.width);
+                fireEvent(this, "y-width-changed", {
+                  value: this._yWidth,
+                  chartIndex: this.chartIndex,
+                });
+              }
+            },
+            position: computeRTL(this.hass) ? "right" : "left",
           },
         },
         plugins: {

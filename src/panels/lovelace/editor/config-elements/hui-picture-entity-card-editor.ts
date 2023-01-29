@@ -2,6 +2,8 @@ import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { entityId } from "../../../../common/structs/is-entity-id";
+import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureEntityCardConfig } from "../../cards/types";
@@ -9,12 +11,11 @@ import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
-import "../../../../components/ha-form/ha-form";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entity: optional(string()),
+    entity: optional(entityId()),
     image: optional(string()),
     name: optional(string()),
     camera_image: optional(string()),

@@ -230,7 +230,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
     result.push(
       ...dashboards
-        .sort((a, b) => stringCompare(a.title, b.title))
+        .sort((a, b) =>
+          stringCompare(a.title, b.title, this.hass.locale.language)
+        )
         .map((dashboard) => ({
           filename: "",
           ...dashboard,
@@ -275,13 +277,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                   .label=${this.hass.localize("ui.common.menu")}
                   .path=${mdiDotsVertical}
                 ></ha-icon-button>
-                <ha-clickable-list-item
-                  @click=${this._entryClicked}
-                  href="/config/lovelace/resources"
-                  aria-label=${this.hass.localize(
-                    "ui.panel.config.lovelace.resources.caption"
-                  )}
-                >
+                <ha-clickable-list-item href="/config/lovelace/resources">
                   ${this.hass.localize(
                     "ui.panel.config.lovelace.resources.caption"
                   )}
@@ -342,7 +338,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
       createDashboard: async (values: LovelaceDashboardCreateParams) => {
         const created = await createDashboard(this.hass!, values);
         this._dashboards = this._dashboards!.concat(created).sort(
-          (res1, res2) => stringCompare(res1.url_path, res2.url_path)
+          (res1, res2) =>
+            stringCompare(
+              res1.url_path,
+              res2.url_path,
+              this.hass.locale.language
+            )
         );
       },
       updateDashboard: async (values) => {
@@ -383,9 +384,5 @@ export class HaConfigLovelaceDashboards extends LitElement {
         }
       },
     });
-  }
-
-  private _entryClicked(ev) {
-    ev.currentTarget.blur();
   }
 }

@@ -484,7 +484,11 @@ export class QuickBar extends LitElement {
         };
       })
       .sort((a, b) =>
-        caseInsensitiveStringCompare(a.primaryText, b.primaryText)
+        caseInsensitiveStringCompare(
+          a.primaryText,
+          b.primaryText,
+          this.hass.locale.language
+        )
       );
   }
 
@@ -494,7 +498,11 @@ export class QuickBar extends LitElement {
       ...this._generateServerControlCommands(),
       ...(await this._generateNavigationCommands()),
     ].sort((a, b) =>
-      caseInsensitiveStringCompare(a.strings.join(" "), b.strings.join(" "))
+      caseInsensitiveStringCompare(
+        a.strings.join(" "),
+        b.strings.join(" "),
+        this.hass.locale.language
+      )
     );
   }
 

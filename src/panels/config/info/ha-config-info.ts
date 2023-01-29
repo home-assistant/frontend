@@ -147,7 +147,6 @@ class HaConfigInfo extends LitElement {
                     graphic="avatar"
                     openNewTab
                     href=${documentationUrl(this.hass, page.path)}
-                    @click=${this._entryClicked}
                   >
                     <div
                       slot="graphic"
@@ -210,10 +209,6 @@ class HaConfigInfo extends LitElement {
 
     this._hassioInfo = hassioInfo;
     this._osInfo = osInfo;
-  }
-
-  private _entryClicked(ev) {
-    ev.currentTarget.blur();
   }
 
   static get styles(): CSSResultGroup {

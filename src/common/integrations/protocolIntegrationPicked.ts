@@ -86,7 +86,7 @@ export const protocolIntegrationPicked = async (
           "ui.panel.config.integrations.config_flow.missing_zwave_zigbee",
           {
             integration: "Zigbee",
-            brand: options?.brand || options?.domain || "Z-Wave",
+            brand: options?.brand || options?.domain || "Zigbee",
             supported_hardware_link: html`<a
               href=${documentationUrl(
                 hass,

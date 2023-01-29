@@ -54,7 +54,11 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
   private async _fetchTags() {
     this._tags = (await fetchTags(this.hass)).sort((a, b) =>
-      caseInsensitiveStringCompare(a.name || a.id, b.name || b.id)
+      caseInsensitiveStringCompare(
+        a.name || a.id,
+        b.name || b.id,
+        this.hass.locale.language
+      )
     );
   }
 

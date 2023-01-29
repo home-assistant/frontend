@@ -220,6 +220,7 @@ export class EnergyGridSettings extends LitElement {
           ${this._co2ConfigEntry
             ? html`<div class="row" .entry=${this._co2ConfigEntry}>
                 <img
+                  alt=""
                   referrerpolicy="no-referrer"
                   src=${brandsUrl({
                     domain: "co2signal",
@@ -244,6 +245,7 @@ export class EnergyGridSettings extends LitElement {
             : html`
                 <div class="row border-bottom">
                   <img
+                    alt=""
                     referrerpolicy="no-referrer"
                     src=${brandsUrl({
                       domain: "co2signal",

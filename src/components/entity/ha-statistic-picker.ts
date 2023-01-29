@@ -177,7 +177,9 @@ export class HaStatisticPicker extends LitElement {
       }
 
       if (output.length > 1) {
-        output.sort((a, b) => stringCompare(a.name || "", b.name || ""));
+        output.sort((a, b) =>
+          stringCompare(a.name || "", b.name || "", this.hass.locale.language)
+        );
       }
 
       output.push({

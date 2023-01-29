@@ -47,6 +47,7 @@ export class HaIntegrationListItem extends ListItemBase {
       )}"
     >
       <img
+        alt=""
         loading="lazy"
         src=${brandsUrl({
           domain: this.integration.domain,

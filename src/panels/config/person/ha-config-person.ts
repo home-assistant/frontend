@@ -156,10 +156,10 @@ class HaConfigPerson extends LitElement {
     const personData = await fetchPersons(this.hass!);
 
     this._storageItems = personData.storage.sort((ent1, ent2) =>
-      stringCompare(ent1.name, ent2.name)
+      stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
     );
     this._configItems = personData.config.sort((ent1, ent2) =>
-      stringCompare(ent1.name, ent2.name)
+      stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
     );
     this._openDialogIfPersonSpecifiedInRoute();
   }
@@ -221,7 +221,8 @@ class HaConfigPerson extends LitElement {
       createEntry: async (values) => {
         const created = await createPerson(this.hass!, values);
         this._storageItems = this._storageItems!.concat(created).sort(
-          (ent1, ent2) => stringCompare(ent1.name, ent2.name)
+          (ent1, ent2) =>
+            stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
         );
       },
       updateEntry: async (values) => {

@@ -144,7 +144,7 @@ export default class HaAutomationAction extends LitElement {
         </mwc-button>
         ${this._processedTypes(this.hass.localize).map(
           ([opt, label, icon]) => html`
-            <mwc-list-item .value=${opt} aria-label=${label} graphic="icon">
+            <mwc-list-item .value=${opt} graphic="icon">
               ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
             ></mwc-list-item>
           `
@@ -299,7 +299,7 @@ export default class HaAutomationAction extends LitElement {
               icon,
             ] as [string, string, string]
         )
-        .sort((a, b) => stringCompare(a[1], b[1]))
+        .sort((a, b) => stringCompare(a[1], b[1], this.hass.locale.language))
   );
 
   static get styles(): CSSResultGroup {

@@ -28,7 +28,7 @@ const cardConfigStruct = assign(
     entities: array(entitiesConfigStruct),
     title: optional(string()),
     hours_to_show: optional(number()),
-    refresh_interval: optional(number()),
+    refresh_interval: optional(number()), // deprecated
     show_names: optional(boolean()),
   })
 );
@@ -40,10 +40,6 @@ const SCHEMA = [
     type: "grid",
     schema: [
       { name: "hours_to_show", selector: { number: { min: 1, mode: "box" } } },
-      {
-        name: "refresh_interval",
-        selector: { number: { min: 1, mode: "box" } },
-      },
     ],
   },
 ] as const;

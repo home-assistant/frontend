@@ -14,6 +14,7 @@ import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-alert";
 import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { navigate } from "../../../../../common/navigate";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 
 @customElement("matter-config-panel")
 export class MatterConfigPanel extends LitElement {
@@ -32,18 +33,24 @@ export class MatterConfigPanel extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-subpage .narrow=${this.narrow} .hass=${this.hass} header="Matter">
+        ${isComponentLoaded(this.hass, "otbr")
+          ? html`
+              <a href="/config/thread" slot="toolbar-icon">
+                <mwc-button>Visit Thread Panel</mwc-button>
+              </a>
+            `
+          : ""}
         <div class="content">
           <ha-card header="Matter">
+            <ha-alert alert-type="warning"
+              >Matter is still in the early phase of development, it is not
+              meant to be used in production. This panel is for development
+              only.</ha-alert
+            >
             <div class="card-content">
               ${this._error
                 ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
                 : ""}
-              <ha-alert alert-type="warning"
-                >Matter is still in the early phase of development, it is not
-                meant to be used in production. This panel is for development
-                only.</ha-alert
-              >
-
               You can add Matter devices by commissing them if they are not
               setup yet, or share them from another controller and enter the
               share code.
@@ -199,6 +206,10 @@ export class MatterConfigPanel extends LitElement {
   static styles = [
     haStyle,
     css`
+      ha-alert[alert-type="warning"] {
+        position: relative;
+        top: -16px;
+      }
       .content {
         padding: 24px 0 32px;
         max-width: 600px;
@@ -207,6 +218,9 @@ export class MatterConfigPanel extends LitElement {
       }
       ha-card:first-child {
         margin-bottom: 16px;
+      }
+      a[slot="toolbar-icon"] {
+        text-decoration: none;
       }
     `,
   ];

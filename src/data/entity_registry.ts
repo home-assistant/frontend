@@ -29,6 +29,8 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   original_icon?: string;
   device_class?: string;
   original_device_class?: string;
+  aliases: string[];
+  options: EntityRegistryOptions | null;
 }
 
 export interface UpdateEntityRegistryEntryResult {
@@ -38,6 +40,7 @@ export interface UpdateEntityRegistryEntryResult {
 }
 
 export interface SensorEntityOptions {
+  precision?: number | null;
   unit_of_measurement?: string | null;
 }
 
@@ -53,6 +56,12 @@ export interface WeatherEntityOptions {
   wind_speed_unit?: string | null;
 }
 
+export interface EntityRegistryOptions {
+  number?: NumberEntityOptions;
+  sensor?: SensorEntityOptions;
+  weather?: WeatherEntityOptions;
+}
+
 export interface EntityRegistryEntryUpdateParams {
   name?: string | null;
   icon?: string | null;
@@ -63,6 +72,7 @@ export interface EntityRegistryEntryUpdateParams {
   new_entity_id?: string;
   options_domain?: string;
   options?: SensorEntityOptions | NumberEntityOptions | WeatherEntityOptions;
+  aliases?: string[];
 }
 
 export const findBatteryEntity = (
@@ -107,6 +117,15 @@ export const getExtendedEntityRegistryEntry = (
   hass.callWS({
     type: "config/entity_registry/get",
     entity_id: entityId,
+  });
+
+export const getExtendedEntityRegistryEntries = (
+  hass: HomeAssistant,
+  entityIds: string[]
+): Promise<Record<string, ExtEntityRegistryEntry>> =>
+  hass.callWS({
+    type: "config/entity_registry/get_entries",
+    entity_ids: entityIds,
   });
 
 export const updateEntityRegistryEntry = (
@@ -162,9 +181,12 @@ export const subscribeEntityRegistry = (
     onChange
   );
 
-export const sortEntityRegistryByName = (entries: EntityRegistryEntry[]) =>
+export const sortEntityRegistryByName = (
+  entries: EntityRegistryEntry[],
+  language: string
+) =>
   entries.sort((entry1, entry2) =>
-    caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
+    caseInsensitiveStringCompare(entry1.name || "", entry2.name || "", language)
   );
 
 export const entityRegistryById = memoizeOne(

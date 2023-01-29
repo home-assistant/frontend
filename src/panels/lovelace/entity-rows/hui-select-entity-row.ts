@@ -102,6 +102,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
       }
       ha-select {
         width: 100%;
+        --ha-select-min-width: 0;
       }
     `;
   }

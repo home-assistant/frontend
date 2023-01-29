@@ -2,7 +2,6 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { TranslationDict } from "../types";
 
 export type HvacMode =
   | "off"
@@ -15,12 +14,13 @@ export type HvacMode =
 
 export const CLIMATE_PRESET_NONE = "none";
 
-type ClimateAttributes = TranslationDict["state_attributes"]["climate"];
-export type HvacAction = keyof ClimateAttributes["hvac_action"];
-export type FanMode = keyof ClimateAttributes["fan_mode"];
-export type PresetMode =
-  | keyof ClimateAttributes["preset_mode"]
-  | typeof CLIMATE_PRESET_NONE;
+export type HvacAction =
+  | "off"
+  | "heating"
+  | "cooling"
+  | "drying"
+  | "idle"
+  | "fan";
 
 export type ClimateEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
@@ -40,23 +40,25 @@ export type ClimateEntity = HassEntityBase & {
     target_humidity_high?: number;
     min_humidity?: number;
     max_humidity?: number;
-    fan_mode?: FanMode;
-    fan_modes?: FanMode[];
-    preset_mode?: PresetMode;
-    preset_modes?: PresetMode[];
+    fan_mode?: string;
+    fan_modes?: string[];
+    preset_mode?: string;
+    preset_modes?: string[];
     swing_mode?: string;
     swing_modes?: string[];
     aux_heat?: "on" | "off";
   };
 };
 
-export const CLIMATE_SUPPORT_TARGET_TEMPERATURE = 1;
-export const CLIMATE_SUPPORT_TARGET_TEMPERATURE_RANGE = 2;
-export const CLIMATE_SUPPORT_TARGET_HUMIDITY = 4;
-export const CLIMATE_SUPPORT_FAN_MODE = 8;
-export const CLIMATE_SUPPORT_PRESET_MODE = 16;
-export const CLIMATE_SUPPORT_SWING_MODE = 32;
-export const CLIMATE_SUPPORT_AUX_HEAT = 64;
+export const enum ClimateEntityFeature {
+  TARGET_TEMPERATURE = 1,
+  TARGET_TEMPERATURE_RANGE = 2,
+  TARGET_HUMIDITY = 4,
+  FAN_MODE = 8,
+  PRESET_MODE = 16,
+  SWING_MODE = 32,
+  AUX_HEAT = 64,
+}
 
 const hvacModeOrdering: { [key in HvacMode]: number } = {
   auto: 1,
@@ -70,3 +72,12 @@ const hvacModeOrdering: { [key in HvacMode]: number } = {
 
 export const compareClimateHvacModes = (mode1: HvacMode, mode2: HvacMode) =>
   hvacModeOrdering[mode1] - hvacModeOrdering[mode2];
+
+export const HVAC_ACTION_TO_MODE: Record<HvacAction, HvacMode> = {
+  cooling: "cool",
+  drying: "dry",
+  fan: "fan_only",
+  heating: "heat",
+  idle: "off",
+  off: "off",
+};

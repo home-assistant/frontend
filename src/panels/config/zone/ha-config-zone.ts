@@ -296,7 +296,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private async _fetchData() {
     this._storageItems = (await fetchZones(this.hass!)).sort((ent1, ent2) =>
-      stringCompare(ent1.name, ent2.name)
+      stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
     );
     this._getStates();
   }
@@ -411,7 +411,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   private async _createEntry(values: ZoneMutableParams) {
     const created = await createZone(this.hass!, values);
     this._storageItems = this._storageItems!.concat(created).sort(
-      (ent1, ent2) => stringCompare(ent1.name, ent2.name)
+      (ent1, ent2) =>
+        stringCompare(ent1.name, ent2.name, this.hass!.locale.language)
     );
     if (this.narrow) {
       return;

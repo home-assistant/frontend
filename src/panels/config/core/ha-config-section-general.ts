@@ -304,7 +304,11 @@ class HaConfigSectionGeneral extends LitElement {
     }
     this._languages = Object.entries(this.hass.translationMetadata.translations)
       .sort((a, b) =>
-        caseInsensitiveStringCompare(a[1].nativeName, b[1].nativeName)
+        caseInsensitiveStringCompare(
+          a[1].nativeName,
+          b[1].nativeName,
+          this.hass.locale.language
+        )
       )
       .map(([value, metaData]) => ({
         value,

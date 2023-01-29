@@ -117,7 +117,7 @@ class OnboardingIntegrations extends LitElement {
       }
     );
     const content = [...entries, ...discovered]
-      .sort((a, b) => stringCompare(a[0], b[0]))
+      .sort((a, b) => stringCompare(a[0], b[0], this.hass.locale.language))
       .map((item) => item[1]);
 
     return html`

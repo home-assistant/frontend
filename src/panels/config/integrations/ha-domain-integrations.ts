@@ -48,6 +48,7 @@ class HaDomainIntegrations extends LitElement {
                 hasMeta
               >
                 <img
+                  alt=""
                   slot="graphic"
                   loading="lazy"
                   src=${brandsUrl({
@@ -91,6 +92,7 @@ class HaDomainIntegrations extends LitElement {
               <img
                 slot="graphic"
                 loading="lazy"
+                alt=""
                 src=${brandsUrl({
                   domain,
                   type: "icon",
@@ -121,7 +123,8 @@ class HaDomainIntegrations extends LitElement {
               }
               return caseInsensitiveStringCompare(
                 a[1].name || domainToName(this.hass.localize, a[0]),
-                b[1].name || domainToName(this.hass.localize, b[0])
+                b[1].name || domainToName(this.hass.localize, b[0]),
+                this.hass.locale.language
               );
             })
             .map(
@@ -151,6 +154,7 @@ class HaDomainIntegrations extends LitElement {
             <img
               slot="graphic"
               loading="lazy"
+              alt=""
               src=${brandsUrl({
                 domain: this.domain,
                 type: "icon",

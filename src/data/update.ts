@@ -68,7 +68,10 @@ export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
     entity_id: entityId,
   });
 
-export const filterUpdateEntities = (entities: HassEntities) =>
+export const filterUpdateEntities = (
+  entities: HassEntities,
+  language?: string
+) =>
   (
     Object.values(entities).filter(
       (entity) => computeStateDomain(entity) === "update"
@@ -94,7 +97,8 @@ export const filterUpdateEntities = (entities: HassEntities) =>
     }
     return caseInsensitiveStringCompare(
       a.attributes.title || a.attributes.friendly_name || "",
-      b.attributes.title || b.attributes.friendly_name || ""
+      b.attributes.title || b.attributes.friendly_name || "",
+      language
     );
   });
 
@@ -110,7 +114,7 @@ export const checkForEntityUpdates = async (
   element: HTMLElement,
   hass: HomeAssistant
 ) => {
-  const entities = filterUpdateEntities(hass.states).map(
+  const entities = filterUpdateEntities(hass.states, hass.locale.language).map(
     (entity) => entity.entity_id
   );
 

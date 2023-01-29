@@ -54,19 +54,20 @@ interface ConversationResult {
 
 export interface AgentInfo {
   attribution?: { name: string; url: string };
-  onboarding?: { text: string; url: string };
 }
 
 export const processConversationInput = (
   hass: HomeAssistant,
   text: string,
   // eslint-disable-next-line: variable-name
-  conversation_id: string
+  conversation_id: string | null,
+  language: string
 ): Promise<ConversationResult> =>
   hass.callWS({
     type: "conversation/process",
     text,
     conversation_id,
+    language,
   });
 
 export const getAgentInfo = (hass: HomeAssistant): Promise<AgentInfo> =>
@@ -74,11 +75,11 @@ export const getAgentInfo = (hass: HomeAssistant): Promise<AgentInfo> =>
     type: "conversation/agent/info",
   });
 
-export const setConversationOnboarding = (
+export const prepareConversation = (
   hass: HomeAssistant,
-  value: boolean
-): Promise<boolean> =>
+  language?: string
+): Promise<void> =>
   hass.callWS({
-    type: "conversation/onboarding/set",
-    shown: value,
+    type: "conversation/prepare",
+    language,
   });

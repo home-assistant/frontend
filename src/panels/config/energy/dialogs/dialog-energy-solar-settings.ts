@@ -130,6 +130,7 @@ export class DialogEnergySolarSettings
                     style="display: flex; align-items: center;"
                   >
                     <img
+                      alt=""
                       referrerpolicy="no-referrer"
                       style="height: 24px; margin-right: 16px;"
                       src=${brandsUrl({

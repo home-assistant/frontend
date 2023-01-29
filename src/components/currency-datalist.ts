@@ -157,7 +157,7 @@ export const CURRENCIES = [
   "XPF",
   "YER",
   "ZAR",
-  "ZMK",
+  "ZMW",
   "ZWL",
 ];
 
@@ -173,14 +173,16 @@ export const getCurrencyOptions = memoizeOne((language?: string) => {
     value: currency,
     label: currencyDisplayNames ? currencyDisplayNames.of(currency)! : currency,
   }));
-  options.sort((a, b) => caseInsensitiveStringCompare(a.label, b.label));
+  options.sort((a, b) =>
+    caseInsensitiveStringCompare(a.label, b.label, language)
+  );
   return options;
 });
 
-export const createCurrencyListEl = () => {
+export const createCurrencyListEl = (language: string) => {
   const list = document.createElement("datalist");
   list.id = "currencies";
-  for (const currency of getCurrencyOptions()) {
+  for (const currency of getCurrencyOptions(language)) {
     const option = document.createElement("option");
     option.value = currency.value;
     option.innerText = currency.label;

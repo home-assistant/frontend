@@ -77,7 +77,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     await new Promise((resolve) => {
       imageObj.onload = resolve;
     });
-    context.drawImage(
+    context?.drawImage(
       imageObj,
       canvas.width / 3,
       canvas.height / 3,
@@ -85,7 +85,14 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
       canvas.height / 3
     );
 
-    this._qrCode = html`<img src=${canvas.toDataURL()}></img>`;
+    this._qrCode = html`<img
+        alt=${this.hass.localize(
+          "ui.panel.profile.long_lived_access_tokens.qr_code_image",
+          "name",
+          this._params!.name
+        )}
+        src=${canvas.toDataURL()}
+      ></img>`;
   }
 
   static get styles(): CSSResultGroup {

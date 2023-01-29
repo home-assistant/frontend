@@ -44,6 +44,7 @@ declare global {
 export type TranslationCategory =
   | "title"
   | "state"
+  | "state_attributes"
   | "entity"
   | "config"
   | "config_panel"
@@ -53,7 +54,8 @@ export type TranslationCategory =
   | "system_health"
   | "device_class"
   | "application_credentials"
-  | "issues";
+  | "issues"
+  | "selector";
 
 export const fetchTranslationPreferences = (hass: HomeAssistant) =>
   fetchFrontendUserData(hass.connection, "language");

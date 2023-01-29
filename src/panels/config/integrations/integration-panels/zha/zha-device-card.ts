@@ -50,7 +50,8 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         .sort((ent1, ent2) =>
           stringCompare(
             ent1.stateName || `zzz${ent1.entity_id}`,
-            ent2.stateName || `zzz${ent2.entity_id}`
+            ent2.stateName || `zzz${ent2.entity_id}`,
+            this.hass.locale.language
           )
         )
   );

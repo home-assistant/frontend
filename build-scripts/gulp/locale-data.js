@@ -1,4 +1,4 @@
-const del = require("del");
+const del = import("del");
 const path = require("path");
 const gulp = require("gulp");
 const fs = require("fs");
@@ -6,7 +6,7 @@ const paths = require("../paths");
 
 const outDir = "build/locale-data";
 
-gulp.task("clean-locale-data", () => del([outDir]));
+gulp.task("clean-locale-data", async () => (await del).deleteSync([outDir]));
 
 gulp.task("ensure-locale-data-build-dir", (done) => {
   if (!fs.existsSync(outDir)) {

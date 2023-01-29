@@ -20,6 +20,7 @@ const cardConfigStruct = assign(
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     theme: optional(string()),
+    alt_text: optional(string()),
   })
 );
 
@@ -53,6 +54,10 @@ export class HuiPictureCardEditor
     return this._config!.theme || "";
   }
 
+  get _alt_text(): string {
+    return this._config!.alt_text || "";
+  }
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -70,6 +75,16 @@ export class HuiPictureCardEditor
           )})"
           .value=${this._image}
           .configValue=${"image"}
+          @input=${this._valueChanged}
+        ></ha-textfield>
+        <ha-textfield
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.alt_text"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .value=${this._alt_text}
+          .configValue=${"alt_text"}
           @input=${this._valueChanged}
         ></ha-textfield>
         <ha-theme-picker

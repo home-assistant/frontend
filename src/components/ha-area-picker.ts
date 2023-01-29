@@ -73,6 +73,14 @@ export class HaAreaPicker extends LitElement {
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
 
+  /**
+   * List of areas to be excluded.
+   * @type {Array}
+   * @attr exclude-areas
+   */
+  @property({ type: Array, attribute: "exclude-areas" })
+  public excludeAreas?: string[];
+
   @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
   @property() public entityFilter?: (entity: EntityRegistryEntry) => boolean;
@@ -109,7 +117,8 @@ export class HaAreaPicker extends LitElement {
       includeDeviceClasses: this["includeDeviceClasses"],
       deviceFilter: this["deviceFilter"],
       entityFilter: this["entityFilter"],
-      noAdd: this["noAdd"]
+      noAdd: this["noAdd"],
+      excludeAreas: this["excludeAreas"]
     ): AreaRegistryEntry[] => {
       if (!areas.length) {
         return [
@@ -117,6 +126,7 @@ export class HaAreaPicker extends LitElement {
             area_id: "no_areas",
             name: this.hass.localize("ui.components.area-picker.no_areas"),
             picture: null,
+            aliases: [],
           },
         ];
       }
@@ -235,12 +245,19 @@ export class HaAreaPicker extends LitElement {
         outputAreas = areas.filter((area) => areaIds!.includes(area.area_id));
       }
 
+      if (excludeAreas) {
+        outputAreas = outputAreas.filter(
+          (area) => !excludeAreas!.includes(area.area_id)
+        );
+      }
+
       if (!outputAreas.length) {
         outputAreas = [
           {
             area_id: "no_areas",
             name: this.hass.localize("ui.components.area-picker.no_match"),
             picture: null,
+            aliases: [],
           },
         ];
       }
@@ -253,6 +270,7 @@ export class HaAreaPicker extends LitElement {
               area_id: "add_new",
               name: this.hass.localize("ui.components.area-picker.add_new"),
               picture: null,
+              aliases: [],
             },
           ];
     }
@@ -264,7 +282,7 @@ export class HaAreaPicker extends LitElement {
       (this._init && changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      (this.comboBox as any).items = this._getAreas(
+      const areas = this._getAreas(
         Object.values(this.hass.areas),
         Object.values(this.hass.devices),
         Object.values(this.hass.entities),
@@ -273,8 +291,11 @@ export class HaAreaPicker extends LitElement {
         this.includeDeviceClasses,
         this.deviceFilter,
         this.entityFilter,
-        this.noAdd
+        this.noAdd,
+        this.excludeAreas
       );
+      (this.comboBox as any).items = areas;
+      (this.comboBox as any).filteredItems = areas;
     }
   }
 
@@ -384,7 +405,8 @@ export class HaAreaPicker extends LitElement {
             this.includeDeviceClasses,
             this.deviceFilter,
             this.entityFilter,
-            this.noAdd
+            this.noAdd,
+            this.excludeAreas
           );
           await this.updateComplete;
           await this.comboBox.updateComplete;

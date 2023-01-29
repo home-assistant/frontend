@@ -174,7 +174,8 @@ export class HaEntityPicker extends LitElement {
           .sort((entityA, entityB) =>
             caseInsensitiveStringCompare(
               entityA.friendly_name,
-              entityB.friendly_name
+              entityB.friendly_name,
+              this.hass.locale.language
             )
           );
       }
@@ -205,7 +206,8 @@ export class HaEntityPicker extends LitElement {
         .sort((entityA, entityB) =>
           caseInsensitiveStringCompare(
             entityA.friendly_name,
-            entityB.friendly_name
+            entityB.friendly_name,
+            this.hass.locale.language
           )
         );
 

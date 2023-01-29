@@ -38,7 +38,7 @@ const cardConfigStruct = assign(
 
 const stat_types = ["mean", "min", "max", "change"] as const;
 
-const statTypeMap: Record<typeof stat_types[number], StatisticType> = {
+const statTypeMap: Record<(typeof stat_types)[number], StatisticType> = {
   mean: "mean",
   min: "min",
   max: "max",

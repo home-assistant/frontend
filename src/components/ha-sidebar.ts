@@ -87,7 +87,8 @@ const panelSorter = (
   reverseSort: string[],
   defaultPanel: string,
   a: PanelInfo,
-  b: PanelInfo
+  b: PanelInfo,
+  language: string
 ) => {
   const indexA = reverseSort.indexOf(a.url_path);
   const indexB = reverseSort.indexOf(b.url_path);
@@ -97,13 +98,14 @@ const panelSorter = (
     }
     return -1;
   }
-  return defaultPanelSorter(defaultPanel, a, b);
+  return defaultPanelSorter(defaultPanel, a, b, language);
 };
 
 const defaultPanelSorter = (
   defaultPanel: string,
   a: PanelInfo,
-  b: PanelInfo
+  b: PanelInfo,
+  language: string
 ) => {
   // Put all the Lovelace at the top.
   const aLovelace = a.component_name === "lovelace";
@@ -117,7 +119,7 @@ const defaultPanelSorter = (
   }
 
   if (aLovelace && bLovelace) {
-    return stringCompare(a.title!, b.title!);
+    return stringCompare(a.title!, b.title!, language);
   }
   if (aLovelace && !bLovelace) {
     return -1;
@@ -139,7 +141,7 @@ const defaultPanelSorter = (
     return 1;
   }
   // both not built in, sort by title
-  return stringCompare(a.title!, b.title!);
+  return stringCompare(a.title!, b.title!, language);
 };
 
 const computePanels = memoizeOne(
@@ -147,7 +149,8 @@ const computePanels = memoizeOne(
     panels: HomeAssistant["panels"],
     defaultPanel: HomeAssistant["defaultPanel"],
     panelsOrder: string[],
-    hiddenPanels: string[]
+    hiddenPanels: string[],
+    locale: HomeAssistant["locale"]
   ): [PanelInfo[], PanelInfo[]] => {
     if (!panels) {
       return [[], []];
@@ -171,8 +174,12 @@ const computePanels = memoizeOne(
 
     const reverseSort = [...panelsOrder].reverse();
 
-    beforeSpacer.sort((a, b) => panelSorter(reverseSort, defaultPanel, a, b));
-    afterSpacer.sort((a, b) => panelSorter(reverseSort, defaultPanel, a, b));
+    beforeSpacer.sort((a, b) =>
+      panelSorter(reverseSort, defaultPanel, a, b, locale.language)
+    );
+    afterSpacer.sort((a, b) =>
+      panelSorter(reverseSort, defaultPanel, a, b, locale.language)
+    );
 
     return [beforeSpacer, afterSpacer];
   }
@@ -374,7 +381,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this.hass.panels,
       this.hass.defaultPanel,
       this._panelOrder,
-      this._hiddenPanels
+      this._hiddenPanels,
+      this.hass.locale
     );
 
     // Show the supervisor as beeing part of configuration

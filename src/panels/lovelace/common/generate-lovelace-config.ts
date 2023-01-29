@@ -59,7 +59,7 @@ const splitByAreaDevice = (
   for (const entity of Object.values(entityEntries)) {
     const areaId =
       entity.area_id ||
-      (entity.device_id && deviceEntries[entity.device_id].area_id);
+      (entity.device_id && deviceEntries[entity.device_id]?.area_id);
     if (areaId && areaId in areaEntries && entity.entity_id in allEntities) {
       if (!(areaId in areasWithEntities)) {
         areasWithEntities[areaId] = [];
@@ -161,7 +161,7 @@ export const computeCards = (
       renderFooterEntities &&
       (domain === "scene" || domain === "script")
     ) {
-      const conf: typeof footerEntities[0] = {
+      const conf: (typeof footerEntities)[0] = {
         entity: entityId,
         show_icon: true,
         show_name: true,

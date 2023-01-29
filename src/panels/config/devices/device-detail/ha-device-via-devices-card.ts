@@ -31,7 +31,8 @@ export class HaDeviceViaDevicesCard extends LitElement {
         .sort((d1, d2) =>
           caseInsensitiveStringCompare(
             computeDeviceName(d1, this.hass),
-            computeDeviceName(d2, this.hass)
+            computeDeviceName(d2, this.hass),
+            this.hass.locale.language
           )
         )
   );

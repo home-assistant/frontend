@@ -302,6 +302,9 @@ export class HAFullCalendar extends LitElement {
 
   private _handleEventClick(info): void {
     const entityStateObj = this.hass.states[info.event.extendedProps.calendar];
+    const canEdit =
+      entityStateObj &&
+      supportsFeature(entityStateObj, CalendarEntityFeature.UPDATE_EVENT);
     const canDelete =
       entityStateObj &&
       supportsFeature(entityStateObj, CalendarEntityFeature.DELETE_EVENT);
@@ -312,6 +315,7 @@ export class HAFullCalendar extends LitElement {
       updated: () => {
         this._fireViewChanged();
       },
+      canEdit: canEdit,
       canDelete: canDelete,
     });
   }

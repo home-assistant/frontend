@@ -96,7 +96,7 @@ class DialogTagDetail
             ></ha-textfield>
             ${!this._params.entry
               ? html`<ha-textfield
-                  .value=${this._id}
+                  .value=${this._id || ""}
                   .configValue=${"id"}
                   @input=${this._valueChanged}
                   .label=${this.hass!.localize(
@@ -236,7 +236,7 @@ class DialogTagDetail
     await new Promise((resolve) => {
       imageObj.onload = resolve;
     });
-    context.drawImage(
+    context?.drawImage(
       imageObj,
       canvas.width / 3,
       canvas.height / 3,
@@ -244,7 +244,14 @@ class DialogTagDetail
       canvas.height / 3
     );
 
-    this._qrCode = html`<img src=${canvas.toDataURL()}></img>`;
+    this._qrCode = html`<img
+        alt=${this.hass.localize(
+          "ui.panel.config.tag.qr_code_image",
+          "name",
+          this._name
+        )}
+        src=${canvas.toDataURL()}
+      ></img>`;
   }
 
   static get styles(): CSSResultGroup {

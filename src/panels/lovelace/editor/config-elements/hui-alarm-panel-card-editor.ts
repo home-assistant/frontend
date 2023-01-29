@@ -1,20 +1,21 @@
-import "../../../../components/ha-form/ha-form";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { array, assert, assign, object, optional, string } from "superstruct";
 import memoizeOne from "memoize-one";
+import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { entityId } from "../../../../common/structs/is-entity-id";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { AlarmPanelCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entity: optional(string()),
+    entity: optional(entityId()),
     name: optional(string()),
     states: optional(array()),
     theme: optional(string()),

@@ -3,13 +3,13 @@ import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiCodeBraces,
+  mdiCommentProcessingOutline,
   mdiDotsVertical,
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
   mdiHelp,
   mdiHelpCircle,
   mdiMagnify,
-  mdiMicrophone,
   mdiPencil,
   mdiPlus,
   mdiRefresh,
@@ -266,7 +266,7 @@ class HUIRoot extends LitElement {
                                         ((Array.isArray(view.visible) &&
                                           !view.visible.some(
                                             (e) =>
-                                              e.user === this.hass!.user!.id
+                                              e.user === this.hass!.user?.id
                                           )) ||
                                           view.visible === false))
                                   ),
@@ -302,9 +302,9 @@ class HUIRoot extends LitElement {
                     ? html`
                         <ha-icon-button
                           .label=${this.hass!.localize(
-                            "ui.panel.lovelace.menu.start_conversation"
+                            "ui.panel.lovelace.menu.assist"
                           )}
-                          .path=${mdiMicrophone}
+                          .path=${mdiCommentProcessingOutline}
                           @click=${this._showVoiceCommandDialog}
                         ></ha-icon-button>
                       `
@@ -324,7 +324,7 @@ class HUIRoot extends LitElement {
                             ? html`
                                 <mwc-list-item
                                   graphic="icon"
-                                  @request-selected=${this._showQuickBar}
+                                  @request-selected=${this._handleShowQuickBar}
                                 >
                                   ${this.hass!.localize(
                                     "ui.panel.lovelace.menu.search"
@@ -343,15 +343,15 @@ class HUIRoot extends LitElement {
                                 <mwc-list-item
                                   graphic="icon"
                                   @request-selected=${this
-                                    ._showVoiceCommandDialog}
+                                    ._handleShowVoiceCommandDialog}
                                 >
                                   ${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.start_conversation"
+                                    "ui.panel.lovelace.menu.assist"
                                   )}
 
                                   <ha-svg-icon
                                     slot="graphic"
-                                    .path=${mdiMicrophone}
+                                    .path=${mdiCommentProcessingOutline}
                                   ></ha-svg-icon>
                                 </mwc-list-item>
                               `
@@ -470,7 +470,7 @@ class HUIRoot extends LitElement {
                                 view.visible !== undefined &&
                                 ((Array.isArray(view.visible) &&
                                   !view.visible.some(
-                                    (e) => e.user === this.hass!.user!.id
+                                    (e) => e.user === this.hass!.user?.id
                                   )) ||
                                   view.visible === false)
                             ),
@@ -711,6 +711,13 @@ class HUIRoot extends LitElement {
     });
   }
 
+  private _handleShowQuickBar(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._showQuickBar();
+  }
+
   private _showQuickBar(): void {
     showQuickBar(this, {
       commandMode: false,
@@ -760,6 +767,15 @@ class HUIRoot extends LitElement {
       return;
     }
     navigate(`${this.route?.prefix}/hass-unused-entities`);
+  }
+
+  private _handleShowVoiceCommandDialog(
+    ev: CustomEvent<RequestSelectedDetail>
+  ): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._showVoiceCommandDialog();
   }
 
   private _showVoiceCommandDialog(): void {
