@@ -39,7 +39,8 @@
         "[javascript]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
-        "terminal.integrated.defaultProfile.linux": "zsh",
+        "files.trimTrailingWhitespace": true,
+        "terminal.integrated.shell.linux": "/usr/bin/zsh",
         "gitlens.showWelcomeOnInstall": false,
         "gitlens.showWhatsNewAfterUpgrades": false,
         "workbench.startupEditor": "none"
