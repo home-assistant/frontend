@@ -90,9 +90,9 @@ export class HuiStatisticCardEditor
     if (!config || !config.period) {
       return config;
     }
-    for (const period of Object.values(periods)) {
+    for (const [periodKey, period] of Object.entries(periods)) {
       if (deepEqual(period, config.period)) {
-        return { ...config, period };
+        return { ...config, period: periodKey };
       }
     }
     return config;
@@ -102,7 +102,7 @@ export class HuiStatisticCardEditor
     (
       entity: string,
       icon: string,
-      periodVal: any,
+      selectedPeriodKey: string | undefined,
       entityState: HassEntity,
       localize: LocalizeFunc,
       metadata?: StatisticsMetaData
@@ -130,22 +130,22 @@ export class HuiStatisticCardEditor
         {
           name: "period",
           required: true,
-          selector: Object.values(periods).includes(periodVal)
-            ? {
-                select: {
-                  multiple: false,
-                  options: Object.entries(periods).map(
-                    ([periodKey, period]) => ({
-                      value: period,
+          selector:
+            selectedPeriodKey &&
+            Object.keys(periods).includes(selectedPeriodKey)
+              ? {
+                  select: {
+                    multiple: false,
+                    options: Object.keys(periods).map((periodKey) => ({
+                      value: periodKey,
                       label:
                         localize(
                           `ui.panel.lovelace.editor.card.statistic.periods.${periodKey}`
                         ) || periodKey,
-                    })
-                  ),
-                },
-              }
-            : { object: {} },
+                    })),
+                  },
+                }
+              : { object: {} },
         },
         {
           type: "grid",
@@ -183,7 +183,7 @@ export class HuiStatisticCardEditor
     const schema = this._schema(
       this._config.entity,
       this._config.icon,
-      data.period,
+      typeof data.period === "string" ? data.period : undefined,
       entityState,
       this.hass.localize,
       this._metadata
@@ -212,6 +212,14 @@ export class HuiStatisticCardEditor
   private async _valueChanged(ev: CustomEvent) {
     const config = ev.detail.value as StatisticCardConfig;
     Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
+
+    if (typeof config.period === "string") {
+      const period = periods[config.period];
+      if (period) {
+        config.period = period;
+      }
+    }
+
     if (
       config.stat_type &&
       config.entity &&
@@ -227,12 +235,14 @@ export class HuiStatisticCardEditor
         config.stat_type = "change";
       }
     }
+
     if (!config.stat_type && config.entity) {
       const metadata = (
         await getStatisticMetadata(this.hass!, [config.entity])
       )?.[0];
       config.stat_type = metadata?.has_sum ? "change" : "mean";
     }
+
     fireEvent(this, "config-changed", { config });
   }
 
