@@ -366,6 +366,7 @@ export class EnergyGridSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGridFlowFromDialog(this, {
       source: { ...origSource },
+      metadata: this.statsMetadata?.[origSource.stat_energy_from],
       saveCallback: async (source) => {
         const flowFrom = energySourcesByType(this.preferences).grid![0]
           .flow_from;
@@ -393,6 +394,7 @@ export class EnergyGridSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGridFlowToDialog(this, {
       source: { ...origSource },
+      metadata: this.statsMetadata?.[origSource.stat_energy_to],
       saveCallback: async (source) => {
         const flowTo = energySourcesByType(this.preferences).grid![0].flow_to;
 
