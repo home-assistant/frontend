@@ -191,16 +191,16 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated && this._configEntities?.length) {
-      this._subscribeHistoryTimeWindow();
+      this._subscribeHistory();
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeHistoryTimeWindow();
+    this._unsubscribeHistory();
   }
 
-  private _subscribeHistoryTimeWindow() {
+  private _subscribeHistory() {
     if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
       return;
     }
@@ -223,26 +223,21 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _unsubscribeHistoryTimeWindow() {
-    if (!this._subscribed) {
-      return;
-    }
-    this._subscribed.then((unsubscribe) => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+  private _unsubscribeHistory() {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub?.());
       this._subscribed = undefined;
-    });
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
     if (this._configEntities?.length) {
       if (!this._subscribed || changedProps.has("_config")) {
-        this._unsubscribeHistoryTimeWindow();
-        this._subscribeHistoryTimeWindow();
+        this._unsubscribeHistory();
+        this._subscribeHistory();
       }
     } else {
-      this._unsubscribeHistoryTimeWindow();
+      this._unsubscribeHistory();
     }
     if (changedProps.has("_config")) {
       this._computePadding();
