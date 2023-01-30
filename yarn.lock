@@ -9504,7 +9504,7 @@ fsevents@^1.2.7:
     map-stream: ^0.0.7
     marked: ^4.0.12
     memoize-one: ^6.0.0
-    merge-stream: ^1.0.1
+    merge-stream: ^2.0.0
     mocha: ^8.4.0
     node-vibrant: 3.2.1-alpha.1
     object-hash: ^3.0.0
@@ -11483,15 +11483,6 @@ fsevents@^1.2.7:
   version: 1.0.1
   resolution: "merge-descriptors@npm:1.0.1"
   checksum: 5abc259d2ae25bb06d19ce2b94a21632583c74e2a9109ee1ba7fd147aa7362b380d971e0251069f8b3eb7d48c21ac839e21fa177b335e82c76ec172e30c31a26
-  languageName: node
-  linkType: hard
-
-"merge-stream@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "merge-stream@npm:1.0.1"
-  dependencies:
-    readable-stream: ^2.0.1
-  checksum: 3be7887dffd8899da0f930c0f85812ab8993252f467dcd61e60a8d085836ebbb23756b8e481a7f71824206342afe1b1a2b80c05a1cd0ed0e792a09c5812a9082
   languageName: node
   linkType: hard
 
