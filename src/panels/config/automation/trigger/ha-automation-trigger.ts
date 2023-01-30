@@ -11,6 +11,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-button-menu";
+import "../../../../components/ha-button";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import { Trigger } from "../../../../data/automation";
@@ -125,7 +126,7 @@ export default class HaAutomationTrigger extends LitElement {
         )}
         </div>
         <ha-button-menu @action=${this._addTrigger} .disabled=${this.disabled}>
-          <mwc-button
+          <ha-button
             slot="trigger"
             outlined
             .label=${this.hass.localize(
@@ -134,7 +135,7 @@ export default class HaAutomationTrigger extends LitElement {
             .disabled=${this.disabled}
           >
             <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-          </mwc-button>
+          </ha-button>
           ${this._processedTypes(this.hass.localize).map(
             ([opt, label, icon]) => html`
               <mwc-list-item .value=${opt} graphic="icon">
@@ -313,11 +314,6 @@ export default class HaAutomationTrigger extends LitElement {
           display: block;
           margin-bottom: 16px;
           scroll-margin-top: 48px;
-        }
-        ha-svg-icon[slot="icon"] {
-          margin-inline-start: 0px;
-          margin-inline-end: 8px;
-          direction: var(--direction);
         }
         ha-svg-icon {
           height: 20px;

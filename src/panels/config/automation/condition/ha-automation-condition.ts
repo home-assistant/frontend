@@ -8,6 +8,7 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-svg-icon";
 import type { Condition } from "../../../../data/automation";
@@ -177,7 +178,7 @@ export default class HaAutomationCondition extends LitElement {
         @action=${this._addCondition}
         .disabled=${this.disabled}
       >
-        <mwc-button
+        <ha-button
           slot="trigger"
           outlined
           .disabled=${this.disabled}
@@ -186,7 +187,7 @@ export default class HaAutomationCondition extends LitElement {
           )}
         >
           <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </mwc-button>
+        </ha-button>
         ${this._processedTypes(this.hass.localize).map(
           ([opt, label, icon]) => html`
             <mwc-list-item .value=${opt} graphic="icon">
@@ -339,11 +340,6 @@ export default class HaAutomationCondition extends LitElement {
           display: block;
           margin-bottom: 16px;
           scroll-margin-top: 48px;
-        }
-        ha-svg-icon[slot="icon"] {
-          margin-inline-start: 0px;
-          margin-inline-end: 8px;
-          direction: var(--direction);
         }
         ha-svg-icon {
           height: 20px;

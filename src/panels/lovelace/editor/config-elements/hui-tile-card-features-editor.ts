@@ -15,6 +15,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import {
@@ -160,7 +161,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                   @action=${this._addFeature}
                   @closed=${stopPropagation}
                 >
-                  <mwc-button
+                  <ha-button
                     slot="trigger"
                     outlined
                     .label=${this.hass!.localize(
@@ -168,7 +169,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                     )}
                   >
                     <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-                  </mwc-button>
+                  </ha-button>
                   ${this._supportedFeatureTypes.map(
                     (featureType) => html`<mwc-list-item .value=${featureType}>
                       <ha-svg-icon
