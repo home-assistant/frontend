@@ -135,9 +135,9 @@ documentContainer.innerHTML = `<custom-style>
       --state-alarm_control_panel-triggered-color: var(--red-color);
       --state-alert-off-color: var(--orange-color);
       --state-alert-on-color: var(--red-color);
+      --state-binary_sensor-active-color: var(--amber-color);
       --state-binary_sensor-battery-on-color: var(--red-color);
       --state-binary_sensor-carbon_monoxide-on-color: var(--red-color);
-      --state-binary_sensor-color: var(--amber-color);
       --state-binary_sensor-gas-on-color: var(--red-color);
       --state-binary_sensor-heat-on-color: var(--red-color);
       --state-binary_sensor-lock-on-color: var(--red-color);

@@ -144,11 +144,14 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         return false;
       }
 
-      if (!(el instanceof HTMLInputElement)) {
+      if (
+        (el as Element).tagName !== "INPUT" &&
+        !(el instanceof HTMLInputElement)
+      ) {
         return true;
       }
 
-      switch (el.type) {
+      switch ((el as HTMLInputElement).type) {
         case "button":
         case "checkbox":
         case "hidden":

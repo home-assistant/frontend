@@ -488,7 +488,8 @@
       "history_charts": {
         "history_disabled": "History integration disabled",
         "loading_history": "Loading state history…",
-        "no_history_found": "No state history found."
+        "no_history_found": "No state history found.",
+        "error": "Unable to load history"
       },
       "statistics_charts": {
         "loading_statistics": "Loading statistics…",
@@ -803,7 +804,7 @@
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
-        "title": "Assistant",
+        "title": "Assist",
         "did_not_hear": "Home Assistant did not hear anything",
         "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
