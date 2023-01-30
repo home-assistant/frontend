@@ -184,7 +184,7 @@
     "@typescript-eslint/parser": "^5.49.0",
     "@web/dev-server": "^0.0.24",
     "@web/dev-server-rollup": "^0.2.11",
-    "babel-loader": "^9.1.0",
+    "babel-loader": "^9.1.2",
     "chai": "^4.3.4",
     "del": "^7.0.0",
     "eslint": "^7.32.0",
