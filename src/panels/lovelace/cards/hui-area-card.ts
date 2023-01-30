@@ -563,7 +563,7 @@ export class HuiAreaCard
         --mdc-icon-button-size: 44px;
       }
       .on {
-        color: var(--state-light-color);
+        color: var(--state-light-active-color);
       }
     `;
   }
