@@ -23,6 +23,7 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
   person: () => import("./controls/more-info-person"),
   remote: () => import("./controls/more-info-remote"),
   script: () => import("./controls/more-info-script"),
+  siren: () => import("./controls/more-info-siren"),
   sun: () => import("./controls/more-info-sun"),
   timer: () => import("./controls/more-info-timer"),
   update: () => import("./controls/more-info-update"),

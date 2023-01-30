@@ -185,6 +185,7 @@
         "text_to_speak": "Text to speak",
         "nothing_playing": "Nothing Playing"
       },
+
       "persistent_notification": {
         "dismiss": "Dismiss"
       },
@@ -889,6 +890,11 @@
         },
         "zone": {
           "graph_unit": "People home"
+        },
+        "siren": {
+          "tone": "Tone",
+          "turn_on": "Turn on",
+          "turn_off": "Turn off"
         }
       },
       "entity_registry": {
