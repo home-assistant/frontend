@@ -189,7 +189,7 @@ export class DialogEnergyWaterSettings
               .value=${this._source.entity_energy_price}
               .label=${`${this.hass.localize(
                 "ui.panel.config.energy.water.dialog.cost_entity_input"
-              )} ${unitPrice ? ` (${unitPrice})` : ""}`}
+              )}${unitPrice ? ` (${unitPrice})` : ""}`}
               @value-changed=${this._priceEntityChanged}
             ></ha-entity-picker>`
           : ""}
@@ -210,7 +210,7 @@ export class DialogEnergyWaterSettings
           ? html`<ha-textfield
               .label=${`${this.hass.localize(
                 "ui.panel.config.energy.water.dialog.cost_number_input"
-              )} ${unitPrice ? ` (${unitPrice})` : ""}`}
+              )}${unitPrice ? ` (${unitPrice})` : ""}`}
               class="price-options"
               step=".01"
               type="number"
