@@ -3166,15 +3166,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/auth-oauth-device@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@octokit/auth-oauth-device@npm:4.0.2"
+"@octokit/auth-oauth-device@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "@octokit/auth-oauth-device@npm:4.0.4"
   dependencies:
     "@octokit/oauth-methods": ^2.0.0
     "@octokit/request": ^6.0.0
-    "@octokit/types": ^7.0.0
+    "@octokit/types": ^9.0.0
     universal-user-agent: ^6.0.0
-  checksum: 49cd76ae8644fa537a6dd0155b85321a46a517d2064a0cb69ee2a9cfa5b081cd70a906958e002ee4e63895e966d942a28b2be9c527490f25b8685e229d17addd
+  checksum: 245e1fd77684d131793a52a45133ad2514dbb14e5bb6af99eeaccff58662b567327196a721e296ef5734c0988e85a7536ef22bbf04613b302eba595995c5c751
   languageName: node
   linkType: hard
 
@@ -9403,7 +9403,7 @@ fsevents@^1.2.7:
     "@material/top-app-bar": =14.0.0-canary.53b3cad2f.0
     "@mdi/js": 7.1.96
     "@mdi/svg": 7.1.96
-    "@octokit/auth-oauth-device": ^4.0.2
+    "@octokit/auth-oauth-device": ^4.0.4
     "@octokit/rest": ^19.0.7
     "@open-wc/dev-server-hmr": ^0.0.2
     "@polymer/app-layout": ^3.1.0
