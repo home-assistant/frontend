@@ -45,7 +45,7 @@ class StateHistoryCharts extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @property({ type: Boolean }) public names = false;
+  @property() public names?: Record<string, string>;
 
   @property({ type: Boolean, attribute: "virtualize", reflect: true })
   public virtualize = false;
