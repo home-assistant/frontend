@@ -2,7 +2,6 @@ import {
   HassEntities,
   HassEntity,
   HassEntityAttributeBase,
-  UnsubscribeFunc,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
@@ -232,7 +231,7 @@ export const subscribeHistoryStatesTimeWindow = (
   entityIds: string[],
   minimalResponse = true,
   significantChangesOnly = true
-): Promise<UnsubscribeFunc> => {
+): Promise<() => Promise<void>> => {
   const params = {
     type: "history/stream",
     entity_ids: entityIds,

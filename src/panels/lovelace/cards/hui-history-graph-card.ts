@@ -1,4 +1,3 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -51,7 +50,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
-  private _subscribed?: UnsubscribeFunc;
+  private _subscribed?: Promise<(() => Promise<void>) | void>;
 
   public getCardSize(): number {
     return this._config?.title ? 2 : 0 + 2 * (this._entityIds?.length || 1);
@@ -99,27 +98,25 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
       return;
     }
-    try {
-      this._subscribed = await subscribeHistoryStatesTimeWindow(
-        this.hass!,
-        (combinedHistory) => {
-          if (!this._subscribed) {
-            // Message came in before we had a chance to unload
-            return;
-          }
-          this._stateHistory = computeHistory(
-            this.hass!,
-            combinedHistory,
-            this.hass!.localize
-          );
-        },
-        this._hoursToShow,
-        this._entityIds
-      );
-    } catch (err: any) {
+    this._subscribed = subscribeHistoryStatesTimeWindow(
+      this.hass!,
+      (combinedHistory) => {
+        if (!this._subscribed) {
+          // Message came in before we had a chance to unload
+          return;
+        }
+        this._stateHistory = computeHistory(
+          this.hass!,
+          combinedHistory,
+          this.hass!.localize
+        );
+      },
+      this._hoursToShow,
+      this._entityIds
+    ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
-    }
+    });
     this._setRedrawTimer();
   }
 
@@ -132,13 +129,13 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _setRedrawTimer() {
     // redraw the graph every minute to update the time axis
     clearInterval(this._interval);
-    this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 10);
+    this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
   }
 
   private _unsubscribeHistory() {
     clearInterval(this._interval);
     if (this._subscribed) {
-      this._subscribed();
+      this._subscribed.then((unsub) => unsub?.());
       this._subscribed = undefined;
     }
   }
