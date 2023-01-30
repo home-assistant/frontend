@@ -94,7 +94,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     this._unsubscribeHistory();
   }
 
-  private async _subscribeHistory() {
+  private _subscribeHistory() {
     if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
       return;
     }
