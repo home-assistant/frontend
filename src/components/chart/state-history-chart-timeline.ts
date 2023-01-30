@@ -19,7 +19,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @property() public names: boolean | Record<string, string> = false;
+  @property() public names?: Record<string, string>;
 
   @property() public unit?: string;
 

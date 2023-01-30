@@ -103,17 +103,21 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                 fullUpdate = true;
               }
             } else if (message.type === "removed") {
-              delete this._configEntries![message.entry.entry_id];
+              if (this._configEntries) {
+                delete this._configEntries[message.entry.entry_id];
+              }
             } else if (message.type === "updated") {
-              const newEntry = message.entry;
-              this._configEntries![message.entry.entry_id] = newEntry;
+              if (this._configEntries) {
+                const newEntry = message.entry;
+                this._configEntries[message.entry.entry_id] = newEntry;
+              }
             }
           });
           if (!newEntries.length && !fullUpdate) {
             return;
           }
           const entries = [
-            ...(fullUpdate ? [] : Object.values(this._configEntries!)),
+            ...(fullUpdate ? [] : Object.values(this._configEntries || {})),
             ...newEntries,
           ];
           const configEntries: { [id: string]: ConfigEntry } = {};
@@ -220,10 +224,6 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    if (!this._configEntries) {
-      return html``;
-    }
-
     let boardId: string | undefined;
     let boardName: string | undefined;
     let imageURL: string | undefined;
@@ -240,14 +240,14 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         (!hw.config_entries.length ||
           hw.config_entries.some(
             (entryId) =>
-              this._configEntries![entryId] &&
-              !this._configEntries![entryId].disabled_by
+              this._configEntries?.[entryId] &&
+              !this._configEntries[entryId].disabled_by
           ))
     );
 
     if (boardData) {
       boardConfigEntries = boardData.config_entries
-        .map((id) => this._configEntries![id])
+        .map((id) => this._configEntries?.[id])
         .filter(
           (entry) => entry?.supports_options && !entry.disabled_by
         ) as ConfigEntry[];
@@ -376,7 +376,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             ? html`<ha-card>
                 ${dongles.map((dongle) => {
                   const configEntry = dongle.config_entries
-                    .map((id) => this._configEntries![id])
+                    .map((id) => this._configEntries?.[id])
                     .filter(
                       (entry) => entry?.supports_options && !entry.disabled_by
                     )[0];

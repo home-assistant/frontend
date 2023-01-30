@@ -132,16 +132,16 @@ export class HuiGraphHeaderFooter
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
-      this._subscribeHistoryTimeWindow();
+      this._subscribeHistory();
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeHistoryTimeWindow();
+    this._unsubscribeHistory();
   }
 
-  private _subscribeHistoryTimeWindow() {
+  private _subscribeHistory() {
     if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
       return;
     }
@@ -185,17 +185,12 @@ export class HuiGraphHeaderFooter
     );
   }
 
-  private _unsubscribeHistoryTimeWindow() {
+  private _unsubscribeHistory() {
     clearInterval(this._interval);
-    if (!this._subscribed) {
-      return;
-    }
-    this._subscribed.then((unsubscribe) => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub?.());
       this._subscribed = undefined;
-    });
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -209,8 +204,8 @@ export class HuiGraphHeaderFooter
       !this._subscribed ||
       oldConfig.entity !== this._config.entity
     ) {
-      this._unsubscribeHistoryTimeWindow();
-      this._subscribeHistoryTimeWindow();
+      this._unsubscribeHistory();
+      this._subscribeHistory();
     }
   }
 
