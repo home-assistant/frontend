@@ -1592,14 +1592,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-relativetimeformat@npm:^9.3.2":
-  version: 9.3.2
-  resolution: "@formatjs/intl-relativetimeformat@npm:9.3.2"
+"@formatjs/intl-relativetimeformat@npm:^11.1.8":
+  version: 11.1.8
+  resolution: "@formatjs/intl-relativetimeformat@npm:11.1.8"
   dependencies:
-    "@formatjs/ecma402-abstract": 1.10.0
-    "@formatjs/intl-localematcher": 0.2.21
-    tslib: ^2.1.0
-  checksum: 636a4ab27e003eda6d5310c270787a7622181f9c1be157b79fada3ac1bbf0867fb5d82def3ddf6641c311387d214e4e214b6b7092e3306a960d913b2f5014c12
+    "@formatjs/ecma402-abstract": 1.14.3
+    "@formatjs/intl-localematcher": 0.2.32
+    tslib: ^2.4.0
+  checksum: 2ca379c549d5998366e8648843e810ffcba88e42112d6b6a8bd8d5898d1bc84137245ee44f7ef83c3fe85e33c122bb366f261478facd2efd78c98718e53fe404
   languageName: node
   linkType: hard
 
@@ -9366,7 +9366,7 @@ fsevents@^1.2.7:
     "@formatjs/intl-locale": ^3.0.11
     "@formatjs/intl-numberformat": ^7.2.5
     "@formatjs/intl-pluralrules": ^4.1.5
-    "@formatjs/intl-relativetimeformat": ^9.3.2
+    "@formatjs/intl-relativetimeformat": ^11.1.8
     "@fullcalendar/common": ^5.11.4
     "@fullcalendar/core": ^5.11.4
     "@fullcalendar/daygrid": ^5.11.4
