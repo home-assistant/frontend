@@ -23,7 +23,7 @@ registerStyles(
   "vaadin-combo-box-item",
   css`
     :host {
-      padding: 0;
+      padding: 0 !important;
     }
     :host([focused]:not([disabled])) {
       background-color: rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.12);
@@ -245,7 +245,6 @@ export class HaComboBox extends LitElement {
 
       if (overlay) {
         this._removeInert(overlay);
-        this._handleRTL(overlay);
       }
       this._observeBody();
     } else {
@@ -303,17 +302,6 @@ export class HaComboBox extends LitElement {
         attributes: true,
       });
     }
-  }
-
-  private _handleRTL(overlay: HTMLElement) {
-    overlay
-      .querySelectorAll("vaadin-combo-box-scroller > vaadin-combo-box-item")
-      .forEach((item) => {
-        const elem = item as HTMLElement;
-        if (elem.dir === "rtl") {
-          elem.style.padding = "0px";
-        }
-      });
   }
 
   private _filterChanged(ev: ComboBoxLightFilterChangedEvent) {
