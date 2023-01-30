@@ -66,7 +66,7 @@ class StatisticsChart extends LitElement {
     StatisticsMetaData
   >;
 
-  @property() public names: boolean | Record<string, string> = false;
+  @property() public names?: Record<string, string>;
 
   @property() public unit?: string;
 
