@@ -8,6 +8,7 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import { computeDomain } from "../../../../../common/entity/compute_domain";
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
@@ -19,14 +20,20 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   @state() private _inputMode?: boolean;
 
+  @state() private _entities: string[] = [];
+
   public static get defaultConfig() {
     return { at: "" };
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, inputMode?: boolean) => {
+    (
+      localize: LocalizeFunc,
+      inputMode?: boolean,
+      include_entities?: string[]
+    ) => {
       const atSelector = inputMode
-        ? { entity: { domain: "input_datetime" } }
+        ? { entity: { include_entities: include_entities } }
         : { time: {} };
 
       return [
@@ -58,6 +65,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     if (!changedProperties.has("trigger")) {
       return;
     }
+
     // We dont support multiple times atm.
     if (this.trigger && Array.isArray(this.trigger.at)) {
       fireEvent(
@@ -79,7 +87,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       this._inputMode ??
       (at?.startsWith("input_datetime.") || at?.startsWith("sensor."));
 
-    const schema = this._schema(this.hass.localize, inputMode);
+    const schema = this._schema(this.hass.localize, inputMode, this._entities);
 
     const data = {
       mode: inputMode ? "input" : "value",
@@ -96,6 +104,19 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>
     `;
+  }
+
+  protected firstUpdated() {
+    const allEntities = Object.keys(this.hass.states);
+    const input_datetimes = allEntities.filter(
+      (eid) => computeDomain(eid) === "input_datetime"
+    );
+    const sensors = allEntities
+      .filter((eid) => computeDomain(eid) === "sensor")
+      .filter(
+        (eid) => this.hass.states[eid].attributes?.device_class === "timestamp"
+      );
+    this._entities = [...input_datetimes, ...sensors];
   }
 
   private _valueChanged(ev: CustomEvent): void {

@@ -2094,7 +2094,7 @@
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of a date/time helper",
+                  "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
                   "mode": "Mode"
@@ -2190,7 +2190,7 @@
                 },
                 "time": {
                   "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
-                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_input%]",
+                  "type_input": "Value of a date/time helper",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
                   "before": "Before",
