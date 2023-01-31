@@ -7799,15 +7799,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-disable@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "eslint-plugin-disable@npm:2.0.1"
+"eslint-plugin-disable@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "eslint-plugin-disable@npm:2.0.3"
   dependencies:
-    eslint: ">=0.16.0"
     resolve: ^1.1.6
   peerDependencies:
     eslint: ">=0.16.0"
-  checksum: 55d541a6378fe2a4c7c6cee17c937df8bb372d907a0b6b79aabb8ded0bb2bbde5f333fdbdfc16af959425e42b679e7048ee9c4ee1524b9f545866e711775397e
+  checksum: 71893242172d633b63d3442393bf103f8f63ce97958ca63f6c5dacea0e4d4cdb4e35f1200b5e66c219034e26003177d18adf88e35af9ae1154739578832ec8ce
   languageName: node
   linkType: hard
 
@@ -7934,7 +7933,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:>=0.16.0, eslint@npm:^7.32.0":
+"eslint@npm:^7.32.0":
   version: 7.32.0
   resolution: "eslint@npm:7.32.0"
   dependencies:
@@ -9468,7 +9467,7 @@ fsevents@^1.2.7:
     eslint-config-airbnb-typescript: ^14.0.0
     eslint-config-prettier: ^8.6.0
     eslint-import-resolver-webpack: ^0.13.1
-    eslint-plugin-disable: ^2.0.1
+    eslint-plugin-disable: ^2.0.3
     eslint-plugin-import: ^2.24.2
     eslint-plugin-lit: ^1.6.1
     eslint-plugin-unused-imports: ^1.1.5
