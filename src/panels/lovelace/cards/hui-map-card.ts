@@ -255,6 +255,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
 
+    // Fix sizing issues in grid and h-stack, frontend issue #14298
+    root.style.height = "0";
+
     if (!this._config.aspect_ratio) {
       root.style.paddingBottom = "100%";
       return;
