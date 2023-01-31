@@ -28,6 +28,7 @@ import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-alert";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HaCheckbox } from "../../../components/ha-checkbox";
+import "../../../components/ha-checkbox";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
