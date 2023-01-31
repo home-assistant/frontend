@@ -26,6 +26,8 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-alert";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import type { HaCheckbox } from "../../../components/ha-checkbox";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
@@ -54,6 +56,8 @@ class HaConfigSectionGeneral extends LitElement {
   @state() private _languages?: { value: string; label: string }[];
 
   @state() private _error?: string;
+
+  @state() private _updateUnits?: boolean;
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
@@ -174,6 +178,32 @@ class HaConfigSectionGeneral extends LitElement {
                     .disabled=${this._submitting}
                   ></ha-radio>
                 </ha-formfield>
+                ${this._unitSystem !== this._configuredUnitSystem()
+                  ? html`
+                      <ha-formfield
+                        .label=${this.hass.localize(
+                          "ui.panel.config.core.section.core.core_config.update_units_label"
+                        )}
+                      >
+                        <ha-checkbox
+                          .checked=${this._updateUnits}
+                          .disabled=${this._submitting}
+                          @change=${this._updateUnitsChanged}
+                        ></ha-checkbox>
+                      </ha-formfield>
+                      <div class="secondary">
+                        ${this.hass.localize(
+                          "ui.panel.config.core.section.core.core_config.update_units_text_1"
+                        )} <br /><br />
+                        ${this.hass.localize(
+                          "ui.panel.config.core.section.core.core_config.update_units_text_2"
+                        )} <br /><br />
+                        ${this.hass.localize(
+                          "ui.panel.config.core.section.core.core_config.update_units_text_3"
+                        )}
+                      </div>
+                    `
+                  : ""}
               </div>
               <div>
                 <ha-select
@@ -284,17 +314,21 @@ class HaConfigSectionGeneral extends LitElement {
     `;
   }
 
+  private _configuredUnitSystem() {
+    return this.hass.config.unit_system.temperature === UNIT_C
+      ? "metric"
+      : "us_customary";
+  }
+
   protected firstUpdated(): void {
-    this._unitSystem =
-      this.hass.config.unit_system.temperature === UNIT_C
-        ? "metric"
-        : "us_customary";
+    this._unitSystem = this._configuredUnitSystem();
     this._currency = this.hass.config.currency;
     this._country = this.hass.config.country;
     this._language = this.hass.config.language;
     this._elevation = this.hass.config.elevation;
     this._timeZone = this.hass.config.time_zone || "Etc/GMT";
     this._name = this.hass.config.location_name;
+    this._updateUnits = true;
     this._computeLanguages();
   }
 
@@ -335,6 +369,10 @@ class HaConfigSectionGeneral extends LitElement {
       | "us_customary";
   }
 
+  private _updateUnitsChanged(ev: CustomEvent) {
+    this._updateUnits = (ev.target as HaCheckbox).checked;
+  }
+
   private _locationChanged(ev: CustomEvent) {
     this._location = ev.detail.location;
   }
@@ -343,6 +381,25 @@ class HaConfigSectionGeneral extends LitElement {
     const button = ev.target as HaProgressButton;
     if (button.progress) {
       return;
+    }
+    const unitSystemChanged = this._unitSystem !== this._configuredUnitSystem();
+    if (unitSystemChanged && this._updateUnits) {
+      if (
+        !(await showConfirmationDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.core.section.core.core_config.update_units_confirm_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.core.section.core.core_config.update_units_confirm_text"
+          ),
+          confirmText: this.hass!.localize(
+            "ui.panel.config.core.section.core.core_config.update_units_confirm_update"
+          ),
+          dismissText: this.hass!.localize("ui.common.cancel"),
+        }))
+      ) {
+        return;
+      }
     }
     button.progress = true;
 
@@ -362,6 +419,7 @@ class HaConfigSectionGeneral extends LitElement {
         currency: this._currency,
         elevation: Number(this._elevation),
         unit_system: this._unitSystem,
+        update_units: this._updateUnits && unitSystemChanged,
         time_zone: this._timeZone,
         location_name: this._name,
         language: this._language,
