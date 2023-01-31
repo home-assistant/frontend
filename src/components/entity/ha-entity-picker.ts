@@ -1,3 +1,4 @@
+import "../ha-list-item";
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
@@ -10,8 +11,8 @@ import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
+import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
-import "../ha-list-item";
 import "../ha-svg-icon";
 import "./state-badge";
 
