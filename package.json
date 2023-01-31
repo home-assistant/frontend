@@ -229,7 +229,7 @@
     "serve": "^11.3.2",
     "sinon": "^15.0.1",
     "source-map-url": "^0.4.0",
-    "systemjs": "^6.3.2",
+    "systemjs": "^6.13.0",
     "tar": "^6.1.11",
     "terser-webpack-plugin": "^5.2.4",
     "ts-lit-plugin": "^1.2.1",
