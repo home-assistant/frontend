@@ -822,6 +822,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         }
         ha-button-menu {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
+          direction: var(--direction);
         }
         .container {
           display: grid;
@@ -850,6 +853,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           display: block;
           color: var(--secondary-text-color);
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
+          direction: var(--direction);
           --mdc-ripple-color: transparant;
         }
         .search {
@@ -874,13 +880,22 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           position: relative;
           display: flex;
           align-items: center;
-          padding: 2px 2px 2px 8px;
+          padding-top: 2px;
+          padding-bottom: 2px;
+          padding-right: 2px;
+          padding-left: 8px;
+          padding-inline-start: 8px;
+          padding-inline-end: 2px;
           font-size: 14px;
           width: max-content;
           cursor: initial;
+          direction: var(--direction);
         }
         .active-filters mwc-button {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
+          direction: var(--direction);
         }
         .active-filters::before {
           background-color: var(--primary-color);

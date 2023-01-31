@@ -14,6 +14,7 @@ import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
+import "./ha-list-item";
 import "./ha-icon-button";
 import "./ha-list-item";
 import type { HaTextField } from "./ha-textfield";
@@ -22,7 +23,7 @@ registerStyles(
   "vaadin-combo-box-item",
   css`
     :host {
-      padding: 0;
+      padding: 0 !important;
     }
     :host([focused]:not([disabled])) {
       background-color: rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.12);
