@@ -63,3 +63,6 @@ export const deleteBlueprint = (
     domain,
     path,
   });
+
+export const isHABlueprint = (path: string) =>
+  path.split("/")[0] === "homeassistant";

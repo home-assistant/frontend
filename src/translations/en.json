@@ -1931,19 +1931,11 @@
             }
           },
           "dialog_new": {
-            "header": "Create a new automation",
-            "how": "How do you want to create your new automation?",
-            "blueprint": {
-              "use_blueprint": "Use a blueprint"
-            },
-            "thingtalk": {
-              "header": "Describe the automation you want to create",
-              "intro": "And we will try to create it for you. For example: Turn the lights off when I leave.",
-              "input_label": "What should this automation do?",
-              "create": "Create"
-            },
-            "start_empty": "Start with an empty automation",
-            "start_empty_description": "Create a new automation from scratch"
+            "header": "Create automation",
+            "create_empty": "Create new automation",
+            "create_empty_description": "Start with an empty automation from scratch",
+            "create_blueprint": "Create from blueprint",
+            "create_blueprint_description": "Discover blueprints"
           },
           "editor": {
             "enable": "[%key:ui::common::enable%]",
