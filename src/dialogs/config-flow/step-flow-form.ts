@@ -130,9 +130,8 @@ class StepFlowForm extends LitElement {
     const toSendData = {};
     Object.keys(stepData).forEach((key) => {
       const value = stepData[key];
-      const isEmpty = [undefined, ""].includes(value);
 
-      if (!isEmpty) {
+      if (value !== undefined) {
         toSendData[key] = value;
       }
     });
