@@ -20,7 +20,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   @state() private _inputMode?: boolean;
 
-  @state() private _entities: string[] = [];
+  @state() private _selectableEntities: string[] = [];
 
   public static get defaultConfig() {
     return { at: "" };
@@ -87,7 +87,11 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       this._inputMode ??
       (at?.startsWith("input_datetime.") || at?.startsWith("sensor."));
 
-    const schema = this._schema(this.hass.localize, inputMode, this._entities);
+    const schema = this._schema(
+      this.hass.localize,
+      inputMode,
+      this._selectableEntities
+    );
 
     const data = {
       mode: inputMode ? "input" : "value",
@@ -108,7 +112,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   protected firstUpdated() {
     const allEntities = Object.keys(this.hass.states);
-    this._entities = allEntities.filter(
+    this._selectableEntities = allEntities.filter(
       (eid) =>
         computeDomain(eid) === "input_datetime" ||
         (computeDomain(eid) === "sensor" &&
