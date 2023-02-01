@@ -1581,14 +1581,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-pluralrules@npm:^4.1.5":
-  version: 4.1.5
-  resolution: "@formatjs/intl-pluralrules@npm:4.1.5"
+"@formatjs/intl-pluralrules@npm:^5.1.8":
+  version: 5.1.8
+  resolution: "@formatjs/intl-pluralrules@npm:5.1.8"
   dependencies:
-    "@formatjs/ecma402-abstract": 1.10.0
-    "@formatjs/intl-localematcher": 0.2.21
-    tslib: ^2.1.0
-  checksum: ad552ae374b5706929dfa6384fde50aa03e50995e4f71d402142d34caeef5c0778c2f4078cfca89b80dd064783f66ee9cdf460b906ef5ba99fb558e33944dc54
+    "@formatjs/ecma402-abstract": 1.14.3
+    "@formatjs/intl-localematcher": 0.2.32
+    tslib: ^2.4.0
+  checksum: 89c2cb25ab073da29a7951ee381206f92458403c13481f9bebecdf488ae6e0d5dace3bead796c499ba7cbe38800b0b5d561fe849cdeb6365f9c0685ac8c43c91
   languageName: node
   linkType: hard
 
@@ -9364,7 +9364,7 @@ fsevents@^1.2.7:
     "@formatjs/intl-getcanonicallocales": ^2.0.5
     "@formatjs/intl-locale": ^3.0.11
     "@formatjs/intl-numberformat": ^7.2.5
-    "@formatjs/intl-pluralrules": ^4.1.5
+    "@formatjs/intl-pluralrules": ^5.1.8
     "@formatjs/intl-relativetimeformat": ^11.1.8
     "@fullcalendar/common": ^5.11.4
     "@fullcalendar/core": ^5.11.4
