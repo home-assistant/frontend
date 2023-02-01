@@ -11,6 +11,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-button-menu";
+import "../../../../components/ha-button";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import { ACTION_TYPES } from "../../../../data/action";
@@ -132,7 +133,7 @@ export default class HaAutomationAction extends LitElement {
         @action=${this._addAction}
         .disabled=${this.disabled}
       >
-        <mwc-button
+        <ha-button
           slot="trigger"
           outlined
           .disabled=${this.disabled}
@@ -141,7 +142,7 @@ export default class HaAutomationAction extends LitElement {
           )}
         >
           <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </mwc-button>
+        </ha-button>
         ${this._processedTypes(this.hass.localize).map(
           ([opt, label, icon]) => html`
             <mwc-list-item .value=${opt} graphic="icon">

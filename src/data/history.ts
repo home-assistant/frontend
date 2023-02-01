@@ -117,7 +117,7 @@ export const fetchDateWS = (
 
 export const subscribeHistory = (
   hass: HomeAssistant,
-  callbackFunction: (message: HistoryStreamMessage) => void,
+  callbackFunction: (data: HistoryStates) => void,
   startTime: Date,
   endTime: Date,
   entityIds: string[]
@@ -132,8 +132,9 @@ export const subscribeHistory = (
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
   };
+  const stream = new HistoryStream(hass);
   return hass.connection.subscribeMessage<HistoryStreamMessage>(
-    (message) => callbackFunction(message),
+    (message) => callbackFunction(stream.processMessage(message)),
     params
   );
 };
@@ -141,11 +142,11 @@ export const subscribeHistory = (
 class HistoryStream {
   hass: HomeAssistant;
 
-  hoursToShow: number;
+  hoursToShow?: number;
 
   combinedHistory: HistoryStates;
 
-  constructor(hass: HomeAssistant, hoursToShow: number) {
+  constructor(hass: HomeAssistant, hoursToShow?: number) {
     this.hass = hass;
     this.hoursToShow = hoursToShow;
     this.combinedHistory = {};
@@ -161,8 +162,9 @@ class HistoryStream {
       // indicate no more historical events
       return this.combinedHistory;
     }
-    const purgeBeforePythonTime =
-      (new Date().getTime() - 60 * 60 * this.hoursToShow * 1000) / 1000;
+    const purgeBeforePythonTime = this.hoursToShow
+      ? (new Date().getTime() - 60 * 60 * this.hoursToShow * 1000) / 1000
+      : undefined;
     const newHistory: HistoryStates = {};
     for (const entityId of Object.keys(this.combinedHistory)) {
       newHistory[entityId] = [];
@@ -195,7 +197,7 @@ class HistoryStream {
         newHistory[entityId] = streamMessage.states[entityId];
       }
       // Remove old history
-      if (entityId in this.combinedHistory) {
+      if (purgeBeforePythonTime && entityId in this.combinedHistory) {
         const expiredStates = newHistory[entityId].filter(
           (state) => state.lu < purgeBeforePythonTime
         );
