@@ -1,6 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ensureArray } from "../../common/array/ensure-array";
 import {
   EntitySources,
   fetchEntitySourcesWithCache,
@@ -76,6 +77,11 @@ export class HaEntitySelector extends LitElement {
   private _filterEntities = (entity: HassEntity): boolean => {
     if (!this.selector?.entity) {
       return true;
+    }
+    if (this.selector.entity.filter) {
+      return ensureArray(this.selector.entity.filter).some((filter) =>
+        filterSelectorEntities(filter, entity, this._entitySources)
+      );
     }
     return filterSelectorEntities(
       this.selector.entity,

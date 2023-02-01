@@ -54,15 +54,9 @@ export interface SelectorDevice {
   model?: NonNullable<DeviceSelector["device"]>["model"];
 }
 
-export interface SelectorEntity {
-  integration?: NonNullable<EntitySelector["entity"]>["integration"];
-  domain?: NonNullable<EntitySelector["entity"]>["domain"];
-  device_class?: NonNullable<EntitySelector["entity"]>["device_class"];
-}
-
 export interface AreaSelector {
   area: {
-    entity?: SelectorEntity;
+    entity?: EntitySelectorFilter;
     device?: SelectorDevice;
     multiple?: boolean;
   } | null;
@@ -113,7 +107,7 @@ export interface DeviceSelector {
     integration?: string;
     manufacturer?: string;
     model?: string;
-    entity?: SelectorEntity;
+    entity?: EntitySelectorFilter;
     multiple?: boolean;
   } | null;
 }
@@ -124,14 +118,30 @@ export interface DurationSelector {
   } | null;
 }
 
+interface EntitySelectorFilter {
+  integration?: string;
+  domain?: string | readonly string[];
+  device_class?: string;
+}
+
 export interface EntitySelector {
   entity: {
-    integration?: string;
-    domain?: string | readonly string[];
-    device_class?: string;
     multiple?: boolean;
     include_entities?: string[];
     exclude_entities?: string[];
+    filter?: EntitySelectorFilter | EntitySelectorFilter[];
+    /**
+     * @deprecated Backward compatibility, use filter instead
+     */
+    integration?: EntitySelectorFilter["integration"];
+    /**
+     * @deprecated Backward compatibility, use filter instead
+     */
+    domain?: EntitySelectorFilter["domain"];
+    /**
+     * @deprecated Backward compatibility, use filter instead
+     */
+    device_class?: EntitySelectorFilter["device_class"];
   } | null;
 }
 
@@ -250,7 +260,7 @@ export interface StringSelector {
 
 export interface TargetSelector {
   target: {
-    entity?: SelectorEntity;
+    entity?: EntitySelectorFilter;
     device?: SelectorDevice;
   } | null;
 }
@@ -308,7 +318,7 @@ export const filterSelectorDevices = (
 };
 
 export const filterSelectorEntities = (
-  filterEntity: SelectorEntity,
+  filterEntity: EntitySelectorFilter,
   entity: HassEntity,
   entitySources?: EntitySources
 ): boolean => {
