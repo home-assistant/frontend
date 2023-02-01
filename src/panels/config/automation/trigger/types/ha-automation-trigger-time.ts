@@ -30,10 +30,10 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     (
       localize: LocalizeFunc,
       inputMode?: boolean,
-      include_entities?: string[]
+      includeEntities?: string[]
     ) => {
       const atSelector = inputMode
-        ? { entity: { include_entities: include_entities } }
+        ? { entity: { include_entities: includeEntities } }
         : { time: {} };
 
       return [
