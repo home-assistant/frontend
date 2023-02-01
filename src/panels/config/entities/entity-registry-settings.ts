@@ -63,7 +63,6 @@ import {
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
-  SensorEntityOptions,
   fetchEntityRegistry,
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
@@ -127,16 +126,6 @@ const OVERRIDE_WEATHER_UNITS = {
 
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
-const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
-
-function precisionLabel(precision: number, _state?: string) {
-  const state_float =
-    _state === undefined || isNaN(parseFloat(_state))
-      ? 0.0
-      : parseFloat(_state);
-  return state_float.toFixed(precision);
-}
-
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -164,8 +153,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _helperConfigEntry?: ConfigEntry;
 
   @state() private _unit_of_measurement?: string | null;
-
-  @state() private _precision?: number | null;
 
   @state() private _precipitation_unit?: string | null;
 
@@ -262,10 +249,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
       this._unit_of_measurement = stateObj?.attributes?.unit_of_measurement;
-    }
-
-    if (domain === "sensor") {
-      this._precision = this.entry.options?.sensor?.precision;
     }
 
     if (domain === "weather") {
@@ -480,44 +463,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 ${this._sensorDeviceClassConvertibleUnits.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
-                  `
-                )}
-              </ha-select>
-            `
-          : ""}
-        ${domain === "sensor" &&
-        // Allow customizing the precision for a sensor with numerical device class,
-        // a unit of measurement or state class
-        ((this._deviceClass &&
-          !["date", "enum", "timestamp"].includes(this._deviceClass)) ||
-          stateObj?.attributes.unit_of_measurement ||
-          stateObj?.attributes.state_class)
-          ? html`
-              <ha-select
-                .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.precision"
-                )}
-                .value=${this._precision == null
-                  ? "default"
-                  : this._precision.toString()}
-                naturalMenuWidth
-                fixedMenuPosition
-                @selected=${this._precisionChanged}
-                @closed=${stopPropagation}
-              >
-                <mwc-list-item .value=${"default"}
-                  >${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.precision_default"
-                  )}</mwc-list-item
-                >
-                ${PRECISIONS.map(
-                  (precision) => html`
-                    <mwc-list-item .value=${precision.toString()}>
-                      ${precisionLabel(
-                        precision,
-                        this.hass.states[this.entry.entity_id]?.state
-                      )}
-                    </mwc-list-item>
                   `
                 )}
               </ha-select>
@@ -948,12 +893,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._precipitation_unit = ev.target.value;
   }
 
-  private _precisionChanged(ev): void {
-    this._error = undefined;
-    this._precision =
-      ev.target.value === "default" ? null : Number(ev.target.value);
-  }
-
   private _pressureUnitChanged(ev): void {
     this._error = undefined;
     this._pressure_unit = ev.target.value;
@@ -1149,16 +1088,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
     ) {
       params.options_domain = domain;
-      params.options = this.entry.options?.[domain] || {};
-      params.options.unit_of_measurement = this._unit_of_measurement;
-    }
-    if (
-      domain === "sensor" &&
-      this.entry.options?.[domain]?.precision !== this._precision
-    ) {
-      params.options_domain = domain;
-      params.options = params.options || this.entry.options?.[domain] || {};
-      (params.options as SensorEntityOptions).precision = this._precision;
+      params.options = { unit_of_measurement: this._unit_of_measurement };
     }
     if (
       domain === "weather" &&
