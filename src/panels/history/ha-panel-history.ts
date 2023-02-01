@@ -304,7 +304,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     }
 
     if (this._subscribed) {
-      await this._unsubscribeHistory();
+      this._unsubscribeHistory();
     }
 
     this._history = undefined;
@@ -368,14 +368,13 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     );
   }
 
-  private async _unsubscribeHistory() {
+  private _unsubscribeHistory() {
     if (this._interval) {
       clearInterval(this._interval);
       this._interval = undefined;
     }
     if (this._subscribed) {
-      const unsub = await this._subscribed;
-      unsub?.();
+      this._subscribed.then((unsub) => unsub?.());
       this._subscribed = undefined;
     }
   }
