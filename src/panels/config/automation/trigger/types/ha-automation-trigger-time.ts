@@ -108,15 +108,12 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   protected firstUpdated() {
     const allEntities = Object.keys(this.hass.states);
-    const input_datetimes = allEntities.filter(
-      (eid) => computeDomain(eid) === "input_datetime"
+    this._entities = allEntities.filter(
+      (eid) =>
+        computeDomain(eid) === "input_datetime" ||
+        (computeDomain(eid) === "sensor" &&
+          this.hass.states[eid].attributes?.device_class === "timestamp")
     );
-    const sensors = allEntities
-      .filter((eid) => computeDomain(eid) === "sensor")
-      .filter(
-        (eid) => this.hass.states[eid].attributes?.device_class === "timestamp"
-      );
-    this._entities = [...input_datetimes, ...sensors];
   }
 
   private _valueChanged(ev: CustomEvent): void {
