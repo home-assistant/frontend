@@ -15,6 +15,7 @@ import {
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { entityId } from "../../../../common/structs/is-entity-id";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -63,16 +64,14 @@ export class HuiTileCardEditor
   }
 
   private _schema = memoizeOne(
-    () =>
+    (localize: LocalizeFunc) =>
       [
         { name: "entity", selector: { entity: {} } },
         {
           name: "",
           type: "expandable",
           iconPath: mdiPalette,
-          title: this.hass!.localize(
-            `ui.panel.lovelace.editor.card.tile.appearance`
-          ),
+          title: localize(`ui.panel.lovelace.editor.card.tile.appearance`),
           schema: [
             {
               name: "",
@@ -111,9 +110,7 @@ export class HuiTileCardEditor
         {
           name: "",
           type: "expandable",
-          title: this.hass!.localize(
-            `ui.panel.lovelace.editor.card.tile.actions`
-          ),
+          title: localize(`ui.panel.lovelace.editor.card.tile.actions`),
           iconPath: mdiGestureTap,
           schema: [
             {
@@ -146,7 +143,7 @@ export class HuiTileCardEditor
       | HassEntity
       | undefined;
 
-    const schema = this._schema();
+    const schema = this._schema(this.hass!.localize);
 
     if (this._subElementEditorConfig) {
       return html`

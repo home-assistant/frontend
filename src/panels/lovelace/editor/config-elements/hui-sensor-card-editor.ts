@@ -1,6 +1,5 @@
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import {
   assert,
   assign,
@@ -35,6 +34,55 @@ const cardConfigStruct = assign(
   })
 );
 
+const SCHEMA = [
+  {
+    name: "entity",
+    selector: {
+      entity: { domain: ["counter", "input_number", "number", "sensor"] },
+    },
+  },
+  { name: "name", selector: { text: {} } },
+  {
+    type: "grid",
+    name: "",
+    schema: [
+      {
+        name: "icon",
+        selector: {
+          icon: {},
+        },
+        context: {
+          icon_entity: "entity",
+        },
+      },
+      {
+        name: "graph",
+        selector: {
+          select: {
+            options: [
+              {
+                value: "none",
+                label: "None",
+              },
+              {
+                value: "line",
+                label: "Line",
+              },
+            ],
+          },
+        },
+      },
+      { name: "unit", selector: { text: {} } },
+      { name: "detail", selector: { boolean: {} } },
+      { name: "theme", selector: { theme: {} } },
+      {
+        name: "hours_to_show",
+        selector: { number: { min: 1, mode: "box" } },
+      },
+    ],
+  },
+] as const;
+
 @customElement("hui-sensor-card-editor")
 export class HuiSensorCardEditor
   extends LitElement
@@ -49,64 +97,10 @@ export class HuiSensorCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    () =>
-      [
-        {
-          name: "entity",
-          selector: {
-            entity: { domain: ["counter", "input_number", "number", "sensor"] },
-          },
-        },
-        { name: "name", selector: { text: {} } },
-        {
-          type: "grid",
-          name: "",
-          schema: [
-            {
-              name: "icon",
-              selector: {
-                icon: {},
-              },
-              context: {
-                icon_entity: "entity",
-              },
-            },
-            {
-              name: "graph",
-              selector: {
-                select: {
-                  options: [
-                    {
-                      value: "none",
-                      label: "None",
-                    },
-                    {
-                      value: "line",
-                      label: "Line",
-                    },
-                  ],
-                },
-              },
-            },
-            { name: "unit", selector: { text: {} } },
-            { name: "detail", selector: { boolean: {} } },
-            { name: "theme", selector: { theme: {} } },
-            {
-              name: "hours_to_show",
-              selector: { number: { min: 1, mode: "box" } },
-            },
-          ],
-        },
-      ] as const
-  );
-
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
-
-    const schema = this._schema();
 
     const data = {
       hours_to_show: 24,
@@ -119,7 +113,7 @@ export class HuiSensorCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${schema}
+        .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -132,9 +126,7 @@ export class HuiSensorCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
       case "theme":
         return `${this.hass!.localize(
