@@ -2,12 +2,7 @@ import "@material/mwc-button";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
-import {
-  acceptSharedMatterDevice,
-  commissionMatterDevice,
-  matterSetThread,
-  matterSetWifi,
-} from "../../../../../data/matter";
+import { matterSetThread, matterSetWifi } from "../../../../../data/matter";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
@@ -64,7 +59,9 @@ export class MatterConfigPanel extends LitElement {
               <mwc-button @click=${this._setWifi}
                 >Set WiFi Credentials</mwc-button
               >
-              <mwc-button @click=${this._setThread}>Set Thread Credentials</mwc-button>
+              <mwc-button @click=${this._setThread}
+                >Set Thread Credentials</mwc-button
+              >
             </div>
           </ha-card>
         </div>
