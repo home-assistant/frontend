@@ -15,17 +15,19 @@ import {
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, PropertyValues } from "lit";
-import { property, state } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
+import { ensureArray } from "../../common/array/ensure-array";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { LocalStorage } from "../../common/decorators/local-storage";
-import { ensureArray } from "../../common/array/ensure-array";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
   extractSearchParamsObject,
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
+import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
@@ -44,7 +46,13 @@ import {
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
 import { subscribeEntityRegistry } from "../../data/entity_registry";
-import { computeHistory, fetchDateWS } from "../../data/history";
+import {
+  computeHistory,
+  fetchDateWS,
+  HistoryResult,
+  HistoryStates,
+  subscribeHistory,
+} from "../../data/history";
 import "../../layouts/ha-app-layout";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
@@ -66,7 +74,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _isLoading = false;
 
-  @state() private _stateHistory?;
+  @state() private _history?: HistoryStates;
+
+  @state() private _stateHistory?: HistoryResult;
 
   @state() private _ranges?: DateRangePickerRanges;
 
@@ -75,6 +85,13 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   @state() private _areaEntityLookup?: AreaEntityLookup;
 
   @state() private _areaDeviceLookup?: AreaDeviceLookup;
+
+  @query("state-history-charts")
+  private _stateHistoryCharts?: StateHistoryCharts;
+
+  private _subscribed?: Promise<UnsubscribeFunc>;
+
+  private _interval?: number;
 
   public constructor() {
     super();
@@ -86,6 +103,18 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     const end = new Date();
     end.setHours(end.getHours() + 1, 0, 0, 0);
     this._endDate = end;
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._getHistory();
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeHistory();
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -270,24 +299,84 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
     if (entityIds.length === 0) {
       this._isLoading = false;
-      this._stateHistory = [];
+      this._stateHistory = { line: [], timeline: [] };
       return;
     }
-    try {
-      const dateHistory = await fetchDateWS(
-        this.hass,
-        this._startDate,
-        this._endDate,
-        entityIds
-      );
 
-      this._stateHistory = computeHistory(
-        this.hass,
-        dateHistory,
-        this.hass.localize
-      );
-    } finally {
-      this._isLoading = false;
+    if (this._subscribed) {
+      await this._unsubscribeHistory();
+    }
+
+    this._history = undefined;
+
+    const now = new Date();
+
+    if (this._endDate < now) {
+      try {
+        const dateHistory = await fetchDateWS(
+          this.hass,
+          this._startDate,
+          this._endDate,
+          entityIds
+        );
+
+        this._stateHistory = computeHistory(
+          this.hass,
+          dateHistory,
+          this.hass.localize
+        );
+      } finally {
+        this._isLoading = false;
+      }
+      return;
+    }
+
+    this._subscribed = subscribeHistory(
+      this.hass,
+      (history) => {
+        this._isLoading = false;
+        if (!this._history) {
+          this._history = history.states;
+        } else {
+          for (const [entityId, states] of Object.entries(history.states)) {
+            if (entityId in this._history) {
+              this._history[entityId] = this._history[entityId].concat(states);
+            } else {
+              this._history[entityId] = states;
+            }
+          }
+        }
+        this._stateHistory = computeHistory(
+          this.hass,
+          this._history,
+          this.hass.localize
+        );
+      },
+      this._startDate,
+      this._endDate,
+      entityIds
+    );
+    this._setRedrawTimer();
+  }
+
+  private _setRedrawTimer() {
+    // redraw the graph every minute to update the time axis
+    clearInterval(this._interval);
+    this._interval = window.setInterval(
+      () => this._stateHistoryCharts?.requestUpdate(),
+      MIN_TIME_BETWEEN_UPDATES
+    );
+  }
+
+  private async _unsubscribeHistory() {
+    if (this._interval) {
+      clearInterval(this._interval);
+      this._interval = undefined;
+    }
+    if (this._subscribed) {
+      const unsub = await this._subscribed;
+      unsub?.();
+      this._subscribed = undefined;
     }
   }
 
