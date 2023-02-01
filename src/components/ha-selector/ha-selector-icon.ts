@@ -35,7 +35,7 @@ export class HaIconSelector extends LitElement {
     const placeholder =
       this.selector.icon?.placeholder || stateObj?.attributes.icon;
     const fallbackPath =
-      !stateObj?.attributes.icon && stateObj
+      !placeholder && stateObj
         ? domainIcon(computeDomain(iconEntity!), stateObj)
         : undefined;
 
