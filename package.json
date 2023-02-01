@@ -158,7 +158,7 @@
     "@babel/plugin-syntax-top-level-await": "^7.14.5",
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-typescript": "^7.18.6",
-    "@koa/cors": "^3.1.0",
+    "@koa/cors": "^4.0.0",
     "@octokit/auth-oauth-device": "^4.0.4",
     "@octokit/rest": "^19.0.7",
     "@open-wc/dev-server-hmr": "^0.0.2",
