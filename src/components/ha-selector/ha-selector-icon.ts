@@ -1,6 +1,8 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { domainIcon } from "../../common/entity/domain_icon";
 import { IconSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-picker";
@@ -21,7 +23,22 @@ export class HaIconSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @property() public context?: {
+    icon_entity?: string;
+  };
+
   protected render() {
+    const iconEntity = this.context?.icon_entity;
+
+    const stateObj = iconEntity ? this.hass.states[iconEntity] : undefined;
+
+    const placeholder =
+      this.selector.icon?.placeholder || stateObj?.attributes.icon;
+    const fallbackPath =
+      !stateObj?.attributes.icon && stateObj
+        ? domainIcon(computeDomain(iconEntity!), stateObj)
+        : undefined;
+
     return html`
       <ha-icon-picker
         .hass=${this.hass}
@@ -30,8 +47,8 @@ export class HaIconSelector extends LitElement {
         .required=${this.required}
         .disabled=${this.disabled}
         .helper=${this.helper}
-        .fallbackPath=${this.selector.icon?.fallbackPath}
-        .placeholder=${this.selector.icon?.placeholder}
+        .fallbackPath=${this.selector.icon?.fallbackPath ?? fallbackPath}
+        .placeholder=${this.selector.icon?.placeholder ?? placeholder}
         @value-changed=${this._valueChanged}
       ></ha-icon-picker>
     `;
