@@ -64,6 +64,8 @@ export class StateHistoryChartTimeline extends LitElement {
     }
 
     if (
+      changedProps.has("startTime") ||
+      changedProps.has("endTime") ||
       changedProps.has("data") ||
       this._chartTime <
         new Date(this.endTime.getTime() - MIN_TIME_BETWEEN_UPDATES)
