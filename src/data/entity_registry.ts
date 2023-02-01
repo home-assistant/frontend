@@ -30,7 +30,6 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   device_class?: string;
   original_device_class?: string;
   aliases: string[];
-  options: EntityRegistryOptions | null;
 }
 
 export interface UpdateEntityRegistryEntryResult {
@@ -40,7 +39,6 @@ export interface UpdateEntityRegistryEntryResult {
 }
 
 export interface SensorEntityOptions {
-  precision?: number | null;
   unit_of_measurement?: string | null;
 }
 
@@ -54,12 +52,6 @@ export interface WeatherEntityOptions {
   temperature_unit?: string | null;
   visibility_unit?: string | null;
   wind_speed_unit?: string | null;
-}
-
-export interface EntityRegistryOptions {
-  number?: NumberEntityOptions;
-  sensor?: SensorEntityOptions;
-  weather?: WeatherEntityOptions;
 }
 
 export interface EntityRegistryEntryUpdateParams {
