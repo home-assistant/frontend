@@ -419,7 +419,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-class-properties@npm:^7.12.1, @babel/plugin-proposal-class-properties@npm:^7.18.6":
+"@babel/plugin-proposal-class-properties@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/plugin-proposal-class-properties@npm:7.18.6"
   dependencies:
@@ -3368,18 +3368,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-wc/dev-server-hmr@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "@open-wc/dev-server-hmr@npm:0.0.2"
+"@open-wc/dev-server-hmr@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "@open-wc/dev-server-hmr@npm:0.1.3"
   dependencies:
     "@babel/core": ^7.12.3
-    "@babel/plugin-proposal-class-properties": ^7.12.1
+    "@babel/plugin-syntax-class-properties": ^7.12.13
     "@babel/plugin-syntax-import-assertions": ^7.12.1
     "@babel/plugin-syntax-top-level-await": ^7.12.1
-    "@web/dev-server-core": ^0.2.18
+    "@web/dev-server-core": ^0.3.10
     "@web/dev-server-hmr": ^0.1.6
     picomatch: ^2.2.2
-  checksum: 4abb61cf6b13ef5bbc8ab7be6c3760d1791e2698b9fe1fcf6d281c2f0bb1e2acd2238e4f79f8e4079b200ca7ec422d3e113cc010d323b8416e687ccbdced2641
+  checksum: 993ddbdea4d919d5414ce2cbed8d49253658f4a0311b66f2e45d03ab9ea7354596144d46622a915683f72ca2b3c045b47362104327b4033bede1456446e085ff
   languageName: node
   linkType: hard
 
@@ -4317,14 +4317,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/parse5@npm:^5.0.3":
-  version: 5.0.3
-  resolution: "@types/parse5@npm:5.0.3"
-  checksum: d6b7495cb1850f9f2e9c5e103ede9f2d30a5320669707b105c403868adc9e4bf8d3a7ff314cc23f67826bbbbbc0e6147346ce9062ab429f099dba7a01f463919
-  languageName: node
-  linkType: hard
-
-"@types/parse5@npm:^6.0.0":
+"@types/parse5@npm:^6.0.0, @types/parse5@npm:^6.0.1":
   version: 6.0.3
   resolution: "@types/parse5@npm:6.0.3"
   checksum: ddb59ee4144af5dfcc508a8dcf32f37879d11e12559561e65788756b95b33e6f03ea027d88e1f5408f9b7bfb656bf630ace31a2169edf44151daaf8dd58df1b7
@@ -4452,12 +4445,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^7.2.6":
-  version: 7.4.0
-  resolution: "@types/ws@npm:7.4.0"
+"@types/ws@npm:^7.2.6, @types/ws@npm:^7.4.0":
+  version: 7.4.7
+  resolution: "@types/ws@npm:7.4.7"
   dependencies:
     "@types/node": "*"
-  checksum: afc0060614ccc9382e0e2900220088bedbbdf9cf828b03990bcca9c9c0167bd2aa8b59cd001419ea804e5cc3b1668cc0c6c4aeb60f63c2a36814bed3f0d20528
+  checksum: b4c9b8ad209620c9b21e78314ce4ff07515c0cadab9af101c1651e7bfb992d7fd933bd8b9c99d110738fd6db523ed15f82f29f50b45510288da72e964dedb1a3
   languageName: node
   linkType: hard
 
@@ -4949,6 +4942,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/dev-server-core@npm:^0.3.10":
+  version: 0.3.19
+  resolution: "@web/dev-server-core@npm:0.3.19"
+  dependencies:
+    "@types/koa": ^2.11.6
+    "@types/ws": ^7.4.0
+    "@web/parse5-utils": ^1.2.0
+    chokidar: ^3.4.3
+    clone: ^2.1.2
+    es-module-lexer: ^1.0.0
+    get-stream: ^6.0.0
+    is-stream: ^2.0.0
+    isbinaryfile: ^4.0.6
+    koa: ^2.13.0
+    koa-etag: ^4.0.0
+    koa-send: ^5.0.1
+    koa-static: ^5.0.0
+    lru-cache: ^6.0.0
+    mime-types: ^2.1.27
+    parse5: ^6.0.1
+    picomatch: ^2.2.2
+    ws: ^7.4.2
+  checksum: 00b3cafc7d9c25806ae4af824d34d44928b09e039c7cf87e66ddc7b2f7d3198ab667f860282f8f8287cf26aeea1e8f4b348609eba4e05259cc52f4a7451c174f
+  languageName: node
+  linkType: hard
+
 "@web/dev-server-hmr@npm:^0.1.6":
   version: 0.1.6
   resolution: "@web/dev-server-hmr@npm:0.1.6"
@@ -4997,13 +5016,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/parse5-utils@npm:^1.0.0":
-  version: 1.1.2
-  resolution: "@web/parse5-utils@npm:1.1.2"
+"@web/parse5-utils@npm:^1.0.0, @web/parse5-utils@npm:^1.2.0":
+  version: 1.3.0
+  resolution: "@web/parse5-utils@npm:1.3.0"
   dependencies:
-    "@types/parse5": ^5.0.3
+    "@types/parse5": ^6.0.1
     parse5: ^6.0.1
-  checksum: 5158e8d2b95d653d8a4d74521c13acd9cc1855cdff574372c867c55a1378afb4600864f9406ba2403bdd418a6b04a18960028fcca43a7d4dff0b3f131937d1ff
+  checksum: 379849c1b0a060d50037c7dc90d27231dc68f57b1034d87f89129c3cd87fa27d3a0f8e550e1ab3be00bb1c0d440a8fa95c153a481ed8c2c705fd46fbc8a8433d
   languageName: node
   linkType: hard
 
@@ -7632,6 +7651,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"es-module-lexer@npm:^1.0.0":
+  version: 1.1.0
+  resolution: "es-module-lexer@npm:1.1.0"
+  checksum: 3e9f5019b69c6b2f04eb8478c4fdb4ed72cb8b4c97511b5dd39c1f498386ed8f5083c32067c15efcfabc7e8460cb65ed4627dd32405475715a898009922f41fa
+  languageName: node
+  linkType: hard
+
 "es-to-primitive@npm:^1.2.1":
   version: 1.2.1
   resolution: "es-to-primitive@npm:1.2.1"
@@ -8057,7 +8083,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"etag@npm:^1.3.0, etag@npm:~1.8.1":
+"etag@npm:^1.3.0, etag@npm:^1.8.1, etag@npm:~1.8.1":
   version: 1.8.1
   resolution: "etag@npm:1.8.1"
   checksum: 571aeb3dbe0f2bbd4e4fadbdb44f325fc75335cd5f6f6b6a091e6a06a9f25ed5392f0863c5442acb0646787446e816f13cbfc6edce5b07658541dff573cab1ff
@@ -9404,7 +9430,7 @@ fsevents@^1.2.7:
     "@mdi/svg": 7.1.96
     "@octokit/auth-oauth-device": ^4.0.4
     "@octokit/rest": ^19.0.7
-    "@open-wc/dev-server-hmr": ^0.0.2
+    "@open-wc/dev-server-hmr": ^0.1.3
     "@polymer/app-layout": ^3.1.0
     "@polymer/iron-flex-layout": ^3.0.1
     "@polymer/iron-icon": ^3.0.1
@@ -10868,7 +10894,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"koa-send@npm:^5.0.0":
+"koa-etag@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "koa-etag@npm:4.0.0"
+  dependencies:
+    etag: ^1.8.1
+  checksum: b5f413574e1edbd60fbbd0d31720e66565d51bfcb407d1bc3f48d9dd5b45fa5a9e4f69a60e749fad7397348e90de23e943307578d007a69da30faaae432deaf6
+  languageName: node
+  linkType: hard
+
+"koa-send@npm:^5.0.0, koa-send@npm:^5.0.1":
   version: 5.0.1
   resolution: "koa-send@npm:5.0.1"
   dependencies:
@@ -16506,9 +16541,9 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"ws@npm:^7.3.1":
-  version: 7.4.0
-  resolution: "ws@npm:7.4.0"
+"ws@npm:^7.3.1, ws@npm:^7.4.2":
+  version: 7.5.9
+  resolution: "ws@npm:7.5.9"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ^5.0.2
@@ -16517,7 +16552,7 @@ typescript@^3.8.3:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 83a19a742aa2254ac5d7aa5d8f9a3bf7f2312bd147427fed02fc13168545c938450f1da9d8371133b292f63d1a21dcf7e7a09c6f89b8603581a27ed6c8e24e09
+  checksum: c3c100a181b731f40b7f2fddf004aa023f79d64f489706a28bc23ff88e87f6a64b3c6651fbec3a84a53960b75159574d7a7385709847a62ddb7ad6af76f49138
   languageName: node
   linkType: hard
 
