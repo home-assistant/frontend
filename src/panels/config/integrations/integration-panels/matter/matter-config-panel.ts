@@ -64,13 +64,7 @@ export class MatterConfigPanel extends LitElement {
               <mwc-button @click=${this._setWifi}
                 >Set WiFi Credentials</mwc-button
               >
-              <mwc-button @click=${this._setThread}>Set Thread</mwc-button>
-              <mwc-button @click=${this._commission}
-                >Commission device</mwc-button
-              >
-              <mwc-button @click=${this._acceptSharedDevice}
-                >Add shared device</mwc-button
-              >
+              <mwc-button @click=${this._setThread}>Set Thread Credentials</mwc-button>
             </div>
           </ha-card>
         </div>
@@ -129,44 +123,6 @@ export class MatterConfigPanel extends LitElement {
     }
     try {
       await matterSetWifi(this.hass, networkName, psk);
-    } catch (err: any) {
-      this._error = err.message;
-    }
-  }
-
-  private async _commission(): Promise<void> {
-    const code = await showPromptDialog(this, {
-      title: "Commission device",
-      inputLabel: "Code",
-      inputType: "string",
-      confirmText: "Commission",
-    });
-    if (!code) {
-      return;
-    }
-    this._error = undefined;
-    this._redirectOnNewDevice();
-    try {
-      await commissionMatterDevice(this.hass, code);
-    } catch (err: any) {
-      this._error = err.message;
-    }
-  }
-
-  private async _acceptSharedDevice(): Promise<void> {
-    const code = await showPromptDialog(this, {
-      title: "Add shared device",
-      inputLabel: "Pin",
-      inputType: "number",
-      confirmText: "Accept device",
-    });
-    if (!code) {
-      return;
-    }
-    this._error = undefined;
-    this._redirectOnNewDevice();
-    try {
-      await acceptSharedMatterDevice(this.hass, Number(code));
     } catch (err: any) {
       this._error = err.message;
     }
