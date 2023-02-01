@@ -3,6 +3,7 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   addDays,
+  differenceInHours,
   endOfToday,
   endOfWeek,
   endOfYesterday,
@@ -356,15 +357,24 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       this._endDate,
       entityIds
     );
+    this._subscribed.catch(() => {
+      this._isLoading = false;
+      this._unsubscribeHistory();
+    });
     this._setRedrawTimer();
   }
 
   private _setRedrawTimer() {
-    // redraw the graph every minute to update the time axis
     clearInterval(this._interval);
+    const timespan = differenceInHours(this._endDate, this._startDate);
     this._interval = window.setInterval(
       () => this._stateHistoryCharts?.requestUpdate(),
-      MIN_TIME_BETWEEN_UPDATES
+      // if timespan smaller than 1 hour, update every 10 seconds, smaller than 5 hours, redraw every minute, otherwise every 5 minutes
+      timespan < 2
+        ? 10000
+        : timespan < 10
+        ? 60 * 1000
+        : MIN_TIME_BETWEEN_UPDATES
     );
   }
 
