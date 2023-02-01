@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -13,8 +12,6 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { domainIcon } from "../../../../common/entity/domain_icon";
 import { entityId } from "../../../../common/structs/is-entity-id";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
@@ -53,7 +50,7 @@ export class HuiSensorCardEditor
   }
 
   private _schema = memoizeOne(
-    (entity: string, icon: string | undefined, entityState: HassEntity) =>
+    () =>
       [
         {
           name: "entity",
@@ -69,13 +66,10 @@ export class HuiSensorCardEditor
             {
               name: "icon",
               selector: {
-                icon: {
-                  placeholder: icon || entityState?.attributes.icon,
-                  fallbackPath:
-                    !icon && !entityState?.attributes.icon && entityState
-                      ? domainIcon(computeDomain(entity), entityState)
-                      : undefined,
-                },
+                icon: {},
+              },
+              context: {
+                icon_entity: "entity",
               },
             },
             {
@@ -112,13 +106,7 @@ export class HuiSensorCardEditor
       return html``;
     }
 
-    const entityState = this.hass.states[this._config.entity];
-
-    const schema = this._schema(
-      this._config.entity,
-      this._config.icon,
-      entityState
-    );
+    const schema = this._schema();
 
     const data = {
       hours_to_show: 24,

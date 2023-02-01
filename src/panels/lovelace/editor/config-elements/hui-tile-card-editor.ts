@@ -14,8 +14,6 @@ import {
   string,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { domainIcon } from "../../../../common/entity/domain_icon";
 import { entityId } from "../../../../common/structs/is-entity-id";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
@@ -65,7 +63,7 @@ export class HuiTileCardEditor
   }
 
   private _schema = memoizeOne(
-    (entity: string, icon?: string, stateObj?: HassEntity) =>
+    () =>
       [
         { name: "entity", selector: { entity: {} } },
         {
@@ -84,14 +82,9 @@ export class HuiTileCardEditor
                 {
                   name: "icon",
                   selector: {
-                    icon: {
-                      placeholder: icon || stateObj?.attributes.icon,
-                      fallbackPath:
-                        !icon && !stateObj?.attributes.icon && stateObj
-                          ? domainIcon(computeDomain(entity), stateObj)
-                          : undefined,
-                    },
+                    icon: {},
                   },
+                  context: { icon_entity: "entity" },
                 },
                 {
                   name: "color",
@@ -153,11 +146,7 @@ export class HuiTileCardEditor
       | HassEntity
       | undefined;
 
-    const schema = this._schema(
-      this._config.entity,
-      this._config.icon,
-      stateObj
-    );
+    const schema = this._schema();
 
     if (this._subElementEditorConfig) {
       return html`
