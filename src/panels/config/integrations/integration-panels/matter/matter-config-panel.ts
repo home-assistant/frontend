@@ -2,7 +2,12 @@ import "@material/mwc-button";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
-import { matterSetThread, matterSetWifi } from "../../../../../data/matter";
+import {
+  acceptSharedMatterDevice,
+  commissionMatterDevice,
+  matterSetThread,
+  matterSetWifi,
+} from "../../../../../data/matter";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
@@ -10,6 +15,7 @@ import "../../../../../components/ha-alert";
 import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { navigate } from "../../../../../common/navigate";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { isDevVersion } from "../../../../../common/config/version";
 
 @customElement("matter-config-panel")
 export class MatterConfigPanel extends LitElement {
@@ -55,6 +61,14 @@ export class MatterConfigPanel extends LitElement {
                 ? html`<mwc-button @click=${this._startMobileCommissioning}
                     >Commission device with mobile app</mwc-button
                   >`
+                : ""}
+              ${isDevVersion(this.hass.config.version)
+                ? html`<mwc-button @click=${this._commission}
+                      >Commission device</mwc-button
+                    >
+                    <mwc-button @click=${this._acceptSharedDevice}
+                      >Add shared device</mwc-button
+                    >`
                 : ""}
               <mwc-button @click=${this._setWifi}
                 >Set WiFi Credentials</mwc-button
@@ -120,6 +134,44 @@ export class MatterConfigPanel extends LitElement {
     }
     try {
       await matterSetWifi(this.hass, networkName, psk);
+    } catch (err: any) {
+      this._error = err.message;
+    }
+  }
+
+  private async _commission(): Promise<void> {
+    const code = await showPromptDialog(this, {
+      title: "Commission device",
+      inputLabel: "Code",
+      inputType: "string",
+      confirmText: "Commission",
+    });
+    if (!code) {
+      return;
+    }
+    this._error = undefined;
+    this._redirectOnNewDevice();
+    try {
+      await commissionMatterDevice(this.hass, code);
+    } catch (err: any) {
+      this._error = err.message;
+    }
+  }
+
+  private async _acceptSharedDevice(): Promise<void> {
+    const code = await showPromptDialog(this, {
+      title: "Add shared device",
+      inputLabel: "Pin",
+      inputType: "number",
+      confirmText: "Accept device",
+    });
+    if (!code) {
+      return;
+    }
+    this._error = undefined;
+    this._redirectOnNewDevice();
+    try {
+      await acceptSharedMatterDevice(this.hass, Number(code));
     } catch (err: any) {
       this._error = err.message;
     }
