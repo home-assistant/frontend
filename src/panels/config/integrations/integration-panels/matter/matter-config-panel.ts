@@ -15,6 +15,7 @@ import "../../../../../components/ha-alert";
 import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { navigate } from "../../../../../common/navigate";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { isDevVersion } from "../../../../../common/config/version";
 
 @customElement("matter-config-panel")
 export class MatterConfigPanel extends LitElement {
@@ -61,15 +62,19 @@ export class MatterConfigPanel extends LitElement {
                     >Commission device with mobile app</mwc-button
                   >`
                 : ""}
+              ${isDevVersion(this.hass.config.version)
+                ? html`<mwc-button @click=${this._commission}
+                      >Commission device</mwc-button
+                    >
+                    <mwc-button @click=${this._acceptSharedDevice}
+                      >Add shared device</mwc-button
+                    >`
+                : ""}
               <mwc-button @click=${this._setWifi}
                 >Set WiFi Credentials</mwc-button
               >
-              <mwc-button @click=${this._setThread}>Set Thread</mwc-button>
-              <mwc-button @click=${this._commission}
-                >Commission device</mwc-button
-              >
-              <mwc-button @click=${this._acceptSharedDevice}
-                >Add shared device</mwc-button
+              <mwc-button @click=${this._setThread}
+                >Set Thread Credentials</mwc-button
               >
             </div>
           </ha-card>
