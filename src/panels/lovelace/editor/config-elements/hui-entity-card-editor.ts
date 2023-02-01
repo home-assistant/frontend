@@ -1,6 +1,5 @@
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { entityId } from "../../../../common/structs/is-entity-id";
@@ -26,6 +25,38 @@ const cardConfigStruct = assign(
   })
 );
 
+const SCHEMA = [
+  { name: "entity", required: true, selector: { entity: {} } },
+  {
+    type: "grid",
+    name: "",
+    schema: [
+      { name: "name", selector: { text: {} } },
+      {
+        name: "icon",
+        selector: {
+          icon: {},
+        },
+        context: {
+          icon_entity: "entity",
+        },
+      },
+      {
+        name: "attribute",
+        selector: {
+          attribute: {},
+        },
+        context: {
+          filter_entity: "entity",
+        },
+      },
+      { name: "unit", selector: { text: {} } },
+      { name: "theme", selector: { theme: {} } },
+      { name: "state_color", selector: { boolean: {} } },
+    ],
+  },
+] as const;
+
 @customElement("hui-entity-card-editor")
 export class HuiEntityCardEditor
   extends LitElement
@@ -40,49 +71,16 @@ export class HuiEntityCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (entity: string) =>
-      [
-        { name: "entity", required: true, selector: { entity: {} } },
-        {
-          type: "grid",
-          name: "",
-          schema: [
-            { name: "name", selector: { text: {} } },
-            {
-              name: "icon",
-              selector: {
-                icon: {},
-                context: {
-                  icon_entity: "entity",
-                },
-              },
-            },
-
-            {
-              name: "attribute",
-              selector: { attribute: { entity_id: entity } },
-            },
-            { name: "unit", selector: { text: {} } },
-            { name: "theme", selector: { theme: {} } },
-            { name: "state_color", selector: { boolean: {} } },
-          ],
-        },
-      ] as const
-  );
-
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
 
-    const schema = this._schema(this._config.entity);
-
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${schema}
+        .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -95,9 +93,7 @@ export class HuiEntityCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     if (schema.name === "entity") {
       return this.hass!.localize(
         "ui.panel.lovelace.editor.card.generic.entity"
