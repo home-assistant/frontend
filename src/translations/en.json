@@ -1935,7 +1935,14 @@
             "create_empty": "Create new automation",
             "create_empty_description": "Start with an empty automation from scratch",
             "create_blueprint": "Create from blueprint",
-            "create_blueprint_description": "Discover blueprints"
+            "create_blueprint_description": "Discover community blueprints",
+            "blueprint_source": {
+              "author": "By {author}",
+              "local": "By you",
+              "community": "By the community",
+              "homeassistant": "By Home Assistant"
+            },
+            "discover_blueprint_tip": "Discover more community blueprints"
           },
           "editor": {
             "enable": "[%key:ui::common::enable%]",

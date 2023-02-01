@@ -2,7 +2,9 @@ import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import {
   mdiAccount,
+  mdiFile,
   mdiHomeAssistant,
+  mdiOpenInNew,
   mdiPencilOutline,
   mdiWeb,
 } from "@mdi/js";
@@ -17,16 +19,25 @@ import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
+import "../../../components/ha-tip";
 import { showAutomationEditor } from "../../../data/automation";
 import {
   Blueprint,
   Blueprints,
+  BlueprintSourceType,
   fetchBlueprints,
-  isHABlueprint,
+  getBlueprintSourceType,
 } from "../../../data/blueprint";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
+
+const SOURCE_TYPE_ICONS: Record<BlueprintSourceType, string> = {
+  local: mdiFile,
+  community: mdiAccount,
+  homeassistant: mdiHomeAssistant,
+};
 
 @customElement("ha-dialog-new-automation")
 class DialogNewAutomation extends LitElement implements HassDialog {
@@ -58,10 +69,15 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     }
     const result = Object.entries(blueprints)
       .filter((entry): entry is [string, Blueprint] => !("error" in entry[1]))
-      .map(([path, blueprint]) => ({
-        ...blueprint.metadata,
-        path,
-      }));
+      .map(([path, blueprint]) => {
+        const sourceType = getBlueprintSourceType(blueprint);
+
+        return {
+          ...blueprint.metadata,
+          sourceType,
+          path,
+        };
+      });
     return result.sort((a, b) =>
       stringCompare(a.name, b.name, this.hass!.locale.language)
     );
@@ -123,32 +139,58 @@ class DialogNewAutomation extends LitElement implements HassDialog {
               >
                 <ha-svg-icon
                   slot="graphic"
-                  .path=${isHABlueprint(blueprint.path)
-                    ? mdiHomeAssistant
-                    : mdiAccount}
+                  .path=${SOURCE_TYPE_ICONS[blueprint.sourceType]}
                 ></ha-svg-icon>
                 ${blueprint.name}
-                <span slot="secondary">${blueprint.path}</span>
+                <span slot="secondary">
+                  ${blueprint.author
+                    ? this.hass.localize(
+                        `ui.panel.config.automation.dialog_new.blueprint_source.author`,
+                        { author: blueprint.author }
+                      )
+                    : this.hass.localize(
+                        `ui.panel.config.automation.dialog_new.blueprint_source.${blueprint.sourceType}`
+                      )}
+                </span>
                 <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
             `
           )}
           ${processedBlueprints.length === 0
             ? html`
-                <ha-list-item hasmeta twoline graphic="icon">
-                  <ha-svg-icon slot="graphic" .path=${mdiWeb}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.dialog_new.create_blueprint"
-                  )}
-                  <span slot="secondary">
+                <a
+                  href=${documentationUrl(this.hass, "/get-blueprints")}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  class="item"
+                >
+                  <ha-list-item hasmeta twoline graphic="icon">
+                    <ha-svg-icon slot="graphic" .path=${mdiWeb}></ha-svg-icon>
                     ${this.hass.localize(
-                      "ui.panel.config.automation.dialog_new.create_blueprint_description"
-                    )}</span
-                  >
-                  <ha-icon-next slot="meta"></ha-icon-next>
-                </ha-list-item>
+                      "ui.panel.config.automation.dialog_new.create_blueprint"
+                    )}
+                    <span slot="secondary">
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.dialog_new.create_blueprint_description"
+                      )}
+                    </span>
+                    <ha-svg-icon slot="meta" path=${mdiOpenInNew}></ha-svg-icon>
+                  </ha-list-item>
+                </a>
               `
-            : null}
+            : html`
+                <ha-tip>
+                  <a
+                    href=${documentationUrl(this.hass, "/get-blueprints")}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.dialog_new.discover_blueprint_tip"
+                    )}
+                  </a>
+                </ha-tip>
+              `}
         </mwc-list>
       </ha-dialog>
     `;
@@ -177,7 +219,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
       haStyleDialog,
       css`
         ha-dialog {
-          --dialog-content-padding: 12px 0;
+          --dialog-content-padding: 0;
           --mdc-dialog-max-height: 60vh;
         }
         @media all and (min-width: 550px) {
@@ -187,6 +229,13 @@ class DialogNewAutomation extends LitElement implements HassDialog {
         }
         ha-icon-next {
           width: 24px;
+        }
+        ha-tip {
+          margin-top: 8px;
+          margin-bottom: 4px;
+        }
+        a.item {
+          text-decoration: unset;
         }
       `,
     ];
