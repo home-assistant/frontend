@@ -41,6 +41,8 @@ export default class HaChartBase extends LitElement {
 
   @state() private _chartHeight?: number;
 
+  @state() private _hysteresisHeight?: number;
+
   @state() private _tooltip?: Tooltip;
 
   @state() private _hiddenDatasets: Set<number> = new Set();
@@ -103,6 +105,12 @@ export default class HaChartBase extends LitElement {
   }
 
   protected render() {
+    const newheight = this.height ?? this._chartHeight ?? 0;
+    const change = newheight - (this._hysteresisHeight ?? 0);
+    if (!this._hysteresisHeight || change > 0 || change < -12) {
+      this._hysteresisHeight = newheight;
+    }
+
     return html`
       ${this.options?.plugins?.legend?.display === true
         ? html`<div class="chartLegend">
@@ -132,7 +140,7 @@ export default class HaChartBase extends LitElement {
       <div
         class="chartContainer"
         style=${styleMap({
-          height: `${this.height ?? this._chartHeight}px`,
+          height: `${this._hysteresisHeight}px`,
           overflow: this._chartHeight ? "initial" : "hidden",
           "padding-left": `${computeRTL(this.hass) ? 0 : this.paddingYAxis}px`,
           "padding-right": `${computeRTL(this.hass) ? this.paddingYAxis : 0}px`,
