@@ -1360,7 +1360,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@braintree/sanitize-url@npm:^6.0.0":
+"@braintree/sanitize-url@npm:^6.0.2":
   version: 6.0.2
   resolution: "@braintree/sanitize-url@npm:6.0.2"
   checksum: 6a9dfd4081cc96516eeb281d1a83d3b5f1ad3d2837adf968fcc2ba18889ee833554f9c641b4083c36d3360a932e4504ddf25b0b51e9933c3742622df82cf7c9a
@@ -1472,16 +1472,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/ecma402-abstract@npm:1.10.0":
-  version: 1.10.0
-  resolution: "@formatjs/ecma402-abstract@npm:1.10.0"
-  dependencies:
-    "@formatjs/intl-localematcher": 0.2.21
-    tslib: ^2.1.0
-  checksum: 3ea000ba9e9e9ca21018a782d0cd26c0ef84ce7a242b3538b17f4450ff5eeac539a0d1b41bad629499bd8c7857119da5363690958e68bb4724bb01341f68559d
-  languageName: node
-  linkType: hard
-
 "@formatjs/ecma402-abstract@npm:1.14.3":
   version: 1.14.3
   resolution: "@formatjs/ecma402-abstract@npm:1.14.3"
@@ -1522,14 +1512,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:^4.2.5":
-  version: 4.2.5
-  resolution: "@formatjs/intl-datetimeformat@npm:4.2.5"
+"@formatjs/intl-datetimeformat@npm:^6.4.3":
+  version: 6.4.3
+  resolution: "@formatjs/intl-datetimeformat@npm:6.4.3"
   dependencies:
-    "@formatjs/ecma402-abstract": 1.10.0
-    "@formatjs/intl-localematcher": 0.2.21
-    tslib: ^2.1.0
-  checksum: 6d796ba2dd98b49884f542ba902a0fc8b36464371c970673cfd2c9ce312df9eb0c9a41ceaf1cab23e36981e4686428ecc15feecc7f100eebc8be20e68ca36de5
+    "@formatjs/ecma402-abstract": 1.14.3
+    "@formatjs/intl-localematcher": 0.2.32
+    tslib: ^2.4.0
+  checksum: 5c77fd9e823a9596665abf45607cfcc3aba786836aeb0a79aeb67026b7991ef4963f0b10998994fc2b487bb1c777145d5ef2938d3e8dd44d4048fe36e779f038
   languageName: node
   linkType: hard
 
@@ -1553,15 +1543,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-localematcher@npm:0.2.21":
-  version: 0.2.21
-  resolution: "@formatjs/intl-localematcher@npm:0.2.21"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: d766eb8ce8b2628d781fdb34fd0833a0a1b28f20e70a72dfabbca27cf02bd1b994a72c357b2b3d4888bc20c33b6b7cc7e10e92847ec228a40745a2e84d8d2e24
-  languageName: node
-  linkType: hard
-
 "@formatjs/intl-localematcher@npm:0.2.32":
   version: 0.2.32
   resolution: "@formatjs/intl-localematcher@npm:0.2.32"
@@ -1571,13 +1552,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-numberformat@npm:^7.2.5":
-  version: 7.2.5
-  resolution: "@formatjs/intl-numberformat@npm:7.2.5"
+"@formatjs/intl-numberformat@npm:^8.3.3":
+  version: 8.3.3
+  resolution: "@formatjs/intl-numberformat@npm:8.3.3"
   dependencies:
-    "@formatjs/ecma402-abstract": 1.10.0
-    tslib: ^2.1.0
-  checksum: 1eda71418fbffbf7fc07eebbe04eca93cf84879b7d445cfc3fa130b5bf6a65b241d784fd7741b46fbb65d699aa5949fa8e613c51cb7833d7f67d8c4210ad67cc
+    "@formatjs/ecma402-abstract": 1.14.3
+    "@formatjs/intl-localematcher": 0.2.32
+    tslib: ^2.4.0
+  checksum: 56fc8e25c445944f43295ee28a8f2dd059770e28e4a368b977787591157f3da357528ee8bcab5e00a54c9f850a879b1fedb92cc1934b93400a30699a3834c119
   languageName: node
   linkType: hard
 
@@ -7001,10 +6983,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^3.15.2":
-  version: 3.15.2
-  resolution: "core-js@npm:3.15.2"
-  checksum: f8f61569c4c3bdf50679226f5a1045551192a2f4bc3fa46a873b6fa834cff6d1634ee138a6e4bae3eea99f1b1db2d588fa693de74640447476292b41f595a4c3
+"core-js@npm:^3.27.2":
+  version: 3.27.2
+  resolution: "core-js@npm:3.27.2"
+  checksum: 718debd426f55a6b97cf9b757c936be258afd6d4f7052f89d0f96c982d7013e9000b0b006df42831a0cf32adad298e34d6a19052dce9ae1c7ab87162c0c665e0
   languageName: node
   linkType: hard
 
@@ -9378,7 +9360,7 @@ fsevents@^1.2.7:
     "@babel/plugin-syntax-top-level-await": ^7.14.5
     "@babel/preset-env": ^7.20.2
     "@babel/preset-typescript": ^7.18.6
-    "@braintree/sanitize-url": ^6.0.0
+    "@braintree/sanitize-url": ^6.0.2
     "@codemirror/autocomplete": ^6.4.0
     "@codemirror/commands": ^6.2.0
     "@codemirror/language": ^6.4.0
@@ -9386,10 +9368,10 @@ fsevents@^1.2.7:
     "@codemirror/search": ^6.2.3
     "@codemirror/state": ^6.2.0
     "@codemirror/view": ^6.7.1
-    "@formatjs/intl-datetimeformat": ^4.2.5
+    "@formatjs/intl-datetimeformat": ^6.4.3
     "@formatjs/intl-getcanonicallocales": ^2.0.5
     "@formatjs/intl-locale": ^3.0.11
-    "@formatjs/intl-numberformat": ^7.2.5
+    "@formatjs/intl-numberformat": ^8.3.3
     "@formatjs/intl-pluralrules": ^5.1.8
     "@formatjs/intl-relativetimeformat": ^11.1.8
     "@fullcalendar/common": ^5.11.4
@@ -9481,7 +9463,7 @@ fsevents@^1.2.7:
     chai: ^4.3.4
     chart.js: ^3.3.2
     comlink: ^4.3.1
-    core-js: ^3.15.2
+    core-js: ^3.27.2
     cropperjs: ^1.5.13
     date-fns: ^2.29.3
     date-fns-tz: ^1.3.7

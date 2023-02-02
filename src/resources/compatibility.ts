@@ -20,6 +20,12 @@ import "@formatjs/intl-datetimeformat/add-all-tz";
 import "proxy-polyfill";
 import "unfetch/polyfill";
 
+import ResizeObserver from "resize-observer-polyfill";
+
+if (!window.ResizeObserver) {
+  window.ResizeObserver = ResizeObserver;
+}
+
 // Source: https://github.com/jserz/js_piece/blob/master/DOM/ParentNode/append()/append().md
 (function (arr) {
   arr.forEach((item) => {

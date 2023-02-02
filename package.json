@@ -24,7 +24,7 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@braintree/sanitize-url": "^6.0.0",
+    "@braintree/sanitize-url": "^6.0.2",
     "@codemirror/autocomplete": "^6.4.0",
     "@codemirror/commands": "^6.2.0",
     "@codemirror/language": "^6.4.0",
@@ -32,10 +32,10 @@
     "@codemirror/search": "^6.2.3",
     "@codemirror/state": "^6.2.0",
     "@codemirror/view": "^6.7.1",
-    "@formatjs/intl-datetimeformat": "^4.2.5",
+    "@formatjs/intl-datetimeformat": "^6.4.3",
     "@formatjs/intl-getcanonicallocales": "^2.0.5",
     "@formatjs/intl-locale": "^3.0.11",
-    "@formatjs/intl-numberformat": "^7.2.5",
+    "@formatjs/intl-numberformat": "^8.3.3",
     "@formatjs/intl-pluralrules": "^5.1.8",
     "@formatjs/intl-relativetimeformat": "^11.1.8",
     "@fullcalendar/common": "^5.11.4",
@@ -99,7 +99,7 @@
     "app-datepicker": "^5.1.0",
     "chart.js": "^3.3.2",
     "comlink": "^4.3.1",
-    "core-js": "^3.15.2",
+    "core-js": "^3.27.2",
     "cropperjs": "^1.5.13",
     "date-fns": "^2.29.3",
     "date-fns-tz": "^1.3.7",
@@ -245,8 +245,7 @@
   },
   "_comment": "Polymer 3.2 contained a bug, fixed in https://github.com/Polymer/polymer/pull/5569, add as patch",
   "resolutions": {
-    "@polymer/polymer": "patch:@polymer/polymer@3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch",
-    "@webcomponents/webcomponentsjs": "^2.2.10"
+    "@polymer/polymer": "patch:@polymer/polymer@3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch"
   },
   "main": "src/home-assistant.js",
   "prettier": {
