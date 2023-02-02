@@ -1,11 +1,8 @@
-import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { any, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { domainIcon } from "../../../../common/entity/domain_icon";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-form/ha-form";
@@ -100,10 +97,7 @@ export class HuiStatisticCardEditor
 
   private _schema = memoizeOne(
     (
-      entity: string,
-      icon: string,
       selectedPeriodKey: string | undefined,
-      entityState: HassEntity,
       localize: LocalizeFunc,
       metadata?: StatisticsMetaData
     ) =>
@@ -155,13 +149,10 @@ export class HuiStatisticCardEditor
             {
               name: "icon",
               selector: {
-                icon: {
-                  placeholder: icon || entityState?.attributes.icon,
-                  fallbackPath:
-                    !icon && !entityState?.attributes.icon && entityState
-                      ? domainIcon(computeDomain(entity), entityState)
-                      : undefined,
-                },
+                icon: {},
+              },
+              context: {
+                icon_entity: "entity",
               },
             },
             { name: "unit", selector: { text: {} } },
@@ -176,15 +167,10 @@ export class HuiStatisticCardEditor
       return html``;
     }
 
-    const entityState = this.hass.states[this._config.entity];
-
     const data = this._data(this._config);
 
     const schema = this._schema(
-      this._config.entity,
-      this._config.icon,
       typeof data.period === "string" ? data.period : undefined,
-      entityState,
       this.hass.localize,
       this._metadata
     );
