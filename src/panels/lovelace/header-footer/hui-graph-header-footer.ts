@@ -131,7 +131,7 @@ export class HuiGraphHeaderFooter
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.hasUpdated) {
+    if (this.hasUpdated && this._config) {
       this._subscribeHistory();
     }
   }
@@ -142,27 +142,31 @@ export class HuiGraphHeaderFooter
   }
 
   private _subscribeHistory() {
-    if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
+    if (
+      !isComponentLoaded(this.hass!, "history") ||
+      this._subscribed ||
+      !this._config
+    ) {
       return;
     }
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
-        if (!this._subscribed) {
+        if (!this._subscribed || !this._config) {
           // Message came in before we had a chance to unload
           return;
         }
         this._coordinates =
           coordinatesMinimalResponseCompressedState(
-            combinedHistory[this._config!.entity],
-            this._config!.hours_to_show!,
+            combinedHistory[this._config.entity],
+            this._config.hours_to_show!,
             500,
-            this._config!.detail!,
-            this._config!.limits
+            this._config.detail!,
+            this._config.limits
           ) || [];
       },
-      this._config!.hours_to_show!,
-      [this._config!.entity]
+      this._config.hours_to_show!,
+      [this._config.entity]
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
