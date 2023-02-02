@@ -9559,7 +9559,7 @@ fsevents@^1.2.7:
     serve: ^11.3.2
     sinon: ^15.0.1
     sortablejs: ^1.14.0
-    source-map-url: ^0.4.0
+    source-map-url: ^0.4.1
     superstruct: ^1.0.3
     systemjs: ^6.13.0
     tar: ^6.1.11
@@ -14422,10 +14422,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"source-map-url@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "source-map-url@npm:0.4.0"
-  checksum: 63ed54045fcd7b4ec7ca17513f48fdc23b573eef679326ecf1a31333e1aaecc0a9c085adaa7d118283b160e65b71cc72da9e1385f2de4ac5ed68294e3920d719
+"source-map-url@npm:^0.4.0, source-map-url@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "source-map-url@npm:0.4.1"
+  checksum: 64c5c2c77aff815a6e61a4120c309ae4cac01298d9bcbb3deb1b46a4dd4c46d4a1eaeda79ec9f684766ae80e8dc86367b89326ce9dd2b89947bd9291fc1ac08c
   languageName: node
   linkType: hard
 
