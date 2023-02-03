@@ -107,7 +107,7 @@ export interface DeviceSelector {
     integration?: string;
     manufacturer?: string;
     model?: string;
-    entity?: EntitySelectorFilter;
+    entity?: EntitySelectorFilter | EntitySelectorFilter[];
     multiple?: boolean;
   } | null;
 }

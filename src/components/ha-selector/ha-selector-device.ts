@@ -1,7 +1,8 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../common/array/ensure-array";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device_registry";
 import {
@@ -13,7 +14,10 @@ import {
   fetchEntitySourcesWithCache,
 } from "../../data/entity_sources";
 import type { DeviceSelector } from "../../data/selector";
-import { filterSelectorDevices } from "../../data/selector";
+import {
+  filterSelectorDevices,
+  filterSelectorEntities,
+} from "../../data/selector";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
 import "../device/ha-device-picker";
@@ -75,12 +79,6 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
           .label=${this.label}
           .helper=${this.helper}
           .deviceFilter=${this._filterDevices}
-          .includeDeviceClasses=${this.selector.device?.entity?.device_class
-            ? [this.selector.device.entity.device_class]
-            : undefined}
-          .includeDomains=${this.selector.device?.entity?.domain
-            ? [this.selector.device.entity.domain]
-            : undefined}
           .disabled=${this.disabled}
           .required=${this.required}
           allow-custom-entity
@@ -95,12 +93,7 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
         .value=${this.value}
         .helper=${this.helper}
         .deviceFilter=${this._filterDevices}
-        .includeDeviceClasses=${this.selector.device.entity?.device_class
-          ? [this.selector.device.entity.device_class]
-          : undefined}
-        .includeDomains=${this.selector.device.entity?.domain
-          ? [this.selector.device.entity.domain]
-          : undefined}
+        .entityFilter=${this._filterEntities}
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-devices-picker>
@@ -120,6 +113,15 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
       this.selector.device,
       device,
       deviceIntegrations
+    );
+  };
+
+  private _filterEntities = (entity: HassEntity): boolean => {
+    if (!this.selector.device?.entity) {
+      return true;
+    }
+    return ensureArray(this.selector.device.entity).some((filter) =>
+      filterSelectorEntities(filter, entity, this._entitySources)
     );
   };
 }
