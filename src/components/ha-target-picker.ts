@@ -342,7 +342,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             )}
             no-add
             .deviceFilter=${this.deviceFilter}
-            .entityFilter=${this.entityRegFilter}
+            .entityFilter=${this.entityFilter}
             .includeDeviceClasses=${this.includeDeviceClasses}
             .includeDomains=${this.includeDomains}
             .excludeAreas=${ensureArray(this.value?.area_id)}

@@ -260,7 +260,7 @@ export interface StringSelector {
 
 export interface TargetSelector {
   target: {
-    entity?: EntitySelectorFilter;
+    entity?: EntitySelectorFilter | EntitySelectorFilter[];
     device?: SelectorDevice;
   } | null;
 }

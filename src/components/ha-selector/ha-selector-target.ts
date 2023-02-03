@@ -14,7 +14,6 @@ import {
   DeviceRegistryEntry,
   getDeviceIntegrationLookup,
 } from "../../data/device_registry";
-import { EntityRegistryEntry } from "../../data/entity_registry";
 import {
   EntitySources,
   fetchEntitySourcesWithCache,
@@ -50,7 +49,9 @@ export class HaTargetSelector extends LitElement {
     if (
       changedProperties.has("selector") &&
       (this.selector.target?.device?.integration ||
-        this.selector.target?.entity?.integration) &&
+        ensureArray(this.selector.target?.entity).some(
+          (entity) => entity.integration
+        )) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -62,7 +63,9 @@ export class HaTargetSelector extends LitElement {
   protected render(): TemplateResult {
     if (
       (this.selector.target?.device?.integration ||
-        this.selector.target?.entity?.integration) &&
+        ensureArray(this.selector.target?.entity).some(
+          (entity) => entity.integration
+        )) &&
       !this._entitySources
     ) {
       return html``;
@@ -73,37 +76,19 @@ export class HaTargetSelector extends LitElement {
       .value=${this.value}
       .helper=${this.helper}
       .deviceFilter=${this._filterDevices}
-      .entityFilter=${this._filterStates}
-      .entityRegFilter=${this._filterRegEntities}
-      .includeDeviceClasses=${this.selector.target?.entity?.device_class
-        ? [this.selector.target?.entity.device_class]
-        : undefined}
-      .includeDomains=${this.selector.target?.entity?.domain
-        ? ensureArray(this.selector.target.entity.domain as string | string[])
-        : undefined}
+      .entityFilter=${this._filterEntities}
       .disabled=${this.disabled}
     ></ha-target-picker>`;
   }
 
-  private _filterStates = (entity: HassEntity): boolean => {
+  private _filterEntities = (entity: HassEntity): boolean => {
     if (!this.selector.target?.entity) {
       return true;
     }
 
-    return filterSelectorEntities(
-      this.selector.target.entity,
-      entity,
-      this._entitySources
+    return ensureArray(this.selector.target.entity).some((filter) =>
+      filterSelectorEntities(filter, entity, this._entitySources)
     );
-  };
-
-  private _filterRegEntities = (entity: EntityRegistryEntry): boolean => {
-    if (this.selector.target?.entity?.integration) {
-      if (entity.platform !== this.selector.target.entity.integration) {
-        return false;
-      }
-    }
-    return true;
   };
 
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {
