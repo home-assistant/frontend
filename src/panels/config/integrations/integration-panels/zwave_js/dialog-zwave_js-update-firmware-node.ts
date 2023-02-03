@@ -15,17 +15,19 @@ import {
 } from "../../../../../data/device_registry";
 import {
   abortZwaveNodeFirmwareUpdate,
+  ControllerFirmwareUpdateStatus,
   fetchZwaveIsNodeFirmwareUpdateInProgress,
   fetchZwaveNodeStatus,
-  FirmwareUpdateStatus,
+  NodeFirmwareUpdateStatus,
   NodeStatus,
   subscribeZwaveNodeStatus,
   subscribeZwaveNodeFirmwareUpdate,
   uploadFirmwareAndBeginUpdate,
   ZWaveJSNodeFirmwareUpdateFinishedMessage,
-  ZWaveJSNodeFirmwareUpdateProgressMessage,
+  ZWaveJSFirmwareUpdateProgressMessage,
   ZWaveJSNodeStatusUpdatedMessage,
   ZWaveJSNodeStatus,
+  ZWaveJSControllerFirmwareUpdateFinishedMessage,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
@@ -44,10 +46,12 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   @state() private _uploading = false;
 
   @state()
-  private _updateFinishedMessage?: ZWaveJSNodeFirmwareUpdateFinishedMessage;
+  private _updateFinishedMessage?:
+    | ZWaveJSNodeFirmwareUpdateFinishedMessage
+    | ZWaveJSControllerFirmwareUpdateFinishedMessage;
 
   @state()
-  private _updateProgressMessage?: ZWaveJSNodeFirmwareUpdateProgressMessage;
+  private _updateProgressMessage?: ZWaveJSFirmwareUpdateProgressMessage;
 
   @state() private _updateInProgress = false;
 
@@ -71,12 +75,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   public closeDialog(): void {
     this._unsubscribeNodeFirmwareUpdate();
     this._unsubscribeNodeStatus();
-    this.device =
-      this._updateProgressMessage =
-      this._updateFinishedMessage =
-      this._firmwareFile =
-      this._nodeStatus =
-        undefined;
+    this.device = undefined;
+    this._updateProgressMessage = undefined;
+    this._updateFinishedMessage = undefined;
+    this._firmwareFile = undefined;
+    this._nodeStatus = undefined;
     this._uploading = this._updateInProgress = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -111,16 +114,20 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         )}
       </mwc-button>`;
 
-    const abortFirmwareUpdateButton = html`
-      <mwc-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
-        ${this.hass.localize("ui.panel.config.zwave_js.update_firmware.abort")}
-      </mwc-button>
-    `;
+    const abortFirmwareUpdateButton = this._nodeStatus.is_controller_node
+      ? html``
+      : html`
+          <mwc-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.update_firmware.abort"
+            )}
+          </mwc-button>
+        `;
 
     const status = this._updateFinishedMessage
-      ? FirmwareUpdateStatus[this._updateFinishedMessage.status]
-          .split("_")[0]
-          .toLowerCase()
+      ? this._updateFinishedMessage.success
+        ? "success"
+        : "error"
       : undefined;
 
     return html`
@@ -210,7 +217,9 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
           : html`
               <div class="flex-container">
                 <ha-svg-icon
-                  .path=${status === "ok" ? mdiCheckCircle : mdiCloseCircle}
+                  .path=${this._updateFinishedMessage!.success
+                    ? mdiCheckCircle
+                    : mdiCloseCircle}
                   .class=${status}
                 ></ha-svg-icon>
                 <div class="status">
@@ -221,9 +230,13 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                         device: html`<strong>${this._deviceName}</strong>`,
                         message: this.hass.localize(
                           `ui.panel.config.zwave_js.update_firmware.finished_status.${
-                            FirmwareUpdateStatus[
-                              this._updateFinishedMessage!.status
-                            ]
+                            this._nodeStatus.is_controller_node
+                              ? ControllerFirmwareUpdateStatus[
+                                  this._updateFinishedMessage!.status
+                                ]
+                              : NodeFirmwareUpdateStatus[
+                                  this._updateFinishedMessage!.status
+                                ]
                           }`
                         ),
                       }
@@ -231,7 +244,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                   </p>
                 </div>
               </div>
-              ${status === "ok"
+              ${this._updateFinishedMessage!.success
                 ? html`<p>
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.update_firmware.finished_status.done"
@@ -345,8 +358,9 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       this.device.id,
       (
         message:
+          | ZWaveJSFirmwareUpdateProgressMessage
+          | ZWaveJSControllerFirmwareUpdateFinishedMessage
           | ZWaveJSNodeFirmwareUpdateFinishedMessage
-          | ZWaveJSNodeFirmwareUpdateProgressMessage
       ) => {
         if (message.event === "firmware update progress") {
           if (!this._updateFinishedMessage) {
@@ -378,7 +392,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     return [
       haStyleDialog,
       css`
-        .ok {
+        .success {
           color: var(--success-color);
         }
 

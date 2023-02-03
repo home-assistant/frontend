@@ -108,7 +108,7 @@ enum RFRegion {
   "Default (EU)" = 0xff,
 }
 
-export enum FirmwareUpdateStatus {
+export enum NodeFirmwareUpdateStatus {
   Error_Timeout = -1,
   Error_Checksum = 0,
   Error_TransmissionFailed = 1,
@@ -122,6 +122,19 @@ export enum FirmwareUpdateStatus {
   OK_WaitingForActivation = 0xfd,
   OK_NoRestart = 0xfe,
   OK_RestartPending = 0xff,
+}
+
+export enum ControllerFirmwareUpdateStatus {
+  // An expected response was not received from the controller in time
+  Error_Timeout = 0,
+  /** The maximum number of retry attempts for a firmware fragments were reached */
+  Error_RetryLimitReached,
+  /** The update was aborted by the bootloader */
+  Error_Aborted,
+  /** This controller does not support firmware updates */
+  Error_NotSupported,
+
+  OK = 0xff,
 }
 
 export interface QRProvisioningInformation {
@@ -322,7 +335,7 @@ export interface ZWaveJSNodeStatusUpdatedMessage {
   status: NodeStatus;
 }
 
-export interface ZWaveJSNodeFirmwareUpdateProgressMessage {
+export interface ZWaveJSFirmwareUpdateProgressMessage {
   event: "firmware update progress";
   current_file: number;
   total_files: number;
@@ -333,10 +346,16 @@ export interface ZWaveJSNodeFirmwareUpdateProgressMessage {
 
 export interface ZWaveJSNodeFirmwareUpdateFinishedMessage {
   event: "firmware update finished";
-  status: FirmwareUpdateStatus;
+  status: NodeFirmwareUpdateStatus;
   success: boolean;
   wait_time?: number;
   reinterview: boolean;
+}
+
+export interface ZWaveJSControllerFirmwareUpdateFinishedMessage {
+  event: "firmware update finished";
+  status: ControllerFirmwareUpdateStatus;
+  success: boolean;
 }
 
 export type ZWaveJSNodeFirmwareUpdateCapabilities =
@@ -747,8 +766,9 @@ export const subscribeZwaveNodeFirmwareUpdate = (
   device_id: string,
   callbackFunction: (
     message:
+      | ZWaveJSFirmwareUpdateProgressMessage
+      | ZWaveJSControllerFirmwareUpdateFinishedMessage
       | ZWaveJSNodeFirmwareUpdateFinishedMessage
-      | ZWaveJSNodeFirmwareUpdateProgressMessage
   ) => void
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage(
