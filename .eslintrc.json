@@ -65,7 +65,10 @@
     "import/extensions": [
       "error",
       "ignorePackages",
-      { "ts": "never", "js": "never" }
+      {
+        "ts": "never",
+        "js": "never"
+      }
     ],
     "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
     "object-curly-newline": "off",
@@ -112,7 +115,10 @@
     ],
     "unused-imports/no-unused-imports": "error",
     "lit/attribute-value-entities": "off",
-    "lit/no-template-map": "off"
+    "lit/no-template-map": "off",
+    "lit/no-native-attributes": "warn",
+    "lit/no-this-assign-in-render": "warn",
+    "lit/prefer-nothing": "warn"
   },
   "plugins": ["disable", "unused-imports"],
   "processor": "disable/disable"
