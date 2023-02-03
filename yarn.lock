@@ -9540,7 +9540,7 @@ fsevents@^1.2.7:
     rrule: ^2.7.1
     serve: ^11.3.2
     sinon: ^15.0.1
-    sortablejs: ^1.14.0
+    sortablejs: ^1.15.0
     source-map-url: ^0.4.1
     superstruct: ^1.0.3
     systemjs: ^6.13.0
@@ -14367,10 +14367,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"sortablejs@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "sortablejs@npm:1.14.0"
-  checksum: 7b9d2cbb0331f3f259b8703a17174ff46a941b6d59c77c75ca05a5bd484bf2b409a9c1d21344f9c933939880450803b254825c7c7d7f88034e8c7e675420b389
+"sortablejs@npm:^1.15.0":
+  version: 1.15.0
+  resolution: "sortablejs@npm:1.15.0"
+  checksum: bb82223a663484640d317cad510ac987f26b7a443631040407224de1be069afcc6c39048b6d8527f10f269e33595e8128d7de2fac23517c8260470f77f932d55
   languageName: node
   linkType: hard
 
