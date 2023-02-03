@@ -185,7 +185,7 @@
     "@web/dev-server": "^0.0.24",
     "@web/dev-server-rollup": "^0.2.11",
     "babel-loader": "^9.1.2",
-    "chai": "^4.3.4",
+    "chai": "^4.3.7",
     "del": "^7.0.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
