@@ -1013,7 +1013,8 @@
         "reload": {
           "title": "Quick reload",
           "short_description": "Load new YAML configurations without a restart.",
-          "action": "Reload"
+          "action": "Reload",
+          "reloading": "Reloading configuration"
         },
         "restart": {
           "title": "Restart",

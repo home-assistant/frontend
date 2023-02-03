@@ -3,6 +3,7 @@ import { mdiAutoFix, mdiPower, mdiPowerCycle, mdiRefresh } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { componentsWithService } from "../../common/config/components_with_service";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import "../../components/ha-alert";
@@ -22,28 +23,38 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../generic/show-dialog-box";
-import { RestartDialogParams } from "./show-dialog-restart";
 
 @customElement("dialog-restart")
 class DialogRestart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _params?: RestartDialogParams;
+  @state() private _open = false;
 
-  public async showDialog(params: RestartDialogParams): Promise<void> {
-    this._params = params;
+  public async showDialog(): Promise<void> {
+    // Present restart core dialog if not hassio and not advanced mode as it's the only option
+    if (
+      !this.hass.userData?.showAdvanced &&
+      !isComponentLoaded(this.hass, "hassio")
+    ) {
+      this._showRestartDialog().then(() => this.closeDialog());
+      return;
+    }
+
+    this._open = true;
     await this.updateComplete;
   }
 
   public closeDialog(): void {
-    this._params = undefined;
+    this._open = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
-    if (!this._params) {
+    if (!this._open) {
       return html``;
     }
+
+    const showReload = this.hass.userData?.showAdvanced;
 
     return html`
       <ha-dialog
@@ -55,25 +66,31 @@ class DialogRestart extends LitElement {
           this.hass.localize("ui.dialogs.restart.heading")
         )}
       >
-        <mwc-list>
-          <ha-list-item
-            graphic="avatar"
-            twoline
-            hasMeta
-            @request-selected=${this._reload}
-          >
-            <div slot="graphic" class="icon-background reload">
-              <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
-            </div>
-            <span
-              >${this.hass.localize("ui.dialogs.restart.reload.title")}</span
-            >
-            <span slot="secondary"
-              >${this.hass.localize(
-                "ui.dialogs.restart.reload.short_description"
-              )}</span
-            >
-          </ha-list-item>
+        <mwc-list dialogInitialFocus>
+          ${showReload
+            ? html`
+                <ha-list-item
+                  graphic="avatar"
+                  twoline
+                  hasMeta
+                  @request-selected=${this._reload}
+                >
+                  <div slot="graphic" class="icon-background reload">
+                    <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
+                  </div>
+                  <span
+                    >${this.hass.localize(
+                      "ui.dialogs.restart.reload.title"
+                    )}</span
+                  >
+                  <span slot="secondary"
+                    >${this.hass.localize(
+                      "ui.dialogs.restart.reload.short_description"
+                    )}</span
+                  >
+                </ha-list-item>
+              `
+            : null}
           <ha-list-item
             graphic="avatar"
             twoline
@@ -92,43 +109,51 @@ class DialogRestart extends LitElement {
               )}</span
             >
           </ha-list-item>
-          <div class="divider"></div>
-          <ha-list-item
-            graphic="avatar"
-            twoline
-            hasMeta
-            @request-selected=${this._hostReboot}
-          >
-            <div slot="graphic" class="icon-background reboot">
-              <ha-svg-icon .path=${mdiPowerCycle}></ha-svg-icon>
-            </div>
-            <span
-              >${this.hass.localize("ui.dialogs.restart.reboot.title")}</span
-            >
-            <span slot="secondary"
-              >${this.hass.localize(
-                "ui.dialogs.restart.reboot.short_description"
-              )}</span
-            >
-          </ha-list-item>
-          <ha-list-item
-            graphic="avatar"
-            twoline
-            hasMeta
-            @request-selected=${this._hostShutdown}
-          >
-            <div slot="graphic" class="icon-background shutdown">
-              <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-            </div>
-            <span
-              >${this.hass.localize("ui.dialogs.restart.shutdown.title")}</span
-            >
-            <span slot="secondary"
-              >${this.hass.localize(
-                "ui.dialogs.restart.shutdown.short_description"
-              )}</span
-            >
-          </ha-list-item>
+          ${isComponentLoaded(this.hass, "hassio")
+            ? html`
+                <div class="divider"></div>
+                <ha-list-item
+                  graphic="avatar"
+                  twoline
+                  hasMeta
+                  @request-selected=${this._hostReboot}
+                >
+                  <div slot="graphic" class="icon-background reboot">
+                    <ha-svg-icon .path=${mdiPowerCycle}></ha-svg-icon>
+                  </div>
+                  <span
+                    >${this.hass.localize(
+                      "ui.dialogs.restart.reboot.title"
+                    )}</span
+                  >
+                  <span slot="secondary"
+                    >${this.hass.localize(
+                      "ui.dialogs.restart.reboot.short_description"
+                    )}</span
+                  >
+                </ha-list-item>
+                <ha-list-item
+                  graphic="avatar"
+                  twoline
+                  hasMeta
+                  @request-selected=${this._hostShutdown}
+                >
+                  <div slot="graphic" class="icon-background shutdown">
+                    <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                  </div>
+                  <span
+                    >${this.hass.localize(
+                      "ui.dialogs.restart.shutdown.title"
+                    )}</span
+                  >
+                  <span slot="secondary"
+                    >${this.hass.localize(
+                      "ui.dialogs.restart.shutdown.short_description"
+                    )}</span
+                  >
+                </ha-list-item>
+              `
+            : null}
         </mwc-list>
       </ha-dialog>
     `;
@@ -142,8 +167,14 @@ class DialogRestart extends LitElement {
 
     this.closeDialog();
 
+    showToast(this, {
+      message: this.hass.localize("ui.dialogs.restart.reload.reloading"),
+      duration: 2000,
+    });
+
     for (const domain of reloadableDomains) {
-      this.hass.callService(domain, "reload");
+      // eslint-disable-next-line no-await-in-loop
+      await this.hass.callService(domain, "reload");
     }
   }
 
@@ -151,6 +182,10 @@ class DialogRestart extends LitElement {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
+    this._showRestartDialog();
+  }
+
+  private async _showRestartDialog() {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize("ui.dialogs.restart.restart.title"),
       text: this.hass.localize("ui.dialogs.restart.restart.description"),
