@@ -21,6 +21,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -144,6 +145,11 @@ class HaConfigSystemNavigation extends LitElement {
               )}
             ></ha-navigation-list>
           </ha-card>
+          <div class="restart-section">
+            <mwc-button @click=${this._showRestartDialog}
+              >Restart Home Assistant</mwc-button
+            >
+          </div>
         </ha-config-section>
       </hass-subpage>
     `;
@@ -238,6 +244,10 @@ class HaConfigSystemNavigation extends LitElement {
     this._externalAccess = this.hass.config.external_url !== null;
   }
 
+  private async _showRestartDialog() {
+    showRestartDialog(this, {});
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -267,6 +277,14 @@ class HaConfigSystemNavigation extends LitElement {
           font-size: 16px;
           padding: 16px;
           padding-bottom: 0;
+        }
+
+        .restart-section {
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          justify-content: center;
+          margin-bottom: 24px;
         }
 
         @media all and (max-width: 600px) {

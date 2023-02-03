@@ -1008,6 +1008,37 @@
           "aliases_description": "Aliases are alternative names used in voice assistants to refer to this entity."
         }
       },
+      "restart": {
+        "heading": "Restart Home Assistant",
+        "reload": {
+          "title": "Quick reload",
+          "short_description": "Load new YAML configurations without a restart.",
+          "action": "Reload"
+        },
+        "restart": {
+          "title": "Restart",
+          "short_description": "Stops dashboards, automations and scripts.",
+          "description": "This will stop all your active dashboards, automations and scripts.",
+          "action": "Restart",
+          "failed": "Failed to restart Home Assistant"
+        },
+        "reboot": {
+          "title": "Reboot system",
+          "short_description": "Stops the Core and all Add-ons.",
+          "description": "This will reboot the complete system which includes the Core and all the Add-ons.",
+          "action": "Reboot",
+          "rebooting": "Rebooting system",
+          "failed": "Failed to reboot system"
+        },
+        "shutdown": {
+          "title": "Shutdown system",
+          "short_description": "Shutdown the complete system",
+          "description": "This will shutdown the complete system whitch includes the Core and all Add-ons.",
+          "action": "Shutdown",
+          "shutting_down": "Shutting down system",
+          "failed": "Failed to shutdown system"
+        }
+      },
       "aliases": {
         "heading": "{name} aliases",
         "remove_alias": "Remove alias {number}",
