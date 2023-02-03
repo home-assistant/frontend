@@ -73,8 +73,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityRegFilter?: (entity: EntityRegistryEntry) => boolean;
-
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
@@ -567,9 +565,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       ) {
         return false;
       }
-    }
-    if (this.entityRegFilter) {
-      return this.entityRegFilter(entity);
     }
     return true;
   }
