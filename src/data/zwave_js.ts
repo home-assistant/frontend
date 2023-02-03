@@ -700,7 +700,7 @@ export const fetchZwaveNodeFirmwareUpdateCapabilities = (
   device_id: string
 ): Promise<ZWaveJSNodeFirmwareUpdateCapabilities> =>
   hass.callWS({
-    type: "zwave_js/get_firmware_update_capabilities",
+    type: "zwave_js/get_node_firmware_update_capabilities",
     device_id,
   });
 
