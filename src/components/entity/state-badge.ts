@@ -29,6 +29,8 @@ export class StateBadge extends LitElement {
 
   @property() public overrideImage?: string;
 
+  @property({ type: Boolean }) public lightColoring?: boolean;
+
   @property({ type: Boolean }) public stateColor?: boolean;
 
   @property() public color?: string;
@@ -76,6 +78,7 @@ export class StateBadge extends LitElement {
       !changedProps.has("stateObj") &&
       !changedProps.has("overrideImage") &&
       !changedProps.has("overrideIcon") &&
+      !changedProps.has("lightColoring") &&
       !changedProps.has("stateColor") &&
       !changedProps.has("color")
     ) {
@@ -109,28 +112,33 @@ export class StateBadge extends LitElement {
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
       } else if (this.color) {
-        // Externally provided overriding color wins over state color
+        // Externally provided overriding color wins over state color unless
+        // ignoreLightColor is set to true
         iconStyle.color = this.color;
       } else if (this._stateColor) {
         const color = stateColorCss(stateObj);
         if (color) {
           iconStyle.color = color;
         }
-        if (stateObj.attributes.rgb_color) {
-          iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
-        }
-        if (stateObj.attributes.brightness) {
-          const brightness = stateObj.attributes.brightness;
-          if (typeof brightness !== "number") {
-            const errorMessage = `Type error: state-badge expected number, but type of ${
-              stateObj.entity_id
-            }.attributes.brightness is ${typeof brightness} (${brightness})`;
-            // eslint-disable-next-line
-            console.warn(errorMessage);
+
+        if (this.lightColoring !== false) {
+          if (stateObj.attributes.rgb_color) {
+            iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
           }
-          // lowest brightness will be around 50% (that's pretty dark)
-          iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+          if (stateObj.attributes.brightness) {
+            const brightness = stateObj.attributes.brightness;
+            if (typeof brightness !== "number") {
+              const errorMessage = `Type error: state-badge expected number, but type of ${
+                stateObj.entity_id
+              }.attributes.brightness is ${typeof brightness} (${brightness})`;
+              // eslint-disable-next-line
+              console.warn(errorMessage);
+            }
+            // lowest brightness will be around 50% (that's pretty dark)
+            iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+          }
         }
+
         if (stateObj.attributes.hvac_action) {
           const hvacAction = stateObj.attributes.hvac_action;
           if (hvacAction in HVAC_ACTION_TO_MODE) {

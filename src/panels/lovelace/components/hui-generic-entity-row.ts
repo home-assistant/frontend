@@ -76,6 +76,7 @@ class HuiGenericEntityRow extends LitElement {
         .stateObj=${stateObj}
         .overrideIcon=${this.config.icon}
         .overrideImage=${this.config.image}
+        .lightColoring=${this.config.light_coloring}
         .stateColor=${this.config.state_color}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
