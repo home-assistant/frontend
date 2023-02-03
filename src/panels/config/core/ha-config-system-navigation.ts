@@ -17,10 +17,6 @@ import {
   HassioHassOSInfo,
   HassioHostInfo,
 } from "../../../data/hassio/host";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../dialogs/generic/show-dialog-box";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -122,13 +118,6 @@ class HaConfigSystemNavigation extends LitElement {
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
       >
-        <mwc-button
-          slot="toolbar-icon"
-          .label=${this.hass.localize(
-            "ui.panel.config.system_dashboard.restart_homeassistant_short"
-          )}
-          @click=${this._restart}
-        ></mwc-button>
         <ha-config-section
           .narrow=${this.narrow}
           .isWide=${this.isWide}
@@ -146,9 +135,11 @@ class HaConfigSystemNavigation extends LitElement {
             ></ha-navigation-list>
           </ha-card>
           <div class="restart-section">
-            <mwc-button @click=${this._showRestartDialog}
-              >Restart Home Assistant</mwc-button
-            >
+            <mwc-button @click=${this._showRestartDialog}>
+              ${this.hass.localize(
+                "ui.panel.config.system_dashboard.restart_homeassistant"
+              )}
+            </mwc-button>
           </div>
         </ha-config-section>
       </hass-subpage>
@@ -165,31 +156,6 @@ class HaConfigSystemNavigation extends LitElement {
     if (isHassioLoaded) {
       this._fetchStorageInfo();
     }
-  }
-
-  private _restart() {
-    showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.system_dashboard.confirm_restart_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.system_dashboard.confirm_restart_text"
-      ),
-      confirmText: this.hass.localize(
-        "ui.panel.config.system_dashboard.restart_homeassistant_short"
-      ),
-      confirm: () => {
-        this.hass.callService("homeassistant", "restart").catch((reason) => {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.system_dashboard.restart_error"
-            ),
-            text: reason.message,
-          });
-        });
-      },
-      destructive: true,
-    });
   }
 
   private async _fetchBackupInfo(isHassioLoaded: boolean) {
