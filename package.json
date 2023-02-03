@@ -194,7 +194,7 @@
     "eslint-import-resolver-webpack": "^0.13.1",
     "eslint-plugin-disable": "^2.0.3",
     "eslint-plugin-import": "^2.24.2",
-    "eslint-plugin-lit": "^1.6.1",
+    "eslint-plugin-lit": "^1.8.2",
     "eslint-plugin-unused-imports": "^1.1.5",
     "eslint-plugin-wc": "^1.4.0",
     "fancy-log": "^2.0.0",
