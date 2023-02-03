@@ -245,7 +245,7 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _showRestartDialog() {
-    showRestartDialog(this, {});
+    showRestartDialog(this);
   }
 
   static get styles(): CSSResultGroup {

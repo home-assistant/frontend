@@ -78,16 +78,14 @@ class DialogRestart extends LitElement {
                   <div slot="graphic" class="icon-background reload">
                     <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
                   </div>
-                  <span
-                    >${this.hass.localize(
-                      "ui.dialogs.restart.reload.title"
-                    )}</span
-                  >
-                  <span slot="secondary"
-                    >${this.hass.localize(
-                      "ui.dialogs.restart.reload.short_description"
-                    )}</span
-                  >
+                  <span>
+                    ${this.hass.localize("ui.dialogs.restart.reload.title")}
+                  </span>
+                  <span slot="secondary">
+                    ${this.hass.localize(
+                      "ui.dialogs.restart.reload.description"
+                    )}
+                  </span>
                 </ha-list-item>
               `
             : null}
@@ -100,14 +98,12 @@ class DialogRestart extends LitElement {
             <div slot="graphic" class="icon-background restart">
               <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
             </div>
-            <span
-              >${this.hass.localize("ui.dialogs.restart.restart.title")}</span
-            >
-            <span slot="secondary"
-              >${this.hass.localize(
-                "ui.dialogs.restart.restart.short_description"
-              )}</span
-            >
+            <span>
+              ${this.hass.localize("ui.dialogs.restart.restart.title")}
+            </span>
+            <span slot="secondary">
+              ${this.hass.localize("ui.dialogs.restart.restart.description")}
+            </span>
           </ha-list-item>
           ${isComponentLoaded(this.hass, "hassio")
             ? html`
@@ -121,16 +117,14 @@ class DialogRestart extends LitElement {
                   <div slot="graphic" class="icon-background reboot">
                     <ha-svg-icon .path=${mdiPowerCycle}></ha-svg-icon>
                   </div>
-                  <span
-                    >${this.hass.localize(
-                      "ui.dialogs.restart.reboot.title"
-                    )}</span
-                  >
-                  <span slot="secondary"
-                    >${this.hass.localize(
-                      "ui.dialogs.restart.reboot.short_description"
-                    )}</span
-                  >
+                  <span>
+                    ${this.hass.localize("ui.dialogs.restart.reboot.title")}
+                  </span>
+                  <span slot="secondary">
+                    ${this.hass.localize(
+                      "ui.dialogs.restart.reboot.description"
+                    )}
+                  </span>
                 </ha-list-item>
                 <ha-list-item
                   graphic="avatar"
@@ -141,16 +135,14 @@ class DialogRestart extends LitElement {
                   <div slot="graphic" class="icon-background shutdown">
                     <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
                   </div>
-                  <span
-                    >${this.hass.localize(
-                      "ui.dialogs.restart.shutdown.title"
-                    )}</span
-                  >
-                  <span slot="secondary"
-                    >${this.hass.localize(
-                      "ui.dialogs.restart.shutdown.short_description"
-                    )}</span
-                  >
+                  <span>
+                    ${this.hass.localize("ui.dialogs.restart.shutdown.title")}
+                  </span>
+                  <span slot="secondary">
+                    ${this.hass.localize(
+                      "ui.dialogs.restart.shutdown.confirm_action"
+                    )}
+                  </span>
                 </ha-list-item>
               `
             : null}
@@ -187,9 +179,13 @@ class DialogRestart extends LitElement {
 
   private async _showRestartDialog() {
     const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize("ui.dialogs.restart.restart.title"),
-      text: this.hass.localize("ui.dialogs.restart.restart.description"),
-      confirmText: this.hass.localize("ui.dialogs.restart.restart.action"),
+      title: this.hass.localize("ui.dialogs.restart.restart.confirm_title"),
+      text: this.hass.localize(
+        "ui.dialogs.restart.restart.confirm_description"
+      ),
+      confirmText: this.hass.localize(
+        "ui.dialogs.restart.restart.confirm_action"
+      ),
       destructive: true,
     });
 
@@ -214,9 +210,11 @@ class DialogRestart extends LitElement {
       return;
     }
     const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize("ui.dialogs.restart.reboot.title"),
-      text: this.hass.localize("ui.dialogs.restart.reboot.description"),
-      confirmText: this.hass.localize("ui.dialogs.restart.reboot.action"),
+      title: this.hass.localize("ui.dialogs.restart.reboot.confirm_title"),
+      text: this.hass.localize("ui.dialogs.restart.reboot.confirm_description"),
+      confirmText: this.hass.localize(
+        "ui.dialogs.restart.reboot.confirm_action"
+      ),
       destructive: true,
     });
 
@@ -249,9 +247,13 @@ class DialogRestart extends LitElement {
       return;
     }
     const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize("ui.dialogs.restart.shutdown.title"),
-      text: this.hass.localize("ui.dialogs.restart.shutdown.description"),
-      confirmText: this.hass.localize("ui.dialogs.restart.shutdown.action"),
+      title: this.hass.localize("ui.dialogs.restart.shutdown.confirm_title"),
+      text: this.hass.localize(
+        "ui.dialogs.restart.shutdown.confirm_description"
+      ),
+      confirmText: this.hass.localize(
+        "ui.dialogs.restart.shutdown.confirm_action"
+      ),
       destructive: true,
     });
 
