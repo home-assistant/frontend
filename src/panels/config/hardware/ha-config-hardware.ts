@@ -28,9 +28,7 @@ import {
 } from "../../../data/hardware";
 import {
   fetchHassioHassOsInfo,
-  fetchHassioHostInfo,
   HassioHassOSInfo,
-  HassioHostInfo,
 } from "../../../data/hassio/host";
 import { scanUSBDevices } from "../../../data/usb";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
@@ -63,8 +61,6 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   @state() private _error?: { code: string; message: string };
 
   @state() private _OSData?: HassioHassOSInfo;
-
-  @state() private _hostData?: HassioHostInfo;
 
   @state() private _hardwareInfo?: HardwareInfo;
 
@@ -454,10 +450,6 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
       if (isHassioLoaded && !this._hardwareInfo?.hardware.length) {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
-      }
-
-      if (isHassioLoaded) {
-        this._hostData = await fetchHassioHostInfo(this.hass);
       }
     } catch (err: any) {
       this._error = err.message || err;
