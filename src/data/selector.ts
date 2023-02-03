@@ -48,16 +48,10 @@ export interface AddonSelector {
   } | null;
 }
 
-export interface SelectorDevice {
-  integration?: NonNullable<DeviceSelector["device"]>["integration"];
-  manufacturer?: NonNullable<DeviceSelector["device"]>["manufacturer"];
-  model?: NonNullable<DeviceSelector["device"]>["model"];
-}
-
 export interface AreaSelector {
   area: {
     entity?: EntitySelectorFilter | EntitySelectorFilter[];
-    device?: SelectorDevice;
+    device?: DeviceSelectorFilter | DeviceSelectorFilter[];
     multiple?: boolean;
   } | null;
 }
@@ -102,13 +96,29 @@ export interface DateTimeSelector {
   datetime: {} | null;
 }
 
+interface DeviceSelectorFilter {
+  integration?: string;
+  manufacturer?: string;
+  model?: string;
+}
+
 export interface DeviceSelector {
   device: {
-    integration?: string;
-    manufacturer?: string;
-    model?: string;
+    filter?: DeviceSelectorFilter | DeviceSelectorFilter[];
     entity?: EntitySelectorFilter | EntitySelectorFilter[];
     multiple?: boolean;
+    /**
+     * @deprecated Backward compatibility, use filter instead
+     */
+    integration?: DeviceSelectorFilter["integration"];
+    /**
+     * @deprecated Backward compatibility, use filter instead
+     */
+    manufacturer?: DeviceSelectorFilter["manufacturer"];
+    /**
+     * @deprecated Backward compatibility, use filter instead
+     */
+    model?: DeviceSelectorFilter["model"];
   } | null;
 }
 
@@ -261,7 +271,7 @@ export interface StringSelector {
 export interface TargetSelector {
   target: {
     entity?: EntitySelectorFilter | EntitySelectorFilter[];
-    device?: SelectorDevice;
+    device?: DeviceSelectorFilter | DeviceSelectorFilter[];
   } | null;
 }
 
@@ -291,7 +301,7 @@ export interface UiColorSelector {
 }
 
 export const filterSelectorDevices = (
-  filterDevice: SelectorDevice,
+  filterDevice: DeviceSelectorFilter,
   device: DeviceRegistryEntry,
   deviceIntegrationLookup: Record<string, string[]> | undefined
 ): boolean => {

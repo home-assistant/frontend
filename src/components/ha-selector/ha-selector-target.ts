@@ -48,7 +48,9 @@ export class HaTargetSelector extends LitElement {
     super.updated(changedProperties);
     if (
       changedProperties.has("selector") &&
-      (this.selector.target?.device?.integration ||
+      (ensureArray(this.selector.target?.device).some(
+        (device) => device.integration
+      ) ||
         ensureArray(this.selector.target?.entity).some(
           (entity) => entity.integration
         )) &&
@@ -62,7 +64,9 @@ export class HaTargetSelector extends LitElement {
 
   protected render(): TemplateResult {
     if (
-      (this.selector.target?.device?.integration ||
+      (ensureArray(this.selector.target?.device).some(
+        (device) => device.integration
+      ) ||
         ensureArray(this.selector.target?.entity).some(
           (entity) => entity.integration
         )) &&
@@ -103,10 +107,8 @@ export class HaTargetSelector extends LitElement {
         )
       : undefined;
 
-    return filterSelectorDevices(
-      this.selector.target.device,
-      device,
-      deviceIntegrations
+    return ensureArray(this.selector.target.device).some((filter) =>
+      filterSelectorDevices(filter, device, deviceIntegrations)
     );
   };
 

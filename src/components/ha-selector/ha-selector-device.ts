@@ -101,13 +101,18 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
   }
 
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {
+    if (!this.selector.device) {
+      return true;
+    }
     const deviceIntegrations =
       this._entitySources && this._entities
         ? this._deviceIntegrationLookup(this._entitySources, this._entities)
         : undefined;
 
-    if (!this.selector.device) {
-      return true;
+    if (this.selector.device.filter) {
+      return ensureArray(this.selector.device.filter).some((filter) =>
+        filterSelectorDevices(filter, device, deviceIntegrations)
+      );
     }
     return filterSelectorDevices(
       this.selector.device,

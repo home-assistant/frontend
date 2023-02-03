@@ -56,7 +56,9 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
   protected updated(changedProperties: PropertyValues): void {
     if (
       changedProperties.has("selector") &&
-      (this.selector.area?.device?.integration ||
+      (ensureArray(this.selector.area?.device).some(
+        (device) => device.integration
+      ) ||
         ensureArray(this.selector.area?.entity).some(
           (entity) => entity.integration
         )) &&
@@ -70,7 +72,9 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     if (
-      (this.selector.area?.device?.integration ||
+      (ensureArray(this.selector.area?.device).some(
+        (device) => device.integration
+      ) ||
         ensureArray(this.selector.area?.entity).some(
           (entity) => entity.integration
         )) &&
@@ -130,10 +134,8 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
         ? this._deviceIntegrationLookup(this._entitySources, this._entities)
         : undefined;
 
-    return filterSelectorDevices(
-      this.selector.area.device,
-      device,
-      deviceIntegrations
+    return ensureArray(this.selector.area.device).some((filter) =>
+      filterSelectorDevices(filter, device, deviceIntegrations)
     );
   };
 }
