@@ -195,7 +195,7 @@ class HaConfigSectionGeneral extends LitElement {
                       <div class="secondary">
                         ${this.hass.localize(
                           "ui.panel.config.core.section.core.core_config.update_units_text_1"
-                        )} <br /><br />
+                        )}
                         ${this.hass.localize(
                           "ui.panel.config.core.section.core.core_config.update_units_text_2"
                         )} <br /><br />
