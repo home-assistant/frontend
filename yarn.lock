@@ -5180,10 +5180,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webcomponents/webcomponentsjs@npm:^2.2.10":
-  version: 2.2.10
-  resolution: "@webcomponents/webcomponentsjs@npm:2.2.10"
-  checksum: 8d7a89e4dbe71290fe14e6142d7d6f33d80433c493544571d83fc5ebc23e2f0584cd86e29ca8b5f8d306ffd72084c2ab2a25a4ec3cee37ea96a487bb7c60f541
+"@webcomponents/webcomponentsjs@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "@webcomponents/webcomponentsjs@npm:2.7.0"
+  checksum: df60a5faf79d85eba334a42f7bffb101f0e01a8ee8cc3705f17c67c70247415c4440ad6e8fdd3c74dc5be097a436c4e4831824bef039a12b69f05e84a07187b7
   languageName: node
   linkType: hard
 
@@ -9465,7 +9465,7 @@ fsevents@^1.2.7:
     "@web/dev-server": ^0.0.24
     "@web/dev-server-rollup": ^0.2.11
     "@webcomponents/scoped-custom-element-registry": ^0.0.5
-    "@webcomponents/webcomponentsjs": ^2.2.10
+    "@webcomponents/webcomponentsjs": ^2.7.0
     app-datepicker: ^5.1.0
     babel-loader: ^9.1.2
     chai: ^4.3.7
