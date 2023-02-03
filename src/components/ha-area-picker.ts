@@ -1,4 +1,6 @@
+import "@material/mwc-list/mwc-list-item";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -83,7 +85,7 @@ export class HaAreaPicker extends LitElement {
 
   @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: (entity: EntityRegistryEntry) => boolean;
+  @property() public entityFilter?: (entity: HassEntity) => boolean;
 
   @property({ type: Boolean }) public disabled?: boolean;
 
@@ -218,9 +220,10 @@ export class HaAreaPicker extends LitElement {
       }
 
       if (entityFilter) {
-        inputEntities = inputEntities!.filter((entity) =>
-          entityFilter!(entity)
-        );
+        inputEntities = inputEntities!.filter((entity) => {
+          const stateObj = this.hass.states[entity.entity_id];
+          return entityFilter!(stateObj);
+        });
       }
 
       let outputAreas = areas;

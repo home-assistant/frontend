@@ -56,7 +56,7 @@ export interface SelectorDevice {
 
 export interface AreaSelector {
   area: {
-    entity?: EntitySelectorFilter;
+    entity?: EntitySelectorFilter | EntitySelectorFilter[];
     device?: SelectorDevice;
     multiple?: boolean;
   } | null;
