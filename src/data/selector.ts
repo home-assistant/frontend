@@ -130,8 +130,8 @@ export interface DurationSelector {
 
 interface EntitySelectorFilter {
   integration?: string;
-  domain?: string | readonly string[];
-  device_class?: string;
+  domain?: string | string[];
+  device_class?: string | string[];
 }
 
 export interface EntitySelector {
@@ -349,11 +349,15 @@ export const filterSelectorEntities = (
     }
   }
 
-  if (
-    filterDeviceClass &&
-    entity.attributes.device_class !== filterDeviceClass
-  ) {
-    return false;
+  if (filterDeviceClass) {
+    const entityDeviceClass = entity.attributes.device_class;
+    if (
+      entityDeviceClass && Array.isArray(filterDeviceClass)
+        ? !filterDeviceClass.includes(entityDeviceClass)
+        : entityDeviceClass !== filterDeviceClass
+    ) {
+      return false;
+    }
   }
 
   if (
