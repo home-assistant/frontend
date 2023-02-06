@@ -1,4 +1,3 @@
-import { memoize } from "@fullcalendar/common";
 import { Ripple } from "@material/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
@@ -13,6 +12,7 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
@@ -139,42 +139,44 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return imageUrl;
   }
 
-  private _computeStateColor = memoize((entity: HassEntity, color?: string) => {
-    // Use custom color if active
-    if (color) {
-      return stateActive(entity) ? computeCssColor(color) : undefined;
-    }
-
-    // Use default color for person/device_tracker because color is on the badge
-    if (
-      computeDomain(entity.entity_id) === "person" ||
-      computeDomain(entity.entity_id) === "device_tracker"
-    ) {
-      return undefined;
-    }
-
-    // Use light color if the light support rgb
-    if (
-      computeDomain(entity.entity_id) === "light" &&
-      entity.attributes.rgb_color
-    ) {
-      const hsvColor = rgb2hsv(entity.attributes.rgb_color);
-
-      // Modify the real rgb color for better contrast
-      if (hsvColor[1] < 0.4) {
-        // Special case for very light color (e.g: white)
-        if (hsvColor[1] < 0.1) {
-          hsvColor[2] = 225;
-        } else {
-          hsvColor[1] = 0.4;
-        }
+  private _computeStateColor = memoizeOne(
+    (entity: HassEntity, color?: string) => {
+      // Use custom color if active
+      if (color) {
+        return stateActive(entity) ? computeCssColor(color) : undefined;
       }
-      return rgb2hex(hsv2rgb(hsvColor));
-    }
 
-    // Fallback to state color
-    return stateColorCss(entity);
-  });
+      // Use default color for person/device_tracker because color is on the badge
+      if (
+        computeDomain(entity.entity_id) === "person" ||
+        computeDomain(entity.entity_id) === "device_tracker"
+      ) {
+        return undefined;
+      }
+
+      // Use light color if the light support rgb
+      if (
+        computeDomain(entity.entity_id) === "light" &&
+        entity.attributes.rgb_color
+      ) {
+        const hsvColor = rgb2hsv(entity.attributes.rgb_color);
+
+        // Modify the real rgb color for better contrast
+        if (hsvColor[1] < 0.4) {
+          // Special case for very light color (e.g: white)
+          if (hsvColor[1] < 0.1) {
+            hsvColor[2] = 225;
+          } else {
+            hsvColor[1] = 0.4;
+          }
+        }
+        return rgb2hex(hsv2rgb(hsvColor));
+      }
+
+      // Fallback to state color
+      return stateColorCss(entity);
+    }
+  );
 
   private _computeStateDisplay(stateObj: HassEntity): TemplateResult | string {
     const domain = computeDomain(stateObj.entity_id);

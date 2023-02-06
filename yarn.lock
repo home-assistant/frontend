@@ -1585,64 +1585,50 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/common@npm:^5.11.4, @fullcalendar/common@npm:~5.11.4":
-  version: 5.11.4
-  resolution: "@fullcalendar/common@npm:5.11.4"
+"@fullcalendar/core@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "@fullcalendar/core@npm:6.1.1"
   dependencies:
-    tslib: ^2.1.0
-  checksum: 8fc0e05539ba83d310eb5a7163dcd10582d83465393cccb525022b20c954e29e6361b289a2d2eec1ae5b5d950700333739b81cb5e81bc8cb72f682484ca697af
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/core@npm:^5.11.4":
-  version: 5.11.4
-  resolution: "@fullcalendar/core@npm:5.11.4"
-  dependencies:
-    "@fullcalendar/common": ~5.11.4
     preact: ^10.0.5
-    tslib: ^2.1.0
-  checksum: 11652a58dc4a7af2b9c552ca71e4215c56d574f7d639deab0a6604afa0a67c7bfef445d5a6e364b6bc6b0ffb333ba9e7730e184d480e0113dce90c470d988d17
+  checksum: 4fc30de34c1c03196f7a80904d4e8f307c66afe52a65e7a257137f1a639c29efc69d15a58d381a2481753b51f4bc101fb00584606cfb006226a01843efa743c5
   languageName: node
   linkType: hard
 
-"@fullcalendar/daygrid@npm:^5.11.4, @fullcalendar/daygrid@npm:~5.11.4":
-  version: 5.11.4
-  resolution: "@fullcalendar/daygrid@npm:5.11.4"
-  dependencies:
-    "@fullcalendar/common": ~5.11.4
-    tslib: ^2.1.0
-  checksum: a25d83cfe5b3ac3feeb49af47701c54e858d30b0b53871df2a83aa7edbcc7d49f435d59fdbf3d6e18b5699caced8133e9c4b1c919caca2c8717bd92f57c08ab4
+"@fullcalendar/daygrid@npm:^6.1.1, @fullcalendar/daygrid@npm:~6.1.1":
+  version: 6.1.1
+  resolution: "@fullcalendar/daygrid@npm:6.1.1"
+  peerDependencies:
+    "@fullcalendar/core": ~6.1.1
+  checksum: ffc3431af31e3858218c962ad761019967e8bccd9d83ea4897bd2db86b0d06fd4dfd4c529f25791ac38ef403295c8a23a0c0e7bb6420c6067890a64350a4305f
   languageName: node
   linkType: hard
 
-"@fullcalendar/interaction@npm:^5.11.4":
-  version: 5.11.4
-  resolution: "@fullcalendar/interaction@npm:5.11.4"
-  dependencies:
-    "@fullcalendar/common": ~5.11.4
-    tslib: ^2.1.0
-  checksum: 88231b925498b947f5af98fcabf564f7d72ecde6660696e5aec7aa5c4aca7988deab74c9486a30e0e461cdd31913c560bb016f54a61641d13359488e845e053f
+"@fullcalendar/interaction@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "@fullcalendar/interaction@npm:6.1.1"
+  peerDependencies:
+    "@fullcalendar/core": ~6.1.1
+  checksum: 8319e06999792e16af16d39fb3437080b427c2f9688a2b3a90f0cd8228e925603389f7390c7558cb651b9099bf3cd88a2e05d8b1e4836723f098a8c4d2a95c69
   languageName: node
   linkType: hard
 
-"@fullcalendar/list@npm:^5.11.4":
-  version: 5.11.4
-  resolution: "@fullcalendar/list@npm:5.11.4"
-  dependencies:
-    "@fullcalendar/common": ~5.11.4
-    tslib: ^2.1.0
-  checksum: e2cec5e89c57836a9ca4db57fbe67e16f78d91191df39ac0b5d0f18c1fdac9763f04647ae42e5f2d31ffa3cd245423d3aec449ed6c84fafc0195e62079a4eedc
+"@fullcalendar/list@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "@fullcalendar/list@npm:6.1.1"
+  peerDependencies:
+    "@fullcalendar/core": ~6.1.1
+  checksum: da2443812b9a477a5fdc2b647bbe8ca4a86e92c3bd000229b5e50b38b3cdee467dc69743ebd58035abee663de5ced392850ac2fa567b0d0487e324b836a0b863
   languageName: node
   linkType: hard
 
-"@fullcalendar/timegrid@npm:^5.11.4":
-  version: 5.11.4
-  resolution: "@fullcalendar/timegrid@npm:5.11.4"
+"@fullcalendar/timegrid@npm:^6.1.1":
+  version: 6.1.1
+  resolution: "@fullcalendar/timegrid@npm:6.1.1"
   dependencies:
-    "@fullcalendar/common": ~5.11.4
-    "@fullcalendar/daygrid": ~5.11.4
-    tslib: ^2.1.0
-  checksum: 3a2fccac65198c5fffa53286fcbb2556b6e3885cfc6f7978b7ee21c57cbc2a58617e6c54eff977f5234163cef3281e50548327a06cf253acc43c6881bed00f2c
+    "@fullcalendar/daygrid": ~6.1.1
+  peerDependencies:
+    "@fullcalendar/core": ~6.1.1
+  checksum: 38796e93ac4e1ea69be4a315105aa6fcc9e8b21564c10f7e0be2fb59756d8115cdbecb8ab8a69f221c27d13da5c06efc1c6c44ed8aabf54e98a69660b466d985
   languageName: node
   linkType: hard
 
@@ -9382,12 +9368,11 @@ fsevents@^1.2.7:
     "@formatjs/intl-numberformat": ^8.3.3
     "@formatjs/intl-pluralrules": ^5.1.8
     "@formatjs/intl-relativetimeformat": ^11.1.8
-    "@fullcalendar/common": ^5.11.4
-    "@fullcalendar/core": ^5.11.4
-    "@fullcalendar/daygrid": ^5.11.4
-    "@fullcalendar/interaction": ^5.11.4
-    "@fullcalendar/list": ^5.11.4
-    "@fullcalendar/timegrid": ^5.11.4
+    "@fullcalendar/core": ^6.1.1
+    "@fullcalendar/daygrid": ^6.1.1
+    "@fullcalendar/interaction": ^6.1.1
+    "@fullcalendar/list": ^6.1.1
+    "@fullcalendar/timegrid": ^6.1.1
     "@koa/cors": ^4.0.0
     "@lezer/highlight": ^1.1.3
     "@lit-labs/motion": ^1.0.3
