@@ -11,6 +11,8 @@ import { documentationUrl } from "../../util/documentation-url";
 import { isComponentLoaded } from "../config/is_component_loaded";
 import { navigate } from "../navigate";
 
+export const PROTOCOL_INTEGRATIONS = ["zha", "zwave_js", "matter"] as const;
+
 export const protocolIntegrationPicked = async (
   element: HTMLElement,
   hass: HomeAssistant,

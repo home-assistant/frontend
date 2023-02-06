@@ -12,6 +12,45 @@ export const startExternalCommissioning = (hass: HomeAssistant) =>
     type: "matter/commission",
   });
 
+let CUR_MATTER_DEVICES: Set<string> | undefined;
+let UNSUB_DEVICE_REG: UnsubscribeFunc | undefined;
+
+export const redirectOnNewMatterDevice = (hass: HomeAssistant) => {
+  if (UNSUB_DEVICE_REG) {
+    // we are already redirecting
+    return;
+  }
+  UNSUB_DEVICE_REG = subscribeDeviceRegistry(hass.connection, (entries) => {
+    if (!CUR_MATTER_DEVICES) {
+      CUR_MATTER_DEVICES = new Set(
+        Object.values(entries)
+          .filter((device) =>
+            device.identifiers.find((identifier) => identifier[0] === "matter")
+          )
+          .map((device) => device.id)
+      );
+      return;
+    }
+    const newMatterDevices = Object.values(entries).filter(
+      (device) =>
+        device.identifiers.find((identifier) => identifier[0] === "matter") &&
+        !CUR_MATTER_DEVICES!.has(device.id)
+    );
+    if (newMatterDevices.length) {
+      stopRedirectOnNewMatterDevice();
+      navigate(`/config/devices/device/${newMatterDevices[0].id}`);
+    }
+  });
+};
+
+export const stopRedirectOnNewMatterDevice = () => {
+  if (UNSUB_DEVICE_REG) {
+    UNSUB_DEVICE_REG();
+    UNSUB_DEVICE_REG = undefined;
+  }
+  CUR_MATTER_DEVICES = undefined;
+};
+
 export const addMatterDevice = (element: HTMLElement, hass: HomeAssistant) => {
   if (!canCommissionMatterExternal(hass)) {
     showAlertDialog(element, {
@@ -20,49 +59,9 @@ export const addMatterDevice = (element: HTMLElement, hass: HomeAssistant) => {
     });
     return;
   }
-
-  let curMatterDevices: Set<string>;
-  let timeout: number | undefined;
-  let unsub: UnsubscribeFunc | undefined = subscribeDeviceRegistry(
-    hass.connection,
-    (entries) => {
-      if (!curMatterDevices) {
-        curMatterDevices = new Set(
-          Object.values(entries)
-            .filter((device) =>
-              device.identifiers.find(
-                (identifier) => identifier[0] === "matter"
-              )
-            )
-            .map((device) => device.id)
-        );
-        return;
-      }
-      const newMatterDevices = Object.values(entries).filter(
-        (device) =>
-          device.identifiers.find((identifier) => identifier[0] === "matter") &&
-          !curMatterDevices!.has(device.id)
-      );
-      if (newMatterDevices.length) {
-        if (unsub) {
-          unsub();
-          unsub = undefined;
-        }
-        if (timeout) {
-          clearTimeout(timeout);
-        }
-        navigate(`/config/devices/device/${newMatterDevices[0].id}`);
-      }
-    }
-  );
-  // timeout of 10 minutes
-  timeout = window.setTimeout(() => {
-    if (unsub) {
-      unsub();
-      unsub = undefined;
-    }
-    timeout = undefined;
-  }, 600000);
+  redirectOnNewMatterDevice(hass);
+  // stop redirecting after 10 minutes
+  setTimeout(stopRedirectOnNewMatterDevice, 600000);
   startExternalCommissioning(hass);
 };
 
