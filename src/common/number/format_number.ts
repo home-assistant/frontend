@@ -95,7 +95,7 @@ export const getNumberFormatOptions = (
   entity: EntityRegistryEntry | undefined
 ): Intl.NumberFormatOptions | undefined => {
   const display_precision =
-    entity?.options?.sensor?.display_precision ||
+    entity?.options?.sensor?.display_precision ??
     entity?.options?.sensor?.suggested_display_precision;
   if (display_precision != null) {
     return { maximumFractionDigits: display_precision };
