@@ -4210,11 +4210,11 @@ __metadata:
   linkType: hard
 
 "@types/leaflet-draw@npm:^1":
-  version: 1.0.5
-  resolution: "@types/leaflet-draw@npm:1.0.5"
+  version: 1.0.6
+  resolution: "@types/leaflet-draw@npm:1.0.6"
   dependencies:
     "@types/leaflet": "*"
-  checksum: 75ee3c389b8ea0acd8b9f88e3094057df695c29edd8360b5abb902898d78810957be6f77392d5c1c2b1f01d94eef80670be9e8374dfbb819fe8237fcf155f8d6
+  checksum: 6520de61f26f4f845fea3faa43077515d2eac58274e98d61b26ca0885d9002fdeb131375e85f4e503daa6b4ec27f0837a1ecddacbba78aea4764084a424bf93e
   languageName: node
   linkType: hard
 
