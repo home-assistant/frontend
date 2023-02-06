@@ -1,5 +1,8 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { navigate } from "../common/navigate";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../types";
+import { subscribeDeviceRegistry } from "./device_registry";
 
 export const canCommissionMatterExternal = (hass: HomeAssistant) =>
   hass.auth.external?.config.canCommissionMatter;
@@ -9,8 +12,51 @@ export const startExternalCommissioning = (hass: HomeAssistant) =>
     type: "matter/commission",
   });
 
-export const addMatterDevice = (element, hass) => {
+export const addMatterDevice = (element: HTMLElement, hass: HomeAssistant) => {
   if (canCommissionMatterExternal(hass)) {
+    let curMatterDevices: Set<string>;
+    let timeout: number | undefined;
+    let unsub: UnsubscribeFunc | undefined = subscribeDeviceRegistry(
+      hass.connection,
+      (entries) => {
+        if (!curMatterDevices) {
+          curMatterDevices = new Set(
+            Object.values(entries)
+              .filter((device) =>
+                device.identifiers.find(
+                  (identifier) => identifier[0] === "matter"
+                )
+              )
+              .map((device) => device.id)
+          );
+          return;
+        }
+        const newMatterDevices = Object.values(entries).filter(
+          (device) =>
+            device.identifiers.find(
+              (identifier) => identifier[0] === "matter"
+            ) && !curMatterDevices!.has(device.id)
+        );
+        if (newMatterDevices.length) {
+          if (unsub) {
+            unsub();
+            unsub = undefined;
+          }
+          if (timeout) {
+            clearTimeout(timeout);
+          }
+          navigate(`/config/devices/device/${newMatterDevices[0].id}`);
+        }
+      }
+    );
+    // timeout of 10 minutes
+    timeout = window.setTimeout(() => {
+      if (unsub) {
+        unsub();
+        unsub = undefined;
+      }
+      timeout = undefined;
+    }, 600000);
     startExternalCommissioning(hass);
     return;
   }

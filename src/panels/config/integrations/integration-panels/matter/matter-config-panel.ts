@@ -101,7 +101,6 @@ export class MatterConfigPanel extends LitElement {
   }
 
   private _startMobileCommissioning() {
-    this._redirectOnNewDevice();
     startExternalCommissioning(this.hass);
   }
 
