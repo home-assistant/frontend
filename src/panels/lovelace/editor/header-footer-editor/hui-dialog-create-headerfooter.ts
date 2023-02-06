@@ -61,7 +61,7 @@ export class HuiCreateDialogHeaderFooter
                 <ha-card
                   role="button"
                   tabindex="0"
-                  aria-labeledby=${"card-name-" + index}
+                  aria-labelledby=${"card-name-" + index}
                   outlined
                   .type=${headerFooter.type}
                   @click=${this._handleHeaderFooterPicked}
