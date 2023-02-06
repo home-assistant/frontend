@@ -82,6 +82,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
+import { formatNumber } from "../../../common/number/format_number";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -128,14 +129,6 @@ const OVERRIDE_WEATHER_UNITS = {
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
 const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
-
-function precisionLabel(precision: number, _state?: string) {
-  const state_float =
-    _state === undefined || isNaN(parseFloat(_state))
-      ? 0.0
-      : parseFloat(_state);
-  return state_float.toFixed(precision);
-}
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -292,6 +285,14 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         this._deviceClassOptions[1].push(...deviceClass);
       }
     }
+  }
+
+  private precisionLabel(precision: number, _state?: string) {
+    const value = _state ?? 0;
+    return formatNumber(value, this.hass.locale, {
+      minimumFractionDigits: precision,
+      maximumFractionDigits: precision,
+    });
   }
 
   protected async updated(changedProps: PropertyValues): Promise<void> {
@@ -513,7 +514,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 ${PRECISIONS.map(
                   (precision) => html`
                     <mwc-list-item .value=${precision.toString()}>
-                      ${precisionLabel(
+                      ${this.precisionLabel(
                         precision,
                         this.hass.states[this.entry.entity_id]?.state
                       )}
