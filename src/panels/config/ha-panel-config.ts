@@ -482,7 +482,7 @@ class HaPanelConfig extends HassRouterPage {
         tag: "matter-config-panel",
         load: () =>
           import(
-            "./integrations/integration-panels/matter/matter-config-dashboard"
+            "./integrations/integration-panels/matter/matter-config-panel"
           ),
       },
       thread: {
