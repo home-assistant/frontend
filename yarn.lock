@@ -9509,7 +9509,7 @@ fsevents@^1.2.7:
     intl-messageformat: ^10.3.0
     js-yaml: ^4.1.0
     jszip: ^3.10.1
-    leaflet: ^1.7.1
+    leaflet: ^1.9.3
     leaflet-draw: ^1.0.4
     lint-staged: ^13.1.0
     lit: ^2.6.1
@@ -10989,10 +10989,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"leaflet@npm:^1.7.1":
-  version: 1.7.1
-  resolution: "leaflet@npm:1.7.1"
-  checksum: f69149ab482eeb6cdabd837939c4782c97a7a18bc0b2a9330d4a828ca0dc6e035981f2ecdb71c6646aa173bc369cd3b4fd6bbe5d81df4c59c45254f9e9361d03
+"leaflet@npm:^1.9.3":
+  version: 1.9.3
+  resolution: "leaflet@npm:1.9.3"
+  checksum: f8bc33215e6aed8488cb3d32511b943ff093c1747bcda8a39116e24fe714e12525f1a6843b6a79940ece4cf8d2a86e2cb1d7b80fc550344b3182659b19231a04
   languageName: node
   linkType: hard
 
