@@ -130,8 +130,8 @@ export interface DurationSelector {
 
 interface EntitySelectorFilter {
   integration?: string;
-  domain?: string | string[];
-  device_class?: string | string[];
+  domain?: string | readonly string[];
+  device_class?: string | readonly string[];
 }
 
 export interface EntitySelector {
