@@ -2,9 +2,9 @@ import { html } from "lit";
 import { getConfigEntries } from "../../data/config_entries";
 import { domainToName } from "../../data/integration";
 import { getIntegrationDescriptions } from "../../data/integrations";
-import { addMatterDevice } from "../../data/matter";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { showMatterAddDeviceDialog } from "../../panels/config/integrations/integration-panels/matter/show-dialog-add-matter-device";
 import { showZWaveJSAddNodeDialog } from "../../panels/config/integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -152,6 +152,6 @@ export const protocolIntegrationPicked = async (
       });
       return;
     }
-    addMatterDevice(element, hass);
+    showMatterAddDeviceDialog(element);
   }
 };

@@ -1,6 +1,5 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { navigate } from "../common/navigate";
-import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../types";
 import { subscribeDeviceRegistry } from "./device_registry";
 
@@ -15,7 +14,10 @@ export const startExternalCommissioning = (hass: HomeAssistant) =>
 let CUR_MATTER_DEVICES: Set<string> | undefined;
 let UNSUB_DEVICE_REG: UnsubscribeFunc | undefined;
 
-export const redirectOnNewMatterDevice = (hass: HomeAssistant) => {
+export const redirectOnNewMatterDevice = (
+  hass: HomeAssistant,
+  callback?: () => void
+) => {
   if (UNSUB_DEVICE_REG) {
     // we are already redirecting
     return;
@@ -38,6 +40,7 @@ export const redirectOnNewMatterDevice = (hass: HomeAssistant) => {
     );
     if (newMatterDevices.length) {
       stopRedirectOnNewMatterDevice();
+      callback?.();
       navigate(`/config/devices/device/${newMatterDevices[0].id}`);
     }
   });
@@ -51,19 +54,7 @@ export const stopRedirectOnNewMatterDevice = () => {
   CUR_MATTER_DEVICES = undefined;
 };
 
-export const addMatterDevice = (element: HTMLElement, hass: HomeAssistant) => {
-  if (!canCommissionMatterExternal(hass)) {
-    showAlertDialog(element, {
-      title: "Use mobile app",
-      text: "Matter commissioning is not supported on this device, use the mobile app to commission Matter devices",
-    });
-    return;
-  }
-  redirectOnNewMatterDevice(hass);
-  // stop redirecting once we are back from the app flow
-  window.addEventListener("click", stopRedirectOnNewMatterDevice, {
-    once: true,
-  });
+export const addMatterDevice = (hass: HomeAssistant) => {
   startExternalCommissioning(hass);
 };
 
