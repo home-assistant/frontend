@@ -43,7 +43,7 @@ class DialogMatterAddDevice extends LitElement {
         .heading=${createCloseHeading(this.hass, "Add Matter device")}
       >
         <div>
-          ${canCommissionMatterExternal(this.hass)
+          ${!canCommissionMatterExternal(this.hass)
             ? "Matter commissioning is not supported on this device, use the mobile app to commission Matter devices."
             : html`<ha-circular-progress
                 size="large"
