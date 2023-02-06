@@ -7783,9 +7783,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-import-resolver-webpack@npm:^0.13.1":
-  version: 0.13.1
-  resolution: "eslint-import-resolver-webpack@npm:0.13.1"
+"eslint-import-resolver-webpack@npm:^0.13.2":
+  version: 0.13.2
+  resolution: "eslint-import-resolver-webpack@npm:0.13.2"
   dependencies:
     array-find: ^1.0.0
     debug: ^3.2.7
@@ -7793,15 +7793,15 @@ __metadata:
     find-root: ^1.1.0
     has: ^1.0.3
     interpret: ^1.4.0
-    is-core-module: ^2.4.0
-    is-regex: ^1.1.3
+    is-core-module: ^2.7.0
+    is-regex: ^1.1.4
     lodash: ^4.17.21
     resolve: ^1.20.0
     semver: ^5.7.1
   peerDependencies:
     eslint-plugin-import: ">=1.4.0"
     webpack: ">=1.11.0"
-  checksum: 667862c99f78d3fbdeb6ee9b3634ce315ec43d245ca62373621e68d0122142b00c96dcd5180ebb621c80cd8502d6f0a280def542875ea87ef3963b29519181de
+  checksum: 6c40164747bf894a0e34cbc9626566193471062e8809cef7aa8be74e0346c962d03aa7b8f3579a3d348245269860c1f241eba5379ec04acc89daffa4fb6b5f17
   languageName: node
   linkType: hard
 
@@ -9482,7 +9482,7 @@ fsevents@^1.2.7:
     eslint-config-airbnb-base: ^14.2.1
     eslint-config-airbnb-typescript: ^14.0.0
     eslint-config-prettier: ^8.6.0
-    eslint-import-resolver-webpack: ^0.13.1
+    eslint-import-resolver-webpack: ^0.13.2
     eslint-plugin-disable: ^2.0.3
     eslint-plugin-import: ^2.24.2
     eslint-plugin-lit: ^1.8.2
@@ -10132,12 +10132,21 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"is-core-module@npm:^2.2.0, is-core-module@npm:^2.4.0, is-core-module@npm:^2.6.0":
+"is-core-module@npm:^2.2.0, is-core-module@npm:^2.6.0":
   version: 2.7.0
   resolution: "is-core-module@npm:2.7.0"
   dependencies:
     has: ^1.0.3
   checksum: 8ec6dc714438ef9dc4dae10c94d21bd5aa67244da7e85bd9e42f0fd298514181214f6bebe358a486477c1242458b170ad7a8c936be0be15d465862fa61d3d1c7
+  languageName: node
+  linkType: hard
+
+"is-core-module@npm:^2.7.0":
+  version: 2.11.0
+  resolution: "is-core-module@npm:2.11.0"
+  dependencies:
+    has: ^1.0.3
+  checksum: f96fd490c6b48eb4f6d10ba815c6ef13f410b0ba6f7eb8577af51697de523e5f2cd9de1c441b51d27251bf0e4aebc936545e33a5d26d5d51f28d25698d4a8bab
   languageName: node
   linkType: hard
 
@@ -10407,7 +10416,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"is-regex@npm:^1.1.3, is-regex@npm:^1.1.4":
+"is-regex@npm:^1.1.4":
   version: 1.1.4
   resolution: "is-regex@npm:1.1.4"
   dependencies:
