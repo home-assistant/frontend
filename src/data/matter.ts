@@ -13,57 +13,57 @@ export const startExternalCommissioning = (hass: HomeAssistant) =>
   });
 
 export const addMatterDevice = (element: HTMLElement, hass: HomeAssistant) => {
-  if (canCommissionMatterExternal(hass)) {
-    let curMatterDevices: Set<string>;
-    let timeout: number | undefined;
-    let unsub: UnsubscribeFunc | undefined = subscribeDeviceRegistry(
-      hass.connection,
-      (entries) => {
-        if (!curMatterDevices) {
-          curMatterDevices = new Set(
-            Object.values(entries)
-              .filter((device) =>
-                device.identifiers.find(
-                  (identifier) => identifier[0] === "matter"
-                )
-              )
-              .map((device) => device.id)
-          );
-          return;
-        }
-        const newMatterDevices = Object.values(entries).filter(
-          (device) =>
-            device.identifiers.find(
-              (identifier) => identifier[0] === "matter"
-            ) && !curMatterDevices!.has(device.id)
-        );
-        if (newMatterDevices.length) {
-          if (unsub) {
-            unsub();
-            unsub = undefined;
-          }
-          if (timeout) {
-            clearTimeout(timeout);
-          }
-          navigate(`/config/devices/device/${newMatterDevices[0].id}`);
-        }
-      }
-    );
-    // timeout of 10 minutes
-    timeout = window.setTimeout(() => {
-      if (unsub) {
-        unsub();
-        unsub = undefined;
-      }
-      timeout = undefined;
-    }, 600000);
-    startExternalCommissioning(hass);
+  if (!canCommissionMatterExternal(hass)) {
+    showAlertDialog(element, {
+      title: "Use mobile app",
+      text: "Matter commissioning is not supported on this device, use the mobile app to commission Matter devices",
+    });
     return;
   }
-  showAlertDialog(element, {
-    title: "Use mobile app",
-    text: "Matter commissioning is not supported on this device, use the mobile app to commission Matter devices",
-  });
+
+  let curMatterDevices: Set<string>;
+  let timeout: number | undefined;
+  let unsub: UnsubscribeFunc | undefined = subscribeDeviceRegistry(
+    hass.connection,
+    (entries) => {
+      if (!curMatterDevices) {
+        curMatterDevices = new Set(
+          Object.values(entries)
+            .filter((device) =>
+              device.identifiers.find(
+                (identifier) => identifier[0] === "matter"
+              )
+            )
+            .map((device) => device.id)
+        );
+        return;
+      }
+      const newMatterDevices = Object.values(entries).filter(
+        (device) =>
+          device.identifiers.find((identifier) => identifier[0] === "matter") &&
+          !curMatterDevices!.has(device.id)
+      );
+      if (newMatterDevices.length) {
+        if (unsub) {
+          unsub();
+          unsub = undefined;
+        }
+        if (timeout) {
+          clearTimeout(timeout);
+        }
+        navigate(`/config/devices/device/${newMatterDevices[0].id}`);
+      }
+    }
+  );
+  // timeout of 10 minutes
+  timeout = window.setTimeout(() => {
+    if (unsub) {
+      unsub();
+      unsub = undefined;
+    }
+    timeout = undefined;
+  }, 600000);
+  startExternalCommissioning(hass);
 };
 
 export const commissionMatterDevice = (
