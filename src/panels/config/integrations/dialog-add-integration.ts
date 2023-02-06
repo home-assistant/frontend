@@ -137,7 +137,7 @@ class AddIntegrationDialog extends LitElement {
       filter?: string
     ): IntegrationListItem[] => {
       const addDeviceRows: IntegrationListItem[] = (
-        ["zha", "zwave_js"] as const
+        ["zha", "zwave_js", "matter"] as const
       )
         .filter((domain) => components.includes(domain))
         .map((domain) => ({
@@ -371,7 +371,7 @@ class AddIntegrationDialog extends LitElement {
       ),
       confirm: () => {
         this.closeDialog();
-        if (["zha", "zwave_js"].includes(integration.supported_by)) {
+        if (["zha", "zwave_js", "matter"].includes(integration.supported_by)) {
           protocolIntegrationPicked(this, this.hass, integration.supported_by);
           return;
         }
@@ -519,7 +519,7 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
-      ["zha", "zwave_js"].includes(integration.domain) &&
+      ["zha", "zwave_js", "matter"].includes(integration.domain) &&
       isComponentLoaded(this.hass, integration.domain)
     ) {
       this._pickedBrand = integration.domain;

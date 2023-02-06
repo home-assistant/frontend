@@ -4,9 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import {
   acceptSharedMatterDevice,
+  canCommissionMatterExternal,
   commissionMatterDevice,
   matterSetThread,
   matterSetWifi,
+  startExternalCommissioning,
 } from "../../../../../data/matter";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -15,7 +17,6 @@ import "../../../../../components/ha-alert";
 import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { navigate } from "../../../../../common/navigate";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
-import { isDevVersion } from "../../../../../common/config/version";
 
 @customElement("matter-config-panel")
 export class MatterConfigPanel extends LitElement {
@@ -26,10 +27,6 @@ export class MatterConfigPanel extends LitElement {
   @state() private _error?: string;
 
   private _curMatterDevices?: Set<string>;
-
-  private get _canCommissionMatter() {
-    return this.hass.auth.external?.config.canCommissionMatter;
-  }
 
   protected render(): TemplateResult {
     return html`
@@ -57,19 +54,17 @@ export class MatterConfigPanel extends LitElement {
               share code.
             </div>
             <div class="card-actions">
-              ${this._canCommissionMatter
+              ${canCommissionMatterExternal(this.hass)
                 ? html`<mwc-button @click=${this._startMobileCommissioning}
                     >Commission device with mobile app</mwc-button
                   >`
                 : ""}
-              ${isDevVersion(this.hass.config.version)
-                ? html`<mwc-button @click=${this._commission}
-                      >Commission device</mwc-button
-                    >
-                    <mwc-button @click=${this._acceptSharedDevice}
-                      >Add shared device</mwc-button
-                    >`
-                : ""}
+              <mwc-button @click=${this._commission}
+                >Commission device</mwc-button
+              >
+              <mwc-button @click=${this._acceptSharedDevice}
+                >Add shared device</mwc-button
+              >
               <mwc-button @click=${this._setWifi}
                 >Set WiFi Credentials</mwc-button
               >
@@ -107,9 +102,7 @@ export class MatterConfigPanel extends LitElement {
 
   private _startMobileCommissioning() {
     this._redirectOnNewDevice();
-    this.hass.auth.external!.fireMessage({
-      type: "matter/commission",
-    });
+    startExternalCommissioning(this.hass);
   }
 
   private async _setWifi(): Promise<void> {

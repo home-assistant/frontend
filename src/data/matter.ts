@@ -1,4 +1,24 @@
+import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../types";
+
+export const canCommissionMatterExternal = (hass: HomeAssistant) =>
+  hass.auth.external?.config.canCommissionMatter;
+
+export const startExternalCommissioning = (hass: HomeAssistant) =>
+  hass.auth.external?.fireMessage({
+    type: "matter/commission",
+  });
+
+export const addMatterDevice = (element, hass) => {
+  if (canCommissionMatterExternal(hass)) {
+    startExternalCommissioning(hass);
+    return;
+  }
+  showAlertDialog(element, {
+    title: "Use mobile app",
+    text: "Matter commissioning is not supported on this device, use the mobile app to commission Matter devices",
+  });
+};
 
 export const commissionMatterDevice = (
   hass: HomeAssistant,

@@ -33,6 +33,7 @@ import {
   findBatteryEntity,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
+import { addMatterDevice } from "../../../data/matter";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -541,6 +542,10 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
     if (filteredConfigEntry?.domain === "zwave_js") {
       this._showZJSAddDeviceDialog(filteredConfigEntry);
+      return;
+    }
+    if (filteredConfigEntry?.domain === "matter") {
+      addMatterDevice(this, this.hass);
       return;
     }
     showAddIntegrationDialog(this);
