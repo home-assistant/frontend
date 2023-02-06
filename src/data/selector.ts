@@ -50,8 +50,8 @@ export interface AddonSelector {
 
 export interface AreaSelector {
   area: {
-    entity?: EntitySelectorFilter | EntitySelectorFilter[];
-    device?: DeviceSelectorFilter | DeviceSelectorFilter[];
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     multiple?: boolean;
   } | null;
 }
@@ -104,8 +104,8 @@ interface DeviceSelectorFilter {
 
 export interface DeviceSelector {
   device: {
-    filter?: DeviceSelectorFilter | DeviceSelectorFilter[];
-    entity?: EntitySelectorFilter | EntitySelectorFilter[];
+    filter?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     multiple?: boolean;
     /**
      * @deprecated Backward compatibility, use filter instead
@@ -139,7 +139,7 @@ export interface EntitySelector {
     multiple?: boolean;
     include_entities?: string[];
     exclude_entities?: string[];
-    filter?: EntitySelectorFilter | EntitySelectorFilter[];
+    filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     /**
      * @deprecated Backward compatibility, use filter instead
      */
@@ -270,8 +270,8 @@ export interface StringSelector {
 
 export interface TargetSelector {
   target: {
-    entity?: EntitySelectorFilter | EntitySelectorFilter[];
-    device?: DeviceSelectorFilter | DeviceSelectorFilter[];
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
   } | null;
 }
 
