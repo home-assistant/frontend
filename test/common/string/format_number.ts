@@ -111,10 +111,13 @@ describe("formatNumber", () => {
 
   it("Sets maximumFractionDigits to '0' when the state value and step are integers", () => {
     assert.deepEqual(
-      getNumberFormatOptions({
-        state: "3.0",
-        attributes: { step: 1 },
-      } as unknown as HassEntity),
+      getNumberFormatOptions(
+        {
+          state: "3.0",
+          attributes: { step: 1 },
+        } as unknown as HassEntity,
+        undefined
+      ),
       {
         maximumFractionDigits: 0,
       }
@@ -123,24 +126,33 @@ describe("formatNumber", () => {
 
   it("Does not set any Intl.NumberFormatOptions when the step is not an integer", () => {
     assert.strictEqual(
-      getNumberFormatOptions({
-        state: "3.0",
-        attributes: { step: 0.5 },
-      } as unknown as HassEntity),
+      getNumberFormatOptions(
+        {
+          state: "3.0",
+          attributes: { step: 0.5 },
+        } as unknown as HassEntity,
+        undefined
+      ),
       undefined
     );
   });
 
   it("Does not set any Intl.NumberFormatOptions when the state value is not an integer", () => {
     assert.strictEqual(
-      getNumberFormatOptions({ state: "3.5" } as unknown as HassEntity),
+      getNumberFormatOptions(
+        { state: "3.5" } as unknown as HassEntity,
+        undefined
+      ),
       undefined
     );
   });
 
   it("Does not set any Intl.NumberFormatOptions when there is no step attribute", () => {
     assert.strictEqual(
-      getNumberFormatOptions({ state: "3.0" } as unknown as HassEntity),
+      getNumberFormatOptions(
+        { state: "3.0" } as unknown as HassEntity,
+        undefined
+      ),
       undefined
     );
   });
