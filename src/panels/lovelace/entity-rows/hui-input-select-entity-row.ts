@@ -24,7 +24,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
 
   @state() private _config?: EntitiesCardEntityConfig;
 
-  @query("ha-select", true) private _haSelect!: HaSelect;
+  @query("ha-select") private _haSelect!: HaSelect;
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config || !config.entity) {
