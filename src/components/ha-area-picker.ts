@@ -126,6 +126,7 @@ export class HaAreaPicker extends LitElement {
             area_id: "no_areas",
             name: this.hass.localize("ui.components.area-picker.no_areas"),
             picture: null,
+            aliases: [],
           },
         ];
       }
@@ -256,6 +257,7 @@ export class HaAreaPicker extends LitElement {
             area_id: "no_areas",
             name: this.hass.localize("ui.components.area-picker.no_match"),
             picture: null,
+            aliases: [],
           },
         ];
       }
@@ -268,6 +270,7 @@ export class HaAreaPicker extends LitElement {
               area_id: "add_new",
               name: this.hass.localize("ui.components.area-picker.add_new"),
               picture: null,
+              aliases: [],
             },
           ];
     }

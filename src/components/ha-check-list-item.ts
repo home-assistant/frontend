@@ -13,6 +13,15 @@ export class HaCheckListItem extends CheckListItemBase {
       :host {
         --mdc-theme-secondary: var(--primary-color);
       }
+
+      :host([graphic="avatar"]) .mdc-deprecated-list-item__graphic,
+      :host([graphic="medium"]) .mdc-deprecated-list-item__graphic,
+      :host([graphic="large"]) .mdc-deprecated-list-item__graphic,
+      :host([graphic="control"]) .mdc-deprecated-list-item__graphic {
+        margin-inline-end: var(--mdc-list-item-graphic-margin, 16px);
+        margin-inline-start: 0px;
+        direction: var(--direction);
+      }
     `,
   ];
 }

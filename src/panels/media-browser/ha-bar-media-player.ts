@@ -30,6 +30,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-button-menu";
+import "../../components/ha-button";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import { UNAVAILABLE } from "../../data/entity";
@@ -227,7 +228,9 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         })}
         @click=${this._openMoreInfo}
       >
-        ${mediaArt ? html`<img src=${this.hass.hassUrl(mediaArt)} />` : ""}
+        ${mediaArt
+          ? html`<img alt="" src=${this.hass.hassUrl(mediaArt)} />`
+          : ""}
         <div class="media-info">
           <hui-marquee
             .text=${mediaTitleClean ||
@@ -321,7 +324,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                     ></ha-icon-button>
                   `
                 : html`
-                    <mwc-button
+                    <ha-button
                       slot="trigger"
                       .label=${this.narrow
                         ? ""
@@ -342,7 +345,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                         slot="trailingIcon"
                         .path=${mdiChevronDown}
                       ></ha-svg-icon>
-                    </mwc-button>
+                    </ha-button>
                   `
             }
             <mwc-list-item
@@ -718,11 +721,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         font-weight: bold;
       }
 
-      ha-svg-icon[slot="icon"] {
-        margin-inline-start: 8px !important;
-        margin-inline-end: 8px !important;
-        direction: var(--direction);
-      }
       ha-svg-icon[slot="trailingIcon"] {
         margin-inline-start: 8px !important;
         margin-inline-end: 0px !important;

@@ -15,7 +15,7 @@ export interface ScheduleDay {
   to: string;
 }
 
-type ScheduleDays = { [K in typeof weekdays[number]]?: ScheduleDay[] };
+type ScheduleDays = { [K in (typeof weekdays)[number]]?: ScheduleDay[] };
 
 export interface Schedule extends ScheduleDays {
   id: string;

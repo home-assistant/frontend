@@ -39,6 +39,7 @@ import {
   rebootHost,
   shutdownHost,
 } from "../../../data/hassio/host";
+import { scanUSBDevices } from "../../../data/usb";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -102,17 +103,21 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                 fullUpdate = true;
               }
             } else if (message.type === "removed") {
-              delete this._configEntries![message.entry.entry_id];
+              if (this._configEntries) {
+                delete this._configEntries[message.entry.entry_id];
+              }
             } else if (message.type === "updated") {
-              const newEntry = message.entry;
-              this._configEntries![message.entry.entry_id] = newEntry;
+              if (this._configEntries) {
+                const newEntry = message.entry;
+                this._configEntries[message.entry.entry_id] = newEntry;
+              }
             }
           });
           if (!newEntries.length && !fullUpdate) {
             return;
           }
           const entries = [
-            ...(fullUpdate ? [] : Object.values(this._configEntries!)),
+            ...(fullUpdate ? [] : Object.values(this._configEntries || {})),
             ...newEntries,
           ];
           const configEntries: { [id: string]: ConfigEntry } = {};
@@ -230,13 +235,22 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     );
 
     const dongles = this._hardwareInfo?.hardware.filter(
-      (hw) => hw.dongle !== null
+      (hw) =>
+        hw.dongle !== null &&
+        (!hw.config_entries.length ||
+          hw.config_entries.some(
+            (entryId) =>
+              this._configEntries?.[entryId] &&
+              !this._configEntries[entryId].disabled_by
+          ))
     );
 
     if (boardData) {
       boardConfigEntries = boardData.config_entries
         .map((id) => this._configEntries?.[id])
-        .filter((entry) => entry?.supports_options) as ConfigEntry[];
+        .filter(
+          (entry) => entry?.supports_options && !entry.disabled_by
+        ) as ConfigEntry[];
       boardId = boardData.board!.hassio_board_id;
       boardName = boardData.name;
       documentationURL = boardData.url;
@@ -363,7 +377,9 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                 ${dongles.map((dongle) => {
                   const configEntry = dongle.config_entries
                     .map((id) => this._configEntries?.[id])
-                    .filter((entry) => entry?.supports_options)[0];
+                    .filter(
+                      (entry) => entry?.supports_options && !entry.disabled_by
+                    )[0];
                   return html`<div class="row">
                     ${dongle.name}${configEntry
                       ? html`<mwc-button
@@ -394,6 +410,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   </div>
                   <div class="card-content">
                     <ha-chart-base
+                      .hass=${this.hass}
                       .data=${{
                         datasets: [
                           {
@@ -425,6 +442,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   </div>
                   <div class="card-content">
                     <ha-chart-base
+                      .hass=${this.hass}
                       .data=${{
                         datasets: [
                           {
@@ -444,6 +462,10 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   }
 
   private async _load() {
+    if (isComponentLoaded(this.hass, "usb")) {
+      await scanUSBDevices(this.hass);
+    }
+
     const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
     try {
       if (isComponentLoaded(this.hass, "hardware")) {

@@ -488,7 +488,8 @@
       "history_charts": {
         "history_disabled": "History integration disabled",
         "loading_history": "Loading state history…",
-        "no_history_found": "No state history found."
+        "no_history_found": "No state history found.",
+        "error": "Unable to load history"
       },
       "statistics_charts": {
         "loading_statistics": "Loading statistics…",
@@ -644,6 +645,33 @@
               "monthly": "months",
               "weekly": "weeks",
               "daily": "days"
+            },
+            "monthly": {
+              "label": "Repeat Monthly"
+            },
+            "weekly": {
+              "weekday": {
+                "su": "Sun",
+                "mo": "Mon",
+                "tu": "Tue",
+                "we": "Wed",
+                "th": "Thu",
+                "fr": "Fri",
+                "sa": "Sat"
+              }
+            },
+            "end": {
+              "label": "End",
+              "never": "Never",
+              "after": "After",
+              "on": "On"
+            },
+            "end_on": {
+              "label": "End On"
+            },
+            "end_after": {
+              "label": "End After",
+              "ocurrences": "ocurrences"
             }
           },
           "rrule": {
@@ -776,13 +804,15 @@
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
+        "title": "Assist",
         "did_not_hear": "Home Assistant did not hear anything",
         "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
-        "how_can_i_help": "How can I help?",
-        "label": "Type a question and press 'Enter'",
-        "label_voice": "Type and press 'Enter' or tap the microphone to speak"
+        "how_can_i_help": "How can I assist?",
+        "input_label": "Enter a request",
+        "send_text": "Send text",
+        "start_listening": "Start listening"
       },
       "generic": {
         "cancel": "Cancel",
@@ -973,17 +1003,18 @@
           "aliases_section": "Aliases",
           "no_aliases": "No configured aliases",
           "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-          "aliases": {
-            "heading": "{name} aliases",
-            "description": "Aliases are alternative names used in voice assistants to refer to this entity.",
-            "remove_alias": "Remove alias",
-            "save": "Save",
-            "add_alias": "Add alias",
-            "no_aliases": "No aliases have been added yet",
-            "update": "Update",
-            "unknown_error": "Unknown error"
-          }
+          "aliases_description": "Aliases are alternative names used in voice assistants to refer to this entity."
         }
+      },
+      "aliases": {
+        "heading": "{name} aliases",
+        "remove_alias": "Remove alias {number}",
+        "input_label": "Alias {number}",
+        "save": "Save",
+        "add_alias": "Add alias",
+        "no_aliases": "No aliases have been added yet",
+        "update": "Update",
+        "unknown_error": "Unknown error"
       },
       "helper_settings": {
         "platform_not_loaded": "The {platform} integration is not loaded. Please add it to your configuration either by adding 'default_config:' or ''{platform}:''.",
@@ -1005,7 +1036,8 @@
           "mode": "Display mode",
           "text": "Text",
           "password": "Password",
-          "pattern": "Regex pattern for client-side validation"
+          "pattern_label": "Regex pattern",
+          "pattern_helper": "Used for client-side validation"
         },
         "input_number": {
           "min": "Minimum value",
@@ -1390,7 +1422,11 @@
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
             "linked_entities_caption": "Entities",
-            "no_linked_entities": "There are no entities linked to this area."
+            "no_linked_entities": "There are no entities linked to this area.",
+            "aliases_section": "Aliases",
+            "no_aliases": "No configured aliases",
+            "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
+            "aliases_description": "Aliases are alternative names used in voice assistants to refer to this area."
           },
           "delete": {
             "confirmation_title": "Delete {name}?",
@@ -1483,30 +1519,30 @@
               "from": {
                 "header": "Configure grid consumption",
                 "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
-                "energy_stat": "Consumed Energy (kWh)",
+                "entity_para": "Pick a sensor which measures grid consumption in either of {unit}.",
+                "energy_stat": "Consumed Energy",
                 "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
                 "no_cost": "Do not track costs",
                 "cost_stat": "Use an entity tracking the total costs",
-                "cost_stat_input": "Total Costs Entity",
+                "cost_stat_input": "Entity with the total costs",
                 "cost_entity": "Use an entity with current price",
                 "cost_entity_input": "Entity with the current price",
                 "cost_number": "Use a static price",
-                "cost_number_input": "Price per kWh",
-                "cost_number_suffix": "{currency}/kWh"
+                "cost_number_input": "Price"
               },
               "to": {
                 "header": "Configure grid production",
                 "paragraph": "Grid production is the energy that flows from your solar panels to the grid.",
-                "energy_stat": "Energy returned to the grid (kWh)",
+                "entity_para": "Pick a sensor which measures grid production in either of {unit}.",
+                "energy_stat": "Energy returned to the grid",
                 "cost_para": "Do you get money back when you return energy to the grid?",
                 "no_cost": "I do not get money back",
                 "cost_stat": "Use an entity tracking the total recieved money",
-                "cost_stat_input": "Total Compensation Entity",
+                "cost_stat_input": "Entity with the total compensation",
                 "cost_entity": "Use an entity with current rate",
                 "cost_entity_input": "Entity with the current rate",
                 "cost_number": "Use a static rate",
-                "cost_number_input": "Rate per kWh",
-                "cost_number_suffix": "{currency}/kWh"
+                "cost_number_input": "Rate"
               }
             }
           },
@@ -1523,7 +1559,8 @@
             "stat_predicted_production": "Prediction of your solar energy production",
             "dialog": {
               "header": "Configure solar panels",
-              "solar_production_energy": "Solar production energy (kWh)",
+              "entity_para": "Pick a sensor which measures solar energy production in either of {unit}.",
+              "solar_production_energy": "Solar production energy",
               "solar_production_forecast": "Solar production forecast",
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
               "dont_forecast_production": "Don't forecast production",
@@ -1541,8 +1578,9 @@
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
-              "energy_into_battery": "Energy going in to the battery (kWh)",
-              "energy_out_of_battery": "Energy coming out of the battery (kWh)"
+              "entity_para": "Pick sensors which measure energy going in to and out of the battery in either of {unit}.",
+              "energy_into_battery": "Energy going in to the battery",
+              "energy_out_of_battery": "Energy coming out of the battery"
             }
           },
           "gas": {
@@ -1555,18 +1593,18 @@
             "add_gas_source": "Add gas source",
             "dialog": {
               "header": "Configure gas consumption",
-              "paragraph": "Gas consumption is the volume of gas that flows to your home.",
-              "energy_stat": "Consumed Energy (m³)",
-              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
-              "no_cost": "Do not track costs",
-              "cost_stat": "Use an entity tracking the total costs",
-              "cost_stat_input": "Total Costs Entity",
-              "cost_entity": "Use an entity with current price",
-              "cost_entity_input": "Entity with the current price per {unit}",
-              "cost_number": "Use a static price",
-              "cost_number_input": "Price per {unit}",
-              "gas_usage": "Gas usage",
-              "m3_or_kWh": "ft³, m³, Wh, kWh, MWh or GJ"
+              "paragraph": "Gas consumption is measured either as the volume of gas that flows to your home or as the amount of energy contained in the gas.",
+              "entity_para": "Pick a sensor which measures gas consumption in either of {unit}.",
+              "note_para": "Note: It is not possible to add both sensors measuring a volume of gas and sensors measuring the amount of energy contained in the gas.",
+              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed gas.",
+              "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
+              "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
+              "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
+              "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
+              "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "gas_usage": "Gas usage"
             }
           },
           "water": {
@@ -1580,16 +1618,16 @@
             "dialog": {
               "header": "Configure water consumption",
               "paragraph": "Water consumption is the volume of water that flows to your home.",
-              "energy_stat": "Consumed water (m³ or gl)",
+              "entity_para": "Pick a sensor which measures gas consumption in either of {unit}.",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
-              "no_cost": "Do not track costs",
-              "cost_stat": "Use an entity tracking the total costs",
-              "cost_stat_input": "Total Costs Entity",
-              "cost_entity": "Use an entity with current price",
-              "cost_entity_input": "Entity with the current price per m³ or gl",
-              "cost_number": "Use a static price",
-              "cost_number_input": "Price per m³ or gl",
-              "water_usage": "Water usage (m³ or gl)"
+              "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
+              "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
+              "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
+              "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
+              "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "water_usage": "Water usage"
             }
           },
           "device_consumption": {
@@ -1602,68 +1640,8 @@
             "add_device": "Add device",
             "dialog": {
               "header": "Add a device",
-              "device_consumption_energy": "Device consumption energy (kWh)",
-              "selected_stat_intro": "Select the entity that represents the device energy usage."
-            }
-          },
-          "validation": {
-            "issues": {
-              "entity_not_defined": {
-                "title": "Entity not defined",
-                "description": "Check the integration or your configuration that provides:"
-              },
-              "recorder_untracked": {
-                "title": "Entity not tracked",
-                "description": "The recorder has been configured to exclude these configured entities:"
-              },
-              "entity_unavailable": {
-                "title": "Entity unavailable",
-                "description": "The state of these configured entities are currently not available:"
-              },
-              "entity_state_non_numeric": {
-                "title": "Entity has non-numeric state",
-                "description": "The following entities have a state that cannot be parsed as a number:"
-              },
-              "entity_negative_state": {
-                "title": "Entity has a negative state",
-                "description": "The following entities have a negative state while a positive state is expected:"
-              },
-              "entity_unexpected_unit_energy": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ':"
-              },
-              "entity_unexpected_unit_gas": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh', 'MWh' or 'GJ' for an energy sensor or 'm³' or 'ft³' for a gas sensor:"
-              },
-              "entity_unexpected_unit_water": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'm³' or 'ft³' for a water sensor:"
-              },
-              "entity_unexpected_unit_energy_price": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'' or ''{currency}/GJ'':"
-              },
-              "entity_unexpected_unit_gas_price": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'', ''{currency}/GJ'', ''{currency}/m³'' or ''{currency}/ft³'':"
-              },
-              "entity_unexpected_unit_water_price": {
-                "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/m³'' or ''{currency}/ft³'':"
-              },
-              "entity_unexpected_state_class": {
-                "title": "Unexpected state class",
-                "description": "The following entities do not have the expected state class:"
-              },
-              "entity_unexpected_device_class": {
-                "title": "Unexpected device class",
-                "description": "The following entities do not have the expected device class:"
-              },
-              "entity_state_class_measurement_no_last_reset": {
-                "title": "Last reset missing",
-                "description": "The following entities have state class 'measurement' but 'last_reset' is missing:"
-              }
+              "device_consumption_energy": "Device consumption energy",
+              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
             }
           }
         },
@@ -2095,7 +2073,11 @@
                   "label": "Numeric state",
                   "above": "Above",
                   "below": "Below",
-                  "value_template": "Value template"
+                  "mode_above": "Above mode",
+                  "mode_below": "Below mode",
+                  "value_template": "Value template",
+                  "type_value": "Fixed number",
+                  "type_input": "Numeric value of another entity"
                 },
                 "sun": {
                   "label": "Sun",
@@ -2178,9 +2160,13 @@
                   "label": "Not"
                 },
                 "numeric_state": {
+                  "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_value%]",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_input%]",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
                   "above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::above%]",
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
+                  "mode_above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_above%]",
+                  "mode_below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::mode_below%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]"
                 },
                 "or": {
@@ -2634,7 +2620,7 @@
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "state_reporting_error": "Unable to {enable_disable} report state.",
-              "manage_entities": "Manage Entities",
+              "manage_entities": "[%key:ui::panel::config::cloud::account::google::manage_entities%]",
               "enable": "enable",
               "disable": "disable",
               "not_configured_title": "Alexa is not activated",
@@ -2685,6 +2671,7 @@
             "follow_domain": "[%key:ui::panel::config::cloud::google::follow_domain%]",
             "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
             "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
+            "manage_aliases": "[%key:ui::panel::config::cloud::google::manage_aliases%]",
             "expose": "Expose to Alexa",
             "sync_entities": "Synchronize entities",
             "sync_entities_error": "Failed to sync entities:"
@@ -2710,6 +2697,11 @@
             "follow_domain": "Follow domain",
             "exposed": "{selected} exposed",
             "not_exposed": "{selected} not exposed",
+            "manage_aliases": "Manage aliases",
+            "add_aliases": "Add aliases",
+            "no_aliases": "No aliases",
+            "aliases_not_available": "Aliases not available",
+            "aliases_not_available_learn_more": "Learn more",
             "sync_to_google": "Synchronizing changes to Google.",
             "sync_entities": "Synchronize entities",
             "sync_entities_error": "Failed to sync entities:",
@@ -3215,6 +3207,8 @@
         },
         "mqtt": {
           "title": "MQTT",
+          "settings_title": "MQTT settings",
+          "reconfigure": "Re-configure MQTT",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
@@ -3685,9 +3679,12 @@
             "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
             "scan_ap": "Scan for access points",
+            "signal_strength": "Signal strength",
             "open": "Open",
             "wep": "WEP",
             "wpa": "wpa-psk",
+            "wifi": "Wi-Fi",
+            "wifi_password": "Wi-Fi password",
             "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
             "static": "Static",
             "dhcp": "DHCP",
@@ -3879,7 +3876,7 @@
           "configure_ui": "Edit Dashboard",
           "help": "Help",
           "search": "Search",
-          "start_conversation": "Start conversation",
+          "assist": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close"
@@ -4292,6 +4289,7 @@
               "appearance": "Appearance",
               "default_color": "Default color (state)",
               "show_entity_picture": "Show entity picture",
+              "vertical": "Vertical",
               "features": {
                 "name": "Features",
                 "not_compatible": "Not compatible",
@@ -4365,7 +4363,9 @@
               "orange": "Orange",
               "deep-orange": "Deep orange",
               "brown": "Brown",
+              "light-grey": "Light grey",
               "grey": "Grey",
+              "dark-grey": "Dark grey",
               "blue-grey": "Blue grey",
               "black": "Black",
               "white": "White"
@@ -5379,9 +5379,12 @@
         "title": "Network settings",
         "connected_to": "Connected to {ssid}",
         "scan_ap": "Scan for access points",
+        "signal_strength": "[%key:ui::panel::config::network::supervisor::signal_strength%]",
         "open": "Open",
         "wep": "WEP",
         "wpa": "wpa-psk",
+        "wifi": "[%key:ui::panel::config::network::supervisor::wifi%]",
+        "wifi_password": "[%key:ui::panel::config::network::supervisor::wifi_password%]",
         "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
         "static": "Static",
         "dhcp": "DHCP",

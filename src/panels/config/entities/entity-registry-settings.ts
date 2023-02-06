@@ -17,6 +17,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stringCompare } from "../../../common/string/compare";
@@ -67,6 +68,8 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
+import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
+import { getSensorDeviceClassConvertibleUnits } from "../../../data/sensor";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -77,7 +80,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { showEntityAliasesDialog } from "./entity-aliases/show-dialog-entity-aliases";
+import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -111,26 +114,6 @@ const OVERRIDE_DEVICE_CLASSES = {
       "moisture",
     ], // Alarm
   ],
-};
-
-const OVERRIDE_NUMBER_UNITS = {
-  temperature: ["°C", "°F", "K"],
-};
-
-const OVERRIDE_SENSOR_UNITS = {
-  current: ["A", "mA"],
-  distance: ["cm", "ft", "in", "km", "m", "mi", "mm", "yd"],
-  gas: ["CCF", "ft³", "m³"],
-  precipitation: ["cm", "in", "mm"],
-  precipitation_intensity: ["in/d", "in/h", "mm/d", "mm/h"],
-  pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
-  speed: ["ft/s", "in/d", "in/h", "km/h", "kn", "m/s", "mm/d", "mm/h", "mph"],
-  temperature: ["°C", "°F", "K"],
-  voltage: ["V", "mV"],
-  volume: ["CCF", "fl. oz.", "ft³", "gal", "L", "mL", "m³"],
-  water: ["CCF", "ft³", "gal", "L", "m³"],
-  weight: ["g", "kg", "lb", "mg", "oz", "st", "µg"],
-  wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
 };
 
 const OVERRIDE_WEATHER_UNITS = {
@@ -186,6 +169,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _submitting?: boolean;
 
   @state() private _cameraPrefs?: CameraPreferences;
+
+  @state() private _numberDeviceClassConvertibleUnits?: string[];
+
+  @state() private _sensorDeviceClassConvertibleUnits?: string[];
 
   private _origEntityId!: string;
 
@@ -286,6 +273,31 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         this._deviceClassOptions[0] = deviceClass;
       } else {
         this._deviceClassOptions[1].push(...deviceClass);
+      }
+    }
+  }
+
+  protected async updated(changedProps: PropertyValues): Promise<void> {
+    if (changedProps.has("_deviceClass")) {
+      const domain = computeDomain(this.entry.entity_id);
+
+      if (domain === "number" && this._deviceClass) {
+        const { units } = await getNumberDeviceClassConvertibleUnits(
+          this.hass,
+          this._deviceClass
+        );
+        this._numberDeviceClassConvertibleUnits = units;
+      } else {
+        this._numberDeviceClassConvertibleUnits = [];
+      }
+      if (domain === "sensor" && this._deviceClass) {
+        const { units } = await getSensorDeviceClassConvertibleUnits(
+          this.hass,
+          this._deviceClass
+        );
+        this._sensorDeviceClassConvertibleUnits = units;
+      } else {
+        this._sensorDeviceClassConvertibleUnits = [];
       }
     }
   }
@@ -409,7 +421,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ${domain === "number" &&
         this._deviceClass &&
         stateObj?.attributes.unit_of_measurement &&
-        OVERRIDE_NUMBER_UNITS[this._deviceClass]?.includes(
+        this._numberDeviceClassConvertibleUnits?.includes(
           stateObj?.attributes.unit_of_measurement
         )
           ? html`
@@ -423,7 +435,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._unitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_NUMBER_UNITS[this._deviceClass].map(
+                ${this._numberDeviceClassConvertibleUnits.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
@@ -434,7 +446,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ${domain === "sensor" &&
         this._deviceClass &&
         stateObj?.attributes.unit_of_measurement &&
-        OVERRIDE_SENSOR_UNITS[this._deviceClass]?.includes(
+        this._sensorDeviceClassConvertibleUnits?.includes(
           stateObj?.attributes.unit_of_measurement
         )
           ? html`
@@ -448,7 +460,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._unitChanged}
                 @closed=${stopPropagation}
               >
-                ${OVERRIDE_SENSOR_UNITS[this._deviceClass].map(
+                ${this._sensorDeviceClassConvertibleUnits.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
@@ -771,12 +783,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               "ui.dialogs.entity_registry.editor.aliases_section"
             )}
           </div>
-          <mwc-list class="aliases">
-            <mwc-list-item
-              .twoline=${this.entry.aliases.length > 0}
-              hasMeta
-              @click=${this._openAliasesSettings}
-            >
+          <mwc-list class="aliases" @action=${this._handleAliasesClicked}>
+            <mwc-list-item .twoline=${this.entry.aliases.length > 0} hasMeta>
               <span>
                 ${this.entry.aliases.length > 0
                   ? this.hass.localize(
@@ -787,13 +795,19 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                       "ui.dialogs.entity_registry.editor.no_aliases"
                     )}
               </span>
-              <span slot="secondary">${this.entry.aliases.join(", ")}</span>
+              <span slot="secondary">
+                ${[...this.entry.aliases]
+                  .sort((a, b) =>
+                    stringCompare(a, b, this.hass.locale.language)
+                  )
+                  .join(", ")}
+              </span>
               <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
             </mwc-list-item>
           </mwc-list>
           <div class="secondary">
             ${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.aliases.description"
+              "ui.dialogs.entity_registry.editor.aliases_description"
             )}
           </div>
           ${this.entry.device_id
@@ -979,14 +993,21 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _openAliasesSettings() {
-    showEntityAliasesDialog(this, {
-      entity: this.entry!,
-      updateEntry: async (updates) => {
+  private _handleAliasesClicked(ev: CustomEvent) {
+    if (ev.detail.index !== 0) return;
+
+    const stateObj = this.hass.states[this.entry.entity_id];
+    const name =
+      (stateObj && computeStateName(stateObj)) || this.entry.entity_id;
+
+    showAliasesDialog(this, {
+      name,
+      aliases: this.entry!.aliases,
+      updateAliases: async (aliases: string[]) => {
         const result = await updateEntityRegistryEntry(
           this.hass,
           this.entry.entity_id,
-          updates
+          { aliases }
         );
         fireEvent(this, "entity-entry-updated", result.entity_entry);
       },

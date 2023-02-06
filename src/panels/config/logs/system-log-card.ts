@@ -104,9 +104,9 @@ export class SystemLogCard extends LitElement {
                             <div class="row">${item.message[0]}</div>
                             <div class="row-secondary" secondary>
                               ${this._timestamp(item)} –
-                              ${html`(<span class=${item.level.toLowerCase()}
+                              ${html`(<span class=${item.level}
                                   >${this.hass.localize(
-                                    `ui.panel.config.logs.level.${item.level.toLowerCase()}`
+                                    `ui.panel.config.logs.level.${item.level}`
                                   )}</span
                                 >) `}
                               ${integrations[idx]

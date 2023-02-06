@@ -135,7 +135,7 @@ export async function getTranslation(
   base_url?: string
 ) {
   const metadata = translationMetadata.translations[language];
-  if (!metadata) {
+  if (!metadata?.hash) {
     if (language !== "en") {
       return getTranslation(fragment, "en", base_url);
     }

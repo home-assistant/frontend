@@ -200,7 +200,6 @@ export class HaDataTable extends LitElement {
       Object.values(clonedColumns).forEach(
         (column: ClonedDataTableColumnData) => {
           delete column.title;
-          delete column.type;
           delete column.template;
         }
       );

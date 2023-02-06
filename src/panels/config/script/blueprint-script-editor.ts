@@ -158,7 +158,7 @@ export class HaBlueprintScriptEditor extends LitElement {
     ev.stopPropagation();
     const target = ev.target as any;
     const key = target.key;
-    const value = ev.detail?.value ?? target.value;
+    const value = ev.detail ? ev.detail.value : target.value;
     if (
       (this.config.use_blueprint.input &&
         this.config.use_blueprint.input[key] === value) ||

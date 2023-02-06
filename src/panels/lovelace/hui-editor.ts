@@ -1,4 +1,4 @@
-import { undoDepth } from "@codemirror/history";
+import { undoDepth } from "@codemirror/commands";
 import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";

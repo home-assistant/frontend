@@ -39,5 +39,5 @@ export default function scrollToTarget(element, target) {
       );
       requestAnimationFrame(updateFrame.bind(element));
     }
-  }.call(element));
+  }).call(element);
 }

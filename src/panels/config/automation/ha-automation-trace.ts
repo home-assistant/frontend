@@ -541,14 +541,9 @@ export class HaAutomationTrace extends LitElement {
           justify-content: center;
           display: flex;
         }
-
         .info {
           flex: 1;
           background-color: var(--card-background-color);
-        }
-
-        .linkButton {
-          color: var(--primary-text-color);
         }
         .trace-link {
           text-decoration: none;

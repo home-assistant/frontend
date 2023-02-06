@@ -9,7 +9,6 @@ import {
   mdiFormatListChecks,
   mdiSync,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -41,22 +40,17 @@ import {
   updateCloudAlexaEntityConfig,
   updateCloudPref,
 } from "../../../../data/cloud";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../../../data/entity_registry";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
 const DEFAULT_CONFIG_EXPOSE = true;
-const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];
 
 @customElement("cloud-alexa")
-class CloudAlexa extends SubscribeMixin(LitElement) {
+class CloudAlexa extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property()
@@ -168,13 +162,8 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
               <state-info
                 .hass=${this.hass}
                 .stateObj=${stateObj}
-                secondary-line
                 @click=${this._showMoreInfo}
               >
-                ${entity.interfaces
-                  .filter((ifc) => !IGNORE_INTERFACES.includes(ifc))
-                  .map((ifc) => ifc.replace(/(Alexa.|Controller)/g, ""))
-                  .join(", ")}
               </state-info>
               ${!emptyFilter
                 ? html`${iconButton}`
@@ -323,23 +312,18 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
     if (changedProps.has("cloudStatus")) {
       this._entityConfigs = this.cloudStatus.prefs.alexa_entity_configs;
     }
-  }
+    if (
+      changedProps.has("hass") &&
+      changedProps.get("hass")?.entities !== this.hass.entities
+    ) {
+      const categories = {};
 
-  protected override hassSubscribe(): (
-    | UnsubscribeFunc
-    | Promise<UnsubscribeFunc>
-  )[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection, (entries) => {
-        const categories = {};
+      for (const entry of Object.values(this.hass.entities)) {
+        categories[entry.entity_id] = entry.entity_category;
+      }
 
-        for (const entry of entries) {
-          categories[entry.entity_id] = entry.entity_category;
-        }
-
-        this._entityCategories = categories;
-      }),
-    ];
+      this._entityCategories = categories;
+    }
   }
 
   private async _fetchData() {
@@ -542,6 +526,7 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
         }
         state-info {
           cursor: pointer;
+          height: 40px;
         }
         ha-switch {
           padding: 8px 0;
