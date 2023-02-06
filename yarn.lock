@@ -4117,9 +4117,9 @@ __metadata:
   linkType: hard
 
 "@types/geojson@npm:*":
-  version: 7946.0.8
-  resolution: "@types/geojson@npm:7946.0.8"
-  checksum: 6049a39b025cfe323d5cf87333d87c133ec963cdbd349c49295bee779827ee4b46a3041fd8bd2e7a4b02d6d1e26f3002968875928941bbed08477bfd5f6f9284
+  version: 7946.0.10
+  resolution: "@types/geojson@npm:7946.0.10"
+  checksum: 12c407c2dc93ecb26c08af533ee732f1506a9b29456616ba7ba1d525df96206c28ddf44a528f6a5415d7d22893e9d967420940a9c095ee5e539c1eba5fefc1f4
   languageName: node
   linkType: hard
 
@@ -4224,20 +4224,20 @@ __metadata:
   linkType: hard
 
 "@types/leaflet-draw@npm:^1":
-  version: 1.0.5
-  resolution: "@types/leaflet-draw@npm:1.0.5"
+  version: 1.0.6
+  resolution: "@types/leaflet-draw@npm:1.0.6"
   dependencies:
     "@types/leaflet": "*"
-  checksum: 75ee3c389b8ea0acd8b9f88e3094057df695c29edd8360b5abb902898d78810957be6f77392d5c1c2b1f01d94eef80670be9e8374dfbb819fe8237fcf155f8d6
+  checksum: 6520de61f26f4f845fea3faa43077515d2eac58274e98d61b26ca0885d9002fdeb131375e85f4e503daa6b4ec27f0837a1ecddacbba78aea4764084a424bf93e
   languageName: node
   linkType: hard
 
 "@types/leaflet@npm:*, @types/leaflet@npm:^1":
-  version: 1.7.5
-  resolution: "@types/leaflet@npm:1.7.5"
+  version: 1.9.0
+  resolution: "@types/leaflet@npm:1.9.0"
   dependencies:
     "@types/geojson": "*"
-  checksum: 922f3d1176017c350be997773df72d0fd8f31c2f0340a20d3a91eb31540c3e6ef09eb020cec85c74b05afd54f4095e406ab3a45c9328c31ea17f95aa6ef69c6e
+  checksum: f3ee2e2fc8bd3480d77667471c8f774a3726ff7694a7d08d2423c05b40e28f00379c7d469b4cbd3b53a1bc96c75970c92f9da7908fc477cbac0eda2a9d17b6ad
   languageName: node
   linkType: hard
 
