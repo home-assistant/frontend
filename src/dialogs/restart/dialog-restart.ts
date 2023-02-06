@@ -6,11 +6,8 @@ import { componentsWithService } from "../../common/config/components_with_servi
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
-import "../../components/ha-alert";
-import "../../components/ha-area-picker";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-list-item";
-import "../../components/ha-textfield";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
