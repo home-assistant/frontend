@@ -3109,7 +3109,7 @@
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
             "missing_zwave_zigbee_title": "{integration} is not setup",
             "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
-            "missing_matter": "To add a {brand} device, you first need the Matter integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
+            "missing_matter": "To add a {brand} device, you first need the {integration} integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
             "supported_hardware": "supported hardware",
             "proceed": "Proceed"
           }
