@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -8,7 +9,6 @@ import {
   addMatterDevice,
   canCommissionMatterExternal,
   redirectOnNewMatterDevice,
-  stopRedirectOnNewMatterDevice,
 } from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
@@ -19,15 +19,22 @@ class DialogMatterAddDevice extends LitElement {
 
   @state() private _open = false;
 
+  private _unsub?: UnsubscribeFunc;
+
   public showDialog(): void {
     this._open = true;
-    redirectOnNewMatterDevice(this.hass, () => this.closeDialog());
+    if (!canCommissionMatterExternal(this.hass)) {
+      return;
+    }
+    this._unsub = redirectOnNewMatterDevice(this.hass, () =>
+      this.closeDialog()
+    );
     addMatterDevice(this.hass);
   }
 
   public closeDialog(): void {
     this._open = false;
-    stopRedirectOnNewMatterDevice();
+    this._unsub?.();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -44,7 +51,9 @@ class DialogMatterAddDevice extends LitElement {
       >
         <div>
           ${!canCommissionMatterExternal(this.hass)
-            ? "Matter commissioning is not supported on this device, use the mobile app to commission Matter devices."
+            ? this.hass.localize(
+                "ui.panel.config.integrations.config_flow.matter_mobile_app"
+              )
             : html`<ha-circular-progress
                 size="large"
                 active

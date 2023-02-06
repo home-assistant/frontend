@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
@@ -12,7 +13,6 @@ import {
   matterSetWifi,
   redirectOnNewMatterDevice,
   startExternalCommissioning,
-  stopRedirectOnNewMatterDevice,
 } from "../../../../../data/matter";
 import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
@@ -27,9 +27,11 @@ export class MatterConfigPanel extends LitElement {
 
   @state() private _error?: string;
 
+  private _unsub?: UnsubscribeFunc;
+
   disconnectedCallback() {
     super.disconnectedCallback();
-    stopRedirectOnNewMatterDevice();
+    this._stopRedirect();
   }
 
   protected render(): TemplateResult {
@@ -82,8 +84,22 @@ export class MatterConfigPanel extends LitElement {
     `;
   }
 
+  private _redirectOnNewMatterDevice() {
+    if (this._unsub) {
+      return;
+    }
+    this._unsub = redirectOnNewMatterDevice(this.hass, () => {
+      this._unsub = undefined;
+    });
+  }
+
+  private _stopRedirect() {
+    this._unsub?.();
+    this._unsub = undefined;
+  }
+
   private _startMobileCommissioning() {
-    redirectOnNewMatterDevice(this.hass);
+    this._redirectOnNewMatterDevice();
     startExternalCommissioning(this.hass);
   }
 
@@ -125,12 +141,12 @@ export class MatterConfigPanel extends LitElement {
       return;
     }
     this._error = undefined;
-    redirectOnNewMatterDevice(this.hass);
+    this._redirectOnNewMatterDevice();
     try {
       await commissionMatterDevice(this.hass, code);
     } catch (err: any) {
       this._error = err.message;
-      stopRedirectOnNewMatterDevice();
+      this._stopRedirect();
     }
   }
 
@@ -145,12 +161,12 @@ export class MatterConfigPanel extends LitElement {
       return;
     }
     this._error = undefined;
-    redirectOnNewMatterDevice(this.hass);
+    this._redirectOnNewMatterDevice();
     try {
       await acceptSharedMatterDevice(this.hass, Number(code));
     } catch (err: any) {
       this._error = err.message;
-      stopRedirectOnNewMatterDevice();
+      this._stopRedirect();
     }
   }
 

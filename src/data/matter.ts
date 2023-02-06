@@ -7,24 +7,18 @@ export const canCommissionMatterExternal = (hass: HomeAssistant) =>
   hass.auth.external?.config.canCommissionMatter;
 
 export const startExternalCommissioning = (hass: HomeAssistant) =>
-  hass.auth.external?.fireMessage({
+  hass.auth.external!.fireMessage({
     type: "matter/commission",
   });
-
-let CUR_MATTER_DEVICES: Set<string> | undefined;
-let UNSUB_DEVICE_REG: UnsubscribeFunc | undefined;
 
 export const redirectOnNewMatterDevice = (
   hass: HomeAssistant,
   callback?: () => void
-) => {
-  if (UNSUB_DEVICE_REG) {
-    // we are already redirecting
-    return;
-  }
-  UNSUB_DEVICE_REG = subscribeDeviceRegistry(hass.connection, (entries) => {
-    if (!CUR_MATTER_DEVICES) {
-      CUR_MATTER_DEVICES = new Set(
+): UnsubscribeFunc => {
+  let curMatterDevices: Set<string> | undefined;
+  const unsubDeviceReg = subscribeDeviceRegistry(hass.connection, (entries) => {
+    if (!curMatterDevices) {
+      curMatterDevices = new Set(
         Object.values(entries)
           .filter((device) =>
             device.identifiers.find((identifier) => identifier[0] === "matter")
@@ -36,22 +30,19 @@ export const redirectOnNewMatterDevice = (
     const newMatterDevices = Object.values(entries).filter(
       (device) =>
         device.identifiers.find((identifier) => identifier[0] === "matter") &&
-        !CUR_MATTER_DEVICES!.has(device.id)
+        !curMatterDevices!.has(device.id)
     );
     if (newMatterDevices.length) {
-      stopRedirectOnNewMatterDevice();
+      unsubDeviceReg();
+      curMatterDevices = undefined;
       callback?.();
       navigate(`/config/devices/device/${newMatterDevices[0].id}`);
     }
   });
-};
-
-export const stopRedirectOnNewMatterDevice = () => {
-  if (UNSUB_DEVICE_REG) {
-    UNSUB_DEVICE_REG();
-    UNSUB_DEVICE_REG = undefined;
-  }
-  CUR_MATTER_DEVICES = undefined;
+  return () => {
+    unsubDeviceReg();
+    curMatterDevices = undefined;
+  };
 };
 
 export const addMatterDevice = (hass: HomeAssistant) => {
