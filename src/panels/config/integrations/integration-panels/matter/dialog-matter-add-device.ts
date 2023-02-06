@@ -35,6 +35,7 @@ class DialogMatterAddDevice extends LitElement {
   public closeDialog(): void {
     this._open = false;
     this._unsub?.();
+    this._unsub = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
