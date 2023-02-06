@@ -60,8 +60,10 @@ export const addMatterDevice = (element: HTMLElement, hass: HomeAssistant) => {
     return;
   }
   redirectOnNewMatterDevice(hass);
-  // stop redirecting after 10 minutes
-  setTimeout(stopRedirectOnNewMatterDevice, 600000);
+  // stop redirecting once we are back from the app flow
+  window.addEventListener("click", stopRedirectOnNewMatterDevice, {
+    once: true,
+  });
   startExternalCommissioning(hass);
 };
 
