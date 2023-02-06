@@ -1,0 +1,50 @@
+name: Deduplicate Dependabot
+
+on:
+  push:
+    branches:
+      - dependabot/npm_and_yarn/*
+
+env:
+  NODE_VERSION: 16
+  NODE_OPTIONS: --max_old_space_size=6144
+
+permissions:
+  contents: write
+
+jobs:
+  dedupe:
+    name: Deduplicate dependencies
+    # Only trigger on initial commit from dependabot
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate app token
+        # Use a GitHub app to checkout and commit in order to re-trigger the CI workflow
+        # (because actions with GITHUB_TOKEN do not trigger new events)
+        id: generate_token
+        uses: tibdex/github-app-token@v1.7.0
+        with:
+          app_id: ${{ secrets.HA_COMMITTER_APP_ID }}
+          private_key: ${{ secrets.HA_COMMITTER_PRIVATE_KEY }}
+      - name: Check out files from GitHub
+        uses: actions/checkout@v3.3.0
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3.6.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - name: Install dependencies
+        # Do not run build scripts as a security measure since job has write permissions
+        run: yarn install --immutable --mode=skip-build
+      - name: Deduplicate dependencies
+        run: yarn dedupe --mode=skip-build
+      - name: Commit changes
+        run: |
+          git config user.name "Home Assistant Committer"
+          git config user.email "hello@home-assistant.io"
+          git add yarn.lock
+          git commit -m "Deduplicate dependencies" || exit 0
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
