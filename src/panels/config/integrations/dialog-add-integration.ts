@@ -521,7 +521,9 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
-      PROTOCOL_INTEGRATIONS.includes(integration.domain) &&
+      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+        integration.domain
+      ) &&
       isComponentLoaded(this.hass, integration.domain)
     ) {
       this._pickedBrand = integration.domain;
