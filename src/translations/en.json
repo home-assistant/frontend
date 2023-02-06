@@ -1702,7 +1702,14 @@
                 "save_button": "Save",
                 "currency": "Currency",
                 "edit_location": "Edit location",
-                "edit_location_description": "Location can be changed in zone settings"
+                "edit_location_description": "Location can be changed in zone settings",
+                "update_units_label": "Update the unit of all sensors",
+                "update_units_text_1": "The unit system has been changed, and the unit of some sensors like distance and speed can be updated.",
+                "update_units_text_2": "The unit of sensors where the unit has been edited from the UI or which can't be edited from the UI will not be updated.",
+                "update_units_text_3": "Note: The unit of temperature sensors is always updated.",
+                "update_units_confirm_title": "The unit of sensors will be updated",
+                "update_units_confirm_text": "The unit system has been changed, and the unit of some sensors like distance and speed will be updated.",
+                "update_units_confirm_update": "Update"
               }
             }
           }
