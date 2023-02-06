@@ -33,6 +33,8 @@ jobs:
           cache: yarn
       - name: Install dependencies
         run: yarn install --immutable
+      - name: Check for duplicate dependencies
+        run: yarn dedupe --check
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Run eslint
@@ -41,8 +43,6 @@ jobs:
         run: yarn run lint:types
       - name: Run prettier
         run: yarn run lint:prettier
-      - name: Check for duplicate dependencies
-        run: yarn dedupe --check
   test:
     name: Run tests
     runs-on: ubuntu-latest
