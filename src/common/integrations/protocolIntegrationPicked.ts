@@ -4,11 +4,14 @@ import { domainToName } from "../../data/integration";
 import { getIntegrationDescriptions } from "../../data/integrations";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { showMatterAddDeviceDialog } from "../../panels/config/integrations/integration-panels/matter/show-dialog-add-matter-device";
 import { showZWaveJSAddNodeDialog } from "../../panels/config/integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { isComponentLoaded } from "../config/is_component_loaded";
 import { navigate } from "../navigate";
+
+export const PROTOCOL_INTEGRATIONS = ["zha", "zwave_js", "matter"] as const;
 
 export const protocolIntegrationPicked = async (
   element: HTMLElement,
@@ -113,5 +116,42 @@ export const protocolIntegrationPicked = async (
     }
 
     navigate("/config/zha/add");
+  } else if (domain === "matter") {
+    const entries = await getConfigEntries(hass, {
+      domain,
+    });
+    if (!isComponentLoaded(hass, domain) || !entries.length) {
+      // If the component isn't loaded, ask them to load the integration first
+      showConfirmationDialog(element, {
+        title: hass.localize(
+          "ui.panel.config.integrations.config_flow.missing_zwave_zigbee_title",
+          { integration: "Matter" }
+        ),
+        text: hass.localize(
+          "ui.panel.config.integrations.config_flow.missing_matter",
+          {
+            brand: options?.brand || options?.domain || "Matter",
+            link: html`<a
+              href=${documentationUrl(hass, "/integrations/matter")}
+              target="_blank"
+              rel="noreferrer"
+              >${hass.localize(
+                "ui.panel.config.integrations.config_flow.supported_hardware"
+              )}</a
+            >`,
+          }
+        ),
+        confirmText: hass.localize(
+          "ui.panel.config.integrations.config_flow.proceed"
+        ),
+        confirm: () => {
+          showConfigFlowDialog(element, {
+            startFlowHandler: "matter",
+          });
+        },
+      });
+      return;
+    }
+    showMatterAddDeviceDialog(element);
   }
 };

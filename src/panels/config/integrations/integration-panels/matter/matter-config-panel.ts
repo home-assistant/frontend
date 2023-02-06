@@ -1,21 +1,23 @@
 import "@material/mwc-button";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import {
   acceptSharedMatterDevice,
+  canCommissionMatterExternal,
   commissionMatterDevice,
   matterSetThread,
   matterSetWifi,
+  redirectOnNewMatterDevice,
+  startExternalCommissioning,
 } from "../../../../../data/matter";
+import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-alert";
-import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { navigate } from "../../../../../common/navigate";
-import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
-import { isDevVersion } from "../../../../../common/config/version";
 
 @customElement("matter-config-panel")
 export class MatterConfigPanel extends LitElement {
@@ -25,10 +27,11 @@ export class MatterConfigPanel extends LitElement {
 
   @state() private _error?: string;
 
-  private _curMatterDevices?: Set<string>;
+  private _unsub?: UnsubscribeFunc;
 
-  private get _canCommissionMatter() {
-    return this.hass.auth.external?.config.canCommissionMatter;
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._stopRedirect();
   }
 
   protected render(): TemplateResult {
@@ -57,19 +60,17 @@ export class MatterConfigPanel extends LitElement {
               share code.
             </div>
             <div class="card-actions">
-              ${this._canCommissionMatter
+              ${canCommissionMatterExternal(this.hass)
                 ? html`<mwc-button @click=${this._startMobileCommissioning}
                     >Commission device with mobile app</mwc-button
                   >`
                 : ""}
-              ${isDevVersion(this.hass.config.version)
-                ? html`<mwc-button @click=${this._commission}
-                      >Commission device</mwc-button
-                    >
-                    <mwc-button @click=${this._acceptSharedDevice}
-                      >Add shared device</mwc-button
-                    >`
-                : ""}
+              <mwc-button @click=${this._commission}
+                >Commission device</mwc-button
+              >
+              <mwc-button @click=${this._acceptSharedDevice}
+                >Add shared device</mwc-button
+              >
               <mwc-button @click=${this._setWifi}
                 >Set WiFi Credentials</mwc-button
               >
@@ -83,33 +84,23 @@ export class MatterConfigPanel extends LitElement {
     `;
   }
 
-  protected override updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-
-    if (!this._curMatterDevices || !changedProps.has("hass")) {
+  private _redirectOnNewMatterDevice() {
+    if (this._unsub) {
       return;
     }
+    this._unsub = redirectOnNewMatterDevice(this.hass, () => {
+      this._unsub = undefined;
+    });
+  }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.devices === this.hass.devices) {
-      return;
-    }
-
-    const newMatterDevices = Object.values(this.hass.devices).filter(
-      (device) =>
-        device.identifiers.find((identifier) => identifier[0] === "matter") &&
-        !this._curMatterDevices!.has(device.id)
-    );
-    if (newMatterDevices.length) {
-      navigate(`/config/devices/device/${newMatterDevices[0].id}`);
-    }
+  private _stopRedirect() {
+    this._unsub?.();
+    this._unsub = undefined;
   }
 
   private _startMobileCommissioning() {
-    this._redirectOnNewDevice();
-    this.hass.auth.external!.fireMessage({
-      type: "matter/commission",
-    });
+    this._redirectOnNewMatterDevice();
+    startExternalCommissioning(this.hass);
   }
 
   private async _setWifi(): Promise<void> {
@@ -150,11 +141,12 @@ export class MatterConfigPanel extends LitElement {
       return;
     }
     this._error = undefined;
-    this._redirectOnNewDevice();
+    this._redirectOnNewMatterDevice();
     try {
       await commissionMatterDevice(this.hass, code);
     } catch (err: any) {
       this._error = err.message;
+      this._stopRedirect();
     }
   }
 
@@ -169,11 +161,12 @@ export class MatterConfigPanel extends LitElement {
       return;
     }
     this._error = undefined;
-    this._redirectOnNewDevice();
+    this._redirectOnNewMatterDevice();
     try {
       await acceptSharedMatterDevice(this.hass, Number(code));
     } catch (err: any) {
       this._error = err.message;
+      this._stopRedirect();
     }
   }
 
@@ -193,19 +186,6 @@ export class MatterConfigPanel extends LitElement {
     } catch (err: any) {
       this._error = err.message;
     }
-  }
-
-  private _redirectOnNewDevice() {
-    if (this._curMatterDevices) {
-      return;
-    }
-    this._curMatterDevices = new Set(
-      Object.values(this.hass.devices)
-        .filter((device) =>
-          device.identifiers.find((identifier) => identifier[0] === "matter")
-        )
-        .map((device) => device.id)
-    );
   }
 
   static styles = [
