@@ -19,7 +19,3 @@ updates:
       - dependency-name: "*rollup*"
       - dependency-name: "@rollup/*"
       - dependency-name: "serve"
-      # Wait for fullcalendar v6+ to fix shadow DOM issue
-      - dependency-name: "@fullcalendar/*"
-        versions:
-          - ">=6"
