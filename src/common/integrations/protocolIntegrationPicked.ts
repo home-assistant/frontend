@@ -130,8 +130,9 @@ export const protocolIntegrationPicked = async (
         text: hass.localize(
           "ui.panel.config.integrations.config_flow.missing_matter",
           {
+            integration: "Matter",
             brand: options?.brand || options?.domain || "Matter",
-            link: html`<a
+            supported_hardware_link: html`<a
               href=${documentationUrl(hass, "/integrations/matter")}
               target="_blank"
               rel="noreferrer"
