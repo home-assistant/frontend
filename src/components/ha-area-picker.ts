@@ -137,7 +137,12 @@ export class HaAreaPicker extends LitElement {
       let inputDevices: DeviceRegistryEntry[] | undefined;
       let inputEntities: EntityRegistryEntry[] | undefined;
 
-      if (includeDomains || excludeDomains || includeDeviceClasses) {
+      if (
+        includeDomains ||
+        excludeDomains ||
+        includeDeviceClasses ||
+        entityFilter
+      ) {
         for (const entity of entities) {
           if (!entity.device_id) {
             continue;
@@ -147,16 +152,9 @@ export class HaAreaPicker extends LitElement {
           }
           deviceEntityLookup[entity.device_id].push(entity);
         }
-        inputDevices = devices;
-        inputEntities = entities.filter((entity) => entity.area_id);
-      } else {
-        if (deviceFilter) {
-          inputDevices = devices;
-        }
-        if (entityFilter) {
-          inputEntities = entities.filter((entity) => entity.area_id);
-        }
       }
+      inputDevices = devices;
+      inputEntities = entities.filter((entity) => entity.area_id);
 
       if (includeDomains) {
         inputDevices = inputDevices!.filter((device) => {
@@ -220,6 +218,19 @@ export class HaAreaPicker extends LitElement {
       }
 
       if (entityFilter) {
+        inputDevices = inputDevices!.filter((device) => {
+          const devEntities = deviceEntityLookup[device.id];
+          if (!devEntities || !devEntities.length) {
+            return false;
+          }
+          return deviceEntityLookup[device.id].some((entity) => {
+            const stateObj = this.hass.states[entity.entity_id];
+            if (!stateObj) {
+              return false;
+            }
+            return entityFilter(stateObj);
+          });
+        });
         inputEntities = inputEntities!.filter((entity) => {
           const stateObj = this.hass.states[entity.entity_id];
           return entityFilter!(stateObj);
