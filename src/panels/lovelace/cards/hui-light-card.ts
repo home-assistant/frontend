@@ -330,11 +330,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       }
 
       .light-button.state-on {
-        color: var(--state-light-color);
+        color: var(--state-light-active-color);
       }
 
       .light-button.state-unavailable {
-        color: var(--state-icon-unavailable-color);
+        color: var(--state-unavailable-color);
       }
 
       #info {
