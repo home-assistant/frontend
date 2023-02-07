@@ -9701,7 +9701,7 @@ fsevents@^1.2.7:
     tsparticles-engine: ^2.8.0
     tsparticles-preset-links: ^2.8.0
     typescript: ^4.9.5
-    unfetch: ^4.1.0
+    unfetch: ^5.0.0
     vinyl-buffer: ^1.0.1
     vinyl-source-stream: ^2.0.0
     vis-data: ^7.1.2
@@ -15830,10 +15830,10 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"unfetch@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "unfetch@npm:4.1.0"
-  checksum: 8a0fee1e0f6ad8b3a2966fa199d07716affc3682d8e1c2c0cc138e5e5d2a2e0627d8c3321a4529a79e8a58332955bf80ac6c018f1dcc6de652026a7c3257d726
+"unfetch@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "unfetch@npm:5.0.0"
+  checksum: 005133bcdc85cefea60890af4ac265799356b69c6a7719c1330484165af7109c06b9eedd3e03d620c14dcc8b43bcf329148f4c1f06016390162f845e0d0a62c5
   languageName: node
   linkType: hard
 
