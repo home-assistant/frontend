@@ -18,6 +18,7 @@ export type Selector =
   | DeviceSelector
   | DurationSelector
   | EntitySelector
+  | LegacyEntitySelector
   | FileSelector
   | IconSelector
   | LocationSelector
@@ -140,19 +141,17 @@ export interface EntitySelector {
     include_entities?: string[];
     exclude_entities?: string[];
     filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
-    /**
-     * @deprecated Backward compatibility, use filter instead
-     */
-    integration?: EntitySelectorFilter["integration"];
-    /**
-     * @deprecated Backward compatibility, use filter instead
-     */
-    domain?: EntitySelectorFilter["domain"];
-    /**
-     * @deprecated Backward compatibility, use filter instead
-     */
-    device_class?: EntitySelectorFilter["device_class"];
   } | null;
+}
+
+export interface LegacyEntitySelector {
+  entity:
+    | (Exclude<EntitySelector["entity"], null> & {
+        integration?: EntitySelectorFilter["integration"];
+        domain?: EntitySelectorFilter["domain"];
+        device_class?: EntitySelectorFilter["device_class"];
+      })
+    | null;
 }
 
 export interface StatisticSelector {
@@ -368,4 +367,32 @@ export const filterSelectorEntities = (
   }
 
   return true;
+};
+
+export const handleLegacyEntitySelector = (
+  selector: LegacyEntitySelector | EntitySelector
+): EntitySelector => {
+  if (!selector.entity) return { entity: null };
+
+  if ("filter" in selector.entity) return selector;
+
+  const { domain, integration, device_class, ...rest } = (
+    selector as LegacyEntitySelector
+  ).entity!;
+
+  if (domain || integration || device_class) {
+    return {
+      entity: {
+        ...rest,
+        filter: {
+          domain,
+          integration,
+          device_class,
+        },
+      },
+    };
+  }
+  return {
+    entity: rest,
+  };
 };

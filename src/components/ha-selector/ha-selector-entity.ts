@@ -65,7 +65,9 @@ export class HaEntitySelector extends LitElement {
     super.updated(changedProps);
     if (
       changedProps.has("selector") &&
-      this.selector.entity?.integration &&
+      ensureArray(this.selector.entity?.filter).some(
+        (filter) => filter.integration
+      ) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -75,18 +77,11 @@ export class HaEntitySelector extends LitElement {
   }
 
   private _filterEntities = (entity: HassEntity): boolean => {
-    if (!this.selector?.entity) {
+    if (!this.selector?.entity?.filter) {
       return true;
     }
-    if (this.selector.entity.filter) {
-      return ensureArray(this.selector.entity.filter).some((filter) =>
-        filterSelectorEntities(filter, entity, this._entitySources)
-      );
-    }
-    return filterSelectorEntities(
-      this.selector.entity,
-      entity,
-      this._entitySources
+    return ensureArray(this.selector.entity.filter).some((filter) =>
+      filterSelectorEntities(filter, entity, this._entitySources)
     );
   };
 }
