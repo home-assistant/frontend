@@ -92,7 +92,7 @@ export const formatNumber = (
  */
 export const getNumberFormatOptions = (
   entityState: HassEntity,
-  entity: EntityRegistryEntry | undefined
+  entity?: EntityRegistryEntry
 ): Intl.NumberFormatOptions | undefined => {
   const display_precision =
     entity?.options?.sensor?.display_precision ??

@@ -32,7 +32,7 @@ function compareEntityState(
   entityId: string
 ) {
   const oldState = oldHass.states[entityId] as HassEntity | undefined;
-  const newState = newHass!.states[entityId] as HassEntity | undefined;
+  const newState = newHass.states[entityId] as HassEntity | undefined;
 
   return oldState !== newState;
 }
@@ -95,8 +95,8 @@ export function hasConfigOrEntitiesChanged(
     }
 
     return (
-      compareEntityState(oldHass, newHass, element._config!.entity) ||
-      compareEntityEntryOptions(oldHass, newHass, element._config!.entity)
+      compareEntityState(oldHass, newHass, entity.entity) ||
+      compareEntityEntryOptions(oldHass, newHass, entity.entity)
     );
   });
 }

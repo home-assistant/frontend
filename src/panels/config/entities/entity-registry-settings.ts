@@ -287,8 +287,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
   }
 
-  private precisionLabel(precision: number, _state?: string) {
-    const value = _state ?? 0;
+  private precisionLabel(precision: number, stateValue?: string) {
+    const value = stateValue ?? 0;
     return formatNumber(value, this.hass.locale, {
       minimumFractionDigits: precision,
       maximumFractionDigits: precision,
@@ -506,7 +506,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._precisionChanged}
                 @closed=${stopPropagation}
               >
-                <mwc-list-item .value=${"default"}
+                <mwc-list-item value="default"
                   >${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.precision_default"
                   )}</mwc-list-item
