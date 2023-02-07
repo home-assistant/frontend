@@ -26,6 +26,8 @@ export class SystemLogCard extends LitElement {
 
   @property() public filter = "";
 
+  @property() public header?: string;
+
   public loaded = false;
 
   @state() private _items?: LoggedError[];
@@ -85,6 +87,7 @@ export class SystemLogCard extends LitElement {
               `
             : html`
                 <div class="header">
+                  <h1 class="card-header">${this.header || "Logs"}</h1>
                   <ha-icon-button
                     .path=${mdiRefresh}
                     @click=${this.fetchData}
@@ -186,8 +189,20 @@ export class SystemLogCard extends LitElement {
 
       .header {
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
         padding: 0 16px;
+      }
+
+      .card-header {
+        color: var(--ha-card-header-color, --primary-text-color);
+        font-family: var(--ha-card-header-font-family, inherit);
+        font-size: var(--ha-card-header-font-size, 24px);
+        letter-spacing: -0.012em;
+        line-height: 48px;
+        display: block;
+        margin-block-start: 0px;
+        margin-block-end: 0px;
+        font-weight: normal;
       }
 
       paper-item {
