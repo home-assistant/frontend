@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-select";
@@ -16,12 +16,15 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceRow } from "./types";
+import type { HaSelect } from "../../../components/ha-select";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EntitiesCardEntityConfig;
+
+  @query("ha-select") private _haSelect!: HaSelect;
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config || !config.entity) {
@@ -33,6 +36,22 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass");
+      if (
+        this.hass &&
+        oldHass &&
+        this._config?.entity &&
+        this.hass.states[this._config.entity].attributes.options !==
+          oldHass.states[this._config.entity].attributes.options
+      ) {
+        this._haSelect.layoutOptions();
+      }
+    }
   }
 
   protected render(): TemplateResult {
@@ -62,7 +81,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
           .label=${this._config.name || computeStateName(stateObj)}
           .value=${stateObj.state}
           .disabled=${
-            stateObj.state === UNAVAILABLE /* UNKNWON state is allowed */
+            stateObj.state === UNAVAILABLE /* UNKNOWN state is allowed */
           }
           naturalMenuWidth
           @selected=${this._selectedChanged}
