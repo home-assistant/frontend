@@ -131,7 +131,7 @@
     "tinykeys": "^1.1.3",
     "tsparticles-engine": "^2.8.0",
     "tsparticles-preset-links": "^2.8.0",
-    "unfetch": "^4.1.0",
+    "unfetch": "^5.0.0",
     "vis-data": "^7.1.2",
     "vis-network": "^8.5.4",
     "vue": "^2.6.12",
