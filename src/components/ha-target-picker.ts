@@ -357,6 +357,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               "ui.components.target-picker.add_device_id"
             )}
             .deviceFilter=${this.deviceFilter}
+            .entityFilter=${this.entityFilter}
             .includeDeviceClasses=${this.includeDeviceClasses}
             .includeDomains=${this.includeDomains}
             .excludeDevices=${ensureArray(this.value?.device_id)}
