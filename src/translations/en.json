@@ -907,7 +907,7 @@
           "unit_of_measurement": "Unit of Measurement",
           "precipitation_unit": "Precipitation unit",
           "precision": "Display precision",
-          "precision_default": "Use default",
+          "precision_default": "Default ({value})",
           "pressure_unit": "Barometric pressure unit",
           "temperature_unit": "Temperature unit",
           "visibility_unit": "Visibility unit",

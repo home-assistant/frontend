@@ -94,11 +94,14 @@ export const getNumberFormatOptions = (
   entityState: HassEntity,
   entity?: EntityRegistryEntry
 ): Intl.NumberFormatOptions | undefined => {
-  const display_precision =
+  const precision =
     entity?.options?.sensor?.display_precision ??
     entity?.options?.sensor?.suggested_display_precision;
-  if (display_precision != null) {
-    return { maximumFractionDigits: display_precision };
+  if (precision != null) {
+    return {
+      maximumFractionDigits: precision,
+      minimumFractionDigits: precision,
+    };
   }
   if (
     Number.isInteger(Number(entityState.attributes?.step)) &&

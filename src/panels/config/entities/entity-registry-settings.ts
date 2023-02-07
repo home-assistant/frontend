@@ -287,7 +287,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
   }
 
-  private precisionLabel(precision: number, stateValue?: string) {
+  private precisionLabel(precision?: number, stateValue?: string) {
     const value = stateValue ?? 0;
     return formatNumber(value, this.hass.locale, {
       minimumFractionDigits: precision,
@@ -330,6 +330,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     const domain = computeDomain(this.entry.entity_id);
 
     const invalidDomainUpdate = computeDomain(this._entityId.trim()) !== domain;
+
+    const defaultPrecision =
+      this.entry.options?.sensor?.suggested_display_precision ?? undefined;
 
     return html`
       ${!stateObj
@@ -508,16 +511,19 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               >
                 <mwc-list-item value="default"
                   >${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.precision_default"
+                    "ui.dialogs.entity_registry.editor.precision_default",
+                    {
+                      value: this.precisionLabel(
+                        defaultPrecision,
+                        stateObj?.state
+                      ),
+                    }
                   )}</mwc-list-item
                 >
                 ${PRECISIONS.map(
                   (precision) => html`
                     <mwc-list-item .value=${precision.toString()}>
-                      ${this.precisionLabel(
-                        precision,
-                        this.hass.states[this.entry.entity_id]?.state
-                      )}
+                      ${this.precisionLabel(precision, stateObj?.state)}
                     </mwc-list-item>
                   `
                 )}
