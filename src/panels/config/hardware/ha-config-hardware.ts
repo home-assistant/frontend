@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiPower } from "@mdi/js";
 import type { ChartOptions } from "chart.js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
@@ -15,6 +15,7 @@ import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
 import {
@@ -32,7 +33,7 @@ import {
 } from "../../../data/hassio/host";
 import { scanUSBDevices } from "../../../data/usb";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { DEFAULT_PRIMARY_COLOR } from "../../../resources/ha-style";
@@ -261,9 +262,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
           ? html`
               <ha-icon-button
                 slot="toolbar-icon"
-                .label=${this.hass.localize("ui.common.menu")}
-                .path=${mdiDotsVertical}
-                @click=${this._openRestartMoveDialog}
+                .path=${mdiPower}
+                .label=${this.hass.localize(
+                  "ui.panel.config.hardware.restart_homeassistant"
+                )}
+                @click=${this._showRestartDialog}
               ></ha-icon-button>
             `
           : ""}
@@ -468,22 +471,8 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     showhardwareAvailableDialog(this);
   }
 
-  private async _openRestartMoveDialog() {
-    showAlertDialog(this, {
-      title: this.hass.localize("ui.panel.config.hardware.reboot_moved_title"),
-      text: html`
-        <p>
-          ${this.hass.localize(
-            "ui.panel.config.hardware.reboot_moved_description"
-          )}
-        </p>
-        <p>
-          <a href=${`/config/system`}>
-            ${this.hass.localize("ui.panel.config.hardware.reboot_moved_link")}
-          </a>
-        </p>
-      `,
-    });
+  private async _showRestartDialog() {
+    showRestartDialog(this);
   }
 
   static styles = [

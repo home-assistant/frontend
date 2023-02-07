@@ -1,3 +1,4 @@
+import { mdiPower } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
@@ -5,6 +6,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-navigation-list";
 import "../../../components/ha-tip";
 import { BackupContent, fetchBackupInfo } from "../../../data/backup";
@@ -118,6 +120,14 @@ class HaConfigSystemNavigation extends LitElement {
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
       >
+        <ha-icon-button
+          slot="toolbar-icon"
+          .path=${mdiPower}
+          .label=${this.hass.localize(
+            "ui.panel.config.system_dashboard.restart_homeassistant"
+          )}
+          @click=${this._showRestartDialog}
+        ></ha-icon-button>
         <ha-config-section
           .narrow=${this.narrow}
           .isWide=${this.isWide}
@@ -134,13 +144,6 @@ class HaConfigSystemNavigation extends LitElement {
               )}
             ></ha-navigation-list>
           </ha-card>
-          <div class="restart-section">
-            <mwc-button @click=${this._showRestartDialog}>
-              ${this.hass.localize(
-                "ui.panel.config.system_dashboard.restart_homeassistant"
-              )}
-            </mwc-button>
-          </div>
         </ha-config-section>
       </hass-subpage>
     `;

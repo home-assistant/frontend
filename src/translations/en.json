@@ -1784,7 +1784,8 @@
           "board": "Board",
           "documentation": "Documentation",
           "configure": "Configure",
-          "documentation_description": "Find extra information about your device"
+          "documentation_description": "Find extra information about your device",
+          "restart_homeassistant": "[%key:ui.panel.config.system_dashboard.restart_homeassistant%]"
         },
         "info": {
           "caption": "About",
