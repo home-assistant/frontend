@@ -44,16 +44,20 @@ export class HaTargetSelector extends LitElement {
 
   private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
 
+  private _hasIntegration(selector: TargetSelector) {
+    return (
+      ensureArray(selector.target?.entity).some(
+        (filter) => filter.integration
+      ) ||
+      ensureArray(selector.target?.device).some((device) => device.integration)
+    );
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (
       changedProperties.has("selector") &&
-      (ensureArray(this.selector.target?.device).some(
-        (device) => device.integration
-      ) ||
-        ensureArray(this.selector.target?.entity).some(
-          (entity) => entity.integration
-        )) &&
+      this._hasIntegration(this.selector) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -63,15 +67,7 @@ export class HaTargetSelector extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (
-      (ensureArray(this.selector.target?.device).some(
-        (device) => device.integration
-      ) ||
-        ensureArray(this.selector.target?.entity).some(
-          (entity) => entity.integration
-        )) &&
-      !this._entitySources
-    ) {
+    if (this._hasIntegration(this.selector) && !this._entitySources) {
       return html``;
     }
 

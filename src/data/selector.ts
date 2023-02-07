@@ -16,6 +16,7 @@ export type Selector =
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
+  | LegacyDeviceSelector
   | DurationSelector
   | EntitySelector
   | LegacyEntitySelector
@@ -108,19 +109,16 @@ export interface DeviceSelector {
     filter?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     multiple?: boolean;
-    /**
-     * @deprecated Backward compatibility, use filter instead
-     */
-    integration?: DeviceSelectorFilter["integration"];
-    /**
-     * @deprecated Backward compatibility, use filter instead
-     */
-    manufacturer?: DeviceSelectorFilter["manufacturer"];
-    /**
-     * @deprecated Backward compatibility, use filter instead
-     */
-    model?: DeviceSelectorFilter["model"];
   } | null;
+}
+
+export interface LegacyDeviceSelector {
+  device:
+    | DeviceSelector["device"] & {
+        integration?: DeviceSelectorFilter["integration"];
+        manufacturer?: DeviceSelectorFilter["manufacturer"];
+        model?: DeviceSelectorFilter["model"];
+      };
 }
 
 export interface DurationSelector {
@@ -146,12 +144,11 @@ export interface EntitySelector {
 
 export interface LegacyEntitySelector {
   entity:
-    | (Exclude<EntitySelector["entity"], null> & {
+    | EntitySelector["entity"] & {
         integration?: EntitySelectorFilter["integration"];
         domain?: EntitySelectorFilter["domain"];
         device_class?: EntitySelectorFilter["device_class"];
-      })
-    | null;
+      };
 }
 
 export interface StatisticSelector {
@@ -394,5 +391,33 @@ export const handleLegacyEntitySelector = (
   }
   return {
     entity: rest,
+  };
+};
+
+export const handleLegacyDeviceSelector = (
+  selector: LegacyDeviceSelector | DeviceSelector
+): DeviceSelector => {
+  if (!selector.device) return { device: null };
+
+  if ("filter" in selector.device) return selector;
+
+  const { integration, manufacturer, model, ...rest } = (
+    selector as LegacyDeviceSelector
+  ).device!;
+
+  if (integration || manufacturer || model) {
+    return {
+      device: {
+        ...rest,
+        filter: {
+          integration,
+          manufacturer,
+          model,
+        },
+      },
+    };
+  }
+  return {
+    device: rest,
   };
 };

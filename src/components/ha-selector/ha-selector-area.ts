@@ -53,15 +53,17 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
     ];
   }
 
+  private _hasIntegration(selector: AreaSelector) {
+    return (
+      ensureArray(selector.area?.entity).some((filter) => filter.integration) ||
+      ensureArray(selector.area?.device).some((device) => device.integration)
+    );
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     if (
       changedProperties.has("selector") &&
-      (ensureArray(this.selector.area?.device).some(
-        (device) => device.integration
-      ) ||
-        ensureArray(this.selector.area?.entity).some(
-          (entity) => entity.integration
-        )) &&
+      this._hasIntegration(this.selector) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -71,15 +73,7 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    if (
-      (ensureArray(this.selector.area?.device).some(
-        (device) => device.integration
-      ) ||
-        ensureArray(this.selector.area?.entity).some(
-          (entity) => entity.integration
-        )) &&
-      !this._entitySources
-    ) {
+    if (this._hasIntegration(this.selector) && !this._entitySources) {
       return html``;
     }
 

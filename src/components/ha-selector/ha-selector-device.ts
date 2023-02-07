@@ -53,11 +53,20 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
     ];
   }
 
+  private _hasIntegration(selector: DeviceSelector) {
+    return (
+      ensureArray(selector.device?.filter).some(
+        (filter) => filter.integration
+      ) ||
+      ensureArray(selector.device?.entity).some((device) => device.integration)
+    );
+  }
+
   protected updated(changedProperties): void {
     super.updated(changedProperties);
     if (
       changedProperties.has("selector") &&
-      this.selector.device?.integration &&
+      this._hasIntegration(this.selector) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -67,7 +76,7 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (this.selector.device?.integration && !this._entitySources) {
+    if (this._hasIntegration(this.selector) && !this._entitySources) {
       return html``;
     }
 
@@ -101,7 +110,7 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
   }
 
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {
-    if (!this.selector.device) {
+    if (!this.selector.device?.filter) {
       return true;
     }
     const deviceIntegrations =
@@ -109,15 +118,8 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
         ? this._deviceIntegrationLookup(this._entitySources, this._entities)
         : undefined;
 
-    if (this.selector.device.filter) {
-      return ensureArray(this.selector.device.filter).some((filter) =>
-        filterSelectorDevices(filter, device, deviceIntegrations)
-      );
-    }
-    return filterSelectorDevices(
-      this.selector.device,
-      device,
-      deviceIntegrations
+    return ensureArray(this.selector.device.filter).some((filter) =>
+      filterSelectorDevices(filter, device, deviceIntegrations)
     );
   };
 

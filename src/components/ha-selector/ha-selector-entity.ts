@@ -30,7 +30,17 @@ export class HaEntitySelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  private _hasIntegration(selector: EntitySelector) {
+    return ensureArray(selector.entity?.filter).some(
+      (filter) => filter.integration
+    );
+  }
+
   protected render() {
+    if (this._hasIntegration(this.selector) && !this._entitySources) {
+      return html``;
+    }
+
     if (!this.selector.entity?.multiple) {
       return html`<ha-entity-picker
         .hass=${this.hass}
@@ -65,9 +75,7 @@ export class HaEntitySelector extends LitElement {
     super.updated(changedProps);
     if (
       changedProps.has("selector") &&
-      ensureArray(this.selector.entity?.filter).some(
-        (filter) => filter.integration
-      ) &&
+      this._hasIntegration(this.selector) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {

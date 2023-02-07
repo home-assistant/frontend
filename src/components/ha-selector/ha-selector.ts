@@ -2,7 +2,11 @@ import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import { Selector, handleLegacyEntitySelector } from "../../data/selector";
+import {
+  Selector,
+  handleLegacyEntitySelector,
+  handleLegacyDeviceSelector,
+} from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 
 const LOAD_ELEMENTS = {
@@ -79,6 +83,9 @@ export class HaSelector extends LitElement {
   private _handleLegacySelector = memoizeOne((selector: Selector) => {
     if ("entity" in selector) {
       return handleLegacyEntitySelector(selector);
+    }
+    if ("device" in selector) {
+      return handleLegacyDeviceSelector(selector);
     }
     return selector;
   });
