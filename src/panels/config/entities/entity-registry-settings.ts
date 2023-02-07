@@ -204,6 +204,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         this._helperConfigEntry = entries.find(
           (ent) => ent.entry_id === this.entry.config_entry_id
         );
+        if (this._helperConfigEntry?.domain === "switch_as_x") {
+          this._switchAs = computeDomain(this.entry.entity_id);
+        }
       });
     }
   }
@@ -552,7 +555,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               </ha-select>
             `
           : ""}
-        ${domain === "switch"
+        ${domain === "switch" ||
+        this._helperConfigEntry?.domain === "switch_as_x"
           ? html`<ha-select
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.device_class"
@@ -562,37 +566,56 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               @selected=${this._switchAsChanged}
               @closed=${stopPropagation}
             >
-              <mwc-list-item
-                value="switch"
-                .selected=${!this._deviceClass ||
-                this._deviceClass === "switch"}
-              >
-                ${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.device_classes.switch.switch"
-                )}
-              </mwc-list-item>
-              <mwc-list-item
-                value="outlet"
-                .selected=${this._deviceClass === "outlet"}
-              >
-                ${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
-                )}
-              </mwc-list-item>
-              <li divider role="separator"></li>
-              ${this._switchAsDomainsSorted(
-                SWITCH_AS_DOMAINS,
-                this.hass.localize
-              ).map(
-                (entry) => html`
-                  <mwc-list-item .value=${entry.domain}>
-                    ${entry.label}
-                  </mwc-list-item>
-                `
-              )}
+              ${domain === "switch"
+                ? html`<mwc-list-item
+                      value="switch"
+                      .selected=${!this._deviceClass ||
+                      this._deviceClass === "switch"}
+                    >
+                      ${this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.device_classes.switch.switch"
+                      )}
+                    </mwc-list-item>
+                    <mwc-list-item
+                      value="outlet"
+                      .selected=${this._deviceClass === "outlet"}
+                    >
+                      ${this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
+                      )}
+                    </mwc-list-item>
+                    <li divider role="separator"></li>
+                    ${this._switchAsDomainsSorted(
+                      SWITCH_AS_DOMAINS,
+                      this.hass.localize
+                    ).map(
+                      (entry) => html`
+                        <mwc-list-item
+                          .value=${entry.domain}
+                          .selected=${this._switchAs === entry.domain}
+                        >
+                          ${entry.label}
+                        </mwc-list-item>
+                      `
+                    )}`
+                : html`<mwc-list-item
+                      value="switch"
+                      .selected=${this._switchAs === "switch"}
+                      >${domainToName(
+                        this.hass.localize,
+                        "switch"
+                      )}</mwc-list-item
+                    ><mwc-list-item
+                      value="switch"
+                      .selected=${this._switchAs === domain}
+                      >${domainToName(
+                        this.hass.localize,
+                        domain
+                      )}</mwc-list-item
+                    >`}
             </ha-select>`
           : ""}
-        ${this._helperConfigEntry
+        ${this._helperConfigEntry && this._helperConfigEntry.supports_options
           ? html`
               <div class="row">
                 <mwc-button
@@ -849,7 +872,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           class="warning"
           @click=${this._confirmDeleteEntry}
           .disabled=${this._submitting ||
-          (!this._helperConfigEntry && !stateObj?.attributes.restored)}
+          ((!this._helperConfigEntry ||
+            this._helperConfigEntry.domain === "switch_as_x") &&
+            !stateObj?.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </mwc-button>
@@ -923,7 +948,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     const switchAs = ev.target.value === "outlet" ? "switch" : ev.target.value;
     this._switchAs = switchAs;
 
-    if (ev.target.value === "outlet" || ev.target.value === "switch") {
+    if (
+      computeDomain(this.entry.entity_id) === "switch" &&
+      (ev.target.value === "outlet" || ev.target.value === "switch")
+    ) {
       this._deviceClass = ev.target.value;
     }
   }
@@ -1136,24 +1164,41 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       this._submitting = false;
     }
 
-    if (this._switchAs !== "switch") {
+    if (this._switchAs !== computeDomain(this._entityId)) {
       if (
         !(await showConfirmationDialog(this, {
           text: this.hass!.localize(
-            "ui.dialogs.entity_registry.editor.switch_as_x_confirm",
+            `ui.dialogs.entity_registry.editor.${
+              this._helperConfigEntry?.domain === "switch_as_x"
+                ? "switch_as_x_remove_confirm"
+                : "switch_as_x_confirm"
+            }`,
             "domain",
-            this._switchAs
+            domainToName(
+              this.hass.localize,
+              this._helperConfigEntry?.domain === "switch_as_x"
+                ? domain
+                : this._switchAs
+            ).toLowerCase()
           ),
         }))
       ) {
         return;
+      }
+      const entityId = this._entityId.trim();
+      if (this._helperConfigEntry?.domain === "switch_as_x") {
+        // remove current helper
+        await deleteConfigEntry(this.hass, this._helperConfigEntry.entry_id);
+        if (this._switchAs === "switch") {
+          return;
+        }
       }
       const configFlow = await createConfigFlow(this.hass, "switch_as_x");
       const result = (await handleConfigFlowStep(
         this.hass,
         configFlow.flow_id,
         {
-          entity_id: this._entityId.trim(),
+          entity_id: entityId,
           target_domain: this._switchAs,
         }
       )) as DataEntryFlowStepCreateEntry;
@@ -1210,9 +1255,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private _switchAsDomainsSorted = memoizeOne(
     (domains: string[], localize: LocalizeFunc) =>
       domains
-        .map((entry) => ({
-          domain: entry,
-          label: domainToName(localize, entry),
+        .map((domain) => ({
+          domain,
+          label: domainToName(localize, domain),
         }))
         .sort((a, b) =>
           stringCompare(a.label, b.label, this.hass.locale.language)
