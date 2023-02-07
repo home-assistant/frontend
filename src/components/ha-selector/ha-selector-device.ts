@@ -92,6 +92,7 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
           .label=${this.label}
           .helper=${this.helper}
           .deviceFilter=${this._filterDevices}
+          .entityFilter=${this._filterEntities}
           .disabled=${this.disabled}
           .required=${this.required}
           allow-custom-entity
