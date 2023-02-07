@@ -1,3 +1,4 @@
+import { mdiRefresh } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -83,6 +84,13 @@ export class SystemLogCard extends LitElement {
                 </div>
               `
             : html`
+                <div class="header">
+                  <ha-icon-button
+                    .path=${mdiRefresh}
+                    @click=${this.fetchData}
+                    .label=${this.hass.localize("ui.common.refresh")}
+                  ></ha-icon-button>
+                </div>
                 ${this._items.length === 0
                   ? html`
                       <div class="card-content empty-content">
@@ -139,11 +147,6 @@ export class SystemLogCard extends LitElement {
                       "ui.panel.config.logs.clear"
                     )}</ha-call-service-button
                   >
-                  <ha-progress-button @click=${this.fetchData}
-                    >${this.hass.localize(
-                      "ui.panel.config.logs.refresh"
-                    )}</ha-progress-button
-                  >
                 </div>
               `}
         </ha-card>
@@ -179,6 +182,12 @@ export class SystemLogCard extends LitElement {
     return css`
       ha-card {
         padding-top: 16px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 16px;
       }
 
       paper-item {

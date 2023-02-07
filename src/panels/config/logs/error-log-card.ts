@@ -56,9 +56,6 @@ class ErrorLogCard extends LitElement {
           ? html`
               <ha-card outlined>
                 <div class="header">
-                  <h2>
-                    ${this.hass.localize("ui.panel.config.logs.show_full_logs")}
-                  </h2>
                   <div>
                     <ha-icon-button
                       .path=${mdiRefresh}
@@ -225,10 +222,14 @@ class ErrorLogCard extends LitElement {
       margin: 16px;
     }
 
+    ha-card {
+      padding-top: 16px;
+    }
+
     .header {
       display: flex;
-      justify-content: space-between;
-      padding: 16px;
+      justify-content: flex-end;
+      padding: 0 16px;
     }
 
     ha-select {
