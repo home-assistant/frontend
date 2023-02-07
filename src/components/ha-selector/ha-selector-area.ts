@@ -55,8 +55,12 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
 
   private _hasIntegration(selector: AreaSelector) {
     return (
-      ensureArray(selector.area?.entity).some((filter) => filter.integration) ||
-      ensureArray(selector.area?.device).some((device) => device.integration)
+      (selector.area?.entity &&
+        ensureArray(selector.area.entity).some(
+          (filter) => filter.integration
+        )) ||
+      (selector.area?.device &&
+        ensureArray(selector.area.device).some((device) => device.integration))
     );
   }
 

@@ -31,8 +31,9 @@ export class HaEntitySelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   private _hasIntegration(selector: EntitySelector) {
-    return ensureArray(selector.entity?.filter).some(
-      (filter) => filter.integration
+    return (
+      selector.entity?.filter &&
+      ensureArray(selector.entity.filter).some((filter) => filter.integration)
     );
   }
 

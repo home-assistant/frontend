@@ -55,10 +55,14 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
 
   private _hasIntegration(selector: DeviceSelector) {
     return (
-      ensureArray(selector.device?.filter).some(
-        (filter) => filter.integration
-      ) ||
-      ensureArray(selector.device?.entity).some((device) => device.integration)
+      (selector.device?.filter &&
+        ensureArray(selector.device.filter).some(
+          (filter) => filter.integration
+        )) ||
+      (selector.device?.entity &&
+        ensureArray(selector.device.entity).some(
+          (device) => device.integration
+        ))
     );
   }
 

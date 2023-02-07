@@ -46,10 +46,14 @@ export class HaTargetSelector extends LitElement {
 
   private _hasIntegration(selector: TargetSelector) {
     return (
-      ensureArray(selector.target?.entity).some(
-        (filter) => filter.integration
-      ) ||
-      ensureArray(selector.target?.device).some((device) => device.integration)
+      (selector.target?.entity &&
+        ensureArray(selector.target.entity).some(
+          (filter) => filter.integration
+        )) ||
+      (selector.target?.device &&
+        ensureArray(selector.target.device).some(
+          (device) => device.integration
+        ))
     );
   }
 
