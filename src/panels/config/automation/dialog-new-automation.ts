@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import {
   mdiAccount,
@@ -14,8 +13,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
-import "../../../components/ha-blueprint-picker";
-import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
@@ -125,7 +122,6 @@ class DialogNewAutomation extends LitElement implements HassDialog {
             <ha-icon-next slot="meta"></ha-icon-next>
           </ha-list-item>
           <li divider role="separator"></li>
-          ${processedBlueprints.length > 0 ? html`` : null}
           ${processedBlueprints.map(
             (blueprint) => html`
               <ha-list-item
