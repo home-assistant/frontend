@@ -18,7 +18,7 @@ import "../lovelace/components/hui-energy-period-selector";
 import { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 
-const LOVELACE_CONFIG: LovelaceConfig = {
+export const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
     {
       strategy: {
@@ -93,8 +93,8 @@ class PanelEnergy extends LitElement {
 
   private _setLovelace() {
     this._lovelace = {
-      config: LOVELACE_CONFIG,
-      rawConfig: LOVELACE_CONFIG,
+      config: ENERGY_LOVELACE_CONFIG,
+      rawConfig: ENERGY_LOVELACE_CONFIG,
       editMode: false,
       urlPath: "energy",
       mode: "generated",
