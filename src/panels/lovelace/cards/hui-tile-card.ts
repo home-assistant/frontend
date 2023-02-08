@@ -16,7 +16,6 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateActive } from "../../../common/entity/state_active";
@@ -263,27 +262,29 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const entityId = this._config.entity;
     const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
-    const tileClasses = { vertical: Boolean(this._config.vertical) };
+    const contentClasses = { vertical: Boolean(this._config.vertical) };
 
     if (!stateObj) {
       return html`
-        <ha-card class="disabled">
-          <div class="tile ${classMap(tileClasses)}">
-            <div class="icon-container">
-              <ha-tile-icon class="icon" .iconPath=${mdiHelp}></ha-tile-icon>
-              <ha-tile-badge
-                class="badge"
-                .iconPath=${mdiExclamationThick}
-                style=${styleMap({
-                  "--tile-badge-background-color": `var(--red-color)`,
-                })}
-              ></ha-tile-badge>
+        <ha-card>
+          <div class="tile">
+            <div class="content ${classMap(contentClasses)}">
+              <div class="icon-container">
+                <ha-tile-icon class="icon" .iconPath=${mdiHelp}></ha-tile-icon>
+                <ha-tile-badge
+                  class="badge"
+                  .iconPath=${mdiExclamationThick}
+                  style=${styleMap({
+                    "--tile-badge-background-color": `var(--red-color)`,
+                  })}
+                ></ha-tile-badge>
+              </div>
+              <ha-tile-info
+                class="info"
+                .primary=${entityId}
+                secondary=${this.hass.localize("ui.card.tile.not_found")}
+              ></ha-tile-info>
             </div>
-            <ha-tile-info
-              class="info"
-              .primary=${entityId}
-              secondary=${this.hass.localize("ui.card.tile.not_found")}
-            ></ha-tile-info>
           </div>
         </ha-card>
       `;
@@ -315,66 +316,62 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : null}
-        <div
-          class="tile ${classMap(tileClasses)}"
-          @action=${this._handleAction}
-          .actionHandler=${actionHandler()}
-          role="button"
-          tabindex="0"
-          @mousedown=${this.handleRippleActivate}
-          @mouseup=${this.handleRippleDeactivate}
-          @mouseenter=${this.handleRippleMouseEnter}
-          @mouseleave=${this.handleRippleMouseLeave}
-          @touchstart=${this.handleRippleActivate}
-          @touchend=${this.handleRippleDeactivate}
-          @touchcancel=${this.handleRippleDeactivate}
-        >
+        <div class="tile">
           <div
-            class="icon-container"
+            class="background"
+            @action=${this._handleAction}
+            .actionHandler=${actionHandler()}
             role="button"
             tabindex="0"
-            @action=${this._handleIconAction}
-            .actionHandler=${actionHandler()}
-            @mousedown=${stopPropagation}
-            @mouseup=${stopPropagation}
-            @mouseenter=${stopPropagation}
-            @mouseleave=${stopPropagation}
-            @touchstart=${stopPropagation}
-            @touchend=${stopPropagation}
-            @touchcancel=${stopPropagation}
-          >
-            ${imageUrl
-              ? html`
-                  <ha-tile-image
-                    class="icon"
-                    .imageUrl=${imageUrl}
-                  ></ha-tile-image>
-                `
-              : html`
-                  <ha-tile-icon
-                    class="icon"
-                    .icon=${icon}
-                    .iconPath=${iconPath}
-                  ></ha-tile-icon>
-                `}
-            ${badge
-              ? html`
-                  <ha-tile-badge
-                    class="badge"
-                    .icon=${badge.icon}
-                    .iconPath=${badge.iconPath}
-                    style=${styleMap({
-                      "--tile-badge-background-color": badge.color,
-                    })}
-                  ></ha-tile-badge>
-                `
-              : null}
+            @mousedown=${this.handleRippleActivate}
+            @mouseup=${this.handleRippleDeactivate}
+            @mouseenter=${this.handleRippleMouseEnter}
+            @mouseleave=${this.handleRippleMouseLeave}
+            @touchstart=${this.handleRippleActivate}
+            @touchend=${this.handleRippleDeactivate}
+            @touchcancel=${this.handleRippleDeactivate}
+          ></div>
+          <div class="content ${classMap(contentClasses)}">
+            <div
+              class="icon-container"
+              role="button"
+              tabindex="0"
+              @action=${this._handleIconAction}
+              .actionHandler=${actionHandler()}
+            >
+              ${imageUrl
+                ? html`
+                    <ha-tile-image
+                      class="icon"
+                      .imageUrl=${imageUrl}
+                    ></ha-tile-image>
+                  `
+                : html`
+                    <ha-tile-icon
+                      class="icon"
+                      .icon=${icon}
+                      .iconPath=${iconPath}
+                    ></ha-tile-icon>
+                  `}
+              ${badge
+                ? html`
+                    <ha-tile-badge
+                      class="badge"
+                      .icon=${badge.icon}
+                      .iconPath=${badge.iconPath}
+                      style=${styleMap({
+                        "--tile-badge-background-color": badge.color,
+                      })}
+                    ></ha-tile-badge>
+                  `
+                : null}
+            </div>
+            <ha-tile-info
+              class="info"
+              .primary=${name}
+              .secondary=${stateDisplay}
+            ></ha-tile-info>
           </div>
-          <ha-tile-info
-            class="info"
-            .primary=${name}
-            .secondary=${stateDisplay}
-          ></ha-tile-info>
         </div>
         ${supportedFeatures?.length
           ? html`
@@ -424,16 +421,15 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         --tile-color: var(--state-inactive-color);
         -webkit-tap-highlight-color: transparent;
       }
-      ha-card:has(.tile:focus-visible) {
+      ha-card:has(.background:focus-visible) {
         border-color: var(--tile-color);
         box-shadow: 0 0 0 1px var(--tile-color);
       }
       ha-card {
         --mdc-ripple-color: var(--tile-color);
         height: 100%;
-        overflow: hidden;
-        // For safari overflow hidden
         z-index: 0;
+        overflow: hidden;
       }
       ha-card.active {
         --tile-color: var(--state-icon-color);
@@ -444,7 +440,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       [role="button"]:focus {
         outline: none;
       }
-      .tile {
+      .background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+      }
+      .content {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -473,6 +476,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       .icon-container .icon {
         --tile-icon-color: var(--tile-color);
+        user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
       }
       .icon-container .badge {
         position: absolute;
@@ -488,9 +495,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         padding: 12px;
         flex: 1;
         min-width: 0;
-        min-height: 40px;
         transition: background-color 180ms ease-in-out;
         box-sizing: border-box;
+        pointer-events: none;
       }
     `;
   }
