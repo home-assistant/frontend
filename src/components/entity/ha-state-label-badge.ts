@@ -186,7 +186,7 @@ export class HaStateLabelBadge extends LitElement {
           ? formatNumber(
               entityState.state,
               this.hass!.locale,
-              getNumberFormatOptions(entityState)
+              getNumberFormatOptions(entityState, entry)
             )
           : computeStateDisplay(
               this.hass!.localize,
