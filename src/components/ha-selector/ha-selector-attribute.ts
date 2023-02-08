@@ -23,15 +23,21 @@ export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public required = true;
 
   @property({ attribute: false }) public context?: {
-    filter_entity?: string;
+    filter_entity?: string | string[];
   };
+
+  get _filterEntity(): string | undefined {
+    if (!this.context?.filter_entity) return undefined;
+    return Array.isArray(this.context.filter_entity)
+      ? this.context.filter_entity[0]
+      : this.context.filter_entity;
+  }
 
   protected render() {
     return html`
       <ha-entity-attribute-picker
         .hass=${this.hass}
-        .entityId=${this.selector.attribute?.entity_id ||
-        this.context?.filter_entity}
+        .entityId=${this.selector.attribute?.entity_id || this._filterEntity}
         .hideAttributes=${this.selector.attribute?.hide_attributes}
         .value=${this.value}
         .label=${this.label}
@@ -67,8 +73,8 @@ export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
 
     // Validate that that the attribute is still valid for this entity, else unselect.
     let invalid = false;
-    if (this.context.filter_entity) {
-      const stateObj = this.hass.states[this.context.filter_entity];
+    if (this._filterEntity) {
+      const stateObj = this.hass.states[this._filterEntity];
 
       if (!(stateObj && this.value in stateObj.attributes)) {
         invalid = true;

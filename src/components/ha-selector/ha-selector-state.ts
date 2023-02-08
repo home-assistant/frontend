@@ -23,15 +23,21 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
 
   @property() public context?: {
     filter_attribute?: string;
-    filter_entity?: string;
+    filter_entity?: string | string[];
   };
+
+  get _filterEntity(): string | undefined {
+    if (!this.context?.filter_entity) return undefined;
+    return Array.isArray(this.context.filter_entity)
+      ? this.context.filter_entity[0]
+      : this.context.filter_entity;
+  }
 
   protected render() {
     return html`
       <ha-entity-state-picker
         .hass=${this.hass}
-        .entityId=${this.selector.state?.entity_id ||
-        this.context?.filter_entity}
+        .entityId=${this.selector.state?.entity_id || this._filterEntity}
         .attribute=${this.selector.state?.attribute ||
         this.context?.filter_attribute}
         .value=${this.value}

@@ -10,7 +10,6 @@ import {
   string,
   union,
 } from "superstruct";
-import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
@@ -35,6 +34,71 @@ const stateTriggerStruct = assign(
   })
 );
 
+const SCHEMA = [
+  {
+    name: "entity_id",
+    required: true,
+    selector: { entity: { multiple: true } },
+  },
+  {
+    name: "attribute",
+    selector: {
+      attribute: {
+        hide_attributes: [
+          "access_token",
+          "available_modes",
+          "color_modes",
+          "device_class",
+          "editable",
+          "effect_list",
+          "entity_picture",
+          "fan_modes",
+          "fan_speed_list",
+          "friendly_name",
+          "has_date",
+          "has_time",
+          "hvac_modes",
+          "icon",
+          "operation_list",
+          "options",
+          "preset_modes",
+          "sound_mode_list",
+          "source_list",
+          "state_class",
+          "supported_features",
+          "swing_modes",
+          "token",
+          "unit_of_measurement",
+        ],
+      },
+    },
+    context: {
+      filter_entity: "entity_id",
+    },
+  },
+  {
+    name: "from",
+    selector: {
+      state: {},
+    },
+    context: {
+      filter_entity: "entity_id",
+      filter_attribute: "attribute",
+    },
+  },
+  {
+    name: "to",
+    selector: {
+      state: {},
+    },
+    context: {
+      filter_entity: "entity_id",
+      filter_attribute: "attribute",
+    },
+  },
+  { name: "for", selector: { duration: {} } },
+] as const;
+
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -46,70 +110,6 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   public static get defaultConfig() {
     return { entity_id: [] };
   }
-
-  private _schema = memoizeOne(
-    (entityId, attribute) =>
-      [
-        {
-          name: "entity_id",
-          required: true,
-          selector: { entity: { multiple: true } },
-        },
-        {
-          name: "attribute",
-          selector: {
-            attribute: {
-              entity_id: entityId ? entityId[0] : undefined,
-              hide_attributes: [
-                "access_token",
-                "available_modes",
-                "color_modes",
-                "device_class",
-                "editable",
-                "effect_list",
-                "entity_picture",
-                "fan_modes",
-                "fan_speed_list",
-                "friendly_name",
-                "has_date",
-                "has_time",
-                "hvac_modes",
-                "icon",
-                "operation_list",
-                "options",
-                "preset_modes",
-                "sound_mode_list",
-                "source_list",
-                "state_class",
-                "supported_features",
-                "swing_modes",
-                "token",
-                "unit_of_measurement",
-              ],
-            },
-          },
-        },
-        {
-          name: "from",
-          selector: {
-            state: {
-              entity_id: entityId ? entityId[0] : undefined,
-              attribute: attribute,
-            },
-          },
-        },
-        {
-          name: "to",
-          selector: {
-            state: {
-              entity_id: entityId ? entityId[0] : undefined,
-              attribute: attribute,
-            },
-          },
-        },
-        { name: "for", selector: { duration: {} } },
-      ] as const
-  );
 
   public shouldUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("trigger")) {
@@ -148,13 +148,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
     };
-    const schema = this._schema(this.trigger.entity_id, this.trigger.attribute);
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${schema}
+        .schema=${SCHEMA}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
         .disabled=${this.disabled}
@@ -176,7 +175,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
+    schema: SchemaUnion<typeof SCHEMA>
   ): string =>
     this.hass.localize(
       schema.name === "entity_id"
