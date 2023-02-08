@@ -38,7 +38,7 @@
     "@formatjs/intl-numberformat": "^8.3.3",
     "@formatjs/intl-pluralrules": "^5.1.8",
     "@formatjs/intl-relativetimeformat": "^11.1.8",
-    "@fullcalendar/core": "^6.1.1",
+    "@fullcalendar/core": "^6.1.4",
     "@fullcalendar/daygrid": "^6.1.1",
     "@fullcalendar/interaction": "^6.1.1",
     "@fullcalendar/list": "^6.1.1",

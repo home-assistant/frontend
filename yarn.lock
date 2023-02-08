@@ -1586,12 +1586,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/core@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "@fullcalendar/core@npm:6.1.1"
+"@fullcalendar/core@npm:^6.1.4":
+  version: 6.1.4
+  resolution: "@fullcalendar/core@npm:6.1.4"
   dependencies:
     preact: ^10.0.5
-  checksum: 4fc30de34c1c03196f7a80904d4e8f307c66afe52a65e7a257137f1a639c29efc69d15a58d381a2481753b51f4bc101fb00584606cfb006226a01843efa743c5
+  checksum: 3c659bbaf814a1f084ddd3e2eeaf68bb48f268a36560abb399c4aa29a40d6017c5bb1cd87c43664f333a1f6682c32b6a85ffb661538ea0faa78a1c119760a381
   languageName: node
   linkType: hard
 
@@ -9600,7 +9600,7 @@ fsevents@^1.2.7:
     "@formatjs/intl-numberformat": ^8.3.3
     "@formatjs/intl-pluralrules": ^5.1.8
     "@formatjs/intl-relativetimeformat": ^11.1.8
-    "@fullcalendar/core": ^6.1.1
+    "@fullcalendar/core": ^6.1.4
     "@fullcalendar/daygrid": ^6.1.1
     "@fullcalendar/interaction": ^6.1.1
     "@fullcalendar/list": ^6.1.1
