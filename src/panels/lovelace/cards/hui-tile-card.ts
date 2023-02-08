@@ -492,10 +492,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       .info {
         position: relative;
-        padding: 10px;
+        padding: 12px;
         flex: 1;
         min-width: 0;
-        min-height: 60px;
         transition: background-color 180ms ease-in-out;
         box-sizing: border-box;
         pointer-events: none;

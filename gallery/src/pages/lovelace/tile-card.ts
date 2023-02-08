@@ -28,7 +28,9 @@ const ENTITIES = [
     friendly_name: "Thermostat",
     hvac_action: "heating",
   }),
-  getEntity("person", "paulus", "home"),
+  getEntity("person", "paulus", "home", {
+    friendly_name: "Paulus",
+  }),
   getEntity("vacuum", "first_floor_vacuum", "docked", {
     friendly_name: "First floor vacuum",
     supported_features:
