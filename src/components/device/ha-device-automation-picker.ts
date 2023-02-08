@@ -75,7 +75,7 @@ export abstract class HaDeviceAutomationPicker<
     }
 
     const idx = this._automations.findIndex((automation) =>
-      deviceAutomationsEqual(automation, this.value!)
+      deviceAutomationsEqual(this.hass, automation, this.value!)
     );
 
     if (idx === -1) {
@@ -161,7 +161,10 @@ export abstract class HaDeviceAutomationPicker<
   }
 
   private _setValue(automation: T) {
-    if (this.value && deviceAutomationsEqual(automation, this.value)) {
+    if (
+      this.value &&
+      deviceAutomationsEqual(this.hass, automation, this.value)
+    ) {
       return;
     }
     const value = { ...automation };

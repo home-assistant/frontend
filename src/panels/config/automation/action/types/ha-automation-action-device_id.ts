@@ -98,7 +98,10 @@ export class HaDeviceAction extends LitElement {
 
   protected updated(changedPros) {
     const prevAction = changedPros.get("action");
-    if (prevAction && !deviceAutomationsEqual(prevAction, this.action)) {
+    if (
+      prevAction &&
+      !deviceAutomationsEqual(this.hass, prevAction, this.action)
+    ) {
       this._deviceId = undefined;
       this._getCapabilities();
     }
@@ -123,7 +126,10 @@ export class HaDeviceAction extends LitElement {
   private _deviceActionPicked(ev) {
     ev.stopPropagation();
     let action = ev.detail.value;
-    if (this._origAction && deviceAutomationsEqual(this._origAction, action)) {
+    if (
+      this._origAction &&
+      deviceAutomationsEqual(this.hass, this._origAction, action)
+    ) {
       action = this._origAction;
     }
     fireEvent(this, "value-changed", { value: action });

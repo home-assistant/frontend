@@ -96,12 +96,15 @@ export class HaDeviceTrigger extends LitElement {
     }
   }
 
-  protected updated(changedPros) {
-    if (!changedPros.has("trigger")) {
+  protected updated(changedProps) {
+    if (!changedProps.has("trigger")) {
       return;
     }
-    const prevTrigger = changedPros.get("trigger");
-    if (prevTrigger && !deviceAutomationsEqual(prevTrigger, this.trigger)) {
+    const prevTrigger = changedProps.get("trigger");
+    if (
+      prevTrigger &&
+      !deviceAutomationsEqual(this.hass, prevTrigger, this.trigger)
+    ) {
       this._getCapabilities();
     }
   }
@@ -129,7 +132,7 @@ export class HaDeviceTrigger extends LitElement {
     let trigger = ev.detail.value;
     if (
       this._origTrigger &&
-      deviceAutomationsEqual(this._origTrigger, trigger)
+      deviceAutomationsEqual(this.hass, this._origTrigger, trigger)
     ) {
       trigger = this._origTrigger;
     }

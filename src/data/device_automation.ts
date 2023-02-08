@@ -93,6 +93,7 @@ const deviceAutomationIdentifiers = [
 ];
 
 export const deviceAutomationsEqual = (
+  hass: HomeAssistant,
   a: DeviceAutomation,
   b: DeviceAutomation
 ) => {
@@ -104,6 +105,16 @@ export const deviceAutomationsEqual = (
     if (!deviceAutomationIdentifiers.includes(property)) {
       continue;
     }
+    if (
+      property === "entity_id" &&
+      a[property]?.includes(".") !== b[property]?.includes(".")
+    ) {
+      // both entity_id and entity_reg_id could be used, we should compare the entity_reg_id
+      if (!compareEntityIdWithEntityRegId(hass, a[property], b[property])) {
+        return false;
+      }
+      continue;
+    }
     if (!Object.is(a[property], b[property])) {
       return false;
     }
@@ -112,12 +123,39 @@ export const deviceAutomationsEqual = (
     if (!deviceAutomationIdentifiers.includes(property)) {
       continue;
     }
+    if (
+      property === "entity_id" &&
+      a[property]?.includes(".") !== b[property]?.includes(".")
+    ) {
+      // both entity_id and entity_reg_id could be used, we should compare the entity_reg_id
+      if (!compareEntityIdWithEntityRegId(hass, a[property], b[property])) {
+        return false;
+      }
+      continue;
+    }
     if (!Object.is(a[property], b[property])) {
       return false;
     }
   }
 
   return true;
+};
+
+const compareEntityIdWithEntityRegId = (
+  hass: HomeAssistant,
+  entityIdA?: string,
+  entityIdB?: string
+) => {
+  if (!entityIdA || !entityIdB) {
+    return false;
+  }
+  if (entityIdA.includes(".")) {
+    entityIdA = hass.entities[entityIdA]?.id;
+  }
+  if (entityIdB.includes(".")) {
+    entityIdB = hass.entities[entityIdB]?.id;
+  }
+  return entityIdA === entityIdB;
 };
 
 const getEntityName = (

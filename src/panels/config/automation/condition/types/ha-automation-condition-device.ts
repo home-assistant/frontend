@@ -100,7 +100,7 @@ export class HaDeviceCondition extends LitElement {
     const prevCondition = changedPros.get("condition");
     if (
       prevCondition &&
-      !deviceAutomationsEqual(prevCondition, this.condition)
+      !deviceAutomationsEqual(this.hass, prevCondition, this.condition)
     ) {
       this._getCapabilities();
     }
@@ -129,7 +129,7 @@ export class HaDeviceCondition extends LitElement {
     let condition = ev.detail.value;
     if (
       this._origCondition &&
-      deviceAutomationsEqual(this._origCondition, condition)
+      deviceAutomationsEqual(this.hass, this._origCondition, condition)
     ) {
       condition = this._origCondition;
     }
