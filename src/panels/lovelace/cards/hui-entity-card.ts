@@ -168,7 +168,10 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               ? formatNumber(
                   stateObj.state,
                   this.hass.locale,
-                  getNumberFormatOptions(stateObj)
+                  getNumberFormatOptions(
+                    stateObj,
+                    this.hass.entities[this._config.entity]
+                  )
                 )
               : computeStateDisplay(
                   this.hass.localize,
