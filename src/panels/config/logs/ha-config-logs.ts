@@ -147,12 +147,18 @@ export class HaConfigLogs extends LitElement {
             ? html`
                 <system-log-card
                   .hass=${this.hass}
+                  .header=${this._logProviders.find(
+                    (p) => p.key === this._selectedLogProvider
+                  )!.name}
                   .filter=${this._filter}
                 ></system-log-card>
               `
             : ""}
           <error-log-card
             .hass=${this.hass}
+            .header=${this._logProviders.find(
+              (p) => p.key === this._selectedLogProvider
+            )!.name}
             .filter=${this._filter}
             .provider=${this._selectedLogProvider}
             .show=${this._selectedLogProvider !== "core"}
