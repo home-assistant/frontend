@@ -9773,7 +9773,7 @@ fsevents@^1.2.7:
     unfetch: ^5.0.0
     vinyl-buffer: ^1.0.1
     vinyl-source-stream: ^2.0.0
-    vis-data: ^7.1.2
+    vis-data: ^7.1.4
     vis-network: ^8.5.4
     vue: ^2.6.12
     vue2-daterange-picker: ^0.5.1
@@ -16161,13 +16161,13 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"vis-data@npm:^7.1.2":
-  version: 7.1.2
-  resolution: "vis-data@npm:7.1.2"
+"vis-data@npm:^7.1.4":
+  version: 7.1.4
+  resolution: "vis-data@npm:7.1.4"
   peerDependencies:
     uuid: ^7.0.0 || ^8.0.0
     vis-util: ^4.0.0 || ^5.0.0
-  checksum: ebc74cd7de8fe27cb8cc111a812de87a4cc644652a392e43f191876ac8c66888488e6fd1f1945ead89193b971a0bc74a13a67daa18aabd3801e185e4a7efc83b
+  checksum: a1266eb678b7f75c422c070ebd579a99565de9b23deba2e75862afb9c15ef5fa67e34f002c8c7013751100c75d6fb76b25bdb9f1a309d9f0cda1bec0935b26ff
   languageName: node
   linkType: hard
 
