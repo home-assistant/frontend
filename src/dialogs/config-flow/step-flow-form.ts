@@ -127,20 +127,11 @@ class StepFlowForm extends LitElement {
 
     const flowId = this.step.flow_id;
 
-    const toSendData = {};
-    Object.keys(stepData).forEach((key) => {
-      const value = stepData[key];
-
-      if (value !== undefined) {
-        toSendData[key] = value;
-      }
-    });
-
     try {
       const step = await this.flowConfig.handleFlowStep(
         this.hass,
         this.step.flow_id,
-        toSendData
+        stepData
       );
 
       // make sure we're still showing the same step as when we
