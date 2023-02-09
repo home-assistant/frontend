@@ -6797,10 +6797,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"comlink@npm:^4.3.1":
-  version: 4.3.1
-  resolution: "comlink@npm:4.3.1"
-  checksum: 557360a6558708c55aff74a25f834bfb9bfca8a42444682c4d5aead57681534a0206202be2a2760b4de124c3ba6d485b08978b6d5469cb3d26bf1438ee28a4f1
+"comlink@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "comlink@npm:4.4.1"
+  checksum: 16d58a8f590087fc45432e31d6c138308dfd4b75b89aec0b7f7bb97ad33d810381bd2b1e608a1fb2cf05979af9cbfcdcaf1715996d5fcf77aeb013b6da3260af
   languageName: node
   linkType: hard
 
@@ -9687,7 +9687,7 @@ fsevents@^1.2.7:
     babel-loader: ^9.1.2
     chai: ^4.3.7
     chart.js: ^3.3.2
-    comlink: ^4.3.1
+    comlink: ^4.4.1
     core-js: ^3.27.2
     cropperjs: ^1.5.13
     date-fns: ^2.29.3
