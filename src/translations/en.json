@@ -1010,11 +1010,6 @@
       },
       "restart": {
         "heading": "Restart Home Assistant",
-        "reload": {
-          "title": "Quick reload",
-          "description": "Load new YAML configurations without a restart.",
-          "reloading": "Reloading configuration"
-        },
         "restart": {
           "title": "Restart",
           "description": "Stops dashboards, automations and scripts.",

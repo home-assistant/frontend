@@ -1,11 +1,11 @@
 import "@material/mwc-list/mwc-list";
-import { mdiAutoFix, mdiPower, mdiPowerCycle, mdiRefresh } from "@mdi/js";
+import { mdiPower, mdiPowerCycle, mdiRefresh } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { componentsWithService } from "../../common/config/components_with_service";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
+import "../../components/ha-circular-progress";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-list-item";
 import {
@@ -25,7 +25,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../generic/show-dialog-box";
-import "../../components/ha-circular-progress";
 
 @customElement("dialog-restart")
 class DialogRestart extends LitElement {
@@ -55,8 +54,8 @@ class DialogRestart extends LitElement {
       }
     }
 
-    // Present restart core dialog if no host actions and not advanced mode as it's the only option
-    if (!this.hass.userData?.showAdvanced && !this._hostInfo) {
+    // Present restart core dialog if no host actions
+    if (!this._hostInfo) {
       this._open = false;
       this._showRestartDialog().then(() => this.closeDialog());
       return;
@@ -76,7 +75,6 @@ class DialogRestart extends LitElement {
       return html``;
     }
 
-    const showReload = this.hass.userData?.showAdvanced;
     const showRebootShutdown = !!this._hostInfo;
 
     return html`
@@ -99,30 +97,6 @@ class DialogRestart extends LitElement {
             `
           : html`
               <mwc-list dialogInitialFocus>
-                ${showReload
-                  ? html`
-                      <ha-list-item
-                        graphic="avatar"
-                        twoline
-                        hasMeta
-                        @request-selected=${this._reload}
-                      >
-                        <div slot="graphic" class="icon-background reload">
-                          <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
-                        </div>
-                        <span>
-                          ${this.hass.localize(
-                            "ui.dialogs.restart.reload.title"
-                          )}
-                        </span>
-                        <span slot="secondary">
-                          ${this.hass.localize(
-                            "ui.dialogs.restart.reload.description"
-                          )}
-                        </span>
-                      </ha-list-item>
-                    `
-                  : null}
                 <ha-list-item
                   graphic="avatar"
                   twoline
@@ -190,25 +164,6 @@ class DialogRestart extends LitElement {
             `}
       </ha-dialog>
     `;
-  }
-
-  private async _reload(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-    const reloadableDomains = componentsWithService(this.hass, "reload");
-
-    this.closeDialog();
-
-    showToast(this, {
-      message: this.hass.localize("ui.dialogs.restart.reload.reloading"),
-      duration: 2000,
-    });
-
-    for (const domain of reloadableDomains) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.hass.callService(domain, "reload");
-    }
   }
 
   private async _restart(ev) {
@@ -333,9 +288,6 @@ class DialogRestart extends LitElement {
         .icon-background {
           border-radius: 50%;
           color: #fff;
-        }
-        .reload {
-          background-color: #5f8a49;
         }
         .restart {
           background-color: #ffd500;
