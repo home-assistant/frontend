@@ -40,7 +40,6 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import "../components/hui-timestamp-display";
 import { createTileFeatureElement } from "../create-element/create-tile-feature-element";
-import { supportsTileFeature } from "../tile-features/tile-features";
 import { LovelaceTileFeatureConfig } from "../tile-features/types";
 import {
   LovelaceCard,
@@ -309,10 +308,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : undefined;
     const badge = computeTileBadge(stateObj, this.hass);
 
-    const supportedFeatures = this._config.features?.filter((feature) =>
-      supportsTileFeature(stateObj, feature.type)
-    );
-
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : null}
@@ -373,15 +368,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ></ha-tile-info>
           </div>
         </div>
-        ${supportedFeatures?.length
-          ? html`
-              <div class="features">
-                ${supportedFeatures.map((featureConf) =>
-                  this.renderFeature(featureConf, stateObj)
-                )}
-              </div>
-            `
-          : null}
+        <div class="features">
+          ${this._config.features?.map((featureConf) =>
+            this.renderFeature(featureConf, stateObj)
+          )}
+        </div>
       </ha-card>
     `;
   }
@@ -412,7 +403,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       (element as LovelaceTileFeature).stateObj = stateObj;
     }
 
-    return html`<div class="feature">${element}</div>`;
+    return html`${element}`;
   }
 
   static get styles(): CSSResultGroup {

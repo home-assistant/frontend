@@ -7,8 +7,15 @@ import {
   mdiWindowShutter,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -60,6 +67,8 @@ export class HuiTileCardFeaturesEditor extends LitElement {
 
   private _sortable?: SortableInstance;
 
+  @state() supportedFeatureTypes: Set<string> = new Set();
+
   public disconnectedCallback() {
     this._destroySortable();
   }
@@ -72,12 +81,23 @@ export class HuiTileCardFeaturesEditor extends LitElement {
     return this._featuresKeys.get(feature)!;
   }
 
-  private get _supportedFeatureTypes() {
-    if (!this.stateObj) return [];
+  protected firstUpdated() {
+    this._createSortable();
+  }
 
-    return FEATURES_TYPE.filter((type) =>
-      supportsTileFeature(this.stateObj!, type)
-    );
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("stateObj")) {
+      FEATURES_TYPE.forEach(async (type) => {
+        const supported = await supportsTileFeature(this.stateObj!, type);
+        if (supported && !this.supportedFeatureTypes.has(type)) {
+          this.supportedFeatureTypes.add(type);
+          this.requestUpdate("supportedFeatureTypes");
+        } else if (!supported && this.supportedFeatureTypes.has(type)) {
+          this.supportedFeatureTypes.delete(type);
+          this.requestUpdate("supportedFeatureTypes");
+        }
+      });
+    }
   }
 
   protected render(): TemplateResult {
@@ -94,8 +114,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
           )}
         </h3>
         <div class="content">
-          ${this._supportedFeatureTypes.length === 0 &&
-          this.features.length === 0
+          ${this.supportedFeatureTypes.size === 0 && this.features.length === 0
             ? html`
                 <ha-alert type="info">
                   ${this.hass!.localize(
@@ -121,7 +140,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                         )}
                       </span>
                       ${this.stateObj &&
-                      !supportsTileFeature(this.stateObj, featureConf.type)
+                      !this.supportedFeatureTypes.has(featureConf.type)
                         ? html`<span class="secondary">
                             ${this.hass!.localize(
                               "ui.panel.lovelace.editor.card.tile.features.not_compatible"
@@ -154,7 +173,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
               `
             )}
           </div>
-          ${this._supportedFeatureTypes.length > 0
+          ${this.supportedFeatureTypes.size > 0
             ? html`
                 <ha-button-menu
                   fixed
@@ -170,7 +189,8 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                   >
                     <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
                   </ha-button>
-                  ${this._supportedFeatureTypes.map(
+                  ${repeat(
+                    this.supportedFeatureTypes.values(),
                     (featureType) => html`<mwc-list-item .value=${featureType}>
                       <ha-svg-icon
                         slot="graphic"
@@ -187,10 +207,6 @@ export class HuiTileCardFeaturesEditor extends LitElement {
         </div>
       </ha-expansion-panel>
     `;
-  }
-
-  protected firstUpdated(): void {
-    this._createSortable();
   }
 
   private async _createSortable() {
@@ -228,7 +244,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
 
     if (index == null) return;
 
-    const value = this._supportedFeatureTypes[index];
+    const value = this.supportedFeatureTypes[index];
     const elClass = await getTileFeatureElementClass(value);
 
     let newFeature: LovelaceTileFeatureConfig;

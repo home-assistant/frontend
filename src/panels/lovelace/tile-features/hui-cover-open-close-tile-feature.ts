@@ -2,6 +2,7 @@ import { mdiStop } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import {
   computeCloseIcon,
   computeOpenIcon,
@@ -36,6 +37,15 @@ class HuiCoverOpenCloseTileFeature
     };
   }
 
+  static isSupported(stateObj: HassEntity): boolean {
+    const domain = computeDomain(stateObj.entity_id);
+    return (
+      domain === "cover" &&
+      (supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
+        supportsFeature(stateObj, CoverEntityFeature.CLOSE))
+    );
+  }
+
   public setConfig(config: CoverOpenCloseTileFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
@@ -64,9 +74,14 @@ class HuiCoverOpenCloseTileFeature
     });
   }
 
-  protected render(): TemplateResult {
-    if (!this._config || !this.hass || !this.stateObj) {
-      return html``;
+  protected render(): TemplateResult | null {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this.stateObj ||
+      !HuiCoverOpenCloseTileFeature.isSupported(this.stateObj)
+    ) {
+      return null;
     }
 
     return html`

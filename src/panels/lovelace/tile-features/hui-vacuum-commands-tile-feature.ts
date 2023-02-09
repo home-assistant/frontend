@@ -10,6 +10,7 @@ import {
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
@@ -138,6 +139,14 @@ class HuiVacuumCommandTileFeature
     };
   }
 
+  static isSupported(stateObj: HassEntity): boolean {
+    const domain = computeDomain(stateObj.entity_id);
+    return (
+      domain === "vacuum" &&
+      VACUUM_COMMANDS.some((c) => supportsVacuumCommand(stateObj, c))
+    );
+  }
+
   public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
     await import(
       "../editor/config-elements/hui-vacuum-commands-tile-feature-editor"
@@ -160,9 +169,14 @@ class HuiVacuumCommandTileFeature
     });
   }
 
-  protected render(): TemplateResult {
-    if (!this._config || !this.hass || !this.stateObj) {
-      return html``;
+  protected render(): TemplateResult | null {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this.stateObj ||
+      !HuiVacuumCommandTileFeature.isSupported(this.stateObj)
+    ) {
+      return null;
     }
 
     const stateObj = this.stateObj as VacuumEntity;
