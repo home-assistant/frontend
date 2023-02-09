@@ -1,10 +1,8 @@
 import {
   BROWSER_PLAYER,
   MediaPlayerEntity,
+  MediaPlayerEntityFeature,
   MediaPlayerItem,
-  SUPPORT_PAUSE,
-  SUPPORT_PLAY,
-  SUPPORT_VOLUME_SET,
 } from "../../data/media-player";
 import { ResolvedMediaSource } from "../../data/media_source";
 import { HomeAssistant } from "../../types";
@@ -96,8 +94,12 @@ export class BrowserMediaPlayer {
       media_title: this.item.title,
       entity_picture: this.item.thumbnail,
       volume_level: this.player.volume,
-      // eslint-disable-next-line no-bitwise
-      supported_features: SUPPORT_PLAY | SUPPORT_PAUSE | SUPPORT_VOLUME_SET,
+      supported_features:
+        // eslint-disable-next-line no-bitwise
+        MediaPlayerEntityFeature.PLAY |
+        // eslint-disable-next-line no-bitwise
+        MediaPlayerEntityFeature.PAUSE |
+        MediaPlayerEntityFeature.VOLUME_SET,
     };
 
     if (this.player.duration) {
