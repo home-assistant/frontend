@@ -9735,7 +9735,7 @@ fsevents@^1.2.7:
     lodash.template: ^4.5.0
     magic-string: ^0.25.7
     map-stream: ^0.0.7
-    marked: ^4.0.12
+    marked: ^4.2.12
     memoize-one: ^6.0.0
     merge-stream: ^2.0.0
     mocha: ^8.4.0
@@ -11747,12 +11747,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"marked@npm:^4.0.12":
-  version: 4.0.12
-  resolution: "marked@npm:4.0.12"
+"marked@npm:^4.2.12":
+  version: 4.2.12
+  resolution: "marked@npm:4.2.12"
   bin:
     marked: bin/marked.js
-  checksum: 7575117f85a8986652f3ac8b8a7b95056c4c5fce01a1fc76dc4c7960412cb4c9bd9da8133487159b6b3ff84f52b543dfe9a36f826a5f358892b5ec4b6824f192
+  checksum: bd551cd61028ee639d4ca2ccdfcc5a6ba4227c1b143c4538f3cde27f569dcb57df8e6313560394645b418b84a7336c07ab1e438b89b6324c29d7d8cdd3102d63
   languageName: node
   linkType: hard
 
