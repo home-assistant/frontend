@@ -1633,12 +1633,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gfx/zopfli@npm:^1.0.9":
-  version: 1.0.11
-  resolution: "@gfx/zopfli@npm:1.0.11"
+"@gfx/zopfli@npm:^1.0.15":
+  version: 1.0.15
+  resolution: "@gfx/zopfli@npm:1.0.15"
   dependencies:
     base64-js: ^1.3.0
-  checksum: 3728effed086649c7acbd4f426b9ac971866134a308010dc9d13f1916419c7093456932d2db32b5c23017da83dee8e75b5fc361d932aa3c063ef01eaa1c9b0d6
+  checksum: 4d7156a861acda05e8c0de7d538e0a8e7321c19c5b3895f59b518b7a85273d53821978b10b358a4e3f89172946fb49b4f439ab79b1eb1c20d885048b4231be05
   languageName: node
   linkType: hard
 
@@ -6264,7 +6264,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bytes@npm:3.1.2, bytes@npm:^3.0.0":
+"bytes@npm:3.1.2, bytes@npm:^3.1.2":
   version: 3.1.2
   resolution: "bytes@npm:3.1.2"
   checksum: e4bcd3948d289c5127591fbedf10c0b639ccbf00243504e4e127374a15c3bc8eed0d28d4aaab08ff6f1cf2abc0cce6ba3085ed32f4f90e82a5683ce0014e1b6e
@@ -7300,12 +7300,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"defaults@npm:^1.0.2":
-  version: 1.0.3
-  resolution: "defaults@npm:1.0.3"
+"defaults@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "defaults@npm:1.0.4"
   dependencies:
     clone: ^1.0.2
-  checksum: 96e2112da6553d376afd5265ea7cbdb2a3b45535965d71ab8bb1da10c8126d168fdd5268799625324b368356d21ba2a7b3d4ec50961f11a47b7feb9de3d4413e
+  checksum: 3a88b7a587fc076b84e60affad8b85245c01f60f38fc1d259e7ac1d89eb9ce6abb19e27215de46b98568dd5bc48471730b327637e6f20b0f1bc85cf00440c80a
   languageName: node
   linkType: hard
 
@@ -8817,16 +8817,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"from2@npm:^2.1.1":
-  version: 2.3.0
-  resolution: "from2@npm:2.3.0"
-  dependencies:
-    inherits: ^2.0.1
-    readable-stream: ^2.0.0
-  checksum: 6080eba0793dce32f475141fb3d54cc15f84ee52e420ee22ac3ab0ad639dc95a1875bc6eb9c0e1140e94972a36a89dc5542491b85f1ab8df0c126241e0f1a61b
-  languageName: node
-  linkType: hard
-
 "fs-extra@npm:^11.1.0":
   version: 11.1.0
   resolution: "fs-extra@npm:11.1.0"
@@ -9393,19 +9383,18 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"gulp-zopfli-green@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "gulp-zopfli-green@npm:3.0.1"
+"gulp-zopfli-green@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "gulp-zopfli-green@npm:6.0.1"
   dependencies:
-    "@gfx/zopfli": ^1.0.9
-    bytes: ^3.0.0
-    defaults: ^1.0.2
-    fancy-log: ^1.3.2
-    into-stream: ^4.0.0
+    "@gfx/zopfli": ^1.0.15
+    bytes: ^3.1.2
+    defaults: ^1.0.4
+    fancy-log: ^2.0.0
     plugin-error: ^1.0.1
     stream-to-array: ^2.0.2
-    through2: ^3.0.0
-  checksum: cd28d8b5216cf15112fb1bdf7d39662b5e0f3480c02bcf3eede1dc082af8be51919518c6e7081d4610974fa91d6c54c995e34c466d6a8fe8d9e32515492a055b
+    through2: ^4.0.2
+  checksum: 20b7567a850d8de98671ff3b98be1fc9d7718946ce30176099eaa4ea383d8d96423deeee9500c94c8d212735ceccd2450090be2ac9dfd8e721425a40ef95d165
   languageName: node
   linkType: hard
 
@@ -9716,7 +9705,7 @@ fsevents@^1.2.7:
     gulp-json-transform: ^0.4.8
     gulp-merge-json: ^2.1.2
     gulp-rename: ^2.0.0
-    gulp-zopfli-green: ^3.0.1
+    gulp-zopfli-green: ^6.0.1
     hammerjs: ^2.0.8
     hls.js: ^1.3.3
     home-assistant-js-websocket: ^8.0.1
@@ -10227,16 +10216,6 @@ fsevents@^1.2.7:
     "@formatjs/icu-messageformat-parser": 2.2.0
     tslib: ^2.4.0
   checksum: a92b2fec9ed0ba992ecfefbe9968c0f80961d6d23d105b16f3437108c61fe57d6e91e04392c4092335136399e047572996bc45d197ec0899473a3aac3627fed2
-  languageName: node
-  linkType: hard
-
-"into-stream@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "into-stream@npm:4.0.0"
-  dependencies:
-    from2: ^2.1.1
-    p-is-promise: ^2.0.0
-  checksum: 952519f8a308fdcaaaa51871f16a66ea3eff568099b815d194fc96842ce0c2fca520b1693480f2be741fa7bea10c08d605b2c166ae6859c7cb6044d659e7a24f
   languageName: node
   linkType: hard
 
@@ -12792,13 +12771,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"p-is-promise@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "p-is-promise@npm:2.0.0"
-  checksum: 784edc4a97efe1cc8f42c3449b765baabc51b96f7bc637ddd322e7323904d1f689cfb00ccf625cc555d78ec4b114100a3b83a4f39c0ec1b26417bf0ee713b4e6
-  languageName: node
-  linkType: hard
-
 "p-limit@npm:^2.2.0":
   version: 2.3.0
   resolution: "p-limit@npm:2.3.0"
@@ -13552,7 +13524,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:2 || 3, readable-stream@npm:^3.0.6":
+"readable-stream@npm:3, readable-stream@npm:^3.0.6":
   version: 3.6.0
   resolution: "readable-stream@npm:3.6.0"
   dependencies:
@@ -15350,12 +15322,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"through2@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "through2@npm:3.0.1"
+"through2@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "through2@npm:4.0.2"
   dependencies:
-    readable-stream: 2 || 3
-  checksum: ffac3931c1906b5d3a375b71e3d692228432299ba63213e65d686f95ea3abe1bb5726fa335fb7eba9c6f5f010da17c071a6c1c531bd091b2ec7650bc38bcaf13
+    readable-stream: 3
+  checksum: ac7430bd54ccb7920fd094b1c7ff3e1ad6edd94202e5528331253e5fde0cc56ceaa690e8df9895de2e073148c52dfbe6c4db74cacae812477a35660090960cc0
   languageName: node
   linkType: hard
 
