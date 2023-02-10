@@ -36,6 +36,8 @@ class ErrorLogCard extends LitElement {
 
   @property() public filter = "";
 
+  @property() public header?: string;
+
   @property() public provider!: string;
 
   @property({ type: Boolean, attribute: true }) public show = false;
@@ -56,9 +58,10 @@ class ErrorLogCard extends LitElement {
           ? html`
               <ha-card outlined>
                 <div class="header">
-                  <h2>
-                    ${this.hass.localize("ui.panel.config.logs.show_full_logs")}
-                  </h2>
+                  <h1 class="card-header">
+                    ${this.header ||
+                    this.hass.localize("ui.panel.config.logs.show_full_logs")}
+                  </h1>
                   <div>
                     <ha-icon-button
                       .path=${mdiRefresh}
@@ -225,10 +228,26 @@ class ErrorLogCard extends LitElement {
       margin: 16px;
     }
 
+    ha-card {
+      padding-top: 16px;
+    }
+
     .header {
       display: flex;
       justify-content: space-between;
-      padding: 16px;
+      padding: 0 16px;
+    }
+
+    .card-header {
+      color: var(--ha-card-header-color, --primary-text-color);
+      font-family: var(--ha-card-header-font-family, inherit);
+      font-size: var(--ha-card-header-font-size, 24px);
+      letter-spacing: -0.012em;
+      line-height: 48px;
+      display: block;
+      margin-block-start: 0px;
+      margin-block-end: 0px;
+      font-weight: normal;
     }
 
     ha-select {

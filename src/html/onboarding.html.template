@@ -13,6 +13,9 @@
         color: var(--primary-text-color, #212121);
         background-color: #0277bd !important;
       }
+      body {
+        height: auto;
+      }
       .content {
         box-sizing: border-box;
         padding: 20px 16px;

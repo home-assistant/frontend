@@ -17,11 +17,8 @@ export class HaClickableListItem extends HaListItem {
     const href = this.href || "";
 
     return html`${this.disableHref
-      ? html`<a aria-role="option">${r}</a>`
-      : html`<a
-          aria-role="option"
-          target=${this.openNewTab ? "_blank" : ""}
-          href=${href}
+      ? html`<a>${r}</a>`
+      : html`<a target=${this.openNewTab ? "_blank" : ""} href=${href}
           >${r}</a
         >`}`;
   }
