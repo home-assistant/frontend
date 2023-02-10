@@ -7676,7 +7676,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-abstract@npm:^1.18.2, es-abstract@npm:^1.19.0, es-abstract@npm:^1.19.1, es-abstract@npm:^1.20.4":
+"es-abstract@npm:^1.19.0, es-abstract@npm:^1.19.1, es-abstract@npm:^1.20.4":
   version: 1.21.1
   resolution: "es-abstract@npm:1.21.1"
   dependencies:
@@ -12612,18 +12612,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"object.entries@npm:^1.1.2":
-  version: 1.1.4
-  resolution: "object.entries@npm:1.1.4"
-  dependencies:
-    call-bind: ^1.0.2
-    define-properties: ^1.1.3
-    es-abstract: ^1.18.2
-  checksum: 1ddd2e28f5ecfe2369fe198439ec0457529f3eec85c7f43870be8de3ec3d98024b014ddb4a769ca48925e47ed76c69a51d8bf2c9886ed43174e3a1d33c2dbe38
-  languageName: node
-  linkType: hard
-
-"object.entries@npm:^1.1.5":
+"object.entries@npm:^1.1.2, object.entries@npm:^1.1.5":
   version: 1.1.6
   resolution: "object.entries@npm:1.1.6"
   dependencies:
