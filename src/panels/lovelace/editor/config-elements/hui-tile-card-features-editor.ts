@@ -31,6 +31,7 @@ import {
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
 
 const FEATURES_TYPE: LovelaceTileFeatureConfig["type"][] = [
+  "climate-temperature",
   "cover-open-close",
   "cover-tilt",
   "light-brightness",

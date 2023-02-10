@@ -2,6 +2,10 @@ export interface CoverOpenCloseTileFeatureConfig {
   type: "cover-open-close";
 }
 
+export interface ClimateTemperatureTileFeatureConfig {
+  type: "climate-temperature";
+}
+
 export interface CoverTiltTileFeatureConfig {
   type: "cover-tilt";
 }
@@ -26,6 +30,7 @@ export interface VacuumCommandsTileFeatureConfig {
 }
 
 export type LovelaceTileFeatureConfig =
+  | ClimateTemperatureTileFeatureConfig
   | CoverOpenCloseTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | LightBrightnessTileFeatureConfig

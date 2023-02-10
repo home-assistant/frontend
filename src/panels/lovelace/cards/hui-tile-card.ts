@@ -29,6 +29,7 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
+import { ClimateEntity } from "../../../data/climate";
 import { CoverEntity } from "../../../data/cover";
 import { isUnavailableState, ON } from "../../../data/entity";
 import { FanEntity } from "../../../data/fan";
@@ -38,6 +39,7 @@ import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
+import { formatNumber } from "../../../common/number/format_number";
 import { handleAction } from "../common/handle-action";
 import "../components/hui-timestamp-display";
 import { createTileFeatureElement } from "../create-element/create-tile-feature-element";
@@ -224,6 +226,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           this.hass!.locale
         )}%`;
       }
+    }
+    if (domain === "climate") {
+      return `${stateDisplay} - ${formatNumber(
+        (stateObj as ClimateEntity).attributes.temperature,
+        this.hass!.locale
+      )}${this.hass!.config.unit_system.temperature}`;
     }
     return stateDisplay;
   }
