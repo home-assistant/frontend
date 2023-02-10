@@ -4298,6 +4298,9 @@
                 "edit": "Edit feature",
                 "remove": "Remove feature",
                 "types": {
+                  "climate-temperature": {
+                    "label": "Climate Temperature"
+                  },
                   "cover-open-close": {
                     "label": "Cover open/close"
                   },

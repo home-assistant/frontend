@@ -10,6 +10,8 @@ type TileFeatureType = LovelaceTileFeatureConfig["type"];
 export type SupportsTileFeature = (stateObj: HassEntity) => boolean;
 
 const TILE_FEATURES_SUPPORT: Record<TileFeatureType, SupportsTileFeature> = {
+  "climate-temperature": (stateObj) =>
+    computeDomain(stateObj.entity_id) === "climate",
   "cover-open-close": (stateObj) =>
     computeDomain(stateObj.entity_id) === "cover" &&
     (supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
