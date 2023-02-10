@@ -10,11 +10,19 @@ export const createDurationData = (
   if (typeof duration !== "object") {
     if (typeof duration === "string" || isNaN(duration)) {
       const parts = duration?.toString().split(":") || [];
+      if (parts.length === 1) {
+        return { seconds: Number(parts[0]) };
+      }
+      if (parts.length > 3) {
+        return undefined;
+      }
+      const seconds = Number(parts[2]) || 0;
+      const seconds_whole = Math.floor(seconds);
       return {
         hours: Number(parts[0]) || 0,
         minutes: Number(parts[1]) || 0,
-        seconds: Number(parts[2]) || 0,
-        milliseconds: Number(parts[3]) || 0,
+        seconds: seconds_whole,
+        milliseconds: Math.floor((seconds - seconds_whole) * 1000),
       };
     }
     return { seconds: duration };
