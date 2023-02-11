@@ -707,14 +707,10 @@ export const fetchZwaveNodeFirmwareUpdateCapabilities = (
 export const uploadFirmwareAndBeginUpdate = async (
   hass: HomeAssistant,
   device_id: string,
-  file: File,
-  target?: number
+  file: File
 ) => {
   const fd = new FormData();
   fd.append("file", file);
-  if (target !== undefined) {
-    fd.append("target", target.toString());
-  }
   const resp = await hass.fetchWithAuth(
     `/api/zwave_js/firmware/upload/${device_id}`,
     {
