@@ -3658,7 +3658,7 @@
               "Error_InvalidHeaderFormat": "Invalid Header Format",
               "Error_InsufficientMemory": "Insufficient Memory",
               "Error_InvalidHardwareVersion": "Invalid Hardware Version",
-              "OK_WaitingForActivation": "Waiting for Activiation",
+              "OK_WaitingForActivation": "Waiting for Activation",
               "OK_NoRestart": "No Restart",
               "OK_RestartPending": "Restart Pending"
             }
