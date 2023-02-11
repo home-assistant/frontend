@@ -3633,8 +3633,6 @@
             "warning": "WARNING: Firmware updates can brick your device if you do not correctly follow the manufacturer's guidance. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your device as a result of the firmware update and will not be able to help you if you brick your device. Would you still like to continue?",
             "introduction": "Select the firmware file you would like to use to update {device}.",
             "upload_firmware": "Upload Firmware",
-            "firmware_target_intro": "Select the firmware target (0 for the Z-Wave chip, ≥1 for other chips if they exist) for this update, or uncheck the box to have the driver attempt to figure it out from the firmware file.",
-            "firmware_target": "Firmware Target (chip)",
             "upload_failed": "Upload Failed",
             "begin_update": "Begin Firmware Update",
             "queued": "The firmware update is ready to be sent to {device} but the device is asleep, wake the device to start the update.",
