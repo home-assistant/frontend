@@ -406,7 +406,7 @@ const getEnergyData = async (
   };
 
   const stats = {
-    ...(energyStatIds
+    ...(energyStatIds.length
       ? await fetchStatistics(
           hass!,
           startMinHour,
@@ -417,7 +417,7 @@ const getEnergyData = async (
           ["sum"]
         )
       : {}),
-    ...(waterStatIds
+    ...(waterStatIds.length
       ? await fetchStatistics(
           hass!,
           startMinHour,
@@ -445,7 +445,7 @@ const getEnergyData = async (
     endCompare = addMilliseconds(start, -1);
 
     statsCompare = {
-      ...(energyStatIds
+      ...(energyStatIds.length
         ? await fetchStatistics(
             hass!,
             compareStartMinHour,
@@ -456,7 +456,7 @@ const getEnergyData = async (
             ["sum"]
           )
         : {}),
-      ...(waterStatIds
+      ...(waterStatIds.length
         ? await fetchStatistics(
             hass!,
             compareStartMinHour,
