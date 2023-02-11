@@ -406,24 +406,28 @@ const getEnergyData = async (
   };
 
   const stats = {
-    ...(await fetchStatistics(
-      hass!,
-      startMinHour,
-      end,
-      energyStatIds,
-      period,
-      energyUnits,
-      ["sum"]
-    )),
-    ...(await fetchStatistics(
-      hass!,
-      startMinHour,
-      end,
-      waterStatIds,
-      period,
-      waterUnits,
-      ["sum"]
-    )),
+    ...(energyStatIds
+      ? await fetchStatistics(
+          hass!,
+          startMinHour,
+          end,
+          energyStatIds,
+          period,
+          energyUnits,
+          ["sum"]
+        )
+      : {}),
+    ...(waterStatIds
+      ? await fetchStatistics(
+          hass!,
+          startMinHour,
+          end,
+          waterStatIds,
+          period,
+          waterUnits,
+          ["sum"]
+        )
+      : {}),
   };
 
   let statsCompare;
@@ -441,24 +445,28 @@ const getEnergyData = async (
     endCompare = addMilliseconds(start, -1);
 
     statsCompare = {
-      ...(await fetchStatistics(
-        hass!,
-        compareStartMinHour,
-        endCompare,
-        energyStatIds,
-        period,
-        energyUnits,
-        ["sum"]
-      )),
-      ...(await fetchStatistics(
-        hass!,
-        compareStartMinHour,
-        endCompare,
-        waterStatIds,
-        period,
-        waterUnits,
-        ["sum"]
-      )),
+      ...(energyStatIds
+        ? await fetchStatistics(
+            hass!,
+            compareStartMinHour,
+            endCompare,
+            energyStatIds,
+            period,
+            energyUnits,
+            ["sum"]
+          )
+        : {}),
+      ...(waterStatIds
+        ? await fetchStatistics(
+            hass!,
+            compareStartMinHour,
+            endCompare,
+            waterStatIds,
+            period,
+            waterUnits,
+            ["sum"]
+          )
+        : {}),
     };
   }
 
