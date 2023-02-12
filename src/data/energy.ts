@@ -405,30 +405,18 @@ const getEnergyData = async (
     volume: lengthUnit === "km" ? "L" : "gal",
   };
 
-  const stats = {
-    ...(energyStatIds.length
+  const stats =
+    energyStatIds.length || waterStatIds.length
       ? await fetchStatistics(
           hass!,
           startMinHour,
           end,
-          energyStatIds,
+          [...energyStatIds, ...waterStatIds],
           period,
-          energyUnits,
+          { ...energyUnits, ...waterUnits },
           ["sum"]
         )
-      : {}),
-    ...(waterStatIds.length
-      ? await fetchStatistics(
-          hass!,
-          startMinHour,
-          end,
-          waterStatIds,
-          period,
-          waterUnits,
-          ["sum"]
-        )
-      : {}),
-  };
+      : {};
 
   let statsCompare;
   let startCompare;
@@ -444,32 +432,19 @@ const getEnergyData = async (
     const compareStartMinHour = addHours(startCompare, -1);
     endCompare = addMilliseconds(start, -1);
 
-    statsCompare = {
-      ...(energyStatIds.length
+    statsCompare =
+      energyStatIds.length || waterStatIds.length
         ? await fetchStatistics(
             hass!,
             compareStartMinHour,
             endCompare,
-            energyStatIds,
+            [...energyStatIds, ...waterStatIds],
             period,
-            energyUnits,
+            { ...energyUnits, ...waterUnits },
             ["sum"]
           )
-        : {}),
-      ...(waterStatIds.length
-        ? await fetchStatistics(
-            hass!,
-            compareStartMinHour,
-            endCompare,
-            waterStatIds,
-            period,
-            waterUnits,
-            ["sum"]
-          )
-        : {}),
-    };
+        : {};
   }
-
   let fossilEnergyConsumption: FossilEnergyConsumption | undefined;
   let fossilEnergyConsumptionCompare: FossilEnergyConsumption | undefined;
 
