@@ -127,11 +127,24 @@ class StepFlowForm extends LitElement {
 
     const flowId = this.step.flow_id;
 
+    // If a field is undefined it was unset by the user
+    // Set it to empty string so it won't be overridden by voluptuous defaults
+    const toSendData = {};
+    Object.keys(stepData).forEach((key) => {
+      const value = stepData[key];
+
+      if (value === undefined) {
+        toSendData[key] = "";
+      } else {
+        toSendData[key] = value;
+      }
+    });
+
     try {
       const step = await this.flowConfig.handleFlowStep(
         this.hass,
         this.step.flow_id,
-        stepData
+        toSendData
       );
 
       // make sure we're still showing the same step as when we
