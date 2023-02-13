@@ -125,7 +125,7 @@
     "regenerator-runtime": "^0.13.11",
     "resize-observer-polyfill": "^1.5.1",
     "roboto-fontface": "^0.10.0",
-    "rrule": "^2.7.1",
+    "rrule": "^2.7.2",
     "sortablejs": "^1.15.0",
     "superstruct": "^1.0.3",
     "tinykeys": "^1.4.0",
