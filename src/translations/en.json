@@ -1010,33 +1010,34 @@
       },
       "restart": {
         "heading": "Restart Home Assistant",
+        "advanced_options": "Advanced options",
         "reload": {
           "title": "Quick reload",
           "description": "Load new YAML configurations without a restart.",
           "reloading": "Reloading configuration"
         },
         "restart": {
-          "title": "Restart",
-          "description": "Stops dashboards, automations and scripts.",
+          "title": "Restart Home Assistant",
+          "description": "Interrupts all running automations and scripts.",
           "confirm_title": "Restart?",
-          "confirm_description": "This will stop all your active dashboards, automations and scripts.",
-          "confirm_action": "Restart",
+          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_action": "Restart Home Assistant",
           "failed": "Failed to restart Home Assistant"
         },
         "reboot": {
           "title": "Reboot system",
-          "description": "Stops the Core and all Add-ons.",
+          "description": "Restart Home Assistant and all Add-ons.",
           "confirm_title": "Reboot system?",
-          "confirm_description": "This will reboot the complete system which includes the Core and all the Add-ons.",
+          "confirm_description": "This will reboot the complete system which includes Home Assistant and all the Add-ons.",
           "confirm_action": "Reboot",
           "rebooting": "Rebooting system",
           "failed": "Failed to reboot system"
         },
         "shutdown": {
           "title": "Shutdown system",
-          "description": "Shutdown the complete system",
+          "description": "Shutdown Home Assistant and all Add-ons.",
           "confirm_title": "Shutdown system?",
-          "confirm_description": "This will shutdown the complete system whitch includes the Core and all Add-ons.",
+          "confirm_description": "This will shutdown the complete system whitch includes Home Assistant and all Add-ons.",
           "confirm_action": "Shutdown",
           "shutting_down": "Shutting down system",
           "failed": "Failed to shutdown system"

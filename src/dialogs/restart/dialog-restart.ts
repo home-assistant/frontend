@@ -146,6 +146,11 @@ class DialogRestart extends LitElement {
                 ${showRebootShutdown
                   ? html`
                       <div class="divider"></div>
+                      <p class="section">
+                        ${this.hass.localize(
+                          "ui.dialogs.restart.advanced_options"
+                        )}
+                      </p>
                       <ha-list-item
                         graphic="avatar"
                         twoline
@@ -182,7 +187,7 @@ class DialogRestart extends LitElement {
                         </span>
                         <span slot="secondary">
                           ${this.hass.localize(
-                            "ui.dialogs.restart.shutdown.confirm_action"
+                            "ui.dialogs.restart.shutdown.description"
                           )}
                         </span>
                       </ha-list-item>
@@ -350,6 +355,14 @@ class DialogRestart extends LitElement {
         .divider {
           height: 1px;
           background-color: var(--divider-color);
+        }
+        .section {
+          font-weight: 500;
+          font-size: 14px;
+          line-height: 20px;
+          margin: 8px 0 4px 0;
+          padding-left: var(--mdc-list-side-padding, 20px);
+          padding-right: var(--mdc-list-side-padding, 20px);
         }
         .loader {
           display: flex;
