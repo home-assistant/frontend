@@ -114,6 +114,14 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
   }),
 };
 
+export const supportsVacuumCommandTileFeature = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "vacuum" &&
+    VACUUM_COMMANDS.some((c) => supportsVacuumCommand(stateObj, c))
+  );
+};
+
 @customElement("hui-vacuum-commands-tile-feature")
 class HuiVacuumCommandTileFeature
   extends LitElement
@@ -137,14 +145,6 @@ class HuiVacuumCommandTileFeature
           ).slice(0, 3)
         : [],
     };
-  }
-
-  static isSupported(stateObj: HassEntity): boolean {
-    const domain = computeDomain(stateObj.entity_id);
-    return (
-      domain === "vacuum" &&
-      VACUUM_COMMANDS.some((c) => supportsVacuumCommand(stateObj, c))
-    );
   }
 
   public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
@@ -174,7 +174,7 @@ class HuiVacuumCommandTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !HuiVacuumCommandTileFeature.isSupported(this.stateObj)
+      !supportsVacuumCommandTileFeature(this.stateObj)
     ) {
       return null;
     }

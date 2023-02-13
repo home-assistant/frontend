@@ -16,6 +16,15 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { CoverTiltTileFeatureConfig } from "./types";
 
+export const supportsCoverTiltTileFeature = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "cover" &&
+    (supportsFeature(stateObj, CoverEntityFeature.OPEN_TILT) ||
+      supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT))
+  );
+};
+
 @customElement("hui-cover-tilt-tile-feature")
 class HuiCoverTiltTileFeature
   extends LitElement
@@ -31,15 +40,6 @@ class HuiCoverTiltTileFeature
     return {
       type: "cover-tilt",
     };
-  }
-
-  static isSupported(stateObj: HassEntity): boolean {
-    const domain = computeDomain(stateObj.entity_id);
-    return (
-      domain === "cover" &&
-      (supportsFeature(stateObj, CoverEntityFeature.OPEN_TILT) ||
-        supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT))
-    );
   }
 
   public setConfig(config: CoverTiltTileFeatureConfig): void {
@@ -75,7 +75,7 @@ class HuiCoverTiltTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !HuiCoverTiltTileFeature.isSupported(this.stateObj)
+      !supportsCoverTiltTileFeature
     ) {
       return null;
     }

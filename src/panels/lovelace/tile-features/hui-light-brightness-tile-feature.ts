@@ -10,6 +10,11 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { LightBrightnessTileFeatureConfig } from "./types";
 
+export const supportsLightBrightnessTileFeature = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "light" && lightSupportsBrightness(stateObj);
+};
+
 @customElement("hui-light-brightness-tile-feature")
 class HuiLightBrightnessTileFeature
   extends LitElement
@@ -27,11 +32,6 @@ class HuiLightBrightnessTileFeature
     };
   }
 
-  static isSupported(stateObj: HassEntity): boolean {
-    const domain = computeDomain(stateObj.entity_id);
-    return domain === "light" && lightSupportsBrightness(stateObj);
-  }
-
   public setConfig(config: LightBrightnessTileFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
@@ -44,7 +44,7 @@ class HuiLightBrightnessTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !HuiLightBrightnessTileFeature.isSupported(this.stateObj)
+      !supportsLightBrightnessTileFeature(this.stateObj)
     ) {
       return null;
     }

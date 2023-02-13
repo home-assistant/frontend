@@ -7,15 +7,8 @@ import {
   mdiWindowShutter,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -31,14 +24,33 @@ import {
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
+import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
+import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
+import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
+import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
 
-const FEATURES_TYPE: LovelaceTileFeatureConfig["type"][] = [
+type FeatureType = LovelaceTileFeatureConfig["type"];
+type FeatureSupported = (stateObj: HassEntity) => boolean;
+
+const FEATURE_TYPES: FeatureType[] = [
   "cover-open-close",
   "cover-tilt",
   "light-brightness",
   "vacuum-commands",
 ];
+
+const EDITABLES_FEATURE_TYPES = new Set<FeatureType>(["vacuum-commands"]);
+
+const SUPPORTS_FEATURE_TYPES: Record<
+  FeatureType,
+  FeatureSupported | undefined
+> = {
+  "cover-open-close": supportsCoverOpenCloseTileFeature,
+  "cover-tilt": supportsCoverTiltTileFeature,
+  "light-brightness": supportsLightBrightnessTileFeature,
+  "vacuum-commands": supportsVacuumCommandTileFeature,
+};
 
 declare global {
   interface HASSDomEvents {
@@ -63,12 +75,18 @@ export class HuiTileCardFeaturesEditor extends LitElement {
 
   private _sortable?: SortableInstance;
 
-  @state() supportedFeatureTypes = new Map<string, boolean>();
-
-  @state() editableFeatureTypes = new Map<string, boolean>();
-
   public disconnectedCallback() {
     this._destroySortable();
+  }
+
+  private _supportsFeatureTypes(feature: FeatureType): boolean {
+    if (!this.stateObj) return false;
+    const supportsFeature = SUPPORTS_FEATURE_TYPES[feature];
+    return !supportsFeature || supportsFeature(this.stateObj);
+  }
+
+  private get _editableFeatureTypes() {
+    return EDITABLES_FEATURE_TYPES;
   }
 
   private _getKey(feature: LovelaceTileFeatureConfig) {
@@ -83,32 +101,8 @@ export class HuiTileCardFeaturesEditor extends LitElement {
     this._createSortable();
   }
 
-  protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("stateObj")) {
-      FEATURES_TYPE.forEach(async (type) => {
-        const elementClass = await getTileFeatureElementClass(type);
-
-        const isFeatureSupported = elementClass.isSupported;
-        const supported =
-          !isFeatureSupported || isFeatureSupported(this.stateObj!);
-
-        const editable = !!elementClass.getConfigElement;
-
-        if (supported !== this.supportedFeatureTypes.get(type)) {
-          this.supportedFeatureTypes.set(type, supported);
-          this.requestUpdate("supportedFeatureTypes");
-        }
-
-        if (editable !== this.editableFeatureTypes.get(type)) {
-          this.editableFeatureTypes.set(type, editable);
-          this.requestUpdate("editableFeatureTypes");
-        }
-      });
-    }
-  }
-
   private get _supportedFeatureTypes() {
-    return FEATURES_TYPE.filter((type) => this.supportedFeatureTypes.get(type));
+    return FEATURE_TYPES.filter((type) => this._supportsFeatureTypes(type));
   }
 
   protected render(): TemplateResult {
@@ -152,7 +146,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                         )}
                       </span>
                       ${this.stateObj &&
-                      !this.supportedFeatureTypes.get(featureConf.type)
+                      !this._supportsFeatureTypes(featureConf.type)
                         ? html`
                             <span class="secondary">
                               ${this.hass!.localize(
@@ -163,7 +157,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                         : null}
                     </div>
                   </div>
-                  ${this.editableFeatureTypes.get(featureConf.type)
+                  ${this._editableFeatureTypes.has(featureConf.type)
                     ? html`
                         <ha-icon-button
                           .label=${this.hass!.localize(

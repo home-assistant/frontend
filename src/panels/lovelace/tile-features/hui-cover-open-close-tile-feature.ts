@@ -20,6 +20,15 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { CoverOpenCloseTileFeatureConfig } from "./types";
 
+export const supportsCoverOpenCloseTileFeature = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "cover" &&
+    (supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
+      supportsFeature(stateObj, CoverEntityFeature.CLOSE))
+  );
+};
+
 @customElement("hui-cover-open-close-tile-feature")
 class HuiCoverOpenCloseTileFeature
   extends LitElement
@@ -35,15 +44,6 @@ class HuiCoverOpenCloseTileFeature
     return {
       type: "cover-open-close",
     };
-  }
-
-  static isSupported(stateObj: HassEntity): boolean {
-    const domain = computeDomain(stateObj.entity_id);
-    return (
-      domain === "cover" &&
-      (supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
-        supportsFeature(stateObj, CoverEntityFeature.CLOSE))
-    );
   }
 
   public setConfig(config: CoverOpenCloseTileFeatureConfig): void {
@@ -79,7 +79,7 @@ class HuiCoverOpenCloseTileFeature
       !this._config ||
       !this.hass ||
       !this.stateObj ||
-      !HuiCoverOpenCloseTileFeature.isSupported(this.stateObj)
+      !supportsCoverOpenCloseTileFeature(this.stateObj)
     ) {
       return null;
     }
