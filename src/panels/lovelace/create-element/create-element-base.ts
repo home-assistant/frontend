@@ -154,7 +154,7 @@ const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
 
 const _getCustomTag = (type: string) =>
   type.startsWith(CUSTOM_TYPE_PREFIX)
-    ? type.substr(CUSTOM_TYPE_PREFIX.length)
+    ? type.slice(CUSTOM_TYPE_PREFIX.length)
     : undefined;
 
 export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(

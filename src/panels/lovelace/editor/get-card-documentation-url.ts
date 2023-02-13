@@ -10,7 +10,8 @@ export const getCardDocumentationURL = (
   type: string
 ): string | undefined => {
   if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    return getCustomCardEntry(type)?.documentationURL;
+    return getCustomCardEntry(type.slice(CUSTOM_TYPE_PREFIX.length))
+      ?.documentationURL;
   }
 
   return `${documentationUrl(hass, "/lovelace/")}${type}`;
