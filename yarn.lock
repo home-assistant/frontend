@@ -9785,7 +9785,7 @@ fsevents@^1.2.7:
     terser-webpack-plugin: ^5.3.6
     tinykeys: ^1.4.0
     ts-lit-plugin: ^1.2.1
-    tsparticles-engine: ^2.8.0
+    tsparticles-engine: ^2.9.3
     tsparticles-preset-links: ^2.8.0
     typescript: ^4.9.5
     unfetch: ^5.0.0
@@ -15553,6 +15553,13 @@ fsevents@^1.2.7:
   version: 2.8.0
   resolution: "tsparticles-engine@npm:2.8.0"
   checksum: 100635a3456b62fc74baea157945d731ba6a02ad0e4e352ebbaf14f2a81d6c553e5807c93611c830676d8a0bd1c5e9a16039fbb1139d1e0a9611db175af50257
+  languageName: node
+  linkType: hard
+
+"tsparticles-engine@npm:^2.9.3":
+  version: 2.9.3
+  resolution: "tsparticles-engine@npm:2.9.3"
+  checksum: 767b6c1568f9428706e62bd15fe91f290fd1a86e9641f00d848006165e829d414e954b95833a4360f2b0a9a2699fa6d340bb007cce22412b48b7692d4a6489f5
   languageName: node
   linkType: hard
 
