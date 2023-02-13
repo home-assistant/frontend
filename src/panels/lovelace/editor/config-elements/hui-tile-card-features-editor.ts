@@ -133,54 +133,59 @@ export class HuiTileCardFeaturesEditor extends LitElement {
             ${repeat(
               this.features,
               (featureConf) => this._getKey(featureConf),
-              (featureConf, index) => html`
-                <div class="feature">
-                  <div class="handle">
-                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                  </div>
-                  <div class="feature-content">
-                    <div>
-                      <span>
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.tile.features.types.${featureConf.type}.label`
-                        )}
-                      </span>
-                      ${this.stateObj &&
-                      !this._supportsFeatureTypes(featureConf.type)
-                        ? html`
-                            <span class="secondary">
-                              ${this.hass!.localize(
-                                "ui.panel.lovelace.editor.card.tile.features.not_compatible"
-                              )}
-                            </span>
-                          `
-                        : null}
+              (featureConf, index) => {
+                const type = featureConf.type;
+                const supported = this._supportsFeatureTypes(type);
+                const editable = this._editableFeatureTypes.has(type);
+                return html`
+                  <div class="feature">
+                    <div class="handle">
+                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                     </div>
-                  </div>
-                  ${this._editableFeatureTypes.has(featureConf.type)
-                    ? html`
-                        <ha-icon-button
-                          .label=${this.hass!.localize(
-                            `ui.panel.lovelace.editor.card.tile.features.edit`
+                    <div class="feature-content">
+                      <div>
+                        <span>
+                          ${this.hass!.localize(
+                            `ui.panel.lovelace.editor.card.tile.features.types.${type}.label`
                           )}
-                          .path=${mdiPencil}
-                          class="edit-icon"
-                          .index=${index}
-                          @click=${this._editFeature}
-                        ></ha-icon-button>
-                      `
-                    : null}
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.tile.features.remove`
-                    )}
-                    .path=${mdiDelete}
-                    class="remove-icon"
-                    .index=${index}
-                    @click=${this._removeFeature}
-                  ></ha-icon-button>
-                </div>
-              `
+                        </span>
+                        ${this.stateObj && !supported
+                          ? html`
+                              <span class="secondary">
+                                ${this.hass!.localize(
+                                  "ui.panel.lovelace.editor.card.tile.features.not_compatible"
+                                )}
+                              </span>
+                            `
+                          : null}
+                      </div>
+                    </div>
+                    ${editable
+                      ? html`
+                          <ha-icon-button
+                            .label=${this.hass!.localize(
+                              `ui.panel.lovelace.editor.card.tile.features.edit`
+                            )}
+                            .path=${mdiPencil}
+                            class="edit-icon"
+                            .index=${index}
+                            @click=${this._editFeature}
+                            .disabled=${!supported}
+                          ></ha-icon-button>
+                        `
+                      : null}
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        `ui.panel.lovelace.editor.card.tile.features.remove`
+                      )}
+                      .path=${mdiDelete}
+                      class="remove-icon"
+                      .index=${index}
+                      @click=${this._removeFeature}
+                    ></ha-icon-button>
+                  </div>
+                `;
+              }
             )}
           </div>
           ${this._supportedFeatureTypes.length > 0
