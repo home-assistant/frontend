@@ -1026,7 +1026,7 @@
         },
         "reboot": {
           "title": "Reboot system",
-          "description": "Restart Home Assistant and all Add-ons.",
+          "description": "Restart the system running Home Assistant and all Add-ons.",
           "confirm_title": "Reboot system?",
           "confirm_description": "This will reboot the complete system which includes Home Assistant and all the Add-ons.",
           "confirm_action": "Reboot",
@@ -1035,7 +1035,7 @@
         },
         "shutdown": {
           "title": "Shutdown system",
-          "description": "Shutdown Home Assistant and all Add-ons.",
+          "description": "Shutdown the system running Home Assistant and all Add-ons.",
           "confirm_title": "Shutdown system?",
           "confirm_description": "This will shutdown the complete system whitch includes Home Assistant and all Add-ons.",
           "confirm_action": "Shutdown",
