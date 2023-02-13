@@ -9764,7 +9764,7 @@ fsevents@^1.2.7:
     rollup-plugin-string: ^3.0.0
     rollup-plugin-terser: ^5.3.0
     rollup-plugin-visualizer: ^5.9.0
-    rrule: ^2.7.1
+    rrule: ^2.7.2
     serve: ^11.3.2
     sinon: ^15.0.1
     sortablejs: ^1.15.0
@@ -14096,12 +14096,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"rrule@npm:^2.7.1":
-  version: 2.7.1
-  resolution: "rrule@npm:2.7.1"
+"rrule@npm:^2.7.2":
+  version: 2.7.2
+  resolution: "rrule@npm:2.7.2"
   dependencies:
     tslib: ^2.4.0
-  checksum: 80b81c5b1c1d12539a2af6de6fc8ebff8d763d8006cd9a418a1de7adbd634ae84ea853f1590d73ea72737422b8775cd53ca64c59e7c4625eda09a2746596f1d9
+  checksum: 9fae4c4ecacd81792b8722ae09b32eb0516148de776860f83caa9f2d97d8aa0fc18e6bb2ea62bd14c336b963252e2def1c212f1bf21310aee9124df4c1d2afc2
   languageName: node
   linkType: hard
 
