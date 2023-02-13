@@ -8,7 +8,7 @@ import { getSignedPath } from "../../data/auth";
 import {
   MediaClassBrowserSettings,
   MediaPickedEvent,
-  SUPPORT_BROWSE_MEDIA,
+  MediaPlayerEntityFeature,
 } from "../../data/media-player";
 import type { MediaSelector, MediaSelectorValue } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
@@ -80,7 +80,8 @@ export class HaMediaSelector extends LitElement {
 
     const supportsBrowse =
       !this.value?.entity_id ||
-      (stateObj && supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA));
+      (stateObj &&
+        supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA));
 
     return html`<ha-entity-picker
         .hass=${this.hass}
