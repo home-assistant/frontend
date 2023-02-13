@@ -25,13 +25,8 @@ import {
   handleMediaControlClick,
   MediaPickedEvent,
   MediaPlayerEntity,
+  MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
-  SUPPORT_BROWSE_MEDIA,
-  SUPPORT_SELECT_SOUND_MODE,
-  SUPPORT_SELECT_SOURCE,
-  SUPPORT_VOLUME_BUTTONS,
-  SUPPORT_VOLUME_MUTE,
-  SUPPORT_VOLUME_SET,
 } from "../../../data/media-player";
 import { HomeAssistant } from "../../../types";
 
@@ -68,7 +63,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 `
               )}
         </div>
-        ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
+        ${supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
           ? html`
               <mwc-button
                 .label=${this.hass.localize(
@@ -85,12 +80,12 @@ class MoreInfoMediaPlayer extends LitElement {
             `
           : ""}
       </div>
-      ${(supportsFeature(stateObj, SUPPORT_VOLUME_SET) ||
-        supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)) &&
+      ${(supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) ||
+        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_BUTTONS)) &&
       ![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state)
         ? html`
             <div class="volume">
-              ${supportsFeature(stateObj, SUPPORT_VOLUME_MUTE)
+              ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE)
                 ? html`
                     <ha-icon-button
                       .path=${stateObj.attributes.is_volume_muted
@@ -107,7 +102,10 @@ class MoreInfoMediaPlayer extends LitElement {
                     ></ha-icon-button>
                   `
                 : ""}
-              ${supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
+              ${supportsFeature(
+                stateObj,
+                MediaPlayerEntityFeature.VOLUME_BUTTONS
+              )
                 ? html`
                     <ha-icon-button
                       action="volume_down"
@@ -127,7 +125,7 @@ class MoreInfoMediaPlayer extends LitElement {
                     ></ha-icon-button>
                   `
                 : ""}
-              ${supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+              ${supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
                 ? html`
                     <ha-slider
                       id="input"
@@ -143,7 +141,7 @@ class MoreInfoMediaPlayer extends LitElement {
           `
         : ""}
       ${![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state) &&
-      supportsFeature(stateObj, SUPPORT_SELECT_SOURCE) &&
+      supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOURCE) &&
       stateObj.attributes.source_list?.length
         ? html`
             <div class="source-input">
@@ -168,7 +166,7 @@ class MoreInfoMediaPlayer extends LitElement {
           `
         : ""}
       ${![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state) &&
-      supportsFeature(stateObj, SUPPORT_SELECT_SOUND_MODE) &&
+      supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOUND_MODE) &&
       stateObj.attributes.sound_mode_list?.length
         ? html`
             <div class="sound-input">

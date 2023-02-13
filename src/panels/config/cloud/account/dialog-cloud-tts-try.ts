@@ -14,7 +14,7 @@ import "../../../../components/ha-select";
 import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
 import { showAutomationEditor } from "../../../../data/automation";
-import { SUPPORT_PLAY_MEDIA } from "../../../../data/media-player";
+import { MediaPlayerEntityFeature } from "../../../../data/media-player";
 import { convertTextToSpeech } from "../../../../data/tts";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -94,7 +94,7 @@ export class DialogTryTts extends LitElement {
               .filter(
                 (entity) =>
                   computeStateDomain(entity) === "media_player" &&
-                  supportsFeature(entity, SUPPORT_PLAY_MEDIA)
+                  supportsFeature(entity, MediaPlayerEntityFeature.PLAY_MEDIA)
               )
               .map(
                 (entity) => html`
