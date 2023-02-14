@@ -1,21 +1,32 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-selector/ha-selector";
-import "./ha-form-boolean";
-import "./ha-form-constant";
-import "./ha-form-float";
-import "./ha-form-grid";
-import "./ha-form-expandable";
-import "./ha-form-integer";
-import "./ha-form-multi_select";
-import "./ha-form-positive_time_period_dict";
-import "./ha-form-select";
-import "./ha-form-string";
 import { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
+
+const LOAD_ELEMENTS = {
+  boolean: () => import("./ha-form-boolean"),
+  constant: () => import("./ha-form-constant"),
+  float: () => import("./ha-form-float"),
+  grid: () => import("./ha-form-grid"),
+  expandable: () => import("./ha-form-expandable"),
+  integer: () => import("./ha-form-integer"),
+  multi_select: () => import("./ha-form-multi_select"),
+  positive_time_period_dict: () =>
+    import("./ha-form-positive_time_period_dict"),
+  select: () => import("./ha-form-select"),
+  string: () => import("./ha-form-string"),
+};
 
 const getValue = (obj, item) =>
   obj ? (!item.name ? obj : obj[item.name]) : null;
@@ -43,6 +54,8 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public computeHelper?: (schema: any) => string | undefined;
 
+  @property() public localizeValue?: (key: string) => string;
+
   public focus() {
     const root = this.shadowRoot?.querySelector(".root");
     if (!root) {
@@ -53,6 +66,17 @@ export class HaForm extends LitElement implements HaFormElement {
         (child as HTMLElement).focus();
         break;
       }
+    }
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("schema") && this.schema) {
+      this.schema.forEach((item) => {
+        if ("selector" in item) {
+          return;
+        }
+        LOAD_ELEMENTS[item.type]?.();
+      });
     }
   }
 
@@ -86,7 +110,9 @@ export class HaForm extends LitElement implements HaFormElement {
                   .value=${getValue(this.data, item)}
                   .label=${this._computeLabel(item, this.data)}
                   .disabled=${item.disabled || this.disabled || false}
+                  .placeholder=${item.required ? "" : item.default}
                   .helper=${this._computeHelper(item)}
+                  .localizeValue=${this.localizeValue}
                   .required=${item.required || false}
                   .context=${this._generateContext(item)}
                 ></ha-selector>`

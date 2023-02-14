@@ -1,4 +1,5 @@
 // Compat needs to be first import
+import "../../src/resources/compatibility";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
 import {
@@ -6,7 +7,6 @@ import {
   provideHass,
 } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
-import "../../src/resources/compatibility";
 import { HomeAssistant } from "../../src/types";
 import { selectedDemoConfig } from "./configs/demo-configs";
 import { mockAuth } from "./stubs/auth";
@@ -71,6 +71,7 @@ class HaDemo extends HomeAssistantAppEl {
         entity_category: null,
         has_entity_name: false,
         unique_id: "co2_intensity",
+        options: null,
       },
       {
         config_entry_id: "co2signal",
@@ -86,6 +87,7 @@ class HaDemo extends HomeAssistantAppEl {
         entity_category: null,
         has_entity_name: false,
         unique_id: "grid_fossil_fuel_percentage",
+        options: null,
       },
     ]);
 

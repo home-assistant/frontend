@@ -277,13 +277,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                   .label=${this.hass.localize("ui.common.menu")}
                   .path=${mdiDotsVertical}
                 ></ha-icon-button>
-                <ha-clickable-list-item
-                  @click=${this._entryClicked}
-                  href="/config/lovelace/resources"
-                  aria-label=${this.hass.localize(
-                    "ui.panel.config.lovelace.resources.caption"
-                  )}
-                >
+                <ha-clickable-list-item href="/config/lovelace/resources">
                   ${this.hass.localize(
                     "ui.panel.config.lovelace.resources.caption"
                   )}
@@ -390,9 +384,5 @@ export class HaConfigLovelaceDashboards extends LitElement {
         }
       },
     });
-  }
-
-  private _entryClicked(ev) {
-    ev.currentTarget.blur();
   }
 }

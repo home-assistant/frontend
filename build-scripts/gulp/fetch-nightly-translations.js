@@ -1,9 +1,9 @@
 // Task to download the latest Lokalise translations from the nightly workflow artifacts
 
+const del = import("del");
 const fs = require("fs/promises");
 const path = require("path");
 const process = require("process");
-const del = require("del");
 const gulp = require("gulp");
 const jszip = require("jszip");
 const tar = require("tar");
@@ -17,8 +17,8 @@ const WORKFLOW_NAME = "nightly.yaml";
 const ARTIFACT_NAME = "translations";
 const CLIENT_ID = "Iv1.3914e28cb27834d1";
 const EXTRACT_DIR = "translations";
-const TOKEN_FILE = path.join(EXTRACT_DIR, "token.json");
-const ARTIFACT_FILE = path.join(EXTRACT_DIR, "artifact.json");
+const TOKEN_FILE = path.posix.join(EXTRACT_DIR, "token.json");
+const ARTIFACT_FILE = path.posix.join(EXTRACT_DIR, "artifact.json");
 
 let allowTokenSetup = false;
 gulp.task("allow-setup-fetch-nightly-translations", (done) => {
@@ -137,7 +137,11 @@ gulp.task("fetch-nightly-translations", async function () {
 
   // Remove the current translations
   const deleteCurrent = Promise.all(writings).then(
-    del([`${EXTRACT_DIR}/*`, `!${ARTIFACT_FILE}`, `!${TOKEN_FILE}`])
+    (await del).deleteAsync([
+      `${EXTRACT_DIR}/*`,
+      `!${ARTIFACT_FILE}`,
+      `!${TOKEN_FILE}`,
+    ])
   );
 
   // Get the download URL and follow the redirect to download (stored as ArrayBuffer)

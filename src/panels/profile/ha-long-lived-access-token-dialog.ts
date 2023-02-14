@@ -77,7 +77,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     await new Promise((resolve) => {
       imageObj.onload = resolve;
     });
-    context.drawImage(
+    context?.drawImage(
       imageObj,
       canvas.width / 3,
       canvas.height / 3,

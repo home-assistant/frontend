@@ -31,15 +31,21 @@ const chunkData = (inputArray: any[], chunks: number) =>
     return results;
   }, []);
 
+declare global {
+  interface HASSDomEvents {
+    "y-width-changed": { value: number; chartIndex: number };
+  }
+}
+
 @customElement("state-history-charts")
-class StateHistoryCharts extends LitElement {
+export class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public historyData!: HistoryResult;
 
   @property() public narrow!: boolean;
 
-  @property({ type: Boolean }) public names = false;
+  @property() public names?: Record<string, string>;
 
   @property({ type: Boolean, attribute: "virtualize", reflect: true })
   public virtualize = false;
@@ -56,10 +62,15 @@ class StateHistoryCharts extends LitElement {
 
   @state() private _computedEndTime!: Date;
 
+  @state() private _maxYWidth = 0;
+
+  @state() private _childYWidths: number[] = [];
+
+  @state() private _chartCount = 0;
+
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  @eventOptions({ passive: true })
   protected render(): TemplateResult {
     if (!isComponentLoaded(this.hass, "history")) {
       return html`<div class="info">
@@ -99,6 +110,8 @@ class StateHistoryCharts extends LitElement {
         ).concat(this.historyData.line)
       : this.historyData.line;
 
+    this._chartCount = combinedItems.length;
+
     return this.virtualize
       ? html`<div class="container ha-scrollbar" @scroll=${this._saveScrollPos}>
           <lit-virtualizer
@@ -130,7 +143,10 @@ class StateHistoryCharts extends LitElement {
           .identifier=${item.identifier}
           .showNames=${this.showNames}
           .endTime=${this._computedEndTime}
+          .paddingYAxis=${this._maxYWidth}
           .names=${this.names}
+          .chartIndex=${index}
+          @y-width-changed=${this._yWidthChanged}
         ></state-history-chart-line>
       </div> `;
     }
@@ -144,12 +160,30 @@ class StateHistoryCharts extends LitElement {
         .names=${this.names}
         .narrow=${this.narrow}
         .chunked=${this.virtualize}
+        .paddingYAxis=${this._maxYWidth}
+        .chartIndex=${index}
+        @y-width-changed=${this._yWidthChanged}
       ></state-history-chart-timeline>
     </div> `;
   };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return !(changedProps.size === 1 && changedProps.has("hass"));
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("_chartCount")) {
+      if (this._chartCount < this._childYWidths.length) {
+        this._childYWidths.length = this._chartCount;
+        this._maxYWidth =
+          this._childYWidths.length === 0 ? 0 : Math.max(...this._childYWidths);
+      }
+    }
+  }
+
+  private _yWidthChanged(e: CustomEvent<HASSDomEvents["y-width-changed"]>) {
+    this._childYWidths[e.detail.chartIndex] = e.detail.value;
+    this._maxYWidth = Math.max(...this._childYWidths);
   }
 
   private _isHistoryEmpty(): boolean {

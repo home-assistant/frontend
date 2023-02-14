@@ -48,7 +48,7 @@ export const darkStyles = {
   "energy-grid-return-color": "#a280db",
   "map-filter":
     "invert(.9) hue-rotate(170deg) brightness(1.5) contrast(1.2) saturate(.3)",
-  "rgb-disabled-color": "70, 70, 70",
+  "disabled-color": "#464646",
 };
 
 export const derivedStyles = {
