@@ -12726,18 +12726,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"open@npm:^8.0.9, open@npm:^8.4.0":
-  version: 8.4.0
-  resolution: "open@npm:8.4.0"
-  dependencies:
-    define-lazy-prop: ^2.0.0
-    is-docker: ^2.1.1
-    is-wsl: ^2.2.0
-  checksum: e9545bec64cdbf30a0c35c1bdc310344adf8428a117f7d8df3c0af0a0a24c513b304916a6d9b11db0190ff7225c2d578885080b761ed46a3d5f6f1eebb98b63c
-  languageName: node
-  linkType: hard
-
-"open@npm:^8.4.1":
+"open@npm:^8.0.9, open@npm:^8.4.0, open@npm:^8.4.1":
   version: 8.4.1
   resolution: "open@npm:8.4.1"
   dependencies:
