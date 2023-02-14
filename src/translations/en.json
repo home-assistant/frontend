@@ -1008,6 +1008,41 @@
           "aliases_description": "Aliases are alternative names used in voice assistants to refer to this entity."
         }
       },
+      "restart": {
+        "heading": "Restart Home Assistant",
+        "advanced_options": "Advanced options",
+        "reload": {
+          "title": "Quick reload",
+          "description": "Load new YAML configurations without a restart.",
+          "reloading": "Reloading configuration"
+        },
+        "restart": {
+          "title": "Restart Home Assistant",
+          "description": "Interrupts all running automations and scripts.",
+          "confirm_title": "Restart?",
+          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_action": "Restart Home Assistant",
+          "failed": "Failed to restart Home Assistant"
+        },
+        "reboot": {
+          "title": "Reboot system",
+          "description": "Restart the system running Home Assistant and all Add-ons.",
+          "confirm_title": "Reboot system?",
+          "confirm_description": "This will reboot the complete system which includes Home Assistant and all the Add-ons.",
+          "confirm_action": "Reboot",
+          "rebooting": "Rebooting system",
+          "failed": "Failed to reboot system"
+        },
+        "shutdown": {
+          "title": "Shutdown system",
+          "description": "Shutdown the system running Home Assistant and all Add-ons.",
+          "confirm_title": "Shutdown system?",
+          "confirm_description": "This will shutdown the complete system whitch includes Home Assistant and all Add-ons.",
+          "confirm_action": "Shutdown",
+          "shutting_down": "Shutting down system",
+          "failed": "Failed to shutdown system"
+        }
+      },
       "aliases": {
         "heading": "{name} aliases",
         "remove_alias": "Remove alias {number}",
@@ -1742,24 +1777,16 @@
             "id": "ID",
             "attributes": "Attributes"
           },
+          "reboot_moved_title": "Reboot and shutdown moved",
+          "reboot_moved_description": "Reboot and shutdown actions has been moved to system page.",
+          "reboot_moved_link": "Go to system page.",
           "processor": "Processor",
           "memory": "Memory",
-          "rebooting_host": "Rebooting system",
-          "reboot": "Reboot",
-          "reboot_host": "Reboot system",
-          "reboot_host_title": "Reboot system?",
-          "reboot_host_text": "This will reboot the complete system which includes the Core and all Add-ons.",
-          "failed_to_reboot_host": "Failed to reboot system",
-          "host_shutting_down": "system shutting down",
-          "shutdown": "Shutdown",
-          "shutdown_host": "Shutdown system",
-          "shutdown_host_title": "Shutdown system?",
-          "shutdown_host_text": "This will shutdown the complete system which includes the Core and all Add-ons.",
-          "failed_to_shutdown_host": "Failed to shutdown system",
           "board": "Board",
           "documentation": "Documentation",
           "configure": "Configure",
-          "documentation_description": "Find extra information about your device"
+          "documentation_description": "Find extra information about your device",
+          "restart_homeassistant": "[%key:ui::panel::config::system_dashboard::restart_homeassistant%]"
         },
         "info": {
           "caption": "About",
@@ -3734,10 +3761,7 @@
           "integration_start_time": "Integration Startup Time"
         },
         "system_dashboard": {
-          "confirm_restart_text": "This will stop all your active dashboards, automations and scripts.",
-          "confirm_restart_title": "Restart Home Assistant?",
-          "restart_homeassistant_short": "Restart",
-          "restart_error": "Failed to restart Home Assistant"
+          "restart_homeassistant": "Restart Home Assistant"
         }
       },
       "lovelace": {
