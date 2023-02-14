@@ -5,6 +5,7 @@ import {
   mdiDevices,
   mdiDotsVertical,
   mdiPencilOutline,
+  mdiSofaOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues } from "lit";
@@ -22,7 +23,8 @@ import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-list-item";
-import "../../components/ha-related-items";
+import { DeviceRegistryEntry } from "../../data/device_registry";
+import { EntityRegistryEntry } from "../../data/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
@@ -44,7 +46,7 @@ export interface MoreInfoDialogParams {
   tab?: Tab;
 }
 
-type Tab = "info" | "history" | "settings" | "related";
+type Tab = "info" | "history" | "settings";
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends LitElement {
@@ -99,6 +101,30 @@ export class MoreInfoDialog extends LitElement {
     );
   }
 
+  protected _getDeviceId(): string | null {
+    const entity = this.hass.entities[this._entityId!] as
+      | EntityRegistryEntry
+      | undefined;
+    return entity?.device_id ?? null;
+  }
+
+  protected _getAreaId(): string | null {
+    const entity = this.hass.entities[this._entityId!] as
+      | EntityRegistryEntry
+      | undefined;
+    if (!entity) return null;
+
+    if (entity.area_id) return entity.area_id;
+
+    if (!entity.device_id) return null;
+
+    const device = this.hass.devices[entity.device_id] as
+      | DeviceRegistryEntry
+      | undefined;
+
+    return device?.area_id ?? null;
+  }
+
   private back() {
     this._currTab = "info";
   }
@@ -112,9 +138,24 @@ export class MoreInfoDialog extends LitElement {
     this._currTab = "settings";
   }
 
-  private _goToRelated(ev): void {
+  private _goToDevice(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
-    this._currTab = "related";
+    const deviceId = this._getDeviceId();
+
+    if (!deviceId) return;
+
+    navigate(`/config/devices/device/${deviceId}`);
+    this.closeDialog();
+  }
+
+  private _goToArea(ev): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) return;
+    const areaId = this._getAreaId();
+
+    if (!areaId) return;
+
+    navigate(`/config/areas/area/${areaId}`);
+    this.closeDialog();
   }
 
   private _goToEdit(ev) {
@@ -218,18 +259,34 @@ export class MoreInfoDialog extends LitElement {
                             .path=${mdiCogOutline}
                           ></ha-svg-icon>
                         </ha-list-item>
-
-                        <ha-list-item
-                          graphic="icon"
-                          @request-selected=${this._goToRelated}
-                        >
-                          Related
-                          <ha-svg-icon
-                            slot="graphic"
-                            .path=${mdiDevices}
-                          ></ha-svg-icon>
-                        </ha-list-item>
-
+                        ${this._getDeviceId()
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._goToDevice}
+                              >
+                                Device info
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiDevices}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : null}
+                        ${this._getAreaId()
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._goToArea}
+                              >
+                                Area overview
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiSofaOutline}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : null}
                         ${this.shouldShowEditIcon(domain, stateObj)
                           ? html`
                               <ha-list-item
@@ -274,14 +331,7 @@ export class MoreInfoDialog extends LitElement {
                     .entityId=${this._entityId}
                   ></ha-more-info-settings>
                 `
-              : html`
-                  <ha-related-items
-                    class="content"
-                    .hass=${this.hass}
-                    .itemId=${entityId}
-                    itemType="entity"
-                  ></ha-related-items>
-                `
+              : null
           )}
         </div>
       </ha-dialog>
