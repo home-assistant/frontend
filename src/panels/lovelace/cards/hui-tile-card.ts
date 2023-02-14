@@ -493,6 +493,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         box-sizing: border-box;
         pointer-events: none;
       }
+      .features {
+        position: relative;
+      }
     `;
   }
 }
