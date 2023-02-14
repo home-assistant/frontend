@@ -39,6 +39,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -176,7 +177,9 @@ export class HaAutomationTrace extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.panel.config.automation.trace.older_trace"
                   )}
-                  .path=${mdiRayEndArrow}
+                  .path=${computeRTL(this.hass!)
+                    ? mdiRayStartArrow
+                    : mdiRayEndArrow}
                   .disabled=${this._traces[this._traces.length - 1].run_id ===
                   this._runId}
                   @click=${this._pickOlderTrace}
@@ -198,7 +201,9 @@ export class HaAutomationTrace extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.panel.config.automation.trace.newer_trace"
                   )}
-                  .path=${mdiRayStartArrow}
+                  .path=${computeRTL(this.hass!)
+                    ? mdiRayEndArrow
+                    : mdiRayStartArrow}
                   .disabled=${this._traces[0].run_id === this._runId}
                   @click=${this._pickNewerTrace}
                 ></ha-icon-button>
