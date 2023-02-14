@@ -1,33 +1,42 @@
+import {
+  mdiChartBoxOutline,
+  mdiClose,
+  mdiCogOutline,
+  mdiDevices,
+  mdiDotsVertical,
+  mdiPencilOutline,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import "@material/mwc-button";
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
-import { mdiClose, mdiPencil } from "@mdi/js";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
+import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-prev";
+import "../../components/ha-list-item";
 import "../../components/ha-related-items";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import {
-  EDITABLE_DOMAINS_WITH_ID,
-  EDITABLE_DOMAINS_WITH_UNIQUE_ID,
-  DOMAINS_WITH_MORE_INFO,
   computeShowHistoryComponent,
   computeShowLogBookComponent,
+  DOMAINS_WITH_MORE_INFO,
+  EDITABLE_DOMAINS_WITH_ID,
+  EDITABLE_DOMAINS_WITH_UNIQUE_ID,
 } from "./const";
 import "./controls/more-info-default";
+import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
-import "./ha-more-info-history-and-logbook";
 import "./more-info-content";
 
 export interface MoreInfoDialogParams {
@@ -82,16 +91,59 @@ export class MoreInfoDialog extends LitElement {
     return false;
   }
 
+  protected shouldShowHistory(domain: string): boolean {
+    return (
+      DOMAINS_WITH_MORE_INFO.includes(domain) &&
+      (computeShowHistoryComponent(this.hass, this._entityId!) ||
+        computeShowLogBookComponent(this.hass, this._entityId!))
+    );
+  }
+
+  private back() {
+    this._currTab = "info";
+  }
+
+  private _goToHistory() {
+    this._currTab = "history";
+  }
+
+  private _goToSettings(ev): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) return;
+    this._currTab = "settings";
+  }
+
+  private _goToRelated(ev): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) return;
+    this._currTab = "related";
+  }
+
+  private _goToEdit(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) return;
+    const stateObj = this.hass.states[this._entityId!];
+    const domain = computeDomain(this._entityId!);
+    let idToPassThroughUrl = stateObj.entity_id;
+    if (EDITABLE_DOMAINS_WITH_ID.includes(domain) || domain === "person") {
+      idToPassThroughUrl = stateObj.attributes.id;
+    }
+    if (EDITABLE_DOMAINS_WITH_UNIQUE_ID.includes(domain)) {
+      idToPassThroughUrl = this.hass.entities[this._entityId!].unique_id;
+    }
+
+    navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
+    this.closeDialog();
+  }
+
   protected render() {
     if (!this._entityId) {
-      return html``;
+      return null;
     }
     const entityId = this._entityId;
     const stateObj = this.hass.states[entityId];
 
     const domain = computeDomain(entityId);
     const name = (stateObj && computeStateName(stateObj)) || entityId;
-    const tabs = this._getTabs(entityId, this.hass.user!.is_admin);
+
+    const isAdmin = this.hass.user!.is_admin;
 
     return html`
       <ha-dialog
@@ -103,14 +155,26 @@ export class MoreInfoDialog extends LitElement {
       >
         <div slot="heading" class="heading">
           <ha-header-bar>
-            <ha-icon-button
-              slot="navigationIcon"
-              dialogAction="cancel"
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_control.dismiss"
-              )}
-              .path=${mdiClose}
-            ></ha-icon-button>
+            ${this._currTab === "info"
+              ? html`
+                  <ha-icon-button
+                    slot="navigationIcon"
+                    dialogAction="cancel"
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.dismiss"
+                    )}
+                    .path=${mdiClose}
+                  ></ha-icon-button>
+                `
+              : html`
+                  <ha-icon-button-prev
+                    slot="navigationIcon"
+                    @click=${this.back}
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.dismiss"
+                    )}
+                  ></ha-icon-button-prev>
+                `}
             <div
               slot="title"
               class="main-title"
@@ -119,38 +183,72 @@ export class MoreInfoDialog extends LitElement {
             >
               ${name}
             </div>
-            ${this.shouldShowEditIcon(domain, stateObj)
+            ${this._currTab === "info"
               ? html`
-                  <ha-icon-button
-                    slot="actionItems"
-                    .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.edit"
-                    )}
-                    .path=${mdiPencil}
-                    @click=${this._gotoEdit}
-                  ></ha-icon-button>
-                `
-              : ""}
-          </ha-header-bar>
+                  ${this.shouldShowHistory(domain)
+                    ? html`
+                        <ha-icon-button
+                          slot="actionItems"
+                          .label=${"History"}
+                          .path=${mdiChartBoxOutline}
+                          @click=${this._goToHistory}
+                        ></ha-icon-button>
+                      `
+                    : null}
+                  ${isAdmin
+                    ? html`<ha-button-menu
+                        corner="BOTTOM_END"
+                        menuCorner="END"
+                        slot="actionItems"
+                        @closed=${stopPropagation}
+                      >
+                        <ha-icon-button
+                          slot="trigger"
+                          .label=${this.hass.localize("ui.common.menu")}
+                          .path=${mdiDotsVertical}
+                        ></ha-icon-button>
 
-          ${tabs.length > 1
-            ? html`
-                <mwc-tab-bar
-                  .activeIndex=${tabs.indexOf(this._currTab)}
-                  @MDCTabBar:activated=${this._handleTabChanged}
-                >
-                  ${tabs.map(
-                    (tab) => html`
-                      <mwc-tab
-                        .label=${this.hass.localize(
-                          `ui.dialogs.more_info_control.${tab}`
-                        )}
-                      ></mwc-tab>
-                    `
-                  )}
-                </mwc-tab-bar>
-              `
-            : ""}
+                        <ha-list-item
+                          graphic="icon"
+                          @request-selected=${this._goToSettings}
+                        >
+                          Settings
+                          <ha-svg-icon
+                            slot="graphic"
+                            .path=${mdiCogOutline}
+                          ></ha-svg-icon>
+                        </ha-list-item>
+
+                        <ha-list-item
+                          graphic="icon"
+                          @request-selected=${this._goToRelated}
+                        >
+                          Related
+                          <ha-svg-icon
+                            slot="graphic"
+                            .path=${mdiDevices}
+                          ></ha-svg-icon>
+                        </ha-list-item>
+
+                        ${this.shouldShowEditIcon(domain, stateObj)
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._goToEdit}
+                              >
+                                Edit
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiPencilOutline}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : null}
+                      </ha-button-menu>`
+                    : null}
+                `
+              : null}
+          </ha-header-bar>
         </div>
 
         <div class="content" tabindex="-1" dialogInitialFocus>
@@ -195,17 +293,6 @@ export class MoreInfoDialog extends LitElement {
     this.addEventListener("close-dialog", () => this.closeDialog());
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-    if (!this._entityId) {
-      return;
-    }
-    const tabs = this._getTabs(this._entityId, this.hass.user!.is_admin);
-    if (!tabs.includes(this._currTab)) {
-      this._currTab = tabs[0];
-    }
-  }
-
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_currTab")) {
@@ -213,56 +300,8 @@ export class MoreInfoDialog extends LitElement {
     }
   }
 
-  private _getTabs(entityId: string, isAdmin: boolean): Tab[] {
-    const domain = computeDomain(entityId);
-    const tabs: Tab[] = ["info"];
-
-    // Info and history are combined in info when there are no
-    // dedicated more-info controls. If not combined, add a history tab.
-    if (
-      DOMAINS_WITH_MORE_INFO.includes(domain) &&
-      (computeShowHistoryComponent(this.hass, entityId) ||
-        computeShowLogBookComponent(this.hass, entityId))
-    ) {
-      tabs.push("history");
-    }
-
-    if (isAdmin) {
-      tabs.push("settings");
-      tabs.push("related");
-    }
-
-    return tabs;
-  }
-
   private _enlarge() {
     this.large = !this.large;
-  }
-
-  private _gotoEdit() {
-    const stateObj = this.hass.states[this._entityId!];
-    const domain = computeDomain(this._entityId!);
-    let idToPassThroughUrl = stateObj.entity_id;
-    if (EDITABLE_DOMAINS_WITH_ID.includes(domain) || domain === "person") {
-      idToPassThroughUrl = stateObj.attributes.id;
-    }
-    if (EDITABLE_DOMAINS_WITH_UNIQUE_ID.includes(domain)) {
-      idToPassThroughUrl = this.hass.entities[this._entityId!].unique_id;
-    }
-
-    navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
-    this.closeDialog();
-  }
-
-  private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = this._getTabs(this._entityId!, this.hass.user!.is_admin)[
-      ev.detail.index
-    ];
-    if (newTab === this._currTab) {
-      return;
-    }
-
-    this._currTab = newTab;
   }
 
   static get styles() {
