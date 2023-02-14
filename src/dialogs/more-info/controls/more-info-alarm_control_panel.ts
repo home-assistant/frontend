@@ -22,7 +22,7 @@ export class MoreInfoAlarmControlPanel extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _armActions!: string[];
+  @state() private _armActions?: string[];
 
   @query("#alarmCode") private _input?: HaTextField;
 
@@ -116,7 +116,7 @@ export class MoreInfoAlarmControlPanel extends LitElement {
           `}
       <div class="actions">
         ${(this.stateObj.state === "disarmed"
-          ? this._armActions
+          ? this._armActions ?? []
           : DISARM_ACTIONS
         ).map(
           (stateAction) => html`
