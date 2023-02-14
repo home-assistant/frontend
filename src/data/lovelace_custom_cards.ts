@@ -11,8 +11,8 @@ export interface CustomCardEntry {
 export interface CustomTileFeatureEntry {
   type: string;
   name?: string;
-  isSupported?: (stateObj: HassEntity) => boolean;
-  editable?: boolean;
+  supported?: (stateObj: HassEntity) => boolean;
+  configurable?: boolean;
 }
 
 export interface CustomCardsWindow {

@@ -90,9 +90,9 @@ export class HuiTileCardFeaturesEditor extends LitElement {
     if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
       const customType = type.slice(CUSTOM_TYPE_PREFIX.length);
       const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
-      if (!customFeatureEntry?.isSupported) return true;
+      if (!customFeatureEntry?.supported) return true;
       try {
-        return customFeatureEntry.isSupported(this.stateObj);
+        return customFeatureEntry.supported(this.stateObj);
       } catch {
         return false;
       }
@@ -105,7 +105,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   private _isFeatureTypeEditable(type: string) {
     if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
       const customType = type.slice(CUSTOM_TYPE_PREFIX.length);
-      return CUSTOM_FEATURE_ENTRIES[customType]?.editable;
+      return CUSTOM_FEATURE_ENTRIES[customType]?.configurable;
     }
 
     return EDITABLES_FEATURE_TYPES.has(type as FeatureType);
