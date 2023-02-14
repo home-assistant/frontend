@@ -33,9 +33,7 @@ jobs:
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install
-        env:
-          CI: true
+        run: yarn install --immutable
 
       - name: Build Cast
         run: ./node_modules/.bin/gulp build-cast
@@ -71,9 +69,7 @@ jobs:
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install
-        env:
-          CI: true
+        run: yarn install --immutable
 
       - name: Build Cast
         run: ./node_modules/.bin/gulp build-cast
