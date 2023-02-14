@@ -50,5 +50,5 @@ jobs:
           git config user.name "Home Assistant Committer"
           git config user.email "hello@home-assistant.io"
           git add yarn.lock
-          git commit -m "Deduplicate dependencies" || exit 0
+          git commit -m "Deduplicate dependencies [dependabot skip]" || exit 0
           git push origin "HEAD:${GITHUB_HEAD_REF}"
