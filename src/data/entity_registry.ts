@@ -78,6 +78,10 @@ export interface NumberEntityOptions {
   unit_of_measurement?: string | null;
 }
 
+export interface LockEntityOptions {
+  default_code?: string | null;
+}
+
 export interface WeatherEntityOptions {
   precipitation_unit?: string | null;
   pressure_unit?: string | null;
@@ -88,6 +92,7 @@ export interface WeatherEntityOptions {
 
 export interface EntityRegistryOptions {
   number?: NumberEntityOptions;
+  lock?: LockEntityOptions;
   sensor?: SensorEntityOptions;
   weather?: WeatherEntityOptions;
 }
@@ -101,7 +106,11 @@ export interface EntityRegistryEntryUpdateParams {
   hidden_by: string | null;
   new_entity_id?: string;
   options_domain?: string;
-  options?: SensorEntityOptions | NumberEntityOptions | WeatherEntityOptions;
+  options?:
+    | SensorEntityOptions
+    | NumberEntityOptions
+    | LockEntityOptions
+    | WeatherEntityOptions;
   aliases?: string[];
 }
 

@@ -921,6 +921,7 @@
           "name": "Name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
+          "default_code": "Default code",
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of Measurement",
           "precipitation_unit": "Precipitation unit",
