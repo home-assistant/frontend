@@ -133,7 +133,7 @@
     "tsparticles-preset-links": "^2.9.3",
     "unfetch": "^5.0.0",
     "vis-data": "^7.1.4",
-    "vis-network": "^8.5.4",
+    "vis-network": "^9.1.2",
     "vue": "^2.6.12",
     "vue2-daterange-picker": "^0.5.1",
     "weekstart": "^1.1.0",
