@@ -73,7 +73,9 @@ export interface MediaPlayerEntity extends HassEntityBase {
     | "off"
     | "on"
     | "unavailable"
-    | "unknown";
+    | "unknown"
+    | "standby"
+    | "buffering";
 }
 
 export const enum MediaPlayerEntityFeature {
