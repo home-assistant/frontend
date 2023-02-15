@@ -9735,7 +9735,7 @@ fsevents@^1.2.7:
     vis-data: ^7.1.4
     vis-network: ^9.1.2
     vue: ^2.6.12
-    vue2-daterange-picker: ^0.5.1
+    vue2-daterange-picker: ^0.6.8
     webpack: ^5.55.1
     webpack-cli: ^5.0.1
     webpack-dev-server: ^4.11.1
@@ -16164,12 +16164,12 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"vue2-daterange-picker@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "vue2-daterange-picker@npm:0.5.1"
+"vue2-daterange-picker@npm:^0.6.8":
+  version: 0.6.8
+  resolution: "vue2-daterange-picker@npm:0.6.8"
   dependencies:
     vue: ^2.6.10
-  checksum: 93951b84a8a40e4092ca805206b47ae6490951d1816674b650990dece018f8e48085661c2a4ef13ca9c8e23aecbca507f7c2b305d37c08a73ef898841e9cec4f
+  checksum: ac928b60b3e08e8b27d019adcde9380dc809557611b774a77d20d838403484526250b275326baa92cfb362b96c9988ddf2957d27f6f76b650b2da37f54f9b77c
   languageName: node
   linkType: hard
 

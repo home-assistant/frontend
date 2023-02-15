@@ -135,7 +135,7 @@
     "vis-data": "^7.1.4",
     "vis-network": "^9.1.2",
     "vue": "^2.6.12",
-    "vue2-daterange-picker": "^0.5.1",
+    "vue2-daterange-picker": "^0.6.8",
     "weekstart": "^1.1.0",
     "workbox-cacheable-response": "^6.5.4",
     "workbox-core": "^6.5.4",
