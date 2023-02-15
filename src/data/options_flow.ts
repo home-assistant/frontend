@@ -38,8 +38,6 @@ export const handleOptionsFlowStep = (
 function transformEmptiedFields<T>(
   data: Record<string, T>
 ): Record<string, T | null> {
-  // If a field is undefined it was emptied by the user
-  // Set it to null so it won't be overridden by voluptuous defaults in core
   const toSendData: Record<string, T | null> = {};
 
   for (const [key, value] of Object.entries(data)) {
