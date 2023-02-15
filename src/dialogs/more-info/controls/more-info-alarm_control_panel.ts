@@ -22,7 +22,7 @@ export class MoreInfoAlarmControlPanel extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _armActions?: string[];
+  @state() private _armActions: string[] = [];
 
   @query("#alarmCode") private _input?: HaTextField;
 
