@@ -513,6 +513,17 @@
         "data": "Service data",
         "integration_doc": "Integration documentation"
       },
+      "related-items": {
+        "no_related_found": "No related items found.",
+        "integration": "Integration",
+        "device": "Device",
+        "area": "Area",
+        "entity": "Related entities",
+        "group": "Part of the following groups",
+        "scene": "Part of the following scenes",
+        "script": "Part of the following scripts",
+        "automation": "Part of the following automations"
+      },
       "data-table": {
         "search": "Search",
         "no-data": "No data",
