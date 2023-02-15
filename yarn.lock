@@ -16218,14 +16218,7 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"vue@npm:^2.6.10":
-  version: 2.6.12
-  resolution: "vue@npm:2.6.12"
-  checksum: a8959e30990c5464131e451d3f9c2a6e6964c2d1137a30fbcd2bc66174a6c2d6f63e4dcec9c17fa0f236580953ff1ad44c25437c5e02ee1cf74b588bbac1a0bf
-  languageName: node
-  linkType: hard
-
-"vue@npm:^2.7.14":
+"vue@npm:^2.6.10, vue@npm:^2.7.14":
   version: 2.7.14
   resolution: "vue@npm:2.7.14"
   dependencies:
