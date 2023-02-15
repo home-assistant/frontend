@@ -1037,7 +1037,7 @@
           "title": "Shutdown system",
           "description": "Shutdown the system running Home Assistant and all Add-ons.",
           "confirm_title": "Shutdown system?",
-          "confirm_description": "This will shutdown the complete system whitch includes Home Assistant and all Add-ons.",
+          "confirm_description": "This will shutdown the complete system which includes Home Assistant and all Add-ons.",
           "confirm_action": "Shutdown",
           "shutting_down": "Shutting down system",
           "failed": "Failed to shutdown system"
