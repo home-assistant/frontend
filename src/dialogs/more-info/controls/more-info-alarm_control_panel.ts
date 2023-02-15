@@ -116,7 +116,7 @@ export class MoreInfoAlarmControlPanel extends LitElement {
           `}
       <div class="actions">
         ${(this.stateObj.state === "disarmed"
-          ? this._armActions ?? []
+          ? this._armActions
           : DISARM_ACTIONS
         ).map(
           (stateAction) => html`
