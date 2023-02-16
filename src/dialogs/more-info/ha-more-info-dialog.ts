@@ -135,8 +135,7 @@ export class MoreInfoDialog extends LitElement {
     this._currTab = "history";
   }
 
-  private _goToSettings(ev): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) return;
+  private _goToSettings(): void {
     this._currTab = "settings";
   }
 
@@ -246,6 +245,12 @@ export class MoreInfoDialog extends LitElement {
                         ></ha-icon-button>
                       `
                     : null}
+                  <ha-icon-button
+                    slot="actionItems"
+                    .label=${"Settings"}
+                    .path=${mdiCogOutline}
+                    @click=${this._goToSettings}
+                  ></ha-icon-button>
                   ${isAdmin
                     ? html`<ha-button-menu
                         corner="BOTTOM_END"
@@ -260,16 +265,6 @@ export class MoreInfoDialog extends LitElement {
                           .path=${mdiDotsVertical}
                         ></ha-icon-button>
 
-                        <ha-list-item
-                          graphic="icon"
-                          @request-selected=${this._goToSettings}
-                        >
-                          Settings
-                          <ha-svg-icon
-                            slot="graphic"
-                            .path=${mdiCogOutline}
-                          ></ha-svg-icon>
-                        </ha-list-item>
                         ${deviceId
                           ? html`
                               <ha-list-item
@@ -424,6 +419,11 @@ export class MoreInfoDialog extends LitElement {
           --video-max-height: calc(100vh - 113px - 72px);
         }
 
+        .main-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
         @media all and (min-width: 600px) and (min-height: 501px) {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
@@ -433,8 +433,6 @@ export class MoreInfoDialog extends LitElement {
           }
 
           .main-title {
-            overflow: hidden;
-            text-overflow: ellipsis;
             cursor: default;
           }
 
