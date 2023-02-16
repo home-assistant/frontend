@@ -316,7 +316,6 @@ export class MoreInfoDialog extends LitElement {
                 `
               : html`
                   <ha-related-items
-                    class="content"
                     .hass=${this.hass}
                     .itemId=${entityId}
                     itemType="entity"
