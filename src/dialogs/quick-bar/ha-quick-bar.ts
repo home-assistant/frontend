@@ -242,7 +242,9 @@ export class QuickBar extends LitElement {
                   : ""}
               </mwc-list>
             `}
-        ${this._hint ? html`<ha-tip>${this._hint}</ha-tip>` : ""}
+        ${this._hint
+          ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
+          : ""}
       </ha-dialog>
     `;
   }
