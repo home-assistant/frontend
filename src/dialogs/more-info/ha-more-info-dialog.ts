@@ -191,7 +191,7 @@ export class MoreInfoDialog extends LitElement {
                     slot="navigationIcon"
                     @click=${this.back}
                     .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.dismiss"
+                      "ui.dialogs.more_info_control.back_to_info"
                     )}
                   ></ha-icon-button-prev>
                 `}
@@ -209,7 +209,9 @@ export class MoreInfoDialog extends LitElement {
                     ? html`
                         <ha-icon-button
                           slot="actionItems"
-                          .label=${"History"}
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.history"
+                          )}
                           .path=${mdiChartBoxOutline}
                           @click=${this._goToHistory}
                         ></ha-icon-button>
@@ -217,7 +219,9 @@ export class MoreInfoDialog extends LitElement {
                     : null}
                   <ha-icon-button
                     slot="actionItems"
-                    .label=${"Settings"}
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.settings"
+                    )}
                     .path=${mdiCogOutline}
                     @click=${this._goToSettings}
                   ></ha-icon-button>
@@ -241,7 +245,9 @@ export class MoreInfoDialog extends LitElement {
                                 graphic="icon"
                                 @request-selected=${this._goToDevice}
                               >
-                                Device info
+                                ${this.hass.localize(
+                                  "ui.dialogs.more_info_control.device_info"
+                                )}
                                 <ha-svg-icon
                                   slot="graphic"
                                   .path=${mdiDevices}
@@ -255,7 +261,9 @@ export class MoreInfoDialog extends LitElement {
                                 graphic="icon"
                                 @request-selected=${this._goToEdit}
                               >
-                                Edit
+                                ${this.hass.localize(
+                                  "ui.dialogs.more_info_control.edit"
+                                )}
                                 <ha-svg-icon
                                   slot="graphic"
                                   .path=${mdiPencilOutline}
@@ -267,7 +275,9 @@ export class MoreInfoDialog extends LitElement {
                           graphic="icon"
                           @request-selected=${this._goToRelated}
                         >
-                          Related
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.related"
+                          )}
                           <ha-svg-icon
                             slot="graphic"
                             .path=${mdiInformationOutline}
