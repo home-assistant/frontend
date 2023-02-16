@@ -131,7 +131,7 @@ class StepFlowForm extends LitElement {
       const step = await this.flowConfig.handleFlowStep(
         this.hass,
         this.step.flow_id,
-        stepData
+        this._transformEmptiedFields(stepData)
       );
 
       // make sure we're still showing the same step as when we
@@ -149,6 +149,30 @@ class StepFlowForm extends LitElement {
     } finally {
       this._loading = false;
     }
+  }
+
+  /**
+   * If a field is undefined it was emptied by the user.
+   *
+   * If their schema allows none set those to null so they won't be overridden
+   * by voluptuous defaults in core.
+   * @param data The config flow payload
+   * @returns the same data where undefined fields are null if they allow it
+   */
+  private _transformEmptiedFields<T>(
+    data: Record<string, T>
+  ): Record<string, T | null> {
+    const toSendData: Record<string, T | null> = data;
+
+    this.step.data_schema
+      .filter((field) => field.allow_none === true)
+      .forEach((field) => {
+        if (toSendData[field.name] === undefined) {
+          toSendData[field.name] = null;
+        }
+      });
+
+    return toSendData;
   }
 
   private _stepDataChanged(ev: CustomEvent): void {

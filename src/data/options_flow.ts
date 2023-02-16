@@ -25,27 +25,8 @@ export const handleOptionsFlowStep = (
   hass.callApi<DataEntryFlowStep>(
     "POST",
     `config/config_entries/options/flow/${flowId}`,
-    transformEmptiedFields(data)
+    data
   );
-
-/**
- * If a field is undefined it was emptied by the user.
- *
- * Set those to null so they won't be overridden by voluptuous defaults in core
- * @param data Data which is intended to be send as the OptionFlow payload
- * @returns the same data where undefined fields are null instead
- */
-function transformEmptiedFields<T>(
-  data: Record<string, T>
-): Record<string, T | null> {
-  const toSendData: Record<string, T | null> = {};
-
-  for (const [key, value] of Object.entries(data)) {
-    toSendData[key] = value !== undefined ? value : null;
-  }
-
-  return toSendData;
-}
 
 export const deleteOptionsFlow = (hass: HomeAssistant, flowId: string) =>
   hass.callApi("DELETE", `config/config_entries/options/flow/${flowId}`);

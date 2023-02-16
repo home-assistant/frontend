@@ -21,6 +21,7 @@ export interface HaFormBaseSchema {
   default?: HaFormData;
   required?: boolean;
   disabled?: boolean;
+  allow_none?: boolean;
   description?: {
     suffix?: string;
     // This value will be set initially when form is loaded
