@@ -1385,15 +1385,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/commands@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "@codemirror/commands@npm:6.2.0"
+"@codemirror/commands@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "@codemirror/commands@npm:6.2.1"
   dependencies:
     "@codemirror/language": ^6.0.0
     "@codemirror/state": ^6.2.0
     "@codemirror/view": ^6.0.0
     "@lezer/common": ^1.0.0
-  checksum: 13475fcd348335b4c31e563cbe83b98fdaa99218da882e3fbe6bad66841c55a69030e4a1a5f475ba2607db194d3b43b91e38fd088f9f4196b1ed4eac5b523909
+  checksum: 216308c57745e86bdd9cbbecc8fa6d8302c340674c3f1837894f1eeb12a91d47adeb24a1d1d76faf05f7630f6dd80b9dad974ff23f017370ebdc5329b2204262
   languageName: node
   linkType: hard
 
@@ -9520,7 +9520,7 @@ fsevents@^1.2.7:
     "@babel/preset-typescript": ^7.18.6
     "@braintree/sanitize-url": ^6.0.2
     "@codemirror/autocomplete": ^6.4.1
-    "@codemirror/commands": ^6.2.0
+    "@codemirror/commands": ^6.2.1
     "@codemirror/language": ^6.4.0
     "@codemirror/legacy-modes": ^6.3.1
     "@codemirror/search": ^6.2.3
