@@ -43,10 +43,12 @@ import "./more-info-content";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
-  tab?: Tab;
+  view?: View;
+  /** @deprecated Use `view` instead */
+  tab?: View;
 }
 
-type Tab = "info" | "history" | "settings" | "related";
+type View = "info" | "history" | "settings" | "related";
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends LitElement {
@@ -56,7 +58,7 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _entityId?: string | null;
 
-  @state() private _currTab: Tab = "info";
+  @state() private _currView: View = "info";
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -64,7 +66,7 @@ export class MoreInfoDialog extends LitElement {
       this.closeDialog();
       return;
     }
-    this._currTab = params.tab || "info";
+    this._currView = params.view || "info";
     this.large = false;
   }
 
@@ -109,15 +111,15 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private back() {
-    this._currTab = "info";
+    this._currView = "info";
   }
 
   private _goToHistory() {
-    this._currTab = "history";
+    this._currView = "history";
   }
 
   private _goToSettings(): void {
-    this._currTab = "settings";
+    this._currView = "settings";
   }
 
   private _goToDevice(ev): void {
@@ -148,7 +150,7 @@ export class MoreInfoDialog extends LitElement {
 
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
-    this._currTab = "related";
+    this._currView = "related";
   }
 
   protected render() {
@@ -175,7 +177,7 @@ export class MoreInfoDialog extends LitElement {
       >
         <div slot="heading" class="heading">
           <ha-header-bar>
-            ${this._currTab === "info"
+            ${this._currView === "info"
               ? html`
                   <ha-icon-button
                     slot="navigationIcon"
@@ -203,7 +205,7 @@ export class MoreInfoDialog extends LitElement {
             >
               ${name}
             </div>
-            ${this._currTab === "info"
+            ${this._currView === "info"
               ? html`
                   ${this.shouldShowHistory(domain)
                     ? html`
@@ -292,7 +294,7 @@ export class MoreInfoDialog extends LitElement {
 
         <div class="content" tabindex="-1" dialogInitialFocus>
           ${cache(
-            this._currTab === "info"
+            this._currView === "info"
               ? html`
                   <ha-more-info-info
                     dialogInitialFocus
@@ -300,14 +302,14 @@ export class MoreInfoDialog extends LitElement {
                     .entityId=${this._entityId}
                   ></ha-more-info-info>
                 `
-              : this._currTab === "history"
+              : this._currView === "history"
               ? html`
                   <ha-more-info-history-and-logbook
                     .hass=${this.hass}
                     .entityId=${this._entityId}
                   ></ha-more-info-history-and-logbook>
                 `
-              : this._currTab === "settings"
+              : this._currView === "settings"
               ? html`
                   <ha-more-info-settings
                     .hass=${this.hass}
@@ -334,8 +336,8 @@ export class MoreInfoDialog extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("_currTab")) {
-      this.setAttribute("tab", this._currTab);
+    if (changedProps.has("_currView")) {
+      this.setAttribute("view", this._currView);
     }
   }
 
@@ -375,14 +377,14 @@ export class MoreInfoDialog extends LitElement {
           padding: var(--content-padding);
         }
 
-        :host([tab="settings"]) ha-dialog {
+        :host([view="settings"]) ha-dialog {
           --content-padding: 0;
         }
 
-        :host([tab="info"]) ha-dialog[data-domain="camera"] {
+        :host([view="info"]) ha-dialog[data-domain="camera"] {
           --content-padding: 0;
           /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
-          --video-max-height: calc(100vh - 113px - 72px);
+          --video-max-height: calc(100vh - 65px - 72px);
         }
 
         .main-title {
