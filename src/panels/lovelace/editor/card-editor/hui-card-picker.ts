@@ -118,7 +118,7 @@ export class HuiCardPicker extends LitElement {
           )}
         </div>
         <div class="cards-container">
-          <div
+          <button
             class="card manual"
             @click=${this._cardPicked}
             .config=${{ type: "" }}
@@ -133,7 +133,7 @@ export class HuiCardPicker extends LitElement {
                 `ui.panel.lovelace.editor.card.generic.manual_description`
               )}
             </div>
-          </div>
+          </button>
         </div>
       </div>
     `;
@@ -299,24 +299,27 @@ export class HuiCardPicker extends LitElement {
       }
     }
 
+    const cardName = customCard
+      ? `${this.hass!.localize(
+          "ui.panel.lovelace.editor.cardpicker.custom_card"
+        )}: ${customCard.name || customCard.type}`
+      : name;
+
     return html`
       <div class="card">
-        <div
+        <button
           class="overlay"
+          type="button"
           @click=${this._cardPicked}
           .config=${cardConfig}
-        ></div>
-        <div class="card-header">
-          ${customCard
-            ? `${this.hass!.localize(
-                "ui.panel.lovelace.editor.cardpicker.custom_card"
-              )}: ${customCard.name || customCard.type}`
-            : name}
-        </div>
+          .title=${cardName}
+        ></button>
+        <div class="card-header">${cardName}</div>
         <div
           class="preview ${classMap({
             description: !element || element.tagName === "HUI-ERROR-CARD",
           })}"
+          inert
         >
           ${element && element.tagName !== "HUI-ERROR-CARD"
             ? element
@@ -356,6 +359,9 @@ export class HuiCardPicker extends LitElement {
           background: var(--primary-background-color, #fafafa);
           cursor: pointer;
           position: relative;
+          border: var(--ha-card-border-width, 1px) solid
+            var(--ha-card-border-color, var(--divider-color));
+          overflow: hidden;
         }
 
         .card-header {
@@ -405,13 +411,19 @@ export class HuiCardPicker extends LitElement {
           height: 100%;
           z-index: 1;
           box-sizing: border-box;
-          border: var(--ha-card-border-width, 1px) solid
-            var(--ha-card-border-color, var(--divider-color));
+          background: none;
+          cursor: pointer;
+          padding: 0;
+          border: none;
           border-radius: var(--ha-card-border-radius, 12px);
         }
 
         .manual {
           max-width: none;
+          display: flex;
+          align-items: inherit;
+          justify-content: center;
+          padding: 0;
         }
       `,
     ];
