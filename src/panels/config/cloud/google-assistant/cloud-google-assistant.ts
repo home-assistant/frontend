@@ -482,8 +482,7 @@ class CloudGoogleAssistant extends LitElement {
 
   private _showMoreInfo(ev) {
     const entityId = ev.currentTarget.stateObj.entity_id;
-    const moreInfoTab = ev.currentTarget.moreInfoTab;
-    fireEvent(this, "hass-more-info", { entityId, tab: moreInfoTab });
+    fireEvent(this, "hass-more-info", { entityId });
   }
 
   private _showMoreInfoSettings(ev) {
