@@ -64,7 +64,7 @@ const buttonEntitiesRowConfigStruct = object({
 
 const castEntitiesRowConfigStruct = object({
   type: literal("cast"),
-  view: optional(union([string(), number()])),
+  view: union([string(), number()]),
   dashboard: optional(string()),
   name: optional(string()),
   icon: optional(string()),

@@ -884,11 +884,6 @@ class HuiEnergyDistrubutionCard
       color: var(--secondary-text-color);
       font-size: 12px;
       opacity: 1;
-      height: 20px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 80px;
-      white-space: nowrap;
     }
     line,
     path {

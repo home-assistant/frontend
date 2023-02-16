@@ -29,10 +29,13 @@ class HuiCastRow extends LitElement implements LovelaceRow {
   @state() private _noHTTPS = false;
 
   public setConfig(config: CastConfig): void {
+    if (!config || config.view === undefined || config.view === null) {
+      throw new Error("View required");
+    }
+
     this._config = {
-      icon: "mdi:television",
+      icon: "hass:television",
       name: "Home Assistant Cast",
-      view: 0,
       ...config,
     };
   }
@@ -120,7 +123,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     castSendShowLovelaceView(
       this._castManager!,
       this.hass.auth.data.hassUrl,
-      this._config!.view!,
+      this._config!.view,
       this._config!.dashboard
     );
   }
