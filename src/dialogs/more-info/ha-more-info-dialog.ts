@@ -6,7 +6,6 @@ import {
   mdiDotsVertical,
   mdiInformationOutline,
   mdiPencilOutline,
-  mdiSofaOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues } from "lit";
@@ -25,7 +24,6 @@ import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-related-items";
-import { DeviceRegistryEntry } from "../../data/device_registry";
 import { EntityRegistryEntry } from "../../data/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
@@ -75,7 +73,7 @@ export class MoreInfoDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected shouldShowEditIcon(
+  private shouldShowEditIcon(
     domain: string,
     stateObj: HassEntity | undefined
   ): boolean {
@@ -95,7 +93,7 @@ export class MoreInfoDialog extends LitElement {
     return false;
   }
 
-  protected shouldShowHistory(domain: string): boolean {
+  private shouldShowHistory(domain: string): boolean {
     return (
       DOMAINS_WITH_MORE_INFO.includes(domain) &&
       (computeShowHistoryComponent(this.hass, this._entityId!) ||
@@ -103,28 +101,11 @@ export class MoreInfoDialog extends LitElement {
     );
   }
 
-  protected _getDeviceId(): string | null {
+  private _getDeviceId(): string | null {
     const entity = this.hass.entities[this._entityId!] as
       | EntityRegistryEntry
       | undefined;
     return entity?.device_id ?? null;
-  }
-
-  protected _getAreaId(): string | null {
-    const entity = this.hass.entities[this._entityId!] as
-      | EntityRegistryEntry
-      | undefined;
-    if (!entity) return null;
-
-    if (entity.area_id) return entity.area_id;
-
-    if (!entity.device_id) return null;
-
-    const device = this.hass.devices[entity.device_id] as
-      | DeviceRegistryEntry
-      | undefined;
-
-    return device?.area_id ?? null;
   }
 
   private back() {
@@ -146,16 +127,6 @@ export class MoreInfoDialog extends LitElement {
     if (!deviceId) return;
 
     navigate(`/config/devices/device/${deviceId}`);
-    this.closeDialog();
-  }
-
-  private _goToArea(ev): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) return;
-    const areaId = this._getAreaId();
-
-    if (!areaId) return;
-
-    navigate(`/config/areas/area/${areaId}`);
     this.closeDialog();
   }
 
@@ -192,7 +163,6 @@ export class MoreInfoDialog extends LitElement {
 
     const isAdmin = this.hass.user!.is_admin;
 
-    const areaId = this._getAreaId();
     const deviceId = this._getDeviceId();
 
     return html`
@@ -271,7 +241,7 @@ export class MoreInfoDialog extends LitElement {
                                 graphic="icon"
                                 @request-selected=${this._goToDevice}
                               >
-                                ${this.hass.devices[deviceId].name}
+                                Device info
                                 <ha-svg-icon
                                   slot="graphic"
                                   .path=${mdiDevices}
@@ -279,30 +249,6 @@ export class MoreInfoDialog extends LitElement {
                               </ha-list-item>
                             `
                           : null}
-                        ${areaId
-                          ? html`
-                              <ha-list-item
-                                graphic="icon"
-                                @request-selected=${this._goToArea}
-                              >
-                                ${this.hass.areas[areaId].name}
-                                <ha-svg-icon
-                                  slot="graphic"
-                                  .path=${mdiSofaOutline}
-                                ></ha-svg-icon>
-                              </ha-list-item>
-                            `
-                          : null}
-                        <ha-list-item
-                          graphic="icon"
-                          @request-selected=${this._goToRelated}
-                        >
-                          Information
-                          <ha-svg-icon
-                            slot="graphic"
-                            .path=${mdiInformationOutline}
-                          ></ha-svg-icon>
-                        </ha-list-item>
                         ${this.shouldShowEditIcon(domain, stateObj)
                           ? html`
                               <ha-list-item
@@ -317,6 +263,16 @@ export class MoreInfoDialog extends LitElement {
                               </ha-list-item>
                             `
                           : null}
+                        <ha-list-item
+                          graphic="icon"
+                          @request-selected=${this._goToRelated}
+                        >
+                          Related
+                          <ha-svg-icon
+                            slot="graphic"
+                            .path=${mdiInformationOutline}
+                          ></ha-svg-icon>
+                        </ha-list-item>
                       </ha-button-menu>`
                     : null}
                 `
@@ -329,6 +285,7 @@ export class MoreInfoDialog extends LitElement {
             this._currTab === "info"
               ? html`
                   <ha-more-info-info
+                    dialogInitialFocus
                     .hass=${this.hass}
                     .entityId=${this._entityId}
                   ></ha-more-info-info>
@@ -383,7 +340,7 @@ export class MoreInfoDialog extends LitElement {
       css`
         ha-dialog {
           --dialog-surface-position: static;
-          --dialog-content-position: static;
+          --dialog-content-position: relative;
           --vertical-align-dialog: flex-start;
           --dialog-content-padding: 0;
           --content-padding: 24px;
