@@ -1397,9 +1397,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/language@npm:^6.0.0, @codemirror/language@npm:^6.4.0":
-  version: 6.4.0
-  resolution: "@codemirror/language@npm:6.4.0"
+"@codemirror/language@npm:^6.0.0, @codemirror/language@npm:^6.6.0":
+  version: 6.6.0
+  resolution: "@codemirror/language@npm:6.6.0"
   dependencies:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.0.0
@@ -1407,7 +1407,7 @@ __metadata:
     "@lezer/highlight": ^1.0.0
     "@lezer/lr": ^1.0.0
     style-mod: ^4.0.0
-  checksum: 607072e234db59a9a21eb41b8777b62d68a55ed28298edc4f6aaedfcf52349db1fe3ff3e7747ccfc77f03757bad45ba9a657d59a0e9c67be1231902586dec7a3
+  checksum: bb9411620e2f231653a3f0c4429e0d19a3843bff5dbc117df4649d7bf783ec4ad809c0add8bc0887a4ec3f48b4f8f941621168e47d76101d5383f0d670af1722
   languageName: node
   linkType: hard
 
@@ -9521,7 +9521,7 @@ fsevents@^1.2.7:
     "@braintree/sanitize-url": ^6.0.2
     "@codemirror/autocomplete": ^6.4.1
     "@codemirror/commands": ^6.2.1
-    "@codemirror/language": ^6.4.0
+    "@codemirror/language": ^6.6.0
     "@codemirror/legacy-modes": ^6.3.1
     "@codemirror/search": ^6.2.3
     "@codemirror/state": ^6.2.0
