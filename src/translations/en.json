@@ -3263,6 +3263,14 @@
           "qos": "QoS",
           "retain": "Retain"
         },
+        "thread": {
+          "other_networks": "Other networks",
+          "my_network": "My network",
+          "no_border_routers": "No border routers found",
+          "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
+          "managed_by_home_assistant": "Managed by Home Assistant",
+          "operational_dataset": "Operational dataset"
+        },
         "zha": {
           "common": {
             "clusters": "Clusters",
