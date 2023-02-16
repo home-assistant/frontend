@@ -3,7 +3,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
 
-export const DOMAINS_NO_INFO = ["camera", "configurator"];
+export const DOMAINS_NO_INFO = ["camera", "configurator", "light"];
 /**
  * Entity domains that should be editable *if* they have an id present;
  * {@see shouldShowEditIcon}.
