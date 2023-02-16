@@ -274,6 +274,7 @@ export class MoreInfoDialog extends LitElement {
           --dialog-content-position: static;
           --vertical-align-dialog: flex-start;
           --dialog-content-padding: 0;
+          --content-padding: 24px;
         }
 
         ha-header-bar {
@@ -299,11 +300,17 @@ export class MoreInfoDialog extends LitElement {
         }
 
         ha-dialog .content {
-          padding: 24px;
+          padding: var(--content-padding);
         }
 
-        :host([tab="settings"]) ha-dialog .content {
-          padding: 0px;
+        :host([tab="settings"]) ha-dialog {
+          --content-padding: 0;
+        }
+
+        :host([tab="info"]) ha-dialog[data-domain="camera"] {
+          --content-padding: 0;
+          /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
+          --video-max-height: calc(100vh - 113px - 72px);
         }
 
         @media all and (min-width: 600px) and (min-height: 501px) {
@@ -324,12 +331,6 @@ export class MoreInfoDialog extends LitElement {
             --mdc-dialog-min-width: 90vw;
             --mdc-dialog-max-width: 90vw;
           }
-        }
-
-        :host([tab="info"]) ha-dialog[data-domain="camera"] .content {
-          padding: 0;
-          /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
-          --video-max-height: calc(100vh - 113px - 72px);
         }
       `,
     ];
