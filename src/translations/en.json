@@ -1655,7 +1655,7 @@
             "dialog": {
               "header": "Configure water consumption",
               "paragraph": "Water consumption is the volume of water that flows to your home.",
-              "entity_para": "Pick a sensor which measures gas consumption in either of {unit}.",
+              "entity_para": "Pick a sensor which measures water consumption in either of {unit}.",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
               "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
