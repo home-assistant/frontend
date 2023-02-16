@@ -1,6 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/web/iconbutton/outlined-icon-button";
-import { mdiPalette, mdiShimmer } from "@mdi/js";
+import "@material/web/iconbutton/outlined-icon-button-toggle";
+import { mdiCreation, mdiPalette, mdiPower } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -26,9 +27,9 @@ class MoreInfoLight extends LitElement {
 
   @property({ attribute: false }) public stateObj?: LightEntity;
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | null {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return null;
     }
 
     const supportsColorTemp = lightSupportsColorMode(
@@ -61,6 +62,22 @@ class MoreInfoLight extends LitElement {
               <div class="buttons">
                 ${supportsColorTemp || supportsColor
                   ? html`
+                      <md-outlined-icon-button-toggle
+                        .title=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.toggle"
+                        )}
+                        .ariaLabel=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.toggle"
+                        )}
+                        .selected=${this.stateObj.state === "on"}
+                        @click=${this._toggle}
+                      >
+                        <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                      </md-outlined-icon-button-toggle>
+                    `
+                  : null}
+                ${supportsColorTemp || supportsColor
+                  ? html`
                       <md-outlined-icon-button
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color"
@@ -91,7 +108,7 @@ class MoreInfoLight extends LitElement {
                             "ui.dialogs.more_info_control.light.select_effect"
                           )}
                         >
-                          <ha-svg-icon .path=${mdiShimmer}></ha-svg-icon>
+                          <ha-svg-icon .path=${mdiCreation}></ha-svg-icon>
                         </md-outlined-icon-button>
                         ${this.stateObj.attributes.effect_list!.map(
                           (effect: string) => html`
@@ -118,6 +135,12 @@ class MoreInfoLight extends LitElement {
       </div>
     `;
   }
+
+  private _toggle = () => {
+    this.hass.callService("light", "toggle", {
+      entity_id: this.stateObj!.entity_id,
+    });
+  };
 
   private _showLightColorPickerDialog = () => {
     showLightColorPickerDialog(this, { entityId: this.stateObj!.entity_id });

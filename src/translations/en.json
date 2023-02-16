@@ -894,6 +894,7 @@
           "graph_unit": "People home"
         },
         "light": {
+          "toggle": "Toggle",
           "change_color": "Change color",
           "select_effect": "Select effect",
           "color_picker": {
