@@ -28,6 +28,8 @@ export class HaBarButton extends LitElement {
         aria-label=${ifDefined(this.label)}
         title=${ifDefined(this.label)}
         .disabled=${Boolean(this.disabled)}
+        @focus=${this.handleRippleFocus}
+        @blur=${this.handleRippleBlur}
         @mousedown=${this.handleRippleActivate}
         @mouseup=${this.handleRippleDeactivate}
         @mouseenter=${this.handleRippleMouseEnter}
@@ -64,6 +66,14 @@ export class HaBarButton extends LitElement {
 
   private handleRippleMouseLeave() {
     this._rippleHandlers.endHover();
+  }
+
+  private handleRippleFocus() {
+    this._rippleHandlers.startFocus();
+  }
+
+  private handleRippleBlur() {
+    this._rippleHandlers.endFocus();
   }
 
   static get styles(): CSSResultGroup {

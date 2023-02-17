@@ -20,7 +20,7 @@ export class HaBarButtonGroup extends LitElement {
         --button-bar-group-spacing: 12px;
         --button-bar-group-thickness: 40px;
         height: var(--button-bar-group-thickness);
-        width: 100%;
+        width: auto;
         display: block;
       }
       .container {
@@ -42,7 +42,7 @@ export class HaBarButtonGroup extends LitElement {
       }
       :host([vertical]) {
         width: var(--button-bar-group-thickness);
-        height: 100%;
+        height: auto;
       }
       :host([vertical]) .container {
         flex-direction: column;
