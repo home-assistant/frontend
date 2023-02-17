@@ -79,6 +79,7 @@ export class HaBarButton extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
+        display: block;
         --button-bar-icon-color: var(--primary-text-color);
         --button-bar-background-color: var(--disabled-color);
         --button-bar-background-opacity: 0.2;

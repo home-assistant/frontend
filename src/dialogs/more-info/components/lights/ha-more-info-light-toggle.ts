@@ -82,6 +82,7 @@ export class HaMoreInfoLightToggle extends LitElement {
               "ui.dialogs.more_info_control.cover.open_tilt_cover"
             )}
             @click=${this._turnOff}
+            .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
               active: isOff,
             })}
