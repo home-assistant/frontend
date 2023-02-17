@@ -27,9 +27,9 @@ import {
   lightSupportsColorMode,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
-import "../components/ha-more-info-light-brightness";
-import "../components/ha-more-info-light-toggle";
 import "../components/ha-more-info-state-header";
+import "../components/lights/ha-more-info-light-brightness";
+import "../components/lights/ha-more-info-light-toggle";
 import { showLightColorPickerDialog } from "../components/lights/show-dialog-light-color-picker";
 
 @customElement("more-info-light")

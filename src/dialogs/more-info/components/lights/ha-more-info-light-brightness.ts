@@ -1,13 +1,17 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
-import { stateActive } from "../../../common/entity/state_active";
-import { stateColorCss } from "../../../common/entity/state_color";
-import { LightEntity } from "../../../data/light";
-import { HomeAssistant } from "../../../types";
-import "../../../components/ha-bar-slider";
-import { UNAVAILABLE } from "../../../data/entity";
+import {
+  hsv2rgb,
+  rgb2hex,
+  rgb2hsv,
+} from "../../../../common/color/convert-color";
+import { stateActive } from "../../../../common/entity/state_active";
+import { stateColorCss } from "../../../../common/entity/state_color";
+import "../../../../components/ha-bar-slider";
+import { UNAVAILABLE } from "../../../../data/entity";
+import { LightEntity } from "../../../../data/light";
+import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-more-info-light-brightness")
 export class HaMoreInfoLightBrightness extends LitElement {
