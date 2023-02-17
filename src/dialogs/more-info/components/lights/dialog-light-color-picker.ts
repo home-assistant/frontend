@@ -27,8 +27,8 @@ import {
 } from "../../../../data/light";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import "../ha-more-info-bar-slider";
 import { LightColorPickerDialogParams } from "./show-dialog-light-color-picker";
+import "../../../../components/ha-bar-slider";
 
 type Mode = "color_temp" | "color" | "white";
 
@@ -177,7 +177,8 @@ class DialogLightColorPicker extends LitElement {
             ((!supportsColor && !supportsWhite) ||
               this._mode === LightColorMode.COLOR_TEMP)
               ? html`
-                  <ha-more-info-bar-slider
+                  <ha-bar-slider
+                    vertical
                     class="color_temp"
                     label=${this.hass.localize(
                       "ui.card.light.color_temperature"
@@ -190,7 +191,7 @@ class DialogLightColorPicker extends LitElement {
                     .min=${this.stateObj.attributes.min_color_temp_kelvin!}
                     .max=${this.stateObj.attributes.max_color_temp_kelvin!}
                   >
-                  </ha-more-info-bar-slider>
+                  </ha-bar-slider>
                 `
               : ""}
             ${supportsColor &&
@@ -560,10 +561,6 @@ class DialogLightColorPicker extends LitElement {
           padding: 16px;
         }
 
-        .content > * {
-          width: 100%;
-        }
-
         .segmentationContainer {
           position: relative;
           max-height: 500px;
@@ -586,19 +583,21 @@ class DialogLightColorPicker extends LitElement {
           --ha-color-picker-marker-bordercolor: white;
         }
 
-        ha-more-info-bar-slider {
-          --more-info-slider-bar-height: 290px;
+        ha-bar-slider {
+          height: 320px;
           margin: 20px 0;
         }
 
         .color_temp {
-          --more-info-slider-bar-background: -webkit-linear-gradient(
+          --slider-bar-thickness: 100px;
+          --slider-bar-border-radius: 24px;
+          --slider-bar-background: -webkit-linear-gradient(
             top,
             rgb(166, 209, 255) 0%,
             white 50%,
             rgb(255, 160, 0) 100%
           );
-          --more-info-slider-bar-background-opacity: 1;
+          --slider-bar-background-opacity: 1;
         }
 
         hr {

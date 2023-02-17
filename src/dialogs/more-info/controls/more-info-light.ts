@@ -2,10 +2,18 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/web/iconbutton/outlined-icon-button";
 import "@material/web/iconbutton/outlined-icon-button-toggle";
 import { mdiCreation, mdiPalette, mdiPower } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-select";
@@ -19,6 +27,7 @@ import {
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-light-brightness";
+import "../components/ha-more-info-state-header";
 import { showLightColorPickerDialog } from "../components/lights/show-dialog-light-color-picker";
 
 @customElement("more-info-light")
@@ -26,6 +35,22 @@ class MoreInfoLight extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: LightEntity;
+
+  @state() _liveBrightness?: number;
+
+  private _brightnessChanged(ev) {
+    const value = (ev.detail as any).value;
+    if (isNaN(value)) return;
+    this._liveBrightness = value;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("stateObj")) {
+      this._liveBrightness = this.stateObj?.attributes.brightness
+        ? Math.round((this.stateObj?.attributes.brightness * 100) / 255)
+        : undefined;
+    }
+  }
 
   protected render(): TemplateResult | null {
     if (!this.hass || !this.stateObj) {
@@ -46,13 +71,25 @@ class MoreInfoLight extends LitElement {
       LightEntityFeature.EFFECT
     );
 
+    const stateOverride = this._liveBrightness
+      ? `${Math.round(this._liveBrightness)}${blankBeforePercent(
+          this.hass!.locale
+        )}%`
+      : undefined;
+
     return html`
       <div class="content">
+        <ha-more-info-state-header
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+          .stateOverride=${stateOverride}
+        ></ha-more-info-state-header>
         ${supportsBrightness
           ? html`
               <ha-more-info-light-brightness
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
+                @slider-moved=${this._brightnessChanged}
               >
               </ha-more-info-light-brightness>
             `
@@ -169,10 +206,6 @@ class MoreInfoLight extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: center;
-      }
-
-      .content > * {
-        width: 100%;
       }
 
       .buttons {

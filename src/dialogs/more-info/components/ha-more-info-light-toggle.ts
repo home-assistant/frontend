@@ -8,8 +8,8 @@ import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import "../../../components/ha-bar-slider";
 
-@customElement("ha-more-info-light-brightness")
-export class HaMoreInfoLightBrightness extends LitElement {
+@customElement("ha-more-info-light-toggle")
+export class HaMoreInfoLightToggle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: LightEntity;
@@ -89,6 +89,6 @@ export class HaMoreInfoLightBrightness extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-light-brightness": HaMoreInfoLightBrightness;
+    "ha-more-info-light-toggle": HaMoreInfoLightToggle;
   }
 }
