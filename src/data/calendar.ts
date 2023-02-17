@@ -1,4 +1,3 @@
-import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
@@ -7,7 +6,7 @@ import { isUnavailableState } from "./entity";
 export interface Calendar {
   entity_id: string;
   name?: string;
-  backgroundColor?: string;
+  color: string;
 }
 
 /** Object used to render a calendar event in fullcalendar. */
@@ -31,6 +30,7 @@ export interface CalendarEventData {
   dtend: string;
   rrule?: string;
   description?: string;
+  backgroundColor?: string;
 }
 
 export interface CalendarEventMutableParams {
@@ -105,8 +105,8 @@ export const fetchCalendarEvents = async (
         start: eventStart,
         end: eventEnd,
         title: ev.summary,
-        backgroundColor: cal.backgroundColor,
-        borderColor: cal.backgroundColor,
+        backgroundColor: cal.color,
+        borderColor: cal.color,
         calendar: cal.entity_id,
         eventData: eventData,
       };
@@ -142,10 +142,10 @@ export const getCalendars = (hass: HomeAssistant): Calendar[] =>
         !isUnavailableState(hass.states[eid].state)
     )
     .sort()
-    .map((eid, idx) => ({
+    .map((eid) => ({
       entity_id: eid,
       name: computeStateName(hass.states[eid]),
-      backgroundColor: getColorByIndex(idx),
+      color: hass.states[eid].attributes.color,
     }));
 
 export const createCalendarEvent = (
