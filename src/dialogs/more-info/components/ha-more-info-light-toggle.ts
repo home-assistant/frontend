@@ -6,7 +6,7 @@ import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-bar-switch";
-import { isUnavailableState } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 
@@ -71,7 +71,7 @@ export class HaMoreInfoLightToggle extends LitElement {
         style=${styleMap({
           "--switch-bar-on-color": color,
         })}
-        .disabled=${isUnavailableState(this.stateObj.state)}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
       >
       </ha-bar-switch>
     `;

@@ -17,7 +17,7 @@ import { blankBeforePercent } from "../../../common/translations/blank_before_pe
 import "../../../components/ha-attributes";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-select";
-import { isUnavailableState } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 import {
   LightColorMode,
   LightEntity,
@@ -115,7 +115,7 @@ class MoreInfoLight extends LitElement {
                   ${supportsBrightness
                     ? html`
                         <md-outlined-icon-button-toggle
-                          .disabled=${isUnavailableState(this.stateObj.state)}
+                          .disabled=${this.stateObj.state === UNAVAILABLE}
                           .title=${this.hass.localize(
                             "ui.dialogs.more_info_control.light.toggle"
                           )}
@@ -132,7 +132,7 @@ class MoreInfoLight extends LitElement {
                   ${supportsColorTemp || supportsColor
                     ? html`
                         <md-outlined-icon-button
-                          .disabled=${isUnavailableState(this.stateObj.state)}
+                          .disabled=${this.stateObj.state === UNAVAILABLE}
                           .title=${this.hass.localize(
                             "ui.dialogs.more_info_control.light.change_color"
                           )}
@@ -152,10 +152,10 @@ class MoreInfoLight extends LitElement {
                           @action=${this._handleEffectButton}
                           @closed=${stopPropagation}
                           fixed
-                          .disabled=${isUnavailableState(this.stateObj.state)}
+                          .disabled=${this.stateObj.state === UNAVAILABLE}
                         >
                           <md-outlined-icon-button
-                            .disabled=${isUnavailableState(this.stateObj.state)}
+                            .disabled=${this.stateObj.state === UNAVAILABLE}
                             slot="trigger"
                             .title=${this.hass.localize(
                               "ui.dialogs.more_info_control.light.select_effect"

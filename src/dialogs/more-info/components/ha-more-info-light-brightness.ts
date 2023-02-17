@@ -7,7 +7,7 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import "../../../components/ha-bar-slider";
-import { isUnavailableState } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("ha-more-info-light-brightness")
 export class HaMoreInfoLightBrightness extends LitElement {
@@ -69,7 +69,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
         style=${styleMap({
           "--slider-bar-color": color,
         })}
-        .disabled=${isUnavailableState(this.stateObj.state)}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
       >
       </ha-bar-slider>
     `;
