@@ -1,6 +1,6 @@
 import "@material/mwc-checkbox";
 import "@material/mwc-formfield";
-import { mdiRefresh } from "@mdi/js";
+import { mdiRefresh, mdiPalette } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -83,7 +83,7 @@ class PanelCalendar extends LitElement {
               (selCal) =>
                 html`
                   <div>
-                    <mwc-formfield .label=${selCal.name}>
+                    <label>
                       <mwc-checkbox
                         style=${styleMap({
                           "--mdc-theme-secondary": selCal.backgroundColor!,
@@ -94,7 +94,9 @@ class PanelCalendar extends LitElement {
                         )}
                         @change=${this._handleToggle}
                       ></mwc-checkbox>
-                    </mwc-formfield>
+                      ${selCal.name}
+                      <ha-icon-button .path=${mdiPalette}></ha-icon-button>
+                    </label>
                   </div>
                 `
             )}
@@ -220,7 +222,7 @@ class PanelCalendar extends LitElement {
           padding-right: 16px;
           padding-inline-end: 16px;
           padding-inline-start: initial;
-          min-width: 170px;
+          min-width: 180px;
           flex: 0 0 15%;
           overflow: hidden;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
@@ -231,6 +233,11 @@ class PanelCalendar extends LitElement {
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
+        }
+
+        .calendar-list > div > label {
+          display: flex;
+          align-items: center;
         }
 
         .calendar-list-header {
