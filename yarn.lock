@@ -9715,6 +9715,7 @@ fsevents@^1.2.7:
     webpack-manifest-plugin: ^5.0.0
     webpackbar: ^5.0.2
     weekstart: ^1.1.0
+    wicg-inert: ^3.1.2
     workbox-build: ^6.5.4
     workbox-cacheable-response: ^6.5.4
     workbox-core: ^6.5.4
@@ -16567,10 +16568,10 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"wicg-inert@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "wicg-inert@npm:3.0.0"
-  checksum: 2f8fdc3140d8937fa01d89901b9a3bfb6d342a63bafb63d3e6ca2da59d4521803abca7d5890b56b20f1a16afe0584c775989f2034a83b1912716dfa8b3e7623e
+"wicg-inert@npm:^3.0.0, wicg-inert@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "wicg-inert@npm:3.1.2"
+  checksum: 538c5cb7f240915a4c17741c644b135040764c6d8a05853099f2f342c95ce2645e6cf7c4f729775013dbc218e0da04b3f943875eba6ed4b38ff9dd431465d391
   languageName: node
   linkType: hard
 

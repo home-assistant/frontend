@@ -14,9 +14,10 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+import "wicg-inert";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/search-input";
 import "../../../../components/ha-circular-progress";
+import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
 import type {
   LovelaceCardConfig,
@@ -114,12 +115,14 @@ export class HuiCardPicker extends LitElement {
       >
         <div class="cards-container">
           ${this._filterCards(this._cards, this._filter).map(
-            (cardElement: CardElement) => cardElement.element
+            (cardElement: CardElement) =>
+              html`<div>${cardElement.element}</div>`
           )}
         </div>
         <div class="cards-container">
           <button
             class="card manual"
+            type="button"
             @click=${this._cardPicked}
             .config=${{ type: "" }}
           >
@@ -306,20 +309,20 @@ export class HuiCardPicker extends LitElement {
       : name;
 
     return html`
-      <div class="card">
-        <button
-          class="overlay"
-          type="button"
-          @click=${this._cardPicked}
-          .config=${cardConfig}
-          .title=${cardName}
-        ></button>
+      <button
+        class="card"
+        type="button"
+        @click=${this._cardPicked}
+        .config=${cardConfig}
+        .title=${cardName}
+      >
         <div class="card-header">${cardName}</div>
         <div
           class="preview ${classMap({
             description: !element || element.tagName === "HUI-ERROR-CARD",
           })}"
           inert
+          aria-hidden="true"
         >
           ${element && element.tagName !== "HUI-ERROR-CARD"
             ? element
@@ -330,7 +333,7 @@ export class HuiCardPicker extends LitElement {
               )
             : description}
         </div>
-      </div>
+      </button>
     `;
   }
 
@@ -348,13 +351,19 @@ export class HuiCardPicker extends LitElement {
           grid-gap: 8px 8px;
           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
           margin-top: 20px;
+          list-style-type: none;
+          padding: 0;
         }
 
         .card {
-          height: 100%;
-          max-width: 500px;
           display: flex;
           flex-direction: column;
+          align-items: inherit;
+          justify-content: center;
+          padding: 0;
+          height: 100%;
+          width: 100%;
+          max-width: 500px;
           border-radius: var(--ha-card-border-radius, 12px);
           background: var(--primary-background-color, #fafafa);
           cursor: pointer;
@@ -420,10 +429,6 @@ export class HuiCardPicker extends LitElement {
 
         .manual {
           max-width: none;
-          display: flex;
-          align-items: inherit;
-          justify-content: center;
-          padding: 0;
         }
       `,
     ];
