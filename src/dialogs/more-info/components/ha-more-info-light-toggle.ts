@@ -1,12 +1,14 @@
+import { mdiLightbulbOff, mdiLightbulbOn } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
+import "../../../components/ha-bar-switch";
+import { isUnavailableState } from "../../../data/entity";
 import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
-import "../../../components/ha-bar-slider";
 
 @customElement("ha-more-info-light-toggle")
 export class HaMoreInfoLightToggle extends LitElement {
@@ -28,13 +30,11 @@ export class HaMoreInfoLightToggle extends LitElement {
     }
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev) {
+    const checked = ev.target.checked as boolean;
 
-    this.hass.callService("light", "turn_on", {
+    this.hass.callService("light", checked ? "turn_on" : "turn_off", {
       entity_id: this.stateObj!.entity_id,
-      brightness_pct: value,
     });
   }
 
@@ -56,32 +56,35 @@ export class HaMoreInfoLightToggle extends LitElement {
       color = rgb2hex(hsv2rgb(hsvColor));
     }
 
+    const checked = this.stateObj.state === "on";
+
     return html`
-      <ha-bar-slider
+      <ha-bar-switch
+        .pathOn=${mdiLightbulbOn}
+        .pathOff=${mdiLightbulbOff}
         vertical
-        .value=${this.value}
-        min="1"
-        max="100"
+        reversed
+        .checked=${checked}
         .showHandle=${stateActive(this.stateObj)}
-        @value-changed=${this._valueChanged}
-        aria-label="Brightness slider"
+        @change=${this._valueChanged}
+        aria-label="Light switch"
         style=${styleMap({
-          "--slider-bar-color": color,
+          "--switch-bar-on-color": color,
         })}
+        .disabled=${isUnavailableState(this.stateObj.state)}
       >
-      </ha-bar-slider>
+      </ha-bar-switch>
     `;
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-bar-slider {
+      ha-bar-switch {
         height: 320px;
-        --slider-bar-thickness: 100px;
-        --slider-bar-border-radius: 24px;
-        --slider-bar-color: var(--primary-color);
-        --slider-bar-background: var(--disabled-color);
-        --slider-bar-background-opacity: 0.2;
+        --switch-bar-thickness: 100px;
+        --switch-bar-border-radius: 24px;
+        --switch-bar-padding: 6px;
+        --mdc-icon-size: 24px;
       }
     `;
   }

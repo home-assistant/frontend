@@ -11,8 +11,8 @@ import { fireEvent } from "../common/dom/fire_event";
 import "./ha-svg-icon";
 
 @customElement("ha-control-switch")
-export class HaControlSwitch extends LitElement {
-  @property({ type: Boolean, attribute: "disabled" })
+export class HaBarSwitch extends LitElement {
+  @property({ type: Boolean, reflect: true })
   public disabled = false;
 
   @property({ type: Boolean })
@@ -107,6 +107,7 @@ export class HaControlSwitch extends LitElement {
         border-radius: var(--control-switch-border-radius);
         outline: none;
         transition: box-shadow 180ms ease-in-out;
+        -webkit-tap-highlight-color: transparent;
       }
       :host(:focus-visible) {
         box-shadow: 0 0 0 2px var(--control-switch-off-color);
