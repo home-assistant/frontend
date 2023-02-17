@@ -7,7 +7,8 @@ import {
   computeOpenIcon,
 } from "../../../common/entity/cover_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/tile/ha-tile-button";
+import "../../../components/ha-bar-button";
+import "../../../components/ha-bar-button-group";
 import {
   canClose,
   canOpen,
@@ -69,10 +70,10 @@ class HuiCoverOpenCloseTileFeature
     }
 
     return html`
-      <div class="container">
+      <ha-bar-button-group>
         ${supportsFeature(this.stateObj, CoverEntityFeature.OPEN)
           ? html`
-              <ha-tile-button
+              <ha-bar-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.open_cover"
                 )}
@@ -82,12 +83,12 @@ class HuiCoverOpenCloseTileFeature
                 <ha-svg-icon
                   .path=${computeOpenIcon(this.stateObj)}
                 ></ha-svg-icon>
-              </ha-tile-button>
+              </ha-bar-button>
             `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.STOP)
           ? html`
-              <ha-tile-button
+              <ha-bar-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.stop_cover"
                 )}
@@ -95,12 +96,12 @@ class HuiCoverOpenCloseTileFeature
                 .disabled=${!canStop(this.stateObj)}
               >
                 <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-              </ha-tile-button>
+              </ha-bar-button>
             `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.CLOSE)
           ? html`
-              <ha-tile-button
+              <ha-bar-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.close_cover"
                 )}
@@ -110,29 +111,18 @@ class HuiCoverOpenCloseTileFeature
                 <ha-svg-icon
                   .path=${computeCloseIcon(this.stateObj)}
                 ></ha-svg-icon>
-              </ha-tile-button>
+              </ha-bar-button>
             `
           : undefined}
-      </div>
+      </ha-bar-button-group>
     `;
   }
 
   static get styles() {
     return css`
-      .container {
-        display: flex;
-        flex-direction: row;
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-      ha-tile-button {
-        flex: 1;
-      }
-      ha-tile-button:not(:last-child) {
-        margin-right: 12px;
-        margin-inline-end: 12px;
-        margin-inline-start: initial;
-        direction: var(--direction);
+      ha-bar-button-group {
+        margin: 0 12px 12px 12px;
+        --button-bar-group-spacing: 12px;
       }
     `;
   }
