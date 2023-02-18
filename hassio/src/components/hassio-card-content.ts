@@ -103,7 +103,7 @@ class HassioCardContent extends LitElement {
       }
       .icon_image.stopped,
       .icon_image.not_available {
-        filter: grayscale(1);
+        filter: grayscale(0.3) brightness(0.5)
       }
       .dot {
         position: absolute;
