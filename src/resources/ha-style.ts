@@ -159,6 +159,7 @@ documentContainer.innerHTML = `<custom-style>
       --state-fan-active-color: var(--cyan-color);
       --state-humidifier-active-color: var(--blue-color);
       --state-light-active-color: var(--amber-color);
+      --state-light-color: var(--amber-color);
       --state-lock-jammed-color: var(--red-color);
       --state-lock-locked-color: var(--green-color);
       --state-lock-pending-color: var(--orange-color);
