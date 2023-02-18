@@ -1,6 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { getStates } from "../../common/entity/get_states";
@@ -9,8 +9,21 @@ import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import { formatAttributeValue } from "../../data/entity_attributes";
 import { fireEvent } from "../../common/dom/fire_event";
+import { fetchDateWS } from "../../data/history";
+import { computeDomain } from "../../common/entity/compute_domain";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
+
+const DYNAMIC_STATE_DOMAINS = [
+  "sensor",
+  "input_text",
+  "text",
+  "input_number",
+  "number",
+  "person",
+  "device_tracker",
+  "zone",
+];
 
 @customElement("ha-entity-state-picker")
 class HaEntityStatePicker extends LitElement {
@@ -37,23 +50,70 @@ class HaEntityStatePicker extends LitElement {
 
   @property({ type: Boolean }) private _opened = false;
 
+  @state() private _stateHistory;
+
+  @state() private _fetching = false;
+
+  @state() private _discardFetch = false;
+
   @query("ha-combo-box", true) private _comboBox!: HaComboBox;
 
   protected shouldUpdate(changedProps: PropertyValues) {
     return !(!changedProps.has("_opened") && this._opened);
   }
 
+  private async _getStateHistory(): Promise<void> {
+    if (this._fetching) {
+      return;
+    }
+    this._fetching = true;
+    this._discardFetch = false;
+    try {
+      const endTime = new Date();
+      const startTime = new Date(endTime.getTime() - 60 * 60 * 24 * 1000 * 3); // 3 days
+      const history = {
+        ...(await fetchDateWS(this.hass, startTime, endTime, [this.entityId!])),
+      };
+      if (!this._discardFetch) {
+        this._stateHistory = history[this.entityId!].map((key) => key.s);
+        this._stateHistory = [...new Set(this._stateHistory.reverse())].slice(
+          0,
+          9
+        );
+      }
+    } finally {
+      this._fetching = false;
+      this._discardFetch = false;
+    }
+  }
+
   protected updated(changedProps: PropertyValues) {
+    if (
+      this.entityId &&
+      (changedProps.has("entityId") ||
+        (changedProps.has("_discardFetch") &&
+          changedProps.get("_discardFetch") &&
+          !this._discardFetch))
+    ) {
+      this._discardFetch = this._fetching; // if entity changes while fetching, discard the result, and then refetch when done
+      this._stateHistory = [];
+      if (DYNAMIC_STATE_DOMAINS.includes(computeDomain(this.entityId))) {
+        this._getStateHistory();
+      }
+    }
+
     if (changedProps.has("_opened") && this._opened) {
-      const state = this.entityId ? this.hass.states[this.entityId] : undefined;
-      (this._comboBox as any).items =
-        this.entityId && state
-          ? getStates(state, this.attribute).map((key) => ({
+      const hassState = this.entityId
+        ? this.hass.states[this.entityId]
+        : undefined;
+      const items =
+        this.entityId && hassState
+          ? getStates(hassState, this.attribute).map((key) => ({
               value: key,
               label: !this.attribute
                 ? computeStateDisplay(
                     this.hass.localize,
-                    state,
+                    hassState,
                     this.hass.locale,
                     this.hass.entities,
                     key
@@ -61,6 +121,19 @@ class HaEntityStatePicker extends LitElement {
                 : formatAttributeValue(this.hass, key),
             }))
           : [];
+      if (!this.attribute) {
+        const itemsValues = items.map((key) => key.value);
+        const historyItems = this._stateHistory.filter(
+          (key) => !itemsValues.includes(key) && key
+        );
+        items.push(
+          ...historyItems.map((v) => ({
+            value: v,
+            label: v,
+          }))
+        );
+      }
+      (this._comboBox as any).items = items;
     }
   }
 
