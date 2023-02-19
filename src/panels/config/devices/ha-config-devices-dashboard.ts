@@ -39,6 +39,7 @@ import { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
+import { showMatterAddDeviceDialog } from "../integrations/integration-panels/matter/show-dialog-add-matter-device";
 import { showZWaveJSAddNodeDialog } from "../integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 
@@ -338,11 +339,14 @@ export class HaConfigDeviceDashboard extends LitElement {
               : undefined;
           const batteryIsBinary =
             battery && computeStateDomain(battery) === "binary_sensor";
+
           return battery && (batteryIsBinary || !isNaN(battery.state as any))
             ? html`
                 ${batteryIsBinary
                   ? ""
-                  : battery.state + blankBeforePercent(this.hass.locale) + "%"}
+                  : Number(battery.state).toFixed() +
+                    blankBeforePercent(this.hass.locale) +
+                    "%"}
                 <ha-battery-icon
                   .hass=${this.hass!}
                   .batteryStateObj=${battery}
@@ -538,6 +542,10 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
     if (filteredConfigEntry?.domain === "zwave_js") {
       this._showZJSAddDeviceDialog(filteredConfigEntry);
+      return;
+    }
+    if (filteredConfigEntry?.domain === "matter") {
+      showMatterAddDeviceDialog(this);
       return;
     }
     showAddIntegrationDialog(this);

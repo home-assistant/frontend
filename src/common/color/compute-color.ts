@@ -19,7 +19,9 @@ export const THEME_COLORS = new Set([
   "orange",
   "deep-orange",
   "brown",
+  "light-grey",
   "grey",
+  "dark-grey",
   "blue-grey",
   "black",
   "white",
@@ -27,7 +29,7 @@ export const THEME_COLORS = new Set([
 
 export function computeCssColor(color: string): string {
   if (THEME_COLORS.has(color)) {
-    return `rgb(var(--rgb-${color}-color))`;
+    return `var(--${color}-color)`;
   }
   return color;
 }

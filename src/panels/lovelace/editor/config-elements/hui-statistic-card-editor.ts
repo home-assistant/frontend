@@ -1,11 +1,8 @@
-import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { any, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { domainIcon } from "../../../../common/entity/domain_icon";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-form/ha-form";
@@ -38,7 +35,7 @@ const cardConfigStruct = assign(
 
 const stat_types = ["mean", "min", "max", "change"] as const;
 
-const statTypeMap: Record<typeof stat_types[number], StatisticType> = {
+const statTypeMap: Record<(typeof stat_types)[number], StatisticType> = {
   mean: "mean",
   min: "min",
   max: "max",
@@ -90,9 +87,9 @@ export class HuiStatisticCardEditor
     if (!config || !config.period) {
       return config;
     }
-    for (const period of Object.values(periods)) {
+    for (const [periodKey, period] of Object.entries(periods)) {
       if (deepEqual(period, config.period)) {
-        return { ...config, period };
+        return { ...config, period: periodKey };
       }
     }
     return config;
@@ -100,10 +97,7 @@ export class HuiStatisticCardEditor
 
   private _schema = memoizeOne(
     (
-      entity: string,
-      icon: string,
-      periodVal: any,
-      entityState: HassEntity,
+      selectedPeriodKey: string | undefined,
       localize: LocalizeFunc,
       metadata?: StatisticsMetaData
     ) =>
@@ -130,22 +124,22 @@ export class HuiStatisticCardEditor
         {
           name: "period",
           required: true,
-          selector: Object.values(periods).includes(periodVal)
-            ? {
-                select: {
-                  multiple: false,
-                  options: Object.entries(periods).map(
-                    ([periodKey, period]) => ({
-                      value: period,
+          selector:
+            selectedPeriodKey &&
+            Object.keys(periods).includes(selectedPeriodKey)
+              ? {
+                  select: {
+                    multiple: false,
+                    options: Object.keys(periods).map((periodKey) => ({
+                      value: periodKey,
                       label:
                         localize(
                           `ui.panel.lovelace.editor.card.statistic.periods.${periodKey}`
                         ) || periodKey,
-                    })
-                  ),
-                },
-              }
-            : { object: {} },
+                    })),
+                  },
+                }
+              : { object: {} },
         },
         {
           type: "grid",
@@ -155,13 +149,10 @@ export class HuiStatisticCardEditor
             {
               name: "icon",
               selector: {
-                icon: {
-                  placeholder: icon || entityState?.attributes.icon,
-                  fallbackPath:
-                    !icon && !entityState?.attributes.icon && entityState
-                      ? domainIcon(computeDomain(entity), entityState)
-                      : undefined,
-                },
+                icon: {},
+              },
+              context: {
+                icon_entity: "entity",
               },
             },
             { name: "unit", selector: { text: {} } },
@@ -176,15 +167,10 @@ export class HuiStatisticCardEditor
       return html``;
     }
 
-    const entityState = this.hass.states[this._config.entity];
-
     const data = this._data(this._config);
 
     const schema = this._schema(
-      this._config.entity,
-      this._config.icon,
-      data.period,
-      entityState,
+      typeof data.period === "string" ? data.period : undefined,
       this.hass.localize,
       this._metadata
     );
@@ -212,6 +198,14 @@ export class HuiStatisticCardEditor
   private async _valueChanged(ev: CustomEvent) {
     const config = ev.detail.value as StatisticCardConfig;
     Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
+
+    if (typeof config.period === "string") {
+      const period = periods[config.period];
+      if (period) {
+        config.period = period;
+      }
+    }
+
     if (
       config.stat_type &&
       config.entity &&
@@ -227,12 +221,14 @@ export class HuiStatisticCardEditor
         config.stat_type = "change";
       }
     }
+
     if (!config.stat_type && config.entity) {
       const metadata = (
         await getStatisticMetadata(this.hass!, [config.entity])
       )?.[0];
       config.stat_type = metadata?.has_sum ? "change" : "mean";
     }
+
     fireEvent(this, "config-changed", { config });
   }
 

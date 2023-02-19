@@ -186,8 +186,8 @@ export interface EnergyInfo {
 
 export interface EnergyValidationIssue {
   type: string;
-  identifier: string;
-  value?: unknown;
+  affected_entities: [string, unknown][];
+  translation_placeholders: Record<string, string>;
 }
 
 export interface EnergyPreferencesValidation {
@@ -200,10 +200,12 @@ export const getEnergyInfo = (hass: HomeAssistant) =>
     type: "energy/info",
   });
 
-export const getEnergyPreferenceValidation = (hass: HomeAssistant) =>
-  hass.callWS<EnergyPreferencesValidation>({
+export const getEnergyPreferenceValidation = async (hass: HomeAssistant) => {
+  await hass.loadBackendTranslation("issues", "energy");
+  return hass.callWS<EnergyPreferencesValidation>({
     type: "energy/validate",
   });
+};
 
 export const getEnergyPreferences = (hass: HomeAssistant) =>
   hass.callWS<EnergyPreferences>({
@@ -404,24 +406,28 @@ const getEnergyData = async (
   };
 
   const stats = {
-    ...(await fetchStatistics(
-      hass!,
-      startMinHour,
-      end,
-      energyStatIds,
-      period,
-      energyUnits,
-      ["sum"]
-    )),
-    ...(await fetchStatistics(
-      hass!,
-      startMinHour,
-      end,
-      waterStatIds,
-      period,
-      waterUnits,
-      ["sum"]
-    )),
+    ...(energyStatIds.length
+      ? await fetchStatistics(
+          hass!,
+          startMinHour,
+          end,
+          energyStatIds,
+          period,
+          energyUnits,
+          ["sum"]
+        )
+      : {}),
+    ...(waterStatIds.length
+      ? await fetchStatistics(
+          hass!,
+          startMinHour,
+          end,
+          waterStatIds,
+          period,
+          waterUnits,
+          ["sum"]
+        )
+      : {}),
   };
 
   let statsCompare;
@@ -439,24 +445,28 @@ const getEnergyData = async (
     endCompare = addMilliseconds(start, -1);
 
     statsCompare = {
-      ...(await fetchStatistics(
-        hass!,
-        compareStartMinHour,
-        endCompare,
-        energyStatIds,
-        period,
-        energyUnits,
-        ["sum"]
-      )),
-      ...(await fetchStatistics(
-        hass!,
-        compareStartMinHour,
-        endCompare,
-        waterStatIds,
-        period,
-        waterUnits,
-        ["sum"]
-      )),
+      ...(energyStatIds.length
+        ? await fetchStatistics(
+            hass!,
+            compareStartMinHour,
+            endCompare,
+            energyStatIds,
+            period,
+            energyUnits,
+            ["sum"]
+          )
+        : {}),
+      ...(waterStatIds.length
+        ? await fetchStatistics(
+            hass!,
+            compareStartMinHour,
+            endCompare,
+            waterStatIds,
+            period,
+            waterUnits,
+            ["sum"]
+          )
+        : {}),
     };
   }
 
@@ -669,7 +679,7 @@ export const getEnergySolarForecasts = (hass: HomeAssistant) =>
   });
 
 const energyGasUnitClass = ["volume", "energy"] as const;
-export type EnergyGasUnitClass = typeof energyGasUnitClass[number];
+export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,

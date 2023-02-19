@@ -29,11 +29,9 @@ export type LocalizeKeys =
   | `ui.panel.config.devices.${string}`
   | `ui.panel.config.energy.${string}`
   | `ui.panel.config.info.${string}`
-  | `ui.panel.config.logs.${string}`
   | `ui.panel.config.lovelace.${string}`
   | `ui.panel.config.network.${string}`
   | `ui.panel.config.scene.${string}`
-  | `ui.panel.config.url.${string}`
   | `ui.panel.config.zha.${string}`
   | `ui.panel.config.zwave_js.${string}`
   | `ui.panel.lovelace.card.${string}`
@@ -67,19 +65,21 @@ export interface FormatsType {
 
 const loadedPolyfillLocale = new Set();
 
+const locale = getLocalLanguage();
+
 const polyfills: Promise<any>[] = [];
 if (__BUILD__ === "latest") {
   if (shouldPolyfillLocale()) {
-    polyfills.push(import("@formatjs/intl-locale/polyfill"));
+    await import("@formatjs/intl-locale/polyfill");
   }
-  if (shouldPolyfillPluralRules()) {
+  if (shouldPolyfillPluralRules(locale)) {
     polyfills.push(import("@formatjs/intl-pluralrules/polyfill"));
     polyfills.push(import("@formatjs/intl-pluralrules/locale-data/en"));
   }
-  if (shouldPolyfillRelativeTime()) {
+  if (shouldPolyfillRelativeTime(locale)) {
     polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill"));
   }
-  if (shouldPolyfillDateTime()) {
+  if (shouldPolyfillDateTime(locale)) {
     polyfills.push(import("@formatjs/intl-datetimeformat/polyfill"));
     polyfills.push(import("@formatjs/intl-datetimeformat/add-all-tz"));
   }
@@ -90,7 +90,7 @@ export const polyfillsLoaded =
     ? undefined
     : Promise.all(polyfills).then(() =>
         // Load the default language
-        loadPolyfillLocales(getLocalLanguage())
+        loadPolyfillLocales(locale)
       );
 
 /**
@@ -216,7 +216,7 @@ export const loadPolyfillLocales = async (language: string) => {
       // @ts-ignore
       Intl.DateTimeFormat.__addLocaleData(await result.json());
     }
-  } catch (_e) {
+  } catch (e) {
     // Ignore
   }
 };

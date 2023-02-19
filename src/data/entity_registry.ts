@@ -22,6 +22,7 @@ export interface EntityRegistryEntry {
   original_name?: string;
   unique_id: string;
   translation_key?: string;
+  options: EntityRegistryOptions | null;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
@@ -39,6 +40,8 @@ export interface UpdateEntityRegistryEntryResult {
 }
 
 export interface SensorEntityOptions {
+  display_precision?: number | null;
+  suggested_display_precision?: number | null;
   unit_of_measurement?: string | null;
 }
 
@@ -52,6 +55,12 @@ export interface WeatherEntityOptions {
   temperature_unit?: string | null;
   visibility_unit?: string | null;
   wind_speed_unit?: string | null;
+}
+
+export interface EntityRegistryOptions {
+  number?: NumberEntityOptions;
+  sensor?: SensorEntityOptions;
+  weather?: WeatherEntityOptions;
 }
 
 export interface EntityRegistryEntryUpdateParams {

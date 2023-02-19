@@ -106,6 +106,7 @@ export class HuiEnergyGasGraphCard
           })}"
         >
           <ha-chart-base
+            .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(
               this._start,

@@ -1,6 +1,12 @@
 import { getWeekStartByLocale } from "weekstart";
 import { FrontendLocaleData, FirstWeekday } from "../../data/translation";
 
+import { polyfillsLoaded } from "../translations/localize";
+
+if (__BUILD__ === "latest" && polyfillsLoaded) {
+  await polyfillsLoaded;
+}
+
 export const weekdays = [
   "sunday",
   "monday",

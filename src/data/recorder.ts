@@ -98,7 +98,7 @@ const statisticTypes = [
   "state",
   "sum",
 ] as const;
-export type StatisticsTypes = typeof statisticTypes[number][];
+export type StatisticsTypes = (typeof statisticTypes)[number][];
 
 export interface StatisticsValidationResults {
   [statisticId: string]: StatisticsValidationResult[];

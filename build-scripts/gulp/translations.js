@@ -1,5 +1,5 @@
+const del = import("del");
 const crypto = require("crypto");
-const del = require("del");
 const path = require("path");
 const source = require("vinyl-source-stream");
 const vinylBuffer = require("vinyl-buffer");
@@ -13,7 +13,7 @@ const { mapFiles } = require("../util");
 const env = require("../env");
 const paths = require("../paths");
 
-require("./fetch-nightly_translations");
+require("./fetch-nightly-translations");
 
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";
@@ -120,7 +120,7 @@ function lokaliseTransform(data, original, file) {
   return output;
 }
 
-gulp.task("clean-translations", () => del([workDir]));
+gulp.task("clean-translations", async () => (await del).deleteSync([workDir]));
 
 gulp.task("ensure-translations-build-dir", (done) => {
   if (!fs.existsSync(workDir)) {

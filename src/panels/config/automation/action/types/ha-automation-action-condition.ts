@@ -38,7 +38,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
       >
         ${this._processedTypes(this.hass.localize).map(
           ([opt, label, icon]) => html`
-            <mwc-list-item .value=${opt} aria-label=${label} graphic="icon">
+            <mwc-list-item .value=${opt} graphic="icon">
               ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
             ></mwc-list-item>
           `

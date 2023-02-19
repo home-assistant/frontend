@@ -13,6 +13,9 @@
         color: var(--primary-text-color, #212121);
         background-color: #0277bd !important;
       }
+      body {
+        height: auto;
+      }
       .content {
         box-sizing: border-box;
         padding: 20px 16px;
@@ -75,6 +78,9 @@
     <%= renderTemplate('_preload_roboto') %>
 
     <script crossorigin="use-credentials">
+      if (!window.globalThis) {
+        window.globalThis = window;
+      }
       // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
       if (!isS11_12) {
         import("<%= latestPageJS %>");
@@ -82,9 +88,6 @@
         window.stepsPromise = fetch("/api/onboarding", {
           credentials: "same-origin",
         });
-        if (!window.globalThis) {
-          window.globalThis = window;
-        }
       }
     </script>
 

@@ -66,7 +66,7 @@ class StatisticsChart extends LitElement {
     StatisticsMetaData
   >;
 
-  @property() public names: boolean | Record<string, string> = false;
+  @property() public names?: Record<string, string>;
 
   @property() public unit?: string;
 
@@ -133,6 +133,7 @@ class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
+        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .chartType=${this.chartType}

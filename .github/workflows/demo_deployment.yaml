@@ -34,9 +34,7 @@ jobs:
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install
-        env:
-          CI: true
+        run: yarn install --immutable
 
       - name: Build Demo
         run: ./node_modules/.bin/gulp build-demo
@@ -72,9 +70,7 @@ jobs:
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install
-        env:
-          CI: true
+        run: yarn install --immutable
 
       - name: Build Demo
         run: ./node_modules/.bin/gulp build-demo

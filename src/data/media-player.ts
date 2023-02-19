@@ -76,23 +76,28 @@ export interface MediaPlayerEntity extends HassEntityBase {
     | "unknown";
 }
 
-export const SUPPORT_PAUSE = 1;
-export const SUPPORT_SEEK = 2;
-export const SUPPORT_VOLUME_SET = 4;
-export const SUPPORT_VOLUME_MUTE = 8;
-export const SUPPORT_PREVIOUS_TRACK = 16;
-export const SUPPORT_NEXT_TRACK = 32;
-export const SUPPORT_TURN_ON = 128;
-export const SUPPORT_TURN_OFF = 256;
-export const SUPPORT_PLAY_MEDIA = 512;
-export const SUPPORT_VOLUME_BUTTONS = 1024;
-export const SUPPORT_SELECT_SOURCE = 2048;
-export const SUPPORT_STOP = 4096;
-export const SUPPORT_PLAY = 16384;
-export const SUPPORT_REPEAT_SET = 262144;
-export const SUPPORT_SELECT_SOUND_MODE = 65536;
-export const SUPPORT_SHUFFLE_SET = 32768;
-export const SUPPORT_BROWSE_MEDIA = 131072;
+export const enum MediaPlayerEntityFeature {
+  PAUSE = 1,
+  SEEK = 2,
+  VOLUME_SET = 4,
+  VOLUME_MUTE = 8,
+  PREVIOUS_TRACK = 16,
+  NEXT_TRACK = 32,
+
+  TURN_ON = 128,
+  TURN_OFF = 256,
+  PLAY_MEDIA = 512,
+  VOLUME_BUTTONS = 1024,
+  SELECT_SOURCE = 2048,
+  STOP = 4096,
+  CLEAR_PLAYLIST = 8192,
+  PLAY = 16384,
+  SHUFFLE_SET = 32768,
+  SELECT_SOUND_MODE = 65536,
+  BROWSE_MEDIA = 131072,
+  REPEAT_SET = 262144,
+  GROUPING = 524288,
+}
 
 export type MediaPlayerBrowseAction = "pick" | "play";
 
@@ -264,7 +269,7 @@ export const computeMediaControls = (
   }
 
   if (state === "off") {
-    return supportsFeature(stateObj, SUPPORT_TURN_ON)
+    return supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
       ? [
           {
             icon: mdiPower,
@@ -276,7 +281,7 @@ export const computeMediaControls = (
 
   const buttons: ControlButton[] = [];
 
-  if (supportsFeature(stateObj, SUPPORT_TURN_OFF)) {
+  if (supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)) {
     buttons.push({
       icon: mdiPower,
       action: "turn_off",
@@ -288,7 +293,7 @@ export const computeMediaControls = (
 
   if (
     (state === "playing" || state === "paused" || assumedState) &&
-    supportsFeature(stateObj, SUPPORT_SHUFFLE_SET) &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.SHUFFLE_SET) &&
     useExtendedControls
   ) {
     buttons.push({
@@ -299,7 +304,7 @@ export const computeMediaControls = (
 
   if (
     (state === "playing" || state === "paused" || assumedState) &&
-    supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+    supportsFeature(stateObj, MediaPlayerEntityFeature.PREVIOUS_TRACK)
   ) {
     buttons.push({
       icon: mdiSkipPrevious,
@@ -310,13 +315,13 @@ export const computeMediaControls = (
   if (
     !assumedState &&
     ((state === "playing" &&
-      (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-        supportsFeature(stateObj, SUPPORT_STOP))) ||
+      (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
+        supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
       ((state === "paused" || state === "idle") &&
-        supportsFeature(stateObj, SUPPORT_PLAY)) ||
+        supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
       (state === "on" &&
-        (supportsFeature(stateObj, SUPPORT_PLAY) ||
-          supportsFeature(stateObj, SUPPORT_PAUSE))))
+        (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
+          supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE))))
   ) {
     buttons.push({
       icon:
@@ -324,33 +329,42 @@ export const computeMediaControls = (
           ? mdiPlayPause
           : state !== "playing"
           ? mdiPlay
-          : supportsFeature(stateObj, SUPPORT_PAUSE)
+          : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
           ? mdiPause
           : mdiStop,
       action:
         state !== "playing"
           ? "media_play"
-          : supportsFeature(stateObj, SUPPORT_PAUSE)
+          : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
           ? "media_pause"
           : "media_stop",
     });
   }
 
-  if (assumedState && supportsFeature(stateObj, SUPPORT_PLAY)) {
+  if (
+    assumedState &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)
+  ) {
     buttons.push({
       icon: mdiPlay,
       action: "media_play",
     });
   }
 
-  if (assumedState && supportsFeature(stateObj, SUPPORT_PAUSE)) {
+  if (
+    assumedState &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
+  ) {
     buttons.push({
       icon: mdiPause,
       action: "media_pause",
     });
   }
 
-  if (assumedState && supportsFeature(stateObj, SUPPORT_STOP)) {
+  if (
+    assumedState &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.STOP)
+  ) {
     buttons.push({
       icon: mdiStop,
       action: "media_stop",
@@ -359,7 +373,7 @@ export const computeMediaControls = (
 
   if (
     (state === "playing" || state === "paused" || assumedState) &&
-    supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+    supportsFeature(stateObj, MediaPlayerEntityFeature.NEXT_TRACK)
   ) {
     buttons.push({
       icon: mdiSkipNext,
@@ -369,7 +383,7 @@ export const computeMediaControls = (
 
   if (
     (state === "playing" || state === "paused" || assumedState) &&
-    supportsFeature(stateObj, SUPPORT_REPEAT_SET) &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.REPEAT_SET) &&
     useExtendedControls
   ) {
     buttons.push({

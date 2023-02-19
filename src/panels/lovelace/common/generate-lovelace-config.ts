@@ -161,7 +161,7 @@ export const computeCards = (
       renderFooterEntities &&
       (domain === "scene" || domain === "script")
     ) {
-      const conf: typeof footerEntities[0] = {
+      const conf: (typeof footerEntities)[0] = {
         entity: entityId,
         show_icon: true,
         show_name: true,
