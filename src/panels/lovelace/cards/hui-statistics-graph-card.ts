@@ -91,7 +91,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return this._config?.title ? 2 : 0 + 2 * (this._entities?.length || 1);
+    return (this._config?.title ? 2 : 0) + 2 * (this._entities?.length || 1);
   }
 
   public setConfig(config: StatisticsGraphCardConfig): void {
