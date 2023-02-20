@@ -186,6 +186,9 @@ export class HuiDialogSelectView extends LitElement {
         ha-select {
           width: 100%;
         }
+        mwc-radio-list-item {
+          direction: ltr;
+        }
       `,
     ];
   }
