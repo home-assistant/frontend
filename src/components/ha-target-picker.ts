@@ -393,6 +393,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     const value = ev.detail.value;
     const target = ev.currentTarget;
+
+    if (target.type === "entity_id" && !value.includes(".")) {
+      return;
+    }
+
     target.value = "";
     this._addMode = undefined;
     if (
