@@ -255,6 +255,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
 
+    root.style.height = "auto";
+
     const ratio = parseAspectRatio(this._config.aspect_ratio);
 
     root.style.paddingBottom =
@@ -368,6 +370,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         overflow: hidden;
         width: 100%;
         height: 100%;
+        display: flex;
+        flex-direction: column;
       }
 
       ha-map {
