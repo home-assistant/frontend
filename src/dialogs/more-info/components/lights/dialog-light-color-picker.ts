@@ -149,7 +149,11 @@ class DialogLightColorPicker extends LitElement {
               )}
             ></ha-icon-button-prev>
 
-            <span slot="title">Change Color</span>
+            <span slot="title"
+              >${this.hass.localize(
+                "ui.dialogs.more_info_control.light.color_picker.title"
+              )}</span
+            >
           </ha-header-bar>
         </div>
         <div>
