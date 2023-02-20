@@ -84,6 +84,7 @@ export class HaControlButton extends LitElement {
         --control-button-background-color: var(--disabled-color);
         --control-button-background-opacity: 0.2;
         --control-button-border-radius: 10px;
+        --mdc-icon-size: 20px;
         width: 40px;
         height: 40px;
         -webkit-tap-highlight-color: transparent;

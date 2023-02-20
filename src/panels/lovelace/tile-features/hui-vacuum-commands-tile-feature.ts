@@ -11,8 +11,8 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-bar-button";
-import "../../../components/ha-bar-button-group";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   canReturnHome,
@@ -168,7 +168,7 @@ class HuiVacuumCommandTileFeature
     const stateObj = this.stateObj as VacuumEntity;
 
     return html`
-      <ha-bar-button-group>
+      <ha-control-button-group>
         ${VACUUM_COMMANDS.filter(
           (command) =>
             supportsVacuumCommand(stateObj, command) &&
@@ -176,7 +176,7 @@ class HuiVacuumCommandTileFeature
         ).map((command) => {
           const button = VACUUM_COMMANDS_BUTTONS[command](stateObj);
           return html`
-            <ha-bar-button
+            <ha-control-button
               .entry=${button}
               .label=${this.hass!.localize(
                 // @ts-ignore
@@ -186,18 +186,18 @@ class HuiVacuumCommandTileFeature
               .disabled=${button.disabled || stateObj.state === UNAVAILABLE}
             >
               <ha-svg-icon .path=${button.icon}></ha-svg-icon>
-            </ha-bar-button>
+            </ha-control-button>
           `;
         })}
-      </ha-bar-button-group>
+      </ha-control-button-group>
     `;
   }
 
   static get styles() {
     return css`
-      ha-bar-button-group {
+      ha-control-button-group {
         margin: 0 12px 12px 12px;
-        --button-bar-group-spacing: 12px;
+        --control-button-group-spacing: 12px;
       }
     `;
   }
