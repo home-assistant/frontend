@@ -1247,10 +1247,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           if (!entity) {
             return;
           }
-          showMoreInfoDialog(parent, {
-            entityId: entity.entity_id,
-            tab: "settings",
-          });
+          showMoreInfoDialog(parent, { entityId: entity.entity_id });
         });
       }, "entity_registry_updated");
     }

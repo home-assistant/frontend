@@ -1,6 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ensureArray } from "../../common/array/ensure-array";
 import {
   EntitySources,
   fetchEntitySourcesWithCache,
@@ -29,7 +30,18 @@ export class HaEntitySelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  private _hasIntegration(selector: EntitySelector) {
+    return (
+      selector.entity?.filter &&
+      ensureArray(selector.entity.filter).some((filter) => filter.integration)
+    );
+  }
+
   protected render() {
+    if (this._hasIntegration(this.selector) && !this._entitySources) {
+      return html``;
+    }
+
     if (!this.selector.entity?.multiple) {
       return html`<ha-entity-picker
         .hass=${this.hass}
@@ -64,7 +76,7 @@ export class HaEntitySelector extends LitElement {
     super.updated(changedProps);
     if (
       changedProps.has("selector") &&
-      this.selector.entity?.integration &&
+      this._hasIntegration(this.selector) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -74,13 +86,11 @@ export class HaEntitySelector extends LitElement {
   }
 
   private _filterEntities = (entity: HassEntity): boolean => {
-    if (!this.selector?.entity) {
+    if (!this.selector?.entity?.filter) {
       return true;
     }
-    return filterSelectorEntities(
-      this.selector.entity,
-      entity,
-      this._entitySources
+    return ensureArray(this.selector.entity.filter).some((filter) =>
+      filterSelectorEntities(filter, entity, this._entitySources)
     );
   };
 }

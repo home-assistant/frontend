@@ -3,7 +3,8 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/tile/ha-tile-button";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import {
   canCloseTilt,
   canOpenTilt,
@@ -65,10 +66,10 @@ class HuiCoverTiltTileFeature
     }
 
     return html`
-      <div class="container">
+      <ha-control-button-group>
         ${supportsFeature(this.stateObj, CoverEntityFeature.OPEN_TILT)
           ? html`
-              <ha-tile-button
+              <ha-control-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.open_tilt_cover"
                 )}
@@ -76,12 +77,12 @@ class HuiCoverTiltTileFeature
                 .disabled=${!canOpenTilt(this.stateObj)}
               >
                 <ha-svg-icon .path=${mdiArrowTopRight}></ha-svg-icon>
-              </ha-tile-button>
+              </ha-control-button>
             `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT)
           ? html`
-              <ha-tile-button
+              <ha-control-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.stop_cover"
                 )}
@@ -89,12 +90,12 @@ class HuiCoverTiltTileFeature
                 .disabled=${!canStopTilt(this.stateObj)}
               >
                 <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-              </ha-tile-button>
+              </ha-control-button>
             `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT)
           ? html`
-              <ha-tile-button
+              <ha-control-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.close_tilt_cover"
                 )}
@@ -102,29 +103,18 @@ class HuiCoverTiltTileFeature
                 .disabled=${!canCloseTilt(this.stateObj)}
               >
                 <ha-svg-icon .path=${mdiArrowBottomLeft}></ha-svg-icon>
-              </ha-tile-button>
+              </ha-control-button>
             `
           : undefined}
-      </div>
+      </ha-control-button-group>
     `;
   }
 
   static get styles() {
     return css`
-      .container {
-        display: flex;
-        flex-direction: row;
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-      ha-tile-button {
-        flex: 1;
-      }
-      ha-tile-button:not(:last-child) {
-        margin-right: 12px;
-        margin-inline-end: 12px;
-        margin-inline-start: initial;
-        direction: var(--direction);
+      ha-control-button-group {
+        margin: 0 12px 12px 12px;
+        --control-button-group-spacing: 12px;
       }
     `;
   }

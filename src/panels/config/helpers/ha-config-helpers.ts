@@ -358,10 +358,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private async _openEditDialog(ev: CustomEvent): Promise<void> {
     const entityId = (ev.detail as RowClickedEvent).id;
-    showMoreInfoDialog(this, {
-      entityId,
-      tab: "settings",
-    });
+    showMoreInfoDialog(this, { entityId });
   }
 
   private _createHelpler() {

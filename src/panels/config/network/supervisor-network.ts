@@ -17,7 +17,6 @@ import "../../../components/ha-formfield";
 import "../../../components/ha-header-bar";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-radio";
-import "../../../components/ha-related-items";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   AccessPoints,

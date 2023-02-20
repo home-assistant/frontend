@@ -2,7 +2,7 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-bar-slider";
+import "../../../../src/components/ha-control-slider";
 import "../../../../src/components/ha-card";
 
 const sliders: {
@@ -46,7 +46,7 @@ const sliders: {
   },
 ];
 
-@customElement("demo-components-ha-bar-slider")
+@customElement("demo-components-ha-control-slider")
 export class DemoHaBarSlider extends LitElement {
   @state() private value = 50;
 
@@ -86,7 +86,7 @@ export class DemoHaBarSlider extends LitElement {
             <div class="card-content">
               <label id=${id}>${label}</label>
               <pre>Config: ${JSON.stringify(config)}</pre>
-              <ha-bar-slider
+              <ha-control-slider
                 .value=${this.value}
                 .mode=${config.mode}
                 class=${ifDefined(config.class)}
@@ -94,7 +94,7 @@ export class DemoHaBarSlider extends LitElement {
                 @slider-moved=${this.handleSliderMoved}
                 aria-labelledby=${id}
               >
-              </ha-bar-slider>
+              </ha-control-slider>
             </div>
           </ha-card>
         `;
@@ -106,7 +106,7 @@ export class DemoHaBarSlider extends LitElement {
             ${repeat(sliders, (slider) => {
               const { id, label, ...config } = slider;
               return html`
-                <ha-bar-slider
+                <ha-control-slider
                   .value=${this.value}
                   .mode=${config.mode}
                   vertical
@@ -115,7 +115,7 @@ export class DemoHaBarSlider extends LitElement {
                   @slider-moved=${this.handleSliderMoved}
                   aria-label=${label}
                 >
-                </ha-bar-slider>
+                </ha-control-slider>
               `;
             })}
           </div>
@@ -141,11 +141,11 @@ export class DemoHaBarSlider extends LitElement {
         font-weight: 600;
       }
       .custom {
-        --slider-bar-color: #ffcf4c;
-        --slider-bar-background: #ffcf4c;
-        --slider-bar-background-opacity: 0.2;
-        --slider-bar-thickness: 100px;
-        --slider-bar-border-radius: 24px;
+        --control-slider-color: #ffcf4c;
+        --control-slider-background: #ffcf4c;
+        --control-slider-background-opacity: 0.2;
+        --control-slider-thickness: 100px;
+        --control-slider-border-radius: 24px;
       }
       .vertical-sliders {
         height: 300px;
@@ -165,6 +165,6 @@ export class DemoHaBarSlider extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-bar-slider": DemoHaBarSlider;
+    "demo-components-ha-control-slider": DemoHaBarSlider;
   }
 }
