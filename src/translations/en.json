@@ -5186,6 +5186,10 @@
             "title": "Watchdog",
             "description": "This will start the add-on if it crashes"
           },
+          "send_remote_username": {
+            "title": "Send username",
+            "description": "This will send the session's username to the addon"
+          },
           "auto_update": {
             "title": "Auto update",
             "description": "Auto update the add-on when there is a new version available"
