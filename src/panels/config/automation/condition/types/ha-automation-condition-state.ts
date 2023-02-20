@@ -4,6 +4,7 @@ import {
   assert,
   boolean,
   literal,
+  number,
   object,
   optional,
   string,
@@ -24,7 +25,7 @@ const stateConditionStruct = object({
   entity_id: optional(string()),
   attribute: optional(string()),
   state: optional(string()),
-  for: optional(union([string(), forDictStruct])),
+  for: optional(union([number(), string(), forDictStruct])),
   enabled: optional(boolean()),
 });
 
