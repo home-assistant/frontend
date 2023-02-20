@@ -55,7 +55,7 @@ class MoreInfoLight extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("stateObj")) {
       this._selectedBrightness = this.stateObj?.attributes.brightness
-        ? Math.round((this.stateObj?.attributes.brightness * 100) / 255)
+        ? Math.round((this.stateObj.attributes.brightness * 100) / 255)
         : undefined;
     }
   }

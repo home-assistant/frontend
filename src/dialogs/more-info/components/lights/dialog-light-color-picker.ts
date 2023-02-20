@@ -12,6 +12,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-bar-slider";
 import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-color-picker";
 import "../../../../components/ha-dialog";
@@ -22,15 +23,13 @@ import {
   getLightCurrentModeRgbColor,
   LightColorMode,
   LightEntity,
-  lightSupportsColor,
   lightSupportsColorMode,
 } from "../../../../data/light";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LightColorPickerDialogParams } from "./show-dialog-light-color-picker";
-import "../../../../components/ha-bar-slider";
 
-type Mode = "color_temp" | "color" | "white";
+type Mode = "color_temp" | "color";
 
 @customElement("dialog-light-color-picker")
 class DialogLightColorPicker extends LitElement {
@@ -73,25 +72,17 @@ class DialogLightColorPicker extends LitElement {
       this.stateObj!,
       LightColorMode.COLOR_TEMP
     );
-    const supportsWhite = lightSupportsColorMode(
-      this.stateObj!,
-      LightColorMode.WHITE
-    );
 
     const modes: Mode[] = [];
     modes.push("color");
     if (supportsTemp) {
       modes.push("color_temp");
     }
-    if (supportsWhite) {
-      modes.push("white");
-    }
 
     this._modes = modes;
     this._mode =
-      this.stateObj!.attributes.color_mode === "color_temp" ||
-      this.stateObj!.attributes.color_mode === "white"
-        ? this.stateObj!.attributes.color_mode
+      this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
+        ? LightColorMode.COLOR_TEMP
         : "color";
 
     this._updateSliderValues();
@@ -108,16 +99,6 @@ class DialogLightColorPicker extends LitElement {
       return html``;
     }
 
-    const supportsTemp = lightSupportsColorMode(
-      this.stateObj,
-      LightColorMode.COLOR_TEMP
-    );
-
-    const supportsWhite = lightSupportsColorMode(
-      this.stateObj,
-      LightColorMode.WHITE
-    );
-
     const supportsRgbww = lightSupportsColorMode(
       this.stateObj,
       LightColorMode.RGBWW
@@ -126,9 +107,6 @@ class DialogLightColorPicker extends LitElement {
     const supportsRgbw =
       !supportsRgbww &&
       lightSupportsColorMode(this.stateObj, LightColorMode.RGBW);
-
-    const supportsColor =
-      supportsRgbww || supportsRgbw || lightSupportsColor(this.stateObj);
 
     return html`
       <ha-dialog
@@ -148,7 +126,6 @@ class DialogLightColorPicker extends LitElement {
                 "ui.dialogs.more_info_control.dismiss"
               )}
             ></ha-icon-button-prev>
-
             <span slot="title"
               >${this.hass.localize(
                 "ui.dialogs.more_info_control.light.color_picker.title"
@@ -157,7 +134,7 @@ class DialogLightColorPicker extends LitElement {
           </ha-header-bar>
         </div>
         <div>
-          ${supportsColor && (supportsTemp || supportsWhite)
+          ${this._modes.length > 1
             ? html`
                 <mwc-tab-bar
                   .activeIndex=${this._mode
@@ -177,9 +154,7 @@ class DialogLightColorPicker extends LitElement {
               `
             : ""}
           <div class="content">
-            ${supportsTemp &&
-            ((!supportsColor && !supportsWhite) ||
-              this._mode === LightColorMode.COLOR_TEMP)
+            ${this._mode === LightColorMode.COLOR_TEMP
               ? html`
                   <ha-bar-slider
                     vertical
@@ -198,8 +173,7 @@ class DialogLightColorPicker extends LitElement {
                   </ha-bar-slider>
                 `
               : ""}
-            ${supportsColor &&
-            ((!supportsTemp && !supportsWhite) || this._mode === "color")
+            ${this._mode === "color"
               ? html`
                   <div class="segmentationContainer">
                     <ha-color-picker

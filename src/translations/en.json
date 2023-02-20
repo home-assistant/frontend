@@ -905,8 +905,7 @@
             "title": "Change color",
             "mode": {
               "color": "Color",
-              "color_temp": "Temperature",
-              "white": "White"
+              "color_temp": "Temperature"
             }
           }
         }
