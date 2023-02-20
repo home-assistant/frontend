@@ -56,7 +56,7 @@ export class EnergyStrategy {
       (source) => source.type === "water"
     );
 
-    if (info.narrow) {
+    if (info.narrow || info.view.strategy?.options?.show_date_selection) {
       view.cards!.push({
         type: "energy-date-selection",
         collection_key: "energy_dashboard",

@@ -27,7 +27,6 @@ import {
   LegacyLovelaceConfig,
   LovelaceConfig,
 } from "../../../../src/data/lovelace";
-import { ENERGY_LOVELACE_CONFIG } from "../../../../src/panels/energy/ha-panel-energy";
 import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
 import { HassElement } from "../../../../src/state/hass-element";
 import { castContext } from "../cast_context";
@@ -254,7 +253,16 @@ export class HcMain extends HassElement {
     }
     this._lovelacePath = msg.viewPath;
     if (msg.urlPath === "energy") {
-      this._lovelaceConfig = ENERGY_LOVELACE_CONFIG;
+      this._lovelaceConfig = {
+        views: [
+          {
+            strategy: {
+              type: "energy",
+              options: { show_date_selection: true },
+            },
+          },
+        ],
+      };
       this._urlPath = "energy";
       this._lovelacePath = 0;
       this._sendStatus();

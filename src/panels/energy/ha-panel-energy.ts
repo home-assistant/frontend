@@ -18,7 +18,7 @@ import "../lovelace/components/hui-energy-period-selector";
 import { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 
-export const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
+const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
     {
       strategy: {
