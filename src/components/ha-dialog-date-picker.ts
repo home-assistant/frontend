@@ -24,7 +24,7 @@ export class HaDialogDatePicker extends LitElement {
   @state() private _value?: string;
 
   public async showDialog(params: datePickerDialogParams): Promise<void> {
-    // app-datpicker has a bug, that it removes its handlers when disconnected, but doesnt add them back when reconnected.
+    // app-datepicker has a bug, that it removes its handlers when disconnected, but doesn't add them back when reconnected.
     // So we need to wait for the next render to make sure the element is removed and re-created so the handlers are added.
     await nextRender();
     this._params = params;

@@ -38,14 +38,14 @@ declare global {
 }
 
 @customElement("state-history-charts")
-class StateHistoryCharts extends LitElement {
+export class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public historyData!: HistoryResult;
 
   @property() public narrow!: boolean;
 
-  @property({ type: Boolean }) public names = false;
+  @property() public names?: Record<string, string>;
 
   @property({ type: Boolean, attribute: "virtualize", reflect: true })
   public virtualize = false;
@@ -71,7 +71,6 @@ class StateHistoryCharts extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  @eventOptions({ passive: true })
   protected render(): TemplateResult {
     if (!isComponentLoaded(this.hass, "history")) {
       return html`<div class="info">

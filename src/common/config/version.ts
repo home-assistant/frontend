@@ -22,3 +22,11 @@ export const atLeastVersion = (
       Number(haPatch) >= patch)
   );
 };
+
+export const isDevVersion = (version: string): boolean => {
+  if (__DEMO__) {
+    return false;
+  }
+
+  return version.includes("dev");
+};

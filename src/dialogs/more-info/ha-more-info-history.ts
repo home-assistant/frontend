@@ -113,20 +113,15 @@ export class MoreInfoHistory extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeHistoryTimeWindow();
+    this._unsubscribeHistory();
   }
 
-  private _unsubscribeHistoryTimeWindow() {
-    if (!this._subscribed) {
-      return;
-    }
+  private _unsubscribeHistory() {
     clearInterval(this._interval);
-    this._subscribed.then((unsubscribe) => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub?.());
       this._subscribed = undefined;
-    });
+    }
   }
 
   private _redrawGraph() {
@@ -165,7 +160,7 @@ export class MoreInfoHistory extends LitElement {
       return;
     }
     if (this._subscribed) {
-      this._unsubscribeHistoryTimeWindow();
+      this._unsubscribeHistory();
     }
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,

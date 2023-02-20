@@ -73,6 +73,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
+import { isDevVersion } from "../../../common/config/version";
 
 const integrationsWithPanel = {
   matter: "/config/matter",
@@ -346,7 +347,9 @@ export class HaIntegrationCard extends LitElement {
             ? html`<mwc-button unelevated @click=${this._handleEnable}>
                 ${this.hass.localize("ui.common.enable")}
               </mwc-button>`
-            : item.domain in integrationsWithPanel
+            : item.domain in integrationsWithPanel &&
+              (item.domain !== "matter" ||
+                isDevVersion(this.hass.config.version))
             ? html`<a
                 href=${`${integrationsWithPanel[item.domain]}?config_entry=${
                   item.entry_id

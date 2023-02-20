@@ -22,6 +22,7 @@ export interface EntityRegistryEntry {
   original_name?: string;
   unique_id: string;
   translation_key?: string;
+  options: EntityRegistryOptions | null;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
@@ -30,7 +31,6 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   device_class?: string;
   original_device_class?: string;
   aliases: string[];
-  options: EntityRegistryOptions | null;
 }
 
 export interface UpdateEntityRegistryEntryResult {
@@ -40,7 +40,8 @@ export interface UpdateEntityRegistryEntryResult {
 }
 
 export interface SensorEntityOptions {
-  precision?: number | null;
+  display_precision?: number | null;
+  suggested_display_precision?: number | null;
   unit_of_measurement?: string | null;
 }
 

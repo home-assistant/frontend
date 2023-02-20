@@ -1,4 +1,6 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { PropertyValues } from "lit";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "./process-config-entities";
 
@@ -24,6 +26,37 @@ function hasConfigChanged(element: any, changedProps: PropertyValues): boolean {
   return false;
 }
 
+function compareEntityState(
+  oldHass: HomeAssistant,
+  newHass: HomeAssistant,
+  entityId: string
+) {
+  const oldState = oldHass.states[entityId] as HassEntity | undefined;
+  const newState = newHass.states[entityId] as HassEntity | undefined;
+
+  return oldState !== newState;
+}
+
+function compareEntityEntryOptions(
+  oldHass: HomeAssistant,
+  newHass: HomeAssistant,
+  entityId: string
+) {
+  const oldEntry = oldHass.entities[entityId] as
+    | EntityRegistryEntry
+    | undefined;
+  const newEntry = newHass.entities[entityId] as
+    | EntityRegistryEntry
+    | undefined;
+
+  return (
+    oldEntry?.options?.sensor?.display_precision !==
+      newEntry?.options?.sensor?.display_precision ||
+    oldEntry?.options?.sensor?.suggested_display_precision !==
+      newEntry?.options?.sensor?.suggested_display_precision
+  );
+}
+
 // Check if config or Entity changed
 export function hasConfigOrEntityChanged(
   element: any,
@@ -34,10 +67,11 @@ export function hasConfigOrEntityChanged(
   }
 
   const oldHass = changedProps.get("hass") as HomeAssistant;
+  const newHass = element.hass as HomeAssistant;
 
   return (
-    oldHass.states[element._config!.entity] !==
-    element.hass!.states[element._config!.entity]
+    compareEntityState(oldHass, newHass, element._config!.entity) ||
+    compareEntityEntryOptions(oldHass, newHass, element._config!.entity)
   );
 }
 
@@ -51,12 +85,18 @@ export function hasConfigOrEntitiesChanged(
   }
 
   const oldHass = changedProps.get("hass") as HomeAssistant;
+  const newHass = element.hass as HomeAssistant;
 
   const entities = processConfigEntities(element._config!.entities, false);
 
-  return entities.some(
-    (entity) =>
-      "entity" in entity &&
-      oldHass.states[entity.entity] !== element.hass!.states[entity.entity]
-  );
+  return entities.some((entity) => {
+    if (!("entity" in entity)) {
+      return false;
+    }
+
+    return (
+      compareEntityState(oldHass, newHass, entity.entity) ||
+      compareEntityEntryOptions(oldHass, newHass, entity.entity)
+    );
+  });
 }

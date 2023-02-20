@@ -11,8 +11,7 @@ export const setupLeafletMap = async (
     throw new Error("Cannot setup Leaflet map on disconnected element");
   }
   // eslint-disable-next-line
-  const Leaflet = ((await import("leaflet")) as any)
-    .default as LeafletModuleType;
+  const Leaflet = (await import("leaflet")).default as LeafletModuleType;
   Leaflet.Icon.Default.imagePath = "/static/images/leaflet/images/";
 
   const map = Leaflet.map(mapElement);

@@ -59,14 +59,14 @@ export const statTypeMap: Record<ExtendedStatisticType, StatisticType> = {
 class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public statisticsData!: Statistics;
+  @property({ attribute: false }) public statisticsData?: Statistics;
 
   @property({ attribute: false }) public metadata?: Record<
     string,
     StatisticsMetaData
   >;
 
-  @property() public names: boolean | Record<string, string> = false;
+  @property() public names?: Record<string, string>;
 
   @property() public unit?: string;
 
@@ -99,7 +99,11 @@ class StatisticsChart extends LitElement {
     if (!this.hasUpdated || changedProps.has("unit")) {
       this._createOptions();
     }
-    if (changedProps.has("statisticsData") || changedProps.has("statTypes")) {
+    if (
+      changedProps.has("statisticsData") ||
+      changedProps.has("statTypes") ||
+      changedProps.has("hideLegend")
+    ) {
       this._generateData();
     }
   }

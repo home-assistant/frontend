@@ -16,8 +16,10 @@ export type Selector =
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
+  | LegacyDeviceSelector
   | DurationSelector
   | EntitySelector
+  | LegacyEntitySelector
   | FileSelector
   | IconSelector
   | LocationSelector
@@ -48,22 +50,10 @@ export interface AddonSelector {
   } | null;
 }
 
-export interface SelectorDevice {
-  integration?: NonNullable<DeviceSelector["device"]>["integration"];
-  manufacturer?: NonNullable<DeviceSelector["device"]>["manufacturer"];
-  model?: NonNullable<DeviceSelector["device"]>["model"];
-}
-
-export interface SelectorEntity {
-  integration?: NonNullable<EntitySelector["entity"]>["integration"];
-  domain?: NonNullable<EntitySelector["entity"]>["domain"];
-  device_class?: NonNullable<EntitySelector["entity"]>["device_class"];
-}
-
 export interface AreaSelector {
   area: {
-    entity?: SelectorEntity;
-    device?: SelectorDevice;
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
     multiple?: boolean;
   } | null;
 }
@@ -108,14 +98,36 @@ export interface DateTimeSelector {
   datetime: {} | null;
 }
 
+interface DeviceSelectorFilter {
+  integration?: string;
+  manufacturer?: string;
+  model?: string;
+}
+
 export interface DeviceSelector {
   device: {
-    integration?: string;
-    manufacturer?: string;
-    model?: string;
-    entity?: SelectorEntity;
+    filter?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     multiple?: boolean;
   } | null;
+}
+
+export interface LegacyDeviceSelector {
+  device:
+    | DeviceSelector["device"] & {
+        /**
+         * @deprecated Use filter instead
+         */
+        integration?: DeviceSelectorFilter["integration"];
+        /**
+         * @deprecated Use filter instead
+         */
+        manufacturer?: DeviceSelectorFilter["manufacturer"];
+        /**
+         * @deprecated Use filter instead
+         */
+        model?: DeviceSelectorFilter["model"];
+      };
 }
 
 export interface DurationSelector {
@@ -124,15 +136,37 @@ export interface DurationSelector {
   } | null;
 }
 
+interface EntitySelectorFilter {
+  integration?: string;
+  domain?: string | readonly string[];
+  device_class?: string | readonly string[];
+}
+
 export interface EntitySelector {
   entity: {
-    integration?: string;
-    domain?: string | readonly string[];
-    device_class?: string;
     multiple?: boolean;
     include_entities?: string[];
     exclude_entities?: string[];
+    filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
   } | null;
+}
+
+export interface LegacyEntitySelector {
+  entity:
+    | EntitySelector["entity"] & {
+        /**
+         * @deprecated Use filter instead
+         */
+        integration?: EntitySelectorFilter["integration"];
+        /**
+         * @deprecated Use filter instead
+         */
+        domain?: EntitySelectorFilter["domain"];
+        /**
+         * @deprecated Use filter instead
+         */
+        device_class?: EntitySelectorFilter["device_class"];
+      };
 }
 
 export interface StatisticSelector {
@@ -250,8 +284,8 @@ export interface StringSelector {
 
 export interface TargetSelector {
   target: {
-    entity?: SelectorEntity;
-    device?: SelectorDevice;
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
   } | null;
 }
 
@@ -281,7 +315,7 @@ export interface UiColorSelector {
 }
 
 export const filterSelectorDevices = (
-  filterDevice: SelectorDevice,
+  filterDevice: DeviceSelectorFilter,
   device: DeviceRegistryEntry,
   deviceIntegrationLookup: Record<string, string[]> | undefined
 ): boolean => {
@@ -308,7 +342,7 @@ export const filterSelectorDevices = (
 };
 
 export const filterSelectorEntities = (
-  filterEntity: SelectorEntity,
+  filterEntity: EntitySelectorFilter,
   entity: HassEntity,
   entitySources?: EntitySources
 ): boolean => {
@@ -329,11 +363,15 @@ export const filterSelectorEntities = (
     }
   }
 
-  if (
-    filterDeviceClass &&
-    entity.attributes.device_class !== filterDeviceClass
-  ) {
-    return false;
+  if (filterDeviceClass) {
+    const entityDeviceClass = entity.attributes.device_class;
+    if (
+      entityDeviceClass && Array.isArray(filterDeviceClass)
+        ? !filterDeviceClass.includes(entityDeviceClass)
+        : entityDeviceClass !== filterDeviceClass
+    ) {
+      return false;
+    }
   }
 
   if (
@@ -344,4 +382,60 @@ export const filterSelectorEntities = (
   }
 
   return true;
+};
+
+export const handleLegacyEntitySelector = (
+  selector: LegacyEntitySelector | EntitySelector
+): EntitySelector => {
+  if (!selector.entity) return { entity: null };
+
+  if ("filter" in selector.entity) return selector;
+
+  const { domain, integration, device_class, ...rest } = (
+    selector as LegacyEntitySelector
+  ).entity!;
+
+  if (domain || integration || device_class) {
+    return {
+      entity: {
+        ...rest,
+        filter: {
+          domain,
+          integration,
+          device_class,
+        },
+      },
+    };
+  }
+  return {
+    entity: rest,
+  };
+};
+
+export const handleLegacyDeviceSelector = (
+  selector: LegacyDeviceSelector | DeviceSelector
+): DeviceSelector => {
+  if (!selector.device) return { device: null };
+
+  if ("filter" in selector.device) return selector;
+
+  const { integration, manufacturer, model, ...rest } = (
+    selector as LegacyDeviceSelector
+  ).device!;
+
+  if (integration || manufacturer || model) {
+    return {
+      device: {
+        ...rest,
+        filter: {
+          integration,
+          manufacturer,
+          model,
+        },
+      },
+    };
+  }
+  return {
+    device: rest,
+  };
 };

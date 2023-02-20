@@ -3,6 +3,15 @@ import { HomeAssistant } from "../types";
 export const FORMAT_TEXT = "text";
 export const FORMAT_NUMBER = "number";
 
+export const enum AlarmControlPanelEntityFeature {
+  ARM_HOME = 1,
+  ARM_AWAY = 2,
+  ARM_NIGHT = 4,
+  TRIGGER = 8,
+  ARM_CUSTOM_BYPASS = 16,
+  ARM_VACATION = 32,
+}
+
 export const callAlarmAction = (
   hass: HomeAssistant,
   entity: string,

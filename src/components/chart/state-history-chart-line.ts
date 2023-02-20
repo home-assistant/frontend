@@ -22,7 +22,7 @@ class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: false }) public data: LineChartEntity[] = [];
 
-  @property() public names: boolean | Record<string, string> = false;
+  @property() public names?: Record<string, string>;
 
   @property() public unit?: string;
 

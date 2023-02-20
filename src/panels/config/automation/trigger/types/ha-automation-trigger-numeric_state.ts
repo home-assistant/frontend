@@ -25,7 +25,6 @@ export class HaNumericStateTrigger extends LitElement {
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      entityId,
       inputAboveIsEntity?: boolean,
       inputBelowIsEntity?: boolean
     ) =>
@@ -35,7 +34,6 @@ export class HaNumericStateTrigger extends LitElement {
           name: "attribute",
           selector: {
             attribute: {
-              entity_id: entityId,
               hide_attributes: [
                 "access_token",
                 "auto_update",
@@ -101,6 +99,9 @@ export class HaNumericStateTrigger extends LitElement {
                 "xy_color",
               ],
             },
+          },
+          context: {
+            filter_entity: "entity_id",
           },
         },
         {
@@ -231,7 +232,6 @@ export class HaNumericStateTrigger extends LitElement {
 
     const schema = this._schema(
       this.hass.localize,
-      this.trigger.entity_id,
       inputAboveIsEntity,
       inputBelowIsEntity
     );

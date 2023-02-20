@@ -106,7 +106,12 @@ export class HassioNetwork extends LitElement {
         )}
         ${this._interface?.type === "wireless"
           ? html`
-              <ha-expansion-panel header="Wi-Fi" outlined>
+              <ha-expansion-panel
+                .header=${this.hass.localize(
+                  "ui.panel.config.network.supervisor.wifi"
+                )}
+                outlined
+              >
                 ${this._interface?.wifi?.ssid
                   ? html`<p>
                       ${this.hass.localize(
@@ -147,7 +152,11 @@ export class HassioNetwork extends LitElement {
                                 >
                                   <span>${ap.ssid}</span>
                                   <span slot="secondary">
-                                    ${ap.mac} - Strength: ${ap.signal}
+                                    ${ap.mac} -
+                                    ${this.hass.localize(
+                                      "ui.panel.config.network.supervisor.signal_strength"
+                                    )}:
+                                    ${ap.signal}
                                   </span>
                                 </mwc-list-item>
                               `
@@ -211,7 +220,9 @@ export class HassioNetwork extends LitElement {
                               class="flex-auto"
                               type="password"
                               id="psk"
-                              label="Password"
+                              .label=${this.hass.localize(
+                                "ui.panel.config.network.supervisor.wifi_password"
+                              )}
                               version="wifi"
                               @value-changed=${this
                                 ._handleInputValueChangedWifi}

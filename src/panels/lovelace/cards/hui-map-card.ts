@@ -40,7 +40,7 @@ import {
   formatTimeWeekday,
 } from "../../../common/datetime/format_time";
 
-const DEFAULT_HOURS_TO_SHOW = 24;
+const DEFAULT_HOURS_TO_SHOW = 0;
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -191,16 +191,16 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated && this._configEntities?.length) {
-      this._subscribeHistoryTimeWindow();
+      this._subscribeHistory();
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeHistoryTimeWindow();
+    this._unsubscribeHistory();
   }
 
-  private _subscribeHistoryTimeWindow() {
+  private _subscribeHistory() {
     if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
       return;
     }
@@ -213,7 +213,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         }
         this._stateHistory = combinedHistory;
       },
-      this._config!.hours_to_show! || DEFAULT_HOURS_TO_SHOW,
+      this._config!.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW,
       this._configEntities!,
       false,
       false
@@ -223,26 +223,21 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _unsubscribeHistoryTimeWindow() {
-    if (!this._subscribed) {
-      return;
-    }
-    this._subscribed.then((unsubscribe) => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+  private _unsubscribeHistory() {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub?.());
       this._subscribed = undefined;
-    });
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
     if (this._configEntities?.length) {
       if (!this._subscribed || changedProps.has("_config")) {
-        this._unsubscribeHistoryTimeWindow();
-        this._subscribeHistoryTimeWindow();
+        this._unsubscribeHistory();
+        this._subscribeHistory();
       }
     } else {
-      this._unsubscribeHistoryTimeWindow();
+      this._unsubscribeHistory();
     }
     if (changedProps.has("_config")) {
       this._computePadding();
@@ -346,7 +341,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           const p = {} as HaMapPathPoint;
           p.point = [latitude, longitude] as LatLngTuple;
           const t = new Date(entityState.lu * 1000);
-          if (config.hours_to_show! || DEFAULT_HOURS_TO_SHOW > 144) {
+          if ((config.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW) > 144) {
             // if showing > 6 days in the history trail, show the full
             // date and time
             p.tooltip = formatDateTime(t, this.hass.locale);

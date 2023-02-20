@@ -19,7 +19,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @property() public names: boolean | Record<string, string> = false;
+  @property() public names?: Record<string, string>;
 
   @property() public unit?: string;
 
@@ -64,6 +64,8 @@ export class StateHistoryChartTimeline extends LitElement {
     }
 
     if (
+      changedProps.has("startTime") ||
+      changedProps.has("endTime") ||
       changedProps.has("data") ||
       this._chartTime <
         new Date(this.endTime.getTime() - MIN_TIME_BETWEEN_UPDATES)

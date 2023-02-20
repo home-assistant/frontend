@@ -2,7 +2,10 @@ import { sanitizeUrl } from "@braintree/sanitize-url";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { protocolIntegrationPicked } from "../../common/integrations/protocolIntegrationPicked";
+import {
+  protocolIntegrationPicked,
+  PROTOCOL_INTEGRATIONS,
+} from "../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -86,6 +89,10 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   add_zwave_device: {
     component: "zwave_js",
     redirect: "/config/zwave_js/add",
+  },
+  add_matter_device: {
+    component: "matter",
+    redirect: "/config/matter/add",
   },
   config_energy: {
     component: "energy",
@@ -310,9 +317,11 @@ class HaPanelMy extends LitElement {
     ) {
       this.hass.loadBackendTranslation("title", this._redirect.component);
       this._error = "no_component";
-      if (["add_zwave_device", "add_zigbee_device"].includes(path)) {
+      const component = this._redirect.component;
+      if (
+        (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(component)
+      ) {
         const params = extractSearchParamsObject();
-        const component = this._redirect.component;
         this.hass
           .loadFragmentTranslation("config")
           .then()

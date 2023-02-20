@@ -131,38 +131,42 @@ export class HuiGraphHeaderFooter
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.hasUpdated) {
-      this._subscribeHistoryTimeWindow();
+    if (this.hasUpdated && this._config) {
+      this._subscribeHistory();
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeHistoryTimeWindow();
+    this._unsubscribeHistory();
   }
 
-  private _subscribeHistoryTimeWindow() {
-    if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
+  private _subscribeHistory() {
+    if (
+      !isComponentLoaded(this.hass!, "history") ||
+      this._subscribed ||
+      !this._config
+    ) {
       return;
     }
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
-        if (!this._subscribed) {
+        if (!this._subscribed || !this._config) {
           // Message came in before we had a chance to unload
           return;
         }
         this._coordinates =
           coordinatesMinimalResponseCompressedState(
-            combinedHistory[this._config!.entity],
-            this._config!.hours_to_show!,
+            combinedHistory[this._config.entity],
+            this._config.hours_to_show!,
             500,
-            this._config!.detail!,
-            this._config!.limits
+            this._config.detail!,
+            this._config.limits
           ) || [];
       },
-      this._config!.hours_to_show!,
-      [this._config!.entity]
+      this._config.hours_to_show!,
+      [this._config.entity]
     ).catch((err) => {
       this._subscribed = undefined;
       this._error = err;
@@ -185,17 +189,12 @@ export class HuiGraphHeaderFooter
     );
   }
 
-  private _unsubscribeHistoryTimeWindow() {
+  private _unsubscribeHistory() {
     clearInterval(this._interval);
-    if (!this._subscribed) {
-      return;
-    }
-    this._subscribed.then((unsubscribe) => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub?.());
       this._subscribed = undefined;
-    });
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -209,8 +208,8 @@ export class HuiGraphHeaderFooter
       !this._subscribed ||
       oldConfig.entity !== this._config.entity
     ) {
-      this._unsubscribeHistoryTimeWindow();
-      this._subscribeHistoryTimeWindow();
+      this._unsubscribeHistory();
+      this._subscribeHistory();
     }
   }
 
