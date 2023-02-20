@@ -249,6 +249,7 @@ export class HaPanelLogbook extends LitElement {
           margin-inline-start: initial;
           max-width: 100%;
           direction: var(--direction);
+          margin-bottom: -5px;
         }
 
         :host([narrow]) ha-date-range-picker {
@@ -256,6 +257,7 @@ export class HaPanelLogbook extends LitElement {
           margin-inline-end: 0;
           margin-inline-start: initial;
           direction: var(--direction);
+          margin-bottom: 8px;
         }
 
         .filters {

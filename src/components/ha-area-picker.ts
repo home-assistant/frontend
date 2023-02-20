@@ -233,6 +233,9 @@ export class HaAreaPicker extends LitElement {
         });
         inputEntities = inputEntities!.filter((entity) => {
           const stateObj = this.hass.states[entity.entity_id];
+          if (!stateObj) {
+            return false;
+          }
           return entityFilter!(stateObj);
         });
       }

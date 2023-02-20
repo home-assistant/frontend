@@ -214,7 +214,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
           if (!devEntities || !devEntities.length) {
             return false;
           }
-          return deviceEntityLookup[device.id].some((entity) => {
+          return devEntities.some((entity) => {
             const stateObj = this.hass.states[entity.entity_id];
             if (!stateObj) {
               return false;
