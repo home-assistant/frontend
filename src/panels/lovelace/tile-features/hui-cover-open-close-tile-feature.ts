@@ -7,8 +7,8 @@ import {
   computeOpenIcon,
 } from "../../../common/entity/cover_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-bar-button";
-import "../../../components/ha-bar-button-group";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import {
   canClose,
   canOpen,
@@ -70,10 +70,10 @@ class HuiCoverOpenCloseTileFeature
     }
 
     return html`
-      <ha-bar-button-group>
+      <ha-control-button-group>
         ${supportsFeature(this.stateObj, CoverEntityFeature.OPEN)
           ? html`
-              <ha-bar-button
+              <ha-control-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.open_cover"
                 )}
@@ -83,12 +83,12 @@ class HuiCoverOpenCloseTileFeature
                 <ha-svg-icon
                   .path=${computeOpenIcon(this.stateObj)}
                 ></ha-svg-icon>
-              </ha-bar-button>
+              </ha-control-button>
             `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.STOP)
           ? html`
-              <ha-bar-button
+              <ha-control-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.stop_cover"
                 )}
@@ -96,12 +96,12 @@ class HuiCoverOpenCloseTileFeature
                 .disabled=${!canStop(this.stateObj)}
               >
                 <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-              </ha-bar-button>
+              </ha-control-button>
             `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.CLOSE)
           ? html`
-              <ha-bar-button
+              <ha-control-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.close_cover"
                 )}
@@ -111,18 +111,18 @@ class HuiCoverOpenCloseTileFeature
                 <ha-svg-icon
                   .path=${computeCloseIcon(this.stateObj)}
                 ></ha-svg-icon>
-              </ha-bar-button>
+              </ha-control-button>
             `
           : undefined}
-      </ha-bar-button-group>
+      </ha-control-button-group>
     `;
   }
 
   static get styles() {
     return css`
-      ha-bar-button-group {
+      ha-control-button-group {
         margin: 0 12px 12px 12px;
-        --button-bar-group-spacing: 12px;
+        --control-button-group-spacing: 12px;
       }
     `;
   }
