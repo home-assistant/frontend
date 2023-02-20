@@ -48,16 +48,30 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             slot="trigger"
           ></ha-icon-button>
           <mwc-list-item @click=${this._addOTBR}
-            >Add border router</mwc-list-item
+            >${this.hass.localize(
+              "ui.panel.config.thread.add_open_thread_border_router"
+            )}</mwc-list-item
           >
         </ha-button-menu>
         <div class="content">
+          <h1>${this.hass.localize("ui.panel.config.thread.my_network")}</h1>
           ${networks.preferred
-            ? html`<h1>
-                  ${this.hass.localize("ui.panel.config.thread.my_network")}
-                </h1>
-                ${this._renderNetwork(networks.preferred)}`
-            : ""}
+            ? this._renderNetwork(networks.preferred)
+            : html`<ha-card>
+                <div class="card-content no-routers">
+                  <h3>
+                    ${this.hass.localize(
+                      "ui.panel.config.thread.no_preferred_network"
+                    )}
+                  </h3>
+                  <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
+                  <mwc-button @click=${this._addOTBR}
+                    >${this.hass.localize(
+                      "ui.panel.config.thread.add_open_thread_border_router"
+                    )}</mwc-button
+                  >
+                </div>
+              </ha-card>`}
           ${networks.networks.length
             ? html`<h3>
                   ${this.hass.localize("ui.panel.config.thread.other_networks")}
@@ -231,7 +245,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         margin: 0 auto;
         direction: ltr;
       }
-      routers {
+      .routers {
         padding-bottom: 0;
       }
       .no-routers {
