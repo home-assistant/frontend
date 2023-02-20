@@ -2226,7 +2226,7 @@
                 },
                 "time": {
                   "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_value%]",
-                  "type_input": "Value of a date/time helper",
+                  "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::time::type_input%]",
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
                   "before": "Before",

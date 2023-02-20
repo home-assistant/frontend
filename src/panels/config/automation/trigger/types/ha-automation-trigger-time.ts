@@ -8,7 +8,6 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import { computeDomain } from "../../../../../common/entity/compute_domain";
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
@@ -20,20 +19,21 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   @state() private _inputMode?: boolean;
 
-  @state() private _selectableEntities: string[] = [];
-
   public static get defaultConfig() {
     return { at: "" };
   }
 
   private _schema = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      inputMode?: boolean,
-      includeEntities?: string[]
-    ) => {
+    (localize: LocalizeFunc, inputMode?: boolean) => {
       const atSelector = inputMode
-        ? { entity: { include_entities: includeEntities } }
+        ? {
+            entity: {
+              filter: [
+                { domain: "input_datetime" },
+                { domain: "sensor", device_class: "timestamp" },
+              ],
+            },
+          }
         : { time: {} };
 
       return [
@@ -65,7 +65,6 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     if (!changedProperties.has("trigger")) {
       return;
     }
-
     // We dont support multiple times atm.
     if (this.trigger && Array.isArray(this.trigger.at)) {
       fireEvent(
@@ -87,11 +86,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       this._inputMode ??
       (at?.startsWith("input_datetime.") || at?.startsWith("sensor."));
 
-    const schema = this._schema(
-      this.hass.localize,
-      inputMode,
-      this._selectableEntities
-    );
+    const schema = this._schema(this.hass.localize, inputMode);
 
     const data = {
       mode: inputMode ? "input" : "value",
@@ -108,16 +103,6 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>
     `;
-  }
-
-  protected firstUpdated() {
-    const allEntities = Object.keys(this.hass.states);
-    this._selectableEntities = allEntities.filter(
-      (eid) =>
-        computeDomain(eid) === "input_datetime" ||
-        (computeDomain(eid) === "sensor" &&
-          this.hass.states[eid].attributes?.device_class === "timestamp")
-    );
   }
 
   private _valueChanged(ev: CustomEvent): void {
