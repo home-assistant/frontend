@@ -9,32 +9,19 @@ import {
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  HassEntity,
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
+import { HassEntity, HassServiceTarget } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { fireEvent } from "../common/dom/fire_event";
 import { ensureArray } from "../common/array/ensure-array";
+import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import {
-  AreaRegistryEntry,
-  subscribeAreaRegistry,
-} from "../data/area_registry";
-import {
   computeDeviceName,
   DeviceRegistryEntry,
-  subscribeDeviceRegistry,
 } from "../data/device_registry";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../data/entity_registry";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { EntityRegistryEntry } from "../data/entity_registry";
 import { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
@@ -46,7 +33,7 @@ import "./ha-input-helper-text";
 import "./ha-svg-icon";
 
 @customElement("ha-target-picker")
-export class HaTargetPicker extends SubscribeMixin(LitElement) {
+export class HaTargetPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: HassServiceTarget;
@@ -73,52 +60,17 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityRegFilter?: (entity: EntityRegistryEntry) => boolean;
-
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public horizontal = false;
 
-  @state() private _areas?: { [areaId: string]: AreaRegistryEntry };
-
-  @state() private _devices?: {
-    [deviceId: string]: DeviceRegistryEntry;
-  };
-
-  @state() private _entities?: EntityRegistryEntry[];
-
   @state() private _addMode?: "area_id" | "entity_id" | "device_id";
 
   @query("#input") private _inputElement?;
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeAreaRegistry(this.hass.connection!, (areas) => {
-        const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
-        for (const area of areas) {
-          areaLookup[area.area_id] = area;
-        }
-        this._areas = areaLookup;
-      }),
-      subscribeDeviceRegistry(this.hass.connection!, (devices) => {
-        const deviceLookup: { [deviceId: string]: DeviceRegistryEntry } = {};
-        for (const device of devices) {
-          deviceLookup[device.id] = device;
-        }
-        this._devices = deviceLookup;
-      }),
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities;
-      }),
-    ];
-  }
-
   protected render() {
-    if (!this._areas || !this._devices || !this._entities) {
-      return html``;
-    }
     return html`
       ${this.horizontal
         ? html`
@@ -141,7 +93,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       <div class="mdc-chip-set items">
         ${this.value?.area_id
           ? ensureArray(this.value.area_id).map((area_id) => {
-              const area = this._areas![area_id];
+              const area = this.hass.devices![area_id];
               return this._renderChip(
                 "area_id",
                 area_id,
@@ -153,7 +105,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           : ""}
         ${this.value?.device_id
           ? ensureArray(this.value.device_id).map((device_id) => {
-              const device = this._devices![device_id];
+              const device = this.hass.devices![device_id];
               return this._renderChip(
                 "device_id",
                 device_id,
@@ -342,7 +294,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             )}
             no-add
             .deviceFilter=${this.deviceFilter}
-            .entityFilter=${this.entityRegFilter}
+            .entityFilter=${this.entityFilter}
             .includeDeviceClasses=${this.includeDeviceClasses}
             .includeDomains=${this.includeDomains}
             .excludeAreas=${ensureArray(this.value?.area_id)}
@@ -359,6 +311,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               "ui.components.target-picker.add_device_id"
             )}
             .deviceFilter=${this.deviceFilter}
+            .entityFilter=${this.entityFilter}
             .includeDeviceClasses=${this.includeDeviceClasses}
             .includeDomains=${this.includeDomains}
             .excludeDevices=${ensureArray(this.value?.device_id)}
@@ -419,7 +372,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     const newDevices: string[] = [];
     const newEntities: string[] = [];
     if (target.type === "area_id") {
-      Object.values(this._devices!).forEach((device) => {
+      Object.values(this.hass.devices).forEach((device) => {
         if (
           device.area_id === target.id &&
           !this.value!.device_id?.includes(device.id) &&
@@ -428,7 +381,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           newDevices.push(device.id);
         }
       });
-      this._entities!.forEach((entity) => {
+      Object.values(this.hass.entities).forEach((entity) => {
         if (
           entity.area_id === target.id &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
@@ -438,7 +391,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         }
       });
     } else if (target.type === "device_id") {
-      this._entities!.forEach((entity) => {
+      Object.values(this.hass.entities).forEach((entity) => {
         if (
           entity.device_id === target.id &&
           !this.value!.entity_id?.includes(entity.entity_id) &&
@@ -502,9 +455,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _deviceMeetsFilter(device: DeviceRegistryEntry): boolean {
-    const devEntities = this._entities?.filter(
+    const devEntities = Object.values(this.hass.entities).filter(
       (entity) => entity.device_id === device.id
     );
+
     if (this.includeDomains) {
       if (!devEntities || !devEntities.length) {
         return false;
@@ -541,7 +495,23 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
 
     if (this.deviceFilter) {
-      return this.deviceFilter(device);
+      if (!this.deviceFilter(device)) {
+        return false;
+      }
+    }
+
+    if (this.entityFilter) {
+      if (
+        !devEntities.some((entity) => {
+          const stateObj = this.hass.states[entity.entity_id];
+          if (!stateObj) {
+            return false;
+          }
+          return this.entityFilter!(stateObj);
+        })
+      ) {
+        return false;
+      }
     }
     return true;
   }
@@ -550,6 +520,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (entity.entity_category) {
       return false;
     }
+
     if (
       this.includeDomains &&
       !this.includeDomains.includes(computeDomain(entity.entity_id))
@@ -568,8 +539,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         return false;
       }
     }
-    if (this.entityRegFilter) {
-      return this.entityRegFilter(entity);
+
+    if (this.entityFilter) {
+      const stateObj = this.hass.states[entity.entity_id];
+      if (!stateObj) {
+        return false;
+      }
+      if (!this.entityFilter!(stateObj)) {
+        return false;
+      }
     }
     return true;
   }
