@@ -422,14 +422,17 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         -webkit-tap-highlight-color: transparent;
       }
       ha-card:has(.background:focus-visible) {
+        --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+        --shadow-focus: 0 0 0 1px var(--tile-color);
         border-color: var(--tile-color);
-        box-shadow: 0 0 0 1px var(--tile-color);
+        box-shadow: var(--shadow-default), var(--shadow-focus);
       }
       ha-card {
         --mdc-ripple-color: var(--tile-color);
         height: 100%;
         z-index: 0;
         overflow: hidden;
+        transition: box-shadow 180ms ease-in-out, border-color 180ms ease-in-out;
       }
       ha-card.active {
         --tile-color: var(--state-icon-color);

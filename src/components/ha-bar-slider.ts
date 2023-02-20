@@ -280,6 +280,7 @@ export class HaBarSlider extends LitElement {
         width: 100%;
         border-radius: var(--slider-bar-border-radius);
         outline: none;
+        transition: box-shadow 180ms ease-in-out;
       }
       :host(:focus-visible) {
         box-shadow: 0 0 0 2px var(--slider-bar-color);
