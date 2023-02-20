@@ -3268,6 +3268,8 @@
         "thread": {
           "other_networks": "Other networks",
           "my_network": "My network",
+          "no_preferred_network": "You don't have a preferred network yet.",
+          "add_open_thread_border_router": "Add an OpenTread border router",
           "no_border_routers": "No border routers found",
           "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
           "managed_by_home_assistant": "Managed by Home Assistant",
