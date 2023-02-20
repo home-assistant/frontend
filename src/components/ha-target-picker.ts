@@ -93,7 +93,7 @@ export class HaTargetPicker extends LitElement {
       <div class="mdc-chip-set items">
         ${this.value?.area_id
           ? ensureArray(this.value.area_id).map((area_id) => {
-              const area = this.hass.devices![area_id];
+              const area = this.hass.areas![area_id];
               return this._renderChip(
                 "area_id",
                 area_id,
