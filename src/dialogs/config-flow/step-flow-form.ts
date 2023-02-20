@@ -70,10 +70,9 @@ class StepFlowForm extends LitElement {
           : html`
               <div>
                 <mwc-button @click=${this._submitStep}>
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_flow.${
-                      this.step.last_step === false ? "next" : "submit"
-                    }`
+                  ${this.flowConfig.renderShowFormStepSubmitButton(
+                    this.hass,
+                    this.step
                   )}
                 </mwc-button>
               </div>

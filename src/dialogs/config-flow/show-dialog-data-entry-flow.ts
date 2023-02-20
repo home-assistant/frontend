@@ -67,6 +67,11 @@ export interface FlowConfig {
     key: string
   ): string;
 
+  renderShowFormStepSubmitButton(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm
+  ): string;
+
   renderExternalStepHeader(
     hass: HomeAssistant,
     step: DataEntryFlowStepExternal
