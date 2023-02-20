@@ -916,10 +916,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _openEditEntry(ev: CustomEvent): void {
     const entityId = (ev.detail as RowClickedEvent).id;
-    showMoreInfoDialog(this, {
-      entityId,
-      tab: "settings",
-    });
+    showMoreInfoDialog(this, { entityId });
   }
 
   private async _loadConfigEntries() {

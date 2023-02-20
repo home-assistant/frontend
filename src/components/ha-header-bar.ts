@@ -36,6 +36,12 @@ export class HaHeaderBar extends LitElement {
           position: static;
           color: var(--mdc-theme-on-primary, #fff);
         }
+        .mdc-top-app-bar__section.mdc-top-app-bar__section--align-start {
+          flex: 1;
+        }
+        .mdc-top-app-bar__section.mdc-top-app-bar__section--align-end {
+          flex: none;
+        }
       `,
     ];
   }
