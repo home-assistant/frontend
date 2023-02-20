@@ -95,7 +95,7 @@ export const getZwaveDeviceActions = async (
     },
   ];
 
-  if (!nodeStatus.ready) {
+  if (!nodeStatus.ready || !nodeStatus.has_firmware_update_cc) {
     return actions;
   }
 
