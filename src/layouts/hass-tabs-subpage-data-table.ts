@@ -333,15 +333,21 @@ export class HaTabsSubpageDataTable extends LitElement {
         align-items: center;
         padding: 2px 2px 2px 8px;
         margin-left: 4px;
+        margin-inline-start: 4px;
+        margin-inline-end: initial;
         font-size: 14px;
         width: max-content;
         cursor: initial;
+        direction: var(--direction);
       }
       .active-filters ha-svg-icon {
         color: var(--primary-color);
       }
       .active-filters mwc-button {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
+        direction: var(--direction);
       }
       .active-filters::before {
         background-color: var(--primary-color);
