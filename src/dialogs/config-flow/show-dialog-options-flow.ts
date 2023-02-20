@@ -115,6 +115,19 @@ export const showOptionsFlowDialog = (
         return hass.localize(`component.${configEntry.domain}.selector.${key}`);
       },
 
+      renderShowFormStepSubmitButton(hass, step) {
+        return (
+          hass.localize(
+            `component.${configEntry.domain}.options.step.${step.step_id}.submit`
+          ) ||
+          hass.localize(
+            `ui.panel.config.integrations.config_flow.${
+              step.last_step === false ? "next" : "submit"
+            }`
+          )
+        );
+      },
+
       renderExternalStepHeader(_hass, _step) {
         return "";
       },
