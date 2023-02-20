@@ -1368,9 +1368,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/autocomplete@npm:^6.4.1":
-  version: 6.4.1
-  resolution: "@codemirror/autocomplete@npm:6.4.1"
+"@codemirror/autocomplete@npm:^6.4.2":
+  version: 6.4.2
+  resolution: "@codemirror/autocomplete@npm:6.4.2"
   dependencies:
     "@codemirror/language": ^6.0.0
     "@codemirror/state": ^6.0.0
@@ -1381,7 +1381,7 @@ __metadata:
     "@codemirror/state": ^6.0.0
     "@codemirror/view": ^6.0.0
     "@lezer/common": ^1.0.0
-  checksum: db2809092e9cc6928a420667dec7d6ceb790c495a85fb136071f8e7f2ab15a26eb1f48de41151e2a94b1ec0117d5ae949896f45b2b2c9bbc4b3dc836b9783967
+  checksum: c6cc4edb1c412153e6f6f27926674d7f1d386d1f30d6d4f60c5b52bfa0105870b0c70449b69891937bcf082340d8b0fa6d1f9f28f5eb60adc2974ed4c73aadc1
   languageName: node
   linkType: hard
 
@@ -9505,7 +9505,7 @@ fsevents@^1.2.7:
     "@babel/preset-env": ^7.20.2
     "@babel/preset-typescript": ^7.18.6
     "@braintree/sanitize-url": ^6.0.2
-    "@codemirror/autocomplete": ^6.4.1
+    "@codemirror/autocomplete": ^6.4.2
     "@codemirror/commands": ^6.2.1
     "@codemirror/language": ^6.6.0
     "@codemirror/legacy-modes": ^6.3.1
