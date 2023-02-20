@@ -1,7 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import "../ha-bar-slider";
+import "../ha-control-slider";
 
 @customElement("ha-tile-slider")
 export class HaTileSlider extends LitElement {
@@ -30,7 +30,7 @@ export class HaTileSlider extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-bar-slider
+      <ha-control-slider
         .disabled=${this.disabled}
         .mode=${this.mode}
         .value=${this.value}
@@ -40,24 +40,24 @@ export class HaTileSlider extends LitElement {
         aria-label=${ifDefined(this.label)}
         .showHandle=${this.showHandle}
       >
-      </ha-bar-slider>
+      </ha-control-slider>
     `;
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-bar-slider {
-        --slider-bar-color: var(--tile-slider-color, var(--primary-color));
-        --slider-bar-background: var(
+      ha-control-slider {
+        --control-slider-color: var(--tile-slider-color, var(--primary-color));
+        --control-slider-background: var(
           --tile-slider-background,
           var(--disabled-color)
         );
-        --slider-bar-background-opacity: var(
+        --control-slider-background-opacity: var(
           --tile-slider-background-opacity,
           0.2
         );
-        --slider-bar-thickness: 40px;
-        --slider-bar-border-radius: 10px;
+        --control-slider-thickness: 40px;
+        --control-slider-border-radius: 10px;
       }
     `;
   }
