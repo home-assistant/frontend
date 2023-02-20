@@ -1438,7 +1438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.6.0, @codemirror/view@npm:^6.9.0":
+"@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.6.0":
   version: 6.9.0
   resolution: "@codemirror/view@npm:6.9.0"
   dependencies:
@@ -1446,6 +1446,17 @@ __metadata:
     style-mod: ^4.0.0
     w3c-keyname: ^2.2.4
   checksum: c68b928220ab01a917d03e79aee2291b9ce524bb2bc5482354c7adb8ca7ba82ad2877283477a135eb09a239b9905985bb10eb91a2f9d0cb82739b4a97dc2ea2e
+  languageName: node
+  linkType: hard
+
+"@codemirror/view@npm:^6.9.1":
+  version: 6.9.1
+  resolution: "@codemirror/view@npm:6.9.1"
+  dependencies:
+    "@codemirror/state": ^6.1.4
+    style-mod: ^4.0.0
+    w3c-keyname: ^2.2.4
+  checksum: 485d54d338a27ebde6bec489e3008db80a2a801fe27db0d4a3c70181c8739f806f035855ba13d5b311d186ad2b130db07196e8b465ec102b0142df0689bff2f8
   languageName: node
   linkType: hard
 
@@ -9511,7 +9522,7 @@ fsevents@^1.2.7:
     "@codemirror/legacy-modes": ^6.3.1
     "@codemirror/search": ^6.2.3
     "@codemirror/state": ^6.2.0
-    "@codemirror/view": ^6.9.0
+    "@codemirror/view": ^6.9.1
     "@formatjs/intl-datetimeformat": ^6.4.3
     "@formatjs/intl-getcanonicallocales": ^2.0.5
     "@formatjs/intl-locale": ^3.0.11
