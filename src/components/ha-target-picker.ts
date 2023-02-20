@@ -18,6 +18,7 @@ import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { isValidEntityId } from "../common/entity/valid_entity_id";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -351,6 +352,11 @@ export class HaTargetPicker extends LitElement {
     }
     const value = ev.detail.value;
     const target = ev.currentTarget;
+
+    if (target.type === "entity_id" && !isValidEntityId(value)) {
+      return;
+    }
+
     target.value = "";
     if (
       this.value &&
