@@ -8,10 +8,10 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-bar-button";
+import "../../../../src/components/ha-control-button";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-svg-icon";
-import "../../../../src/components/ha-bar-button-group";
+import "../../../../src/components/ha-control-button-group";
 
 type Button = {
   label: string;
@@ -46,7 +46,7 @@ const buttonGroups: ButtonGroup[] = [
   },
 ];
 
-@customElement("demo-components-ha-bar-button")
+@customElement("demo-components-ha-control-button")
 export class DemoHaBarButton extends LitElement {
   protected render(): TemplateResult {
     return html`
@@ -56,13 +56,13 @@ export class DemoHaBarButton extends LitElement {
           (btn) => html`
             <div class="card-content">
               <pre>Config: ${JSON.stringify(btn)}</pre>
-              <ha-bar-button
+              <ha-control-button
                 class=${ifDefined(btn.class)}
                 label=${ifDefined(btn.label)}
                 disabled=${ifDefined(btn.disabled)}
               >
                 <ha-svg-icon .path=${btn.icon || mdiLightbulb}></ha-svg-icon>
-              </ha-bar-button>
+              </ha-control-button>
             </div>
           `
         )}
@@ -74,26 +74,26 @@ export class DemoHaBarButton extends LitElement {
           (group) => html`
             <div class="card-content">
               <pre>Config: ${JSON.stringify(group)}</pre>
-              <ha-bar-button-group class=${ifDefined(group.class)}>
-                <ha-bar-button>
+              <ha-control-button-group class=${ifDefined(group.class)}>
+                <ha-control-button>
                   <ha-svg-icon
                     .path=${mdiFanSpeed1}
                     label="Speed 1"
                   ></ha-svg-icon>
-                </ha-bar-button>
-                <ha-bar-button>
+                </ha-control-button>
+                <ha-control-button>
                   <ha-svg-icon
                     .path=${mdiFanSpeed2}
                     label="Speed 2"
                   ></ha-svg-icon>
-                </ha-bar-button>
-                <ha-bar-button>
+                </ha-control-button>
+                <ha-control-button>
                   <ha-svg-icon
                     .path=${mdiFanSpeed3}
                     label="Speed 3"
                   ></ha-svg-icon>
-                </ha-bar-button>
-              </ha-bar-button-group>
+                </ha-control-button>
+              </ha-control-button-group>
             </div>
           `
         )}
@@ -105,26 +105,29 @@ export class DemoHaBarButton extends LitElement {
             ${repeat(
               buttonGroups,
               (group) => html`
-                <ha-bar-button-group vertical class=${ifDefined(group.class)}>
-                  <ha-bar-button>
+                <ha-control-button-group
+                  vertical
+                  class=${ifDefined(group.class)}
+                >
+                  <ha-control-button>
                     <ha-svg-icon
                       .path=${mdiFanSpeed1}
                       label="Speed 1"
                     ></ha-svg-icon>
-                  </ha-bar-button>
-                  <ha-bar-button>
+                  </ha-control-button>
+                  <ha-control-button>
                     <ha-svg-icon
                       .path=${mdiFanSpeed2}
                       label="Speed 2"
                     ></ha-svg-icon>
-                  </ha-bar-button>
-                  <ha-bar-button>
+                  </ha-control-button>
+                  <ha-control-button>
                     <ha-svg-icon
                       .path=${mdiFanSpeed3}
                       label="Speed 3"
                     ></ha-svg-icon>
-                  </ha-bar-button>
-                </ha-bar-button-group>
+                  </ha-control-button>
+                </ha-control-button-group>
               `
             )}
           </div>
@@ -150,20 +153,20 @@ export class DemoHaBarButton extends LitElement {
         font-weight: 600;
       }
       .custom {
-        --button-bar-icon-color: var(--primary-color);
-        --button-bar-background-color: var(--primary-color);
-        --button-bar-background-opacity: 0.2;
-        --button-bar-border-radius: 18px;
+        --control-button-icon-color: var(--primary-color);
+        --control-button-background-color: var(--primary-color);
+        --control-button-background-opacity: 0.2;
+        --control-button-border-radius: 18px;
         height: 100px;
         width: 100px;
       }
       .custom-group {
-        --button-bar-group-thickness: 100px;
-        --button-bar-group-border-radius: 18px;
-        --button-bar-group-spacing: 20px;
+        --control-button-group-thickness: 100px;
+        --control-button-group-border-radius: 18px;
+        --control-button-group-spacing: 20px;
       }
-      .custom-group ha-bar-button {
-        --button-bar-border-radius: 18px;
+      .custom-group ha-control-button {
+        --control-button-border-radius: 18px;
         --mdc-icon-size: 32px;
       }
       .vertical-buttons {
@@ -184,6 +187,6 @@ export class DemoHaBarButton extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-bar-button": DemoHaBarButton;
+    "demo-components-ha-control-button": DemoHaBarButton;
   }
 }

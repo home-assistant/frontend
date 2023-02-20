@@ -10,8 +10,8 @@ import {
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 
-@customElement("ha-bar-button")
-export class HaBarButton extends LitElement {
+@customElement("ha-control-button")
+export class HaControlButton extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
 
   @property() public label?: string;
@@ -80,10 +80,10 @@ export class HaBarButton extends LitElement {
     return css`
       :host {
         display: block;
-        --button-bar-icon-color: var(--primary-text-color);
-        --button-bar-background-color: var(--disabled-color);
-        --button-bar-background-opacity: 0.2;
-        --button-bar-border-radius: 10px;
+        --control-button-icon-color: var(--primary-text-color);
+        --control-button-background-color: var(--disabled-color);
+        --control-button-background-opacity: 0.2;
+        --control-button-border-radius: 10px;
         width: 40px;
         height: 40px;
         -webkit-tap-highlight-color: transparent;
@@ -97,7 +97,7 @@ export class HaBarButton extends LitElement {
         justify-content: center;
         width: 100%;
         height: 100%;
-        border-radius: var(--button-bar-border-radius);
+        border-radius: var(--control-button-border-radius);
         border: none;
         margin: 0;
         padding: 0;
@@ -107,7 +107,7 @@ export class HaBarButton extends LitElement {
         overflow: hidden;
         background: none;
         z-index: 1;
-        --mdc-ripple-color: var(--button-bar-background-color);
+        --mdc-ripple-color: var(--control-button-background-color);
       }
       .button::before {
         content: "";
@@ -116,21 +116,21 @@ export class HaBarButton extends LitElement {
         left: 0;
         height: 100%;
         width: 100%;
-        background-color: var(--button-bar-background-color);
+        background-color: var(--control-button-background-color);
         transition: background-color 180ms ease-in-out,
           opacity 180ms ease-in-out;
-        opacity: var(--button-bar-background-opacity);
+        opacity: var(--control-button-background-opacity);
       }
       .button ::slotted(*) {
         transition: color 180ms ease-in-out;
-        color: var(--button-bar-icon-color);
+        color: var(--control-button-icon-color);
         pointer-events: none;
       }
       .button:disabled {
         cursor: not-allowed;
-        --button-bar-background-color: var(--disabled-color);
-        --button-bar-icon-color: var(--disabled-text-color);
-        --button-bar-background-opacity: 0.2;
+        --control-button-background-color: var(--disabled-color);
+        --control-button-icon-color: var(--disabled-text-color);
+        --control-button-background-opacity: 0.2;
       }
     `;
   }
@@ -138,6 +138,6 @@ export class HaBarButton extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-bar-button": HaBarButton;
+    "ha-control-button": HaControlButton;
   }
 }
