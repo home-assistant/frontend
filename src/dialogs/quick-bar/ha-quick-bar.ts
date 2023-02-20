@@ -552,6 +552,18 @@ export class QuickBar extends LitElement {
       ),
     });
 
+    // Add "homeassistant.reload_all"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.all"
+      ),
+      action: () => this.hass.callService("homeassistant", "reload_all"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
+    });
+
     return commands.map((command) => ({
       ...command,
       categoryKey: "reload",

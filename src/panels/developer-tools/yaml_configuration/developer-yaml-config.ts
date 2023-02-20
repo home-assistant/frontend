@@ -125,6 +125,16 @@ export class DeveloperYamlConfig extends LitElement {
             <ha-call-service-button
               .hass=${this.hass}
               domain="homeassistant"
+              service="reload_all"
+              >${this.hass.localize(
+                "ui.panel.developer-tools.tabs.yaml.section.reloading.all"
+              )}
+            </ha-call-service-button>
+          </div>
+          <div class="card-actions">
+            <ha-call-service-button
+              .hass=${this.hass}
+              domain="homeassistant"
               service="reload_core_config"
               >${this.hass.localize(
                 "ui.panel.developer-tools.tabs.yaml.section.reloading.core"
