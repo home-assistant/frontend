@@ -244,7 +244,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         </div>
       </div>
       <div class="controls-progress">
-        ${this._browserPlayer?.buffering
+        ${stateObj.state === "buffering"
           ? html` <ha-circular-progress active></ha-circular-progress> `
           : html`
               <div class="controls">
