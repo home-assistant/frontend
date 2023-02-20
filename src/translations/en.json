@@ -4194,7 +4194,8 @@
                 "5minute": "5 Minutes"
               },
               "pick_statistic": "Add a statistic",
-              "picked_statistic": "Statistic"
+              "picked_statistic": "Statistic",
+              "hide_legend": "Hide legend"
             },
             "statistic": {
               "name": "Statistic",
