@@ -1,52 +1,47 @@
-import { mdiLightbulbOff, mdiLightbulbOn } from "@mdi/js";
+import { mdiFlash, mdiFlashOff } from "@mdi/js";
+import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { stateActive } from "../../../../common/entity/state_active";
-import { stateColorCss } from "../../../../common/entity/state_color";
-import "../../../../components/ha-bar-switch";
-import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity";
-import { LightEntity } from "../../../../data/light";
-import { HomeAssistant } from "../../../../types";
-import "../../../../components/ha-bar-button";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateActive } from "../../../common/entity/state_active";
+import { stateColorCss } from "../../../common/entity/state_color";
+import "../../../components/ha-bar-button";
+import "../../../components/ha-bar-switch";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
 
-@customElement("ha-more-info-light-toggle")
-export class HaMoreInfoLightToggle extends LitElement {
+@customElement("ha-more-info-toggle")
+export class HaMoreInfoToggle extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj!: LightEntity;
+  @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @state() value?: number;
+  @property({ attribute: false }) public iconPathOn?: string;
 
-  protected updated(changedProp: Map<string | number | symbol, unknown>): void {
-    if (changedProp.has("stateObj")) {
-      this.value =
-        this.stateObj.attributes.brightness != null
-          ? Math.max(
-              Math.round((this.stateObj.attributes.brightness * 100) / 255),
-              1
-            )
-          : undefined;
-    }
-  }
+  @property({ attribute: false }) public iconPathOff?: string;
 
   private _valueChanged(ev) {
     const checked = ev.target.checked as boolean;
 
-    this.hass.callService("light", checked ? "turn_on" : "turn_off", {
-      entity_id: this.stateObj!.entity_id,
-    });
+    if (checked) {
+      this._turnOn();
+    } else {
+      this._turnOff();
+    }
   }
 
   private _turnOn() {
-    this.hass.callService("light", "turn_on", {
+    const domain = computeDomain(this.stateObj!.entity_id);
+    this.hass.callService(domain, "turn_on", {
       entity_id: this.stateObj!.entity_id,
     });
   }
 
   private _turnOff() {
-    this.hass.callService("light", "turn_off", {
+    const domain = computeDomain(this.stateObj!.entity_id);
+    this.hass.callService(domain, "turn_off", {
       entity_id: this.stateObj!.entity_id,
     });
   }
@@ -63,9 +58,7 @@ export class HaMoreInfoLightToggle extends LitElement {
       return html`
         <div class="buttons">
           <ha-bar-button
-            .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.cover.open_tilt_cover"
-            )}
+            .label=${this.hass.localize("ui.dialogs.more_info_control.turn_on")}
             @click=${this._turnOn}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -75,11 +68,11 @@ export class HaMoreInfoLightToggle extends LitElement {
               "--color": color,
             })}
           >
-            <ha-svg-icon .path=${mdiLightbulbOn}></ha-svg-icon>
+            <ha-svg-icon .path=${this.iconPathOn || mdiFlash}></ha-svg-icon>
           </ha-bar-button>
           <ha-bar-button
             .label=${this.hass.localize(
-              "ui.dialogs.more_info_control.cover.open_tilt_cover"
+              "ui.dialogs.more_info_control.turn_off"
             )}
             @click=${this._turnOff}
             .disabled=${this.stateObj.state === UNAVAILABLE}
@@ -90,7 +83,7 @@ export class HaMoreInfoLightToggle extends LitElement {
               "--color": color,
             })}
           >
-            <ha-svg-icon .path=${mdiLightbulbOff}></ha-svg-icon>
+            <ha-svg-icon .path=${this.iconPathOff || mdiFlashOff}></ha-svg-icon>
           </ha-bar-button>
         </div>
       `;
@@ -98,14 +91,14 @@ export class HaMoreInfoLightToggle extends LitElement {
 
     return html`
       <ha-bar-switch
-        .pathOn=${mdiLightbulbOn}
-        .pathOff=${mdiLightbulbOff}
+        .pathOn=${this.iconPathOn || mdiFlash}
+        .pathOff=${this.iconPathOff || mdiFlashOff}
         vertical
         reversed
         .checked=${isOn}
         .showHandle=${stateActive(this.stateObj)}
         @change=${this._valueChanged}
-        aria-label="Light switch"
+        .ariaLabel=${this.hass.localize("ui.dialogs.more_info_control.toggle")}
         style=${styleMap({
           "--switch-bar-on-color": color,
         })}
@@ -151,6 +144,6 @@ export class HaMoreInfoLightToggle extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-light-toggle": HaMoreInfoLightToggle;
+    "ha-more-info-toggle": HaMoreInfoToggle;
   }
 }

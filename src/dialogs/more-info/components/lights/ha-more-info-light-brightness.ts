@@ -69,7 +69,9 @@ export class HaMoreInfoLightBrightness extends LitElement {
         max="100"
         .showHandle=${stateActive(this.stateObj)}
         @value-changed=${this._valueChanged}
-        aria-label="Brightness slider"
+        .ariaLabel=${this.hass.localize(
+          "ui.dialogs.more_info_control.light.brightness"
+        )}
         style=${styleMap({
           "--slider-bar-color": color,
         })}

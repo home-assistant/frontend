@@ -1,7 +1,13 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/web/iconbutton/outlined-icon-button";
 import "@material/web/iconbutton/outlined-icon-button-toggle";
-import { mdiCreation, mdiPalette, mdiPower } from "@mdi/js";
+import {
+  mdiCreation,
+  mdiLightbulb,
+  mdiLightbulbOff,
+  mdiPalette,
+  mdiPower,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -29,7 +35,7 @@ import {
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-state-header";
 import "../components/lights/ha-more-info-light-brightness";
-import "../components/lights/ha-more-info-light-toggle";
+import "../components/ha-more-info-toggle";
 import { showLightColorPickerDialog } from "../components/lights/show-dialog-light-color-picker";
 
 @customElement("more-info-light")
@@ -38,17 +44,17 @@ class MoreInfoLight extends LitElement {
 
   @property({ attribute: false }) public stateObj?: LightEntity;
 
-  @state() _liveBrightness?: number;
+  @state() private _selectedBrightness?: number;
 
   private _brightnessChanged(ev) {
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
-    this._liveBrightness = value;
+    this._selectedBrightness = value;
   }
 
   protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("stateObj")) {
-      this._liveBrightness = this.stateObj?.attributes.brightness
+      this._selectedBrightness = this.stateObj?.attributes.brightness
         ? Math.round((this.stateObj?.attributes.brightness * 100) / 255)
         : undefined;
     }
@@ -73,8 +79,8 @@ class MoreInfoLight extends LitElement {
       LightEntityFeature.EFFECT
     );
 
-    const stateOverride = this._liveBrightness
-      ? `${Math.round(this._liveBrightness)}${blankBeforePercent(
+    const stateOverride = this._selectedBrightness
+      ? `${Math.round(this._selectedBrightness)}${blankBeforePercent(
           this.hass!.locale
         )}%`
       : undefined;
@@ -86,7 +92,6 @@ class MoreInfoLight extends LitElement {
           .stateObj=${this.stateObj}
           .stateOverride=${stateOverride}
         ></ha-more-info-state-header>
-        
         </ha-more-info-light-toggle>
         ${
           supportsBrightness
@@ -99,10 +104,12 @@ class MoreInfoLight extends LitElement {
                 </ha-more-info-light-brightness>
               `
             : html`
-                <ha-more-info-light-toggle
+                <ha-more-info-toggle
                   .stateObj=${this.stateObj}
                   .hass=${this.hass}
-                ></ha-more-info-light-toggle>
+                  .iconPathOn=${mdiLightbulb}
+                  .iconPathOff=${mdiLightbulbOff}
+                ></ha-more-info-toggle>
               `
         }
         ${

@@ -40,7 +40,7 @@ export class HaBarSwitch extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("value")) {
+    if (changedProps.has("checked")) {
       this.setAttribute("aria-checked", this.checked ? "true" : "false");
     }
   }
