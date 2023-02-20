@@ -13,6 +13,7 @@ import { HassEntity, HassServiceTarget } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -21,7 +22,6 @@ import {
   computeDeviceName,
   DeviceRegistryEntry,
 } from "../data/device_registry";
-import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { EntityRegistryEntry } from "../data/entity_registry";
 import { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
@@ -298,7 +298,7 @@ export class HaTargetPicker extends LitElement {
               )}
               no-add
               .deviceFilter=${this.deviceFilter}
-              .entityFilter=${this.entityRegFilter}
+              .entityFilter=${this.entityFilter}
               .includeDeviceClasses=${this.includeDeviceClasses}
               .includeDomains=${this.includeDomains}
               .excludeAreas=${ensureArray(this.value?.area_id)}
