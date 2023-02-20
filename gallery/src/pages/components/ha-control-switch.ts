@@ -8,7 +8,7 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-bar-switch";
+import "../../../../src/components/ha-control-switch";
 import "../../../../src/components/ha-card";
 
 const switches: {
@@ -39,8 +39,8 @@ const switches: {
   },
 ];
 
-@customElement("demo-components-ha-bar-switch")
-export class DemoHaBarSwitch extends LitElement {
+@customElement("demo-components-ha-control-switch")
+export class DemoHaControlSwitch extends LitElement {
   @state() private checked = false;
 
   handleValueChanged(e: any) {
@@ -56,7 +56,7 @@ export class DemoHaBarSwitch extends LitElement {
             <div class="card-content">
               <label id=${id}>${label}</label>
               <pre>Config: ${JSON.stringify(config)}</pre>
-              <ha-bar-switch
+              <ha-control-switch
                 .checked=${this.checked}
                 class=${ifDefined(config.class)}
                 @change=${this.handleValueChanged}
@@ -66,7 +66,7 @@ export class DemoHaBarSwitch extends LitElement {
                 disabled=${ifDefined(config.disabled)}
                 reversed=${ifDefined(config.reversed)}
               >
-              </ha-bar-switch>
+              </ha-control-switch>
             </div>
           </ha-card>
         `;
@@ -78,7 +78,7 @@ export class DemoHaBarSwitch extends LitElement {
             ${repeat(switches, (sw) => {
               const { id, label, ...config } = sw;
               return html`
-                <ha-bar-switch
+                <ha-control-switch
                   .checked=${this.checked}
                   vertical
                   class=${ifDefined(config.class)}
@@ -89,7 +89,7 @@ export class DemoHaBarSwitch extends LitElement {
                   disabled=${ifDefined(config.disabled)}
                   reversed=${ifDefined(config.reversed)}
                 >
-                </ha-bar-switch>
+                </ha-control-switch>
               `;
             })}
           </div>
@@ -115,11 +115,11 @@ export class DemoHaBarSwitch extends LitElement {
         font-weight: 600;
       }
       .custom {
-        --switch-bar-on-color: var(--green-color);
-        --switch-bar-off-color: var(--red-color);
-        --switch-bar-thickness: 100px;
-        --switch-bar-border-radius: 24px;
-        --switch-bar-padding: 6px;
+        --control-switch-on-color: var(--green-color);
+        --control-switch-off-color: var(--red-color);
+        --control-switch-thickness: 100px;
+        --control-switch-border-radius: 24px;
+        --control-switch-padding: 6px;
         --mdc-icon-size: 24px;
       }
       .vertical-switches {
@@ -140,6 +140,6 @@ export class DemoHaBarSwitch extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-bar-switch": DemoHaBarSwitch;
+    "demo-components-ha-control-switch": DemoHaControlSwitch;
   }
 }
