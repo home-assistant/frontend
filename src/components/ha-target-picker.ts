@@ -21,6 +21,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { isValidEntityId } from "../common/entity/valid_entity_id";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -394,7 +395,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     const value = ev.detail.value;
     const target = ev.currentTarget;
 
-    if (target.type === "entity_id" && !value.includes(".")) {
+    if (target.type === "entity_id" && !isValidEntityId(value)) {
       return;
     }
 
