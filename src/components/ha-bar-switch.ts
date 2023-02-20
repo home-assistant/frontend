@@ -106,6 +106,7 @@ export class HaBarSwitch extends LitElement {
         cursor: pointer;
         border-radius: var(--switch-bar-border-radius);
         outline: none;
+        transition: box-shadow 180ms ease-in-out;
       }
       :host(:focus-visible) {
         box-shadow: 0 0 0 2px var(--switch-bar-off-color);
