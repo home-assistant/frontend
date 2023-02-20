@@ -59,7 +59,6 @@
     "prefer-destructuring": "off",
     "no-restricted-globals": [2, "event"],
     "prefer-promise-reject-errors": "off",
-    "no-promise-executor-return": "warn",
     "no-unsafe-optional-chaining": "warn",
     "prefer-regex-literals": ["warn"],
     "import/prefer-default-export": "off",

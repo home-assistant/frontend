@@ -150,7 +150,9 @@ export const checkForEntityUpdates = async (
   });
 
   // there is no reliable way to know if all the updates are done updating, so we just wait a bit for now...
-  await new Promise((r) => setTimeout(r, 10000));
+  await new Promise((r) => {
+    setTimeout(r, 10000);
+  });
 
   unsubscribeEvents();
 
