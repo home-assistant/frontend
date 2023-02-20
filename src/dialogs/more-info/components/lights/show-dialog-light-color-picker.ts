@@ -15,5 +15,6 @@ export const showLightColorPickerDialog = (
     dialogTag: "dialog-light-color-picker",
     dialogImport: loadLightColorPickerDialog,
     dialogParams,
+    addHistory: false,
   });
 };
