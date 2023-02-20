@@ -5186,7 +5186,7 @@
             "title": "Watchdog",
             "description": "This will start the add-on if it crashes"
           },
-          "send_remote_username": {
+          "remote_user": {
             "title": "Send username",
             "description": "This will send the session's username to the addon"
           },

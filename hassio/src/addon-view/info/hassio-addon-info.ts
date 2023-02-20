@@ -457,25 +457,25 @@ class HassioAddonInfo extends LitElement {
                             </ha-settings-row>
                           `
                         : ""}
-
-                      <ha-settings-row ?three-line=${this.narrow}>
-                        <span slot="heading">
-                          ${this.supervisor.localize(
-                            "addon.dashboard.option.send_remote_username.title"
-                          )}
-                        </span>
-                        <span slot="description">
-                          ${this.supervisor.localize(
-                            "addon.dashboard.option.send_remote_username.description"
-                          )}
-                        </span>
-                        <ha-switch
-                          @change=${this._sendRemoteUsernameToggled}
-                          .checked=${this.addon.send_remote_username}
-                          haptic
-                        ></ha-switch>
-                      </ha-settings-row>
-
+                      ${this.addon.remote_user_requested
+                        ? html`<ha-settings-row ?three-line=${this.narrow}>
+                            <span slot="heading">
+                              ${this.supervisor.localize(
+                                "addon.dashboard.option.remote_user.title"
+                              )}
+                            </span>
+                            <span slot="description">
+                              ${this.supervisor.localize(
+                                "addon.dashboard.option.remote_user.description"
+                              )}
+                            </span>
+                            <ha-switch
+                              @change=${this._sendRemoteUsernameToggled}
+                              .checked=${this.addon.remote_user}
+                              haptic
+                            ></ha-switch>
+                          </ha-settings-row>`
+                        : ""}
                       ${this.addon.auto_update ||
                       this.hass.userData?.showAdvanced
                         ? html`
@@ -830,8 +830,7 @@ class HassioAddonInfo extends LitElement {
   private async _sendRemoteUsernameToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
-      send_remote_username: !(this.addon as HassioAddonDetails)
-        .send_remote_username,
+      remote_user: !(this.addon as HassioAddonDetails).remote_user,
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);

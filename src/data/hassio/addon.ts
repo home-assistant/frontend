@@ -93,7 +93,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   protected: boolean;
   rating: "1-8";
   schema: HaFormSchema[] | null;
-  send_remote_username: null | boolean;
+  remote_user: null | boolean;
   services_role: string[];
   signed: boolean;
   slug: string;
@@ -130,7 +130,7 @@ export interface HassioAddonSetOptionParams {
   ingress_panel?: boolean;
   network?: Record<string, unknown> | null;
   watchdog?: boolean;
-  send_remote_username?: boolean;
+  remote_user?: boolean;
 }
 
 export const reloadHassioAddons = async (hass: HomeAssistant) => {
