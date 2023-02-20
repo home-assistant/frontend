@@ -26,7 +26,14 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   private _schema = memoizeOne(
     (localize: LocalizeFunc, inputMode?: boolean) => {
       const atSelector = inputMode
-        ? { entity: { domain: "input_datetime" } }
+        ? {
+            entity: {
+              filter: [
+                { domain: "input_datetime" },
+                { domain: "sensor", device_class: "timestamp" },
+              ],
+            },
+          }
         : { time: {} };
 
       return [
