@@ -99,9 +99,9 @@ export class MoreInfoInfo extends LitElement {
 
       ha-alert {
         display: block;
-        margin: calc(-1 * var(--dialog-content-padding, 24px))
-          calc(-1 * var(--dialog-content-padding, 24px)) 16px
-          calc(-1 * var(--dialog-content-padding, 24px));
+        margin: calc(-1 * var(--content-padding, 24px))
+          calc(-1 * var(--content-padding, 24px)) 16px
+          calc(-1 * var(--content-padding, 24px));
       }
     `;
   }
