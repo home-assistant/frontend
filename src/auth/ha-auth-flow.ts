@@ -8,7 +8,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../components/ha-alert";
 import "../components/ha-checkbox";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
@@ -25,7 +25,8 @@ import "./ha-password-manager-polyfill";
 
 type State = "loading" | "error" | "step";
 
-class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
+@customElement("ha-auth-flow")
+export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @property({ attribute: false }) public authProvider?: AuthProvider;
 
   @property() public clientId?: string;
@@ -407,7 +408,6 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     `;
   }
 }
-customElements.define("ha-auth-flow", HaAuthFlow);
 
 declare global {
   interface HTMLElementTagNameMap {
