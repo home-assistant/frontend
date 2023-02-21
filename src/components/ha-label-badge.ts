@@ -6,9 +6,10 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 
+@customElement("ha-label-badge")
 class HaLabelBadge extends LitElement {
   @property() public label?: string;
 
@@ -132,5 +133,3 @@ declare global {
     "ha-label-badge": HaLabelBadge;
   }
 }
-
-customElements.define("ha-label-badge", HaLabelBadge);

@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
 import { html, LitElement, TemplateResult } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -38,7 +38,8 @@ interface LovelacePanelConfig {
 let editorLoaded = false;
 let resourcesLoaded = false;
 
-class LovelacePanel extends LitElement {
+@customElement("ha-panel-lovelace")
+export class LovelacePanel extends LitElement {
   @property() public panel?: PanelInfo<LovelacePanelConfig>;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -448,5 +449,3 @@ class LovelacePanel extends LitElement {
     }
   }
 }
-
-customElements.define("ha-panel-lovelace", LovelacePanel);
