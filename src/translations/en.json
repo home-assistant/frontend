@@ -3722,7 +3722,7 @@
               "Error_RetryLimitReached": "Retry Limit Reached",
               "Error_Aborted": "Update Aborted by Bootloader",
               "Error_NotSupported": "Firmware Updates not Supported",
-              "OK": "Success"
+              "OK": "Success! Please wait for the controller to restart."
             }
           },
           "logs": {
