@@ -2,6 +2,7 @@ import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
@@ -14,6 +15,15 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { CoverTiltTileFeatureConfig } from "./types";
+
+export const supportsCoverTiltTileFeature = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "cover" &&
+    (supportsFeature(stateObj, CoverEntityFeature.OPEN_TILT) ||
+      supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT))
+  );
+};
 
 @customElement("hui-cover-tilt-tile-feature")
 class HuiCoverTiltTileFeature
@@ -60,9 +70,14 @@ class HuiCoverTiltTileFeature
     });
   }
 
-  protected render(): TemplateResult {
-    if (!this._config || !this.hass || !this.stateObj) {
-      return html``;
+  protected render(): TemplateResult | null {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this.stateObj ||
+      !supportsCoverTiltTileFeature
+    ) {
+      return null;
     }
 
     return html`

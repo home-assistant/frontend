@@ -5,7 +5,10 @@ import {
   LovelaceViewConfig,
   LovelaceViewElement,
 } from "../../../data/lovelace";
-import { CUSTOM_TYPE_PREFIX } from "../../../data/lovelace_custom_cards";
+import {
+  isCustomType,
+  stripCustomPrefix,
+} from "../../../data/lovelace_custom_cards";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import type { ErrorCardConfig } from "../cards/types";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
@@ -153,9 +156,7 @@ const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
 };
 
 const _getCustomTag = (type: string) =>
-  type.startsWith(CUSTOM_TYPE_PREFIX)
-    ? type.slice(CUSTOM_TYPE_PREFIX.length)
-    : undefined;
+  isCustomType(type) ? stripCustomPrefix(type) : undefined;
 
 export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   tagSuffix: T,
