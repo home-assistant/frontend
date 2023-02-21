@@ -15,7 +15,8 @@ import { HomeAssistant } from "../../types";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 
-interface Tooltip extends TooltipModel<any> {
+interface Tooltip
+  extends Omit<TooltipModel<any>, "tooltipPosition" | "hasValue" | "getProps"> {
   top: string;
   left: string;
 }
@@ -80,13 +81,10 @@ export default class HaChartBase extends LitElement {
     if (!this.hasUpdated || !this.chart) {
       return;
     }
-    if (changedProps.has("plugins")) {
+    if (changedProps.has("plugins") || changedProps.has("chartType")) {
       this.chart.destroy();
       this._setupChart();
       return;
-    }
-    if (changedProps.has("chartType")) {
-      this.chart.config.type = this.chartType;
     }
     if (changedProps.has("data")) {
       if (this._hiddenDatasets.size) {
@@ -236,7 +234,7 @@ export default class HaChartBase extends LitElement {
         id: "afterRenderHook",
         afterRender: (chart) => {
           const change = chart.height - (this._chartHeight ?? 0);
-          if (!this._chartHeight || change > 0 || change < -12) {
+          if (!this._chartHeight || change > 12 || change < -12) {
             // hysteresis to prevent infinite render loops
             this._chartHeight = chart.height;
           }
@@ -295,7 +293,7 @@ export default class HaChartBase extends LitElement {
       | "none"
       | "hide"
       | "show"
-      | "normal"
+      | "default"
       | "active"
       | undefined
   ): void => {
@@ -313,7 +311,7 @@ export default class HaChartBase extends LitElement {
       .chartContainer {
         overflow: hidden;
         height: 0;
-        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        // transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
       }
       canvas {
         max-height: var(--chart-max-height, 400px);
