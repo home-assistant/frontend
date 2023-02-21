@@ -1492,14 +1492,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/icu-messageformat-parser@npm:2.2.0":
-  version: 2.2.0
-  resolution: "@formatjs/icu-messageformat-parser@npm:2.2.0"
+"@formatjs/icu-messageformat-parser@npm:2.3.0":
+  version: 2.3.0
+  resolution: "@formatjs/icu-messageformat-parser@npm:2.3.0"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/icu-skeleton-parser": 1.3.18
     tslib: ^2.4.0
-  checksum: bd457714296a3503d57383ee9ba8c9fb01e0097379c2bcf18c827ff736f64cf83132f2ab539f534b716726d6554beede354c30180d543dd8a1cf8e4c8f842bd7
+  checksum: e8aca733bed81c94ec16fa9f1a88dbaf93a644a8c5796a6ab1e795112dd1f6c1e92528a123483d3034ac5e6b2b454481ef61f7e56e6e77f1467f9524be7fe331
   languageName: node
   linkType: hard
 
@@ -9642,7 +9642,7 @@ fsevents@^1.2.7:
     husky: ^8.0.3
     idb-keyval: ^6.2.0
     instant-mocha: ^1.5.0
-    intl-messageformat: ^10.3.0
+    intl-messageformat: ^10.3.1
     js-yaml: ^4.1.0
     jszip: ^3.10.1
     leaflet: ^1.9.3
@@ -10136,15 +10136,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"intl-messageformat@npm:^10.3.0":
-  version: 10.3.0
-  resolution: "intl-messageformat@npm:10.3.0"
+"intl-messageformat@npm:^10.3.1":
+  version: 10.3.1
+  resolution: "intl-messageformat@npm:10.3.1"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/fast-memoize": 1.2.8
-    "@formatjs/icu-messageformat-parser": 2.2.0
+    "@formatjs/icu-messageformat-parser": 2.3.0
     tslib: ^2.4.0
-  checksum: a92b2fec9ed0ba992ecfefbe9968c0f80961d6d23d105b16f3437108c61fe57d6e91e04392c4092335136399e047572996bc45d197ec0899473a3aac3627fed2
+  checksum: 926f07c8a09ad10feaf2619119b8fc77057cb263d6dec1a06a74ca62b530cfcdfa36f58bd40691c1d3cd41c350b75bc7d96f0e402a81e0ecb700d4d7d0d8cce9
   languageName: node
   linkType: hard
 
