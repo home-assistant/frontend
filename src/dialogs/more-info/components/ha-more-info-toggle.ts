@@ -7,7 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-bar-button";
+import "../../../components/ha-control-button";
 import "../../../components/ha-control-switch";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
@@ -57,7 +57,7 @@ export class HaMoreInfoToggle extends LitElement {
     ) {
       return html`
         <div class="buttons">
-          <ha-bar-button
+          <ha-control-button
             .label=${this.hass.localize("ui.dialogs.more_info_control.turn_on")}
             @click=${this._turnOn}
             .disabled=${this.stateObj.state === UNAVAILABLE}
@@ -69,8 +69,8 @@ export class HaMoreInfoToggle extends LitElement {
             })}
           >
             <ha-svg-icon .path=${this.iconPathOn || mdiFlash}></ha-svg-icon>
-          </ha-bar-button>
-          <ha-bar-button
+          </ha-control-button>
+          <ha-control-button
             .label=${this.hass.localize(
               "ui.dialogs.more_info_control.turn_off"
             )}
@@ -84,7 +84,7 @@ export class HaMoreInfoToggle extends LitElement {
             })}
           >
             <ha-svg-icon .path=${this.iconPathOff || mdiFlashOff}></ha-svg-icon>
-          </ha-bar-button>
+          </ha-control-button>
         </div>
       `;
     }
@@ -125,17 +125,17 @@ export class HaMoreInfoToggle extends LitElement {
         padding: 6px;
         box-sizing: border-box;
       }
-      ha-bar-button {
+      ha-control-button {
         flex: 1;
         width: 100%;
         --button-bar-border-radius: 18px;
       }
-      ha-bar-button.active {
+      ha-control-button.active {
         --button-bar-icon-color: white;
         --button-bar-background-color: var(--color);
         --button-bar-background-opacity: 1;
       }
-      ha-bar-button:not(:last-child) {
+      ha-control-button:not(:last-child) {
         margin-bottom: 6px;
       }
     `;

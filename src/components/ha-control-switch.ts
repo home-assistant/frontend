@@ -11,7 +11,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import "./ha-svg-icon";
 
 @customElement("ha-control-switch")
-export class HaBarSwitch extends LitElement {
+export class HaControlSwitch extends LitElement {
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
