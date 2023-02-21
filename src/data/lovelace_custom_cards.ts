@@ -22,12 +22,6 @@ export interface CustomCardsWindow {
 
 export const CUSTOM_TYPE_PREFIX = "custom:";
 
-export const isCustomType = (type: string) =>
-  type.startsWith(CUSTOM_TYPE_PREFIX);
-
-export const stripCustomPrefix = (type: string) =>
-  type.slice(CUSTOM_TYPE_PREFIX.length);
-
 const customCardsWindow = window as CustomCardsWindow;
 
 if (!("customCards" in customCardsWindow)) {
@@ -42,3 +36,9 @@ export const customTileFeatures = customCardsWindow.customTileFeatures!;
 
 export const getCustomCardEntry = (type: string) =>
   customCards.find((card) => card.type === type);
+
+export const isCustomType = (type: string) =>
+  type.startsWith(CUSTOM_TYPE_PREFIX);
+
+export const stripCustomPrefix = (type: string) =>
+  type.slice(CUSTOM_TYPE_PREFIX.length);
