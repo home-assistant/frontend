@@ -566,6 +566,10 @@ class DialogLightColorPicker extends LitElement {
           margin: 20px 0;
         }
 
+        ha-labeled-slider {
+          width: 100%;
+        }
+
         .color_temp {
           --control-slider-thickness: 100px;
           --control-slider-border-radius: 24px;
