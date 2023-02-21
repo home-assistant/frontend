@@ -438,8 +438,7 @@ class HassioAddonInfo extends LitElement {
                       ${this.addon.startup !== "once"
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
-                              <span slot="heading"
-                                >Hello
+                              <span slot="heading">
                                 ${this.supervisor.localize(
                                   "addon.dashboard.option.watchdog.title"
                                 )}
