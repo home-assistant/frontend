@@ -199,6 +199,9 @@ export class MoreInfoDialog extends LitElement {
     const deviceId = this._getDeviceId();
 
     const title = this._childView?.viewTitle ?? name;
+
+    const isInfoView = this._currView === "info" && !this._childView;
+
     return html`
       <ha-dialog
         open
@@ -206,21 +209,11 @@ export class MoreInfoDialog extends LitElement {
         .heading=${title}
         hideActions
         data-domain=${domain}
-        ?child-view=${this._childView}
       >
         <div slot="heading" class="heading">
           <ha-header-bar>
-            ${this._currView !== "info" || this._childView
+            ${isInfoView
               ? html`
-                  <ha-icon-button-prev
-                    slot="navigationIcon"
-                    @click=${this._goBack}
-                    .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.back_to_info"
-                    )}
-                  ></ha-icon-button-prev>
-                `
-              : html`
                   <ha-icon-button
                     slot="navigationIcon"
                     dialogAction="cancel"
@@ -229,10 +222,17 @@ export class MoreInfoDialog extends LitElement {
                     )}
                     .path=${mdiClose}
                   ></ha-icon-button>
+                `
+              : html`
+                  <ha-icon-button-prev
+                    slot="navigationIcon"
+                    @click=${this._goBack}
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.back_to_info"
+                    )}
+                  ></ha-icon-button-prev>
                 `}
-            ${this._currView !== "info" ||
-            this._childView ||
-            !DOMAINS_WITH_NEW_MORE_INFO.includes(domain)
+            ${!isInfoView || !DOMAINS_WITH_NEW_MORE_INFO.includes(domain)
               ? html`<div
                   slot="title"
                   class="main-title"
@@ -242,7 +242,7 @@ export class MoreInfoDialog extends LitElement {
                   ${title}
                 </div>`
               : null}
-            ${this._currView === "info"
+            ${isInfoView
               ? html`
                   ${this.shouldShowHistory(domain)
                     ? html`
@@ -386,6 +386,10 @@ export class MoreInfoDialog extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("_currView")) {
       this.setAttribute("view", this._currView);
+      this._childView = undefined;
+    }
+    if (changedProps.has("_childView")) {
+      this.toggleAttribute("has-child-view", !!this._childView);
     }
   }
 
@@ -432,7 +436,7 @@ export class MoreInfoDialog extends LitElement {
           --video-max-height: calc(100vh - 65px - 72px);
         }
 
-        ha-dialog[child-view] {
+        :host([has-child-view]) ha-dialog {
           --content-padding: 0;
         }
 
