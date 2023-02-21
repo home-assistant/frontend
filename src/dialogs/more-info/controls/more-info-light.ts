@@ -33,9 +33,9 @@ import {
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-state-header";
-import "../components/lights/ha-more-info-light-brightness";
 import "../components/ha-more-info-toggle";
-import { showLightColorPickerDialog } from "../components/lights/show-dialog-light-color-picker";
+import "../components/lights/ha-more-info-light-brightness";
+import { showLightColorPickerView } from "../components/lights/show-view-light-color-picker";
 
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
@@ -144,7 +144,7 @@ class MoreInfoLight extends LitElement {
                           .ariaLabel=${this.hass.localize(
                             "ui.dialogs.more_info_control.light.change_color"
                           )}
-                          @click=${this._showLightColorPickerDialog}
+                          @click=${this._showLightColorPickerView}
                         >
                           <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
                         </md-outlined-icon-button>
@@ -204,8 +204,16 @@ class MoreInfoLight extends LitElement {
     });
   };
 
-  private _showLightColorPickerDialog = () => {
-    showLightColorPickerDialog(this, { entityId: this.stateObj!.entity_id });
+  private _showLightColorPickerView = () => {
+    showLightColorPickerView(
+      this,
+      this.hass.localize(
+        "ui.dialogs.more_info_control.light.color_picker.title"
+      ),
+      {
+        entityId: this.stateObj!.entity_id,
+      }
+    );
   };
 
   private _handleEffectButton(ev) {

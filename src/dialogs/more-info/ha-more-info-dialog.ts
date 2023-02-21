@@ -11,6 +11,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -51,6 +52,19 @@ export interface MoreInfoDialogParams {
 
 type View = "info" | "history" | "settings" | "related";
 
+type ChildView = {
+  viewTag: string;
+  viewTitle?: string;
+  viewImport?: () => Promise<unknown>;
+  viewParams?: any;
+};
+
+declare global {
+  interface HASSDomEvents {
+    "show-child-view": ChildView;
+  }
+}
+
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -61,6 +75,8 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _currView: View = "info";
 
+  @state() private _childView?: ChildView;
+
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
     if (!this._entityId) {
@@ -68,11 +84,13 @@ export class MoreInfoDialog extends LitElement {
       return;
     }
     this._currView = params.view || "info";
+    this._childView = undefined;
     this.large = false;
   }
 
   public closeDialog() {
     this._entityId = undefined;
+    this._childView = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -111,8 +129,12 @@ export class MoreInfoDialog extends LitElement {
     return entity?.device_id ?? null;
   }
 
-  private back() {
-    this._currView = "info";
+  private _goBack() {
+    if (this._childView) {
+      this._childView = undefined;
+    } else {
+      this._currView = "info";
+    }
   }
 
   private _goToHistory() {
@@ -121,6 +143,14 @@ export class MoreInfoDialog extends LitElement {
 
   private _goToSettings(): void {
     this._currView = "settings";
+  }
+
+  private async _showChildView(ev: CustomEvent): Promise<void> {
+    const view = ev.detail as ChildView;
+    if (view.viewImport) {
+      await view.viewImport();
+    }
+    this._childView = view;
   }
 
   private _goToDevice(ev): void {
@@ -168,18 +198,29 @@ export class MoreInfoDialog extends LitElement {
 
     const deviceId = this._getDeviceId();
 
+    const title = this._childView?.viewTitle ?? name;
     return html`
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${name}
+        .heading=${title}
         hideActions
         data-domain=${domain}
+        ?child-view=${this._childView}
       >
         <div slot="heading" class="heading">
           <ha-header-bar>
-            ${this._currView === "info"
+            ${this._currView !== "info" || this._childView
               ? html`
+                  <ha-icon-button-prev
+                    slot="navigationIcon"
+                    @click=${this._goBack}
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.back_to_info"
+                    )}
+                  ></ha-icon-button-prev>
+                `
+              : html`
                   <ha-icon-button
                     slot="navigationIcon"
                     dialogAction="cancel"
@@ -188,25 +229,17 @@ export class MoreInfoDialog extends LitElement {
                     )}
                     .path=${mdiClose}
                   ></ha-icon-button>
-                `
-              : html`
-                  <ha-icon-button-prev
-                    slot="navigationIcon"
-                    @click=${this.back}
-                    .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.back_to_info"
-                    )}
-                  ></ha-icon-button-prev>
                 `}
             ${this._currView !== "info" ||
+            this._childView ||
             !DOMAINS_WITH_NEW_MORE_INFO.includes(domain)
               ? html`<div
                   slot="title"
                   class="main-title"
-                  .title=${name}
+                  .title=${title}
                   @click=${this._enlarge}
                 >
-                  ${name}
+                  ${title}
                 </div>`
               : null}
             ${this._currView === "info"
@@ -295,39 +328,50 @@ export class MoreInfoDialog extends LitElement {
               : null}
           </ha-header-bar>
         </div>
-
-        <div class="content" tabindex="-1" dialogInitialFocus>
-          ${cache(
-            this._currView === "info"
-              ? html`
-                  <ha-more-info-info
-                    dialogInitialFocus
-                    .hass=${this.hass}
-                    .entityId=${this._entityId}
-                  ></ha-more-info-info>
-                `
-              : this._currView === "history"
-              ? html`
-                  <ha-more-info-history-and-logbook
-                    .hass=${this.hass}
-                    .entityId=${this._entityId}
-                  ></ha-more-info-history-and-logbook>
-                `
-              : this._currView === "settings"
-              ? html`
-                  <ha-more-info-settings
-                    .hass=${this.hass}
-                    .entityId=${this._entityId}
-                  ></ha-more-info-settings>
-                `
-              : html`
-                  <ha-related-items
-                    .hass=${this.hass}
-                    .itemId=${entityId}
-                    itemType="entity"
-                  ></ha-related-items>
-                `
-          )}
+        <div
+          class="content"
+          tabindex="-1"
+          dialogInitialFocus
+          @show-child-view=${this._showChildView}
+        >
+          ${this._childView
+            ? dynamicElement(this._childView.viewTag, {
+                hass: this.hass,
+                params: this._childView.viewParams,
+              })
+            : cache(
+                this._currView === "info"
+                  ? html`
+                      <ha-more-info-info
+                        dialogInitialFocus
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                      ></ha-more-info-info>
+                    `
+                  : this._currView === "history"
+                  ? html`
+                      <ha-more-info-history-and-logbook
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                      ></ha-more-info-history-and-logbook>
+                    `
+                  : this._currView === "settings"
+                  ? html`
+                      <ha-more-info-settings
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                      ></ha-more-info-settings>
+                    `
+                  : this._currView === "related"
+                  ? html`
+                      <ha-related-items
+                        .hass=${this.hass}
+                        .itemId=${entityId}
+                        itemType="entity"
+                      ></ha-related-items>
+                    `
+                  : null
+              )}
         </div>
       </ha-dialog>
     `;
@@ -378,10 +422,6 @@ export class MoreInfoDialog extends LitElement {
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
-        ha-dialog .content {
-          padding: var(--content-padding);
-        }
-
         :host([view="settings"]) ha-dialog {
           --content-padding: 0;
         }
@@ -390,6 +430,14 @@ export class MoreInfoDialog extends LitElement {
           --content-padding: 0;
           /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
           --video-max-height: calc(100vh - 65px - 72px);
+        }
+
+        ha-dialog[child-view] {
+          --content-padding: 0;
+        }
+
+        .content {
+          padding: var(--content-padding);
         }
 
         .main-title {
