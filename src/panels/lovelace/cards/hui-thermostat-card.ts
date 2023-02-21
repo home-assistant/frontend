@@ -517,7 +517,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     // After updating temperature, wait 2s and check if the values
     // from call service are reflected in the entity. If not, resync
     // the slider to the entity values.
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 2000);
+    });
 
     const newState = this.hass!.states[this._config!.entity] as ClimateEntity;
     delete data.entity_id;
