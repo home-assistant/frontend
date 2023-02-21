@@ -1525,16 +1525,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-getcanonicallocales@npm:2.0.5":
-  version: 2.0.5
-  resolution: "@formatjs/intl-getcanonicallocales@npm:2.0.5"
+"@formatjs/intl-enumerator@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@formatjs/intl-enumerator@npm:1.2.1"
   dependencies:
     tslib: ^2.4.0
-  checksum: 8276c055fe35c48cdc2125f1b32b04275b2a19df228c82fbb4b9eae0f2684e50f353c60e228fad15e6134097078e513c961088c257d97bc076fd81dbec203d10
+  checksum: d1971913230d16a576fc9920b3dfb5640977086686c78e533ed8393c2da5b0c26e91712a93e76ac9bc43f241517ac4ee2bc5236863ac398aa4e1b6b66fe0a3e5
   languageName: node
   linkType: hard
 
-"@formatjs/intl-getcanonicallocales@npm:^2.1.0":
+"@formatjs/intl-getcanonicallocales@npm:2.1.0, @formatjs/intl-getcanonicallocales@npm:^2.1.0":
   version: 2.1.0
   resolution: "@formatjs/intl-getcanonicallocales@npm:2.1.0"
   dependencies:
@@ -1543,14 +1543,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-locale@npm:^3.0.11":
-  version: 3.0.11
-  resolution: "@formatjs/intl-locale@npm:3.0.11"
+"@formatjs/intl-locale@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@formatjs/intl-locale@npm:3.1.1"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
-    "@formatjs/intl-getcanonicallocales": 2.0.5
+    "@formatjs/intl-enumerator": 1.2.1
+    "@formatjs/intl-getcanonicallocales": 2.1.0
     tslib: ^2.4.0
-  checksum: 615a2293e561398f72b979533d40708b741e4bde384a924f15e55b9a38c2d42e78c497c7e6060e0c9cc2789bb444816005a5bc13a88e29db1211fb5332f9c416
+  checksum: 4e7272199581526f1226e6daef3c2434429f8ec6ceb3b3ce3362209f9e7dd5b34c57a2933f8a63b04be9e44af89548f5e457f2e1d4e9ded96c23c6555aad7f94
   languageName: node
   linkType: hard
 
@@ -1563,25 +1564,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-numberformat@npm:^8.3.3":
-  version: 8.3.3
-  resolution: "@formatjs/intl-numberformat@npm:8.3.3"
+"@formatjs/intl-numberformat@npm:^8.3.5":
+  version: 8.3.5
+  resolution: "@formatjs/intl-numberformat@npm:8.3.5"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/intl-localematcher": 0.2.32
     tslib: ^2.4.0
-  checksum: 56fc8e25c445944f43295ee28a8f2dd059770e28e4a368b977787591157f3da357528ee8bcab5e00a54c9f850a879b1fedb92cc1934b93400a30699a3834c119
+  checksum: 6eb305b20ae5a639e5e721ed425387bfd58b427e17ba9c15e23e56e45e65fa4c6065f5237577c3b763c000aad2f6d3f1140fd89ab89ce21ac0fc25f84e68032e
   languageName: node
   linkType: hard
 
-"@formatjs/intl-pluralrules@npm:^5.1.8":
-  version: 5.1.8
-  resolution: "@formatjs/intl-pluralrules@npm:5.1.8"
+"@formatjs/intl-pluralrules@npm:^5.1.10":
+  version: 5.1.10
+  resolution: "@formatjs/intl-pluralrules@npm:5.1.10"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/intl-localematcher": 0.2.32
     tslib: ^2.4.0
-  checksum: 89c2cb25ab073da29a7951ee381206f92458403c13481f9bebecdf488ae6e0d5dace3bead796c499ba7cbe38800b0b5d561fe849cdeb6365f9c0685ac8c43c91
+  checksum: c93e6ac888d20421bbdc203e0258fddfd91bd47933dacc3bb1b9329096a0b8cc8dc030a951665449a5feeb51a0cc439b7bacd75cd2f2b990dff5020905251db5
   languageName: node
   linkType: hard
 
@@ -9524,9 +9525,9 @@ fsevents@^1.2.7:
     "@codemirror/view": ^6.9.1
     "@formatjs/intl-datetimeformat": ^6.5.1
     "@formatjs/intl-getcanonicallocales": ^2.1.0
-    "@formatjs/intl-locale": ^3.0.11
-    "@formatjs/intl-numberformat": ^8.3.3
-    "@formatjs/intl-pluralrules": ^5.1.8
+    "@formatjs/intl-locale": ^3.1.1
+    "@formatjs/intl-numberformat": ^8.3.5
+    "@formatjs/intl-pluralrules": ^5.1.10
     "@formatjs/intl-relativetimeformat": ^11.1.10
     "@fullcalendar/core": ^6.1.4
     "@fullcalendar/daygrid": ^6.1.4
