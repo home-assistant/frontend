@@ -253,6 +253,16 @@ class MoreInfoLight extends LitElement {
       ha-attributes {
         width: 100%;
       }
+
+      md-outlined-icon-button-toggle,
+      md-outlined-icon-button {
+        --md-sys-color-on-surface: var(--secondary-text-color);
+        --md-sys-color-on-surface-variant: var(--secondary-text-color);
+        --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
+        --md-sys-color-outline: var(--secondary-text-color);
+        --md-sys-color-inverse-surface: var(--primary-text-color);
+        --md-sys-color-inverse-on-surface: var(--primary-background-color);
+      }
     `;
   }
 }
