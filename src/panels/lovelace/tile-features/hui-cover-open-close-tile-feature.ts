@@ -2,6 +2,7 @@ import { mdiStop } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import {
   computeCloseIcon,
   computeOpenIcon,
@@ -18,6 +19,15 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { CoverOpenCloseTileFeatureConfig } from "./types";
+
+export const supportsCoverOpenCloseTileFeature = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "cover" &&
+    (supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
+      supportsFeature(stateObj, CoverEntityFeature.CLOSE))
+  );
+};
 
 @customElement("hui-cover-open-close-tile-feature")
 class HuiCoverOpenCloseTileFeature
@@ -64,9 +74,14 @@ class HuiCoverOpenCloseTileFeature
     });
   }
 
-  protected render(): TemplateResult {
-    if (!this._config || !this.hass || !this.stateObj) {
-      return html``;
+  protected render(): TemplateResult | null {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this.stateObj ||
+      !supportsCoverOpenCloseTileFeature(this.stateObj)
+    ) {
+      return null;
     }
 
     return html`
