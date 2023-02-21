@@ -147,7 +147,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
       .filter((type) => this._supportsFeatureType(type));
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | null {
     if (!this.features || !this.hass) {
       return null;
     }
