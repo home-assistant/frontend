@@ -36,6 +36,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
+import { HaFormIntegerSchema } from "../../../../../components/ha-form/types";
 
 @customElement("dialog-zwave_js-update-firmware-node")
 class DialogZWaveJSUpdateFirmwareNode extends LitElement {
@@ -59,6 +60,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   @state() private _nodeStatus?: ZWaveJSNodeStatus;
 
+  @state() private _firmwareTarget?: number;
+
   private _subscribedNodeStatus?: Promise<UnsubscribeFunc>;
 
   private _subscribedNodeFirmwareUpdate?: Promise<UnsubscribeFunc>;
@@ -80,6 +83,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     this._updateFinishedMessage = undefined;
     this._firmwareFile = undefined;
     this._nodeStatus = undefined;
+    this._firmwareTarget = undefined;
     this._uploading = this._updateInProgress = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -94,6 +98,12 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       return html``;
     }
 
+    const schema: HaFormIntegerSchema = {
+      name: "firmware_target",
+      type: "integer",
+      valueMin: 0,
+    };
+
     const beginFirmwareUpdateHTML = html`<ha-file-upload
         .hass=${this.hass}
         .uploading=${this._uploading}
@@ -104,6 +114,17 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         )}
         @file-picked=${this._uploadFile}
       ></ha-file-upload>
+      <p>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.update_firmware.firmware_target_intro"
+        )}
+      </p>
+      <ha-form
+        .hass=${this.hass}
+        .data=${{ firmware_target: this._firmwareTarget }}
+        .schema=${[schema]}
+        @value-changed=${this._firmwareTargetChanged}
+      ></ha-form>
       <mwc-button
         slot="primaryAction"
         @click=${this._beginFirmwareUpdate}
@@ -283,7 +304,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       await uploadFirmwareAndBeginUpdate(
         this.hass,
         this.device!.id,
-        this._firmwareFile!
+        this._firmwareFile!,
+        this._firmwareTarget
       );
       this._updateInProgress = true;
       this._uploading = false;
@@ -386,6 +408,10 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     }
     this._subscribedNodeFirmwareUpdate.then((unsub) => unsub());
     this._subscribedNodeFirmwareUpdate = undefined;
+  }
+
+  private async _firmwareTargetChanged(ev) {
+    this._firmwareTarget = ev.detail.value.firmware_target;
   }
 
   private async _uploadFile(ev) {
