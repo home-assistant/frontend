@@ -2127,7 +2127,8 @@
                 },
                 "template": {
                   "label": "Template",
-                  "value_template": "Value template"
+                  "value_template": "Value template",
+                  "for": "For"
                 },
                 "time": {
                   "type_value": "Fixed time",
