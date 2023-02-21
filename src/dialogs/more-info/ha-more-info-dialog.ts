@@ -350,8 +350,9 @@ export class MoreInfoDialog extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
+          /* This is needed for the tooltip of the history charts to be positioned correctly */
           --dialog-surface-position: static;
-          --dialog-content-position: relative;
+          --dialog-content-position: static;
           --vertical-align-dialog: flex-start;
           --dialog-content-padding: 0;
           --content-padding: 24px;
