@@ -211,7 +211,14 @@ class DialogRestart extends LitElement {
       duration: 1000,
     });
 
-    await this.hass.callService("homeassistant", "reload_all");
+    try {
+      await this.hass.callService("homeassistant", "reload_all");
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.dialogs.restart.reload.failed"),
+        text: err.message,
+      });
+    }
   }
 
   private async _restart(ev) {

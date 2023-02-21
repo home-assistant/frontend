@@ -1016,7 +1016,8 @@
         "reload": {
           "title": "Quick reload",
           "description": "Load new YAML configurations without a restart.",
-          "reloading": "Reloading configuration"
+          "reloading": "Reloading configuration",
+          "failed": "Failed to reload configuration"
         },
         "restart": {
           "title": "Restart Home Assistant",
@@ -4942,8 +4943,6 @@
               },
               "server_management": {
                 "heading": "Home Assistant",
-                "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
-                "confirm_restart_title": "Restart Home Assistant?",
                 "restart": "Restart",
                 "stop": "Stop",
                 "confirm_stop": "Are you sure you want to stop Home Assistant?",
