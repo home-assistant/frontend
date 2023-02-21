@@ -8,7 +8,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-bar-button";
-import "../../../components/ha-bar-switch";
+import "../../../components/ha-control-switch";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
@@ -90,7 +90,7 @@ export class HaMoreInfoToggle extends LitElement {
     }
 
     return html`
-      <ha-bar-switch
+      <ha-control-switch
         .pathOn=${this.iconPathOn || mdiFlash}
         .pathOff=${this.iconPathOff || mdiFlashOff}
         vertical
@@ -100,21 +100,21 @@ export class HaMoreInfoToggle extends LitElement {
         @change=${this._valueChanged}
         .ariaLabel=${this.hass.localize("ui.dialogs.more_info_control.toggle")}
         style=${styleMap({
-          "--switch-bar-on-color": color,
+          "--control-switch-on-color": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       >
-      </ha-bar-switch>
+      </ha-control-switch>
     `;
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-bar-switch {
+      ha-control-switch {
         height: 320px;
-        --switch-bar-thickness: 100px;
-        --switch-bar-border-radius: 24px;
-        --switch-bar-padding: 6px;
+        --control-switch-thickness: 100px;
+        --control-switch-border-radius: 24px;
+        --control-switch-padding: 6px;
         --mdc-icon-size: 24px;
       }
       .buttons {

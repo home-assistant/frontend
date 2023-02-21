@@ -12,7 +12,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-bar-slider";
+import "../../../../components/ha-control-slider";
 import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-color-picker";
 import "../../../../components/ha-dialog";
@@ -156,7 +156,7 @@ class DialogLightColorPicker extends LitElement {
           <div class="content">
             ${this._mode === LightColorMode.COLOR_TEMP
               ? html`
-                  <ha-bar-slider
+                  <ha-control-slider
                     vertical
                     class="color_temp"
                     label=${this.hass.localize(
@@ -170,7 +170,7 @@ class DialogLightColorPicker extends LitElement {
                     .min=${this.stateObj.attributes.min_color_temp_kelvin!}
                     .max=${this.stateObj.attributes.max_color_temp_kelvin!}
                   >
-                  </ha-bar-slider>
+                  </ha-control-slider>
                 `
               : ""}
             ${this._mode === "color"
@@ -561,21 +561,21 @@ class DialogLightColorPicker extends LitElement {
           --ha-color-picker-marker-bordercolor: white;
         }
 
-        ha-bar-slider {
+        ha-control-slider {
           height: 320px;
           margin: 20px 0;
         }
 
         .color_temp {
-          --slider-bar-thickness: 100px;
-          --slider-bar-border-radius: 24px;
-          --slider-bar-background: -webkit-linear-gradient(
+          --control-slider-thickness: 100px;
+          --control-slider-border-radius: 24px;
+          --control-slider-background: -webkit-linear-gradient(
             top,
             rgb(166, 209, 255) 0%,
             white 50%,
             rgb(255, 160, 0) 100%
           );
-          --slider-bar-background-opacity: 1;
+          --control-slider-background-opacity: 1;
         }
 
         hr {

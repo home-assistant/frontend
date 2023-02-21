@@ -8,7 +8,7 @@ import {
 } from "../../../../common/color/convert-color";
 import { stateActive } from "../../../../common/entity/state_active";
 import { stateColorCss } from "../../../../common/entity/state_color";
-import "../../../../components/ha-bar-slider";
+import "../../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../../data/entity";
 import { LightEntity } from "../../../../data/light";
 import { HomeAssistant } from "../../../../types";
@@ -62,7 +62,7 @@ export class HaMoreInfoLightBrightness extends LitElement {
     }
 
     return html`
-      <ha-bar-slider
+      <ha-control-slider
         vertical
         .value=${this.value}
         min="1"
@@ -73,23 +73,23 @@ export class HaMoreInfoLightBrightness extends LitElement {
           "ui.dialogs.more_info_control.light.brightness"
         )}
         style=${styleMap({
-          "--slider-bar-color": color,
+          "--control-slider-color": color,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       >
-      </ha-bar-slider>
+      </ha-control-slider>
     `;
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-bar-slider {
+      ha-control-slider {
         height: 320px;
-        --slider-bar-thickness: 100px;
-        --slider-bar-border-radius: 24px;
-        --slider-bar-color: var(--primary-color);
-        --slider-bar-background: var(--disabled-color);
-        --slider-bar-background-opacity: 0.2;
+        --control-slider-thickness: 100px;
+        --control-slider-border-radius: 24px;
+        --control-slider-color: var(--primary-color);
+        --control-slider-background: var(--disabled-color);
+        --control-slider-background-opacity: 0.2;
       }
     `;
   }
