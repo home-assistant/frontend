@@ -1,4 +1,4 @@
-import "hammerjs";
+import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
 import {
   css,
   CSSResultGroup,
@@ -131,18 +131,18 @@ export class HaControlSlider extends LitElement {
 
   setupListeners() {
     if (this.slider && !this._mc) {
-      this._mc = new Hammer.Manager(this.slider, {
+      this._mc = new Manager(this.slider, {
         touchAction: this.vertical ? "pan-x" : "pan-y",
       });
       this._mc.add(
-        new Hammer.Pan({
+        new Pan({
           threshold: 10,
-          direction: Hammer.DIRECTION_ALL,
+          direction: DIRECTION_ALL,
           enable: true,
         })
       );
 
-      this._mc.add(new Hammer.Tap({ event: "singletap" }));
+      this._mc.add(new Tap({ event: "singletap" }));
 
       let savedValue;
       this._mc.on("panstart", () => {
