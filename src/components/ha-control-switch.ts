@@ -12,7 +12,7 @@ import "./ha-svg-icon";
 
 @customElement("ha-control-switch")
 export class HaControlSwitch extends LitElement {
-  @property({ type: Boolean, attribute: "disabled" })
+  @property({ type: Boolean, reflect: true })
   public disabled = false;
 
   @property({ type: Boolean })
@@ -40,7 +40,7 @@ export class HaControlSwitch extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("value")) {
+    if (changedProps.has("checked")) {
       this.setAttribute("aria-checked", this.checked ? "true" : "false");
     }
   }
@@ -107,6 +107,7 @@ export class HaControlSwitch extends LitElement {
         border-radius: var(--control-switch-border-radius);
         outline: none;
         transition: box-shadow 180ms ease-in-out;
+        -webkit-tap-highlight-color: transparent;
       }
       :host(:focus-visible) {
         box-shadow: 0 0 0 2px var(--control-switch-off-color);

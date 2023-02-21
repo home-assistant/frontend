@@ -12,6 +12,7 @@ import {
   computeShowLogBookComponent,
   DOMAINS_NO_INFO,
   DOMAINS_WITH_MORE_INFO,
+  DOMAINS_WITH_NEW_MORE_INFO,
 } from "./const";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
@@ -47,7 +48,8 @@ export class MoreInfoInfo extends LitElement {
             )}
           </ha-alert>`
         : ""}
-      ${DOMAINS_NO_INFO.includes(domain)
+      ${DOMAINS_NO_INFO.includes(domain) ||
+      DOMAINS_WITH_NEW_MORE_INFO.includes(domain)
         ? ""
         : html`
             <state-card-content
