@@ -63,31 +63,6 @@ class MoreInfoViewLightColorPicker extends LitElement {
       : undefined;
   }
 
-  public firstUpdated() {
-    const supportsTemp = lightSupportsColorMode(
-      this.stateObj!,
-      LightColorMode.COLOR_TEMP
-    );
-
-    const supportsColor = lightSupportsColor(this.stateObj!);
-
-    const modes: Mode[] = [];
-    if (supportsColor) {
-      modes.push("color");
-    }
-    if (supportsTemp) {
-      modes.push("color_temp");
-    }
-
-    this._modes = modes;
-    this._mode =
-      this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
-        ? LightColorMode.COLOR_TEMP
-        : "color";
-
-    this._updateSliderValues();
-  }
-
   protected render(): TemplateResult {
     if (!this.params || !this.stateObj) {
       return html``;
@@ -271,8 +246,31 @@ class MoreInfoViewLightColorPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!changedProps.has("hass")) {
+    if (!changedProps.has("params") || !changedProps.has("hass")) {
       return;
+    }
+
+    if (changedProps.has("params")) {
+      const supportsTemp = lightSupportsColorMode(
+        this.stateObj!,
+        LightColorMode.COLOR_TEMP
+      );
+
+      const supportsColor = lightSupportsColor(this.stateObj!);
+
+      const modes: Mode[] = [];
+      if (supportsColor) {
+        modes.push("color");
+      }
+      if (supportsTemp) {
+        modes.push("color_temp");
+      }
+
+      this._modes = modes;
+      this._mode =
+        this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
+          ? LightColorMode.COLOR_TEMP
+          : "color";
     }
 
     this._updateSliderValues();
