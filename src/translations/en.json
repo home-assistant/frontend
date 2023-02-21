@@ -841,6 +841,9 @@
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
+        "turn_on": "Turn on",
+        "turn_off": "Turn off",
+        "toggle": "Toggle",
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
@@ -892,6 +895,19 @@
         },
         "zone": {
           "graph_unit": "People home"
+        },
+        "light": {
+          "toggle": "Toggle",
+          "change_color": "Change color",
+          "select_effect": "Select effect",
+          "brightness": "Brightness",
+          "color_picker": {
+            "title": "Change color",
+            "mode": {
+              "color": "Color",
+              "color_temp": "Temperature"
+            }
+          }
         }
       },
       "entity_registry": {

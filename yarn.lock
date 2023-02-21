@@ -3095,6 +3095,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/web@npm:=1.0.0-pre.2":
+  version: 1.0.0-pre.2
+  resolution: "@material/web@npm:1.0.0-pre.2"
+  dependencies:
+    lit: ^2.3.0
+    tslib: ^2.4.0
+  checksum: 7c6733fae5fb67c43d7c49fab70f7893defd95e4fcbe996d06057882e47c0121760546cc5d1c407a9dbd11c5f02f3f278016c52922e6a9e97db0c0b52d7133f2
+  languageName: node
+  linkType: hard
+
 "@mdi/js@npm:7.1.96":
   version: 7.1.96
   resolution: "@mdi/js@npm:7.1.96"
@@ -9540,6 +9550,7 @@ fsevents@^1.2.7:
     "@material/mwc-textfield": ^0.27.0
     "@material/mwc-top-app-bar-fixed": ^0.27.0
     "@material/top-app-bar": =14.0.0-canary.53b3cad2f.0
+    "@material/web": =1.0.0-pre.2
     "@mdi/js": 7.1.96
     "@mdi/svg": 7.1.96
     "@octokit/auth-oauth-device": ^4.0.4
@@ -11336,7 +11347,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.5.0, lit@npm:^2.6.1":
+"lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.3.0, lit@npm:^2.5.0, lit@npm:^2.6.1":
   version: 2.6.1
   resolution: "lit@npm:2.6.1"
   dependencies:
