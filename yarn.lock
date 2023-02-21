@@ -1575,14 +1575,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-relativetimeformat@npm:^11.1.8":
-  version: 11.1.8
-  resolution: "@formatjs/intl-relativetimeformat@npm:11.1.8"
+"@formatjs/intl-relativetimeformat@npm:^11.1.10":
+  version: 11.1.10
+  resolution: "@formatjs/intl-relativetimeformat@npm:11.1.10"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/intl-localematcher": 0.2.32
     tslib: ^2.4.0
-  checksum: 2ca379c549d5998366e8648843e810ffcba88e42112d6b6a8bd8d5898d1bc84137245ee44f7ef83c3fe85e33c122bb366f261478facd2efd78c98718e53fe404
+  checksum: e0a2994a35cdce02272bf4eff0806e940ee9f63cbe6988b83da9a8aea06365ac4ac037c39f700d4b84a29af13452503642b042f7d32ec7fdd823f76de00ad919
   languageName: node
   linkType: hard
 
@@ -9517,7 +9517,7 @@ fsevents@^1.2.7:
     "@formatjs/intl-locale": ^3.0.11
     "@formatjs/intl-numberformat": ^8.3.3
     "@formatjs/intl-pluralrules": ^5.1.8
-    "@formatjs/intl-relativetimeformat": ^11.1.8
+    "@formatjs/intl-relativetimeformat": ^11.1.10
     "@fullcalendar/core": ^6.1.4
     "@fullcalendar/daygrid": ^6.1.4
     "@fullcalendar/interaction": ^6.1.4
