@@ -20,7 +20,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { useAmPm } from "../../common/datetime/use_am_pm";
@@ -71,7 +71,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
   },
 };
 
-@customElements("ha-full-calendar")
+@customElement("ha-full-calendar")
 export class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
