@@ -1,6 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/web/iconbutton/outlined-icon-button";
-import "@material/web/iconbutton/outlined-icon-button-toggle";
 import {
   mdiCreation,
   mdiLightbulb,
@@ -121,7 +120,7 @@ class MoreInfoLight extends LitElement {
                 <div class="buttons">
                   ${supportsBrightness
                     ? html`
-                        <md-outlined-icon-button-toggle
+                        <md-outlined-icon-button
                           .disabled=${this.stateObj.state === UNAVAILABLE}
                           .title=${this.hass.localize(
                             "ui.dialogs.more_info_control.light.toggle"
@@ -129,11 +128,10 @@ class MoreInfoLight extends LitElement {
                           .ariaLabel=${this.hass.localize(
                             "ui.dialogs.more_info_control.light.toggle"
                           )}
-                          .selected=${this.stateObj.state === "on"}
                           @click=${this._toggle}
                         >
                           <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                        </md-outlined-icon-button-toggle>
+                        </md-outlined-icon-button>
                       `
                     : null}
                   ${supportsColorTemp || supportsColor
@@ -260,8 +258,6 @@ class MoreInfoLight extends LitElement {
         --md-sys-color-on-surface-variant: var(--secondary-text-color);
         --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
         --md-sys-color-outline: var(--secondary-text-color);
-        --md-sys-color-inverse-surface: var(--primary-text-color);
-        --md-sys-color-inverse-on-surface: var(--primary-background-color);
       }
     `;
   }
