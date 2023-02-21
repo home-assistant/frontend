@@ -7,7 +7,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import { checkCoreConfig } from "../../../data/core";
 import { domainToName } from "../../../data/integration";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route, TranslationDict } from "../../../types";
 
@@ -181,23 +181,7 @@ export class DeveloperYamlConfig extends LitElement {
   }
 
   private _restart() {
-    showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.developer-tools.tabs.yaml.section.server_management.confirm_restart_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.developer-tools.tabs.yaml.section.server_management.confirm_restart_text"
-      ),
-      confirmText: this.hass.localize(
-        "ui.panel.developer-tools.tabs.yaml.section.server_management.restart"
-      ),
-      confirm: () => {
-        this.hass.callService("homeassistant", "restart").catch((reason) => {
-          this._isValid = false;
-          this._validateLog = reason.message;
-        });
-      },
-    });
+    showRestartDialog(this);
   }
 
   static get styles(): CSSResultGroup {
