@@ -31,6 +31,7 @@ import { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
+  DOMAINS_WITH_NEW_MORE_INFO,
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
@@ -197,14 +198,17 @@ export class MoreInfoDialog extends LitElement {
                     )}
                   ></ha-icon-button-prev>
                 `}
-            <div
-              slot="title"
-              class="main-title"
-              .title=${name}
-              @click=${this._enlarge}
-            >
-              ${name}
-            </div>
+            ${this._currView !== "info" ||
+            !DOMAINS_WITH_NEW_MORE_INFO.includes(domain)
+              ? html`<div
+                  slot="title"
+                  class="main-title"
+                  .title=${name}
+                  @click=${this._enlarge}
+                >
+                  ${name}
+                </div>`
+              : null}
             ${this._currView === "info"
               ? html`
                   ${this.shouldShowHistory(domain)

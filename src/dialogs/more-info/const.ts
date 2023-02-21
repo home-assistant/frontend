@@ -3,7 +3,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
 
-export const DOMAINS_NO_INFO = ["camera", "configurator", "light"];
+export const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**
  * Entity domains that should be editable *if* they have an id present;
  * {@see shouldShowEditIcon}.
@@ -13,7 +13,8 @@ export const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
  * Entity Domains that should always be editable; {@see shouldShowEditIcon}.
  * */
 export const EDITABLE_DOMAINS_WITH_UNIQUE_ID = ["script"];
-
+/** Domains with with new more info design. */
+export const DOMAINS_WITH_NEW_MORE_INFO = ["light"];
 /** Domains with separate more info dialog. */
 export const DOMAINS_WITH_MORE_INFO = [
   "alarm_control_panel",
