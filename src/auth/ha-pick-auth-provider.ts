@@ -1,7 +1,7 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { css, html, LitElement } from "lit";
-import { property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "../components/ha-icon-next";
 import { AuthProvider } from "../data/auth";
@@ -13,7 +13,8 @@ declare global {
   }
 }
 
-class HaPickAuthProvider extends litLocalizeLiteMixin(LitElement) {
+@customElement("ha-pick-auth-provider")
+export class HaPickAuthProvider extends litLocalizeLiteMixin(LitElement) {
   @property() public authProviders: AuthProvider[] = [];
 
   protected render() {
@@ -47,4 +48,3 @@ class HaPickAuthProvider extends litLocalizeLiteMixin(LitElement) {
     }
   `;
 }
-customElements.define("ha-pick-auth-provider", HaPickAuthProvider);

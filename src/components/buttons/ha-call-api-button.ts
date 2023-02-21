@@ -1,9 +1,10 @@
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { property, query } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
 import "./ha-progress-button";
 
+@customElement("ha-call-api-button")
 class HaCallApiButton extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -68,8 +69,6 @@ class HaCallApiButton extends LitElement {
     `;
   }
 }
-
-customElements.define("ha-call-api-button", HaCallApiButton);
 
 declare global {
   interface HTMLElementTagNameMap {

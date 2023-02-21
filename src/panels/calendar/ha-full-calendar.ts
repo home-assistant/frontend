@@ -71,6 +71,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
   },
 };
 
+@customElements("ha-full-calendar")
 export class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
@@ -673,5 +674,3 @@ export class HAFullCalendar extends LitElement {
     ];
   }
 }
-
-window.customElements.define("ha-full-calendar", HAFullCalendar);
