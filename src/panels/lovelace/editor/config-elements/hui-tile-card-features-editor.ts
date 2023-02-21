@@ -15,6 +15,8 @@ import {
   CustomTileFeatureEntry,
   customTileFeatures,
   CUSTOM_TYPE_PREFIX,
+  isCustomType,
+  stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import {
@@ -87,8 +89,8 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   private _supportsFeatureType(type: string): boolean {
     if (!this.stateObj) return false;
 
-    if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-      const customType = type.slice(CUSTOM_TYPE_PREFIX.length);
+    if (isCustomType(type)) {
+      const customType = stripCustomPrefix(type);
       const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
       if (!customFeatureEntry?.supported) return true;
       try {
@@ -103,18 +105,20 @@ export class HuiTileCardFeaturesEditor extends LitElement {
   }
 
   private _isFeatureTypeEditable(type: string) {
-    if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-      const customType = type.slice(CUSTOM_TYPE_PREFIX.length);
-      return CUSTOM_FEATURE_ENTRIES[customType]?.configurable;
+    if (isCustomType(type)) {
+      const customType = stripCustomPrefix(type);
+      const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
+      return customFeatureEntry?.configurable;
     }
 
     return EDITABLES_FEATURE_TYPES.has(type as FeatureType);
   }
 
   private _getFeatureTypeLabel(type: string) {
-    if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-      const customType = type.slice(CUSTOM_TYPE_PREFIX.length);
-      return CUSTOM_FEATURE_ENTRIES[customType]?.name || type;
+    if (isCustomType(type)) {
+      const customType = stripCustomPrefix(type);
+      const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
+      return customFeatureEntry?.name || type;
     }
     return this.hass!.localize(
       `ui.panel.lovelace.editor.card.tile.features.types.${type}.label`
@@ -133,7 +137,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
     this._createSortable();
   }
 
-  private get _supportedFeaturesType() {
+  private _getSupportedFeaturesType() {
     const featuresTypes = FEATURE_TYPES as string[];
     const customFeaturesTypes = customTileFeatures.map(
       (feature) => `${CUSTOM_TYPE_PREFIX}${feature.type}`
@@ -145,8 +149,15 @@ export class HuiTileCardFeaturesEditor extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.features || !this.hass) {
-      return html``;
+      return null;
     }
+
+    const supportedFeaturesType = this._getSupportedFeaturesType();
+
+    const types = supportedFeaturesType.filter((type) => !isCustomType(type));
+    const customTypes = supportedFeaturesType.filter((type) =>
+      isCustomType(type)
+    );
 
     return html`
       <ha-expansion-panel outlined>
@@ -157,8 +168,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
           )}
         </h3>
         <div class="content">
-          ${this._supportedFeaturesType.length === 0 &&
-          this.features.length === 0
+          ${supportedFeaturesType.length === 0 && this.features.length === 0
             ? html`
                 <ha-alert type="info">
                   ${this.hass!.localize(
@@ -222,7 +232,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
               }
             )}
           </div>
-          ${this._supportedFeaturesType.length > 0
+          ${supportedFeaturesType.length > 0
             ? html`
                 <ha-button-menu
                   fixed
@@ -238,7 +248,17 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                   >
                     <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
                   </ha-button>
-                  ${this._supportedFeaturesType.map(
+                  ${types.map(
+                    (type) => html`
+                      <ha-list-item .value=${type}>
+                        ${this._getFeatureTypeLabel(type)}
+                      </ha-list-item>
+                    `
+                  )}
+                  ${types.length > 0 && customTypes.length > 0
+                    ? html`<li divider role="separator"></li>`
+                    : null}
+                  ${customTypes.map(
                     (type) => html`
                       <ha-list-item .value=${type}>
                         ${this._getFeatureTypeLabel(type)}
@@ -288,7 +308,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
 
     if (index == null) return;
 
-    const value = this._supportedFeaturesType[index];
+    const value = this._getSupportedFeaturesType()[index];
     if (!value) return;
 
     const elClass = await getTileFeatureElementClass(value);
@@ -401,6 +421,10 @@ export class HuiTileCardFeaturesEditor extends LitElement {
         .secondary {
           font-size: 12px;
           color: var(--secondary-text-color);
+        }
+
+        li[divider] {
+          border-bottom-color: var(--divider-color);
         }
       `,
     ];
