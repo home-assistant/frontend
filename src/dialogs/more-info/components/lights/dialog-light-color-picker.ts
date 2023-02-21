@@ -23,6 +23,7 @@ import {
   getLightCurrentModeRgbColor,
   LightColorMode,
   LightEntity,
+  lightSupportsColor,
   lightSupportsColorMode,
 } from "../../../../data/light";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -73,8 +74,12 @@ class DialogLightColorPicker extends LitElement {
       LightColorMode.COLOR_TEMP
     );
 
+    const supportsColor = lightSupportsColor(this.stateObj!);
+
     const modes: Mode[] = [];
-    modes.push("color");
+    if (supportsColor) {
+      modes.push("color");
+    }
     if (supportsTemp) {
       modes.push("color_temp");
     }
