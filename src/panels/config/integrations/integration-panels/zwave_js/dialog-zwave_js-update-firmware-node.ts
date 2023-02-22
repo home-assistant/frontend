@@ -65,10 +65,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   private _deviceName?: string;
 
-  private _localizationKeySuffix = "";
-
-  private _abortFirmwareUpdateButton = html``;
-
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
     this._deviceName = computeDeviceName(params.device, this.hass!);
     this.device = params.device;
@@ -124,6 +120,20 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         : "error"
       : undefined;
 
+    const localizationKeySuffix = this._nodeStatus.is_controller_node
+      ? "_controller"
+      : "";
+
+    const abortFirmwareUpdateButton = this._nodeStatus.is_controller_node
+      ? html``
+      : html`
+          <mwc-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.update_firmware.abort"
+            )}
+          </mwc-button>
+        `;
+
     return html`
       <ha-dialog
         open
@@ -138,7 +148,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
             ? html`
                 <p>
                   ${this.hass.localize(
-                    `ui.panel.config.zwave_js.update_firmware.introduction${this._localizationKeySuffix}`,
+                    `ui.panel.config.zwave_js.update_firmware.introduction${localizationKeySuffix}`,
                     {
                       device: html`<strong>${this._deviceName}</strong>`,
                     }
@@ -177,7 +187,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                         }
                       )}
                 </p>
-                ${this._abortFirmwareUpdateButton}
+                ${abortFirmwareUpdateButton}
               `
           : this._updateProgressMessage && !this._updateFinishedMessage
           ? html`
@@ -206,7 +216,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                   }
                 )}
               </p>
-              ${this._abortFirmwareUpdateButton}
+              ${abortFirmwareUpdateButton}
             `
           : html`
               <div class="flex-container">
@@ -241,7 +251,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
               ${this._updateFinishedMessage!.success
                 ? html`<p>
                     ${this.hass.localize(
-                      `ui.panel.config.zwave_js.update_firmware.finished_status.done${this._localizationKeySuffix}`
+                      `ui.panel.config.zwave_js.update_firmware.finished_status.done${localizationKeySuffix}`
                     )}
                   </p>`
                 : html`<p>
@@ -260,19 +270,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       fetchZwaveNodeStatus(this.hass, this.device!.id),
       fetchZwaveIsNodeFirmwareUpdateInProgress(this.hass, this.device!.id),
     ]);
-    if (this._nodeStatus.is_controller_node) {
-      this._localizationKeySuffix = "_controller";
-      this._abortFirmwareUpdateButton = html``;
-    } else {
-      this._localizationKeySuffix = "";
-      this._abortFirmwareUpdateButton = html`
-        <mwc-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
-          ${this.hass.localize(
-            "ui.panel.config.zwave_js.update_firmware.abort"
-          )}
-        </mwc-button>
-      `;
-    }
     if (this._updateInProgress) {
       this._subscribeNodeFirmwareUpdate();
     }
