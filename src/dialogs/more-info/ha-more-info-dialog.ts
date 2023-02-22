@@ -421,7 +421,7 @@ export class MoreInfoDialog extends LitElement {
           outline: none;
         }
 
-        .heading {
+        ha-dialog[scrolled] .heading {
           border-bottom: 1px solid
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }

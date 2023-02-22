@@ -40,6 +40,21 @@ export class HaDialog extends DialogBase {
       this.suppressDefaultPressSelector,
       SUPPRESS_DEFAULT_PRESS_SELECTOR,
     ].join(", ");
+    this._updateScrolledAttribute();
+    this.contentElement?.addEventListener("scroll", this._onScroll);
+  }
+
+  disconnectedCallback(): void {
+    this.contentElement.removeEventListener("scroll", this._onScroll);
+  }
+
+  private _onScroll = () => {
+    this._updateScrolledAttribute();
+  };
+
+  private _updateScrolledAttribute() {
+    if (!this.contentElement) return;
+    this.toggleAttribute("scrolled", this.contentElement.scrollTop !== 0);
   }
 
   static override styles = [
