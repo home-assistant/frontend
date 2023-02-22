@@ -17,7 +17,6 @@ import type { HaTextField } from "../../../../../components/ha-textfield";
 import {
   InclusionStrategy,
   MINIMUM_QR_STRING_LENGTH,
-  PlannedProvisioningEntry,
   provisionZwaveSmartStartNode,
   QRProvisioningInformation,
   RequestedGrant,
@@ -28,6 +27,7 @@ import {
   zwaveGrantSecurityClasses,
   zwaveParseQrCode,
   zwaveSupportsFeature,
+  zwaveTryParseDskFromQrCode,
   zwaveValidateDskAndEnterPin,
 } from "../../../../../data/zwave_js";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
@@ -515,6 +515,21 @@ class DialogZWaveJSAddNode extends LitElement {
       return;
     }
     this._qrProcessing = true;
+    const dsk = await zwaveTryParseDskFromQrCode(
+      this.hass,
+      this._entryId!,
+      qrCodeString
+    );
+    if (dsk) {
+      this._status = "loading";
+      // wait for QR scanner to be removed before resetting qr processing
+      this.updateComplete.then(() => {
+        this._qrProcessing = false;
+      });
+      this._inclusionStrategy = InclusionStrategy.Security_S2;
+      this._startInclusion(undefined, dsk);
+      return;
+    }
     if (
       qrCodeString.length < MINIMUM_QR_STRING_LENGTH ||
       !qrCodeString.startsWith("90")
@@ -623,15 +638,13 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _startInclusion(
     qrProvisioningInformation?: QRProvisioningInformation,
-    qrCodeString?: string,
-    plannedProvisioningEntry?: PlannedProvisioningEntry
+    dsk?: string
   ): void {
     if (!this.hass) {
       return;
     }
     this._lowSecurity = false;
-    const specificDevice =
-      qrProvisioningInformation || qrCodeString || plannedProvisioningEntry;
+    const specificDevice = qrProvisioningInformation || dsk;
     this._subscribed = subscribeAddZwaveNode(
       this.hass,
       this._entryId!,
@@ -697,8 +710,9 @@ class DialogZWaveJSAddNode extends LitElement {
       },
       this._inclusionStrategy,
       qrProvisioningInformation,
-      qrCodeString,
-      plannedProvisioningEntry
+      undefined,
+      undefined,
+      dsk
     );
     this._addNodeTimeoutHandle = window.setTimeout(() => {
       this._unsubscribe();

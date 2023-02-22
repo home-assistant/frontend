@@ -440,7 +440,8 @@ export const subscribeAddZwaveNode = (
   inclusion_strategy: InclusionStrategy = InclusionStrategy.Default,
   qr_provisioning_information?: QRProvisioningInformation,
   qr_code_string?: string,
-  planned_provisioning_entry?: PlannedProvisioningEntry
+  planned_provisioning_entry?: PlannedProvisioningEntry,
+  dsk?: string
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage((message) => callbackFunction(message), {
     type: "zwave_js/add_node",
@@ -449,6 +450,7 @@ export const subscribeAddZwaveNode = (
     qr_code_string,
     qr_provisioning_information,
     planned_provisioning_entry,
+    dsk,
   });
 
 export const stopZwaveInclusion = (hass: HomeAssistant, entry_id: string) =>
@@ -474,6 +476,17 @@ export const zwaveGrantSecurityClasses = (
     entry_id,
     security_classes,
     client_side_auth,
+  });
+
+export const zwaveTryParseDskFromQrCode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  qr_code_string: string
+) =>
+  hass.callWS<string | null>({
+    type: "zwave_js/try_parse_dsk_from_qr_code_string",
+    entry_id,
+    qr_code_string,
   });
 
 export const zwaveValidateDskAndEnterPin = (
