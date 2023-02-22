@@ -5,7 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
+import { extractSearchParam } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-card";
+import { getSignedPath } from "../../../../../data/auth";
+import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
 import { getOTBRInfo } from "../../../../../data/otbr";
 import {
   listThreadDataSets,
@@ -20,6 +23,7 @@ import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
+import { fileDownload } from "../../../../../util/file_download";
 
 interface ThreadNetwork {
   name: string;
@@ -32,6 +36,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
+
+  @state() private _configEntryId: string | null = null;
 
   @state() private _routers: ThreadRouter[] = [];
 
@@ -47,6 +53,19 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>
+          <a
+            href=${getConfigEntryDiagnosticsDownloadUrl(
+              this._configEntryId || ""
+            )}
+            target="_blank"
+            @click=${this._signUrl}
+          >
+            <mwc-list-item>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.download_diagnostics"
+              )}
+            </mwc-list-item>
+          </a>
           <mwc-list-item @click=${this._addOTBR}
             >${this.hass.localize(
               "ui.panel.config.thread.add_open_thread_border_router"
@@ -177,6 +196,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     super.firstUpdated(changedProps);
 
     this._refresh();
+
+    this._configEntryId = extractSearchParam("config_entry");
   }
 
   private _groupRoutersByNetwork = memoizeOne(
@@ -226,6 +247,16 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     });
   }
 
+  private async _signUrl(ev) {
+    const anchor = ev.target.closest("a");
+    ev.preventDefault();
+    const signedUrl = await getSignedPath(
+      this.hass,
+      anchor.getAttribute("href")
+    );
+    fileDownload(signedUrl.path);
+  }
+
   private _addOTBR() {
     showConfigFlowDialog(this, {
       dialogClosedCallback: () => {
@@ -244,6 +275,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         max-width: 600px;
         margin: 0 auto;
         direction: ltr;
+      }
+      ha-button-menu a {
+        text-decoration: none;
       }
       .routers {
         padding-bottom: 0;
