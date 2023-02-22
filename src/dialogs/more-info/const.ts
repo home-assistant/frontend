@@ -1,5 +1,7 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { computeGroupDomain, GroupEntity } from "../../data/group";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
 
@@ -88,4 +90,17 @@ export const computeShowLogBookComponent = (
   }
 
   return true;
+};
+
+export const computeShowNewMoreInfo = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  if (domain === "group") {
+    const groupDomain = computeGroupDomain(stateObj as GroupEntity);
+    return (
+      groupDomain &&
+      groupDomain !== "group" &&
+      DOMAINS_WITH_NEW_MORE_INFO.includes(groupDomain)
+    );
+  }
+  return DOMAINS_WITH_NEW_MORE_INFO.includes(domain);
 };

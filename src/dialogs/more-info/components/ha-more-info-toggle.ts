@@ -10,6 +10,7 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-switch";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { forwardHaptic } from "../../../data/haptics";
 import { HomeAssistant } from "../../../types";
 
 @customElement("ha-more-info-toggle")
@@ -33,16 +34,32 @@ export class HaMoreInfoToggle extends LitElement {
   }
 
   private _turnOn() {
-    const domain = computeDomain(this.stateObj!.entity_id);
-    this.hass.callService(domain, "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-    });
+    this._callService(true);
   }
 
   private _turnOff() {
-    const domain = computeDomain(this.stateObj!.entity_id);
-    this.hass.callService(domain, "turn_off", {
-      entity_id: this.stateObj!.entity_id,
+    this._callService(false);
+  }
+
+  private async _callService(turnOn): Promise<void> {
+    if (!this.hass || !this.stateObj) {
+      return;
+    }
+    forwardHaptic("light");
+    const stateDomain = computeDomain(this.stateObj.entity_id);
+    let serviceDomain;
+    let service;
+
+    if (stateDomain === "group") {
+      serviceDomain = "homeassistant";
+      service = turnOn ? "turn_on" : "turn_off";
+    } else {
+      serviceDomain = stateDomain;
+      service = turnOn ? "turn_on" : "turn_off";
+    }
+
+    await this.hass.callService(serviceDomain, service, {
+      entity_id: this.stateObj.entity_id,
     });
   }
 
