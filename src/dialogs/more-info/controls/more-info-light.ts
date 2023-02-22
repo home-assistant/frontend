@@ -199,7 +199,8 @@ class MoreInfoLight extends LitElement {
   }
 
   private _toggle = () => {
-    this.hass.callService("light", "toggle", {
+    const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
+    this.hass.callService("light", service, {
       entity_id: this.stateObj!.entity_id,
     });
   };

@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { subscribeOne } from "../../common/util/subscribe-one";
@@ -10,9 +10,9 @@ import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
+  computeShowNewMoreInfo,
   DOMAINS_NO_INFO,
   DOMAINS_WITH_MORE_INFO,
-  DOMAINS_WITH_NEW_MORE_INFO,
 } from "./const";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
@@ -48,8 +48,7 @@ export class MoreInfoInfo extends LitElement {
             )}
           </ha-alert>`
         : ""}
-      ${DOMAINS_NO_INFO.includes(domain) ||
-      DOMAINS_WITH_NEW_MORE_INFO.includes(domain)
+      ${DOMAINS_NO_INFO.includes(domain) || computeShowNewMoreInfo(stateObj)
         ? ""
         : html`
             <state-card-content
