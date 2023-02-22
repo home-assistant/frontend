@@ -32,7 +32,7 @@ import { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
-  DOMAINS_WITH_NEW_MORE_INFO,
+  computeShowNewMoreInfo,
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
@@ -232,7 +232,7 @@ export class MoreInfoDialog extends LitElement {
                     )}
                   ></ha-icon-button-prev>
                 `}
-            ${!isInfoView || !DOMAINS_WITH_NEW_MORE_INFO.includes(domain)
+            ${!isInfoView || !computeShowNewMoreInfo(stateObj)
               ? html`<div
                   slot="title"
                   class="main-title"
