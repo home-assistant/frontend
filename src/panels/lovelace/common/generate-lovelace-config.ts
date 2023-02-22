@@ -278,8 +278,8 @@ const computeDefaultViewStates = (
       .filter(
         (entry) =>
           entry.entity_category ||
-          HIDE_PLATFORM.has(entry.platform) ||
-          entry.hidden_by
+          (entry.platform && HIDE_PLATFORM.has(entry.platform)) ||
+          entry.hidden
       )
       .map((entry) => entry.entity_id)
   );

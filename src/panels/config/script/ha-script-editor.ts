@@ -39,6 +39,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
   deleteScript,
   getScriptStateConfig,
@@ -74,6 +75,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 
   @state() private _config?: ScriptConfig;
 
@@ -431,7 +434,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           this._config = this._normalizeConfig(config);
         },
         (resp) => {
-          const entity = Object.values(this.hass.entities).find(
+          const entity = this.entityRegistry.find(
             (ent) =>
               ent.platform === "script" && ent.unique_id === this.scriptId
           );
@@ -477,7 +480,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
         this._config = this._normalizeConfig(c.config);
       });
-      const regEntry = this.hass.entities[this.entityId];
+      const regEntry = this.entityRegistry.find(
+        (ent) => ent.entity_id === this.entityId
+      );
       if (regEntry?.unique_id) {
         this.scriptId = regEntry.unique_id;
       }
@@ -544,7 +549,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     if (!this.scriptId) {
       return;
     }
-    const entity = Object.values(this.hass.entities).find(
+    const entity = this.entityRegistry.find(
       (entry) => entry.unique_id === this.scriptId
     );
     if (!entity) {

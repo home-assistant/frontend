@@ -25,7 +25,11 @@ import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-related-items";
-import { EntityRegistryEntry } from "../../data/entity_registry";
+import {
+  EntityRegistryEntry,
+  ExtEntityRegistryEntry,
+  getExtendedEntityRegistryEntry,
+} from "../../data/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
@@ -77,6 +81,8 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _childView?: ChildView;
 
+  @state() private _entry?: ExtEntityRegistryEntry;
+
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
     if (!this._entityId) {
@@ -86,10 +92,22 @@ export class MoreInfoDialog extends LitElement {
     this._currView = params.view || "info";
     this._childView = undefined;
     this.large = false;
+    this._loadEntityRegistryEntry();
+  }
+
+  private async _loadEntityRegistryEntry() {
+    if (!this._entityId) {
+      return;
+    }
+    this._entry = await getExtendedEntityRegistryEntry(
+      this.hass,
+      this._entityId
+    );
   }
 
   public closeDialog() {
     this._entityId = undefined;
+    this._entry = undefined;
     this._childView = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -172,7 +190,10 @@ export class MoreInfoDialog extends LitElement {
       idToPassThroughUrl = stateObj.attributes.id;
     }
     if (EDITABLE_DOMAINS_WITH_UNIQUE_ID.includes(domain)) {
-      idToPassThroughUrl = this.hass.entities[this._entityId!].unique_id;
+      if (!this._entry) {
+        return;
+      }
+      idToPassThroughUrl = this._entry.unique_id;
     }
 
     navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
@@ -358,6 +379,8 @@ export class MoreInfoDialog extends LitElement {
                       <ha-more-info-settings
                         .hass=${this.hass}
                         .entityId=${this._entityId}
+                        .entry=${this._entry}
+                        @entity-entry-updated=${this._entryUpdated}
                       ></ha-more-info-settings>
                     `
                   : this._currView === "related"
@@ -385,6 +408,10 @@ export class MoreInfoDialog extends LitElement {
     if (changedProps.has("_currView")) {
       this._childView = undefined;
     }
+  }
+
+  private _entryUpdated(ev: CustomEvent<ExtEntityRegistryEntry>) {
+    this._entry = ev.detail;
   }
 
   private _enlarge() {

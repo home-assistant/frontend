@@ -12,10 +12,11 @@ import {
   createAreaRegistryEntry,
 } from "../data/area_registry";
 import {
-  DeviceEntityLookup,
+  DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
+  getDeviceEntityDisplayLookup,
 } from "../data/device_registry";
-import { EntityRegistryEntry } from "../data/entity_registry";
+import { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -113,7 +114,7 @@ export class HaAreaPicker extends LitElement {
     (
       areas: AreaRegistryEntry[],
       devices: DeviceRegistryEntry[],
-      entities: EntityRegistryEntry[],
+      entities: EntityRegistryDisplayEntry[],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
@@ -133,9 +134,9 @@ export class HaAreaPicker extends LitElement {
         ];
       }
 
-      const deviceEntityLookup: DeviceEntityLookup = {};
+      let deviceEntityLookup: DeviceEntityDisplayLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
-      let inputEntities: EntityRegistryEntry[] | undefined;
+      let inputEntities: EntityRegistryDisplayEntry[] | undefined;
 
       if (
         includeDomains ||
@@ -143,15 +144,7 @@ export class HaAreaPicker extends LitElement {
         includeDeviceClasses ||
         entityFilter
       ) {
-        for (const entity of entities) {
-          if (!entity.device_id) {
-            continue;
-          }
-          if (!(entity.device_id in deviceEntityLookup)) {
-            deviceEntityLookup[entity.device_id] = [];
-          }
-          deviceEntityLookup[entity.device_id].push(entity);
-        }
+        deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
       }
       inputDevices = devices;
       inputEntities = entities.filter((entity) => entity.area_id);

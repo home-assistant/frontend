@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { EntityRegistryEntry } from "../../data/entity_registry";
+import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { HomeAssistant } from "../../types";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
@@ -15,7 +15,7 @@ export const computeAttributeValueDisplay = (
   const attributeValue =
     value !== undefined ? value : stateObj.attributes[attribute];
   const domain = computeDomain(entityId);
-  const entity = entities[entityId] as EntityRegistryEntry | undefined;
+  const entity = entities[entityId] as EntityRegistryDisplayEntry | undefined;
   const translationKey = entity?.translation_key;
 
   return (
@@ -38,7 +38,7 @@ export const computeAttributeNameDisplay = (
 ): string => {
   const entityId = stateObj.entity_id;
   const domain = computeDomain(entityId);
-  const entity = entities[entityId] as EntityRegistryEntry | undefined;
+  const entity = entities[entityId] as EntityRegistryDisplayEntry | undefined;
   const translationKey = entity?.translation_key;
 
   return (
