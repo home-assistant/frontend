@@ -33,7 +33,6 @@ class MoreInfoSwitch extends LitElement {
         <ha-attributes
           .hass=${this.hass}
           .stateObj=${this.stateObj}
-          extra-filters="brightness,color_temp,color_temp_kelvin,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,min_color_temp_kelvin,max_color_temp_kelvin,entity_id,supported_color_modes,color_mode"
         ></ha-attributes>
       </div>
     `;
@@ -45,6 +44,10 @@ class MoreInfoSwitch extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: center;
+      }
+
+      ha-more-info-toggle {
+        margin-bottom: 24px;
       }
 
       ha-attributes {

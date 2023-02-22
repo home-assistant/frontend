@@ -146,6 +146,7 @@ export class HaMoreInfoToggle extends LitElement {
         flex: 1;
         width: 100%;
         --control-button-border-radius: 18px;
+        --mdc-icon-size: 24px;
       }
       ha-control-button.active {
         --control-button-icon-color: white;
