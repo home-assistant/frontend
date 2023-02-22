@@ -116,17 +116,19 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         )}
         @file-picked=${this._uploadFile}
       ></ha-file-upload>
-      <p>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.update_firmware.firmware_target_intro"
-        )}
-      </p>
-      <ha-form
-        .hass=${this.hass}
-        .data=${{ firmware_target: this._firmwareTarget }}
-        .schema=${firmwareTargetSchema}
-        @value-changed=${this._firmwareTargetChanged}
-      ></ha-form>
+      ${this._nodeStatus.is_controller_node
+        ? html``
+        : html`<p>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.update_firmware.firmware_target_intro"
+              )}
+            </p>
+            <ha-form
+              .hass=${this.hass}
+              .data=${{ firmware_target: this._firmwareTarget }}
+              .schema=${firmwareTargetSchema}
+              @value-changed=${this._firmwareTargetChanged}
+            ></ha-form>`}
       <mwc-button
         slot="primaryAction"
         @click=${this._beginFirmwareUpdate}
