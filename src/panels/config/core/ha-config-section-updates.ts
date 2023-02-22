@@ -1,5 +1,5 @@
 import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
+import { mdiDotsVertical, mdiUpdate } from "@mdi/js";
 import { HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -66,7 +66,7 @@ class HaConfigSectionUpdates extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.updates.check_updates"
             )}
-            .path=${mdiRefresh}
+            .path=${mdiUpdate}
             @click=${this._checkUpdates}
           ></ha-icon-button>
           <ha-button-menu corner="BOTTOM_START" multi>
