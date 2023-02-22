@@ -1,5 +1,11 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
+import {
+  mdiCloudLock,
+  mdiDotsVertical,
+  mdiMagnify,
+  mdiPower,
+  mdiUpdate,
+} from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -198,13 +204,16 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
 
-              <ha-list-item>
+              <ha-list-item graphic="icon">
                 ${this.hass.localize("ui.panel.config.updates.check_updates")}
+                <ha-svg-icon slot="graphic" .path=${mdiUpdate}></ha-svg-icon>
               </ha-list-item>
-              <ha-list-item>
+
+              <ha-list-item graphic="icon">
                 ${this.hass.localize(
                   "ui.panel.config.system_dashboard.restart_homeassistant"
                 )}
+                <ha-svg-icon slot="graphic" .path=${mdiPower}></ha-svg-icon>
               </ha-list-item>
             </ha-button-menu>
           </app-toolbar>
