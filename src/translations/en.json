@@ -3688,7 +3688,9 @@
           "update_firmware": {
             "title": "Update Device Firmware",
             "warning": "WARNING: Firmware updates can brick your device if you do not correctly follow the manufacturer's guidance. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your device as a result of the firmware update and will not be able to help you if you brick your device. Would you still like to continue?",
+            "warning_controller": "WARNING: Firmware updates can brick your controller if you do not use the right firmware files, or if you attempt to stop the firmware update before it completes. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your controller as a result of the firmware update and will not be able to help you if you brick your controller. Would you still like to continue?",
             "introduction": "Select the firmware file you would like to use to update {device}.",
+            "introduction_controller": "Select the firmware file you would like to use to update {device}. Note that once you start a firmware update, you MUST wait for the update to complete.",
             "upload_firmware": "Upload Firmware",
             "upload_failed": "Upload Failed",
             "begin_update": "Begin Firmware Update",
@@ -3701,10 +3703,11 @@
             "abort_failed": "Abort Failed",
             "confirm_abort": "Are you sure you want to abort the firmware update on {device}?",
             "finished_status": {
-              "ok": "Successfully updated firmware on {device}: {message}.",
+              "success": "Successfully updated firmware on {device}: {message}.",
               "error": "Unable to update firmware on {device}: {message}.",
               "try_again": "To attempt the firmware update again, select the new firmware file you would like to use.",
               "done": "The firmware update is complete! If you want to attempt another firmware update on this device, please wait until it gets re-interviewed.",
+              "done_controller": "The firmware update is complete! Your controller is being restarted and your network will temporarily be unavailable.",
               "Error_Timeout": "Timed Out",
               "Error_Checksum": "Checksum Error",
               "Error_TransmissionFailed": "Transmission Failed",
@@ -3717,7 +3720,11 @@
               "Error_InvalidHardwareVersion": "Invalid Hardware Version",
               "OK_WaitingForActivation": "Waiting for Activation",
               "OK_NoRestart": "No Restart",
-              "OK_RestartPending": "Restart Pending"
+              "OK_RestartPending": "Restart Pending",
+              "Error_RetryLimitReached": "Retry Limit Reached",
+              "Error_Aborted": "Update Aborted by Bootloader",
+              "Error_NotSupported": "Firmware Updates Not Supported",
+              "OK": "Success"
             }
           },
           "logs": {

@@ -43,59 +43,68 @@ export const getZwaveDeviceActions = async (
 
   const nodeStatus = await fetchZwaveNodeStatus(hass, device.id);
 
-  if (!nodeStatus || nodeStatus.is_controller_node) {
+  if (!nodeStatus) {
     return [];
   }
 
-  const actions = [
-    {
-      label: hass.localize(
-        "ui.panel.config.zwave_js.device_info.device_config"
-      ),
-      icon: mdiCog,
-      href: `/config/zwave_js/node_config/${device.id}?config_entry=${entryId}`,
-    },
-    {
-      label: hass.localize(
-        "ui.panel.config.zwave_js.device_info.reinterview_device"
-      ),
-      icon: mdiChatQuestion,
-      action: () =>
-        showZWaveJSReinterviewNodeDialog(el, {
-          device_id: device.id,
-        }),
-    },
-    {
-      label: hass.localize("ui.panel.config.zwave_js.device_info.heal_node"),
-      icon: mdiHospitalBox,
-      action: () =>
-        showZWaveJSHealNodeDialog(el, {
-          device,
-        }),
-    },
-    {
-      label: hass.localize(
-        "ui.panel.config.zwave_js.device_info.remove_failed"
-      ),
-      icon: mdiDeleteForever,
-      action: () =>
-        showZWaveJSRemoveFailedNodeDialog(el, {
-          device_id: device.id,
-        }),
-    },
-    {
-      label: hass.localize(
-        "ui.panel.config.zwave_js.device_info.node_statistics"
-      ),
-      icon: mdiInformation,
-      action: () =>
-        showZWaveJSNodeStatisticsDialog(el, {
-          device,
-        }),
-    },
-  ];
+  const actions: DeviceAction[] = [];
 
-  if (!nodeStatus.ready || !nodeStatus.has_firmware_update_cc) {
+  if (!nodeStatus.is_controller_node) {
+    actions.push(
+      {
+        label: hass.localize(
+          "ui.panel.config.zwave_js.device_info.device_config"
+        ),
+        icon: mdiCog,
+        href: `/config/zwave_js/node_config/${device.id}?config_entry=${entryId}`,
+      },
+      {
+        label: hass.localize(
+          "ui.panel.config.zwave_js.device_info.reinterview_device"
+        ),
+        icon: mdiChatQuestion,
+        action: () =>
+          showZWaveJSReinterviewNodeDialog(el, {
+            device_id: device.id,
+          }),
+      },
+      {
+        label: hass.localize("ui.panel.config.zwave_js.device_info.heal_node"),
+        icon: mdiHospitalBox,
+        action: () =>
+          showZWaveJSHealNodeDialog(el, {
+            device,
+          }),
+      },
+      {
+        label: hass.localize(
+          "ui.panel.config.zwave_js.device_info.remove_failed"
+        ),
+        icon: mdiDeleteForever,
+        action: () =>
+          showZWaveJSRemoveFailedNodeDialog(el, {
+            device_id: device.id,
+          }),
+      },
+      {
+        label: hass.localize(
+          "ui.panel.config.zwave_js.device_info.node_statistics"
+        ),
+        icon: mdiInformation,
+        action: () =>
+          showZWaveJSNodeStatisticsDialog(el, {
+            device,
+          }),
+      }
+    );
+  }
+
+  if (
+    !(
+      nodeStatus.ready &&
+      (nodeStatus.is_controller_node || nodeStatus.has_firmware_update_cc)
+    )
+  ) {
     return actions;
   }
 
@@ -117,7 +126,9 @@ export const getZwaveDeviceActions = async (
           (await fetchZwaveIsNodeFirmwareUpdateInProgress(hass, device.id)) ||
           (await showConfirmationDialog(el, {
             text: hass.localize(
-              "ui.panel.config.zwave_js.update_firmware.warning"
+              `ui.panel.config.zwave_js.update_firmware.${
+                nodeStatus.is_controller_node ? "warning_controller" : "warning"
+              }`
             ),
             dismissText: hass.localize("ui.common.no"),
             confirmText: hass.localize("ui.common.yes"),
