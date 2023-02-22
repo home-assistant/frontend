@@ -248,7 +248,7 @@ class MoreInfoLight extends LitElement {
       }
 
       ha-more-info-light-brightness,
-      ha-more-info-light-toggle {
+      ha-more-info-toggle {
         margin-bottom: 24px;
       }
 
