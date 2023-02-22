@@ -3,7 +3,7 @@ import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
-import { Condition, Trigger } from "./automation";
+import { Condition, Trigger, ForDict } from "./automation";
 import {
   DeviceCondition,
   DeviceTrigger,
@@ -11,6 +11,18 @@ import {
   localizeDeviceAutomationTrigger,
 } from "./device_automation";
 import { formatAttributeName } from "./entity_attributes";
+
+const describeDuration = (forTime: number | string | ForDict) => {
+  let duration: string | null;
+  if (typeof forTime === "number") {
+    duration = secondsToDuration(forTime);
+  } else if (typeof forTime === "string") {
+    duration = forTime;
+  } else {
+    duration = formatDuration(forTime);
+  }
+  return duration;
+};
 
 export const describeTrigger = (
   trigger: Trigger,
@@ -73,14 +85,7 @@ export const describeTrigger = (
     }
 
     if (trigger.for) {
-      let duration: string | null;
-      if (typeof trigger.for === "number") {
-        duration = secondsToDuration(trigger.for);
-      } else if (typeof trigger.for === "string") {
-        duration = trigger.for;
-      } else {
-        duration = formatDuration(trigger.for);
-      }
+      const duration = describeDuration(trigger.for);
       if (duration) {
         base += ` for ${duration}`;
       }
@@ -156,15 +161,7 @@ export const describeTrigger = (
     }
 
     if (trigger.for) {
-      let duration: string | null;
-      if (typeof trigger.for === "number") {
-        duration = secondsToDuration(trigger.for);
-      } else if (typeof trigger.for === "string") {
-        duration = trigger.for;
-      } else {
-        duration = formatDuration(trigger.for);
-      }
-
+      const duration = describeDuration(trigger.for);
       if (duration) {
         base += ` for ${duration}`;
       }
@@ -319,7 +316,14 @@ export const describeTrigger = (
 
   // Template Trigger
   if (trigger.platform === "template") {
-    return "When a template triggers";
+    let base = "When a template triggers";
+    if (trigger.for) {
+      const duration = describeDuration(trigger.for);
+      if (duration) {
+        base += ` for ${duration}`;
+      }
+    }
+    return base;
   }
 
   // Webhook Trigger
@@ -440,14 +444,7 @@ export const describeCondition = (
     base += ` ${entity} is ${states}`;
 
     if (condition.for) {
-      let duration: string | null;
-      if (typeof condition.for === "number") {
-        duration = secondsToDuration(condition.for);
-      } else if (typeof condition.for === "string") {
-        duration = condition.for;
-      } else {
-        duration = formatDuration(condition.for);
-      }
+      const duration = describeDuration(condition.for);
       if (duration) {
         base += ` for ${duration}`;
       }

@@ -1,15 +1,24 @@
 import { mdiLightbulbOutline } from "@mdi/js";
-import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { property, customElement } from "lit/decorators";
+import { HomeAssistant } from "../types";
 
 import "./ha-svg-icon";
 
 @customElement("ha-tip")
 class HaTip extends LitElement {
-  public render() {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  public render(): TemplateResult {
+    if (!this.hass) {
+      return html``;
+    }
+
     return html`
       <ha-svg-icon .path=${mdiLightbulbOutline}></ha-svg-icon>
-      <span class="prefix">Tip!</span>
+      <span class="prefix"
+        >${this.hass.localize("ui.panel.config.tips.tip")}</span
+      >
       <span class="text"><slot></slot></span>
     `;
   }
@@ -21,7 +30,10 @@ class HaTip extends LitElement {
     }
 
     .text {
+      direction: var(--direction);
       margin-left: 2px;
+      margin-inline-start: 2px;
+      margin-inline-end: initial;
       color: var(--secondary-text-color);
     }
 

@@ -15,17 +15,19 @@ import {
 } from "../../../../../data/device_registry";
 import {
   abortZwaveNodeFirmwareUpdate,
+  ControllerFirmwareUpdateStatus,
   fetchZwaveIsNodeFirmwareUpdateInProgress,
   fetchZwaveNodeStatus,
-  FirmwareUpdateStatus,
+  NodeFirmwareUpdateStatus,
   NodeStatus,
   subscribeZwaveNodeStatus,
   subscribeZwaveNodeFirmwareUpdate,
   uploadFirmwareAndBeginUpdate,
   ZWaveJSNodeFirmwareUpdateFinishedMessage,
-  ZWaveJSNodeFirmwareUpdateProgressMessage,
+  ZWaveJSFirmwareUpdateProgressMessage,
   ZWaveJSNodeStatusUpdatedMessage,
   ZWaveJSNodeStatus,
+  ZWaveJSControllerFirmwareUpdateFinishedMessage,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
@@ -34,7 +36,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
-import { HaFormIntegerSchema } from "../../../../../components/ha-form/types";
 
 @customElement("dialog-zwave_js-update-firmware-node")
 class DialogZWaveJSUpdateFirmwareNode extends LitElement {
@@ -45,18 +46,18 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   @state() private _uploading = false;
 
   @state()
-  private _updateFinishedMessage?: ZWaveJSNodeFirmwareUpdateFinishedMessage;
+  private _updateFinishedMessage?:
+    | ZWaveJSNodeFirmwareUpdateFinishedMessage
+    | ZWaveJSControllerFirmwareUpdateFinishedMessage;
 
   @state()
-  private _updateProgressMessage?: ZWaveJSNodeFirmwareUpdateProgressMessage;
+  private _updateProgressMessage?: ZWaveJSFirmwareUpdateProgressMessage;
 
   @state() private _updateInProgress = false;
 
   @state() private _firmwareFile?: File;
 
   @state() private _nodeStatus?: ZWaveJSNodeStatus;
-
-  @state() private _firmwareTarget? = 0;
 
   private _subscribedNodeStatus?: Promise<UnsubscribeFunc>;
 
@@ -74,13 +75,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   public closeDialog(): void {
     this._unsubscribeNodeFirmwareUpdate();
     this._unsubscribeNodeStatus();
-    this.device =
-      this._updateProgressMessage =
-      this._updateFinishedMessage =
-      this._firmwareFile =
-      this._nodeStatus =
-        undefined;
-    this._firmwareTarget = 0;
+    this.device = undefined;
+    this._updateProgressMessage = undefined;
+    this._updateFinishedMessage = undefined;
+    this._firmwareFile = undefined;
+    this._nodeStatus = undefined;
     this._uploading = this._updateInProgress = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -95,12 +94,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       return html``;
     }
 
-    const schema: HaFormIntegerSchema = {
-      name: "firmware_target",
-      type: "integer",
-      valueMin: 0,
-    };
-
     const beginFirmwareUpdateHTML = html`<ha-file-upload
         .hass=${this.hass}
         .uploading=${this._uploading}
@@ -111,17 +104,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         )}
         @file-picked=${this._uploadFile}
       ></ha-file-upload>
-      <p>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.update_firmware.firmware_target_intro"
-        )}
-      </p>
-      <ha-form
-        .hass=${this.hass}
-        .data=${{ firmware_target: this._firmwareTarget }}
-        .schema=${[schema]}
-        @value-changed=${this._firmwareTargetChanged}
-      ></ha-form>
       <mwc-button
         slot="primaryAction"
         @click=${this._beginFirmwareUpdate}
@@ -132,17 +114,25 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         )}
       </mwc-button>`;
 
-    const abortFirmwareUpdateButton = html`
-      <mwc-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
-        ${this.hass.localize("ui.panel.config.zwave_js.update_firmware.abort")}
-      </mwc-button>
-    `;
-
     const status = this._updateFinishedMessage
-      ? FirmwareUpdateStatus[this._updateFinishedMessage.status]
-          .split("_")[0]
-          .toLowerCase()
+      ? this._updateFinishedMessage.success
+        ? "success"
+        : "error"
       : undefined;
+
+    const localizationKeySuffix = this._nodeStatus.is_controller_node
+      ? "_controller"
+      : "";
+
+    const abortFirmwareUpdateButton = this._nodeStatus.is_controller_node
+      ? html``
+      : html`
+          <mwc-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.update_firmware.abort"
+            )}
+          </mwc-button>
+        `;
 
     return html`
       <ha-dialog
@@ -158,7 +148,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
             ? html`
                 <p>
                   ${this.hass.localize(
-                    "ui.panel.config.zwave_js.update_firmware.introduction",
+                    `ui.panel.config.zwave_js.update_firmware.introduction${localizationKeySuffix}`,
                     {
                       device: html`<strong>${this._deviceName}</strong>`,
                     }
@@ -231,7 +221,9 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
           : html`
               <div class="flex-container">
                 <ha-svg-icon
-                  .path=${status === "ok" ? mdiCheckCircle : mdiCloseCircle}
+                  .path=${this._updateFinishedMessage!.success
+                    ? mdiCheckCircle
+                    : mdiCloseCircle}
                   .class=${status}
                 ></ha-svg-icon>
                 <div class="status">
@@ -242,9 +234,13 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                         device: html`<strong>${this._deviceName}</strong>`,
                         message: this.hass.localize(
                           `ui.panel.config.zwave_js.update_firmware.finished_status.${
-                            FirmwareUpdateStatus[
-                              this._updateFinishedMessage!.status
-                            ]
+                            this._nodeStatus.is_controller_node
+                              ? ControllerFirmwareUpdateStatus[
+                                  this._updateFinishedMessage!.status
+                                ]
+                              : NodeFirmwareUpdateStatus[
+                                  this._updateFinishedMessage!.status
+                                ]
                           }`
                         ),
                       }
@@ -252,10 +248,10 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                   </p>
                 </div>
               </div>
-              ${status === "ok"
+              ${this._updateFinishedMessage!.success
                 ? html`<p>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.update_firmware.finished_status.done"
+                      `ui.panel.config.zwave_js.update_firmware.finished_status.done${localizationKeySuffix}`
                     )}
                   </p>`
                 : html`<p>
@@ -287,8 +283,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       await uploadFirmwareAndBeginUpdate(
         this.hass,
         this.device!.id,
-        this._firmwareFile!,
-        this._firmwareTarget
+        this._firmwareFile!
       );
       this._updateInProgress = true;
       this._uploading = false;
@@ -367,8 +362,9 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       this.device.id,
       (
         message:
+          | ZWaveJSFirmwareUpdateProgressMessage
+          | ZWaveJSControllerFirmwareUpdateFinishedMessage
           | ZWaveJSNodeFirmwareUpdateFinishedMessage
-          | ZWaveJSNodeFirmwareUpdateProgressMessage
       ) => {
         if (message.event === "firmware update progress") {
           if (!this._updateFinishedMessage) {
@@ -392,10 +388,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     this._subscribedNodeFirmwareUpdate = undefined;
   }
 
-  private async _firmwareTargetChanged(ev) {
-    this._firmwareTarget = ev.detail.value.firmware_target;
-  }
-
   private async _uploadFile(ev) {
     this._firmwareFile = ev.detail.files[0];
   }
@@ -404,7 +396,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     return [
       haStyleDialog,
       css`
-        .ok {
+        .success {
           color: var(--success-color);
         }
 

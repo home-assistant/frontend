@@ -17,10 +17,7 @@ import {
   union,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import {
-  customType,
-  isCustomType,
-} from "../../../../common/structs/is-custom-type";
+import { customType } from "../../../../common/structs/is-custom-type";
 import { entityId } from "../../../../common/structs/is-entity-id";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
@@ -50,6 +47,7 @@ import {
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { buttonEntityConfigStruct } from "../structs/button-entity-struct";
+import { isCustomType } from "../../../../data/lovelace_custom_cards";
 
 const buttonEntitiesRowConfigStruct = object({
   type: literal("button"),

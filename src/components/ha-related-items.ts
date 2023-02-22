@@ -282,7 +282,9 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
 
   private async _navigateAwayClose() {
     // allow new page to open before closing dialog
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
     fireEvent(this, "close-dialog");
   }
 

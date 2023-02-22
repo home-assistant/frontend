@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -36,6 +36,8 @@ interface Device {
 export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
 ) => boolean;
+
+export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<mwc-list-item
   .twoline=${!!item.area}
@@ -94,6 +96,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
+  @property() public entityFilter?: HaDevicePickerEntityFilterFunc;
+
   @property({ type: Boolean }) public disabled?: boolean;
 
   @property({ type: Boolean }) public required?: boolean;
@@ -113,6 +117,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
       deviceFilter: this["deviceFilter"],
+      entityFilter: this["entityFilter"],
       excludeDevices: this["excludeDevices"]
     ): Device[] => {
       if (!devices.length) {
@@ -127,7 +132,12 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
       const deviceEntityLookup: DeviceEntityLookup = {};
 
-      if (includeDomains || excludeDomains || includeDeviceClasses) {
+      if (
+        includeDomains ||
+        excludeDomains ||
+        includeDeviceClasses ||
+        entityFilter
+      ) {
         for (const entity of entities) {
           if (!entity.device_id) {
             continue;
@@ -194,6 +204,22 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
               stateObj.attributes.device_class &&
               includeDeviceClasses.includes(stateObj.attributes.device_class)
             );
+          });
+        });
+      }
+
+      if (entityFilter) {
+        inputDevices = inputDevices.filter((device) => {
+          const devEntities = deviceEntityLookup[device.id];
+          if (!devEntities || !devEntities.length) {
+            return false;
+          }
+          return devEntities.some((entity) => {
+            const stateObj = this.hass.states[entity.entity_id];
+            if (!stateObj) {
+              return false;
+            }
+            return entityFilter(stateObj);
           });
         });
       }
@@ -274,6 +300,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         this.excludeDomains,
         this.includeDeviceClasses,
         this.deviceFilter,
+        this.entityFilter,
         this.excludeDevices
       );
     }

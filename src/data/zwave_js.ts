@@ -92,7 +92,23 @@ enum NodeType {
   "End Node" = 1,
 }
 
-export enum FirmwareUpdateStatus {
+enum RFRegion {
+  "Europe" = 0x00,
+  "USA" = 0x01,
+  "Australia/New Zealand" = 0x02,
+  "Hong Kong" = 0x03,
+  "India" = 0x05,
+  "Israel" = 0x06,
+  "Russia" = 0x07,
+  "China" = 0x08,
+  "USA (Long Range)" = 0x09,
+  "Japan" = 0x20,
+  "Korea" = 0x21,
+  "Unknown" = 0xfe,
+  "Default (EU)" = 0xff,
+}
+
+export enum NodeFirmwareUpdateStatus {
   Error_Timeout = -1,
   Error_Checksum = 0,
   Error_TransmissionFailed = 1,
@@ -106,6 +122,19 @@ export enum FirmwareUpdateStatus {
   OK_WaitingForActivation = 0xfd,
   OK_NoRestart = 0xfe,
   OK_RestartPending = 0xff,
+}
+
+export enum ControllerFirmwareUpdateStatus {
+  // An expected response was not received from the controller in time
+  Error_Timeout = 0,
+  /** The maximum number of retry attempts for a firmware fragments were reached */
+  Error_RetryLimitReached,
+  /** The update was aborted by the bootloader */
+  Error_Aborted,
+  /** This controller does not support firmware updates */
+  Error_NotSupported,
+
+  OK = 0xff,
 }
 
 export interface QRProvisioningInformation {
@@ -149,6 +178,7 @@ export interface ZWaveJSController {
   sdk_version: string;
   type: number;
   own_node_id: number;
+  rf_region: RFRegion | null;
   is_primary: boolean;
   is_using_home_id_from_other_network: boolean;
   is_sis_present: boolean;
@@ -176,6 +206,7 @@ export interface ZWaveJSNodeStatus {
   zwave_plus_version: number | null;
   highest_security_class: SecurityClass | null;
   is_controller_node: boolean;
+  has_firmware_update_cc: boolean;
 }
 
 export interface ZwaveJSNodeMetadata {
@@ -304,7 +335,7 @@ export interface ZWaveJSNodeStatusUpdatedMessage {
   status: NodeStatus;
 }
 
-export interface ZWaveJSNodeFirmwareUpdateProgressMessage {
+export interface ZWaveJSFirmwareUpdateProgressMessage {
   event: "firmware update progress";
   current_file: number;
   total_files: number;
@@ -315,10 +346,16 @@ export interface ZWaveJSNodeFirmwareUpdateProgressMessage {
 
 export interface ZWaveJSNodeFirmwareUpdateFinishedMessage {
   event: "firmware update finished";
-  status: FirmwareUpdateStatus;
+  status: NodeFirmwareUpdateStatus;
   success: boolean;
   wait_time?: number;
   reinterview: boolean;
+}
+
+export interface ZWaveJSControllerFirmwareUpdateFinishedMessage {
+  event: "firmware update finished";
+  status: ControllerFirmwareUpdateStatus;
+  success: boolean;
 }
 
 export type ZWaveJSNodeFirmwareUpdateCapabilities =
@@ -422,7 +459,8 @@ export const subscribeAddZwaveNode = (
   inclusion_strategy: InclusionStrategy = InclusionStrategy.Default,
   qr_provisioning_information?: QRProvisioningInformation,
   qr_code_string?: string,
-  planned_provisioning_entry?: PlannedProvisioningEntry
+  planned_provisioning_entry?: PlannedProvisioningEntry,
+  dsk?: string
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage((message) => callbackFunction(message), {
     type: "zwave_js/add_node",
@@ -431,6 +469,7 @@ export const subscribeAddZwaveNode = (
     qr_code_string,
     qr_provisioning_information,
     planned_provisioning_entry,
+    dsk,
   });
 
 export const stopZwaveInclusion = (hass: HomeAssistant, entry_id: string) =>
@@ -456,6 +495,17 @@ export const zwaveGrantSecurityClasses = (
     entry_id,
     security_classes,
     client_side_auth,
+  });
+
+export const zwaveTryParseDskFromQrCode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  qr_code_string: string
+) =>
+  hass.callWS<string | null>({
+    type: "zwave_js/try_parse_dsk_from_qr_code_string",
+    entry_id,
+    qr_code_string,
   });
 
 export const zwaveValidateDskAndEnterPin = (
@@ -700,21 +750,17 @@ export const fetchZwaveNodeFirmwareUpdateCapabilities = (
   device_id: string
 ): Promise<ZWaveJSNodeFirmwareUpdateCapabilities> =>
   hass.callWS({
-    type: "zwave_js/get_firmware_update_capabilities",
+    type: "zwave_js/get_node_firmware_update_capabilities",
     device_id,
   });
 
 export const uploadFirmwareAndBeginUpdate = async (
   hass: HomeAssistant,
   device_id: string,
-  file: File,
-  target?: number
+  file: File
 ) => {
   const fd = new FormData();
   fd.append("file", file);
-  if (target !== undefined) {
-    fd.append("target", target.toString());
-  }
   const resp = await hass.fetchWithAuth(
     `/api/zwave_js/firmware/upload/${device_id}`,
     {
@@ -733,8 +779,9 @@ export const subscribeZwaveNodeFirmwareUpdate = (
   device_id: string,
   callbackFunction: (
     message:
+      | ZWaveJSFirmwareUpdateProgressMessage
+      | ZWaveJSControllerFirmwareUpdateFinishedMessage
       | ZWaveJSNodeFirmwareUpdateFinishedMessage
-      | ZWaveJSNodeFirmwareUpdateProgressMessage
   ) => void
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage(

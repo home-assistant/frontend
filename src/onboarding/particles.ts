@@ -1,82 +1,88 @@
-import { tsParticles } from "tsparticles";
+import { tsParticles } from "tsparticles-engine";
+import { loadLinksPreset } from "tsparticles-preset-links";
 
-tsParticles.load("particles", {
-  // autoPlay: true,
-  fullScreen: {
-    enable: true,
-    zIndex: -1,
-  },
-  detectRetina: true,
-  fpsLimit: 60,
-  motion: {
-    disable: false,
-    reduce: {
-      factor: 4,
-      value: true,
+loadLinksPreset(tsParticles).then(() => {
+  tsParticles.load("particles", {
+    preset: "links",
+    background: {
+      opacity: 0,
     },
-  },
-  particles: {
-    color: {
-      value: "#fff",
-      animation: {
-        enable: true,
-        speed: 50,
-        sync: false,
+    fullScreen: {
+      enable: true,
+      zIndex: -1,
+    },
+    detectRetina: true,
+    fpsLimit: 60,
+    motion: {
+      disable: false,
+      reduce: {
+        factor: 4,
+        value: true,
       },
     },
-    links: {
+    particles: {
       color: {
-        value: "random",
+        value: "#fff",
+        animation: {
+          enable: true,
+          speed: 50,
+          sync: false,
+        },
       },
-      distance: 100,
-      enable: true,
-      frequency: 1,
-      opacity: 0.7,
-      width: 1,
-    },
-    move: {
-      enable: true,
-      speed: 0.5,
-    },
-    number: {
-      density: {
+      links: {
+        color: {
+          value: "random",
+        },
+        distance: 100,
         enable: true,
-        area: 800,
-        factor: 1000,
+        frequency: 1,
+        opacity: 0.7,
+        width: 1,
       },
-      limit: 0,
-      value: 50,
-    },
-    opacity: {
-      random: {
+      move: {
         enable: true,
-        minimumValue: 0.3,
-      },
-      value: 0.5,
-      animation: {
-        destroy: "none",
-        enable: true,
-        minimumValue: 0.3,
         speed: 0.5,
-        startValue: "random",
-        sync: false,
+      },
+      number: {
+        density: {
+          enable: true,
+          area: 800,
+          factor: 1000,
+        },
+        limit: 0,
+        value: 50,
+      },
+      opacity: {
+        random: {
+          enable: true,
+          minimumValue: 0.3,
+        },
+        value: 0.5,
+        animation: {
+          destroy: "none",
+          enable: true,
+          minimumValue: 0.3,
+          speed: 0.5,
+          startValue: "random",
+          sync: false,
+        },
+      },
+      size: {
+        random: {
+          enable: true,
+          minimumValue: 1,
+        },
+        value: 3,
+        animation: {
+          destroy: "none",
+          enable: true,
+          minimumValue: 1,
+          speed: 3,
+          startValue: "random",
+          sync: false,
+        },
       },
     },
-    size: {
-      random: {
-        enable: true,
-        minimumValue: 1,
-      },
-      value: 3,
-      animation: {
-        destroy: "none",
-        enable: true,
-        minimumValue: 1,
-        speed: 3,
-        startValue: "random",
-        sync: false,
-      },
-    },
-  },
-  pauseOnBlur: true,
+    pauseOnBlur: true,
+  });
 });

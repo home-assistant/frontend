@@ -156,7 +156,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         </app-header>
 
         <div class="flex content">
-          <div class="filters flex layout horizontal narrow-wrap">
+          <div class="filters">
             <ha-date-range-picker
               .hass=${this.hass}
               ?disabled=${this._isLoading}
@@ -169,7 +169,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
-              horizontal
+              addOnTop
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
           </div>
@@ -510,18 +510,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           height: 100%;
         }
 
-        :host([narrow]) .narrow-wrap {
-          flex-wrap: wrap;
-        }
-
-        .horizontal {
-          align-items: center;
-        }
-
-        :host(:not([narrow])) .selector-padding {
-          padding-left: 32px;
-        }
-
         .progress-wrapper {
           position: relative;
         }
@@ -529,11 +517,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         .filters {
           display: flex;
           align-items: flex-start;
-          padding: 8px 16px 0;
-        }
-
-        :host([narrow]) .filters {
-          flex-wrap: wrap;
+          margin-top: 16px;
         }
 
         ha-date-range-picker {
@@ -544,11 +528,15 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           direction: var(--direction);
         }
 
-        :host([narrow]) ha-date-range-picker {
-          margin-right: 0;
-          margin-inline-end: 0;
-          margin-inline-start: initial;
-          direction: var(--direction);
+        @media all and (max-width: 1025px) {
+          .filters {
+            flex-direction: column;
+          }
+          ha-date-range-picker {
+            margin-right: 0;
+            margin-inline-end: 0;
+            width: 100%;
+          }
         }
 
         ha-circular-progress {
@@ -556,17 +544,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%);
-        }
-
-        ha-entity-picker {
-          display: inline-block;
-          flex-grow: 1;
-          max-width: 400px;
-        }
-
-        :host([narrow]) ha-entity-picker {
-          max-width: none;
-          width: 100%;
         }
 
         .start-search {

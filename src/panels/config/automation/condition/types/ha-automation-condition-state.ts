@@ -1,10 +1,10 @@
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import {
   assert,
   boolean,
   literal,
+  number,
   object,
   optional,
   string,
@@ -25,9 +25,57 @@ const stateConditionStruct = object({
   entity_id: optional(string()),
   attribute: optional(string()),
   state: optional(string()),
-  for: optional(union([string(), forDictStruct])),
+  for: optional(union([number(), string(), forDictStruct])),
   enabled: optional(boolean()),
 });
+
+const SCHEMA = [
+  { name: "entity_id", required: true, selector: { entity: {} } },
+  {
+    name: "attribute",
+    selector: {
+      attribute: {
+        hide_attributes: [
+          "access_token",
+          "available_modes",
+          "color_modes",
+          "editable",
+          "effect_list",
+          "entity_picture",
+          "fan_modes",
+          "fan_speed_list",
+          "forecast",
+          "friendly_name",
+          "hvac_modes",
+          "icon",
+          "operation_list",
+          "options",
+          "preset_modes",
+          "sound_mode_list",
+          "source_list",
+          "state_class",
+          "swing_modes",
+          "token",
+        ],
+      },
+    },
+    context: {
+      filter_entity: "entity_id",
+    },
+  },
+  {
+    name: "state",
+    required: true,
+    selector: {
+      state: {},
+    },
+    context: {
+      filter_entity: "entity_id",
+      filter_attribute: "attribute",
+    },
+  },
+  { name: "for", selector: { duration: {} } },
+] as const;
 
 @customElement("ha-automation-condition-state")
 export class HaStateCondition extends LitElement implements ConditionElement {
@@ -40,51 +88,6 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   public static get defaultConfig() {
     return { entity_id: "", state: "" };
   }
-
-  private _schema = memoizeOne(
-    (entityId, attribute) =>
-      [
-        { name: "entity_id", required: true, selector: { entity: {} } },
-        {
-          name: "attribute",
-          selector: {
-            attribute: {
-              entity_id: entityId,
-              hide_attributes: [
-                "access_token",
-                "available_modes",
-                "color_modes",
-                "editable",
-                "effect_list",
-                "entity_picture",
-                "fan_modes",
-                "fan_speed_list",
-                "forecast",
-                "friendly_name",
-                "hvac_modes",
-                "icon",
-                "operation_list",
-                "options",
-                "preset_modes",
-                "sound_mode_list",
-                "source_list",
-                "state_class",
-                "swing_modes",
-                "token",
-              ],
-            },
-          },
-        },
-        {
-          name: "state",
-          required: true,
-          selector: {
-            state: { entity_id: entityId, attribute: attribute },
-          },
-        },
-        { name: "for", selector: { duration: {} } },
-      ] as const
-  );
 
   public shouldUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("condition")) {
@@ -101,16 +104,12 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   protected render() {
     const trgFor = createDurationData(this.condition.for);
     const data = { ...this.condition, for: trgFor };
-    const schema = this._schema(
-      this.condition.entity_id,
-      this.condition.attribute
-    );
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${schema}
+        .schema=${SCHEMA}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
@@ -138,7 +137,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   }
 
   private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
+    schema: SchemaUnion<typeof SCHEMA>
   ): string => {
     switch (schema.name) {
       case "entity_id":

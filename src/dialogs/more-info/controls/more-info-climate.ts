@@ -467,7 +467,9 @@ class MoreInfoClimate extends LitElement {
     // We reset stateObj to re-sync the inputs with the state. It will be out
     // of sync if our service call did not result in the entity to be turned
     // on. Since the state is not changing, the resync is not called automatic.
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 2000);
+    });
 
     // No need to resync if we received a new state.
     if (this.stateObj !== curState) {

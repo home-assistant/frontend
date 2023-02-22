@@ -5,6 +5,7 @@ import {
   assert,
   assign,
   literal,
+  number,
   object,
   optional,
   string,
@@ -31,7 +32,7 @@ const stateTriggerStruct = assign(
     attribute: optional(string()),
     from: optional(string()),
     to: optional(string()),
-    for: optional(union([string(), forDictStruct])),
+    for: optional(union([number(), string(), forDictStruct])),
   })
 );
 
