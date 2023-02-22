@@ -156,18 +156,6 @@ The `title ` option should not be used without a description.
 
 *Documentation coming soon*
 
-**Right to left**
-
-<ha-alert alert-type="success" rtl>
-  This is an info alert — check it out!
-</ha-alert>
-
-```html
-<ha-alert alert-type="success" rtl>
-  This is an info alert — check it out!
-</ha-alert>
-```
-
 ### API
 **Properties/Attributes**
 

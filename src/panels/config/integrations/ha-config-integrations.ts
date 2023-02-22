@@ -14,7 +14,10 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
+import {
+  protocolIntegrationPicked,
+  PROTOCOL_INTEGRATIONS,
+} from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -761,7 +764,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           }
         ),
         confirm: async () => {
-          if (["zha", "zwave_js"].includes(integration.supported_by!)) {
+          if (
+            (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+              integration.supported_by!
+            )
+          ) {
             protocolIntegrationPicked(
               this,
               this.hass,

@@ -1,6 +1,6 @@
-import { memoize } from "@fullcalendar/common";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { entityId } from "../../../../common/structs/is-entity-id";
@@ -66,8 +66,8 @@ export class HuiWeatherForecastCardEditor
     return undefined;
   }
 
-  private _schema = memoize(
-    (entity: string, localize: LocalizeFunc, hasForecast?: boolean) =>
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc, hasForecast?: boolean) =>
       [
         {
           name: "entity",
@@ -81,7 +81,8 @@ export class HuiWeatherForecastCardEditor
           schema: [
             {
               name: "secondary_info_attribute",
-              selector: { attribute: { entity_id: entity } },
+              selector: { attribute: {} },
+              context: { filter_entity: "entity" },
             },
             { name: "theme", selector: { theme: {} } },
           ],
@@ -125,11 +126,7 @@ export class HuiWeatherForecastCardEditor
       return html``;
     }
 
-    const schema = this._schema(
-      this._config.entity,
-      this.hass.localize,
-      this._has_forecast
-    );
+    const schema = this._schema(this.hass.localize, this._has_forecast);
 
     const data: WeatherForecastCardConfig = {
       show_current: true,

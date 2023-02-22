@@ -133,7 +133,7 @@ export class StateBadge extends LitElement {
         }
         if (stateObj.attributes.hvac_action) {
           const hvacAction = stateObj.attributes.hvac_action;
-          if (["heating", "cooling", "drying", "fan"].includes(hvacAction)) {
+          if (hvacAction in HVAC_ACTION_TO_MODE) {
             iconStyle.color = stateColorCss(
               stateObj,
               HVAC_ACTION_TO_MODE[hvacAction]

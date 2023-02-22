@@ -1,6 +1,8 @@
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
+import { customElement } from "lit/decorators";
 import { HaSvgIcon } from "./ha-svg-icon";
 
+@customElement("ha-icon-next")
 export class HaIconNext extends HaSvgIcon {
   public connectedCallback() {
     super.connectedCallback();
@@ -20,5 +22,3 @@ declare global {
     "ha-icon-next": HaIconNext;
   }
 }
-
-customElements.define("ha-icon-next", HaIconNext);

@@ -9,8 +9,7 @@ import {
 } from "lit";
 import { property, state } from "lit/decorators";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { GroupEntity } from "../../../data/group";
+import { computeGroupDomain, GroupEntity } from "../../../data/group";
 import "../../../state-summary/state-card-content";
 import { HomeAssistant } from "../../../types";
 import {
@@ -47,20 +46,19 @@ class MoreInfoGroup extends LitElement {
     }
 
     const baseStateObj = states.find((s) => s.state === "on") || states[0];
-    const groupDomain = computeStateDomain(baseStateObj);
+
+    const groupDomain = computeGroupDomain(this.stateObj);
 
     // Groups need to be filtered out or we'll show content of
     // first child above the children of the current group
-    if (
-      groupDomain !== "group" &&
-      states.every(
-        (entityState) => groupDomain === computeStateDomain(entityState)
-      )
-    ) {
+    if (groupDomain && groupDomain !== "group") {
       this._groupDomainStateObj = {
         ...baseStateObj,
         entity_id: this.stateObj.entity_id,
-        attributes: { ...baseStateObj.attributes },
+        attributes: {
+          ...baseStateObj.attributes,
+          friendly_name: this.stateObj.attributes.friendly_name,
+        },
       };
       const type = domainMoreInfoType(groupDomain);
       importMoreInfoControl(type);

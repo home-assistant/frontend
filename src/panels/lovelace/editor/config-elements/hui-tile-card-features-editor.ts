@@ -1,11 +1,4 @@
-import {
-  mdiDelete,
-  mdiDrag,
-  mdiListBox,
-  mdiPencil,
-  mdiPlus,
-  mdiWindowShutter,
-} from "@mdi/js";
+import { mdiDelete, mdiDrag, mdiListBox, mdiPencil, mdiPlus } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -14,9 +7,17 @@ import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-icon-button";
 import "../../../../components/ha-button";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
+import {
+  CustomTileFeatureEntry,
+  customTileFeatures,
+  CUSTOM_TYPE_PREFIX,
+  isCustomType,
+  stripCustomPrefix,
+} from "../../../../data/lovelace_custom_cards";
 import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import {
   loadSortable,
@@ -24,18 +25,39 @@ import {
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
-import {
-  isTileFeatureEditable,
-  supportsTileFeature,
-} from "../../tile-features/tile-features";
+import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
+import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
+import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
+import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
 
-const FEATURES_TYPE: LovelaceTileFeatureConfig["type"][] = [
+type FeatureType = LovelaceTileFeatureConfig["type"];
+type SupportsFeature = (stateObj: HassEntity) => boolean;
+
+const FEATURE_TYPES: FeatureType[] = [
   "cover-open-close",
   "cover-tilt",
   "light-brightness",
   "vacuum-commands",
 ];
+
+const EDITABLES_FEATURE_TYPES = new Set<FeatureType>(["vacuum-commands"]);
+
+const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
+  {
+    "cover-open-close": supportsCoverOpenCloseTileFeature,
+    "cover-tilt": supportsCoverTiltTileFeature,
+    "light-brightness": supportsLightBrightnessTileFeature,
+    "vacuum-commands": supportsVacuumCommandTileFeature,
+  };
+
+const CUSTOM_FEATURE_ENTRIES: Record<
+  string,
+  CustomTileFeatureEntry | undefined
+> = {};
+customTileFeatures.forEach((feature) => {
+  CUSTOM_FEATURE_ENTRIES[feature.type] = feature;
+});
 
 declare global {
   interface HASSDomEvents {
@@ -64,6 +86,45 @@ export class HuiTileCardFeaturesEditor extends LitElement {
     this._destroySortable();
   }
 
+  private _supportsFeatureType(type: string): boolean {
+    if (!this.stateObj) return false;
+
+    if (isCustomType(type)) {
+      const customType = stripCustomPrefix(type);
+      const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
+      if (!customFeatureEntry?.supported) return true;
+      try {
+        return customFeatureEntry.supported(this.stateObj);
+      } catch {
+        return false;
+      }
+    }
+
+    const supportsFeature = SUPPORTS_FEATURE_TYPES[type];
+    return !supportsFeature || supportsFeature(this.stateObj);
+  }
+
+  private _isFeatureTypeEditable(type: string) {
+    if (isCustomType(type)) {
+      const customType = stripCustomPrefix(type);
+      const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
+      return customFeatureEntry?.configurable;
+    }
+
+    return EDITABLES_FEATURE_TYPES.has(type as FeatureType);
+  }
+
+  private _getFeatureTypeLabel(type: string) {
+    if (isCustomType(type)) {
+      const customType = stripCustomPrefix(type);
+      const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
+      return customFeatureEntry?.name || type;
+    }
+    return this.hass!.localize(
+      `ui.panel.lovelace.editor.card.tile.features.types.${type}.label`
+    );
+  }
+
   private _getKey(feature: LovelaceTileFeatureConfig) {
     if (!this._featuresKeys.has(feature)) {
       this._featuresKeys.set(feature, Math.random().toString());
@@ -72,18 +133,31 @@ export class HuiTileCardFeaturesEditor extends LitElement {
     return this._featuresKeys.get(feature)!;
   }
 
-  private get _supportedFeatureTypes() {
-    if (!this.stateObj) return [];
-
-    return FEATURES_TYPE.filter((type) =>
-      supportsTileFeature(this.stateObj!, type)
-    );
+  protected firstUpdated() {
+    this._createSortable();
   }
 
-  protected render(): TemplateResult {
+  private _getSupportedFeaturesType() {
+    const featuresTypes = FEATURE_TYPES as string[];
+    const customFeaturesTypes = customTileFeatures.map(
+      (feature) => `${CUSTOM_TYPE_PREFIX}${feature.type}`
+    );
+    return featuresTypes
+      .concat(customFeaturesTypes)
+      .filter((type) => this._supportsFeatureType(type));
+  }
+
+  protected render(): TemplateResult | null {
     if (!this.features || !this.hass) {
-      return html``;
+      return null;
     }
+
+    const supportedFeaturesType = this._getSupportedFeaturesType();
+
+    const types = supportedFeaturesType.filter((type) => !isCustomType(type));
+    const customTypes = supportedFeaturesType.filter((type) =>
+      isCustomType(type)
+    );
 
     return html`
       <ha-expansion-panel outlined>
@@ -94,8 +168,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
           )}
         </h3>
         <div class="content">
-          ${this._supportedFeatureTypes.length === 0 &&
-          this.features.length === 0
+          ${supportedFeaturesType.length === 0 && this.features.length === 0
             ? html`
                 <ha-alert type="info">
                   ${this.hass!.localize(
@@ -108,53 +181,58 @@ export class HuiTileCardFeaturesEditor extends LitElement {
             ${repeat(
               this.features,
               (featureConf) => this._getKey(featureConf),
-              (featureConf, index) => html`
-                <div class="feature">
-                  <div class="handle">
-                    <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                  </div>
-                  <div class="feature-content">
-                    <div>
-                      <span>
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.tile.features.types.${featureConf.type}.label`
-                        )}
-                      </span>
-                      ${this.stateObj &&
-                      !supportsTileFeature(this.stateObj, featureConf.type)
-                        ? html`<span class="secondary">
-                            ${this.hass!.localize(
-                              "ui.panel.lovelace.editor.card.tile.features.not_compatible"
-                            )}
-                          </span>`
-                        : null}
+              (featureConf, index) => {
+                const type = featureConf.type;
+                const supported = this._supportsFeatureType(type);
+                const editable = this._isFeatureTypeEditable(type);
+                return html`
+                  <div class="feature">
+                    <div class="handle">
+                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                     </div>
+                    <div class="feature-content">
+                      <div>
+                        <span> ${this._getFeatureTypeLabel(type)} </span>
+                        ${this.stateObj && !supported
+                          ? html`
+                              <span class="secondary">
+                                ${this.hass!.localize(
+                                  "ui.panel.lovelace.editor.card.tile.features.not_compatible"
+                                )}
+                              </span>
+                            `
+                          : null}
+                      </div>
+                    </div>
+                    ${editable
+                      ? html`
+                          <ha-icon-button
+                            .label=${this.hass!.localize(
+                              `ui.panel.lovelace.editor.card.tile.features.edit`
+                            )}
+                            .path=${mdiPencil}
+                            class="edit-icon"
+                            .index=${index}
+                            @click=${this._editFeature}
+                            .disabled=${!supported}
+                          ></ha-icon-button>
+                        `
+                      : null}
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        `ui.panel.lovelace.editor.card.tile.features.remove`
+                      )}
+                      .path=${mdiDelete}
+                      class="remove-icon"
+                      .index=${index}
+                      @click=${this._removeFeature}
+                    ></ha-icon-button>
                   </div>
-                  ${isTileFeatureEditable(featureConf.type)
-                    ? html`<ha-icon-button
-                        .label=${this.hass!.localize(
-                          `ui.panel.lovelace.editor.card.tile.features.edit`
-                        )}
-                        .path=${mdiPencil}
-                        class="edit-icon"
-                        .index=${index}
-                        @click=${this._editFeature}
-                      ></ha-icon-button>`
-                    : null}
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.tile.features.remove`
-                    )}
-                    .path=${mdiDelete}
-                    class="remove-icon"
-                    .index=${index}
-                    @click=${this._removeFeature}
-                  ></ha-icon-button>
-                </div>
-              `
+                `;
+              }
             )}
           </div>
-          ${this._supportedFeatureTypes.length > 0
+          ${supportedFeaturesType.length > 0
             ? html`
                 <ha-button-menu
                   fixed
@@ -170,16 +248,22 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                   >
                     <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
                   </ha-button>
-                  ${this._supportedFeatureTypes.map(
-                    (featureType) => html`<mwc-list-item .value=${featureType}>
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiWindowShutter}
-                      ></ha-svg-icon>
-                      ${this.hass!.localize(
-                        `ui.panel.lovelace.editor.card.tile.features.types.${featureType}.label`
-                      )}
-                    </mwc-list-item>`
+                  ${types.map(
+                    (type) => html`
+                      <ha-list-item .value=${type}>
+                        ${this._getFeatureTypeLabel(type)}
+                      </ha-list-item>
+                    `
+                  )}
+                  ${types.length > 0 && customTypes.length > 0
+                    ? html`<li divider role="separator"></li>`
+                    : null}
+                  ${customTypes.map(
+                    (type) => html`
+                      <ha-list-item .value=${type}>
+                        ${this._getFeatureTypeLabel(type)}
+                      </ha-list-item>
+                    `
                   )}
                 </ha-button-menu>
               `
@@ -187,10 +271,6 @@ export class HuiTileCardFeaturesEditor extends LitElement {
         </div>
       </ha-expansion-panel>
     `;
-  }
-
-  protected firstUpdated(): void {
-    this._createSortable();
   }
 
   private async _createSortable() {
@@ -228,7 +308,9 @@ export class HuiTileCardFeaturesEditor extends LitElement {
 
     if (index == null) return;
 
-    const value = this._supportedFeatureTypes[index];
+    const value = this._getSupportedFeaturesType()[index];
+    if (!value) return;
+
     const elClass = await getTileFeatureElementClass(value);
 
     let newFeature: LovelaceTileFeatureConfig;
@@ -339,6 +421,10 @@ export class HuiTileCardFeaturesEditor extends LitElement {
         .secondary {
           font-size: 12px;
           color: var(--secondary-text-color);
+        }
+
+        li[divider] {
+          border-bottom-color: var(--divider-color);
         }
       `,
     ];

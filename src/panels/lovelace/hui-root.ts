@@ -29,7 +29,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -78,6 +78,7 @@ import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 
+@customElement("hui-root")
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -1066,5 +1067,3 @@ declare global {
     "hui-root": HUIRoot;
   }
 }
-
-customElements.define("hui-root", HUIRoot);

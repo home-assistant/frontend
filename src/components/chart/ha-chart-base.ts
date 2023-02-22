@@ -233,7 +233,11 @@ export default class HaChartBase extends LitElement {
       {
         id: "afterRenderHook",
         afterRender: (chart) => {
-          this._chartHeight = chart.height;
+          const change = chart.height - (this._chartHeight ?? 0);
+          if (!this._chartHeight || change > 0 || change < -12) {
+            // hysteresis to prevent infinite render loops
+            this._chartHeight = chart.height;
+          }
         },
         legend: {
           ...this.options?.plugins?.legend,

@@ -2,6 +2,7 @@ import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../common/array/ensure-array";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device_registry";
 import {
@@ -52,11 +53,21 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
     ];
   }
 
+  private _hasIntegration(selector: AreaSelector) {
+    return (
+      (selector.area?.entity &&
+        ensureArray(selector.area.entity).some(
+          (filter) => filter.integration
+        )) ||
+      (selector.area?.device &&
+        ensureArray(selector.area.device).some((device) => device.integration))
+    );
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     if (
       changedProperties.has("selector") &&
-      (this.selector.area?.device?.integration ||
-        this.selector.area?.entity?.integration) &&
+      this._hasIntegration(this.selector) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
@@ -66,11 +77,7 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    if (
-      (this.selector.area?.device?.integration ||
-        this.selector.area?.entity?.integration) &&
-      !this._entitySources
-    ) {
+    if (this._hasIntegration(this.selector) && !this._entitySources) {
       return html``;
     }
 
@@ -110,10 +117,8 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
       return true;
     }
 
-    return filterSelectorEntities(
-      this.selector.area.entity,
-      entity,
-      this._entitySources
+    return ensureArray(this.selector.area.entity).some((filter) =>
+      filterSelectorEntities(filter, entity, this._entitySources)
     );
   };
 
@@ -127,10 +132,8 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
         ? this._deviceIntegrationLookup(this._entitySources, this._entities)
         : undefined;
 
-    return filterSelectorDevices(
-      this.selector.area.device,
-      device,
-      deviceIntegrations
+    return ensureArray(this.selector.area.device).some((filter) =>
+      filterSelectorDevices(filter, device, deviceIntegrations)
     );
   };
 }

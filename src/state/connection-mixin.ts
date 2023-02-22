@@ -10,7 +10,11 @@ import {
   subscribeServices,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
+import { polyfillsLoaded } from "../common/translations/localize";
+import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
+import { subscribeDeviceRegistry } from "../data/device_registry";
+import { subscribeEntityRegistry } from "../data/entity_registry";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
@@ -19,15 +23,11 @@ import { FirstWeekday, NumberFormat, TimeFormat } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
+import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
-import { getLocalLanguage } from "../util/common-translation";
 import { HassBaseEl } from "./hass-base-mixin";
-import { polyfillsLoaded } from "../common/translations/localize";
-import { subscribeAreaRegistry } from "../data/area_registry";
-import { subscribeDeviceRegistry } from "../data/device_registry";
-import { subscribeEntityRegistry } from "../data/entity_registry";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -70,6 +70,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         enableShortcuts: true,
         moreInfoEntityId: null,
         hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
+        // eslint-disable-next-line @typescript-eslint/default-param-last
         callService: async (domain, service, serviceData = {}, target) => {
           if (__DEV__) {
             // eslint-disable-next-line no-console

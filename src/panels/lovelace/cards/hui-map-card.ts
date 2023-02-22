@@ -255,6 +255,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
 
+    root.style.height = "auto";
+
     const ratio = parseAspectRatio(this._config.aspect_ratio);
 
     root.style.paddingBottom =
@@ -341,7 +343,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           const p = {} as HaMapPathPoint;
           p.point = [latitude, longitude] as LatLngTuple;
           const t = new Date(entityState.lu * 1000);
-          if (config.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW > 144) {
+          if ((config.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW) > 144) {
             // if showing > 6 days in the history trail, show the full
             // date and time
             p.tooltip = formatDateTime(t, this.hass.locale);
@@ -368,6 +370,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         overflow: hidden;
         width: 100%;
         height: 100%;
+        display: flex;
+        flex-direction: column;
       }
 
       ha-map {

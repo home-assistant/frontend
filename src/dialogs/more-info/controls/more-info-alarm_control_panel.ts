@@ -1,18 +1,19 @@
 import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-textfield";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { HaTextField } from "../../../components/ha-textfield";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
+  AlarmControlPanelEntityFeature,
 } from "../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../types";
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
-const ARM_ACTIONS = ["arm_home", "arm_away"];
 const DISARM_ACTIONS = ["disarm"];
 
 @customElement("more-info-alarm_control_panel")
@@ -21,7 +22,50 @@ export class MoreInfoAlarmControlPanel extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
+  @state() private _armActions: string[] = [];
+
   @query("#alarmCode") private _input?: HaTextField;
+
+  public willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+
+    if (!this.stateObj || !changedProps.has("stateObj")) {
+      return;
+    }
+
+    this._armActions = [];
+    if (
+      supportsFeature(this.stateObj, AlarmControlPanelEntityFeature.ARM_HOME)
+    ) {
+      this._armActions.push("arm_home");
+    }
+    if (
+      supportsFeature(this.stateObj, AlarmControlPanelEntityFeature.ARM_AWAY)
+    ) {
+      this._armActions.push("arm_away");
+    }
+    if (
+      supportsFeature(this.stateObj, AlarmControlPanelEntityFeature.ARM_NIGHT)
+    ) {
+      this._armActions.push("arm_night");
+    }
+    if (
+      supportsFeature(
+        this.stateObj,
+        AlarmControlPanelEntityFeature.ARM_CUSTOM_BYPASS
+      )
+    ) {
+      this._armActions.push("arm_custom_bypass");
+    }
+    if (
+      supportsFeature(
+        this.stateObj,
+        AlarmControlPanelEntityFeature.ARM_VACATION
+      )
+    ) {
+      this._armActions.push("arm_vacation");
+    }
+  }
 
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
@@ -72,7 +116,7 @@ export class MoreInfoAlarmControlPanel extends LitElement {
           `}
       <div class="actions">
         ${(this.stateObj.state === "disarmed"
-          ? ARM_ACTIONS
+          ? this._armActions
           : DISARM_ACTIONS
         ).map(
           (stateAction) => html`

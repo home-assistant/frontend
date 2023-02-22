@@ -9,11 +9,9 @@ import {
   state,
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import "../ha-icon";
-import "../ha-svg-icon";
 
-@customElement("ha-tile-button")
-export class HaTileButton extends LitElement {
+@customElement("ha-control-button")
+export class HaControlButton extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
 
   @property() public label?: string;
@@ -28,7 +26,7 @@ export class HaTileButton extends LitElement {
         type="button"
         class="button"
         aria-label=${ifDefined(this.label)}
-        .title=${this.label}
+        title=${ifDefined(this.label)}
         .disabled=${Boolean(this.disabled)}
         @focus=${this.handleRippleFocus}
         @blur=${this.handleRippleBlur}
@@ -81,9 +79,12 @@ export class HaTileButton extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        --tile-button-icon-color: var(--primary-text-color);
-        --tile-button-background-color: var(--disabled-color);
-        --tile-button-background-opacity: 0.2;
+        display: block;
+        --control-button-icon-color: var(--primary-text-color);
+        --control-button-background-color: var(--disabled-color);
+        --control-button-background-opacity: 0.2;
+        --control-button-border-radius: 10px;
+        --mdc-icon-size: 20px;
         width: 40px;
         height: 40px;
         -webkit-tap-highlight-color: transparent;
@@ -97,7 +98,7 @@ export class HaTileButton extends LitElement {
         justify-content: center;
         width: 100%;
         height: 100%;
-        border-radius: 10px;
+        border-radius: var(--control-button-border-radius);
         border: none;
         margin: 0;
         padding: 0;
@@ -106,7 +107,8 @@ export class HaTileButton extends LitElement {
         outline: none;
         overflow: hidden;
         background: none;
-        --mdc-ripple-color: var(--tile-button-background-color);
+        z-index: 1;
+        --mdc-ripple-color: var(--control-button-background-color);
       }
       .button::before {
         content: "";
@@ -115,22 +117,21 @@ export class HaTileButton extends LitElement {
         left: 0;
         height: 100%;
         width: 100%;
-        background-color: var(--tile-button-background-color);
+        background-color: var(--control-button-background-color);
         transition: background-color 180ms ease-in-out,
           opacity 180ms ease-in-out;
-        opacity: var(--tile-button-background-opacity);
+        opacity: var(--control-button-background-opacity);
       }
       .button ::slotted(*) {
-        --mdc-icon-size: 20px;
         transition: color 180ms ease-in-out;
-        color: var(--tile-button-icon-color);
+        color: var(--control-button-icon-color);
         pointer-events: none;
       }
       .button:disabled {
         cursor: not-allowed;
-        --tile-button-background-color: var(--disabled-color);
-        --tile-button-icon-color: var(--disabled-text-color);
-        --tile-button-background-opacity: 0.2;
+        --control-button-background-color: var(--disabled-color);
+        --control-button-icon-color: var(--disabled-text-color);
+        --control-button-background-opacity: 0.2;
       }
     `;
   }
@@ -138,6 +139,6 @@ export class HaTileButton extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-tile-button": HaTileButton;
+    "ha-control-button": HaControlButton;
   }
 }

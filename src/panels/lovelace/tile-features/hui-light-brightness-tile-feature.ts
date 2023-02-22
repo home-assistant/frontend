@@ -1,12 +1,19 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/tile/ha-tile-slider";
 import { UNAVAILABLE } from "../../../data/entity";
+import { lightSupportsBrightness } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { LightBrightnessTileFeatureConfig } from "./types";
+
+export const supportsLightBrightnessTileFeature = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "light" && lightSupportsBrightness(stateObj);
+};
 
 @customElement("hui-light-brightness-tile-feature")
 class HuiLightBrightnessTileFeature
@@ -32,9 +39,14 @@ class HuiLightBrightnessTileFeature
     this._config = config;
   }
 
-  protected render(): TemplateResult {
-    if (!this._config || !this.hass || !this.stateObj) {
-      return html``;
+  protected render(): TemplateResult | null {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this.stateObj ||
+      !supportsLightBrightnessTileFeature(this.stateObj)
+    ) {
+      return null;
     }
 
     const position =

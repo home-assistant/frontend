@@ -29,7 +29,6 @@ export default class HaNumericStateCondition extends LitElement {
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      entityId,
       inputAboveIsEntity?: boolean,
       inputBelowIsEntity?: boolean
     ) =>
@@ -39,7 +38,6 @@ export default class HaNumericStateCondition extends LitElement {
           name: "attribute",
           selector: {
             attribute: {
-              entity_id: entityId,
               hide_attributes: [
                 "access_token",
                 "auto_update",
@@ -105,6 +103,9 @@ export default class HaNumericStateCondition extends LitElement {
                 "xy_color",
               ],
             },
+          },
+          context: {
+            filter_entity: "entity_id",
           },
         },
         {
@@ -212,7 +213,6 @@ export default class HaNumericStateCondition extends LitElement {
 
     const schema = this._schema(
       this.hass.localize,
-      this.condition.entity_id,
       inputAboveIsEntity,
       inputBelowIsEntity
     );

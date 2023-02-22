@@ -67,7 +67,7 @@ module.exports.babelOptions = ({ latestBuild }) => ({
       "@babel/preset-env",
       {
         useBuiltIns: "entry",
-        corejs: { version: "3.27", proposals: true },
+        corejs: { version: "3.28", proposals: true },
         bugfixes: true,
       },
     ],

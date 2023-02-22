@@ -126,8 +126,7 @@ describe("formatNumber", () => {
       getNumberFormatOptions({
         state: "3.0",
         attributes: { step: 0.5 },
-      } as unknown as HassEntity),
-      undefined
+      } as unknown as HassEntity)
     );
   });
 

@@ -1,4 +1,4 @@
-import "hammerjs";
+import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
 import {
   css,
   CSSResultGroup,
@@ -42,9 +42,9 @@ const getPercentageFromEvent = (e: HammerInput, vertical: boolean) => {
   return Math.max(Math.min(1, (x - offset) / total), 0);
 };
 
-@customElement("ha-bar-slider")
-export class HaBarSlider extends LitElement {
-  @property({ type: Boolean })
+@customElement("ha-control-slider")
+export class HaControlSlider extends LitElement {
+  @property({ type: Boolean, reflect: true })
   public disabled = false;
 
   @property()
@@ -131,18 +131,18 @@ export class HaBarSlider extends LitElement {
 
   setupListeners() {
     if (this.slider && !this._mc) {
-      this._mc = new Hammer.Manager(this.slider, {
+      this._mc = new Manager(this.slider, {
         touchAction: this.vertical ? "pan-x" : "pan-y",
       });
       this._mc.add(
-        new Hammer.Pan({
+        new Pan({
           threshold: 10,
-          direction: Hammer.DIRECTION_ALL,
+          direction: DIRECTION_ALL,
           enable: true,
         })
       );
 
-      this._mc.add(new Hammer.Tap({ event: "singletap" }));
+      this._mc.add(new Tap({ event: "singletap" }));
 
       let savedValue;
       this._mc.on("panstart", () => {
@@ -245,14 +245,16 @@ export class HaBarSlider extends LitElement {
       >
         <div class="slider-track-background"></div>
         ${this.mode === "cursor"
-          ? html`
-              <div
-                class=${classMap({
-                  "slider-track-cursor": true,
-                  vertical: this.vertical,
-                })}
-              ></div>
-            `
+          ? this.value != null
+            ? html`
+                <div
+                  class=${classMap({
+                    "slider-track-cursor": true,
+                    vertical: this.vertical,
+                  })}
+                ></div>
+              `
+            : null
           : html`
               <div
                 class=${classMap({
@@ -271,28 +273,29 @@ export class HaBarSlider extends LitElement {
     return css`
       :host {
         display: block;
-        --slider-bar-color: var(--primary-color);
-        --slider-bar-background: var(--disabled-color);
-        --slider-bar-background-opacity: 0.2;
-        --slider-bar-thickness: 40px;
-        --slider-bar-border-radius: 10px;
-        height: var(--slider-bar-thickness);
+        --control-slider-color: var(--primary-color);
+        --control-slider-background: var(--disabled-color);
+        --control-slider-background-opacity: 0.2;
+        --control-slider-thickness: 40px;
+        --control-slider-border-radius: 10px;
+        height: var(--control-slider-thickness);
         width: 100%;
-        border-radius: var(--slider-bar-border-radius);
+        border-radius: var(--control-slider-border-radius);
         outline: none;
+        transition: box-shadow 180ms ease-in-out;
       }
       :host(:focus-visible) {
-        box-shadow: 0 0 0 2px var(--slider-bar-color);
+        box-shadow: 0 0 0 2px var(--control-slider-color);
       }
       :host([vertical]) {
-        width: var(--slider-bar-thickness);
+        width: var(--control-slider-thickness);
         height: 100%;
       }
       .slider {
         position: relative;
         height: 100%;
         width: 100%;
-        border-radius: var(--slider-bar-border-radius);
+        border-radius: var(--control-slider-border-radius);
         transform: translateZ(0);
         overflow: hidden;
         cursor: pointer;
@@ -306,19 +309,20 @@ export class HaBarSlider extends LitElement {
         left: 0;
         height: 100%;
         width: 100%;
-        background: var(--slider-bar-background);
-        opacity: var(--slider-bar-background-opacity);
+        background: var(--control-slider-background);
+        opacity: var(--control-slider-background-opacity);
       }
       .slider .slider-track-bar {
-        --border-radius: var(--slider-bar-border-radius);
+        --border-radius: var(--control-slider-border-radius);
         --handle-size: 4px;
-        --handle-margin: calc(var(--slider-bar-thickness) / 8);
+        --handle-margin: calc(var(--control-slider-thickness) / 8);
         --slider-size: 100%;
         position: absolute;
         height: 100%;
         width: 100%;
-        background-color: var(--slider-bar-color);
-        transition: transform 180ms ease-in-out;
+        background-color: var(--control-slider-color);
+        transition: transform 180ms ease-in-out,
+          background-color 180ms ease-in-out;
       }
       .slider .slider-track-bar.show-handle {
         --slider-size: calc(
@@ -412,7 +416,7 @@ export class HaBarSlider extends LitElement {
       }
 
       .slider .slider-track-cursor {
-        --cursor-size: calc(var(--slider-bar-thickness) / 4);
+        --cursor-size: calc(var(--control-slider-thickness) / 4);
         --handle-size: 4px;
         position: absolute;
         background-color: white;
@@ -445,12 +449,15 @@ export class HaBarSlider extends LitElement {
       :host([pressed]) .slider-track-cursor {
         transition: none;
       }
+      :host(:disabled) .slider {
+        cursor: not-allowed;
+      }
     `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-bar-slider": HaBarSlider;
+    "ha-control-slider": HaControlSlider;
   }
 }

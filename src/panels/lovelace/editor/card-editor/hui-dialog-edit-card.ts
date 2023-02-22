@@ -315,7 +315,9 @@ export class HuiDialogEditCard
 
   private async _confirmCancel() {
     // Make sure the open state of this dialog is handled before the open state of confirm dialog
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
     const confirm = await showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.lovelace.editor.edit_card.unsaved_changes"

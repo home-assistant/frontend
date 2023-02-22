@@ -12,6 +12,7 @@ import {
   array,
   assert,
   assign,
+  boolean,
   literal,
   number,
   object,
@@ -72,6 +73,7 @@ const cardConfigStruct = assign(
     chart_type: optional(union([literal("bar"), literal("line")])),
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
     unit: optional(string()),
+    hide_legend: optional(boolean()),
   })
 );
 
@@ -204,6 +206,11 @@ export class HuiStatisticsGraphCardEditor
                 ["bar", "Bar"],
               ],
             },
+            {
+              name: "hide_legend",
+              required: false,
+              selector: { boolean: {} },
+            },
           ],
         },
       ];
@@ -334,6 +341,7 @@ export class HuiStatisticsGraphCardEditor
       case "stat_types":
       case "period":
       case "unit":
+      case "hide_legend":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`
         );

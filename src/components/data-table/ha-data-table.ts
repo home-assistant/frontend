@@ -1,3 +1,4 @@
+import "@lit-labs/virtualizer";
 import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -21,16 +22,15 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../search-input";
 import { debounce } from "../../common/util/debounce";
 import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
+import "../search-input";
 import { filterData, sortData } from "./sort-filter";
-import { HomeAssistant } from "../../types";
-import "@lit-labs/virtualizer";
 
 declare global {
   // for fire event
@@ -461,7 +461,9 @@ export class HaDataTable extends LitElement {
     const elapsed = curTime - startTime;
 
     if (elapsed < 100) {
-      await new Promise((resolve) => setTimeout(resolve, 100 - elapsed));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100 - elapsed);
+      });
     }
     if (this.curRequest !== curRequest) {
       return;

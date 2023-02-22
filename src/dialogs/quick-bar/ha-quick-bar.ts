@@ -242,7 +242,9 @@ export class QuickBar extends LitElement {
                   : ""}
               </mwc-list>
             `}
-        ${this._hint ? html`<ha-tip>${this._hint}</ha-tip>` : ""}
+        ${this._hint
+          ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
+          : ""}
       </ha-dialog>
     `;
   }
@@ -544,6 +546,18 @@ export class QuickBar extends LitElement {
       ),
       action: () =>
         this.hass.callService("homeassistant", "reload_core_config"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
+    });
+
+    // Add "homeassistant.reload_all"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.all"
+      ),
+      action: () => this.hass.callService("homeassistant", "reload_all"),
       iconPath: mdiReload,
       categoryText: this.hass.localize(
         "ui.dialogs.quick-bar.commands.types.reload"
