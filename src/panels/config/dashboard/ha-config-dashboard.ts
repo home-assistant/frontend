@@ -1,6 +1,11 @@
 import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
+import {
+  mdiCloudLock,
+  mdiDotsVertical,
+  mdiMagnify,
+  mdiPower,
+  mdiUpdate,
+} from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -19,6 +24,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-list-item";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
@@ -34,6 +40,7 @@ import {
   UpdateEntity,
 } from "../../../data/update";
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
+import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/ha-app-layout";
 import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -190,7 +197,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             <ha-button-menu
               corner="BOTTOM_START"
               @action=${this._handleMenuAction}
-              activatable
             >
               <ha-icon-button
                 slot="trigger"
@@ -198,9 +204,17 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
 
-              <mwc-list-item>
+              <ha-list-item graphic="icon">
                 ${this.hass.localize("ui.panel.config.updates.check_updates")}
-              </mwc-list-item>
+                <ha-svg-icon slot="graphic" .path=${mdiUpdate}></ha-svg-icon>
+              </ha-list-item>
+
+              <ha-list-item graphic="icon">
+                ${this.hass.localize(
+                  "ui.panel.config.system_dashboard.restart_homeassistant"
+                )}
+                <ha-svg-icon slot="graphic" .path=${mdiPower}></ha-svg-icon>
+              </ha-list-item>
             </ha-button-menu>
           </app-toolbar>
         </app-header>
@@ -311,6 +325,9 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     switch (ev.detail.index) {
       case 0:
         checkForEntityUpdates(this, this.hass);
+        break;
+      case 1:
+        showRestartDialog(this);
         break;
     }
   }
