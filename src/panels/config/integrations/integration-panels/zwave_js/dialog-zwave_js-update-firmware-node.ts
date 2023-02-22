@@ -38,6 +38,12 @@ import {
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { HaFormIntegerSchema } from "../../../../../components/ha-form/types";
 
+const firmwareTargetSchema: HaFormIntegerSchema = {
+  name: "firmware_target",
+  type: "integer",
+  valueMin: 0,
+};
+
 @customElement("dialog-zwave_js-update-firmware-node")
 class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -98,12 +104,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       return html``;
     }
 
-    const schema: HaFormIntegerSchema = {
-      name: "firmware_target",
-      type: "integer",
-      valueMin: 0,
-    };
-
     const beginFirmwareUpdateHTML = html`<ha-file-upload
         .hass=${this.hass}
         .uploading=${this._uploading}
@@ -122,7 +122,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       <ha-form
         .hass=${this.hass}
         .data=${{ firmware_target: this._firmwareTarget }}
-        .schema=${[schema]}
+        .schema=${[firmwareTargetSchema]}
         @value-changed=${this._firmwareTargetChanged}
       ></ha-form>
       <mwc-button
