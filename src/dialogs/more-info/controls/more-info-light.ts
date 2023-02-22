@@ -91,104 +91,99 @@ class MoreInfoLight extends LitElement {
           .stateObj=${this.stateObj}
           .stateOverride=${stateOverride}
         ></ha-more-info-state-header>
-        </ha-more-info-light-toggle>
-        ${
-          supportsBrightness
-            ? html`
-                <ha-more-info-light-brightness
-                  .stateObj=${this.stateObj}
-                  .hass=${this.hass}
-                  @slider-moved=${this._brightnessChanged}
-                >
-                </ha-more-info-light-brightness>
-              `
-            : html`
-                <ha-more-info-toggle
-                  .stateObj=${this.stateObj}
-                  .hass=${this.hass}
-                  .iconPathOn=${mdiLightbulb}
-                  .iconPathOff=${mdiLightbulbOff}
-                ></ha-more-info-toggle>
-              `
-        }
-        ${
-          supportsColorTemp ||
-          supportsColor ||
-          supportsEffects ||
-          supportsBrightness
-            ? html`
-                <div class="buttons">
-                  ${supportsBrightness
-                    ? html`
+        ${supportsBrightness
+          ? html`
+              <ha-more-info-light-brightness
+                .stateObj=${this.stateObj}
+                .hass=${this.hass}
+                @slider-moved=${this._brightnessChanged}
+              >
+              </ha-more-info-light-brightness>
+            `
+          : html`
+              <ha-more-info-toggle
+                .stateObj=${this.stateObj}
+                .hass=${this.hass}
+                .iconPathOn=${mdiLightbulb}
+                .iconPathOff=${mdiLightbulbOff}
+              ></ha-more-info-toggle>
+            `}
+        ${supportsColorTemp ||
+        supportsColor ||
+        supportsEffects ||
+        supportsBrightness
+          ? html`
+              <div class="buttons">
+                ${supportsBrightness
+                  ? html`
+                      <md-outlined-icon-button
+                        .disabled=${this.stateObj.state === UNAVAILABLE}
+                        .title=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.toggle"
+                        )}
+                        .ariaLabel=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.toggle"
+                        )}
+                        @click=${this._toggle}
+                      >
+                        <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                      </md-outlined-icon-button>
+                    `
+                  : null}
+                ${supportsColorTemp || supportsColor
+                  ? html`
+                      <md-outlined-icon-button
+                        .disabled=${this.stateObj.state === UNAVAILABLE}
+                        .title=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.change_color"
+                        )}
+                        .ariaLabel=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.change_color"
+                        )}
+                        @click=${this._showLightColorPickerView}
+                      >
+                        <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
+                      </md-outlined-icon-button>
+                    `
+                  : null}
+                ${supportsEffects
+                  ? html`
+                      <ha-button-menu
+                        corner="BOTTOM_START"
+                        @action=${this._handleEffectButton}
+                        @closed=${stopPropagation}
+                        fixed
+                        .disabled=${this.stateObj.state === UNAVAILABLE}
+                      >
                         <md-outlined-icon-button
                           .disabled=${this.stateObj.state === UNAVAILABLE}
+                          slot="trigger"
                           .title=${this.hass.localize(
-                            "ui.dialogs.more_info_control.light.toggle"
+                            "ui.dialogs.more_info_control.light.select_effect"
                           )}
                           .ariaLabel=${this.hass.localize(
-                            "ui.dialogs.more_info_control.light.toggle"
+                            "ui.dialogs.more_info_control.light.select_effect"
                           )}
-                          @click=${this._toggle}
                         >
-                          <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                          <ha-svg-icon .path=${mdiCreation}></ha-svg-icon>
                         </md-outlined-icon-button>
-                      `
-                    : null}
-                  ${supportsColorTemp || supportsColor
-                    ? html`
-                        <md-outlined-icon-button
-                          .disabled=${this.stateObj.state === UNAVAILABLE}
-                          .title=${this.hass.localize(
-                            "ui.dialogs.more_info_control.light.change_color"
-                          )}
-                          .ariaLabel=${this.hass.localize(
-                            "ui.dialogs.more_info_control.light.change_color"
-                          )}
-                          @click=${this._showLightColorPickerView}
-                        >
-                          <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
-                        </md-outlined-icon-button>
-                      `
-                    : null}
-                  ${supportsEffects
-                    ? html`
-                        <ha-button-menu
-                          corner="BOTTOM_START"
-                          @action=${this._handleEffectButton}
-                          @closed=${stopPropagation}
-                          fixed
-                          .disabled=${this.stateObj.state === UNAVAILABLE}
-                        >
-                          <md-outlined-icon-button
-                            .disabled=${this.stateObj.state === UNAVAILABLE}
-                            slot="trigger"
-                            .title=${this.hass.localize(
-                              "ui.dialogs.more_info_control.light.select_effect"
-                            )}
-                            .ariaLabel=${this.hass.localize(
-                              "ui.dialogs.more_info_control.light.select_effect"
-                            )}
-                          >
-                            <ha-svg-icon .path=${mdiCreation}></ha-svg-icon>
-                          </md-outlined-icon-button>
-                          ${this.stateObj.attributes.effect_list!.map(
-                            (effect: string) => html`
-                              <mwc-list-item
-                                .value=${effect}
-                                .activated=${this.stateObj!.attributes
-                                  .effect === effect}
-                              >
-                                ${effect}
-                              </mwc-list-item>
-                            `
-                          )}
-                        </ha-button-menu>
-                      `
-                    : null}
-                </div>
-              `
-            : null
-        }
+                        ${this.stateObj.attributes.effect_list!.map(
+                          (effect: string) => html`
+                            <mwc-list-item
+                              .value=${effect}
+                              .activated=${this.stateObj!.attributes.effect ===
+                              effect}
+                            >
+                              ${effect}
+                            </mwc-list-item>
+                          `
+                        )}
+                      </ha-button-menu>
+                    `
+                  : null}
+              </div>
+            `
+          : null}
         <ha-attributes
           .hass=${this.hass}
           .stateObj=${this.stateObj}

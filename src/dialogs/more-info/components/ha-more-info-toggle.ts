@@ -145,12 +145,12 @@ export class HaMoreInfoToggle extends LitElement {
       ha-control-button {
         flex: 1;
         width: 100%;
-        --button-bar-border-radius: 18px;
+        --control-button-border-radius: 18px;
       }
       ha-control-button.active {
-        --button-bar-icon-color: white;
-        --button-bar-background-color: var(--color);
-        --button-bar-background-opacity: 1;
+        --control-button-icon-color: white;
+        --control-button-background-color: var(--color);
+        --control-button-background-opacity: 1;
       }
       ha-control-button:not(:last-child) {
         margin-bottom: 6px;
