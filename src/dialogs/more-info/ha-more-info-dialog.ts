@@ -99,10 +99,14 @@ export class MoreInfoDialog extends LitElement {
     if (!this._entityId) {
       return;
     }
-    this._entry = await getExtendedEntityRegistryEntry(
-      this.hass,
-      this._entityId
-    );
+    try {
+      this._entry = await getExtendedEntityRegistryEntry(
+        this.hass,
+        this._entityId
+      );
+    } catch (e) {
+      this._entry = null;
+    }
   }
 
   public closeDialog() {
