@@ -3095,13 +3095,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/web@npm:=1.0.0-pre.2":
-  version: 1.0.0-pre.2
-  resolution: "@material/web@npm:1.0.0-pre.2"
+"@material/web@npm:=1.0.0-pre.3":
+  version: 1.0.0-pre.3
+  resolution: "@material/web@npm:1.0.0-pre.3"
   dependencies:
     lit: ^2.3.0
     tslib: ^2.4.0
-  checksum: 7c6733fae5fb67c43d7c49fab70f7893defd95e4fcbe996d06057882e47c0121760546cc5d1c407a9dbd11c5f02f3f278016c52922e6a9e97db0c0b52d7133f2
+  checksum: d6286992cb0d63b094e638a3db484398195608b422bb2cb209102eaf87d220ed24bbe85d29933730054fd3cf99d318dbb3645ae9a2e271fe1a3c2833d829bf4c
   languageName: node
   linkType: hard
 
@@ -9562,7 +9562,7 @@ fsevents@~2.3.2:
     "@material/mwc-textfield": ^0.27.0
     "@material/mwc-top-app-bar-fixed": ^0.27.0
     "@material/top-app-bar": =14.0.0-canary.53b3cad2f.0
-    "@material/web": =1.0.0-pre.2
+    "@material/web": =1.0.0-pre.3
     "@mdi/js": 7.1.96
     "@mdi/svg": 7.1.96
     "@octokit/auth-oauth-device": ^4.0.4
