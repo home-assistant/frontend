@@ -87,29 +87,31 @@ export class HaControlSwitch extends LitElement {
 
       this._mc.add(new Tap({ event: "singletap" }));
 
-      this._mc.on("swipeup", () => {
-        if (this.disabled) return;
-        this.checked = !!this.reversed;
-        fireEvent(this, "change");
-      });
+      if (this.vertical) {
+        this._mc.on("swipeup", () => {
+          if (this.disabled) return;
+          this.checked = !!this.reversed;
+          fireEvent(this, "change");
+        });
 
-      this._mc.on("swipedown", () => {
-        if (this.disabled) return;
-        this.checked = !this.reversed;
-        fireEvent(this, "change");
-      });
+        this._mc.on("swipedown", () => {
+          if (this.disabled) return;
+          this.checked = !this.reversed;
+          fireEvent(this, "change");
+        });
+      } else {
+        this._mc.on("swiperight", () => {
+          if (this.disabled) return;
+          this.checked = !this.reversed;
+          fireEvent(this, "change");
+        });
 
-      this._mc.on("swiperight", () => {
-        if (this.disabled) return;
-        this.checked = !this.reversed;
-        fireEvent(this, "change");
-      });
-
-      this._mc.on("swipeleft", () => {
-        if (this.disabled) return;
-        this.checked = !!this.reversed;
-        fireEvent(this, "change");
-      });
+        this._mc.on("swipeleft", () => {
+          if (this.disabled) return;
+          this.checked = !!this.reversed;
+          fireEvent(this, "change");
+        });
+      }
 
       this._mc.on("singletap", () => {
         if (this.disabled) return;
