@@ -3095,13 +3095,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/web@npm:=1.0.0-pre.2":
-  version: 1.0.0-pre.2
-  resolution: "@material/web@npm:1.0.0-pre.2"
+"@material/web@npm:=1.0.0-pre.3":
+  version: 1.0.0-pre.3
+  resolution: "@material/web@npm:1.0.0-pre.3"
   dependencies:
     lit: ^2.3.0
     tslib: ^2.4.0
-  checksum: 7c6733fae5fb67c43d7c49fab70f7893defd95e4fcbe996d06057882e47c0121760546cc5d1c407a9dbd11c5f02f3f278016c52922e6a9e97db0c0b52d7133f2
+  checksum: d6286992cb0d63b094e638a3db484398195608b422bb2cb209102eaf87d220ed24bbe85d29933730054fd3cf99d318dbb3645ae9a2e271fe1a3c2833d829bf4c
   languageName: node
   linkType: hard
 
@@ -9562,7 +9562,7 @@ fsevents@~2.3.2:
     "@material/mwc-textfield": ^0.27.0
     "@material/mwc-top-app-bar-fixed": ^0.27.0
     "@material/top-app-bar": =14.0.0-canary.53b3cad2f.0
-    "@material/web": =1.0.0-pre.2
+    "@material/web": =1.0.0-pre.3
     "@mdi/js": 7.1.96
     "@mdi/svg": 7.1.96
     "@octokit/auth-oauth-device": ^4.0.4
@@ -9663,7 +9663,7 @@ fsevents@~2.3.2:
     lit: ^2.6.1
     lit-analyzer: ^1.2.1
     lodash.template: ^4.5.0
-    magic-string: ^0.29.0
+    magic-string: ^0.30.0
     map-stream: ^0.0.7
     marked: ^4.2.12
     memoize-one: ^6.0.0
@@ -11590,12 +11590,12 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.29.0":
-  version: 0.29.0
-  resolution: "magic-string@npm:0.29.0"
+"magic-string@npm:^0.30.0":
+  version: 0.30.0
+  resolution: "magic-string@npm:0.30.0"
   dependencies:
     "@jridgewell/sourcemap-codec": ^1.4.13
-  checksum: 19e5398fcfc44804917127c72ad622c68a19a0a10cbdb8d4f9f9417584a087fe9e117140bfb2463d86743cf1ed9cf4182ae0b0ad1a7536f7fdda257ee4449ffb
+  checksum: 7bdf22e27334d8a393858a16f5f840af63a7c05848c000fd714da5aa5eefa09a1bc01d8469362f25cc5c4a14ec01b46557b7fff8751365522acddf21e57c488d
   languageName: node
   linkType: hard
 
