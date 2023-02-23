@@ -26,12 +26,9 @@ export interface ThreadRouterDiscoveryEvent {
 }
 
 class DiscoveryStream {
-  hass: HomeAssistant;
-
   routers: { [key: string]: ThreadRouter };
 
-  constructor(hass: HomeAssistant) {
-    this.hass = hass;
+  constructor() {
     this.routers = {};
   }
 
@@ -49,7 +46,7 @@ export const subscribeDiscoverThreadRouters = (
   hass: HomeAssistant,
   callbackFunction: (routers: ThreadRouter[]) => void
 ) => {
-  const stream = new DiscoveryStream(hass);
+  const stream = new DiscoveryStream();
   return hass.connection.subscribeMessage<ThreadRouterDiscoveryEvent>(
     (message) => callbackFunction(stream.processEvent(message)),
     {
