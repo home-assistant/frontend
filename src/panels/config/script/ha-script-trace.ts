@@ -39,6 +39,7 @@ import { HomeAssistant, Route } from "../../../types";
 import "../../../layouts/hass-subpage";
 import "../../../components/ha-button-menu";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -53,6 +54,8 @@ export class HaScriptTrace extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 
   @state() private _entityId?: string;
 
@@ -318,7 +321,7 @@ export class HaScriptTrace extends LitElement {
     const params = new URLSearchParams(location.search);
     this._loadTraces(params.get("run_id") || undefined);
 
-    this._entityId = Object.values(this.hass.entities).find(
+    this._entityId = this.entityRegistry.find(
       (entry) => entry.unique_id === this.scriptId
     )?.entity_id;
   }
@@ -335,7 +338,7 @@ export class HaScriptTrace extends LitElement {
       if (this.scriptId) {
         this._loadTraces();
 
-        this._entityId = Object.values(this.hass.entities).find(
+        this._entityId = this.entityRegistry.find(
           (entry) => entry.unique_id === this.scriptId
         )?.entity_id;
       }

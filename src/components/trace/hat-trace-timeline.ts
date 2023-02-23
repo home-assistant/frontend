@@ -6,6 +6,7 @@ import {
   mdiProgressWrench,
   mdiRecordCircleOutline,
 } from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -14,12 +15,16 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { toggleAttribute } from "../../common/dom/toggle_attribute";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../data/entity_registry";
 import { LogbookEntry } from "../../data/logbook";
 import {
   ChooseAction,
@@ -193,6 +198,7 @@ class ActionRenderer {
 
   constructor(
     private hass: HomeAssistant,
+    private entityReg: EntityRegistryEntry[],
     private entries: TemplateResult[],
     private trace: AutomationTraceExtended,
     private logbookRenderer: LogbookRenderer,
@@ -298,7 +304,7 @@ class ActionRenderer {
 
     this._renderEntry(
       path,
-      describeAction(this.hass, data, actionType),
+      describeAction(this.hass, this.entityReg, data, actionType),
       undefined,
       data.enabled === false
     );
@@ -441,7 +447,9 @@ class ActionRenderer {
     ) as RepeatAction;
     const disabled = repeatConfig.enabled === false;
 
-    const name = repeatConfig.alias || describeAction(this.hass, repeatConfig);
+    const name =
+      repeatConfig.alias ||
+      describeAction(this.hass, this.entityReg, repeatConfig);
 
     this._renderEntry(repeatPath, name, undefined, disabled);
 
@@ -577,6 +585,16 @@ export class HaAutomationTracer extends LitElement {
 
   @property({ type: Boolean }) public allowPick = false;
 
+  @state() private _entityReg: EntityRegistryEntry[] = [];
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entityReg = entities;
+      }),
+    ];
+  }
+
   protected render(): TemplateResult {
     if (!this.trace) {
       return html``;
@@ -592,6 +610,7 @@ export class HaAutomationTracer extends LitElement {
     );
     const actionRenderer = new ActionRenderer(
       this.hass,
+      this._entityReg,
       entries,
       this.trace,
       logbookRenderer,

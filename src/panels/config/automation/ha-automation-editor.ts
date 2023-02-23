@@ -49,6 +49,7 @@ import {
   showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
+import { fetchEntityRegistry } from "../../../data/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -479,7 +480,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       this._readOnly = false;
       this._config = this._normalizeConfig(config);
     } catch (err: any) {
-      const entity = Object.values(this.hass.entities).find(
+      const entityRegistry = await fetchEntityRegistry(this.hass.connection);
+      const entity = entityRegistry.find(
         (ent) =>
           ent.platform === "automation" && ent.unique_id === this.automationId
       );

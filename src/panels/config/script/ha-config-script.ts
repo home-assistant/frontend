@@ -1,14 +1,19 @@
-import { HassEntities } from "home-assistant-js-websocket";
+import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../data/entity_registry";
 import { ScriptEntity } from "../../../data/script";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import "./ha-script-editor";
 import "./ha-script-picker";
@@ -21,7 +26,7 @@ const equal = (a: ScriptEntity[], b: ScriptEntity[]): boolean => {
 };
 
 @customElement("ha-config-script")
-class HaConfigScript extends HassRouterPage {
+class HaConfigScript extends SubscribeMixin(HassRouterPage) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
@@ -31,6 +36,16 @@ class HaConfigScript extends HassRouterPage {
   @property() public showAdvanced!: boolean;
 
   @property() public scripts: ScriptEntity[] = [];
+
+  @state() private _entityReg: EntityRegistryEntry[] = [];
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entityReg = entities;
+      }),
+    ];
+  }
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -78,6 +93,7 @@ class HaConfigScript extends HassRouterPage {
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
     pageEl.showAdvanced = this.showAdvanced;
+    pageEl.entityRegistry = this._entityReg;
 
     if (this.hass) {
       if (!pageEl.scripts || !changedProps) {
