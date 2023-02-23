@@ -329,10 +329,14 @@ export class MoreInfoDialog extends LitElement {
           @show-child-view=${this._showChildView}
         >
           ${this._childView
-            ? dynamicElement(this._childView.viewTag, {
-                hass: this.hass,
-                params: this._childView.viewParams,
-              })
+            ? html`
+                <div class="child-view">
+                  ${dynamicElement(this._childView.viewTag, {
+                    hass: this.hass,
+                    params: this._childView.viewParams,
+                  })}
+                </div>
+              `
             : cache(
                 this._currView === "info"
                   ? html`
@@ -379,11 +383,7 @@ export class MoreInfoDialog extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_currView")) {
-      this.setAttribute("view", this._currView);
       this._childView = undefined;
-    }
-    if (changedProps.has("_childView")) {
-      this.toggleAttribute("has-child-view", !!this._childView);
     }
   }
 
@@ -424,6 +424,12 @@ export class MoreInfoDialog extends LitElement {
         ha-more-info-history-and-logbook {
           padding: 24px;
           display: block;
+        }
+
+        @media all and (max-width: 450px) {
+          .child-view > * {
+            min-height: calc(100vh - 56px);
+          }
         }
 
         .main-title {
