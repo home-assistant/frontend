@@ -45,6 +45,7 @@ export class HaDialog extends DialogBase {
   }
 
   disconnectedCallback(): void {
+    super.disconnectedCallback();
     this.contentElement.removeEventListener("scroll", this._onScroll);
   }
 

@@ -11,6 +11,7 @@ import { computeDeviceName } from "./device_registry";
 import {
   computeEntityRegistryName,
   entityRegistryById,
+  EntityRegistryEntry,
 } from "./entity_registry";
 import { domainToName } from "./integration";
 import {
@@ -33,6 +34,7 @@ import {
 
 export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
   ignoreAlias = false
@@ -91,7 +93,7 @@ export const describeAction = <T extends ActionType>(
                 targets.push(targetThing);
               }
             } else {
-              const entityReg = entityRegistryById(hass.entities)[targetThing];
+              const entityReg = entityRegistryById(entityRegistry)[targetThing];
               if (entityReg) {
                 targets.push(
                   computeEntityRegistryName(hass, entityReg) || targetThing

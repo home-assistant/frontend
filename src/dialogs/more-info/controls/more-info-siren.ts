@@ -1,9 +1,10 @@
 import { mdiVolumeHigh, mdiVolumeOff } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-attributes";
 import { LightEntity } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
+import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
 
@@ -19,41 +20,27 @@ class MoreInfoSiren extends LitElement {
     }
 
     return html`
-      <div class="content">
-        <ha-more-info-state-header
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-        ></ha-more-info-state-header>
+      <ha-more-info-state-header
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+      ></ha-more-info-state-header>
+      <div class="controls">
         <ha-more-info-toggle
           .stateObj=${this.stateObj}
           .hass=${this.hass}
           .iconPathOn=${mdiVolumeHigh}
           .iconPathOff=${mdiVolumeOff}
         ></ha-more-info-toggle>
-        <ha-attributes
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-        ></ha-attributes>
       </div>
+      <ha-attributes
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+      ></ha-attributes>
     `;
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      .content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      ha-more-info-toggle {
-        margin-bottom: 24px;
-      }
-
-      ha-attributes {
-        width: 100%;
-      }
-    `;
+    return moreInfoControlStyle;
   }
 }
 

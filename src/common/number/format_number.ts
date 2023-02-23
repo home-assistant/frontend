@@ -2,7 +2,7 @@ import {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
-import { EntityRegistryEntry } from "../../data/entity_registry";
+import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { FrontendLocaleData, NumberFormat } from "../../data/translation";
 import { round } from "./round";
 
@@ -92,11 +92,9 @@ export const formatNumber = (
  */
 export const getNumberFormatOptions = (
   entityState: HassEntity,
-  entity?: EntityRegistryEntry
+  entity?: EntityRegistryDisplayEntry
 ): Intl.NumberFormatOptions | undefined => {
-  const precision =
-    entity?.options?.sensor?.display_precision ??
-    entity?.options?.sensor?.suggested_display_precision;
+  const precision = entity?.display_precision;
   if (precision != null) {
     return {
       maximumFractionDigits: precision,

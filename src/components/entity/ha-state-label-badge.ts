@@ -22,7 +22,7 @@ import {
   isNumericState,
 } from "../../common/number/format_number";
 import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../data/entity";
-import { EntityRegistryEntry } from "../../data/entity_registry";
+import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { timerTimeRemaining } from "../../data/timer";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
@@ -160,7 +160,7 @@ export class HaStateLabelBadge extends LitElement {
   private _computeValue(
     domain: string,
     entityState: HassEntity,
-    entry?: EntityRegistryEntry
+    entry?: EntityRegistryDisplayEntry
   ) {
     switch (domain) {
       case "alarm_control_panel":
@@ -200,7 +200,7 @@ export class HaStateLabelBadge extends LitElement {
   private _computeShowIcon(
     domain: string,
     entityState: HassEntity,
-    entry?: EntityRegistryEntry
+    entry?: EntityRegistryDisplayEntry
   ): boolean {
     if (entityState.state === UNAVAILABLE) {
       return false;

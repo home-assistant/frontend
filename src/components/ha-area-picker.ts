@@ -12,10 +12,11 @@ import {
   createAreaRegistryEntry,
 } from "../data/area_registry";
 import {
-  DeviceEntityLookup,
+  DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
+  getDeviceEntityDisplayLookup,
 } from "../data/device_registry";
-import { EntityRegistryEntry } from "../data/entity_registry";
+import { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -113,7 +114,7 @@ export class HaAreaPicker extends LitElement {
     (
       areas: AreaRegistryEntry[],
       devices: DeviceRegistryEntry[],
-      entities: EntityRegistryEntry[],
+      entities: EntityRegistryDisplayEntry[],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
@@ -133,111 +134,107 @@ export class HaAreaPicker extends LitElement {
         ];
       }
 
-      const deviceEntityLookup: DeviceEntityLookup = {};
+      let deviceEntityLookup: DeviceEntityDisplayLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
-      let inputEntities: EntityRegistryEntry[] | undefined;
+      let inputEntities: EntityRegistryDisplayEntry[] | undefined;
 
       if (
         includeDomains ||
         excludeDomains ||
         includeDeviceClasses ||
+        deviceFilter ||
         entityFilter
       ) {
-        for (const entity of entities) {
-          if (!entity.device_id) {
-            continue;
-          }
-          if (!(entity.device_id in deviceEntityLookup)) {
-            deviceEntityLookup[entity.device_id] = [];
-          }
-          deviceEntityLookup[entity.device_id].push(entity);
-        }
-      }
-      inputDevices = devices;
-      inputEntities = entities.filter((entity) => entity.area_id);
+        deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
+        inputDevices = devices;
+        inputEntities = entities.filter((entity) => entity.area_id);
 
-      if (includeDomains) {
-        inputDevices = inputDevices!.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return deviceEntityLookup[device.id].some((entity) =>
+        if (includeDomains) {
+          inputDevices = inputDevices!.filter((device) => {
+            const devEntities = deviceEntityLookup[device.id];
+            if (!devEntities || !devEntities.length) {
+              return false;
+            }
+            return deviceEntityLookup[device.id].some((entity) =>
+              includeDomains.includes(computeDomain(entity.entity_id))
+            );
+          });
+          inputEntities = inputEntities!.filter((entity) =>
             includeDomains.includes(computeDomain(entity.entity_id))
           );
-        });
-        inputEntities = inputEntities!.filter((entity) =>
-          includeDomains.includes(computeDomain(entity.entity_id))
-        );
-      }
+        }
 
-      if (excludeDomains) {
-        inputDevices = inputDevices!.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return true;
-          }
-          return entities.every(
+        if (excludeDomains) {
+          inputDevices = inputDevices!.filter((device) => {
+            const devEntities = deviceEntityLookup[device.id];
+            if (!devEntities || !devEntities.length) {
+              return true;
+            }
+            return entities.every(
+              (entity) =>
+                !excludeDomains.includes(computeDomain(entity.entity_id))
+            );
+          });
+          inputEntities = inputEntities!.filter(
             (entity) =>
               !excludeDomains.includes(computeDomain(entity.entity_id))
           );
-        });
-        inputEntities = inputEntities!.filter(
-          (entity) => !excludeDomains.includes(computeDomain(entity.entity_id))
-        );
-      }
+        }
 
-      if (includeDeviceClasses) {
-        inputDevices = inputDevices!.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return deviceEntityLookup[device.id].some((entity) => {
-            const stateObj = this.hass.states[entity.entity_id];
-            if (!stateObj) {
+        if (includeDeviceClasses) {
+          inputDevices = inputDevices!.filter((device) => {
+            const devEntities = deviceEntityLookup[device.id];
+            if (!devEntities || !devEntities.length) {
               return false;
             }
+            return deviceEntityLookup[device.id].some((entity) => {
+              const stateObj = this.hass.states[entity.entity_id];
+              if (!stateObj) {
+                return false;
+              }
+              return (
+                stateObj.attributes.device_class &&
+                includeDeviceClasses.includes(stateObj.attributes.device_class)
+              );
+            });
+          });
+          inputEntities = inputEntities!.filter((entity) => {
+            const stateObj = this.hass.states[entity.entity_id];
             return (
               stateObj.attributes.device_class &&
               includeDeviceClasses.includes(stateObj.attributes.device_class)
             );
           });
-        });
-        inputEntities = inputEntities!.filter((entity) => {
-          const stateObj = this.hass.states[entity.entity_id];
-          return (
-            stateObj.attributes.device_class &&
-            includeDeviceClasses.includes(stateObj.attributes.device_class)
+        }
+
+        if (deviceFilter) {
+          inputDevices = inputDevices!.filter((device) =>
+            deviceFilter!(device)
           );
-        });
-      }
+        }
 
-      if (deviceFilter) {
-        inputDevices = inputDevices!.filter((device) => deviceFilter!(device));
-      }
-
-      if (entityFilter) {
-        inputDevices = inputDevices!.filter((device) => {
-          const devEntities = deviceEntityLookup[device.id];
-          if (!devEntities || !devEntities.length) {
-            return false;
-          }
-          return deviceEntityLookup[device.id].some((entity) => {
+        if (entityFilter) {
+          inputDevices = inputDevices!.filter((device) => {
+            const devEntities = deviceEntityLookup[device.id];
+            if (!devEntities || !devEntities.length) {
+              return false;
+            }
+            return deviceEntityLookup[device.id].some((entity) => {
+              const stateObj = this.hass.states[entity.entity_id];
+              if (!stateObj) {
+                return false;
+              }
+              return entityFilter(stateObj);
+            });
+          });
+          inputEntities = inputEntities!.filter((entity) => {
             const stateObj = this.hass.states[entity.entity_id];
             if (!stateObj) {
               return false;
             }
-            return entityFilter(stateObj);
+            return entityFilter!(stateObj);
           });
-        });
-        inputEntities = inputEntities!.filter((entity) => {
-          const stateObj = this.hass.states[entity.entity_id];
-          if (!stateObj) {
-            return false;
-          }
-          return entityFilter!(stateObj);
-        });
+        }
       }
 
       let outputAreas = areas;

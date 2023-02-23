@@ -3691,6 +3691,8 @@
             "warning_controller": "WARNING: Firmware updates can brick your controller if you do not use the right firmware files, or if you attempt to stop the firmware update before it completes. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your controller as a result of the firmware update and will not be able to help you if you brick your controller. Would you still like to continue?",
             "introduction": "Select the firmware file you would like to use to update {device}.",
             "introduction_controller": "Select the firmware file you would like to use to update {device}. Note that once you start a firmware update, you MUST wait for the update to complete.",
+            "firmware_target_intro": "Select the firmware target (0 for the Z-Wave chip, ≥1 for other chips if they exist) for this update.",
+            "firmware_target": "Firmware Target (chip)",
             "upload_firmware": "Upload Firmware",
             "upload_failed": "Upload Failed",
             "begin_update": "Begin Firmware Update",

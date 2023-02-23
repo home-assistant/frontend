@@ -14,7 +14,7 @@ import { polyfillsLoaded } from "../common/translations/localize";
 import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
-import { subscribeEntityRegistry } from "../data/entity_registry";
+import { subscribeEntityRegistryDisplay } from "../data/entity_registry";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
@@ -188,10 +188,22 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
 
       subscribeEntities(conn, (states) => this._updateHass({ states }));
-      subscribeEntityRegistry(conn, (entityReg) => {
+      subscribeEntityRegistryDisplay(conn, (entityReg) => {
         const entities: HomeAssistant["entities"] = {};
-        for (const entity of entityReg) {
-          entities[entity.entity_id] = entity;
+        for (const entity of entityReg.entities) {
+          entities[entity.ei] = {
+            entity_id: entity.ei,
+            device_id: entity.di,
+            area_id: entity.ai,
+            translation_key: entity.tk,
+            platform: entity.pl,
+            entity_category: entity.ec
+              ? entityReg.entity_categories[entity.ec]
+              : undefined,
+            name: entity.en,
+            hidden: entity.hb,
+            display_precision: entity.dp,
+          };
         }
         this._updateHass({ entities });
       });

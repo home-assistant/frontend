@@ -25,7 +25,11 @@ import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-related-items";
-import { EntityRegistryEntry } from "../../data/entity_registry";
+import {
+  EntityRegistryEntry,
+  ExtEntityRegistryEntry,
+  getExtendedEntityRegistryEntry,
+} from "../../data/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
@@ -77,6 +81,8 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _childView?: ChildView;
 
+  @state() private _entry?: ExtEntityRegistryEntry;
+
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
     if (!this._entityId) {
@@ -86,10 +92,22 @@ export class MoreInfoDialog extends LitElement {
     this._currView = params.view || "info";
     this._childView = undefined;
     this.large = false;
+    this._loadEntityRegistryEntry();
+  }
+
+  private async _loadEntityRegistryEntry() {
+    if (!this._entityId) {
+      return;
+    }
+    this._entry = await getExtendedEntityRegistryEntry(
+      this.hass,
+      this._entityId
+    );
   }
 
   public closeDialog() {
     this._entityId = undefined;
+    this._entry = undefined;
     this._childView = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -172,7 +190,10 @@ export class MoreInfoDialog extends LitElement {
       idToPassThroughUrl = stateObj.attributes.id;
     }
     if (EDITABLE_DOMAINS_WITH_UNIQUE_ID.includes(domain)) {
-      idToPassThroughUrl = this.hass.entities[this._entityId!].unique_id;
+      if (!this._entry) {
+        return;
+      }
+      idToPassThroughUrl = this._entry.unique_id;
     }
 
     navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
@@ -203,13 +224,7 @@ export class MoreInfoDialog extends LitElement {
     const isInfoView = this._currView === "info" && !this._childView;
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${title}
-        hideActions
-        data-domain=${domain}
-      >
+      <ha-dialog open @closed=${this.closeDialog} .heading=${title} hideActions>
         <div slot="heading" class="heading">
           <ha-header-bar>
             ${isInfoView
@@ -335,10 +350,14 @@ export class MoreInfoDialog extends LitElement {
           @show-child-view=${this._showChildView}
         >
           ${this._childView
-            ? dynamicElement(this._childView.viewTag, {
-                hass: this.hass,
-                params: this._childView.viewParams,
-              })
+            ? html`
+                <div class="child-view">
+                  ${dynamicElement(this._childView.viewTag, {
+                    hass: this.hass,
+                    params: this._childView.viewParams,
+                  })}
+                </div>
+              `
             : cache(
                 this._currView === "info"
                   ? html`
@@ -360,6 +379,8 @@ export class MoreInfoDialog extends LitElement {
                       <ha-more-info-settings
                         .hass=${this.hass}
                         .entityId=${this._entityId}
+                        .entry=${this._entry}
+                        @entity-entry-updated=${this._entryUpdated}
                       ></ha-more-info-settings>
                     `
                   : this._currView === "related"
@@ -385,12 +406,12 @@ export class MoreInfoDialog extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_currView")) {
-      this.setAttribute("view", this._currView);
       this._childView = undefined;
     }
-    if (changedProps.has("_childView")) {
-      this.toggleAttribute("has-child-view", !!this._childView);
-    }
+  }
+
+  private _entryUpdated(ev: CustomEvent<ExtEntityRegistryEntry>) {
+    this._entry = ev.detail;
   }
 
   private _enlarge() {
@@ -407,7 +428,6 @@ export class MoreInfoDialog extends LitElement {
           --dialog-content-position: static;
           --vertical-align-dialog: flex-start;
           --dialog-content-padding: 0;
-          --content-padding: 24px;
         }
 
         ha-header-bar {
@@ -417,6 +437,7 @@ export class MoreInfoDialog extends LitElement {
           display: block;
           border-bottom: none;
         }
+
         .content {
           outline: none;
         }
@@ -426,22 +447,16 @@ export class MoreInfoDialog extends LitElement {
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
-        :host([view="settings"]) ha-dialog {
-          --content-padding: 0;
+        ha-related-items,
+        ha-more-info-history-and-logbook {
+          padding: 24px;
+          display: block;
         }
 
-        :host([view="info"]) ha-dialog[data-domain="camera"] {
-          --content-padding: 0;
-          /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
-          --video-max-height: calc(100vh - 65px - 72px);
-        }
-
-        :host([has-child-view]) ha-dialog {
-          --content-padding: 0;
-        }
-
-        .content {
-          padding: var(--content-padding);
+        @media all and (max-width: 450px) {
+          .child-view > * {
+            min-height: calc(100vh - 56px);
+          }
         }
 
         .main-title {
