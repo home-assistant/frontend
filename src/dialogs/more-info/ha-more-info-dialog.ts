@@ -203,13 +203,7 @@ export class MoreInfoDialog extends LitElement {
     const isInfoView = this._currView === "info" && !this._childView;
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${title}
-        hideActions
-        data-domain=${domain}
-      >
+      <ha-dialog open @closed=${this.closeDialog} .heading=${title} hideActions>
         <div slot="heading" class="heading">
           <ha-header-bar>
             ${isInfoView
@@ -335,10 +329,14 @@ export class MoreInfoDialog extends LitElement {
           @show-child-view=${this._showChildView}
         >
           ${this._childView
-            ? dynamicElement(this._childView.viewTag, {
-                hass: this.hass,
-                params: this._childView.viewParams,
-              })
+            ? html`
+                <div class="child-view">
+                  ${dynamicElement(this._childView.viewTag, {
+                    hass: this.hass,
+                    params: this._childView.viewParams,
+                  })}
+                </div>
+              `
             : cache(
                 this._currView === "info"
                   ? html`
@@ -385,11 +383,7 @@ export class MoreInfoDialog extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_currView")) {
-      this.setAttribute("view", this._currView);
       this._childView = undefined;
-    }
-    if (changedProps.has("_childView")) {
-      this.toggleAttribute("has-child-view", !!this._childView);
     }
   }
 
@@ -407,7 +401,6 @@ export class MoreInfoDialog extends LitElement {
           --dialog-content-position: static;
           --vertical-align-dialog: flex-start;
           --dialog-content-padding: 0;
-          --content-padding: 24px;
         }
 
         ha-header-bar {
@@ -417,6 +410,7 @@ export class MoreInfoDialog extends LitElement {
           display: block;
           border-bottom: none;
         }
+
         .content {
           outline: none;
         }
@@ -426,22 +420,16 @@ export class MoreInfoDialog extends LitElement {
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
-        :host([view="settings"]) ha-dialog {
-          --content-padding: 0;
+        ha-related-items,
+        ha-more-info-history-and-logbook {
+          padding: 24px;
+          display: block;
         }
 
-        :host([view="info"]) ha-dialog[data-domain="camera"] {
-          --content-padding: 0;
-          /* max height of the video is full screen, minus the height of the header of the dialog and the padding of the dialog (mdc-dialog-max-height: calc(100% - 72px)) */
-          --video-max-height: calc(100vh - 65px - 72px);
-        }
-
-        :host([has-child-view]) ha-dialog {
-          --content-padding: 0;
-        }
-
-        .content {
-          padding: var(--content-padding);
+        @media all and (max-width: 450px) {
+          .child-view > * {
+            min-height: calc(100vh - 56px);
+          }
         }
 
         .main-title {

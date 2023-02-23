@@ -94,12 +94,12 @@ export const computeShowLogBookComponent = (
   return true;
 };
 
-export const computeShowNewMoreInfo = (stateObj: HassEntity) => {
+export const computeShowNewMoreInfo = (stateObj: HassEntity): boolean => {
   const domain = computeDomain(stateObj.entity_id);
   if (domain === "group") {
     const groupDomain = computeGroupDomain(stateObj as GroupEntity);
     return (
-      groupDomain &&
+      groupDomain != null &&
       groupDomain !== "group" &&
       DOMAINS_WITH_NEW_MORE_INFO.includes(groupDomain)
     );
