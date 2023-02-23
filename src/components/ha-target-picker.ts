@@ -1,6 +1,7 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-menu/mwc-menu-surface";
 import {
   mdiClose,
   mdiDevices,
@@ -9,13 +10,14 @@ import {
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
+import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { HassEntity, HassServiceTarget } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
@@ -23,7 +25,7 @@ import {
   computeDeviceName,
   DeviceRegistryEntry,
 } from "../data/device_registry";
-import { EntityRegistryEntry } from "../data/entity_registry";
+import { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
@@ -33,8 +35,6 @@ import "./ha-area-picker";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-svg-icon";
-import { stopPropagation } from "../common/dom/stop_propagation";
-import "@material/mwc-menu/mwc-menu-surface";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends LitElement {
@@ -551,7 +551,7 @@ export class HaTargetPicker extends LitElement {
     return true;
   }
 
-  private _entityRegMeetsFilter(entity: EntityRegistryEntry): boolean {
+  private _entityRegMeetsFilter(entity: EntityRegistryDisplayEntry): boolean {
     if (entity.entity_category) {
       return false;
     }

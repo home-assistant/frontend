@@ -1,14 +1,10 @@
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device_registry";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../data/entity_registry";
 import {
   EntitySources,
   fetchEntitySourcesWithCache,
@@ -18,20 +14,17 @@ import {
   filterSelectorDevices,
   filterSelectorEntities,
 } from "../../data/selector";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
 import "../device/ha-device-picker";
 import "../device/ha-devices-picker";
 
 @customElement("ha-selector-device")
-export class HaDeviceSelector extends SubscribeMixin(LitElement) {
+export class HaDeviceSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() public selector!: DeviceSelector;
 
   @state() private _entitySources?: EntitySources;
-
-  @state() private _entities?: EntityRegistryEntry[];
 
   @property() public value?: any;
 
@@ -44,14 +37,6 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public required = true;
 
   private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities.filter((entity) => entity.device_id !== null);
-      }),
-    ];
-  }
 
   private _hasIntegration(selector: DeviceSelector) {
     return (
@@ -118,10 +103,12 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
     if (!this.selector.device?.filter) {
       return true;
     }
-    const deviceIntegrations =
-      this._entitySources && this._entities
-        ? this._deviceIntegrationLookup(this._entitySources, this._entities)
-        : undefined;
+    const deviceIntegrations = this._entitySources
+      ? this._deviceIntegrationLookup(
+          this._entitySources,
+          Object.values(this.hass.entities)
+        )
+      : undefined;
 
     return ensureArray(this.selector.device.filter).some((filter) =>
       filterSelectorDevices(filter, device, deviceIntegrations)
