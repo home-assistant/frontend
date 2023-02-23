@@ -72,7 +72,7 @@ export class HaControlSwitch extends LitElement {
   }
 
   @query("#switch")
-  private switch;
+  private switch!: HTMLDivElement;
 
   setupListeners() {
     if (this.switch && !this._mc) {
