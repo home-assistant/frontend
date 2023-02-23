@@ -1,4 +1,4 @@
-import { LitElement, html } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { HomeAssistant } from "../../types";
 import {
@@ -32,6 +32,18 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
             ></ha-more-info-logbook>
           `
         : ""}
+    `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      ha-more-info-history,
+      ha-more-info-logbook {
+        display: block;
+      }
+      ha-more-info-history + ha-more-info-logbook {
+        margin-top: 16px;
+      }
     `;
   }
 }
