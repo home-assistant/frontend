@@ -23,6 +23,7 @@ import "../../../components/ha-attributes";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
+import { forwardHaptic } from "../../../data/haptics";
 import {
   LightColorMode,
   LightEntity,
@@ -197,6 +198,7 @@ class MoreInfoLight extends LitElement {
 
   private _toggle = () => {
     const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
+    forwardHaptic("light");
     this.hass.callService("light", service, {
       entity_id: this.stateObj!.entity_id,
     });
