@@ -32,6 +32,7 @@ import {
   lightSupportsColorMode,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
+import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
 import "../components/lights/ha-more-info-light-brightness";
@@ -85,12 +86,12 @@ class MoreInfoLight extends LitElement {
       : undefined;
 
     return html`
-      <div class="content">
-        <ha-more-info-state-header
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-          .stateOverride=${stateOverride}
-        ></ha-more-info-state-header>
+      <ha-more-info-state-header
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        .stateOverride=${stateOverride}
+      ></ha-more-info-state-header>
+      <div class="controls">
         ${supportsBrightness
           ? html`
               <ha-more-info-light-brightness
@@ -184,12 +185,13 @@ class MoreInfoLight extends LitElement {
               </div>
             `
           : null}
-        <ha-attributes
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-          extra-filters="brightness,color_temp,color_temp_kelvin,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,min_color_temp_kelvin,max_color_temp_kelvin,entity_id,supported_color_modes,color_mode"
-        ></ha-attributes>
       </div>
+
+      <ha-attributes
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        extra-filters="brightness,color_temp,color_temp_kelvin,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,min_color_temp_kelvin,max_color_temp_kelvin,entity_id,supported_color_modes,color_mode"
+      ></ha-attributes>
     `;
   }
 
@@ -230,41 +232,29 @@ class MoreInfoLight extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      .content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+    return [
+      moreInfoControlStyle,
+      css`
+        .buttons {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 12px;
+        }
+        .buttons > * {
+          margin: 4px;
+        }
 
-      .buttons {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 12px;
-      }
-      .buttons > * {
-        margin: 4px;
-      }
-
-      ha-more-info-light-brightness,
-      ha-more-info-toggle {
-        margin-bottom: 24px;
-      }
-
-      ha-attributes {
-        width: 100%;
-      }
-
-      md-outlined-icon-button-toggle,
-      md-outlined-icon-button {
-        --ha-icon-display: block;
-        --md-sys-color-on-surface: var(--secondary-text-color);
-        --md-sys-color-on-surface-variant: var(--secondary-text-color);
-        --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
-        --md-sys-color-outline: var(--secondary-text-color);
-      }
-    `;
+        md-outlined-icon-button-toggle,
+        md-outlined-icon-button {
+          --ha-icon-display: block;
+          --md-sys-color-on-surface: var(--secondary-text-color);
+          --md-sys-color-on-surface-variant: var(--secondary-text-color);
+          --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
+          --md-sys-color-outline: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 

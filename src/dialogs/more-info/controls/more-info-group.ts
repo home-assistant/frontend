@@ -12,6 +12,7 @@ import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { computeGroupDomain, GroupEntity } from "../../../data/group";
 import "../../../state-summary/state-card-content";
 import { HomeAssistant } from "../../../types";
+import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import {
   domainMoreInfoType,
   importMoreInfoControl,
@@ -94,12 +95,15 @@ class MoreInfoGroup extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      state-card-content {
-        display: block;
-        margin-top: 8px;
-      }
-    `;
+    return [
+      moreInfoControlStyle,
+      css`
+        state-card-content {
+          display: block;
+          margin-top: 8px;
+        }
+      `,
+    ];
   }
 }
 
