@@ -405,34 +405,34 @@ const getEnergyData = async (
     volume: lengthUnit === "km" ? "L" : "gal",
   };
 
-  const stats = {
-    ...(energyStatIds.length
-      ? await fetchStatistics(
-          hass!,
-          startMinHour,
-          end,
-          energyStatIds,
-          period,
-          energyUnits,
-          ["sum"]
-        )
-      : {}),
-    ...(waterStatIds.length
-      ? await fetchStatistics(
-          hass!,
-          startMinHour,
-          end,
-          waterStatIds,
-          period,
-          waterUnits,
-          ["sum"]
-        )
-      : {}),
-  };
+  const _energyStats = energyStatIds.length
+    ? fetchStatistics(
+        hass!,
+        startMinHour,
+        end,
+        energyStatIds,
+        period,
+        energyUnits,
+        ["sum"]
+      )
+    : Promise.resolve({});
+  const _waterStats = waterStatIds.length
+    ? await fetchStatistics(
+        hass!,
+        startMinHour,
+        end,
+        waterStatIds,
+        period,
+        waterUnits,
+        ["sum"]
+      )
+    : Promise.resolve({});
 
-  let statsCompare;
   let startCompare;
   let endCompare;
+  let _energyStatsCompare = Promise.resolve({});
+  let _waterStatsCompare = Promise.resolve({});
+
   if (compare) {
     if (dayDifference > 27 && dayDifference < 32) {
       // When comparing a month, we want to start at the begining of the month
@@ -443,38 +443,38 @@ const getEnergyData = async (
 
     const compareStartMinHour = addHours(startCompare, -1);
     endCompare = addMilliseconds(start, -1);
-
-    statsCompare = {
-      ...(energyStatIds.length
-        ? await fetchStatistics(
-            hass!,
-            compareStartMinHour,
-            endCompare,
-            energyStatIds,
-            period,
-            energyUnits,
-            ["sum"]
-          )
-        : {}),
-      ...(waterStatIds.length
-        ? await fetchStatistics(
-            hass!,
-            compareStartMinHour,
-            endCompare,
-            waterStatIds,
-            period,
-            waterUnits,
-            ["sum"]
-          )
-        : {}),
-    };
+    if (energyStatIds.length) {
+      _energyStatsCompare = fetchStatistics(
+        hass!,
+        compareStartMinHour,
+        endCompare,
+        energyStatIds,
+        period,
+        energyUnits,
+        ["sum"]
+      );
+    }
+    if (waterStatIds.length) {
+      _waterStatsCompare = fetchStatistics(
+        hass!,
+        compareStartMinHour,
+        endCompare,
+        waterStatIds,
+        period,
+        waterUnits,
+        ["sum"]
+      );
+    }
   }
 
-  let fossilEnergyConsumption: FossilEnergyConsumption | undefined;
-  let fossilEnergyConsumptionCompare: FossilEnergyConsumption | undefined;
-
+  let _fossilEnergyConsumption:
+    | Promise<undefined>
+    | Promise<FossilEnergyConsumption> = Promise.resolve(undefined);
+  let _fossilEnergyConsumptionCompare:
+    | Promise<undefined>
+    | Promise<FossilEnergyConsumption> = Promise.resolve(undefined);
   if (co2SignalEntity !== undefined) {
-    fossilEnergyConsumption = await getFossilEnergyConsumption(
+    _fossilEnergyConsumption = getFossilEnergyConsumption(
       hass!,
       start,
       consumptionStatIDs,
@@ -483,7 +483,7 @@ const getEnergyData = async (
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
     if (compare) {
-      fossilEnergyConsumptionCompare = await getFossilEnergyConsumption(
+      _fossilEnergyConsumptionCompare = getFossilEnergyConsumption(
         hass!,
         startCompare,
         consumptionStatIDs,
@@ -492,6 +492,35 @@ const getEnergyData = async (
         dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
       );
     }
+  }
+
+  const statsMetadata: Record<string, StatisticsMetaData> = {};
+  const _getStatisticMetadata: Promise<StatisticsMetaData[]> = allStatIDs.length
+    ? getStatisticMetadata(hass, allStatIDs)
+    : Promise.resolve([]);
+  const [
+    energyStats,
+    waterStats,
+    energyStatsCompare,
+    waterStatsCompare,
+    statsMetadataArray,
+    fossilEnergyConsumption,
+    fossilEnergyConsumptionCompare,
+  ] = await Promise.all([
+    _energyStats,
+    _waterStats,
+    _energyStatsCompare,
+    _waterStatsCompare,
+    _getStatisticMetadata,
+    _fossilEnergyConsumption,
+    _fossilEnergyConsumptionCompare,
+  ]);
+  const stats = { ...energyStats, ...waterStats };
+  const statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
+  if (allStatIDs.length) {
+    statsMetadataArray.forEach((x) => {
+      statsMetadata[x.statistic_id] = x;
+    });
   }
 
   Object.values(stats).forEach((stat) => {
@@ -505,12 +534,6 @@ const getEnergyData = async (
         state: 0,
       });
     }
-  });
-
-  const statsMetadataArray = await getStatisticMetadata(hass, allStatIDs);
-  const statsMetadata: Record<string, StatisticsMetaData> = {};
-  statsMetadataArray.forEach((x) => {
-    statsMetadata[x.statistic_id] = x;
   });
 
   const data: EnergyData = {
