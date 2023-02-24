@@ -126,13 +126,13 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         `;
 
     const mainHumidity = html`
-      <svg viewBox="0 0 24 20">
+      <svg viewBox="0 0 30 20">
         <text x="50%" dx="1" y="73%" text-anchor="middle" id="main-humidity">
           ${stateObjCurrentHumidity
             ? isUnavailableState(stateObjCurrentHumidity.state)
               ? ""
               : svg`
-                        ${Math.round(Number(stateObjCurrentHumidity.state))}
+                        ${stateObjCurrentHumidity.state}
                         <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                           %
                         </tspan>
@@ -400,7 +400,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
       .toggle-button {
         color: var(--primary-text-color);
-        width: 60%;
+        width: 75%;
         height: auto;
         position: absolute;
         max-width: calc(100% - 40px);
