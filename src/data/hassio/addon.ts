@@ -101,6 +101,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   stdin: boolean;
   translations: Record<string, AddonTranslations>;
   watchdog: null | boolean;
+  remote_user_requested: boolean;
   webui: null | string;
 }
 

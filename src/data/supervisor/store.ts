@@ -39,7 +39,6 @@ export interface StoreAddonDetails extends StoreAddon {
   long_description: string;
   rating: number;
   signed: boolean;
-  remote_user_requested: boolean;
 }
 
 interface StoreRepository {
