@@ -428,6 +428,7 @@ const getEnergyData = async (
       )
     : Promise.resolve({});
 
+  let statsCompare;
   let startCompare;
   let endCompare;
   let _energyStatsCompare = Promise.resolve({});
@@ -516,7 +517,9 @@ const getEnergyData = async (
     _fossilEnergyConsumptionCompare,
   ]);
   const stats = { ...energyStats, ...waterStats };
-  const statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
+  if (compare) {
+    statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
+  }
   if (allStatIDs.length) {
     statsMetadataArray.forEach((x) => {
       statsMetadata[x.statistic_id] = x;
