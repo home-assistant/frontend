@@ -81,7 +81,7 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _childView?: ChildView;
 
-  @state() private _entry?: ExtEntityRegistryEntry;
+  @state() private _entry?: ExtEntityRegistryEntry | null;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
