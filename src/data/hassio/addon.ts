@@ -93,7 +93,6 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   protected: boolean;
   rating: "1-8";
   schema: HaFormSchema[] | null;
-  remote_user: null | boolean;
   services_role: string[];
   signed: boolean;
   slug: string;
@@ -101,6 +100,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   stdin: boolean;
   translations: Record<string, AddonTranslations>;
   watchdog: null | boolean;
+  remote_user?: boolean;
   remote_user_requested: boolean;
   webui: null | string;
 }
