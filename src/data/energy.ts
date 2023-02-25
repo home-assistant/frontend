@@ -11,10 +11,8 @@ import {
 } from "date-fns/esm";
 import { Collection, getCollection } from "home-assistant-js-websocket";
 import { groupBy } from "../common/util/group-by";
-import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
-import { subscribeEntityRegistry } from "./entity_registry";
 import {
   fetchStatistics,
   getStatisticMetadata,
@@ -341,9 +339,8 @@ const getEnergyData = async (
   end?: Date,
   compare?: boolean
 ): Promise<EnergyData> => {
-  const [configEntries, entityRegistryEntries, info] = await Promise.all([
+  const [configEntries, info] = await Promise.all([
     getConfigEntries(hass, { domain: "co2signal" }),
-    subscribeOne(hass.connection, subscribeEntityRegistry),
     getEnergyInfo(hass),
   ]);
 
@@ -352,15 +349,15 @@ const getEnergyData = async (
     : undefined;
 
   let co2SignalEntity: string | undefined;
-
   if (co2SignalConfigEntry) {
-    for (const entry of entityRegistryEntries) {
-      if (entry.config_entry_id !== co2SignalConfigEntry.entry_id) {
+    for (const entityId of Object.keys(hass.entities)) {
+      const entity = hass.entities[entityId];
+      if (entity.platform !== "co2signal") {
         continue;
       }
 
       // The integration offers 2 entities. We want the % one.
-      const co2State = hass.states[entry.entity_id];
+      const co2State = hass.states[entityId];
       if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
         continue;
       }
