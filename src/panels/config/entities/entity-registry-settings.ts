@@ -288,7 +288,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private precisionLabel(precision?: number, stateValue?: string) {
-    const value = stateValue ?? 0;
+    const stateValueNumber = Number(stateValue);
+    const value = !isNaN(stateValueNumber) ? stateValueNumber : 0;
     return formatNumber(value, this.hass.locale, {
       minimumFractionDigits: precision,
       maximumFractionDigits: precision,
