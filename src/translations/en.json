@@ -1801,7 +1801,7 @@
           "reboot_moved_link": "Go to system page.",
           "processor": "Processor",
           "memory": "Memory",
-          "board": "Board",
+          "generic_hardware": "Generic Hardware",
           "documentation": "Documentation",
           "configure": "Configure",
           "documentation_description": "Find extra information about your device",
