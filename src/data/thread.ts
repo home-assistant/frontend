@@ -10,13 +10,13 @@ export interface ThreadRouter {
 }
 
 export interface ThreadDataSet {
-  created;
-  dataset_id;
-  extended_pan_id;
-  network_name: string;
-  pan_id;
+  created: string;
+  dataset_id: string;
   preferred: boolean;
-  source;
+  source: string;
+  network_name: string;
+  extended_pan_id?: string;
+  pan_id?: string;
 }
 
 export interface ThreadRouterDiscoveryEvent {
@@ -60,4 +60,30 @@ export const listThreadDataSets = (
 ): Promise<{ datasets: ThreadDataSet[] }> =>
   hass.callWS({
     type: "thread/list_datasets",
+  });
+
+export const getThreadDataSetTLV = (
+  hass: HomeAssistant,
+  dataset_id: string
+): Promise<{ tlv: string }> =>
+  hass.callWS({ type: "thread/get_dataset_tlv", dataset_id });
+
+export const addThreadDataSet = (
+  hass: HomeAssistant,
+  source: string,
+  tlv: string
+): Promise<void> =>
+  hass.callWS({
+    type: "thread/add_dataset_tlv",
+    source,
+    tlv,
+  });
+
+export const removeThreadDataSet = (
+  hass: HomeAssistant,
+  dataset_id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "thread/delete_dataset",
+    dataset_id,
   });
