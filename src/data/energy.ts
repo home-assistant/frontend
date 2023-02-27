@@ -614,7 +614,9 @@ export const getEnergyDataCollection = (
   }
 
   energyCollectionKeys.push(options.key);
+
   let energyInfoAndCO2Signal: EnergyInfoAndCO2Signal | undefined;
+  let forceRefreshEnergyInfo: bool = false;
 
   const collection = getCollection<EnergyData>(
     hass.connection,
@@ -643,13 +645,13 @@ export const getEnergyDataCollection = (
         }
         nextFetch.setMinutes(20, 0, 0);
 
-        collection._refreshTimeout = window.setTimeout(
-          () => collection.refresh(),
-          nextFetch.getTime() - Date.now()
-        );
+        collection._refreshTimeout = window.setTimeout(() => {
+          forceRefreshEnergyInfo = true;
+          collection.refresh();
+        }, nextFetch.getTime() - Date.now());
       }
 
-      if (!energyInfoAndCO2Signal) {
+      if (!energyInfoAndCO2Signal || forceRefreshEnergyInfo) {
         energyInfoAndCO2Signal = await getEnergyInfoAndCO2Signal(hass);
       }
 
