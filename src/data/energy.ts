@@ -356,7 +356,7 @@ const getEnergyData = async (
       }
 
       // The integration offers 2 entities. We want the % one.
-      const co2State = hass.states[entityId];
+      const co2State = hass.states[entity.entity_id];
       if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
         continue;
       }
