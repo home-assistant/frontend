@@ -427,8 +427,8 @@ const getEnergyData = async (
   let statsCompare;
   let startCompare;
   let endCompare;
-  let _energyStatsCompare = {};
-  let _waterStatsCompare = {};
+  let _energyStatsCompare: Statistics | Promise<Statistics> = {};
+  let _waterStatsCompare: Statistics | Promise<Statistics> = {};
 
   if (compare) {
     if (dayDifference > 27 && dayDifference < 32) {
@@ -464,9 +464,7 @@ const getEnergyData = async (
     }
   }
 
-  let _fossilEnergyConsumption:
-    | undefined
-    | Promise<FossilEnergyConsumption>;
+  let _fossilEnergyConsumption: undefined | Promise<FossilEnergyConsumption>;
   let _fossilEnergyConsumptionCompare:
     | undefined
     | Promise<FossilEnergyConsumption>;
@@ -492,7 +490,9 @@ const getEnergyData = async (
   }
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
-  const _getStatisticMetadata: Promise<StatisticsMetaData[]> | StatisticsMetaData[] = allStatIDs.length
+  const _getStatisticMetadata:
+    | Promise<StatisticsMetaData[]>
+    | StatisticsMetaData[] = allStatIDs.length
     ? getStatisticMetadata(hass, allStatIDs)
     : [];
   const [
