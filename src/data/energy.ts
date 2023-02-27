@@ -466,7 +466,7 @@ const getEnergyData = async (
 
   let _fossilEnergyConsumption:
     | undefined
-    | Promise<FossilEnergyConsumption> = Promise.resolve(undefined);
+    | Promise<FossilEnergyConsumption>;
   let _fossilEnergyConsumptionCompare:
     | undefined
     | Promise<FossilEnergyConsumption> = Promise.resolve(undefined);
