@@ -62,7 +62,7 @@ class HaLabelBadge extends LitElement {
           height: var(--ha-label-badge-size, 2.5em);
           line-height: var(--ha-label-badge-size, 2.5em);
           font-size: var(--ha-label-badge-font-size, 1.5em);
-          border-radius: 50%;
+          border-radius: var(--ha-label-badge-border-radius, 50%);
           border: 0.1em solid var(--ha-label-badge-color, var(--primary-color));
           color: var(--label-badge-text-color, rgb(76, 76, 76));
 
