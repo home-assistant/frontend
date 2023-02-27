@@ -373,24 +373,6 @@ const getEnergyInfoAndCO2Signal = async (
   };
 };
 
-const getEnergyData = async (
-  hass: HomeAssistant,
-  prefs: EnergyPreferences,
-  start: Date,
-  end?: Date,
-  compare?: boolean
-): Promise<EnergyData> => {
-  const energyInfoAndCO2Signal = await getEnergyInfoAndCO2Signal(hass);
-  return getEnergyDataWithInfo(
-    hass,
-    energyInfoAndCO2Signal,
-    prefs,
-    start,
-    end,
-    compare
-  );
-};
-
 const getEnergyDataWithInfo = async (
   hass: HomeAssistant,
   energyInfoAndCO2Signal: EnergyInfoAndCO2Signal,
@@ -663,8 +645,10 @@ export const getEnergyDataCollection = (
         );
       }
 
-      return getEnergyData(
+      const energyInfoAndCO2Signal = await getEnergyInfoAndCO2Signal(hass);
+      return getEnergyDataWithInfo(
         hass,
+        energyInfoAndCO2Signal,
         collection.prefs,
         collection.start,
         collection.end,
