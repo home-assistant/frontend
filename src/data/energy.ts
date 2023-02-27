@@ -401,7 +401,7 @@ const getEnergyData = async (
     volume: lengthUnit === "km" ? "L" : "gal",
   };
 
-  const _energyStats = energyStatIds.length
+  const _energyStats: Statistics | Promise<Statistics> = energyStatIds.length
     ? fetchStatistics(
         hass!,
         startMinHour,
@@ -412,7 +412,7 @@ const getEnergyData = async (
         ["sum"]
       )
     : {};
-  const _waterStats = waterStatIds.length
+  const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
     ? fetchStatistics(
         hass!,
         startMinHour,
