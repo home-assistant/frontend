@@ -427,8 +427,8 @@ const getEnergyData = async (
   let statsCompare;
   let startCompare;
   let endCompare;
-  let _energyStatsCompare = Promise.resolve({});
-  let _waterStatsCompare = Promise.resolve({});
+  let _energyStatsCompare = {};
+  let _waterStatsCompare = {};
 
   if (compare) {
     if (dayDifference > 27 && dayDifference < 32) {
