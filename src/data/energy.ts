@@ -193,6 +193,11 @@ export interface EnergyPreferencesValidation {
   device_consumption: EnergyValidationIssue[][];
 }
 
+export interface EnergyInfoAndCO2Signal {
+  energyInfo: EnergyInfo;
+  co2SignalEntity: string | undefined;
+}
+
 export const getEnergyInfo = (hass: HomeAssistant) =>
   hass.callWS<EnergyInfo>({
     type: "energy/info",
@@ -332,13 +337,9 @@ export const getReferencedStatisticIds = (
   return statIDs;
 };
 
-const getEnergyData = async (
-  hass: HomeAssistant,
-  prefs: EnergyPreferences,
-  start: Date,
-  end?: Date,
-  compare?: boolean
-): Promise<EnergyData> => {
+const getEnergyInfoAndCO2Signal = async (
+  hass: HomeAssistant
+): Promise<EnergyInfoAndCO2Signal> => {
   const [configEntries, info] = await Promise.all([
     getConfigEntries(hass, { domain: "co2signal" }),
     getEnergyInfo(hass),
@@ -366,6 +367,40 @@ const getEnergyData = async (
     }
   }
 
+  return <EnergyInfoAndCO2Signal>{
+    energyInfo: info,
+    co2SignalEntity: co2SignalEntity,
+  };
+};
+
+const getEnergyData = async (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences,
+  start: Date,
+  end?: Date,
+  compare?: boolean
+): Promise<EnergyData> => {
+  const energyInfoAndCO2Signal = await getEnergyInfoAndCO2Signal(hass);
+  return getEnergyDataWithInfo(
+    hass,
+    energyInfoAndCO2Signal,
+    prefs,
+    start,
+    end,
+    compare
+  );
+};
+
+const getEnergyDataWithInfo = async (
+  hass: HomeAssistant,
+  energyInfoAndCO2Signal: EnergyInfoAndCO2Signal,
+  prefs: EnergyPreferences,
+  start: Date,
+  end?: Date,
+  compare?: boolean
+): Promise<EnergyData> => {
+  const info = energyInfoAndCO2Signal.energyInfo;
+  const co2SignalEntity = energyInfoAndCO2Signal.co2SignalEntity;
   const consumptionStatIDs: string[] = [];
   for (const source of prefs.energy_sources) {
     // grid source
