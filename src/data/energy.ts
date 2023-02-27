@@ -196,6 +196,7 @@ export interface EnergyPreferencesValidation {
 export interface EnergyInfoAndCO2Signal {
   energyInfo: EnergyInfo;
   co2SignalEntity: string | undefined;
+  co2SignalConfigEntry: ConfigEntry | undefined;
 }
 
 export const getEnergyInfo = (hass: HomeAssistant) =>
@@ -370,6 +371,7 @@ const getEnergyInfoAndCO2Signal = async (
   return <EnergyInfoAndCO2Signal>{
     energyInfo: info,
     co2SignalEntity: co2SignalEntity,
+    co2SignalConfigEntry: co2SignalConfigEntry,
   };
 };
 
@@ -383,6 +385,7 @@ const getEnergyDataWithInfo = async (
 ): Promise<EnergyData> => {
   const info = energyInfoAndCO2Signal.energyInfo;
   const co2SignalEntity = energyInfoAndCO2Signal.co2SignalEntity;
+  const co2SignalConfigEntry = energyInfoAndCO2Signal.co2SignalConfigEntry;
   const consumptionStatIDs: string[] = [];
   for (const source of prefs.energy_sources) {
     // grid source
