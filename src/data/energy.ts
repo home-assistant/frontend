@@ -413,7 +413,7 @@ const getEnergyData = async (
       )
     : Promise.resolve({});
   const _waterStats = waterStatIds.length
-    ? await fetchStatistics(
+    ? fetchStatistics(
         hass!,
         startMinHour,
         end,
