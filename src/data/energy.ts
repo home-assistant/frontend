@@ -653,6 +653,7 @@ export const getEnergyDataCollection = (
 
       if (!energyInfoAndCO2Signal || forceRefreshEnergyInfo) {
         energyInfoAndCO2Signal = await getEnergyInfoAndCO2Signal(hass);
+        forceRefreshEnergyInfo = false;
       }
 
       return getEnergyDataWithInfo(
