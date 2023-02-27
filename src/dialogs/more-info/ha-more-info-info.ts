@@ -1,11 +1,6 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { subscribeOne } from "../../common/util/subscribe-one";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
@@ -24,11 +19,10 @@ export class MoreInfoInfo extends LitElement {
 
   @property() public entityId!: string;
 
-  @state() private _entityEntry?: EntityRegistryEntry;
-
   protected render() {
     const entityId = this.entityId;
     const stateObj = this.hass.states[entityId];
+    const entityRegObj = this.hass.entities[entityId];
     const domain = computeDomain(entityId);
     const newMoreInfo = computeShowNewMoreInfo(stateObj);
 
@@ -41,12 +35,12 @@ export class MoreInfoInfo extends LitElement {
               )}
             </ha-alert>`
           : ""}
-        ${stateObj?.attributes.restored && this._entityEntry
+        ${stateObj?.attributes.restored && entityRegObj
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
                 "ui.dialogs.more_info_control.restored.no_longer_provided",
                 {
-                  integration: this._entityEntry.platform,
+                  integration: entityRegObj.platform,
                 }
               )}
             </ha-alert>`
@@ -84,17 +78,6 @@ export class MoreInfoInfo extends LitElement {
         </div>
       </div>
     `;
-  }
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    subscribeOne(this.hass.connection, subscribeEntityRegistry).then(
-      (entries) => {
-        this._entityEntry = entries.find(
-          (entry) => entry.entity_id === this.entityId
-        );
-      }
-    );
   }
 
   static get styles() {
