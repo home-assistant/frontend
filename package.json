@@ -100,7 +100,7 @@
     "app-datepicker": "^5.1.0",
     "chart.js": "^3.3.2",
     "comlink": "^4.4.1",
-    "core-js": "^3.28.0",
+    "core-js": "^3.29.0",
     "cropperjs": "^1.5.13",
     "date-fns": "^2.29.3",
     "date-fns-tz": "^2.0.0",
