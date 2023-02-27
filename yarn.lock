@@ -6860,6 +6860,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"compression-webpack-plugin@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "compression-webpack-plugin@npm:10.0.0"
+  dependencies:
+    schema-utils: ^4.0.0
+    serialize-javascript: ^6.0.0
+  peerDependencies:
+    webpack: ^5.1.0
+  checksum: 2ac9079b7ab87141639c62ddbb2820a06f105198e27ef4c3860da3186bdbefc00d1e206969833ce7a4b7b26161ddbec7b8d20d30f9f9c1d494818b9b86f0d5cc
+  languageName: node
+  linkType: hard
+
 "compression@npm:1.7.3":
   version: 1.7.3
   resolution: "compression@npm:1.7.3"
@@ -9626,6 +9638,7 @@ fsevents@~2.3.2:
     chai: ^4.3.7
     chart.js: ^3.3.2
     comlink: ^4.4.1
+    compression-webpack-plugin: ^10.0.0
     core-js: ^3.28.0
     cropperjs: ^1.5.13
     date-fns: ^2.29.3
