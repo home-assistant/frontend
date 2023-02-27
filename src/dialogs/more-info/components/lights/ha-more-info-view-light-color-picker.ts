@@ -264,10 +264,18 @@ class MoreInfoViewLightColorPicker extends LitElement {
       }
 
       this._modes = modes;
-      this._mode =
-        this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
+      // If we have an active color mode, use it to determine what to render.
+      // Otherwise (e. g. light is off) fallback to the supported modes instead.
+      this._mode = this.stateObj!.attributes.color_mode
+        ? this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
           ? LightColorMode.COLOR_TEMP
-          : "color";
+          : "color"
+        : this.stateObj!.attributes.supported_color_modes &&
+          this.stateObj!.attributes.supported_color_modes.indexOf(
+            LightColorMode.COLOR_TEMP
+          ) >= 0
+        ? LightColorMode.COLOR_TEMP
+        : "color";
     }
 
     this._updateSliderValues();
