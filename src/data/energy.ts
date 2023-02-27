@@ -616,7 +616,7 @@ export const getEnergyDataCollection = (
   energyCollectionKeys.push(options.key);
 
   let energyInfoAndCO2Signal: EnergyInfoAndCO2Signal | undefined;
-  let forceRefreshEnergyInfo: bool = false;
+  let forceRefreshEnergyInfo = false;
 
   const collection = getCollection<EnergyData>(
     hass.connection,
