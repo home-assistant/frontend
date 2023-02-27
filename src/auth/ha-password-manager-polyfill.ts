@@ -1,6 +1,6 @@
-/* eslint-disable lit/prefer-static-styles */
-import { html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HaFormSchema } from "../components/ha-form/types";
 import { autocompleteLoginFields } from "../data/auth";
@@ -29,35 +29,43 @@ export class HaPasswordManagerPolyfill extends LitElement {
 
   @property({ attribute: false }) public boundingRect?: DOMRect;
 
+  private _styleElement?: HTMLStyleElement;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._styleElement = document.createElement("style");
+    this._styleElement.textContent = css`
+      .password-manager-polyfill {
+        position: absolute;
+        opacity: 0;
+        z-index: -1;
+      }
+      .password-manager-polyfill input {
+        width: 100%;
+        height: 62px;
+        padding: 0;
+        border: 0;
+      }
+      .password-manager-polyfill input[type="submit"] {
+        width: 0;
+        height: 0;
+      }
+    `.toString();
+    document.head.append(this._styleElement);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._styleElement?.remove();
+    delete this._styleElement;
+  }
+
   protected createRenderRoot() {
     // Add under document body so the element isn't placed inside any shadow roots
     return document.body;
   }
 
-  private get styles() {
-    return `
-    .password-manager-polyfill {
-      position: absolute;
-      top: ${this.boundingRect?.y || 148}px;
-      left: calc(50% - ${(this.boundingRect?.width || 360) / 2}px);
-      width: ${this.boundingRect?.width || 360}px;
-      opacity: 0;
-      z-index: -1;
-    }
-    .password-manager-polyfill input {
-      width: 100%;
-      height: 62px;
-      padding: 0;
-      border: 0;
-    }
-    .password-manager-polyfill input[type="submit"] {
-      width: 0;
-      height: 0;
-    }
-  `;
-  }
-
-  protected render(): TemplateResult {
+  protected render() {
     if (
       this.step &&
       this.step.type === "form" &&
@@ -67,6 +75,11 @@ export class HaPasswordManagerPolyfill extends LitElement {
       return html`
         <form
           class="password-manager-polyfill"
+          style=${styleMap({
+            top: `${this.boundingRect?.y || 148}px`,
+            left: `calc(50% - ${(this.boundingRect?.width || 360) / 2}px)`,
+            width: `${this.boundingRect?.width || 360}px`,
+          })}
           aria-hidden="true"
           @submit=${this._handleSubmit}
         >
@@ -74,16 +87,13 @@ export class HaPasswordManagerPolyfill extends LitElement {
             this.render_input(input)
           )}
           <input type="submit" />
-          <style>
-            ${this.styles}
-          </style>
         </form>
       `;
     }
-    return html``;
+    return nothing;
   }
 
-  private render_input(schema: HaFormSchema): TemplateResult | string {
+  private render_input(schema: HaFormSchema) {
     const inputType = schema.name.includes("password") ? "password" : "text";
     if (schema.type !== "string") {
       return "";

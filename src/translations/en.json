@@ -1038,9 +1038,9 @@
         "restart": {
           "title": "Restart Home Assistant",
           "description": "Interrupts all running automations and scripts.",
-          "confirm_title": "Restart?",
+          "confirm_title": "Restart  Home Assistant?",
           "confirm_description": "This will interrupt all running automations and scripts.",
-          "confirm_action": "Restart Home Assistant",
+          "confirm_action": "Restart",
           "failed": "Failed to restart Home Assistant"
         },
         "reboot": {
@@ -1801,7 +1801,7 @@
           "reboot_moved_link": "Go to system page.",
           "processor": "Processor",
           "memory": "Memory",
-          "board": "Board",
+          "generic_hardware": "Generic Hardware",
           "documentation": "Documentation",
           "configure": "Configure",
           "documentation_description": "Find extra information about your device",
@@ -3288,6 +3288,12 @@
           "my_network": "My network",
           "no_preferred_network": "You don't have a preferred network yet.",
           "add_open_thread_border_router": "Add an OpenThread border router",
+          "add_dataset_from_tlv": "Add dataset from TLV",
+          "add_dataset": "Add Thread dataset",
+          "add_dataset_label": "Operational dataset TLV",
+          "add_dataset_button": "Add dataset",
+          "confirm_delete_dataset": "Delete {name} dataset?",
+          "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
           "no_border_routers": "No border routers found",
           "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
           "managed_by_home_assistant": "Managed by Home Assistant",

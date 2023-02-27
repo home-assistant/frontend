@@ -30,6 +30,30 @@ export class HaListItem extends ListItemBase {
           margin-inline-end: 0px !important;
           direction: var(--direction);
         }
+        :host([multiline-secondary]) {
+          height: auto;
+        }
+        :host([multiline-secondary]) .mdc-deprecated-list-item__text {
+          padding: 8px 0;
+        }
+        :host([multiline-secondary]) .mdc-deprecated-list-item__secondary-text {
+          text-overflow: initial;
+          white-space: normal;
+          overflow: auto;
+          display: inline-block;
+          margin-top: 10px;
+        }
+        :host([multiline-secondary]) .mdc-deprecated-list-item__primary-text {
+          margin-top: 10px;
+        }
+        :host([multiline-secondary])
+          .mdc-deprecated-list-item__secondary-text::before {
+          display: none;
+        }
+        :host([multiline-secondary])
+          .mdc-deprecated-list-item__primary-text::before {
+          display: none;
+        }
       `,
     ];
   }
