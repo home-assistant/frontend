@@ -106,6 +106,7 @@ class DialogRestart extends LitElement {
                       <ha-list-item
                         graphic="avatar"
                         twoline
+                        multiline-secondary
                         hasMeta
                         @request-selected=${this._reload}
                       >
@@ -128,6 +129,7 @@ class DialogRestart extends LitElement {
                 <ha-list-item
                   graphic="avatar"
                   twoline
+                  multiline-secondary
                   hasMeta
                   @request-selected=${this._restart}
                 >
@@ -154,6 +156,7 @@ class DialogRestart extends LitElement {
                       <ha-list-item
                         graphic="avatar"
                         twoline
+                        multiline-secondary
                         hasMeta
                         @request-selected=${this._hostReboot}
                       >
@@ -174,6 +177,7 @@ class DialogRestart extends LitElement {
                       <ha-list-item
                         graphic="avatar"
                         twoline
+                        multiline-secondary
                         hasMeta
                         @request-selected=${this._hostShutdown}
                       >
