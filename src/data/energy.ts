@@ -411,7 +411,7 @@ const getEnergyData = async (
         energyUnits,
         ["sum"]
       )
-    : Promise.resolve({});
+    : {};
   const _waterStats = waterStatIds.length
     ? fetchStatistics(
         hass!,
