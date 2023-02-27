@@ -15,6 +15,8 @@ import {
   mdiCheckCircleOutline,
   mdiClock,
   mdiCloseCircleOutline,
+  mdiFan,
+  mdiFanOff,
   mdiGestureTapButton,
   mdiLanConnect,
   mdiLanDisconnect,
@@ -107,6 +109,9 @@ export const domainIconWithoutDefault = (
         return compareState === "home" ? mdiBluetoothConnect : mdiBluetooth;
       }
       return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
+
+    case "fan":
+      return compareState === "off" ? mdiFanOff : mdiFan;
 
     case "humidifier":
       return compareState === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;

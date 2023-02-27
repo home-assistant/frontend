@@ -1,5 +1,10 @@
 import "@material/mwc-button";
-import { mdiDevices, mdiDotsVertical, mdiInformationOutline } from "@mdi/js";
+import {
+  mdiDeleteOutline,
+  mdiDevices,
+  mdiDotsVertical,
+  mdiInformationOutline,
+} from "@mdi/js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -11,13 +16,19 @@ import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
 import { getOTBRInfo } from "../../../../../data/otbr";
 import {
+  addThreadDataSet,
   listThreadDataSets,
+  removeThreadDataSet,
   subscribeDiscoverThreadRouters,
   ThreadDataSet,
   ThreadRouter,
 } from "../../../../../data/thread";
 import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
-import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
@@ -66,6 +77,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               )}
             </mwc-list-item>
           </a>
+          <mwc-list-item @click=${this._addTLV}
+            >${this.hass.localize(
+              "ui.panel.config.thread.add_dataset_from_tlv"
+            )}</mwc-list-item
+          >
           <mwc-list-item @click=${this._addOTBR}
             >${this.hass.localize(
               "ui.panel.config.thread.add_open_thread_border_router"
@@ -108,11 +124,20 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     return html`<ha-card>
       <div class="card-header">
         ${network.name}${network.dataset
-          ? html`<ha-icon-button
-              .networkDataset=${network.dataset}
-              .path=${mdiInformationOutline}
-              @click=${this._showDatasetInfo}
-            ></ha-icon-button>`
+          ? html`<div>
+              <ha-icon-button
+                .networkDataset=${network.dataset}
+                .path=${mdiInformationOutline}
+                @click=${this._showDatasetInfo}
+              ></ha-icon-button
+              >${!network.dataset.preferred && !network.routers?.length
+                ? html`<ha-icon-button
+                    .networkDataset=${network.dataset}
+                    .path=${mdiDeleteOutline}
+                    @click=${this._removeDataset}
+                  ></ha-icon-button>`
+                : ""}
+            </div>`
           : ""}
       </div>
       ${network.routers?.length
@@ -154,7 +179,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const dataset = (ev.currentTarget as any).networkDataset as ThreadDataSet;
     if (isComponentLoaded(this.hass, "otbr")) {
       const otbrInfo = await getOTBRInfo(this.hass);
-      if (otbrInfo.active_dataset_tlvs.includes(dataset.extended_pan_id)) {
+      if (
+        dataset.extended_pan_id &&
+        otbrInfo.active_dataset_tlvs?.includes(dataset.extended_pan_id)
+      ) {
         showAlertDialog(this, {
           title: dataset.network_name,
           text: html`Network name: ${dataset.network_name}<br />
@@ -265,6 +293,57 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       startFlowHandler: "otbr",
       showAdvanced: this.hass.userData?.showAdvanced,
     });
+  }
+
+  private async _addTLV() {
+    const tlv = await showPromptDialog(this, {
+      title: this.hass.localize("ui.panel.config.thread.add_dataset"),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.thread.add_dataset_label"
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.config.thread.add_dataset_button"
+      ),
+    });
+    if (!tlv) {
+      return;
+    }
+    try {
+      await addThreadDataSet(this.hass, "manual", tlv);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: "Error",
+        text: err.message || err,
+      });
+    }
+    this._refresh();
+  }
+
+  private async _removeDataset(ev: Event) {
+    const dataset = (ev.currentTarget as any).networkDataset as ThreadDataSet;
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.thread.confirm_delete_dataset",
+        { name: dataset.network_name }
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.thread.confirm_delete_dataset_text"
+      ),
+      destructive: true,
+      confirmText: this.hass.localize("ui.common.delete"),
+    });
+    if (!confirm) {
+      return;
+    }
+    try {
+      await removeThreadDataSet(this.hass, dataset.dataset_id);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: "Error",
+        text: err.message || err,
+      });
+    }
+    this._refresh();
   }
 
   static styles = [
