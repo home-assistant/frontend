@@ -19,6 +19,7 @@ module.exports = {
     "**/*.json": "js",
     "**/*.css": "js",
   },
+  compress: true,
   middleware: [cors()],
   plugins: rollupWDSPlugins,
 };
