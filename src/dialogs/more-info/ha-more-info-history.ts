@@ -14,6 +14,7 @@ import {
   getStatisticMetadata,
   Statistics,
   StatisticsTypes,
+  StatisticsMetaData,
 } from "../../data/recorder";
 import { HomeAssistant } from "../../types";
 import "../../components/chart/statistics-chart";
@@ -47,6 +48,8 @@ export class MoreInfoHistory extends LitElement {
 
   private _error?: string;
 
+  private _metadata?: Record<string, StatisticsMetaData>;
+
   protected render(): TemplateResult {
     if (!this.entityId) {
       return html``;
@@ -70,6 +73,7 @@ export class MoreInfoHistory extends LitElement {
                 .hass=${this.hass}
                 .isLoadingData=${!this._statistics}
                 .statisticsData=${this._statistics}
+                .metadata=${this._metadata}
                 .statTypes=${statTypes}
                 .names=${this._statNames}
                 hideLegend
@@ -136,15 +140,33 @@ export class MoreInfoHistory extends LitElement {
     this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
   }
 
+  private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
+    const statsMetadataArray = await getStatisticMetadata(
+      this.hass,
+      statisticIds
+    );
+    const statisticsMetaData = {};
+    statsMetadataArray.forEach((x) => {
+      statisticsMetaData[x.statistic_id] = x;
+    });
+    return statisticsMetaData;
+  }
+
   private async _getStateHistory(): Promise<void> {
     if (
       isComponentLoaded(this.hass, "recorder") &&
       computeDomain(this.entityId) === "sensor"
     ) {
-      const metadata = await getStatisticMetadata(this.hass, [this.entityId]);
-      this._statNames = { [this.entityId]: "" };
-      if (metadata.length) {
-        this._statistics = await fetchStatistics(
+      const stateObj = this.hass.states[this.entityId];
+      // If there is no state class, the integration providing the entity
+      // has not opted into statistics so there is no need to check as it
+      // requires another round-trip to the server.
+      if (stateObj && stateObj.attributes.state_class) {
+        // Fire off the metadata and fetch at the same time
+        // to avoid waiting in sequence so the UI responds
+        // faster.
+        const _metadata = this._getStatisticsMetaData([this.entityId]);
+        const _statistics = fetchStatistics(
           this.hass!,
           subHours(new Date(), 24),
           undefined,
@@ -153,7 +175,16 @@ export class MoreInfoHistory extends LitElement {
           undefined,
           statTypes
         );
-        return;
+        const [metadata, statistics] = await Promise.all([
+          _metadata,
+          _statistics,
+        ]);
+        if (metadata && Object.keys(metadata).length) {
+          this._metadata = metadata;
+          this._statistics = statistics;
+          this._statNames = { [this.entityId]: "" };
+          return;
+        }
       }
     }
     if (!isComponentLoaded(this.hass, "history") || this._subscribed) {

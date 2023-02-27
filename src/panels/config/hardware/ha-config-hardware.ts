@@ -278,7 +278,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             `
           : ""}
         <div class="content">
-          ${boardName
+          ${boardName || isComponentLoaded(this.hass, "hassio")
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
@@ -293,7 +293,9 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                           : ""}
                         <span class="primary-text">
                           ${boardName ||
-                          this.hass.localize("ui.panel.config.hardware.board")}
+                          this.hass.localize(
+                            "ui.panel.config.hardware.generic_hardware"
+                          )}
                         </span>
                         ${boardId
                           ? html`
