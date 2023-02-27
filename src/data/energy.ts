@@ -614,6 +614,7 @@ export const getEnergyDataCollection = (
   }
 
   energyCollectionKeys.push(options.key);
+  let energyInfoAndCO2Signal: EnergyInfoAndCO2Signal | undefined;
 
   const collection = getCollection<EnergyData>(
     hass.connection,
@@ -648,7 +649,10 @@ export const getEnergyDataCollection = (
         );
       }
 
-      const energyInfoAndCO2Signal = await getEnergyInfoAndCO2Signal(hass);
+      if (!energyInfoAndCO2Signal) {
+        energyInfoAndCO2Signal = await getEnergyInfoAndCO2Signal(hass);
+      }
+
       return getEnergyDataWithInfo(
         hass,
         energyInfoAndCO2Signal,
