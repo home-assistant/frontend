@@ -2,6 +2,7 @@ const webpack = require("webpack");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
+const CompressionWebpackPlugin = require("compression-webpack-plugin");
 const log = require("fancy-log");
 const WebpackBar = require("webpackbar");
 const paths = require("./paths.js");
@@ -75,6 +76,7 @@ const createWebpackConfig = ({
       chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
     },
     plugins: [
+      new CompressionWebpackPlugin(),
       !isStatsBuild && new WebpackBar({ fancy: !isProdBuild }),
       new WebpackManifestPlugin({
         // Only include the JS of entrypoints
