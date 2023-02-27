@@ -7,6 +7,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import "../../components/ha-circular-progress";
 import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-expansion-panel";
 import "../../components/ha-list-item";
 import {
   extractApiErrorMessage,
@@ -106,6 +107,7 @@ class DialogRestart extends LitElement {
                       <ha-list-item
                         graphic="avatar"
                         twoline
+                        multiline-secondary
                         hasMeta
                         @request-selected=${this._reload}
                       >
@@ -128,6 +130,7 @@ class DialogRestart extends LitElement {
                 <ha-list-item
                   graphic="avatar"
                   twoline
+                  multiline-secondary
                   hasMeta
                   @request-selected=${this._restart}
                 >
@@ -143,57 +146,62 @@ class DialogRestart extends LitElement {
                     )}
                   </span>
                 </ha-list-item>
-                ${showRebootShutdown
-                  ? html`
-                      <div class="divider"></div>
-                      <p class="section">
-                        ${this.hass.localize(
-                          "ui.dialogs.restart.advanced_options"
-                        )}
-                      </p>
-                      <ha-list-item
-                        graphic="avatar"
-                        twoline
-                        hasMeta
-                        @request-selected=${this._hostReboot}
-                      >
-                        <div slot="graphic" class="icon-background reboot">
-                          <ha-svg-icon .path=${mdiPowerCycle}></ha-svg-icon>
-                        </div>
-                        <span>
-                          ${this.hass.localize(
-                            "ui.dialogs.restart.reboot.title"
-                          )}
-                        </span>
-                        <span slot="secondary">
-                          ${this.hass.localize(
-                            "ui.dialogs.restart.reboot.description"
-                          )}
-                        </span>
-                      </ha-list-item>
-                      <ha-list-item
-                        graphic="avatar"
-                        twoline
-                        hasMeta
-                        @request-selected=${this._hostShutdown}
-                      >
-                        <div slot="graphic" class="icon-background shutdown">
-                          <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                        </div>
-                        <span>
-                          ${this.hass.localize(
-                            "ui.dialogs.restart.shutdown.title"
-                          )}
-                        </span>
-                        <span slot="secondary">
-                          ${this.hass.localize(
-                            "ui.dialogs.restart.shutdown.description"
-                          )}
-                        </span>
-                      </ha-list-item>
-                    `
-                  : null}
               </mwc-list>
+
+              ${showRebootShutdown
+                ? html`
+                    <ha-expansion-panel
+                      .header=${this.hass.localize(
+                        "ui.dialogs.restart.advanced_options"
+                      )}
+                    >
+                      <mwc-list>
+                        <ha-list-item
+                          graphic="avatar"
+                          twoline
+                          multiline-secondary
+                          hasMeta
+                          @request-selected=${this._hostReboot}
+                        >
+                          <div slot="graphic" class="icon-background reboot">
+                            <ha-svg-icon .path=${mdiPowerCycle}></ha-svg-icon>
+                          </div>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.dialogs.restart.reboot.title"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
+                              "ui.dialogs.restart.reboot.description"
+                            )}
+                          </span>
+                        </ha-list-item>
+                        <ha-list-item
+                          graphic="avatar"
+                          twoline
+                          multiline-secondary
+                          hasMeta
+                          @request-selected=${this._hostShutdown}
+                        >
+                          <div slot="graphic" class="icon-background shutdown">
+                            <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                          </div>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.dialogs.restart.shutdown.title"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
+                              "ui.dialogs.restart.shutdown.description"
+                            )}
+                          </span>
+                        </ha-list-item>
+                      </mwc-list>
+                    </ha-expansion-panel>
+                  `
+                : null}
             `}
       </ha-dialog>
     `;
@@ -340,6 +348,23 @@ class DialogRestart extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
         }
+        @media all and (min-width: 550px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 500px;
+            --mdc-dialog-max-width: 500px;
+          }
+        }
+
+        ha-expansion-panel {
+          border-top: 1px solid var(--divider-color);
+          margin-bottom: 10px;
+          box-shadow: none;
+          --expansion-panel-content-padding: 0;
+          --expansion-panel-summary-padding: 0
+            var(--mdc-list-side-padding, 20px);
+          --ha-card-border-radius: 0;
+        }
+
         .icon-background {
           border-radius: 50%;
           color: #fff;
