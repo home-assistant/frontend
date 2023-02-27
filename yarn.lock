@@ -9720,7 +9720,7 @@ fsevents@~2.3.2:
     webpack-dev-server: ^4.11.1
     webpack-manifest-plugin: ^5.0.0
     webpackbar: ^5.0.2
-    weekstart: ^1.1.0
+    weekstart: ^2.0.0
     workbox-build: ^6.5.4
     workbox-cacheable-response: ^6.5.4
     workbox-core: ^6.5.4
@@ -16427,10 +16427,10 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"weekstart@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "weekstart@npm:1.1.0"
-  checksum: afce96e0b95809a30f00fa02b13a0927324d9f76b9c10ce6b3de9bbd5926615156f8a0526c63e2bd1cabdc8ec3da68b8df8d6608b6364ded11b5da300a8cfcb4
+"weekstart@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "weekstart@npm:2.0.0"
+  checksum: 9a27d7fe30d847997d50006c814e68ad9b105858a43029b2312bf5757dd49839865a64ad28345d2dcb1b9f25b72f0de81e23d8db50362890b253486defff69e6
   languageName: node
   linkType: hard
 
