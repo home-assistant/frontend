@@ -100,6 +100,7 @@
     "app-datepicker": "^5.1.0",
     "chart.js": "^3.3.2",
     "comlink": "^4.4.1",
+    "compression-webpack-plugin": "^10.0.0",
     "core-js": "^3.28.0",
     "cropperjs": "^1.5.13",
     "date-fns": "^2.29.3",
