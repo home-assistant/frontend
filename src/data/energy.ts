@@ -422,7 +422,7 @@ const getEnergyData = async (
         waterUnits,
         ["sum"]
       )
-    : Promise.resolve({});
+    : {};
 
   let statsCompare;
   let startCompare;
