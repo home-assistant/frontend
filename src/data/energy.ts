@@ -492,7 +492,7 @@ const getEnergyData = async (
   }
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
-  const _getStatisticMetadata: Promise<StatisticsMetaData[]> = allStatIDs.length
+  const _getStatisticMetadata: Promise<StatisticsMetaData[]> | StatisticsMetaData[] = allStatIDs.length
     ? getStatisticMetadata(hass, allStatIDs)
     : [];
   const [
