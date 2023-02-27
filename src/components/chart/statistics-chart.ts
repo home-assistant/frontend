@@ -332,7 +332,10 @@ class StatisticsChart extends LitElement {
         prevEndTime = end;
       };
 
-      const color = getGraphColorByIndex(colorIndex, this._computedStyle!);
+      const color = getGraphColorByIndex(
+        colorIndex,
+        this._computedStyle || getComputedStyle(this)
+      );
       colorIndex++;
 
       const statTypes: this["statTypes"] = [];
