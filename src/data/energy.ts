@@ -350,8 +350,7 @@ const getEnergyData = async (
 
   let co2SignalEntity: string | undefined;
   if (co2SignalConfigEntry) {
-    for (const entityId of Object.keys(hass.entities)) {
-      const entity = hass.entities[entityId];
+    for (const entity of Object.values(hass.entities)) {
       if (entity.platform !== "co2signal") {
         continue;
       }
