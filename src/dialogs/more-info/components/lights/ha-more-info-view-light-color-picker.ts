@@ -7,8 +7,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-button-toggle-group";
@@ -97,15 +97,19 @@ class MoreInfoViewLightColorPicker extends LitElement {
       <div class="content">
         ${this._mode === LightColorMode.COLOR_TEMP
           ? html`
+              <p class="color-temp-value">
+                ${this._ctSliderValue ? `${this._ctSliderValue} K` : nothing}
+              </p>
               <ha-control-slider
                 vertical
-                class="color_temp"
+                class="color-temp"
                 label=${this.hass.localize("ui.card.light.color_temperature")}
                 min="1"
                 max="100"
                 mode="cursor"
                 .value=${this._ctSliderValue}
                 @value-changed=${this._ctSliderChanged}
+                @slider-moved=${this._ctSliderMoved}
                 .min=${this.stateObj.attributes.min_color_temp_kelvin!}
                 .max=${this.stateObj.attributes.max_color_temp_kelvin!}
               >
@@ -206,7 +210,11 @@ class MoreInfoViewLightColorPicker extends LitElement {
           this._brightnessAdjusted = maxVal;
         }
       }
-      this._ctSliderValue = stateObj.attributes.color_temp_kelvin;
+      this._ctSliderValue =
+        stateObj.attributes.color_mode === LightColorMode.COLOR_TEMP
+          ? stateObj.attributes.color_temp_kelvin
+          : undefined;
+
       this._wvSliderValue =
         stateObj.attributes.color_mode === LightColorMode.RGBW
           ? Math.round((stateObj.attributes.rgbw_color![3] * 100) / 255)
@@ -243,7 +251,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!changedProps.has("params") || !changedProps.has("hass")) {
+    if (!changedProps.has("params") && !changedProps.has("hass")) {
       return;
     }
 
@@ -279,6 +287,16 @@ class MoreInfoViewLightColorPicker extends LitElement {
       return;
     }
     this._mode = newMode;
+  }
+
+  private _ctSliderMoved(ev: CustomEvent) {
+    const ct = ev.detail.value;
+
+    if (isNaN(ct)) {
+      return;
+    }
+
+    this._ctSliderValue = ct;
   }
 
   private _ctSliderChanged(ev: CustomEvent) {
@@ -524,7 +542,17 @@ class MoreInfoViewLightColorPicker extends LitElement {
           width: 100%;
         }
 
-        .color_temp {
+        .color-temp-value {
+          font-style: normal;
+          font-weight: 500;
+          font-size: 16px;
+          height: 24px;
+          line-height: 1;
+          letter-spacing: 0.1px;
+          margin: 0;
+        }
+
+        .color-temp {
           --control-slider-thickness: 100px;
           --control-slider-border-radius: 24px;
           --control-slider-background: -webkit-linear-gradient(
