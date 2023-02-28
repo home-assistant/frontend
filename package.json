@@ -182,7 +182,7 @@
     "@types/tar": "^6",
     "@types/webspeechapi": "^0.0.29",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
-    "@typescript-eslint/parser": "^5.53.0",
+    "@typescript-eslint/parser": "^5.54.0",
     "@web/dev-server": "^0.1.35",
     "@web/dev-server-rollup": "^0.2.11",
     "babel-loader": "^9.1.2",
