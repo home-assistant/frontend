@@ -54,7 +54,7 @@ const createRollupConfig = ({
       commonjs(),
       json(),
       babel({
-        ...bundle.babelOptions({ latestBuild }),
+        ...bundle.babelOptions({ latestBuild, isProdBuild }),
         extensions,
         babelHelpers: isWDS ? "inline" : "bundled",
       }),
