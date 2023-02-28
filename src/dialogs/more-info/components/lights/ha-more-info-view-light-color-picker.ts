@@ -548,7 +548,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
           font-weight: 500;
           font-size: 16px;
           height: 24px;
-          line-height: 1;
+          line-height: 24px;
           letter-spacing: 0.1px;
           margin: 0;
         }
@@ -563,6 +563,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
             rgb(255, 160, 0) 100%
           );
           --control-slider-background-opacity: 1;
+          margin-bottom: 44px;
         }
 
         hr {
