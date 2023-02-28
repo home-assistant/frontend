@@ -12,7 +12,7 @@ import {
 import "@polymer/paper-tooltip/paper-tooltip";
 import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { HassEntity, HassServiceTarget } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, unsafeCSS } from "lit";
+import { css, CSSResultGroup, html, LitElement, unsafeCSS, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../common/array/ensure-array";
@@ -278,7 +278,7 @@ export class HaTargetPicker extends LitElement {
 
   private _renderPicker() {
     if (!this._addMode) {
-      return html``;
+      return nothing;
     }
     return html`<mwc-menu-surface
       open

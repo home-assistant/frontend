@@ -1,6 +1,6 @@
 import { mdiClose, mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
@@ -55,9 +55,9 @@ class DialogSystemLogDetail extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const item = this._params.item;
 
@@ -159,7 +159,7 @@ class DialogSystemLogDetail extends LitElement {
                 </ul>
               `
             : item.message[0]}
-          ${item.exception ? html` <pre>${item.exception}</pre> ` : html``}
+          ${item.exception ? html` <pre>${item.exception}</pre> ` : nothing}
         </div>
       </ha-dialog>
     `;

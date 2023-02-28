@@ -12,7 +12,7 @@ import {
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -461,7 +461,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     hideMoreInfoDialog(this);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || this._entities === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
@@ -687,7 +687,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
               </ha-fab>
             </a>`
-          : html``}
+          : nothing}
       </hass-tabs-subpage-data-table>
     `;
   }

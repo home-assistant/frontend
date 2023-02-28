@@ -1,24 +1,24 @@
 import { startOfYesterday, subHours } from "date-fns/esm";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/chart/state-history-charts";
+import "../../components/chart/statistics-chart";
 import {
+  computeHistory,
   HistoryResult,
   subscribeHistoryStatesTimeWindow,
-  computeHistory,
 } from "../../data/history";
 import {
   fetchStatistics,
   getStatisticMetadata,
   Statistics,
-  StatisticsTypes,
   StatisticsMetaData,
+  StatisticsTypes,
 } from "../../data/recorder";
 import { HomeAssistant } from "../../types";
-import "../../components/chart/statistics-chart";
-import { computeDomain } from "../../common/entity/compute_domain";
 
 declare global {
   interface HASSDomEvents {
@@ -50,9 +50,9 @@ export class MoreInfoHistory extends LitElement {
 
   private _metadata?: Record<string, StatisticsMetaData>;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.entityId) {
-      return html``;
+      return nothing;
     }
 
     return html` ${isComponentLoaded(this.hass, "history")

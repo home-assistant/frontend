@@ -1,15 +1,15 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/ha-alert";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   createHassioFullBackup,
   createHassioPartialBackup,
 } from "../../../../src/data/hassio/backup";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
@@ -42,9 +42,9 @@ class HassioCreateBackupDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._dialogParams) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-dialog

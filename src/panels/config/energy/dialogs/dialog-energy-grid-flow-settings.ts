@@ -1,30 +1,30 @@
+import "@material/mwc-button/mwc-button";
 import { mdiTransmissionTower } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
+import type { HaRadio } from "../../../../components/ha-radio";
 import {
   emptyFlowFromGridSourceEnergyPreference,
   emptyFlowToGridSourceEnergyPreference,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
 } from "../../../../data/energy";
+import {
+  getDisplayUnit,
+  getStatisticMetadata,
+  isExternalStatistic,
+} from "../../../../data/recorder";
+import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { EnergySettingsGridFlowDialogParams } from "./show-dialogs-energy";
-import "@material/mwc-button/mwc-button";
-import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-radio";
-import "../../../../components/ha-formfield";
-import type { HaRadio } from "../../../../components/ha-radio";
-import "../../../../components/entity/ha-entity-picker";
-import {
-  getStatisticMetadata,
-  getDisplayUnit,
-  isExternalStatistic,
-} from "../../../../data/recorder";
-import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 
 const energyUnitClasses = ["energy"];
 
@@ -89,9 +89,9 @@ export class DialogEnergyGridFlowSettings
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params || !this._source) {
-      return html``;
+      return nothing;
     }
 
     const pickableUnit = this._energy_units?.join(", ") || "";

@@ -4,9 +4,9 @@ import {
 } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
 import { mdiCloudOutline, mdiOpenInNew, mdiPackageVariant } from "@mdi/js";
-import { css, CSSResultGroup, html } from "lit";
-import { classMap } from "lit/directives/class-map";
+import { css, CSSResultGroup, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { domainToName } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -24,18 +24,20 @@ export class HaIntegrationListItem extends ListItemBase {
 
   @property({ type: Boolean }) brand = false;
 
-  renderSingleLine() {
+  // @ts-expect-error
+  protected override renderSingleLine() {
     if (!this.integration) {
-      return html``;
+      return nothing;
     }
     return html`${this.integration.name ||
     domainToName(this.hass.localize, this.integration.domain)}
     ${this.integration.is_helper ? " (helper)" : ""}`;
   }
 
-  protected renderGraphic() {
+  // @ts-expect-error
+  protected override renderGraphic() {
     if (!this.integration) {
-      return html``;
+      return nothing;
     }
     const graphicClasses = {
       multi: this.multipleGraphics,
@@ -61,9 +63,10 @@ export class HaIntegrationListItem extends ListItemBase {
     </span>`;
   }
 
-  protected renderMeta() {
+  // @ts-expect-error
+  protected override renderMeta() {
     if (!this.integration) {
-      return html``;
+      return nothing;
     }
     return html`<span class="mdc-deprecated-list-item__meta material-icons">
       ${this.integration.cloud

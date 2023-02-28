@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   array,
@@ -23,8 +23,8 @@ import "../../components/hui-input-list-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
-import { entitiesConfigStruct } from "../structs/entities-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -76,9 +76,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return this._config!.geo_location_sources || [];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`

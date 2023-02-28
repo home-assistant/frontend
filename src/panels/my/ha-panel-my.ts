@@ -1,5 +1,5 @@
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import {
@@ -406,7 +406,7 @@ class HaPanelMy extends LitElement {
         .hass=${this.hass}
       ></hass-error-screen>`;
     }
-    return html``;
+    return nothing;
   }
 
   private _createRedirectUrl(): string {

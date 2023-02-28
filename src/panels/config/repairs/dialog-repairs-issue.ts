@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateNumeric } from "../../../common/datetime/format_date";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -33,9 +33,9 @@ class DialogRepairsIssue extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._issue) {
-      return html``;
+      return nothing;
     }
 
     const learnMoreUrlIsHomeAssistant =

@@ -11,7 +11,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateWeekdayDay } from "../../../common/datetime/format_date";
@@ -50,9 +50,9 @@ class MoreInfoWeather extends LitElement {
     return false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const hourly = isForecastHourly(this.stateObj.attributes.forecast);

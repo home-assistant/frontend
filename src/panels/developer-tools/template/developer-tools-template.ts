@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
@@ -231,7 +231,7 @@ class HaPanelDevTemplate extends LitElement {
                   "ui.panel.developer-tools.tabs.templates.no_listeners"
                 )}
               </span>`
-            : html``}
+            : nothing}
         </div>
       </div>
     `;

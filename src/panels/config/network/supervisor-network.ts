@@ -5,7 +5,7 @@ import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiDotsVertical } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import "../../../components/ha-alert";
@@ -67,9 +67,9 @@ export class HassioNetwork extends LitElement {
     this._interface = { ...this._interfaces[this._curTabIndex] };
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._interface) {
-      return html``;
+      return nothing;
     }
 
     return html`

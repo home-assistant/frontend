@@ -13,7 +13,7 @@ import {
   mdiWater,
 } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, svg } from "lit";
+import { css, html, LitElement, svg, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -67,7 +67,7 @@ class HuiEnergyDistrubutionCard
 
   protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
     }
 
     if (!this._data) {

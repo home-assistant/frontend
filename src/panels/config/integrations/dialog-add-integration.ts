@@ -1,7 +1,14 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import Fuse from "fuse.js";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import {
+  css,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -270,9 +277,9 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._open) {
-      return html``;
+      return nothing;
     }
     const integrations = this._integrations
       ? this._getIntegrations()
@@ -428,7 +435,7 @@ class AddIntegrationDialog extends LitElement {
 
   private _renderRow = (integration: IntegrationListItem) => {
     if (!integration) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-integration-list-item

@@ -7,7 +7,7 @@ import {
   mdiPencilOutline,
   mdiWeb,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -78,9 +78,9 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     );
   });
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._opened) {
-      return html``;
+      return nothing;
     }
 
     const processedBlueprints = this._processedBlueprints(this.blueprints);

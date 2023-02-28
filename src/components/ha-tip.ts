@@ -1,6 +1,6 @@
 import { mdiLightbulbOutline } from "@mdi/js";
-import { css, html, LitElement, TemplateResult } from "lit";
-import { property, customElement } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
 import { HomeAssistant } from "../types";
 
 import "./ha-svg-icon";
@@ -9,9 +9,9 @@ import "./ha-svg-icon";
 class HaTip extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  public render(): TemplateResult {
+  public render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`

@@ -1,14 +1,14 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   ConfigEntry,
   getConfigEntries,
@@ -21,9 +21,9 @@ import {
   subscribeZwaveNodeStatus,
   ZWaveJSNodeStatus,
 } from "../../../../../../data/zwave_js";
+import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
-import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 
 @customElement("ha-device-info-zwave_js")
 export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
@@ -83,9 +83,9 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
     this._node = await fetchZwaveNodeStatus(this.hass, this.device.id);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._node) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-expansion-panel

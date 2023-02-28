@@ -1,19 +1,13 @@
 import "@material/mwc-button";
-import {
-  CSSResultGroup,
-  html,
-  LitElement,
-  TemplateResult,
-  PropertyValues,
-} from "lit";
+import { CSSResultGroup, html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { DataEntryFlowStepAbort } from "../../data/data_entry_flow";
-import { HomeAssistant } from "../../types";
 import { showAddApplicationCredentialDialog } from "../../panels/config/application_credentials/show-dialog-add-application-credential";
-import { configFlowContentStyles } from "./styles";
-import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
+import { HomeAssistant } from "../../types";
 import { showConfigFlowDialog } from "./show-dialog-config-flow";
+import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
+import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-abort")
 class StepFlowAbort extends LitElement {
@@ -32,9 +26,9 @@ class StepFlowAbort extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this.step.reason === "missing_credentials") {
-      return html``;
+      return nothing;
     }
     return html`
       <h2>${this.hass.localize(`component.${this.domain}.title`)}</h2>

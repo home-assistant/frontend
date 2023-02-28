@@ -3,7 +3,7 @@ import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiPencil } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -24,10 +24,10 @@ import {
   ExtEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
-import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 
 @customElement("ha-registry-basic-editor")
 export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
@@ -148,13 +148,13 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (
       !this.hass ||
       !this.entry ||
       this.entry.entity_id !== this._origEntityId
     ) {
-      return html``;
+      return nothing;
     }
     const invalidDomainUpdate =
       computeDomain(this._entityId.trim()) !==

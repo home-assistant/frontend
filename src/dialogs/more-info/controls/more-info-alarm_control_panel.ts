@@ -1,15 +1,15 @@
 import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { css, html, LitElement, PropertyValues, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../components/ha-textfield";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import {
+  AlarmControlPanelEntityFeature,
   callAlarmAction,
   FORMAT_NUMBER,
-  AlarmControlPanelEntityFeature,
 } from "../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../types";
 
@@ -67,9 +67,9 @@ export class MoreInfoAlarmControlPanel extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     return html`
