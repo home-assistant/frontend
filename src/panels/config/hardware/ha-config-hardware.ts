@@ -75,6 +75,8 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
   private _cpuEntries: { x: number; y: number | null }[] = [];
 
+  private _hardwareComponentLoaded = false;
+
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     const subs = [
       subscribeConfigEntries(
@@ -140,6 +142,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
           }
         )
       );
+      this._hardwareComponentLoaded = true;
     }
 
     return subs;
@@ -439,7 +442,8 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                     ></ha-chart-base>
                   </div>
                 </ha-card>`
-            : html`<ha-card outlined>
+            : this._hardwareComponentLoaded
+            ? html`<ha-card outlined>
                 <div class="card-content">
                   <div class="value">
                     ${this.hass.localize(
@@ -447,7 +451,8 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                     )}
                   </div>
                 </div>
-              </ha-card>`}
+              </ha-card>`
+            : ""}
         </div>
       </hass-subpage>
     `;
