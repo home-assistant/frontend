@@ -6,7 +6,7 @@ import {
   HassEntity,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -43,6 +43,8 @@ import { ScriptEntity } from "../../../data/script";
 import { findRelated, RelatedResult } from "../../../data/search";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -51,8 +53,6 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
-import "../../../layouts/hass-error-screen";
-import "../../../layouts/hass-subpage";
 
 declare type NameAndEntity<EntityType extends HassEntity> = {
   name: string;
@@ -164,9 +164,9 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._areas || !this._devices || !this._entities) {
-      return html``;
+      return nothing;
     }
 
     const area = this._area(this.areaId, this._areas);

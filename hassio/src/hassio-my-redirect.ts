@@ -1,5 +1,5 @@
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../src/common/navigate";
 import {
@@ -101,13 +101,13 @@ class HassioMyRedirect extends LitElement {
     navigate(url, { replace: true });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._error) {
       return html`<hass-error-screen
         .error=${this._error}
       ></hass-error-screen>`;
     }
-    return html``;
+    return nothing;
   }
 
   private _createRedirectUrl(redirect: Redirect): string {

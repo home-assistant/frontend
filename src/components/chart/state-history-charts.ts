@@ -4,11 +4,12 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
-import { customElement, property, state, eventOptions } from "lit/decorators";
+import { customElement, eventOptions, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
 import {
   HistoryResult,
   LineChartUnit,
@@ -17,7 +18,6 @@ import {
 import type { HomeAssistant } from "../../types";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
-import { restoreScroll } from "../../common/decorators/restore-scroll";
 
 const CANVAS_TIMELINE_ROWS_CHUNK = 10; // Split up the canvases to avoid hitting the render limit
 
@@ -71,7 +71,7 @@ export class StateHistoryCharts extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!isComponentLoaded(this.hass, "history")) {
       return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.history_disabled")}
@@ -130,9 +130,9 @@ export class StateHistoryCharts extends LitElement {
   private _renderHistoryItem = (
     item: TimelineEntity[] | LineChartUnit,
     index: number
-  ): TemplateResult => {
+  ) => {
     if (!item || index === undefined) {
-      return html``;
+      return nothing;
     }
     if (!Array.isArray(item)) {
       return html`<div class="entry-container">

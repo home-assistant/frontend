@@ -9,7 +9,7 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -90,9 +90,9 @@ class MoreInfoVacuum extends LitElement {
 
   @property() public stateObj?: VacuumEntity;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.stateObj;

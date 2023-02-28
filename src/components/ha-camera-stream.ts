@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
@@ -76,9 +76,9 @@ export class HaCameraStream extends LitElement {
     this._connected = false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.stateObj) {
-      return html``;
+      return nothing;
     }
     if (__DEMO__ || this._shouldRenderMJPEG) {
       return html`<img
@@ -102,7 +102,7 @@ export class HaCameraStream extends LitElement {
             .url=${this._url}
             .posterUrl=${this._posterUrl}
           ></ha-hls-player>`
-        : html``;
+        : nothing;
     }
     if (this.stateObj.attributes.frontend_stream_type === STREAM_TYPE_WEB_RTC) {
       return html`<ha-web-rtc-player
@@ -115,7 +115,7 @@ export class HaCameraStream extends LitElement {
         .posterUrl=${this._posterUrl}
       ></ha-web-rtc-player>`;
     }
-    return html``;
+    return nothing;
   }
 
   private get _shouldRenderMJPEG() {

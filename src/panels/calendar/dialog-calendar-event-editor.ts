@@ -1,5 +1,6 @@
 import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
+import { formatInTimeZone, toDate } from "date-fns-tz";
 import {
   addDays,
   addHours,
@@ -7,9 +8,8 @@ import {
   differenceInMilliseconds,
   startOfHour,
 } from "date-fns/esm";
-import { formatInTimeZone, toDate } from "date-fns-tz";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -25,8 +25,8 @@ import {
   CalendarEventMutableParams,
   createCalendarEvent,
   deleteCalendarEvent,
-  updateCalendarEvent,
   RecurrenceRange,
+  updateCalendarEvent,
 } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -123,9 +123,9 @@ class DialogCalendarEventEditor extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const isCreate = this._params.entry === undefined;
 

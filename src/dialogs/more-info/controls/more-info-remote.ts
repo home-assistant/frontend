@@ -1,12 +1,12 @@
-import { html, LitElement, TemplateResult } from "lit";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import { RemoteEntity, REMOTE_SUPPORT_ACTIVITY } from "../../../data/remote";
 import { HomeAssistant } from "../../../types";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-list/mwc-list";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 const filterExtraAttributes = "activity_list,current_activity";
 
@@ -16,9 +16,9 @@ class MoreInfoRemote extends LitElement {
 
   @property() public stateObj?: RemoteEntity;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.stateObj;

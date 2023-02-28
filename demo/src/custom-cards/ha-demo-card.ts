@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import "../../../src/components/ha-card";
@@ -30,9 +30,9 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   public setConfig(_config: LovelaceCardConfig) {}
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._hidden) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-card>

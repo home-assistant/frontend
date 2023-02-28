@@ -1,7 +1,7 @@
 import { mdiInformation } from "@mdi/js";
 import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import "../../../../components/ha-card";
@@ -50,9 +50,9 @@ class HuiEnergySolarGaugeCard
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     if (!this._data) {
@@ -65,7 +65,7 @@ class HuiEnergySolarGaugeCard
     const types = energySourcesByType(prefs);
 
     if (!types.solar) {
-      return html``;
+      return nothing;
     }
 
     const totalSolarProduction = calculateStatisticsSumGrowth(

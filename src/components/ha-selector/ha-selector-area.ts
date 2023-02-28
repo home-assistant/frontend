@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -61,9 +61,9 @@ export class HaAreaSelector extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._hasIntegration(this.selector) && !this._entitySources) {
-      return html``;
+      return nothing;
     }
 
     if (!this.selector.area?.multiple) {

@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import { mdiPencil } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stringCompare } from "../../../common/string/compare";
@@ -57,9 +57,9 @@ class DialogAreaDetail extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const entry = this._params.entry;
     const nameInvalid = !this._isNameValid();
@@ -154,7 +154,7 @@ class DialogAreaDetail extends LitElement {
                 ${this.hass.localize("ui.panel.config.areas.editor.delete")}
               </mwc-button>
             `
-          : html``}
+          : nothing}
         <mwc-button
           slot="primaryAction"
           @click=${this._updateEntry}

@@ -9,7 +9,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { firstWeekdayIndex } from "../../../../common/datetime/first_weekday";
@@ -137,9 +137,9 @@ class HaScheduleForm extends LitElement {
     this._resizeObserver.observe(form);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     const nameInvalid = !this._name || this._name.trim() === "";
 

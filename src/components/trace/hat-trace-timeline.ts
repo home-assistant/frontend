@@ -14,6 +14,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -595,9 +596,9 @@ export class HaAutomationTracer extends LitElement {
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.trace) {
-      return html``;
+      return nothing;
     }
 
     const entries: TemplateResult[] = [];

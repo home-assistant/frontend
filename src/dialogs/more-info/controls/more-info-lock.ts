@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../../../components/ha-attributes";
 import "../../../components/ha-textfield";
@@ -15,9 +15,9 @@ class MoreInfoLock extends LitElement {
 
   @query("ha-textfield") private _textfield?: HaTextField;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
     return html`
       ${this.stateObj.attributes.code_format

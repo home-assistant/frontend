@@ -15,9 +15,9 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   svg,
-  TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -104,9 +104,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
 
@@ -467,9 +467,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _renderIcon(mode: string, currentMode: string): TemplateResult {
+  private _renderIcon(mode: string, currentMode: string) {
     if (!modeIcons[mode]) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-icon-button

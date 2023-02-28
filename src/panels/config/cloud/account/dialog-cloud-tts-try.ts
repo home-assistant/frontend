@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiPlayCircleOutline, mdiRobot } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { LocalStorage } from "../../../../common/decorators/local-storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -44,9 +44,9 @@ export class DialogTryTts extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const target = this._target || "browser";
     return html`

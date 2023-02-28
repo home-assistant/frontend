@@ -1,5 +1,5 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -19,9 +19,9 @@ class HaCoverTiltControls extends LitElement {
 
   @property({ attribute: false }) stateObj!: CoverEntity;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     return html` <ha-icon-button

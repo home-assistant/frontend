@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -133,9 +133,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
     const stateObj = this.hass.states[this._config.entity];
 
@@ -185,7 +185,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           )}
         </div>
         ${!stateObj.attributes.code_format
-          ? html``
+          ? nothing
           : html`
               <ha-textfield
                 id="alarmCode"
@@ -197,7 +197,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
               ></ha-textfield>
             `}
         ${stateObj.attributes.code_format !== FORMAT_NUMBER
-          ? html``
+          ? nothing
           : html`
               <div id="keypad">
                 ${BUTTONS.map((value) =>

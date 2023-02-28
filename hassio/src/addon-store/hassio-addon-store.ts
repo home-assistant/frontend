@@ -6,6 +6,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
@@ -73,8 +74,8 @@ export class HassioAddonStore extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
-    let repos: TemplateResult[] = [];
+  protected render() {
+    let repos: (TemplateResult | typeof nothing)[] = [];
 
     if (this.supervisor.store.repositories) {
       repos = this.addonRepositories(
@@ -173,7 +174,7 @@ export class HassioAddonStore extends LitElement {
                 .supervisor=${this.supervisor}
               ></hassio-addon-repository>
             `
-          : html``;
+          : nothing;
       })
   );
 

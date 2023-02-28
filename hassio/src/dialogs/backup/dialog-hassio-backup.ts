@@ -1,9 +1,11 @@
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import { slugify } from "../../../../src/common/string/slugify";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
@@ -11,11 +13,11 @@ import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
 import { getSignedPath } from "../../../../src/data/auth";
-import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   fetchHassioBackupInfo,
   HassioBackupDetail,
 } from "../../../../src/data/hassio/backup";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -27,8 +29,6 @@ import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-backup-content";
 import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
 import { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
-import { atLeastVersion } from "../../../../src/common/config/version";
-import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 
 @customElement("dialog-hassio-backup")
 class HassioBackupDialog
@@ -62,9 +62,9 @@ class HassioBackupDialog
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._dialogParams || !this._backup) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-dialog

@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -12,11 +12,11 @@ import { styleMap } from "lit/directives/style-map";
 import { STATES_OFF } from "../../../common/const";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
+import type { HaCameraStream } from "../../../components/ha-camera-stream";
+import "../../../components/ha-circular-progress";
 import { CameraEntity, fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-import "../../../components/ha-circular-progress";
-import type { HaCameraStream } from "../../../components/ha-camera-stream";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
@@ -131,9 +131,9 @@ export class HuiImage extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     const useRatio = Boolean(
       this._ratio && this._ratio.w > 0 && this._ratio.h > 0
@@ -219,7 +219,7 @@ export class HuiImage extends LitElement {
               ></ha-camera-stream>
             `
           : imageSrc === undefined
-          ? html``
+          ? nothing
           : html`
               <img
                 id="image"

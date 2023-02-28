@@ -5,8 +5,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -95,7 +95,7 @@ class HaLogbookRenderer extends LitElement {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.entries?.length) {
       return html`
         <div class="container no-entries">
@@ -129,12 +129,9 @@ class HaLogbookRenderer extends LitElement {
     `;
   }
 
-  private _renderLogbookItem = (
-    item: LogbookEntry,
-    index: number
-  ): TemplateResult => {
+  private _renderLogbookItem = (item: LogbookEntry, index: number) => {
     if (!item || index === undefined) {
-      return html``;
+      return nothing;
     }
     const previous = this.entries[index - 1] as LogbookEntry | undefined;
     const seenEntityIds: string[] = [];
@@ -188,7 +185,7 @@ class HaLogbookRenderer extends LitElement {
                 ${formatDate(new Date(item.when * 1000), this.hass.locale)}
               </h4>
             `
-          : html``}
+          : nothing}
 
         <div class="entry ${classMap({ "no-entity": !item.entity_id })}">
           <div class="icon-message">
