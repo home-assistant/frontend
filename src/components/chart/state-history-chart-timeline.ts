@@ -143,7 +143,10 @@ export class StateHistoryChartTimeline extends LitElement {
             }
           },
           afterUpdate: (y) => {
-            if (this._yWidth !== Math.floor(y.width)) {
+            if (
+              this._yWidth !== Math.floor(y.width) &&
+              y.ticks.length === this.data.length
+            ) {
               this._yWidth = Math.floor(y.width);
               fireEvent(this, "y-width-changed", {
                 value: this._yWidth,
