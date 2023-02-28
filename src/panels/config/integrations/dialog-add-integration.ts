@@ -1,13 +1,23 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import Fuse from "fuse.js";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import {
+  css,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
+import {
+  protocolIntegrationPicked,
+  PROTOCOL_INTEGRATIONS,
+} from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -136,10 +146,9 @@ class AddIntegrationDialog extends LitElement {
       localize: LocalizeFunc,
       filter?: string
     ): IntegrationListItem[] => {
-      const addDeviceRows: IntegrationListItem[] = (
-        ["zha", "zwave_js"] as const
+      const addDeviceRows: IntegrationListItem[] = PROTOCOL_INTEGRATIONS.filter(
+        (domain) => components.includes(domain)
       )
-        .filter((domain) => components.includes(domain))
         .map((domain) => ({
           name: localize(`ui.panel.config.integrations.add_${domain}_device`),
           domain,
@@ -268,9 +277,9 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._open) {
-      return html``;
+      return nothing;
     }
     const integrations = this._integrations
       ? this._getIntegrations()
@@ -371,7 +380,7 @@ class AddIntegrationDialog extends LitElement {
       ),
       confirm: () => {
         this.closeDialog();
-        if (["zha", "zwave_js"].includes(integration.supported_by)) {
+        if (PROTOCOL_INTEGRATIONS.includes(integration.supported_by)) {
           protocolIntegrationPicked(this, this.hass, integration.supported_by);
           return;
         }
@@ -426,7 +435,7 @@ class AddIntegrationDialog extends LitElement {
 
   private _renderRow = (integration: IntegrationListItem) => {
     if (!integration) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-integration-list-item
@@ -519,7 +528,9 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
-      ["zha", "zwave_js"].includes(integration.domain) &&
+      (PROTOCOL_INTEGRATIONS as ReadonlyArray<string>).includes(
+        integration.domain
+      ) &&
       isComponentLoaded(this.hass, integration.domain)
     ) {
       this._pickedBrand = integration.domain;

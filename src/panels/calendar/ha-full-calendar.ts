@@ -1,15 +1,9 @@
-// @ts-ignore
-import fullcalendarStyle from "@fullcalendar/common/main.css";
 import type { CalendarOptions } from "@fullcalendar/core";
 import { Calendar } from "@fullcalendar/core";
 import allLocales from "@fullcalendar/core/locales-all";
 import dayGridPlugin from "@fullcalendar/daygrid";
-// @ts-ignore
-import daygridStyle from "@fullcalendar/daygrid/main.css";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-// @ts-ignore
-import listStyle from "@fullcalendar/list/main.css";
 import "@material/mwc-button";
 import {
   mdiPlus,
@@ -24,10 +18,9 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
-  unsafeCSS,
+  nothing,
 } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { useAmPm } from "../../common/datetime/use_am_pm";
@@ -78,6 +71,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
   },
 };
 
+@customElement("ha-full-calendar")
 export class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
@@ -110,7 +104,7 @@ export class HAFullCalendar extends LitElement {
     this.calendar?.updateSize();
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     const viewToggleButtons = this._viewToggleButtons(
       this.views,
       this.hass.localize
@@ -209,7 +203,7 @@ export class HAFullCalendar extends LitElement {
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </ha-fab>`
-        : html``}
+        : nothing}
     `;
   }
 
@@ -406,10 +400,6 @@ export class HAFullCalendar extends LitElement {
     return [
       haStyle,
       css`
-        ${unsafeCSS(fullcalendarStyle)}
-        ${unsafeCSS(daygridStyle)}
-        ${unsafeCSS(listStyle)}
-
         :host {
           display: flex;
           flex-direction: column;
@@ -684,5 +674,3 @@ export class HAFullCalendar extends LitElement {
     ];
   }
 }
-
-window.customElements.define("ha-full-calendar", HAFullCalendar);

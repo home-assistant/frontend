@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
@@ -32,9 +32,9 @@ export class HuiCreateDialogHeaderFooter
     return true;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -61,7 +61,7 @@ export class HuiCreateDialogHeaderFooter
                 <ha-card
                   role="button"
                   tabindex="0"
-                  aria-labeledby=${"card-name-" + index}
+                  aria-labelledby=${"card-name-" + index}
                   outlined
                   .type=${headerFooter.type}
                   @click=${this._handleHeaderFooterPicked}

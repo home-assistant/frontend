@@ -7,7 +7,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
@@ -202,9 +202,9 @@ class DataEntryFlowDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
 
     return html`

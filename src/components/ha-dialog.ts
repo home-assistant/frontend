@@ -40,13 +40,32 @@ export class HaDialog extends DialogBase {
       this.suppressDefaultPressSelector,
       SUPPRESS_DEFAULT_PRESS_SELECTOR,
     ].join(", ");
+    this._updateScrolledAttribute();
+    this.contentElement?.addEventListener("scroll", this._onScroll);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.contentElement.removeEventListener("scroll", this._onScroll);
+  }
+
+  private _onScroll = () => {
+    this._updateScrolledAttribute();
+  };
+
+  private _updateScrolledAttribute() {
+    if (!this.contentElement) return;
+    this.toggleAttribute("scrolled", this.contentElement.scrollTop !== 0);
   }
 
   static override styles = [
     styles,
     css`
       .mdc-dialog {
-        --mdc-dialog-scroll-divider-color: var(--divider-color);
+        --mdc-dialog-scroll-divider-color: var(
+          --dialog-scroll-divider-color,
+          var(--divider-color)
+        );
         z-index: var(--dialog-z-index, 7);
         -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
         backdrop-filter: var(--dialog-backdrop-filter, none);

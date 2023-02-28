@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { mdiContentCopy, mdiOpenInNew } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -32,7 +32,7 @@ export class DialogManageCloudhook extends LitElement {
 
   protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const { webhook, cloudhook } = this._params;
     const docsUrl =

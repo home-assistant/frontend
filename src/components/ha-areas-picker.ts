@@ -1,7 +1,7 @@
-import { css, html, LitElement, TemplateResult } from "lit";
+import { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import type { EntityRegistryEntry } from "../data/entity_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
@@ -48,7 +48,7 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
 
   @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  @property() public entityFilter?: (entity: EntityRegistryEntry) => boolean;
+  @property() public entityFilter?: (entity: HassEntity) => boolean;
 
   @property({ attribute: "picked-area-label" })
   public pickedAreaLabel?: string;
@@ -60,9 +60,9 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required?: boolean;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     const currentAreas = this._currentAreas;

@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/entity/ha-entities-picker";
@@ -97,9 +97,9 @@ class DialogPersonDetail extends LitElement {
     await this.updateComplete;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const nameInvalid = this._name.trim() === "";
     return html`
@@ -255,7 +255,7 @@ class DialogPersonDetail extends LitElement {
                   </mwc-button>`
                 : ""}
             `
-          : html``}
+          : nothing}
         <mwc-button
           slot="primaryAction"
           @click=${this._updateEntry}

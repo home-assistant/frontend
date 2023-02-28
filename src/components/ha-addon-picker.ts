@@ -1,5 +1,5 @@
-import { html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
@@ -54,9 +54,9 @@ class HaAddonPicker extends LitElement {
     this._getAddons();
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._addons) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-combo-box

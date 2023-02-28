@@ -6,6 +6,9 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-STATS=1 NODE_ENV=production ../node_modules/.bin/webpack --profile --json > compilation-stats.json
-npx webpack-bundle-analyzer compilation-stats.json dist/frontend_latest
-rm compilation-stats.json
+export STATS=1
+statsfile="compilation-stats-demo.json"
+
+./node_modules/.bin/webpack-cli --profile --node-env=production --json=$statsfile
+npx webpack-bundle-analyzer $statsfile dist/frontend_latest
+rm -f $statsfile

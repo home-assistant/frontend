@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -230,9 +230,9 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._devices || !this._areas || !this._entities) {
-      return html``;
+      return nothing;
     }
     const areas = this._getAreasWithDevices(
       this._devices,

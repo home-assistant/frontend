@@ -1,6 +1,6 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { property, state } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-circular-progress";
@@ -14,6 +14,7 @@ import {
   setDemoConfig,
 } from "../configs/demo-configs";
 
+@customElement("ha-demo-card")
 export class HADemoCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public lovelace?: Lovelace;
 
@@ -29,9 +30,9 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   public setConfig(_config: LovelaceCardConfig) {}
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._hidden) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-card>
@@ -154,5 +155,3 @@ declare global {
     "ha-demo-card": HADemoCard;
   }
 }
-
-customElements.define("ha-demo-card", HADemoCard);

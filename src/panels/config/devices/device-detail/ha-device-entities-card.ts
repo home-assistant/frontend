@@ -223,10 +223,7 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   private _openEditEntry(ev: Event): void {
     const entry = (ev.currentTarget! as any).entry;
-    showMoreInfoDialog(this, {
-      entityId: entry.entity_id,
-      tab: "settings",
-    });
+    showMoreInfoDialog(this, { entityId: entry.entity_id });
   }
 
   private _addToLovelaceView(): void {

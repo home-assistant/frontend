@@ -13,7 +13,7 @@ import {
   startOfToday,
 } from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -40,9 +40,9 @@ import {
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
+  getStatisticLabel,
   Statistics,
   StatisticsMetaData,
-  getStatisticLabel,
 } from "../../../../data/recorder";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -89,9 +89,9 @@ export class HuiEnergySolarGraphCard
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -105,6 +105,7 @@ export class HuiEnergySolarGraphCard
           })}"
         >
           <ha-chart-base
+            .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(
               this._start,

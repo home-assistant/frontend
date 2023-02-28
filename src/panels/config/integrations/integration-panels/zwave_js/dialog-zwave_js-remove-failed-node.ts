@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle, mdiRobotDead } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
@@ -52,9 +52,9 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     this.closeDialog();
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.device_id) {
-      return html``;
+      return nothing;
     }
 
     return html`

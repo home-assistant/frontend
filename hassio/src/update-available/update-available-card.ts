@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -116,12 +116,12 @@ class UpdateAvailableCard extends LitElement {
       storeAddons.find((addon) => addon.slug === slug)
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (
       !this._updateType ||
       (this._updateType === "addon" && !this._addonInfo)
     ) {
-      return html``;
+      return nothing;
     }
 
     const changelog = changelogUrl(this._updateType, this._version_latest);

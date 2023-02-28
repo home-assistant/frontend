@@ -312,6 +312,7 @@ export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
   period?: "5minute" | "hour" | "day" | "month";
   stat_types?: ExtendedStatisticType | ExtendedStatisticType[];
   chart_type?: "line" | "bar";
+  hide_legend?: boolean;
 }
 
 export interface StatisticCardConfig extends LovelaceCardConfig {

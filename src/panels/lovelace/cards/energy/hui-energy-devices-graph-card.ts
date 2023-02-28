@@ -8,7 +8,7 @@ import {
 import { getRelativePosition } from "chart.js/helpers";
 import { addHours, differenceInDays } from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -71,9 +71,9 @@ export class HuiEnergyDevicesGraphCard
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -87,6 +87,7 @@ export class HuiEnergyDevicesGraphCard
           })}"
         >
           <ha-chart-base
+            .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(this.hass.locale)}
             .height=${(this._chartData?.datasets[0]?.data.length || 0) * 28 +

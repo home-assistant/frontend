@@ -1,7 +1,7 @@
 import { mdiPencil } from "@mdi/js";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
@@ -11,6 +11,7 @@ import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
+@customElement("ha-panel-map")
 class HaPanelMap extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -94,8 +95,6 @@ class HaPanelMap extends LitElement {
     ];
   }
 }
-
-customElements.define("ha-panel-map", HaPanelMap);
 
 declare global {
   interface HTMLElementTagNameMap {

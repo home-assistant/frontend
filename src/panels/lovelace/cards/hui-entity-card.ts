@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -111,9 +111,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     return size;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity];
@@ -168,7 +168,10 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               ? formatNumber(
                   stateObj.state,
                   this.hass.locale,
-                  getNumberFormatOptions(stateObj)
+                  getNumberFormatOptions(
+                    stateObj,
+                    this.hass.entities[this._config.entity]
+                  )
                 )
               : computeStateDisplay(
                   this.hass.localize,
@@ -195,7 +198,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   private _computeColor(stateObj: HassEntity): string | undefined {
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
-      if (["heating", "cooling", "drying", "fan"].includes(hvacAction)) {
+      if (hvacAction in HVAC_ACTION_TO_MODE) {
         return stateColorCss(stateObj, HVAC_ACTION_TO_MODE[hvacAction]);
       }
       return undefined;

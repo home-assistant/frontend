@@ -6,6 +6,35 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 
+type entityCategory = "config" | "diagnostic";
+
+export interface EntityRegistryDisplayEntry {
+  entity_id: string;
+  name?: string;
+  device_id?: string;
+  area_id?: string;
+  hidden?: boolean;
+  entity_category?: entityCategory;
+  translation_key?: string;
+  platform?: string;
+  display_precision?: number;
+}
+
+interface EntityRegistryDisplayEntryResponse {
+  entities: {
+    ei: string;
+    di?: string;
+    ai?: string;
+    ec?: number;
+    en?: string;
+    pl?: string;
+    tk?: string;
+    hb?: boolean;
+    dp?: number;
+  }[];
+  entity_categories: Record<number, entityCategory>;
+}
+
 export interface EntityRegistryEntry {
   id: string;
   entity_id: string;
@@ -17,11 +46,12 @@ export interface EntityRegistryEntry {
   area_id: string | null;
   disabled_by: "user" | "device" | "integration" | "config_entry" | null;
   hidden_by: Exclude<EntityRegistryEntry["disabled_by"], "config_entry">;
-  entity_category: "config" | "diagnostic" | null;
+  entity_category: entityCategory | null;
   has_entity_name: boolean;
   original_name?: string;
   unique_id: string;
   translation_key?: string;
+  options: EntityRegistryOptions | null;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
@@ -30,7 +60,6 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   device_class?: string;
   original_device_class?: string;
   aliases: string[];
-  options: EntityRegistryOptions | null;
 }
 
 export interface UpdateEntityRegistryEntryResult {
@@ -40,7 +69,8 @@ export interface UpdateEntityRegistryEntryResult {
 }
 
 export interface SensorEntityOptions {
-  precision?: number | null;
+  display_precision?: number | null;
+  suggested_display_precision?: number | null;
   unit_of_measurement?: string | null;
 }
 
@@ -153,6 +183,11 @@ export const fetchEntityRegistry = (conn: Connection) =>
     type: "config/entity_registry/list",
   });
 
+export const fetchEntityRegistryDisplay = (conn: Connection) =>
+  conn.sendMessagePromise<EntityRegistryDisplayEntryResponse>({
+    type: "config/entity_registry/list_for_display",
+  });
+
 const subscribeEntityRegistryUpdates = (
   conn: Connection,
   store: Store<EntityRegistryEntry[]>
@@ -181,6 +216,34 @@ export const subscribeEntityRegistry = (
     onChange
   );
 
+const subscribeEntityRegistryDisplayUpdates = (
+  conn: Connection,
+  store: Store<EntityRegistryDisplayEntryResponse>
+) =>
+  conn.subscribeEvents(
+    debounce(
+      () =>
+        fetchEntityRegistryDisplay(conn).then((entities) =>
+          store.setState(entities, true)
+        ),
+      500,
+      true
+    ),
+    "entity_registry_updated"
+  );
+
+export const subscribeEntityRegistryDisplay = (
+  conn: Connection,
+  onChange: (entities: EntityRegistryDisplayEntryResponse) => void
+) =>
+  createCollection<EntityRegistryDisplayEntryResponse>(
+    "_entityRegistryDisplay",
+    fetchEntityRegistryDisplay,
+    subscribeEntityRegistryDisplayUpdates,
+    conn,
+    onChange
+  );
+
 export const sortEntityRegistryByName = (
   entries: EntityRegistryEntry[],
   language: string
@@ -189,10 +252,20 @@ export const sortEntityRegistryByName = (
     caseInsensitiveStringCompare(entry1.name || "", entry2.name || "", language)
   );
 
+export const entityRegistryByEntityId = memoizeOne(
+  (entries: EntityRegistryEntry[]) => {
+    const entities: Record<string, EntityRegistryEntry> = {};
+    for (const entity of entries) {
+      entities[entity.entity_id] = entity;
+    }
+    return entities;
+  }
+);
+
 export const entityRegistryById = memoizeOne(
-  (entries: HomeAssistant["entities"]) => {
-    const entities: HomeAssistant["entities"] = {};
-    for (const entity of Object.values(entries)) {
+  (entries: EntityRegistryEntry[]) => {
+    const entities: Record<string, EntityRegistryEntry> = {};
+    for (const entity of entries) {
       entities[entity.id] = entity;
     }
     return entities;

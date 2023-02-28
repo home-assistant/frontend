@@ -1,16 +1,16 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
-import memoizeOne from "memoize-one";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
-import "../../../../../components/ha-code-editor";
-import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-code-editor";
 import { fetchDevices, ZHADevice } from "../../../../../data/zha";
+import { HomeAssistant } from "../../../../../types";
 
 export interface DeviceRowData extends DataTableRowData {
   id: string;
@@ -113,9 +113,9 @@ class ZHADeviceNeighbors extends LitElement {
           }
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.device) {
-      return html``;
+      return nothing;
     }
     return html`
       ${!this._devices

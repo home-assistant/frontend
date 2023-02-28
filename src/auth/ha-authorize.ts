@@ -1,5 +1,5 @@
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import punycode from "punycode";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
@@ -14,7 +14,8 @@ import "./ha-auth-flow";
 
 import("./ha-pick-auth-provider");
 
-class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
+@customElement("ha-authorize")
+export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   @property() public clientId?: string;
 
   @property() public redirectUri?: string;
@@ -183,4 +184,3 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     `;
   }
 }
-customElements.define("ha-authorize", HaAuthorize);

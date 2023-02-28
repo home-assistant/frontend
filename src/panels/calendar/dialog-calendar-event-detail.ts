@@ -1,8 +1,8 @@
 import "@material/mwc-button";
 import { mdiCalendarClock, mdiClose } from "@mdi/js";
-import { addDays, isSameDay } from "date-fns/esm";
 import { toDate } from "date-fns-tz";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { addDays, isSameDay } from "date-fns/esm";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTime } from "../../common/datetime/format_date_time";
@@ -19,10 +19,10 @@ import {
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
+import { renderRRuleAsText } from "./recurrence";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
-import { renderRRuleAsText } from "./recurrence";
 
 class DialogCalendarEventDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -54,9 +54,9 @@ class DialogCalendarEventDetail extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const stateObj = this.hass.states[this._calendarId!];
     return html`
@@ -90,7 +90,7 @@ class DialogCalendarEventDetail extends LitElement {
                 ? html`<br />
                     <div class="description">${this._data.description}</div>
                     <br />`
-                : html``}
+                : nothing}
             </div>
           </div>
 

@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -91,7 +91,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return this._config?.title ? 2 : 0 + 2 * (this._entities?.length || 1);
+    return (
+      5 +
+      (this._config?.title ? 2 : 0) +
+      (!this._config?.hide_legend ? this._entities?.length || 0 : 0)
+    );
   }
 
   public setConfig(config: StatisticsGraphCardConfig): void {
@@ -173,9 +177,9 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -194,6 +198,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .statTypes=${this._statTypes!}
             .names=${this._names}
             .unit=${this._unit}
+            .hideLegend=${this._config.hide_legend || false}
           ></statistics-chart>
         </div>
       </ha-card>

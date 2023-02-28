@@ -11,6 +11,7 @@ import {
   mdiStopCircleOutline,
   mdiSort,
 } from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -26,6 +27,10 @@ import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_TYPES } from "../../../../data/action";
 import { validateConfig } from "../../../../data/config";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../../data/entity_registry";
 import { Action, getActionType } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
@@ -107,6 +112,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public reOrderMode = false;
 
+  @state() private _entityReg: EntityRegistryEntry[] = [];
+
   @state() private _warnings?: string[];
 
   @state() private _uiModeAvailable = true;
@@ -114,6 +121,14 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entityReg = entities;
+      }),
+    ];
+  }
 
   protected willUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
@@ -156,7 +171,9 @@ export default class HaAutomationActionRow extends LitElement {
               class="action-icon"
               .path=${ACTION_TYPES[type!]}
             ></ha-svg-icon>
-            ${capitalizeFirstLetter(describeAction(this.hass, this.action))}
+            ${capitalizeFirstLetter(
+              describeAction(this.hass, this._entityReg, this.action)
+            )}
           </h3>
 
           <slot name="icons" slot="icons"></slot>
@@ -465,7 +482,7 @@ export default class HaAutomationActionRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeAction(this.hass, this.action, undefined, true)
+        describeAction(this.hass, this._entityReg, this.action, undefined, true)
       ),
       defaultValue: this.action.alias,
       confirmText: this.hass.localize("ui.common.submit"),

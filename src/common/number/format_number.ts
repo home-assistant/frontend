@@ -2,6 +2,7 @@ import {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
+import { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { FrontendLocaleData, NumberFormat } from "../../data/translation";
 import { round } from "./round";
 
@@ -90,8 +91,16 @@ export const formatNumber = (
  * @returns An `Intl.NumberFormatOptions` object with `maximumFractionDigits` set to 0, or `undefined`
  */
 export const getNumberFormatOptions = (
-  entityState: HassEntity
+  entityState: HassEntity,
+  entity?: EntityRegistryDisplayEntry
 ): Intl.NumberFormatOptions | undefined => {
+  const precision = entity?.display_precision;
+  if (precision != null) {
+    return {
+      maximumFractionDigits: precision,
+      minimumFractionDigits: precision,
+    };
+  }
   if (
     Number.isInteger(Number(entityState.attributes?.step)) &&
     Number.isInteger(Number(entityState.state))

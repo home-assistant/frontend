@@ -9,7 +9,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -20,6 +20,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { formatNumber } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
 import {
   LocalizeFunc,
@@ -63,9 +64,9 @@ import {
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
-  SensorEntityOptions,
   fetchEntityRegistry,
   removeEntityRegistryEntry,
+  SensorEntityOptions,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
@@ -75,6 +76,7 @@ import {
   WeatherUnits,
   getWeatherConvertibleUnits,
 } from "../../../data/weather";
+import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -85,7 +87,6 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -124,14 +125,6 @@ const OVERRIDE_DEVICE_CLASSES = {
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
 const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
-
-function precisionLabel(precision: number, _state?: string) {
-  const state_float =
-    _state === undefined || isNaN(parseFloat(_state))
-      ? 0.0
-      : parseFloat(_state);
-  return state_float.toFixed(precision);
-}
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -263,7 +256,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
 
     if (domain === "sensor") {
-      this._precision = this.entry.options?.sensor?.precision;
+      this._precision = this.entry.options?.sensor?.display_precision;
     }
 
     if (domain === "weather") {
@@ -290,6 +283,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         this._deviceClassOptions[1].push(...deviceClass);
       }
     }
+  }
+
+  private precisionLabel(precision?: number, stateValue?: string) {
+    const stateValueNumber = Number(stateValue);
+    const value = !isNaN(stateValueNumber) ? stateValueNumber : 0;
+    return formatNumber(value, this.hass.locale, {
+      minimumFractionDigits: precision,
+      maximumFractionDigits: precision,
+    });
   }
 
   protected async updated(changedProps: PropertyValues): Promise<void> {
@@ -327,9 +329,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this.entry.entity_id !== this._origEntityId) {
-      return html``;
+      return nothing;
     }
     const stateObj: HassEntity | undefined =
       this.hass.states[this.entry.entity_id];
@@ -337,6 +339,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     const domain = computeDomain(this.entry.entity_id);
 
     const invalidDomainUpdate = computeDomain(this._entityId.trim()) !== domain;
+
+    const defaultPrecision =
+      this.entry.options?.sensor?.suggested_display_precision ?? undefined;
 
     return html`
       ${!stateObj
@@ -513,18 +518,21 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._precisionChanged}
                 @closed=${stopPropagation}
               >
-                <mwc-list-item .value=${"default"}
+                <mwc-list-item value="default"
                   >${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.precision_default"
+                    "ui.dialogs.entity_registry.editor.precision_default",
+                    {
+                      value: this.precisionLabel(
+                        defaultPrecision,
+                        stateObj?.state
+                      ),
+                    }
                   )}</mwc-list-item
                 >
                 ${PRECISIONS.map(
                   (precision) => html`
                     <mwc-list-item .value=${precision.toString()}>
-                      ${precisionLabel(
-                        precision,
-                        this.hass.states[this.entry.entity_id]?.state
-                      )}
+                      ${this.precisionLabel(precision, stateObj?.state)}
                     </mwc-list-item>
                   `
                 )}
@@ -1162,11 +1170,12 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
     if (
       domain === "sensor" &&
-      this.entry.options?.[domain]?.precision !== this._precision
+      this.entry.options?.[domain]?.display_precision !== this._precision
     ) {
       params.options_domain = domain;
       params.options = params.options || this.entry.options?.[domain] || {};
-      (params.options as SensorEntityOptions).precision = this._precision;
+      (params.options as SensorEntityOptions).display_precision =
+        this._precision;
     }
     if (
       domain === "weather" &&
@@ -1247,10 +1256,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           if (!entity) {
             return;
           }
-          showMoreInfoDialog(parent, {
-            entityId: entity.entity_id,
-            tab: "settings",
-          });
+          showMoreInfoDialog(parent, { entityId: entity.entity_id });
         });
       }, "entity_registry_updated");
     }

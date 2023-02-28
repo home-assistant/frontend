@@ -6,7 +6,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -78,9 +78,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config!.entity] as LightEntity;
@@ -330,11 +330,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       }
 
       .light-button.state-on {
-        color: var(--state-light-color);
+        color: var(--state-light-active-color);
       }
 
       .light-button.state-unavailable {
-        color: var(--state-icon-unavailable-color);
+        color: var(--state-unavailable-color);
       }
 
       #info {

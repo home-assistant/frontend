@@ -18,7 +18,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -29,6 +29,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
@@ -44,13 +45,9 @@ import {
   getCurrentProgress,
   handleMediaControlClick,
   MediaPlayerEntity,
+  MediaPlayerEntityFeature,
   MediaPlayerItem,
   setMediaPlayerVolume,
-  SUPPORT_BROWSE_MEDIA,
-  SUPPORT_PAUSE,
-  SUPPORT_PLAY,
-  SUPPORT_STOP,
-  SUPPORT_VOLUME_SET,
 } from "../../data/media-player";
 import { ResolvedMediaSource } from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
@@ -159,13 +156,15 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     this._newMediaExpected = false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._newMediaExpected) {
       return html`
         <div class="controls-progress">
           ${until(
             // Only show spinner after 500ms
-            new Promise((resolve) => setTimeout(resolve, 500)).then(
+            new Promise((resolve) => {
+              setTimeout(resolve, 500);
+            }).then(
               () => html`<ha-circular-progress active></ha-circular-progress>`
             )
           )}
@@ -183,13 +182,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     const controls: ControlButton[] | undefined = !this.narrow
       ? computeMediaControls(stateObj, true)
       : (stateObj.state === "playing" &&
-          (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-            supportsFeature(stateObj, SUPPORT_STOP))) ||
+          (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
+            supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
         ((stateObj.state === "paused" || stateObj.state === "idle") &&
-          supportsFeature(stateObj, SUPPORT_PLAY)) ||
+          supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
         (stateObj.state === "on" &&
-          (supportsFeature(stateObj, SUPPORT_PLAY) ||
-            supportsFeature(stateObj, SUPPORT_PAUSE)))
+          (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
+            supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)))
       ? [
           {
             icon:
@@ -197,13 +196,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                 ? mdiPlayPause
                 : stateObj.state !== "playing"
                 ? mdiPlay
-                : supportsFeature(stateObj, SUPPORT_PAUSE)
+                : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
                 ? mdiPause
                 : mdiStop,
             action:
               stateObj.state !== "playing"
                 ? "media_play"
-                : supportsFeature(stateObj, SUPPORT_PAUSE)
+                : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
                 ? "media_pause"
                 : "media_stop",
           },
@@ -247,7 +246,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         </div>
       </div>
       <div class="controls-progress">
-        ${this._browserPlayer?.buffering
+        ${stateObj.state === "buffering"
           ? html` <ha-circular-progress active></ha-circular-progress> `
           : html`
               <div class="controls">
@@ -268,7 +267,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                     )}
               </div>
               ${stateObj.attributes.media_duration === Infinity
-                ? html``
+                ? nothing
                 : this.narrow
                 ? html`<mwc-linear-progress></mwc-linear-progress>`
                 : html`
@@ -291,7 +290,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       ${
         !this.narrow &&
         stateObj &&
-        supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
           ? html`
               <ha-button-menu corner="BOTTOM_START" y="0" x="76">
                 <ha-icon-button
@@ -323,7 +322,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                     ></ha-icon-button>
                   `
                 : html`
-                    <mwc-button
+                    <ha-button
                       slot="trigger"
                       .label=${this.narrow
                         ? ""
@@ -344,7 +343,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                         slot="trailingIcon"
                         .path=${mdiChevronDown}
                       ></ha-svg-icon>
-                    </mwc-button>
+                    </ha-button>
                   `
             }
             <mwc-list-item
@@ -469,7 +468,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     return Object.values(this.hass!.states).filter(
       (entity) =>
         computeStateDomain(entity) === "media_player" &&
-        supportsFeature(entity, SUPPORT_BROWSE_MEDIA) &&
+        supportsFeature(entity, MediaPlayerEntityFeature.BROWSE_MEDIA) &&
         !this._hiddenEntities.has(entity.entity_id)
     );
   }
@@ -720,11 +719,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         font-weight: bold;
       }
 
-      ha-svg-icon[slot="icon"] {
-        margin-inline-start: 8px !important;
-        margin-inline-end: 8px !important;
-        direction: var(--direction);
-      }
       ha-svg-icon[slot="trailingIcon"] {
         margin-inline-start: 8px !important;
         margin-inline-end: 0px !important;

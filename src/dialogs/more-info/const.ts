@@ -1,5 +1,7 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { computeGroupDomain, GroupEntity } from "../../data/group";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
 
@@ -13,7 +15,8 @@ export const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
  * Entity Domains that should always be editable; {@see shouldShowEditIcon}.
  * */
 export const EDITABLE_DOMAINS_WITH_UNIQUE_ID = ["script"];
-
+/** Domains with with new more info design. */
+export const DOMAINS_WITH_NEW_MORE_INFO = ["light", "siren", "switch"];
 /** Domains with separate more info dialog. */
 export const DOMAINS_WITH_MORE_INFO = [
   "alarm_control_panel",
@@ -34,7 +37,9 @@ export const DOMAINS_WITH_MORE_INFO = [
   "remote",
   "script",
   "scene",
+  "siren",
   "sun",
+  "switch",
   "timer",
   "update",
   "vacuum",
@@ -87,4 +92,17 @@ export const computeShowLogBookComponent = (
   }
 
   return true;
+};
+
+export const computeShowNewMoreInfo = (stateObj: HassEntity): boolean => {
+  const domain = computeDomain(stateObj.entity_id);
+  if (domain === "group") {
+    const groupDomain = computeGroupDomain(stateObj as GroupEntity);
+    return (
+      groupDomain != null &&
+      groupDomain !== "group" &&
+      DOMAINS_WITH_NEW_MORE_INFO.includes(groupDomain)
+    );
+  }
+  return DOMAINS_WITH_NEW_MORE_INFO.includes(domain);
 };

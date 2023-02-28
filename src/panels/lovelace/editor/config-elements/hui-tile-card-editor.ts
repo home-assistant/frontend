@@ -1,6 +1,6 @@
 import { mdiGestureTap, mdiPalette } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
@@ -14,9 +14,8 @@ import {
   string,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { domainIcon } from "../../../../common/entity/domain_icon";
 import { entityId } from "../../../../common/structs/is-entity-id";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -65,16 +64,14 @@ export class HuiTileCardEditor
   }
 
   private _schema = memoizeOne(
-    (entity: string, icon?: string, stateObj?: HassEntity) =>
+    (localize: LocalizeFunc) =>
       [
         { name: "entity", selector: { entity: {} } },
         {
           name: "",
           type: "expandable",
           iconPath: mdiPalette,
-          title: this.hass!.localize(
-            `ui.panel.lovelace.editor.card.tile.appearance`
-          ),
+          title: localize(`ui.panel.lovelace.editor.card.tile.appearance`),
           schema: [
             {
               name: "",
@@ -84,14 +81,9 @@ export class HuiTileCardEditor
                 {
                   name: "icon",
                   selector: {
-                    icon: {
-                      placeholder: icon || stateObj?.attributes.icon,
-                      fallbackPath:
-                        !icon && !stateObj?.attributes.icon && stateObj
-                          ? domainIcon(computeDomain(entity), stateObj)
-                          : undefined,
-                    },
+                    icon: {},
                   },
+                  context: { icon_entity: "entity" },
                 },
                 {
                   name: "color",
@@ -118,9 +110,7 @@ export class HuiTileCardEditor
         {
           name: "",
           type: "expandable",
-          title: this.hass!.localize(
-            `ui.panel.lovelace.editor.card.tile.actions`
-          ),
+          title: localize(`ui.panel.lovelace.editor.card.tile.actions`),
           iconPath: mdiGestureTap,
           schema: [
             {
@@ -144,20 +134,16 @@ export class HuiTileCardEditor
     (entity_id?: string): LovelaceTileFeatureContext => ({ entity_id })
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity ?? ""] as
       | HassEntity
       | undefined;
 
-    const schema = this._schema(
-      this._config.entity,
-      this._config.icon,
-      stateObj
-    );
+    const schema = this._schema(this.hass!.localize);
 
     if (this._subElementEditorConfig) {
       return html`

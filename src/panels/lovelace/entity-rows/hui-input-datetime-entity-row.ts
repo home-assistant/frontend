@@ -4,10 +4,12 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-date-input";
+import "../../../components/ha-time-input";
 import { isUnavailableState, UNKNOWN } from "../../../data/entity";
 import {
   setInputDateTimeValue,
@@ -18,8 +20,6 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { EntityConfig, LovelaceRow } from "./types";
-import "../../../components/ha-time-input";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 
 @customElement("hui-input-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
@@ -38,9 +38,9 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity];

@@ -1,3 +1,4 @@
+import "@lit-labs/virtualizer";
 import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -5,6 +6,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
@@ -21,16 +23,15 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../search-input";
 import { debounce } from "../../common/util/debounce";
 import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
+import "../search-input";
 import { filterData, sortData } from "./sort-filter";
-import { HomeAssistant } from "../../types";
-import "@lit-labs/virtualizer";
 
 declare global {
   // for fire event
@@ -73,7 +74,7 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   title: TemplateResult | string;
   label?: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
-  template?: (data: any, row: T) => TemplateResult | string;
+  template?: (data: any, row: T) => TemplateResult | string | typeof nothing;
   width?: string;
   maxWidth?: string;
   grows?: boolean;
@@ -352,13 +353,10 @@ export class HaDataTable extends LitElement {
     `;
   }
 
-  private _renderRow = (
-    row: DataTableRowData,
-    index: number
-  ): TemplateResult => {
+  private _renderRow = (row: DataTableRowData, index: number) => {
     // not sure how this happens...
     if (!row) {
-      return html``;
+      return nothing;
     }
     if (row.append) {
       return html` <div class="mdc-data-table__row">${row.content}</div> `;
@@ -461,7 +459,9 @@ export class HaDataTable extends LitElement {
     const elapsed = curTime - startTime;
 
     if (elapsed < 100) {
-      await new Promise((resolve) => setTimeout(resolve, 100 - elapsed));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100 - elapsed);
+      });
     }
     if (this.curRequest !== curRequest) {
       return;

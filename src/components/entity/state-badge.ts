@@ -6,7 +6,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -45,7 +45,7 @@ export class StateBadge extends LitElement {
     return this.stateColor || (domain === "light" && this.stateColor !== false);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     const stateObj = this.stateObj;
 
     // We either need a `stateObj` or one override
@@ -56,7 +56,7 @@ export class StateBadge extends LitElement {
     }
 
     if (!this._showIcon) {
-      return html``;
+      return nothing;
     }
 
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
@@ -133,7 +133,7 @@ export class StateBadge extends LitElement {
         }
         if (stateObj.attributes.hvac_action) {
           const hvacAction = stateObj.attributes.hvac_action;
-          if (["heating", "cooling", "drying", "fan"].includes(hvacAction)) {
+          if (hvacAction in HVAC_ACTION_TO_MODE) {
             iconStyle.color = stateColorCss(
               stateObj,
               HVAC_ACTION_TO_MODE[hvacAction]

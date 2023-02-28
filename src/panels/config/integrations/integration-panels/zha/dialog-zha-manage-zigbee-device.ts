@@ -1,18 +1,21 @@
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
+import { mdiClose } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
-import { mdiClose } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-header-bar";
 import {
   fetchBindableDevices,
   fetchGroups,
@@ -22,20 +25,17 @@ import {
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { sortZHADevices, sortZHAGroups } from "./functions";
-import "./zha-cluster-attributes";
-import "./zha-cluster-commands";
-import "./zha-manage-clusters";
-import "./zha-device-binding";
-import "./zha-group-binding";
-import "./zha-device-neighbors";
-import "./zha-device-signature";
 import {
   Tab,
   ZHAManageZigbeeDeviceDialogParams,
 } from "./show-dialog-zha-manage-zigbee-device";
-import "../../../../../components/ha-header-bar";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
+import "./zha-cluster-attributes";
+import "./zha-cluster-commands";
+import "./zha-device-binding";
+import "./zha-device-neighbors";
+import "./zha-device-signature";
+import "./zha-group-binding";
+import "./zha-manage-clusters";
 
 @customElement("dialog-zha-manage-zigbee-device")
 class DialogZHAManageZigbeeDevice extends LitElement {
@@ -87,9 +87,9 @@ class DialogZHAManageZigbeeDevice extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._device) {
-      return html``;
+      return nothing;
     }
 
     const tabs = this._getTabs(this._device);

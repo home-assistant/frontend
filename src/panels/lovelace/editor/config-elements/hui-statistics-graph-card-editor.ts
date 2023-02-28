@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -12,6 +12,7 @@ import {
   array,
   assert,
   assign,
+  boolean,
   literal,
   number,
   object,
@@ -19,8 +20,8 @@ import {
   string,
   union,
 } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { ensureArray } from "../../../../common/array/ensure-array";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import {
@@ -72,6 +73,7 @@ const cardConfigStruct = assign(
     chart_type: optional(union([literal("bar"), literal("line")])),
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
     unit: optional(string()),
+    hide_legend: optional(boolean()),
   })
 );
 
@@ -204,6 +206,11 @@ export class HuiStatisticsGraphCardEditor
                 ["bar", "Bar"],
               ],
             },
+            {
+              name: "hide_legend",
+              required: false,
+              selector: { boolean: {} },
+            },
           ],
         },
       ];
@@ -227,9 +234,9 @@ export class HuiStatisticsGraphCardEditor
     }
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const schema = this._schema(
@@ -334,6 +341,7 @@ export class HuiStatisticsGraphCardEditor
       case "stat_types":
       case "period":
       case "unit":
+      case "hide_legend":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`
         );

@@ -6,7 +6,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -140,9 +140,9 @@ export class HuiDialogEditCard
     this._isEscapeEnabled = false;
   };
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
 
     let heading: string;
@@ -315,7 +315,9 @@ export class HuiDialogEditCard
 
   private async _confirmCancel() {
     // Make sure the open state of this dialog is handled before the open state of confirm dialog
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
     const confirm = await showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.lovelace.editor.edit_card.unsaved_changes"

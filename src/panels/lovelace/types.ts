@@ -109,6 +109,7 @@ export interface LovelaceTileFeatureConstructor
     hass: HomeAssistant,
     stateObj?: HassEntity
   ) => LovelaceTileFeatureConfig;
+  isSupported?: (stateObj?: HassEntity) => boolean;
 }
 
 export interface LovelaceTileFeatureEditor

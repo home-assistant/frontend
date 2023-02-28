@@ -1,6 +1,7 @@
+import { mdiRefresh } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/buttons/ha-call-service-button";
@@ -24,6 +25,8 @@ export class SystemLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public filter = "";
+
+  @property() public header?: string;
 
   public loaded = false;
 
@@ -66,7 +69,7 @@ export class SystemLogCard extends LitElement {
       })
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     const filteredItems = this._items
       ? this._getFilteredItems(this._items, this.filter.toLowerCase())
       : [];
@@ -83,6 +86,14 @@ export class SystemLogCard extends LitElement {
                 </div>
               `
             : html`
+                <div class="header">
+                  <h1 class="card-header">${this.header || "Logs"}</h1>
+                  <ha-icon-button
+                    .path=${mdiRefresh}
+                    @click=${this.fetchData}
+                    .label=${this.hass.localize("ui.common.refresh")}
+                  ></ha-icon-button>
+                </div>
                 ${this._items.length === 0
                   ? html`
                       <div class="card-content empty-content">
@@ -123,7 +134,7 @@ export class SystemLogCard extends LitElement {
                                 : item.source[0]}
                               ${item.count > 1
                                 ? html` - ${this._multipleMessages(item)} `
-                                : html``}
+                                : nothing}
                             </div>
                           </paper-item-body>
                         </paper-item>
@@ -138,11 +149,6 @@ export class SystemLogCard extends LitElement {
                     >${this.hass.localize(
                       "ui.panel.config.logs.clear"
                     )}</ha-call-service-button
-                  >
-                  <ha-progress-button @click=${this.fetchData}
-                    >${this.hass.localize(
-                      "ui.panel.config.logs.refresh"
-                    )}</ha-progress-button
                   >
                 </div>
               `}
@@ -179,6 +185,24 @@ export class SystemLogCard extends LitElement {
     return css`
       ha-card {
         padding-top: 16px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 16px;
+      }
+
+      .card-header {
+        color: var(--ha-card-header-color, --primary-text-color);
+        font-family: var(--ha-card-header-font-family, inherit);
+        font-size: var(--ha-card-header-font-size, 24px);
+        letter-spacing: -0.012em;
+        line-height: 48px;
+        display: block;
+        margin-block-start: 0px;
+        margin-block-end: 0px;
+        font-weight: normal;
       }
 
       paper-item {

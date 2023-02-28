@@ -1,10 +1,13 @@
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "./ha-device-picker";
-import type { HaDevicePickerDeviceFilterFunc } from "./ha-device-picker";
+import type {
+  HaDevicePickerDeviceFilterFunc,
+  HaDevicePickerEntityFilterFunc,
+} from "./ha-device-picker";
 
 @customElement("ha-devices-picker")
 class HaDevicesPicker extends LitElement {
@@ -44,9 +47,11 @@ class HaDevicesPicker extends LitElement {
 
   @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
-  protected render(): TemplateResult {
+  @property() public entityFilter?: HaDevicePickerEntityFilterFunc;
+
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     const currentDevices = this._currentDevices;
@@ -59,6 +64,7 @@ class HaDevicesPicker extends LitElement {
               .curValue=${entityId}
               .hass=${this.hass}
               .deviceFilter=${this.deviceFilter}
+              .entityFilter=${this.entityFilter}
               .includeDomains=${this.includeDomains}
               .excludeDomains=${this.excludeDomains}
               .includeDeviceClasses=${this.includeDeviceClasses}
@@ -76,8 +82,10 @@ class HaDevicesPicker extends LitElement {
           .hass=${this.hass}
           .helper=${this.helper}
           .deviceFilter=${this.deviceFilter}
+          .entityFilter=${this.entityFilter}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
+          .excludeDevices=${currentDevices}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .label=${this.pickDeviceLabel}
           .disabled=${this.disabled}

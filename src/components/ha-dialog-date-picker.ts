@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "app-datepicker";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
@@ -24,7 +24,7 @@ export class HaDialogDatePicker extends LitElement {
   @state() private _value?: string;
 
   public async showDialog(params: datePickerDialogParams): Promise<void> {
-    // app-datpicker has a bug, that it removes its handlers when disconnected, but doesnt add them back when reconnected.
+    // app-datepicker has a bug, that it removes its handlers when disconnected, but doesn't add them back when reconnected.
     // So we need to wait for the next render to make sure the element is removed and re-created so the handlers are added.
     await nextRender();
     this._params = params;
@@ -38,7 +38,7 @@ export class HaDialogDatePicker extends LitElement {
 
   render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     return html`<ha-dialog open @closed=${this.closeDialog}>
       <app-datepicker

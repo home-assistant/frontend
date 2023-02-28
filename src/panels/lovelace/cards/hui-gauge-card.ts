@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -13,6 +13,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import { getNumberFormatOptions } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -78,9 +79,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     this._config = { min: 0, max: 100, ...config };
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity];
@@ -129,6 +130,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .min=${this._config.min!}
           .max=${this._config.max!}
           .value=${stateObj.state}
+          .formatOptions=${getNumberFormatOptions(
+            stateObj,
+            this.hass.entities[stateObj.entity_id]
+          )}
           .locale=${this.hass!.locale}
           .label=${this._config!.unit ||
           this.hass?.states[this._config!.entity].attributes
@@ -178,7 +183,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     // new format
     let segments = this._config!.segments;
     if (segments) {
-      segments = [...segments].sort((a, b) => a?.from - b?.from);
+      segments = [...segments].sort((a, b) => a.from - b.from);
 
       for (let i = 0; i < segments.length; i++) {
         const segment = segments[i];

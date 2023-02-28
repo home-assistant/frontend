@@ -7,6 +7,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
@@ -91,9 +92,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult | void {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
 
     let content: TemplateResult;

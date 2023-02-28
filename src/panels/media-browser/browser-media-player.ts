@@ -1,10 +1,8 @@
 import {
   BROWSER_PLAYER,
   MediaPlayerEntity,
+  MediaPlayerEntityFeature,
   MediaPlayerItem,
-  SUPPORT_PAUSE,
-  SUPPORT_PLAY,
-  SUPPORT_VOLUME_SET,
 } from "../../data/media-player";
 import { ResolvedMediaSource } from "../../data/media_source";
 import { HomeAssistant } from "../../types";
@@ -72,10 +70,6 @@ export class BrowserMediaPlayer {
     }
   }
 
-  public get isPlaying(): boolean {
-    return this.buffering || (!this.player.paused && !this.player.ended);
-  }
-
   static idleStateObj(): MediaPlayerEntity {
     const now = new Date().toISOString();
     return {
@@ -90,21 +84,29 @@ export class BrowserMediaPlayer {
 
   toStateObj(): MediaPlayerEntity {
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
-    const base = BrowserMediaPlayer.idleStateObj();
-    base.state = this.isPlaying ? "playing" : "paused";
-    base.attributes = {
+    const stateObj = BrowserMediaPlayer.idleStateObj();
+    stateObj.state = this.buffering
+      ? "buffering"
+      : this.player.paused || this.player.ended
+      ? "paused"
+      : "playing";
+    stateObj.attributes = {
       media_title: this.item.title,
       entity_picture: this.item.thumbnail,
       volume_level: this.player.volume,
-      // eslint-disable-next-line no-bitwise
-      supported_features: SUPPORT_PLAY | SUPPORT_PAUSE | SUPPORT_VOLUME_SET,
+      supported_features:
+        // eslint-disable-next-line no-bitwise
+        MediaPlayerEntityFeature.PLAY |
+        // eslint-disable-next-line no-bitwise
+        MediaPlayerEntityFeature.PAUSE |
+        MediaPlayerEntityFeature.VOLUME_SET,
     };
 
     if (this.player.duration) {
-      base.attributes.media_duration = this.player.duration;
-      base.attributes.media_position = this.player.currentTime;
-      base.attributes.media_position_updated_at = base.last_updated;
+      stateObj.attributes.media_duration = this.player.duration;
+      stateObj.attributes.media_position = this.player.currentTime;
+      stateObj.attributes.media_position_updated_at = stateObj.last_updated;
     }
-    return base;
+    return stateObj;
   }
 }

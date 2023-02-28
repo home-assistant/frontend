@@ -488,7 +488,8 @@
       "history_charts": {
         "history_disabled": "History integration disabled",
         "loading_history": "Loading state history…",
-        "no_history_found": "No state history found."
+        "no_history_found": "No state history found.",
+        "error": "Unable to load history"
       },
       "statistics_charts": {
         "loading_statistics": "Loading statistics…",
@@ -720,6 +721,7 @@
       "quick-bar": {
         "commands": {
           "reload": {
+            "all": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::all%]",
             "reload": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::reload%]",
             "core": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::core%]",
             "group": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::group%]",
@@ -803,7 +805,7 @@
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
-        "title": "Assistant",
+        "title": "Assist",
         "did_not_hear": "Home Assistant did not hear anything",
         "did_not_understand": "Didn't quite get that",
         "found": "I found the following for you:",
@@ -831,13 +833,17 @@
         "settings": "Settings",
         "edit": "Edit entity",
         "details": "Details",
-        "info": "Info",
+        "back_to_info": "Back to info",
         "related": "Related",
         "history": "History",
         "logbook": "Logbook",
+        "device_info": "Device info",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
+        "turn_on": "Turn on",
+        "turn_off": "Turn off",
+        "toggle": "Toggle",
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
@@ -889,6 +895,19 @@
         },
         "zone": {
           "graph_unit": "People home"
+        },
+        "light": {
+          "toggle": "Toggle",
+          "change_color": "Change color",
+          "select_effect": "Select effect",
+          "brightness": "Brightness",
+          "color_picker": {
+            "title": "Change color",
+            "mode": {
+              "color": "Color",
+              "color_temp": "Temperature"
+            }
+          }
         }
       },
       "entity_registry": {
@@ -905,8 +924,8 @@
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of Measurement",
           "precipitation_unit": "Precipitation unit",
-          "precision": "Precision",
-          "precision_default": "Use default",
+          "precision": "Display precision",
+          "precision_default": "Default ({value})",
           "pressure_unit": "Barometric pressure unit",
           "temperature_unit": "Temperature unit",
           "visibility_unit": "Visibility unit",
@@ -1005,6 +1024,42 @@
           "no_aliases": "No configured aliases",
           "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
           "aliases_description": "Aliases are alternative names used in voice assistants to refer to this entity."
+        }
+      },
+      "restart": {
+        "heading": "Restart Home Assistant",
+        "advanced_options": "Advanced options",
+        "reload": {
+          "title": "Quick reload",
+          "description": "Load new YAML configurations without a restart.",
+          "reloading": "Reloading configuration",
+          "failed": "Failed to reload configuration"
+        },
+        "restart": {
+          "title": "Restart Home Assistant",
+          "description": "Interrupts all running automations and scripts.",
+          "confirm_title": "Restart  Home Assistant?",
+          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_action": "Restart",
+          "failed": "Failed to restart Home Assistant"
+        },
+        "reboot": {
+          "title": "Reboot system",
+          "description": "Restart the system running Home Assistant and all Add-ons.",
+          "confirm_title": "Reboot system?",
+          "confirm_description": "This will reboot the complete system which includes Home Assistant and all the Add-ons.",
+          "confirm_action": "Reboot",
+          "rebooting": "Rebooting system",
+          "failed": "Failed to reboot system"
+        },
+        "shutdown": {
+          "title": "Shutdown system",
+          "description": "Shutdown the system running Home Assistant and all Add-ons.",
+          "confirm_title": "Shutdown system?",
+          "confirm_description": "This will shutdown the complete system which includes Home Assistant and all Add-ons.",
+          "confirm_action": "Shutdown",
+          "shutting_down": "Shutting down system",
+          "failed": "Failed to shutdown system"
         }
       },
       "aliases": {
@@ -1520,30 +1575,30 @@
               "from": {
                 "header": "Configure grid consumption",
                 "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
-                "energy_stat": "Consumed Energy (kWh)",
+                "entity_para": "Pick a sensor which measures grid consumption in either of {unit}.",
+                "energy_stat": "Consumed Energy",
                 "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
                 "no_cost": "Do not track costs",
                 "cost_stat": "Use an entity tracking the total costs",
-                "cost_stat_input": "Total Costs Entity",
+                "cost_stat_input": "Entity with the total costs",
                 "cost_entity": "Use an entity with current price",
                 "cost_entity_input": "Entity with the current price",
                 "cost_number": "Use a static price",
-                "cost_number_input": "Price per kWh",
-                "cost_number_suffix": "{currency}/kWh"
+                "cost_number_input": "Price"
               },
               "to": {
                 "header": "Configure grid production",
                 "paragraph": "Grid production is the energy that flows from your solar panels to the grid.",
-                "energy_stat": "Energy returned to the grid (kWh)",
+                "entity_para": "Pick a sensor which measures grid production in either of {unit}.",
+                "energy_stat": "Energy returned to the grid",
                 "cost_para": "Do you get money back when you return energy to the grid?",
                 "no_cost": "I do not get money back",
                 "cost_stat": "Use an entity tracking the total recieved money",
-                "cost_stat_input": "Total Compensation Entity",
+                "cost_stat_input": "Entity with the total compensation",
                 "cost_entity": "Use an entity with current rate",
                 "cost_entity_input": "Entity with the current rate",
                 "cost_number": "Use a static rate",
-                "cost_number_input": "Rate per kWh",
-                "cost_number_suffix": "{currency}/kWh"
+                "cost_number_input": "Rate"
               }
             }
           },
@@ -1560,7 +1615,8 @@
             "stat_predicted_production": "Prediction of your solar energy production",
             "dialog": {
               "header": "Configure solar panels",
-              "solar_production_energy": "Solar production energy (kWh)",
+              "entity_para": "Pick a sensor which measures solar energy production in either of {unit}.",
+              "solar_production_energy": "Solar production energy",
               "solar_production_forecast": "Solar production forecast",
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
               "dont_forecast_production": "Don't forecast production",
@@ -1578,8 +1634,9 @@
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
-              "energy_into_battery": "Energy going in to the battery (kWh)",
-              "energy_out_of_battery": "Energy coming out of the battery (kWh)"
+              "entity_para": "Pick sensors which measure energy going in to and out of the battery in either of {unit}.",
+              "energy_into_battery": "Energy going in to the battery",
+              "energy_out_of_battery": "Energy coming out of the battery"
             }
           },
           "gas": {
@@ -1592,18 +1649,18 @@
             "add_gas_source": "Add gas source",
             "dialog": {
               "header": "Configure gas consumption",
-              "paragraph": "Gas consumption is the volume of gas that flows to your home.",
-              "energy_stat": "Consumed Energy (m³)",
-              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
-              "no_cost": "Do not track costs",
-              "cost_stat": "Use an entity tracking the total costs",
-              "cost_stat_input": "Total Costs Entity",
-              "cost_entity": "Use an entity with current price",
-              "cost_entity_input": "Entity with the current price per {unit}",
-              "cost_number": "Use a static price",
-              "cost_number_input": "Price per {unit}",
-              "gas_usage": "Gas usage",
-              "m3_or_kWh": "ft³, m³, Wh, kWh, MWh or GJ"
+              "paragraph": "Gas consumption is measured either as the volume of gas that flows to your home or as the amount of energy contained in the gas.",
+              "entity_para": "Pick a sensor which measures gas consumption in either of {unit}.",
+              "note_para": "Note: It is not possible to add both sensors measuring a volume of gas and sensors measuring the amount of energy contained in the gas.",
+              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed gas.",
+              "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
+              "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
+              "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
+              "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
+              "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "gas_usage": "Gas usage"
             }
           },
           "water": {
@@ -1617,16 +1674,16 @@
             "dialog": {
               "header": "Configure water consumption",
               "paragraph": "Water consumption is the volume of water that flows to your home.",
-              "energy_stat": "Consumed water (m³ or gl)",
+              "entity_para": "Pick a sensor which measures water consumption in either of {unit}.",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
-              "no_cost": "Do not track costs",
-              "cost_stat": "Use an entity tracking the total costs",
-              "cost_stat_input": "Total Costs Entity",
-              "cost_entity": "Use an entity with current price",
-              "cost_entity_input": "Entity with the current price per m³ or gl",
-              "cost_number": "Use a static price",
-              "cost_number_input": "Price per m³ or gl",
-              "water_usage": "Water usage (m³ or gl)"
+              "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
+              "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
+              "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
+              "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
+              "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "water_usage": "Water usage"
             }
           },
           "device_consumption": {
@@ -1639,8 +1696,8 @@
             "add_device": "Add device",
             "dialog": {
               "header": "Add a device",
-              "device_consumption_energy": "Device consumption energy (kWh)",
-              "selected_stat_intro": "Select the entity that represents the device energy usage."
+              "device_consumption_energy": "Device consumption energy",
+              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
             }
           }
         },
@@ -1701,7 +1758,14 @@
                 "save_button": "Save",
                 "currency": "Currency",
                 "edit_location": "Edit location",
-                "edit_location_description": "Location can be changed in zone settings"
+                "edit_location_description": "Location can be changed in zone settings",
+                "update_units_label": "Update the unit of all sensors",
+                "update_units_text_1": "The unit system has been changed, and the unit of some sensors like distance and speed can be updated.",
+                "update_units_text_2": "The unit of sensors where the unit has been edited from the UI or which can't be edited from the UI will not be updated.",
+                "update_units_text_3": "Note: The unit of temperature sensors is always updated.",
+                "update_units_confirm_title": "The unit of sensors will be updated",
+                "update_units_confirm_text": "The unit system has been changed, and the unit of some sensors like distance and speed will be updated.",
+                "update_units_confirm_update": "Update"
               }
             }
           }
@@ -1732,24 +1796,16 @@
             "id": "ID",
             "attributes": "Attributes"
           },
+          "reboot_moved_title": "Reboot and shutdown moved",
+          "reboot_moved_description": "Reboot and shutdown actions has been moved to system page.",
+          "reboot_moved_link": "Go to system page.",
           "processor": "Processor",
           "memory": "Memory",
-          "rebooting_host": "Rebooting system",
-          "reboot": "Reboot",
-          "reboot_host": "Reboot system",
-          "reboot_host_title": "Reboot system?",
-          "reboot_host_text": "This will reboot the complete system which includes the Core and all Add-ons.",
-          "failed_to_reboot_host": "Failed to reboot system",
-          "host_shutting_down": "system shutting down",
-          "shutdown": "Shutdown",
-          "shutdown_host": "Shutdown system",
-          "shutdown_host_title": "Shutdown system?",
-          "shutdown_host_text": "This will shutdown the complete system which includes the Core and all Add-ons.",
-          "failed_to_shutdown_host": "Failed to shutdown system",
-          "board": "Board",
+          "generic_hardware": "Generic Hardware",
           "documentation": "Documentation",
           "configure": "Configure",
-          "documentation_description": "Find extra information about your device"
+          "documentation_description": "Find extra information about your device",
+          "restart_homeassistant": "[%key:ui::panel::config::system_dashboard::restart_homeassistant%]"
         },
         "info": {
           "caption": "About",
@@ -1923,19 +1979,18 @@
             }
           },
           "dialog_new": {
-            "header": "Create a new automation",
-            "how": "How do you want to create your new automation?",
-            "blueprint": {
-              "use_blueprint": "Use a blueprint"
+            "header": "Create automation",
+            "create_empty": "Create new automation",
+            "create_empty_description": "Start with an empty automation from scratch",
+            "create_blueprint": "Create from blueprint",
+            "create_blueprint_description": "Discover community blueprints",
+            "blueprint_source": {
+              "author": "By {author}",
+              "local": "By you",
+              "community": "By the community",
+              "homeassistant": "By Home Assistant"
             },
-            "thingtalk": {
-              "header": "Describe the automation you want to create",
-              "intro": "And we will try to create it for you. For example: Turn the lights off when I leave.",
-              "input_label": "What should this automation do?",
-              "create": "Create"
-            },
-            "start_empty": "Start with an empty automation",
-            "start_empty_description": "Create a new automation from scratch"
+            "discover_blueprint_tip": "Discover more community blueprints"
           },
           "editor": {
             "enable": "[%key:ui::common::enable%]",
@@ -2090,11 +2145,12 @@
                 },
                 "template": {
                   "label": "Template",
-                  "value_template": "Value template"
+                  "value_template": "Value template",
+                  "for": "For"
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of a date/time helper",
+                  "type_input": "Value of a date/time helper or timestamp-class sensor",
                   "label": "Time",
                   "at": "At time",
                   "mode": "Mode"
@@ -2992,6 +3048,7 @@
           "search_brand": "Search for a brand name",
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
+          "add_matter_device": "Add Matter device",
           "disable": {
             "show_disabled": "Show disabled integrations",
             "disabled_integrations": "{number} disabled",
@@ -3105,8 +3162,10 @@
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
-            "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
             "missing_zwave_zigbee_title": "{integration} is not setup",
+            "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
+            "missing_matter": "To add a {brand} device, you first need the {integration} integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
+            "matter_mobile_app": "You need to use the Home Assistant Companion app on your mobile phone to commission Matter devices.",
             "supported_hardware": "supported hardware",
             "proceed": "Proceed"
           }
@@ -3223,6 +3282,22 @@
           "message_received": "Message {id} received on {topic} at {time}:",
           "qos": "QoS",
           "retain": "Retain"
+        },
+        "thread": {
+          "other_networks": "Other networks",
+          "my_network": "My network",
+          "no_preferred_network": "You don't have a preferred network yet.",
+          "add_open_thread_border_router": "Add an OpenThread border router",
+          "add_dataset_from_tlv": "Add dataset from TLV",
+          "add_dataset": "Add Thread dataset",
+          "add_dataset_label": "Operational dataset TLV",
+          "add_dataset_button": "Add dataset",
+          "confirm_delete_dataset": "Delete {name} dataset?",
+          "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
+          "no_border_routers": "No border routers found",
+          "border_routers": "{count} border {count, plural,\n  one {router}\n  other {routers}\n}",
+          "managed_by_home_assistant": "Managed by Home Assistant",
+          "operational_dataset": "Operational dataset"
         },
         "zha": {
           "common": {
@@ -3619,10 +3694,12 @@
           "update_firmware": {
             "title": "Update Device Firmware",
             "warning": "WARNING: Firmware updates can brick your device if you do not correctly follow the manufacturer's guidance. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your device as a result of the firmware update and will not be able to help you if you brick your device. Would you still like to continue?",
+            "warning_controller": "WARNING: Firmware updates can brick your controller if you do not use the right firmware files, or if you attempt to stop the firmware update before it completes. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your controller as a result of the firmware update and will not be able to help you if you brick your controller. Would you still like to continue?",
             "introduction": "Select the firmware file you would like to use to update {device}.",
-            "upload_firmware": "Upload Firmware",
-            "firmware_target_intro": "Select the firmware target (0 for the Z-Wave chip, ≥1 for other chips if they exist) for this update, or uncheck the box to have the driver attempt to figure it out from the firmware file.",
+            "introduction_controller": "Select the firmware file you would like to use to update {device}. Note that once you start a firmware update, you MUST wait for the update to complete.",
+            "firmware_target_intro": "Select the firmware target (0 for the Z-Wave chip, ≥1 for other chips if they exist) for this update.",
             "firmware_target": "Firmware Target (chip)",
+            "upload_firmware": "Upload Firmware",
             "upload_failed": "Upload Failed",
             "begin_update": "Begin Firmware Update",
             "queued": "The firmware update is ready to be sent to {device} but the device is asleep, wake the device to start the update.",
@@ -3634,10 +3711,11 @@
             "abort_failed": "Abort Failed",
             "confirm_abort": "Are you sure you want to abort the firmware update on {device}?",
             "finished_status": {
-              "ok": "Successfully updated firmware on {device}: {message}.",
+              "success": "Successfully updated firmware on {device}: {message}.",
               "error": "Unable to update firmware on {device}: {message}.",
               "try_again": "To attempt the firmware update again, select the new firmware file you would like to use.",
               "done": "The firmware update is complete! If you want to attempt another firmware update on this device, please wait until it gets re-interviewed.",
+              "done_controller": "The firmware update is complete! Your controller is being restarted and your network will temporarily be unavailable.",
               "Error_Timeout": "Timed Out",
               "Error_Checksum": "Checksum Error",
               "Error_TransmissionFailed": "Transmission Failed",
@@ -3648,9 +3726,13 @@
               "Error_InvalidHeaderFormat": "Invalid Header Format",
               "Error_InsufficientMemory": "Insufficient Memory",
               "Error_InvalidHardwareVersion": "Invalid Hardware Version",
-              "OK_WaitingForActivation": "Waiting for Activiation",
+              "OK_WaitingForActivation": "Waiting for Activation",
               "OK_NoRestart": "No Restart",
-              "OK_RestartPending": "Restart Pending"
+              "OK_RestartPending": "Restart Pending",
+              "Error_RetryLimitReached": "Retry Limit Reached",
+              "Error_Aborted": "Update Aborted by Bootloader",
+              "Error_NotSupported": "Firmware Updates Not Supported",
+              "OK": "Success"
             }
           },
           "logs": {
@@ -3678,9 +3760,12 @@
             "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
             "scan_ap": "Scan for access points",
+            "signal_strength": "Signal strength",
             "open": "Open",
             "wep": "WEP",
             "wpa": "wpa-psk",
+            "wifi": "Wi-Fi",
+            "wifi_password": "Wi-Fi password",
             "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
             "static": "Static",
             "dhcp": "DHCP",
@@ -3721,10 +3806,7 @@
           "integration_start_time": "Integration Startup Time"
         },
         "system_dashboard": {
-          "confirm_restart_text": "This will stop all your active dashboards, automations and scripts.",
-          "confirm_restart_title": "Restart Home Assistant?",
-          "restart_homeassistant_short": "Restart",
-          "restart_error": "Failed to restart Home Assistant"
+          "restart_homeassistant": "Restart Home Assistant"
         }
       },
       "lovelace": {
@@ -4149,7 +4231,8 @@
                 "5minute": "5 Minutes"
               },
               "pick_statistic": "Add a statistic",
-              "picked_statistic": "Statistic"
+              "picked_statistic": "Statistic",
+              "hide_legend": "Hide legend"
             },
             "statistic": {
               "name": "Statistic",
@@ -4852,6 +4935,7 @@
                 "invalid": "Configuration invalid!"
               },
               "reloading": {
+                "all": "All YAML configuration",
                 "heading": "YAML configuration reloading",
                 "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking one of the options below will unload their current YAML configuration and load the new one.",
                 "reload": "{domain}",
@@ -4891,8 +4975,6 @@
               },
               "server_management": {
                 "heading": "Home Assistant",
-                "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
-                "confirm_restart_title": "Restart Home Assistant?",
                 "restart": "Restart",
                 "stop": "Stop",
                 "confirm_stop": "Are you sure you want to stop Home Assistant?",
@@ -5375,9 +5457,12 @@
         "title": "Network settings",
         "connected_to": "Connected to {ssid}",
         "scan_ap": "Scan for access points",
+        "signal_strength": "[%key:ui::panel::config::network::supervisor::signal_strength%]",
         "open": "Open",
         "wep": "WEP",
         "wpa": "wpa-psk",
+        "wifi": "[%key:ui::panel::config::network::supervisor::wifi%]",
+        "wifi_password": "[%key:ui::panel::config::network::supervisor::wifi_password%]",
         "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
         "static": "Static",
         "dhcp": "DHCP",

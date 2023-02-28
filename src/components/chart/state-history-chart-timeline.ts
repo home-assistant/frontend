@@ -19,7 +19,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @property() public names: boolean | Record<string, string> = false;
+  @property() public names?: Record<string, string>;
 
   @property() public unit?: string;
 
@@ -64,6 +64,8 @@ export class StateHistoryChartTimeline extends LitElement {
     }
 
     if (
+      changedProps.has("startTime") ||
+      changedProps.has("endTime") ||
       changedProps.has("data") ||
       this._chartTime <
         new Date(this.endTime.getTime() - MIN_TIME_BETWEEN_UPDATES)
@@ -141,7 +143,10 @@ export class StateHistoryChartTimeline extends LitElement {
             }
           },
           afterUpdate: (y) => {
-            if (this._yWidth !== Math.floor(y.width)) {
+            if (
+              this._yWidth !== Math.floor(y.width) &&
+              y.ticks.length === this.data.length
+            ) {
               this._yWidth = Math.floor(y.width);
               fireEvent(this, "y-width-changed", {
                 value: this._yWidth,

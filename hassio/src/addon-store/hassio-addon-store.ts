@@ -6,10 +6,11 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
@@ -49,7 +50,8 @@ const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   return a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1;
 };
 
-class HassioAddonStore extends LitElement {
+@customElement("hassio-addon-store")
+export class HassioAddonStore extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
@@ -72,8 +74,8 @@ class HassioAddonStore extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
-    let repos: TemplateResult[] = [];
+  protected render() {
+    let repos: (TemplateResult | typeof nothing)[] = [];
 
     if (this.supervisor.store.repositories) {
       repos = this.addonRepositories(
@@ -172,7 +174,7 @@ class HassioAddonStore extends LitElement {
                 .supervisor=${this.supervisor}
               ></hassio-addon-repository>
             `
-          : html``;
+          : nothing;
       })
   );
 
@@ -250,5 +252,3 @@ class HassioAddonStore extends LitElement {
     `;
   }
 }
-
-customElements.define("hassio-addon-store", HassioAddonStore);

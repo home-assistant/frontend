@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
@@ -37,11 +37,11 @@ export class HaDeviceViaDevicesCard extends LitElement {
         )
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     const viaDevices = this._viaDevices(this.deviceId, this.hass.devices);
 
     if (viaDevices.length === 0) {
-      return html``;
+      return nothing;
     }
 
     return html`

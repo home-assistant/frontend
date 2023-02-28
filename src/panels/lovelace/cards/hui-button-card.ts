@@ -8,7 +8,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import {
   customElement,
@@ -136,9 +136,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
     const stateObj = this._config.entity
       ? this.hass.states[this._config.entity]
@@ -323,7 +323,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     }
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
-      if (["heating", "cooling", "drying", "fan"].includes(hvacAction)) {
+      if (hvacAction in HVAC_ACTION_TO_MODE) {
         return stateColorCss(stateObj, HVAC_ACTION_TO_MODE[hvacAction]);
       }
       return undefined;

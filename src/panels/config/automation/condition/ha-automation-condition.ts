@@ -2,12 +2,20 @@ import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
 import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-svg-icon";
 import type { Condition } from "../../../../data/automation";
@@ -21,6 +29,7 @@ import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaSelect } from "../../../../components/ha-select";
 import { CONDITION_TYPES } from "../../../../data/condition";
+import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import {
   loadSortable,
   SortableInstance,
@@ -34,7 +43,6 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
-import { sortableStyles } from "../../../../resources/ha-sortable-style";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
@@ -101,7 +109,7 @@ export default class HaAutomationCondition extends LitElement {
 
   protected render() {
     if (!Array.isArray(this.conditions)) {
-      return html``;
+      return nothing;
     }
     return html`
       ${this.reOrderMode && !this.nested
@@ -177,7 +185,7 @@ export default class HaAutomationCondition extends LitElement {
         @action=${this._addCondition}
         .disabled=${this.disabled}
       >
-        <mwc-button
+        <ha-button
           slot="trigger"
           outlined
           .disabled=${this.disabled}
@@ -186,7 +194,7 @@ export default class HaAutomationCondition extends LitElement {
           )}
         >
           <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-        </mwc-button>
+        </ha-button>
         ${this._processedTypes(this.hass.localize).map(
           ([opt, label, icon]) => html`
             <mwc-list-item .value=${opt} graphic="icon">

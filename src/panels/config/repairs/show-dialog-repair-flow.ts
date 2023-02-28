@@ -128,6 +128,21 @@ export const showRepairsFlowDialog = (
         return hass.localize(`component.${issue.domain}.selector.${key}`);
       },
 
+      renderShowFormStepSubmitButton(hass, step) {
+        return (
+          hass.localize(
+            `component.${issue.domain}.issues.${
+              issue.translation_key || issue.issue_id
+            }.fix_flow.step.${step.step_id}.submit`
+          ) ||
+          hass.localize(
+            `ui.panel.config.integrations.config_flow.${
+              step.last_step === false ? "next" : "submit"
+            }`
+          )
+        );
+      },
+
       renderExternalStepHeader(_hass, _step) {
         return "";
       },

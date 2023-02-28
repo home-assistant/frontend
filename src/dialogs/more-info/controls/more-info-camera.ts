@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import "../../../components/ha-camera-stream";
 import { CameraEntity } from "../../../data/camera";
@@ -21,9 +21,9 @@ class MoreInfoCamera extends LitElement {
     this._attached = false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._attached || !this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     return html`

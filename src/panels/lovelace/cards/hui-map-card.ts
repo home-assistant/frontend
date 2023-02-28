@@ -1,3 +1,5 @@
+import { mdiImageFilterCenterFocus } from "@mdi/js";
+import { isToday } from "date-fns";
 import { HassEntities } from "home-assistant-js-websocket";
 import { LatLngTuple } from "leaflet";
 import {
@@ -6,17 +8,27 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { mdiImageFilterCenterFocus } from "@mdi/js";
 import memoizeOne from "memoize-one";
-import { isToday } from "date-fns";
+import { getColorByIndex } from "../../../common/color/colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
+import {
+  formatTime,
+  formatTimeWeekday,
+} from "../../../common/datetime/format_time";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/map/ha-map";
+import type {
+  HaMap,
+  HaMapPathPoint,
+  HaMapPaths,
+} from "../../../components/map/ha-map";
 import {
   HistoryStates,
   subscribeHistoryStatesTimeWindow,
@@ -27,20 +39,8 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
-import "../../../components/map/ha-map";
-import type {
-  HaMap,
-  HaMapPaths,
-  HaMapPathPoint,
-} from "../../../components/map/ha-map";
-import { getColorByIndex } from "../../../common/color/colors";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
-import {
-  formatTime,
-  formatTimeWeekday,
-} from "../../../common/datetime/format_time";
 
-const DEFAULT_HOURS_TO_SHOW = 24;
+const DEFAULT_HOURS_TO_SHOW = 0;
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -131,9 +131,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return { type: "map", entities: foundEntities };
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
     }
     if (this._error) {
       return html`<div class="error">${this._error}</div>`;
@@ -191,16 +191,16 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated && this._configEntities?.length) {
-      this._subscribeHistoryTimeWindow();
+      this._subscribeHistory();
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeHistoryTimeWindow();
+    this._unsubscribeHistory();
   }
 
-  private _subscribeHistoryTimeWindow() {
+  private _subscribeHistory() {
     if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
       return;
     }
@@ -213,7 +213,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         }
         this._stateHistory = combinedHistory;
       },
-      this._config!.hours_to_show! || DEFAULT_HOURS_TO_SHOW,
+      this._config!.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW,
       this._configEntities!,
       false,
       false
@@ -223,26 +223,21 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _unsubscribeHistoryTimeWindow() {
-    if (!this._subscribed) {
-      return;
-    }
-    this._subscribed.then((unsubscribe) => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+  private _unsubscribeHistory() {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub?.());
       this._subscribed = undefined;
-    });
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
     if (this._configEntities?.length) {
       if (!this._subscribed || changedProps.has("_config")) {
-        this._unsubscribeHistoryTimeWindow();
-        this._subscribeHistoryTimeWindow();
+        this._unsubscribeHistory();
+        this._subscribeHistory();
       }
     } else {
-      this._unsubscribeHistoryTimeWindow();
+      this._unsubscribeHistory();
     }
     if (changedProps.has("_config")) {
       this._computePadding();
@@ -259,6 +254,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       root.style.paddingBottom = "100%";
       return;
     }
+
+    root.style.height = "auto";
 
     const ratio = parseAspectRatio(this._config.aspect_ratio);
 
@@ -346,7 +343,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           const p = {} as HaMapPathPoint;
           p.point = [latitude, longitude] as LatLngTuple;
           const t = new Date(entityState.lu * 1000);
-          if (config.hours_to_show! || DEFAULT_HOURS_TO_SHOW > 144) {
+          if ((config.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW) > 144) {
             // if showing > 6 days in the history trail, show the full
             // date and time
             p.tooltip = formatDateTime(t, this.hass.locale);
@@ -373,6 +370,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         overflow: hidden;
         width: 100%;
         height: 100%;
+        display: flex;
+        flex-direction: column;
       }
 
       ha-map {

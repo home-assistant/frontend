@@ -3,6 +3,7 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   addDays,
+  differenceInHours,
   endOfToday,
   endOfWeek,
   endOfYesterday,
@@ -15,17 +16,19 @@ import {
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, PropertyValues } from "lit";
-import { property, state } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
+import { ensureArray } from "../../common/array/ensure-array";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { LocalStorage } from "../../common/decorators/local-storage";
-import { ensureArray } from "../../common/array/ensure-array";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
   extractSearchParamsObject,
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
+import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
@@ -44,7 +47,11 @@ import {
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
 import { subscribeEntityRegistry } from "../../data/entity_registry";
-import { computeHistory, fetchDateWS } from "../../data/history";
+import {
+  computeHistory,
+  HistoryResult,
+  subscribeHistory,
+} from "../../data/history";
 import "../../layouts/ha-app-layout";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
@@ -66,7 +73,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _isLoading = false;
 
-  @state() private _stateHistory?;
+  @state() private _stateHistory?: HistoryResult;
 
   @state() private _ranges?: DateRangePickerRanges;
 
@@ -76,16 +83,35 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _areaDeviceLookup?: AreaDeviceLookup;
 
+  @query("state-history-charts")
+  private _stateHistoryCharts?: StateHistoryCharts;
+
+  private _subscribed?: Promise<UnsubscribeFunc>;
+
+  private _interval?: number;
+
   public constructor() {
     super();
 
     const start = new Date();
-    start.setHours(start.getHours() - 2, 0, 0, 0);
+    start.setHours(start.getHours() - 1, 0, 0, 0);
     this._startDate = start;
 
     const end = new Date();
-    end.setHours(end.getHours() + 1, 0, 0, 0);
+    end.setHours(end.getHours() + 2, 0, 0, 0);
     this._endDate = end;
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._getHistory();
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeHistory();
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -130,7 +156,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         </app-header>
 
         <div class="flex content">
-          <div class="filters flex layout horizontal narrow-wrap">
+          <div class="filters">
             <ha-date-range-picker
               .hass=${this.hass}
               ?disabled=${this._isLoading}
@@ -143,7 +169,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
-              horizontal
+              addOnTop
               @value-changed=${this._targetsChanged}
             ></ha-target-picker>
           </div>
@@ -270,24 +296,63 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
     if (entityIds.length === 0) {
       this._isLoading = false;
-      this._stateHistory = [];
+      this._stateHistory = { line: [], timeline: [] };
       return;
     }
-    try {
-      const dateHistory = await fetchDateWS(
-        this.hass,
-        this._startDate,
-        this._endDate,
-        entityIds
-      );
 
-      this._stateHistory = computeHistory(
-        this.hass,
-        dateHistory,
-        this.hass.localize
-      );
-    } finally {
+    if (this._subscribed) {
+      this._unsubscribeHistory();
+    }
+
+    const now = new Date();
+
+    this._subscribed = subscribeHistory(
+      this.hass,
+      (history) => {
+        this._isLoading = false;
+        this._stateHistory = computeHistory(
+          this.hass,
+          history,
+          this.hass.localize
+        );
+      },
+      this._startDate,
+      this._endDate,
+      entityIds
+    );
+    this._subscribed.catch(() => {
       this._isLoading = false;
+      this._unsubscribeHistory();
+    });
+    if (this._endDate > now) {
+      this._setRedrawTimer();
+    }
+  }
+
+  private _setRedrawTimer() {
+    clearInterval(this._interval);
+    const now = new Date();
+    const end = this._endDate > now ? now : this._endDate;
+    const timespan = differenceInHours(this._startDate, end);
+    this._interval = window.setInterval(
+      () => this._stateHistoryCharts?.requestUpdate(),
+      // if timespan smaller than 1 hour, update every 10 seconds, smaller than 5 hours, redraw every minute, otherwise every 5 minutes
+      timespan < 2
+        ? 10000
+        : timespan < 10
+        ? 60 * 1000
+        : MIN_TIME_BETWEEN_UPDATES
+    );
+  }
+
+  private _unsubscribeHistory() {
+    if (this._interval) {
+      clearInterval(this._interval);
+      this._interval = undefined;
+    }
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed = undefined;
     }
   }
 
@@ -445,18 +510,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           height: 100%;
         }
 
-        :host([narrow]) .narrow-wrap {
-          flex-wrap: wrap;
-        }
-
-        .horizontal {
-          align-items: center;
-        }
-
-        :host(:not([narrow])) .selector-padding {
-          padding-left: 32px;
-        }
-
         .progress-wrapper {
           position: relative;
         }
@@ -464,11 +517,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         .filters {
           display: flex;
           align-items: flex-start;
-          padding: 8px 16px 0;
-        }
-
-        :host([narrow]) .filters {
-          flex-wrap: wrap;
+          margin-top: 16px;
         }
 
         ha-date-range-picker {
@@ -479,11 +528,15 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           direction: var(--direction);
         }
 
-        :host([narrow]) ha-date-range-picker {
-          margin-right: 0;
-          margin-inline-end: 0;
-          margin-inline-start: initial;
-          direction: var(--direction);
+        @media all and (max-width: 1025px) {
+          .filters {
+            flex-direction: column;
+          }
+          ha-date-range-picker {
+            margin-right: 0;
+            margin-inline-end: 0;
+            width: 100%;
+          }
         }
 
         ha-circular-progress {
@@ -491,17 +544,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%);
-        }
-
-        ha-entity-picker {
-          display: inline-block;
-          flex-grow: 1;
-          max-width: 400px;
-        }
-
-        :host([narrow]) ha-entity-picker {
-          max-width: none;
-          width: 100%;
         }
 
         .start-search {

@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
@@ -27,9 +27,9 @@ class HaConfigRepairs extends LitElement {
   @property({ type: Number })
   public total?: number;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.repairsIssues?.length) {
-      return html``;
+      return nothing;
     }
 
     const issues = this.repairsIssues;

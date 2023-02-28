@@ -5,10 +5,10 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../components/ha-alert";
 import "../components/ha-checkbox";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
@@ -25,7 +25,8 @@ import "./ha-password-manager-polyfill";
 
 type State = "loading" | "error" | "step";
 
-class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
+@customElement("ha-auth-flow")
+export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @property({ attribute: false }) public authProvider?: AuthProvider;
 
   @property() public clientId?: string;
@@ -133,11 +134,11 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }, 500);
   }
 
-  private _renderForm(): TemplateResult {
+  private _renderForm() {
     switch (this._state) {
       case "step":
         if (this._step == null) {
-          return html``;
+          return nothing;
         }
         return html`
           ${this._renderStep(this._step)}
@@ -175,11 +176,11 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           </ha-alert>
         `;
       default:
-        return html``;
+        return nothing;
     }
   }
 
-  private _renderStep(step: DataEntryFlowStep): TemplateResult {
+  private _renderStep(step: DataEntryFlowStep) {
     switch (step.type) {
       case "abort":
         return html`
@@ -201,7 +202,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
                   .content=${this._computeStepDescription(step)}
                 ></ha-markdown>
               `
-            : html``}
+            : nothing}
           <ha-form
             .data=${this._stepData}
             .schema=${autocompleteLoginFields(step.data_schema)}
@@ -227,7 +228,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             : ""}
         `;
       default:
-        return html``;
+        return nothing;
     }
   }
 
@@ -407,7 +408,6 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     `;
   }
 }
-customElements.define("ha-auth-flow", HaAuthFlow);
 
 declare global {
   interface HTMLElementTagNameMap {

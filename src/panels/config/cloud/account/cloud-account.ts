@@ -321,8 +321,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   }
 }
 
-customElements.define("cloud-account", CloudAccount);
-
 declare global {
   interface HTMLElementTagNameMap {
     "cloud-account": CloudAccount;

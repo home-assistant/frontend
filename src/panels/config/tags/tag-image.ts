@@ -1,5 +1,5 @@
 import { mdiNfcVariant } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-svg-icon";
 import { TagRowData } from "./ha-config-tags";
@@ -37,7 +37,7 @@ export class HaTagImage extends LitElement {
 
   protected render() {
     if (!this.tag) {
-      return html``;
+      return nothing;
     }
     return html`<div class="container">
       <div class="image">

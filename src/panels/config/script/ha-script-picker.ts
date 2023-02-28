@@ -44,6 +44,7 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -57,7 +58,9 @@ class HaScriptPicker extends LitElement {
 
   @property() public route!: Route;
 
-  @property() private _activeFilters?: string[];
+  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
+
+  @state() private _activeFilters?: string[];
 
   @state() private _filteredScripts?: string[] | null;
 
@@ -266,7 +269,7 @@ class HaScriptPicker extends LitElement {
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const entry = this.hass.entities[ev.detail.id];
+    const entry = this.entityRegistry.find((e) => e.entity_id === ev.detail.id);
     if (entry) {
       navigate(`/config/script/edit/${entry.unique_id}`);
     } else {
@@ -275,7 +278,12 @@ class HaScriptPicker extends LitElement {
   }
 
   private _runScript = async (script: any) => {
-    const entry = this.hass.entities[script.entity_id];
+    const entry = this.entityRegistry.find(
+      (e) => e.entity_id === script.entity_id
+    );
+    if (!entry) {
+      return;
+    }
     await triggerScript(this.hass, entry.unique_id);
     showToast(this, {
       message: this.hass.localize(
@@ -291,7 +299,9 @@ class HaScriptPicker extends LitElement {
   }
 
   private _showTrace(script: any) {
-    const entry = this.hass.entities[script.entity_id];
+    const entry = this.entityRegistry.find(
+      (e) => e.entity_id === script.entity_id
+    );
     if (entry) {
       navigate(`/config/script/trace/${entry.unique_id}`);
     }
@@ -317,7 +327,12 @@ class HaScriptPicker extends LitElement {
 
   private async _duplicate(script: any) {
     try {
-      const entry = this.hass.entities[script.entity_id];
+      const entry = this.entityRegistry.find(
+        (e) => e.entity_id === script.entity_id
+      );
+      if (!entry) {
+        return;
+      }
       const config = await fetchScriptFileConfig(this.hass, entry.unique_id);
       showScriptEditor({
         ...config,
@@ -362,8 +377,12 @@ class HaScriptPicker extends LitElement {
 
   private async _delete(script: any) {
     try {
-      const entry = this.hass.entities[script.entity_id];
-      await deleteScript(this.hass, entry.unique_id);
+      const entry = this.entityRegistry.find(
+        (e) => e.entity_id === script.entity_id
+      );
+      if (entry) {
+        await deleteScript(this.hass, entry.unique_id);
+      }
     } catch (err: any) {
       await showAlertDialog(this, {
         text:

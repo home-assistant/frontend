@@ -1,22 +1,22 @@
-import { html, css, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-switch";
 
-import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { IntegrationManifest } from "../../../../src/data/integration";
 
+import { DeviceRegistryEntry } from "../../../../src/data/device_registry";
+import { EntityRegistryEntry } from "../../../../src/data/entity_registry";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import { HomeAssistant } from "../../../../src/types";
-import "../../../../src/panels/config/integrations/ha-integration-card";
-import "../../../../src/panels/config/integrations/ha-ignored-config-entry-card";
 import "../../../../src/panels/config/integrations/ha-config-flow-card";
 import type {
   ConfigEntryExtended,
   DataEntryFlowProgressExtended,
 } from "../../../../src/panels/config/integrations/ha-config-integrations";
-import { DeviceRegistryEntry } from "../../../../src/data/device_registry";
-import { EntityRegistryEntry } from "../../../../src/data/entity_registry";
+import "../../../../src/panels/config/integrations/ha-ignored-config-entry-card";
+import "../../../../src/panels/config/integrations/ha-integration-card";
+import { HomeAssistant } from "../../../../src/types";
 
 const createConfigEntry = (
   title: string,
@@ -197,6 +197,7 @@ const createEntityRegistryEntries = (
     platform: "updater",
     has_entity_name: false,
     unique_id: "updater",
+    options: null,
   },
 ];
 
@@ -230,9 +231,9 @@ export class DemoIntegrationCard extends LitElement {
 
   @state() isCloud = false;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     return html`
       <div class="container">

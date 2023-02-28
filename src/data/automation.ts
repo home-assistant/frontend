@@ -146,6 +146,7 @@ export interface TimeTrigger extends BaseTrigger {
 export interface TemplateTrigger extends BaseTrigger {
   platform: "template";
   value_template: string;
+  for?: string | number | ForDict;
 }
 
 export interface EventTrigger extends BaseTrigger {

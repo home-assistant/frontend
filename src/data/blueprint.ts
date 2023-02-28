@@ -16,6 +16,7 @@ export interface BlueprintMetaData {
   input?: Record<string, BlueprintInput | null>;
   description?: string;
   source_url?: string;
+  author?: string;
 }
 
 export interface BlueprintInput {
@@ -63,3 +64,19 @@ export const deleteBlueprint = (
     domain,
     path,
   });
+
+export type BlueprintSourceType = "local" | "community" | "homeassistant";
+
+export const getBlueprintSourceType = (
+  blueprint: Blueprint
+): BlueprintSourceType => {
+  const sourceUrl = blueprint.metadata.source_url;
+
+  if (!sourceUrl) {
+    return "local";
+  }
+  if (sourceUrl.includes("github.com/home-assistant")) {
+    return "homeassistant";
+  }
+  return "community";
+};

@@ -2,12 +2,14 @@ import { mdiStop } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import {
   computeCloseIcon,
   computeOpenIcon,
 } from "../../../common/entity/cover_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/tile/ha-tile-button";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import {
   canClose,
   canOpen,
@@ -17,6 +19,15 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature } from "../types";
 import { CoverOpenCloseTileFeatureConfig } from "./types";
+
+export const supportsCoverOpenCloseTileFeature = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "cover" &&
+    (supportsFeature(stateObj, CoverEntityFeature.OPEN) ||
+      supportsFeature(stateObj, CoverEntityFeature.CLOSE))
+  );
+};
 
 @customElement("hui-cover-open-close-tile-feature")
 class HuiCoverOpenCloseTileFeature
@@ -63,16 +74,21 @@ class HuiCoverOpenCloseTileFeature
     });
   }
 
-  protected render(): TemplateResult {
-    if (!this._config || !this.hass || !this.stateObj) {
-      return html``;
+  protected render(): TemplateResult | null {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this.stateObj ||
+      !supportsCoverOpenCloseTileFeature(this.stateObj)
+    ) {
+      return null;
     }
 
     return html`
-      <div class="container">
+      <ha-control-button-group>
         ${supportsFeature(this.stateObj, CoverEntityFeature.OPEN)
           ? html`
-              <ha-tile-button
+              <ha-control-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.open_cover"
                 )}
@@ -82,12 +98,12 @@ class HuiCoverOpenCloseTileFeature
                 <ha-svg-icon
                   .path=${computeOpenIcon(this.stateObj)}
                 ></ha-svg-icon>
-              </ha-tile-button>
+              </ha-control-button>
             `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.STOP)
           ? html`
-              <ha-tile-button
+              <ha-control-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.stop_cover"
                 )}
@@ -95,12 +111,12 @@ class HuiCoverOpenCloseTileFeature
                 .disabled=${!canStop(this.stateObj)}
               >
                 <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-              </ha-tile-button>
+              </ha-control-button>
             `
           : null}
         ${supportsFeature(this.stateObj, CoverEntityFeature.CLOSE)
           ? html`
-              <ha-tile-button
+              <ha-control-button
                 .label=${this.hass.localize(
                   "ui.dialogs.more_info_control.cover.close_cover"
                 )}
@@ -110,29 +126,18 @@ class HuiCoverOpenCloseTileFeature
                 <ha-svg-icon
                   .path=${computeCloseIcon(this.stateObj)}
                 ></ha-svg-icon>
-              </ha-tile-button>
+              </ha-control-button>
             `
           : undefined}
-      </div>
+      </ha-control-button-group>
     `;
   }
 
   static get styles() {
     return css`
-      .container {
-        display: flex;
-        flex-direction: row;
-        padding: 0 12px 12px 12px;
-        width: auto;
-      }
-      ha-tile-button {
-        flex: 1;
-      }
-      ha-tile-button:not(:last-child) {
-        margin-right: 12px;
-        margin-inline-end: 12px;
-        margin-inline-start: initial;
-        direction: var(--direction);
+      ha-control-button-group {
+        margin: 0 12px 12px 12px;
+        --control-button-group-spacing: 12px;
       }
     `;
   }

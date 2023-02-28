@@ -1,4 +1,4 @@
-import { html, TemplateResult } from "lit";
+import { html, nothing } from "lit";
 import { customElement } from "lit/decorators";
 import {
   any,
@@ -45,9 +45,9 @@ export class HuiGridCardEditor extends HuiStackCardEditor {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const data = { square: true, columns: 3, ...this._config };

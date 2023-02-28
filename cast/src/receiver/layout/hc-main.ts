@@ -252,6 +252,22 @@ export class HcMain extends HassElement {
       msg.urlPath = null;
     }
     this._lovelacePath = msg.viewPath;
+    if (msg.urlPath === "energy") {
+      this._lovelaceConfig = {
+        views: [
+          {
+            strategy: {
+              type: "energy",
+              options: { show_date_selection: true },
+            },
+          },
+        ],
+      };
+      this._urlPath = "energy";
+      this._lovelacePath = 0;
+      this._sendStatus();
+      return;
+    }
     if (!this._unsubLovelace || this._urlPath !== msg.urlPath) {
       this._urlPath = msg.urlPath;
       this._lovelaceConfig = undefined;

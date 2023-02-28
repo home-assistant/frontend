@@ -7,7 +7,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -31,10 +31,8 @@ import {
   handleMediaControlClick,
   MediaPickedEvent,
   MediaPlayerEntity,
+  MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
-  SUPPORT_BROWSE_MEDIA,
-  SUPPORT_SEEK,
-  SUPPORT_TURN_ON,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -140,9 +138,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
     const stateObj = this._stateObj;
 
@@ -174,7 +172,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const isOffState = entityState === "off";
     const isUnavailable =
       isUnavailableState(entityState) ||
-      (entityState === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
+      (entityState === "off" &&
+        !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;
     const controls = computeMediaControls(stateObj, false);
     const showControls =
@@ -282,7 +281,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                                 </ha-icon-button>
                               `
                             )}
-                            ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
+                            ${supportsFeature(
+                              stateObj,
+                              MediaPlayerEntityFeature.BROWSE_MEDIA
+                            )
                               ? html`
                                   <ha-icon-button
                                     class="browse-media"
@@ -305,7 +307,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                           style=${styleMap({
                             "--mdc-theme-primary":
                               this._foregroundColor || "var(--accent-color)",
-                            cursor: supportsFeature(stateObj, SUPPORT_SEEK)
+                            cursor: supportsFeature(
+                              stateObj,
+                              MediaPlayerEntityFeature.SEEK
+                            )
                               ? "pointer"
                               : "initial",
                           })}
@@ -522,7 +527,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   private _handleSeek(e: MouseEvent): void {
     const stateObj = this._stateObj!;
 
-    if (!supportsFeature(stateObj, SUPPORT_SEEK)) {
+    if (!supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)) {
       return;
     }
 

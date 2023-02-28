@@ -1,4 +1,5 @@
 import { atLeastVersion } from "../common/config/version";
+import { fireEvent } from "../common/dom/fire_event";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import {
   computeRTLDirection,
@@ -16,14 +17,13 @@ import {
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant } from "../types";
-import { storeState } from "../util/ha-pref-storage";
 import {
   getLocalLanguage,
   getTranslation,
   getUserLocale,
 } from "../util/common-translation";
+import { storeState } from "../util/ha-pref-storage";
 import { HassBaseEl } from "./hass-base-mixin";
-import { fireEvent } from "../common/dom/fire_event";
 
 declare global {
   // for fire event
@@ -373,7 +373,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // overwritten when we call _updateHass the second time!
 
       // Allow hass to be updated
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
 
       if (language !== (this.hass ?? this._pendingHass).language) {
         // the language was changed, abort

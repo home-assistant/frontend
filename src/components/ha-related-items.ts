@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -70,9 +70,9 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._related) {
-      return html``;
+      return nothing;
     }
     if (Object.keys(this._related).length === 0) {
       return html`
@@ -282,7 +282,9 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
 
   private async _navigateAwayClose() {
     // allow new page to open before closing dialog
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
     fireEvent(this, "close-dialog");
   }
 

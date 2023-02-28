@@ -6,9 +6,10 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 
+@customElement("ha-label-badge")
 class HaLabelBadge extends LitElement {
   @property() public label?: string;
 
@@ -61,7 +62,7 @@ class HaLabelBadge extends LitElement {
           height: var(--ha-label-badge-size, 2.5em);
           line-height: var(--ha-label-badge-size, 2.5em);
           font-size: var(--ha-label-badge-font-size, 1.5em);
-          border-radius: 50%;
+          border-radius: var(--ha-label-badge-border-radius, 50%);
           border: 0.1em solid var(--ha-label-badge-color, var(--primary-color));
           color: var(--label-badge-text-color, rgb(76, 76, 76));
 
@@ -132,5 +133,3 @@ declare global {
     "ha-label-badge": HaLabelBadge;
   }
 }
-
-customElements.define("ha-label-badge", HaLabelBadge);

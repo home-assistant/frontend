@@ -1,17 +1,17 @@
-import { mdiUpload } from "@mdi/js";
 import "@material/mwc-button";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { mdiUpload } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { MediaPlayerItem } from "../../data/media-player";
-import "../ha-circular-progress";
-import "../ha-svg-icon";
 import {
   isLocalMediaSourceContentId,
   uploadLocalMedia,
 } from "../../data/media_source";
-import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../types";
+import "../ha-circular-progress";
+import "../ha-svg-icon";
 
 declare global {
   interface HASSDomEvents {
@@ -28,12 +28,12 @@ class MediaUploadButton extends LitElement {
 
   @state() _uploading = 0;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (
       !this.currentItem ||
       !isLocalMediaSourceContentId(this.currentItem.media_content_id || "")
     ) {
-      return html``;
+      return nothing;
     }
     return html`
       <mwc-button

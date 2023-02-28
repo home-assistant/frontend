@@ -1,11 +1,7 @@
-// @ts-ignore
-import fullcalendarStyle from "@fullcalendar/common/main.css";
 import { Calendar, CalendarOptions } from "@fullcalendar/core";
 import allLocales from "@fullcalendar/core/locales-all";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
-// @ts-ignore
-import timegridStyle from "@fullcalendar/timegrid/main.css";
 import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import {
   css,
@@ -13,8 +9,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
-  unsafeCSS,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { firstWeekdayIndex } from "../../../../common/datetime/first_weekday";
@@ -142,9 +137,9 @@ class HaScheduleForm extends LitElement {
     this._resizeObserver.observe(form);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     const nameInvalid = !this._name || this._name.trim() === "";
 
@@ -409,8 +404,6 @@ class HaScheduleForm extends LitElement {
     return [
       haStyle,
       css`
-        ${unsafeCSS(fullcalendarStyle)}
-        ${unsafeCSS(timegridStyle)}
         .form {
           color: var(--primary-text-color);
         }

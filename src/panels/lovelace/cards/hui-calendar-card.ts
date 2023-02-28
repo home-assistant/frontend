@@ -4,9 +4,9 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -118,9 +118,9 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass || !this._calendars.length) {
-      return html``;
+      return nothing;
     }
 
     const views: FullCalendarView[] = this._veryNarrow
