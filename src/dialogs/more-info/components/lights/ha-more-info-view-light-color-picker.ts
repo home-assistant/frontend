@@ -118,7 +118,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
           : ""}
         ${this._mode === "color"
           ? html`
-              <div class="segmentationContainer">
+              <div class="segmentation-container">
                 <ha-color-picker
                   class="color"
                   @colorselected=${this._colorPicked}
@@ -131,7 +131,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
                 <ha-icon-button
                   .path=${mdiPalette}
                   @click=${this._segmentClick}
-                  class="segmentationButton"
+                  class="segmentation-button"
                 ></ha-icon-button>
               </div>
 
@@ -512,14 +512,14 @@ class MoreInfoViewLightColorPicker extends LitElement {
           flex: 1;
         }
 
-        .segmentationContainer {
+        .segmentation-container {
           position: relative;
           max-height: 500px;
           display: flex;
           justify-content: center;
         }
 
-        .segmentationButton {
+        .segmentation-button {
           position: absolute;
           top: 5%;
           left: 0;
