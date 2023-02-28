@@ -43,7 +43,14 @@ const createRollupConfig = ({
     preserveEntrySignatures: false,
     plugins: [
       ignore({
-        files: bundle.emptyPackages({ latestBuild }),
+        files: bundle
+          .emptyPackages({ latestBuild })
+          // TEMP HACK: Makes Rollup build work again
+          .concat(
+            require.resolve(
+              "@webcomponents/scoped-custom-element-registry/scoped-custom-element-registry.min"
+            )
+          ),
       }),
       resolve({
         extensions,
