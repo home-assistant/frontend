@@ -1395,6 +1395,9 @@
           "about": {
             "main": "About",
             "secondary": "Version information, credits and more"
+          },
+          "cloud": {
+            "secondary": "Loading..."
           }
         },
         "common": {
