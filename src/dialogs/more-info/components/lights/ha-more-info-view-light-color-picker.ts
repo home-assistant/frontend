@@ -272,10 +272,11 @@ class MoreInfoViewLightColorPicker extends LitElement {
       }
 
       this._modes = modes;
-      this._mode =
-        this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
+      this._mode = this.stateObj!.attributes.color_mode
+        ? this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
           ? LightColorMode.COLOR_TEMP
-          : "color";
+          : "color"
+        : this._modes[0];
     }
 
     this._updateSliderValues();
