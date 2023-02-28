@@ -21,7 +21,7 @@ class MoreInfoLock extends LitElement {
     }
     return html`
       ${this.stateObj.attributes.code_format
-        ? html`
+        ? html`<div class="code">
             <ha-textfield
               .label=${this.hass.localize("ui.card.lock.code")}
               .pattern=${this.stateObj.attributes.code_format}
@@ -36,7 +36,7 @@ class MoreInfoLock extends LitElement {
               : html`<mwc-button @click=${this._callService} data-service="lock"
                   >${this.hass.localize("ui.card.lock.lock")}</mwc-button
                 >`}
-          `
+          </div>`
         : ""}
       <ha-attributes
         .hass=${this.hass}
@@ -59,6 +59,18 @@ class MoreInfoLock extends LitElement {
     :host {
       display: flex;
       align-items: center;
+      flex-direction: column;
+    }
+    .code {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 8px;
+      width: 100%;
+    }
+    ha-attributes {
+      width: 100%;
     }
   `;
 }
