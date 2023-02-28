@@ -119,7 +119,6 @@
     "lit/no-template-map": "off",
     "lit/no-native-attributes": "warn",
     "lit/no-this-assign-in-render": "warn",
-    "lit/prefer-nothing": "warn",
     "lit-a11y/click-events-have-key-events": ["off"],
     "lit-a11y/no-autofocus": "off",
     "lit-a11y/alt-text": "warn",

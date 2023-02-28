@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -29,9 +29,9 @@ export class CloudTTSPref extends LitElement {
 
   @state() private ttsInfo?: CloudTTSInfo;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.cloudStatus || !this.ttsInfo) {
-      return html``;
+      return nothing;
     }
 
     const languages = this.getLanguages(this.ttsInfo);

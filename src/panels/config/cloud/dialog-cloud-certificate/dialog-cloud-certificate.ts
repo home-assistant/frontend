@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -26,7 +26,7 @@ class DialogCloudCertificate extends LitElement {
 
   protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const { certificateInfo } = this._params;
 

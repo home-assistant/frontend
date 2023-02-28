@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -41,9 +41,9 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     return !(changedProperties.size === 1 && changedProperties.has("hass"));
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
     }
 
     const active =
@@ -59,7 +59,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
         ${this._noHTTPS
           ? html` Cast requires HTTPS `
           : this._castManager === undefined
-          ? html``
+          ? nothing
           : this._castManager === null
           ? html` Cast API unavailable `
           : this._castManager.castState === "NO_DEVICES_AVAILABLE"

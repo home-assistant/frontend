@@ -1,5 +1,5 @@
 import { dump } from "js-yaml";
-import { html, css, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
@@ -127,9 +127,9 @@ export class DemoAutomationDescribeAction extends LitElement {
 
   @state() _action = initialAction;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-card header="Actions">

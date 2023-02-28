@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -55,9 +55,9 @@ class DialogZoneDetail extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params || !this._data) {
-      return html``;
+      return nothing;
     }
     const nameInvalid = this._data.name.trim() === "";
     const iconInvalid = Boolean(
@@ -109,7 +109,7 @@ class DialogZoneDetail extends LitElement {
                 ${this.hass!.localize("ui.panel.config.zone.detail.delete")}
               </mwc-button>
             `
-          : html``}
+          : nothing}
         <mwc-button
           slot="primaryAction"
           @click=${this._updateEntry}

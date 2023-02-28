@@ -7,7 +7,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -138,9 +138,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
     const stateObj = this._stateObj;
 

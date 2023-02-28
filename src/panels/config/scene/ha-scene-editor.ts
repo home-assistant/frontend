@@ -16,7 +16,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -206,9 +206,9 @@ export class HaSceneEditor extends SubscribeMixin(
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     const { devices, entities } = this._getEntitiesDevices(
       this._entities,
@@ -342,7 +342,7 @@ export class HaSceneEditor extends SubscribeMixin(
                           ${device.entities.map((entityId) => {
                             const entityStateObj = this.hass.states[entityId];
                             if (!entityStateObj) {
-                              return html``;
+                              return nothing;
                             }
                             return html`
                               <paper-icon-item
@@ -408,7 +408,7 @@ export class HaSceneEditor extends SubscribeMixin(
                                   const entityStateObj =
                                     this.hass.states[entityId];
                                   if (!entityStateObj) {
-                                    return html``;
+                                    return nothing;
                                   }
                                   return html`
                                     <paper-icon-item

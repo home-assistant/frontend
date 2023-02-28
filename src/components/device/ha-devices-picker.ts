@@ -1,4 +1,4 @@
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -49,9 +49,9 @@ class HaDevicesPicker extends LitElement {
 
   @property() public entityFilter?: HaDevicePickerEntityFilterFunc;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     const currentDevices = this._currentDevices;

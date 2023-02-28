@@ -1,5 +1,5 @@
 import { mdiAlert } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/ha-label-badge";
 import "../../../components/ha-svg-icon";
@@ -28,9 +28,9 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`

@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
@@ -100,9 +100,9 @@ class DialogZWaveJSAddNode extends LitElement {
 
   @query("#pin-input") private _pinInput?: HaTextField;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._entryId) {
-      return html``;
+      return nothing;
     }
 
     return html`

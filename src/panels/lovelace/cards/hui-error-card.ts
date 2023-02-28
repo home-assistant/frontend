@@ -1,5 +1,5 @@
 import { dump } from "js-yaml";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import { HomeAssistant } from "../../../types";
@@ -20,9 +20,9 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
     }
 
     let dumped: string | undefined;

@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -156,9 +156,9 @@ export class HaIcon extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.icon) {
-      return html``;
+      return nothing;
     }
     if (this._legacy) {
       return html`<iron-icon .icon=${this.icon}></iron-icon>`;

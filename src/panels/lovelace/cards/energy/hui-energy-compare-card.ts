@@ -1,6 +1,6 @@
 import { differenceInDays, endOfDay } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../../common/datetime/format_date";
 import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
@@ -46,9 +46,9 @@ export class HuiEnergyCompareCard
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._startCompare || !this._endCompare) {
-      return html``;
+      return nothing;
     }
 
     const dayDifference = differenceInDays(

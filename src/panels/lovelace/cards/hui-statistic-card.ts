@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -123,9 +123,9 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     return size;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     if (this._error) {

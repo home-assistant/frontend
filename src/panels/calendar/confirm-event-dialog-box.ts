@@ -1,13 +1,13 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
 import "../../components/ha-switch";
+import { RecurrenceRange } from "../../data/calendar";
 import { HomeAssistant } from "../../types";
 import { ConfirmEventDialogBoxParams } from "./show-confirm-event-dialog-box";
-import { RecurrenceRange } from "../../data/calendar";
 
 @customElement("confirm-event-dialog-box")
 class ConfirmEventDialogBox extends LitElement {
@@ -23,9 +23,9 @@ class ConfirmEventDialogBox extends LitElement {
     return true;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
 
     return html`

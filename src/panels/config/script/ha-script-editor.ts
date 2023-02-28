@@ -18,6 +18,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -42,9 +43,9 @@ import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
   deleteScript,
-  getScriptStateConfig,
   fetchScriptFileConfig,
   getScriptEditorInitData,
+  getScriptStateConfig,
   isMaxMode,
   MODES,
   MODES_MAX,
@@ -157,9 +158,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       ] as const
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
     }
 
     const schema = this._schema(

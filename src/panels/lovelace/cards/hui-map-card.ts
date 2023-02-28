@@ -1,3 +1,5 @@
+import { mdiImageFilterCenterFocus } from "@mdi/js";
+import { isToday } from "date-fns";
 import { HassEntities } from "home-assistant-js-websocket";
 import { LatLngTuple } from "leaflet";
 import {
@@ -6,17 +8,27 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { mdiImageFilterCenterFocus } from "@mdi/js";
 import memoizeOne from "memoize-one";
-import { isToday } from "date-fns";
+import { getColorByIndex } from "../../../common/color/colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
+import {
+  formatTime,
+  formatTimeWeekday,
+} from "../../../common/datetime/format_time";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/map/ha-map";
+import type {
+  HaMap,
+  HaMapPathPoint,
+  HaMapPaths,
+} from "../../../components/map/ha-map";
 import {
   HistoryStates,
   subscribeHistoryStatesTimeWindow,
@@ -27,18 +39,6 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
-import "../../../components/map/ha-map";
-import type {
-  HaMap,
-  HaMapPaths,
-  HaMapPathPoint,
-} from "../../../components/map/ha-map";
-import { getColorByIndex } from "../../../common/color/colors";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
-import {
-  formatTime,
-  formatTimeWeekday,
-} from "../../../common/datetime/format_time";
 
 const DEFAULT_HOURS_TO_SHOW = 0;
 @customElement("hui-map-card")
@@ -131,9 +131,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return { type: "map", entities: foundEntities };
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
     }
     if (this._error) {
       return html`<div class="error">${this._error}</div>`;

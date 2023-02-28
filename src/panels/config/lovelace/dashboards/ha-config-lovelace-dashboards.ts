@@ -6,7 +6,7 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
@@ -72,7 +72,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                     )}
                   ></ha-icon>
                 `
-              : html``,
+              : nothing,
         },
         title: {
           title: this.hass.localize(
@@ -242,7 +242,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     return result;
   });
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || this._dashboards === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }

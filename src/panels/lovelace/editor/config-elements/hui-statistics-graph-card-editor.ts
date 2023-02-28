@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -20,8 +20,8 @@ import {
   string,
   union,
 } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { ensureArray } from "../../../../common/array/ensure-array";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import {
@@ -234,9 +234,9 @@ export class HuiStatisticsGraphCardEditor
     }
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const schema = this._schema(

@@ -6,6 +6,7 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
   TemplateResult,
 } from "lit";
@@ -73,7 +74,7 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   title: TemplateResult | string;
   label?: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
-  template?: (data: any, row: T) => TemplateResult | string;
+  template?: (data: any, row: T) => TemplateResult | string | typeof nothing;
   width?: string;
   maxWidth?: string;
   grows?: boolean;
@@ -352,13 +353,10 @@ export class HaDataTable extends LitElement {
     `;
   }
 
-  private _renderRow = (
-    row: DataTableRowData,
-    index: number
-  ): TemplateResult => {
+  private _renderRow = (row: DataTableRowData, index: number) => {
     // not sure how this happens...
     if (!row) {
-      return html``;
+      return nothing;
     }
     if (row.append) {
       return html` <div class="mdc-data-table__row">${row.content}</div> `;

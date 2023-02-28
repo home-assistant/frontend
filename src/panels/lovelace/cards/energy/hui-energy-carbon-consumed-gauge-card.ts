@@ -1,7 +1,7 @@
 import { mdiInformation } from "@mdi/js";
 import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { round } from "../../../../common/number/round";
@@ -52,9 +52,9 @@ class HuiEnergyCarbonGaugeCard
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     if (!this._data) {
@@ -64,7 +64,7 @@ class HuiEnergyCarbonGaugeCard
     }
 
     if (!this._data.co2SignalEntity) {
-      return html``;
+      return nothing;
     }
 
     const co2State = this.hass.states[this._data.co2SignalEntity];

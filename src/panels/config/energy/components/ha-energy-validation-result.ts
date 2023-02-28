@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-alert";
 import { EnergyValidationIssue } from "../../../../data/energy";
@@ -14,7 +14,7 @@ class EnergyValidationMessage extends LitElement {
 
   public render() {
     if (this.issues.length === 0) {
-      return html``;
+      return nothing;
     }
 
     return this.issues.map(
