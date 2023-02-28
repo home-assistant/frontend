@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -70,9 +70,9 @@ export class HaTargetSelector extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._hasIntegration(this.selector) && !this._entitySources) {
-      return html``;
+      return nothing;
     }
 
     return html`<ha-target-picker

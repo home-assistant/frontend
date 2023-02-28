@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { mdiContentCopy, mdiHelpCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -24,9 +24,9 @@ export class CloudRemotePref extends LitElement {
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.cloudStatus) {
-      return html``;
+      return nothing;
     }
 
     const { remote_enabled } = this.cloudStatus.prefs;

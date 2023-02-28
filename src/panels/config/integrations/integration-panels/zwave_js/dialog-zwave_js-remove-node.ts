@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
@@ -40,9 +40,9 @@ class DialogZWaveJSRemoveNode extends LitElement {
     this.entry_id = params.entry_id;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.entry_id) {
-      return html``;
+      return nothing;
     }
 
     return html`

@@ -1,4 +1,4 @@
-import { css, CSSResult, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResult, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 import {
@@ -30,9 +30,9 @@ class MoreInfoCover extends LitElement {
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const _isTiltOnly = isTiltOnly(this.stateObj);
@@ -71,7 +71,7 @@ class MoreInfoCover extends LitElement {
                       slot="extra"
                       .stateObj=${this.stateObj}
                     ></ha-cover-tilt-controls> `
-                  : html``}
+                  : nothing}
               </ha-labeled-slider>`
             : !_isTiltOnly
             ? html`
@@ -83,7 +83,7 @@ class MoreInfoCover extends LitElement {
                   .stateObj=${this.stateObj}
                 ></ha-cover-tilt-controls>
               `
-            : html``}
+            : nothing}
         </div>
       </div>
       <ha-attributes

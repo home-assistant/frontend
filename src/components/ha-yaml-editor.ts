@@ -1,5 +1,5 @@
 import { DEFAULT_SCHEMA, dump, load, Schema } from "js-yaml";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
@@ -56,9 +56,9 @@ export class HaYamlEditor extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._yaml === undefined) {
-      return html``;
+      return nothing;
     }
     return html`
       ${this.label

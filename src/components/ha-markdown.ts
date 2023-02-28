@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-markdown-element";
 
@@ -15,9 +15,9 @@ export class HaMarkdown extends LitElement {
 
   @property({ type: Boolean }) public breaks = false;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.content) {
-      return html``;
+      return nothing;
     }
 
     return html`<ha-markdown-element

@@ -13,6 +13,7 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import {
   customElement,
@@ -311,7 +312,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._error) {
       return html`
         <div class="container">
@@ -388,7 +389,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     : ""}
                                 </div>
                               `
-                            : html``}
+                            : nothing}
                           <div class="header-info">
                             <div class="breadcrumb">
                               <h1 class="title">${currentItem.title}</h1>

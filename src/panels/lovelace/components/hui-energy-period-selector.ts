@@ -19,8 +19,9 @@ import {
   startOfYear,
 } from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
   formatDate,
   formatDateMonthYear,
@@ -28,15 +29,14 @@ import {
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-button-next";
+import "../../../components/ha-icon-button-prev";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, ToggleButton } from "../../../types";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -67,9 +67,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._startDate) {
-      return html``;
+      return nothing;
     }
 
     const viewButtons: ToggleButton[] = [

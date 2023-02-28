@@ -8,7 +8,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-button-toggle-group";
@@ -62,9 +62,9 @@ class MoreInfoViewLightColorPicker extends LitElement {
       : undefined;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.params || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const supportsRgbww = lightSupportsColorMode(

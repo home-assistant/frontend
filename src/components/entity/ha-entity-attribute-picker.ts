@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { formatAttributeName } from "../../data/entity_attributes";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -60,9 +60,9 @@ class HaEntityAttributePicker extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`

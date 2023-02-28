@@ -1,7 +1,7 @@
 import { mdiRefresh } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/buttons/ha-call-service-button";
@@ -69,7 +69,7 @@ export class SystemLogCard extends LitElement {
       })
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     const filteredItems = this._items
       ? this._getFilteredItems(this._items, this.filter.toLowerCase())
       : [];
@@ -134,7 +134,7 @@ export class SystemLogCard extends LitElement {
                                 : item.source[0]}
                               ${item.count > 1
                                 ? html` - ${this._multipleMessages(item)} `
-                                : html``}
+                                : nothing}
                             </div>
                           </paper-item-body>
                         </paper-item>

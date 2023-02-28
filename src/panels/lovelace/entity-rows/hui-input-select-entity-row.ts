@@ -1,9 +1,10 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { css, html, LitElement, PropertyValues, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-select";
+import type { HaSelect } from "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
 import {
@@ -16,7 +17,6 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceRow } from "./types";
-import type { HaSelect } from "../../../components/ha-select";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
@@ -54,9 +54,9 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.hass.states[this._config.entity] as

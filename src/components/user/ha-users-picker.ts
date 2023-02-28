@@ -1,5 +1,5 @@
 import { mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
@@ -34,9 +34,9 @@ class HaUsersPickerLight extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.users) {
-      return html``;
+      return nothing;
     }
 
     const notSelectedUsers = this._notSelectedUsers(this.users, this.value);

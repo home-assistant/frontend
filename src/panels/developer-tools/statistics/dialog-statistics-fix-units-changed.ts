@@ -1,16 +1,16 @@
 import "@material/mwc-button/mwc-button";
-import { LitElement, TemplateResult, html, CSSResultGroup } from "lit";
+import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-dialog";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { haStyle, haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import "../../../components/ha-dialog";
+import "../../../components/ha-formfield";
+import "../../../components/ha-radio";
 import {
   clearStatistics,
   updateStatisticsMetadata,
 } from "../../../data/recorder";
-import "../../../components/ha-formfield";
-import "../../../components/ha-radio";
+import { haStyle, haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
 import type { DialogStatisticsUnitsChangedParams } from "./show-dialog-statistics-fix-units-changed";
 
 @customElement("dialog-statistics-fix-units-changed")
@@ -32,9 +32,9 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult | void {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     /* eslint-disable lit/quoted-expressions */
     return html`

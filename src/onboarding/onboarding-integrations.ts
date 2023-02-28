@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import { mdiCheck, mdiDotsHorizontal } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -6,12 +7,12 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiCheck, mdiDotsHorizontal } from "@mdi/js";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { LocalizeFunc } from "../common/translations/localize";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
 import {
@@ -74,9 +75,9 @@ class OnboardingIntegrations extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._entries || !this._discovered) {
-      return html``;
+      return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.
     const entries: Array<[string, TemplateResult]> = this._entries.map(

@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -39,14 +39,14 @@ class ConfigUrlForm extends LitElement {
 
   @state() private _showCustomInternalUrl = false;
 
-  protected render(): TemplateResult {
+  protected render() {
     const canEdit = ["storage", "default"].includes(
       this.hass.config.config_source
     );
     const disabled = this._working || !canEdit;
 
     if (!this.hass.userData?.showAdvanced || this._cloudStatus === undefined) {
-      return html``;
+      return nothing;
     }
 
     const internalUrl = this._internalUrlValue;

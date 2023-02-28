@@ -9,7 +9,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -20,6 +20,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { formatNumber } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
 import {
   LocalizeFunc,
@@ -63,14 +64,15 @@ import {
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
-  SensorEntityOptions,
   fetchEntityRegistry,
   removeEntityRegistryEntry,
+  SensorEntityOptions,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
 import { getSensorDeviceClassConvertibleUnits } from "../../../data/sensor";
+import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -81,8 +83,6 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
-import { formatNumber } from "../../../common/number/format_number";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -321,9 +321,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this.entry.entity_id !== this._origEntityId) {
-      return html``;
+      return nothing;
     }
     const stateObj: HassEntity | undefined =
       this.hass.states[this.entry.entity_id];
