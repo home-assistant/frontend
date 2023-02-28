@@ -20,7 +20,7 @@ class MoreInfoLock extends LitElement {
       return html``;
     }
     return html`
-      ${this.stateObj.attributes.code_format || true
+      ${this.stateObj.attributes.code_format
         ? html`<div class="code">
             <ha-textfield
               .label=${this.hass.localize("ui.card.lock.code")}
