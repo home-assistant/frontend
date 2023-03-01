@@ -535,8 +535,12 @@ class MoreInfoViewLightColorPicker extends LitElement {
         }
 
         ha-control-slider {
-          height: 320px;
+          height: 45vh;
+          max-height: 320px;
+          min-height: 200px;
           margin: 20px 0;
+          --control-slider-thickness: 100px;
+          --control-slider-border-radius: 24px;
         }
 
         ha-labeled-slider {
@@ -554,8 +558,6 @@ class MoreInfoViewLightColorPicker extends LitElement {
         }
 
         .color-temp {
-          --control-slider-thickness: 100px;
-          --control-slider-border-radius: 24px;
           --control-slider-background: -webkit-linear-gradient(
             top,
             rgb(166, 209, 255) 0%,
