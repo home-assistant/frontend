@@ -214,7 +214,7 @@ export class MoreInfoDialog extends LitElement {
       return null;
     }
     const entityId = this._entityId;
-    const stateObj = this.hass.states[entityId];
+    const stateObj = this.hass.states[entityId] as HassEntity | undefined;
 
     const domain = computeDomain(entityId);
     const name = (stateObj && computeStateName(stateObj)) || entityId;
@@ -226,6 +226,7 @@ export class MoreInfoDialog extends LitElement {
     const title = this._childView?.viewTitle ?? name;
 
     const isInfoView = this._currView === "info" && !this._childView;
+    const isNewMoreInfo = stateObj && computeShowNewMoreInfo(stateObj);
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} .heading=${title} hideActions>
@@ -251,7 +252,7 @@ export class MoreInfoDialog extends LitElement {
                     )}
                   ></ha-icon-button-prev>
                 `}
-            ${!isInfoView || !computeShowNewMoreInfo(stateObj)
+            ${!isInfoView || !isNewMoreInfo
               ? html`<div
                   slot="title"
                   class="main-title"

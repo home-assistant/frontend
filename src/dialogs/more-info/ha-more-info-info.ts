@@ -1,3 +1,4 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -21,10 +22,10 @@ export class MoreInfoInfo extends LitElement {
 
   protected render() {
     const entityId = this.entityId;
-    const stateObj = this.hass.states[entityId];
+    const stateObj = this.hass.states[entityId] as HassEntity | undefined;
     const entityRegObj = this.hass.entities[entityId];
     const domain = computeDomain(entityId);
-    const newMoreInfo = computeShowNewMoreInfo(stateObj);
+    const isNewMoreInfo = stateObj && computeShowNewMoreInfo(stateObj);
 
     return html`
       <div class="container" data-domain=${domain}>
@@ -46,7 +47,7 @@ export class MoreInfoInfo extends LitElement {
             </ha-alert>`
           : ""}
         <div class="content">
-          ${DOMAINS_NO_INFO.includes(domain) || computeShowNewMoreInfo(stateObj)
+          ${DOMAINS_NO_INFO.includes(domain) || isNewMoreInfo
             ? ""
             : html`
                 <state-card-content
@@ -70,7 +71,7 @@ export class MoreInfoInfo extends LitElement {
                 .entityId=${this.entityId}
               ></ha-more-info-logbook>`}
           <more-info-content
-            ?full-height=${newMoreInfo}
+            ?full-height=${isNewMoreInfo}
             .stateObj=${stateObj}
             .hass=${this.hass}
           ></more-info-content>
