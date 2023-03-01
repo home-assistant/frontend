@@ -523,3 +523,18 @@ export const isForecastHourly = (
 
   return undefined;
 };
+
+export type WeatherUnits = {
+  precipitation_unit: string[];
+  pressure_unit: string[];
+  temperature_unit: string[];
+  visibility_unit: string[];
+  wind_speed_unit: string[];
+};
+
+export const getWeatherConvertibleUnits = (
+  hass: HomeAssistant
+): Promise<{ units: WeatherUnits }> =>
+  hass.callWS({
+    type: "weather/convertible_units",
+  });
