@@ -67,11 +67,11 @@ const sortData = (
       }
     }
 
-    // Ensure "undefined" is always sorted to the bottom
-    if (valA === undefined && valB !== undefined) {
+    // Ensure "undefined" and "null" are always sorted to the bottom
+    if (valA == null && valB != null) {
       return 1;
     }
-    if (valB === undefined && valA !== undefined) {
+    if (valB == null && valA != null) {
       return -1;
     }
 
