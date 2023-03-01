@@ -1053,13 +1053,13 @@
           "failed": "Failed to reboot system"
         },
         "shutdown": {
-          "title": "Shutdown system",
-          "description": "Shutdown the system running Home Assistant and all Add-ons.",
-          "confirm_title": "Shutdown system?",
-          "confirm_description": "This will shutdown the complete system which includes Home Assistant and all Add-ons.",
-          "confirm_action": "Shutdown",
+          "title": "Shut down system",
+          "description": "Shut down the system running Home Assistant and all Add-ons.",
+          "confirm_title": "Shut down system?",
+          "confirm_description": "This will shut down the complete system which includes Home Assistant and all Add-ons.",
+          "confirm_action": "Shut down",
           "shutting_down": "Shutting down system",
-          "failed": "Failed to shutdown system"
+          "failed": "Failed to shut down system"
         }
       },
       "aliases": {
