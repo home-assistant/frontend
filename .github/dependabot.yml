@@ -18,4 +18,3 @@ updates:
       # Ignore rollup and plugins until everything else is updated
       - dependency-name: "*rollup*"
       - dependency-name: "@rollup/*"
-      - dependency-name: "serve"
