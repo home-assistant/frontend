@@ -6931,12 +6931,12 @@ __metadata:
   linkType: hard
 
 "copy-props@npm:^2.0.1":
-  version: 2.0.4
-  resolution: "copy-props@npm:2.0.4"
+  version: 2.0.5
+  resolution: "copy-props@npm:2.0.5"
   dependencies:
-    each-props: ^1.3.0
-    is-plain-object: ^2.0.1
-  checksum: 48a8cd2374f222a58eeacbe268fd52f96a039e632ee96cc3f8fe1fbb00699b76032cee47c073882aec44fcc1e2096685e811e1c65995bcfefae739b5f2b2a2a4
+    each-props: ^1.3.2
+    is-plain-object: ^5.0.0
+  checksum: e05bbd4b020fb19f3ce9edce51478d41283397af7ac393297859e2014f518d96e3e2d47ff84736e7c46c17f03fee58c5cef16a8a2420237b069873e5cfe80672
   languageName: node
   linkType: hard
 
@@ -7438,7 +7438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"each-props@npm:^1.3.0":
+"each-props@npm:^1.3.2":
   version: 1.3.2
   resolution: "each-props@npm:1.3.2"
   dependencies:
