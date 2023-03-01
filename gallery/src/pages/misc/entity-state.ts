@@ -2,7 +2,7 @@ import {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../../src/common/entity/compute_domain";
@@ -387,9 +387,9 @@ export class DemoEntityState extends LitElement {
     hass.updateTranslations("config", "en");
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`

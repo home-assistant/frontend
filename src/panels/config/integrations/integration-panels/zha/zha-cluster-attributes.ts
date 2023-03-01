@@ -7,13 +7,15 @@ import {
   LitElement,
   PropertyValues,
   TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
+import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
-import "../../../../../components/buttons/ha-progress-button";
+import { forwardHaptic } from "../../../../../data/haptics";
 import {
   Attribute,
   Cluster,
@@ -24,7 +26,6 @@ import {
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import { forwardHaptic } from "../../../../../data/haptics";
 import { formatAsPaddedHex } from "./functions";
 import {
   ChangeEvent,
@@ -63,9 +64,9 @@ export class ZHAClusterAttributes extends LitElement {
     super.updated(changedProperties);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.device || !this.selectedCluster || !this._attributes) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-card class="content">

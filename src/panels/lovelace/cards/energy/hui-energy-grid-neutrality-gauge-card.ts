@@ -1,13 +1,13 @@
 import { mdiInformation } from "@mdi/js";
 import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-gauge";
 import type { LevelDefinition } from "../../../../components/ha-gauge";
+import "../../../../components/ha-svg-icon";
 import {
   EnergyData,
   getEnergyDataCollection,
@@ -55,9 +55,9 @@ class HuiEnergyGridGaugeCard
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     if (!this._data) {
@@ -74,7 +74,7 @@ class HuiEnergyGridGaugeCard
     let value: number | undefined;
 
     if (!gridSource) {
-      return html``;
+      return nothing;
     }
 
     const consumedFromGrid = calculateStatisticsSumGrowth(

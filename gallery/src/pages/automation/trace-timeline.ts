@@ -1,5 +1,6 @@
 /* eslint-disable lit/no-template-arrow */
-import { html, css, LitElement, TemplateResult } from "lit";
+
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/trace/hat-script-graph";
@@ -29,9 +30,9 @@ const traces: DemoTrace[] = [
 export class DemoAutomationTraceTimeline extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     return html`
       ${traces.map(

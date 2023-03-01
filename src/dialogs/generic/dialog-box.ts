@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { mdiAlertOutline } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -35,9 +35,9 @@ class DialogBox extends LitElement {
     return true;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
 
     const confirmPrompt = this._params.confirmation || this._params.prompt;

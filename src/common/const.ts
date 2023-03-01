@@ -1,7 +1,6 @@
 /** Constants to be used in the frontend. */
 
 import {
-  mdiAccount,
   mdiAirFilter,
   mdiAlert,
   mdiAngleAcute,
@@ -48,7 +47,6 @@ import {
   mdiProgressClock,
   mdiRayVertex,
   mdiRemote,
-  mdiRobot,
   mdiRobotVacuum,
   mdiScriptText,
   mdiSineWave,
@@ -59,15 +57,12 @@ import {
   mdiThermostat,
   mdiTimerOutline,
   mdiTransmissionTower,
-  mdiVideo,
   mdiWater,
   mdiWaterPercent,
-  mdiWeatherCloudy,
   mdiWeatherPouring,
   mdiWeatherRainy,
   mdiWeatherWindy,
   mdiWeight,
-  mdiWhiteBalanceSunny,
   mdiWifi,
 } from "@mdi/js";
 
@@ -82,9 +77,7 @@ export const DEFAULT_DOMAIN_ICON = mdiBookmark;
 export const FIXED_DOMAIN_ICONS = {
   alert: mdiAlert,
   air_quality: mdiAirFilter,
-  automation: mdiRobot,
   calendar: mdiCalendar,
-  camera: mdiVideo,
   climate: mdiThermostat,
   configurator: mdiCog,
   conversation: mdiMicrophoneMessage,
@@ -105,7 +98,6 @@ export const FIXED_DOMAIN_ICONS = {
   notify: mdiCommentAlert,
   number: mdiRayVertex,
   persistent_notification: mdiBell,
-  person: mdiAccount,
   plant: mdiFlower,
   proximity: mdiAppleSafari,
   remote: mdiRemote,
@@ -116,13 +108,10 @@ export const FIXED_DOMAIN_ICONS = {
   sensor: mdiEye,
   siren: mdiBullhorn,
   simple_alarm: mdiBell,
-  sun: mdiWhiteBalanceSunny,
   text: mdiFormTextbox,
   timer: mdiTimerOutline,
   updater: mdiCloudUpload,
   vacuum: mdiRobotVacuum,
-  water_heater: mdiThermometer,
-  weather: mdiWeatherCloudy,
   zone: mdiMapMarkerRadius,
 };
 

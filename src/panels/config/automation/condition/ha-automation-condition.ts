@@ -2,7 +2,14 @@ import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
 import { mdiArrowDown, mdiArrowUp, mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -22,6 +29,7 @@ import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaSelect } from "../../../../components/ha-select";
 import { CONDITION_TYPES } from "../../../../data/condition";
+import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import {
   loadSortable,
   SortableInstance,
@@ -35,7 +43,6 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
-import { sortableStyles } from "../../../../resources/ha-sortable-style";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
@@ -102,7 +109,7 @@ export default class HaAutomationCondition extends LitElement {
 
   protected render() {
     if (!Array.isArray(this.conditions)) {
-      return html``;
+      return nothing;
     }
     return html`
       ${this.reOrderMode && !this.nested

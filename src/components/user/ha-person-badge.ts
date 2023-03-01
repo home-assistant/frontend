@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -9,9 +9,9 @@ import { computeUserInitials } from "../../data/user";
 class PersonBadge extends LitElement {
   @property({ attribute: false }) public person?: Person;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.person) {
-      return html``;
+      return nothing;
     }
 
     const picture = this.person.picture;

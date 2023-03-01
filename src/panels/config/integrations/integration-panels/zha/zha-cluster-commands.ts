@@ -6,14 +6,14 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-select";
 import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-select";
 import {
   Cluster,
   Command,
@@ -58,9 +58,9 @@ export class ZHAClusterCommands extends LitElement {
     super.updated(changedProperties);
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.device || !this.selectedCluster || !this._commands) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-card class="content">

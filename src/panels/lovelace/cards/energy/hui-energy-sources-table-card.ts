@@ -1,21 +1,14 @@
 // @ts-ignore
 import dataTableStyles from "@material/data-table/dist/mdc.data-table.min.css";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  TemplateResult,
-  unsafeCSS,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, unsafeCSS, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import {
-  rgb2hex,
-  lab2rgb,
-  rgb2lab,
   hex2rgb,
+  lab2rgb,
+  rgb2hex,
+  rgb2lab,
 } from "../../../../common/color/convert-color";
 import { labBrighten, labDarken } from "../../../../common/color/lab";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -67,9 +60,9 @@ export class HuiEnergySourcesTableCard
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     if (!this._data) {

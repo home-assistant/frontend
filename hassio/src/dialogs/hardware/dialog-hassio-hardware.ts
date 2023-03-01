@@ -1,13 +1,13 @@
 import { mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/search-input";
 import { stringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/search-input";
 import { HassioHardwareInfo } from "../../../../src/data/hassio/hardware";
 import { dump } from "../../../../src/resources/js-yaml-dump";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
@@ -53,9 +53,9 @@ class HassioHardwareDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._dialogParams) {
-      return html``;
+      return nothing;
     }
 
     const devices = _filterDevices(

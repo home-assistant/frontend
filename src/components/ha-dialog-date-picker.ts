@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "app-datepicker";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
@@ -38,7 +38,7 @@ export class HaDialogDatePicker extends LitElement {
 
   render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     return html`<ha-dialog open @closed=${this.closeDialog}>
       <app-datepicker

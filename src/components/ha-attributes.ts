@@ -1,5 +1,12 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   formatAttributeName,
@@ -21,9 +28,9 @@ class HaAttributes extends LitElement {
 
   @state() private _expanded = false;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const attributes = this.computeDisplayAttributes(
@@ -32,7 +39,7 @@ class HaAttributes extends LitElement {
       )
     );
     if (attributes.length === 0) {
-      return html``;
+      return nothing;
     }
 
     return html`

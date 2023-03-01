@@ -11,7 +11,7 @@ import {
   mdiSort,
   mdiStopCircleOutline,
 } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -87,7 +87,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
   protected render() {
     if (!this.condition) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-card outlined>

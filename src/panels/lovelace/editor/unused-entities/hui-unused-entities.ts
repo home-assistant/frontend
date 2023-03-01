@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -47,13 +47,13 @@ export class HuiUnusedEntities extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.lovelace) {
-      return html``;
+      return nothing;
     }
 
     if (this.lovelace.mode === "storage" && this.lovelace.editMode === false) {
-      return html``;
+      return nothing;
     }
 
     return html`

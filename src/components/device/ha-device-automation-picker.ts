@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
@@ -85,9 +85,9 @@ export abstract class HaDeviceAutomationPicker<
     return `${this._automations[idx].device_id}_${idx}`;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._renderEmpty) {
-      return html``;
+      return nothing;
     }
     const value = this._value;
     return html`

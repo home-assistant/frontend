@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
@@ -68,9 +68,9 @@ export class EntityRegistrySettingsHelper extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._item === undefined) {
-      return html``;
+      return nothing;
     }
     const stateObj = this.hass.states[this.entry.entity_id];
     return html`

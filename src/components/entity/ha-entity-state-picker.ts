@@ -1,14 +1,14 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
-import { PolymerChangedEvent } from "../../polymer-types";
 import { getStates } from "../../common/entity/get_states";
+import { formatAttributeValue } from "../../data/entity_attributes";
+import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
-import { formatAttributeValue } from "../../data/entity_attributes";
-import { fireEvent } from "../../common/dom/fire_event";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -64,9 +64,9 @@ class HaEntityStatePicker extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`

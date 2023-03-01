@@ -3,7 +3,7 @@ import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
@@ -42,9 +42,9 @@ export class HassioHostname extends LitElement {
     this._hostname = hostInfo.hostname;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._hostname) {
-      return html``;
+      return nothing;
     }
 
     return html`

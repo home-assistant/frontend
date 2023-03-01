@@ -1,6 +1,6 @@
 import type { SelectedDetail } from "@material/mwc-list";
 import { formatInTimeZone, toDate } from "date-fns-tz";
-import { css, html, LitElement, PropertyValues } from "lit";
+import { css, html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { Options, WeekdayStr } from "rrule";
@@ -9,6 +9,7 @@ import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-chip";
+import "../../components/ha-date-input";
 import "../../components/ha-list-item";
 import "../../components/ha-select";
 import type { HaSelect } from "../../components/ha-select";
@@ -18,18 +19,17 @@ import {
   convertFrequency,
   convertRepeatFrequency,
   DEFAULT_COUNT,
+  getMonthdayRepeatFromRule,
+  getMonthlyRepeatItems,
+  getMonthlyRepeatWeekdayFromRule,
   getWeekday,
   getWeekdays,
-  getMonthlyRepeatItems,
+  MonthlyRepeatItem,
   RepeatEnd,
   RepeatFrequency,
   ruleByWeekDay,
   untilValue,
-  MonthlyRepeatItem,
-  getMonthlyRepeatWeekdayFromRule,
-  getMonthdayRepeatFromRule,
 } from "./recurrence";
-import "../../components/ha-date-input";
 
 @customElement("ha-recurrence-rule-editor")
 export class RecurrenceRuleEditor extends LitElement {
@@ -233,7 +233,7 @@ export class RecurrenceRuleEditor extends LitElement {
               `
             )}
           </ha-select>`
-        : html``}
+        : nothing}
     `;
   }
 
@@ -321,7 +321,7 @@ export class RecurrenceRuleEditor extends LitElement {
               @change=${this._onCountChange}
             ></ha-textfield>
           `
-        : html``}
+        : nothing}
       ${this._end === "on"
         ? html`
             <ha-date-input
@@ -334,17 +334,17 @@ export class RecurrenceRuleEditor extends LitElement {
               @value-changed=${this._onUntilChange}
             ></ha-date-input>
           `
-        : html``}
+        : nothing}
     `;
   }
 
   render() {
     return html`
       ${this.renderRepeat()}
-      ${this._freq === "monthly" ? this.renderMonthly() : html``}
-      ${this._freq === "weekly" ? this.renderWeekly() : html``}
-      ${this._freq === "daily" ? this.renderDaily() : html``}
-      ${this._freq !== "none" ? this.renderEnd() : html``}
+      ${this._freq === "monthly" ? this.renderMonthly() : nothing}
+      ${this._freq === "weekly" ? this.renderWeekly() : nothing}
+      ${this._freq === "daily" ? this.renderDaily() : nothing}
+      ${this._freq !== "none" ? this.renderEnd() : nothing}
     `;
   }
 

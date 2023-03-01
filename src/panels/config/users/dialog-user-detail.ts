@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -51,9 +51,9 @@ class DialogUserDetail extends LitElement {
     await this.updateComplete;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
     const user = this._params.entry;
     const badges = computeUserBadges(this.hass, user, true);

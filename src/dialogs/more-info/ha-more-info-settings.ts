@@ -1,6 +1,13 @@
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import {
@@ -25,7 +32,7 @@ export class HaMoreInfoSettings extends LitElement {
   protected render() {
     // loading.
     if (this.entry === undefined) {
-      return html``;
+      return nothing;
     }
 
     // No unique ID
@@ -49,7 +56,7 @@ export class HaMoreInfoSettings extends LitElement {
     }
 
     if (!this._settingsElementTag) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -86,7 +93,7 @@ export class HaMoreInfoSettings extends LitElement {
     return [
       css`
         .content {
-          padding: 24px;
+          padding: 8px 24px 24px 24px;
         }
       `,
     ];

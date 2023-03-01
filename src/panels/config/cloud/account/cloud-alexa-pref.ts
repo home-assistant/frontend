@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
@@ -16,9 +16,9 @@ export class CloudAlexaPref extends LitElement {
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.cloudStatus) {
-      return html``;
+      return nothing;
     }
 
     const alexa_registered = this.cloudStatus.alexa_registered;

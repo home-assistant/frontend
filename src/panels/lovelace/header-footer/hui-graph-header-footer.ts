@@ -5,13 +5,13 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-circular-progress";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import "../../../components/ha-circular-progress";
+import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
@@ -99,9 +99,9 @@ export class HuiGraphHeaderFooter
     this._config = cardConfig;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     if (this._error) {

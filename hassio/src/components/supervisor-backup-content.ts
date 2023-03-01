@@ -1,6 +1,13 @@
 import { mdiFolder, mdiHomeAssistant, mdiPuzzle } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { formatDate } from "../../../src/common/datetime/format_date";
@@ -11,9 +18,9 @@ import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-radio";
 import type { HaRadio } from "../../../src/components/ha-radio";
 import {
+  HassioBackupDetail,
   HassioFullBackupCreateParams,
   HassioPartialBackupCreateParams,
-  HassioBackupDetail,
 } from "../../../src/data/hassio/backup";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
@@ -115,9 +122,9 @@ export class SupervisorBackupContent extends LitElement {
     this.supervisor?.localize(`backup.${key}`) ||
     this.localize!(`ui.panel.page-onboarding.restore.${key}`);
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.onboarding && !this.supervisor) {
-      return html``;
+      return nothing;
     }
     const foldersSection =
       this.backupType === "partial" ? this._getSection("folders") : undefined;
