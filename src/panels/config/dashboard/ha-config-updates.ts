@@ -1,18 +1,15 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
-import "../../../components/ha-icon-next";
-import type { UpdateEntity } from "../../../data/update";
-import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -22,6 +19,9 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
+import type { UpdateEntity } from "../../../data/update";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends SubscribeMixin(LitElement) {
@@ -62,9 +62,9 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
       this.entities?.find((entity) => entity.entity_id === entityId)
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.updateEntities?.length) {
-      return html``;
+      return nothing;
     }
 
     const updates = this.updateEntities;

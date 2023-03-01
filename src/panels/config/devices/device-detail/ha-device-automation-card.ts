@@ -1,4 +1,4 @@
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-chip";
@@ -58,9 +58,9 @@ export abstract class HaDeviceAutomationCard<
     return false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this.automations.length === 0) {
-      return html``;
+      return nothing;
     }
     const automations = this._showSecondary
       ? this.automations

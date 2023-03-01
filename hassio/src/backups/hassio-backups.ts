@@ -8,7 +8,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -160,9 +160,9 @@ export class HassioBackups extends LitElement {
     }))
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.supervisor) {
-      return html``;
+      return nothing;
     }
     return html`
       <hass-tabs-subpage-data-table

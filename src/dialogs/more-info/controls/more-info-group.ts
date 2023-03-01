@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { property, state } from "lit/decorators";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
@@ -70,9 +70,9 @@ class MoreInfoGroup extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
     return html`${this._moreInfoType
       ? dynamicElement(this._moreInfoType, {

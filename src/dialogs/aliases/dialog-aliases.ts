@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { mdiDeleteOutline, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
@@ -40,9 +40,9 @@ class DialogAliases extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
 
     return html`

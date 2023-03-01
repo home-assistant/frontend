@@ -18,7 +18,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
@@ -104,7 +104,7 @@ export class HAFullCalendar extends LitElement {
     this.calendar?.updateSize();
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     const viewToggleButtons = this._viewToggleButtons(
       this.views,
       this.hass.localize
@@ -203,7 +203,7 @@ export class HAFullCalendar extends LitElement {
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </ha-fab>`
-        : html``}
+        : nothing}
     `;
   }
 

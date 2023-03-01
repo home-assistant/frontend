@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { mdiWater } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
@@ -15,15 +15,15 @@ import {
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
-  getStatisticMetadata,
   getDisplayUnit,
+  getStatisticMetadata,
   isExternalStatistic,
 } from "../../../../data/recorder";
+import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { EnergySettingsWaterDialogParams } from "./show-dialogs-energy";
-import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 
 @customElement("dialog-energy-water-settings")
 export class DialogEnergyWaterSettings
@@ -76,9 +76,9 @@ export class DialogEnergyWaterSettings
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params || !this._source) {
-      return html``;
+      return nothing;
     }
 
     const pickableUnit = this._water_units?.join(", ") || "";

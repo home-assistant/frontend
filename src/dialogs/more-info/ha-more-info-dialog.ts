@@ -214,7 +214,7 @@ export class MoreInfoDialog extends LitElement {
       return null;
     }
     const entityId = this._entityId;
-    const stateObj = this.hass.states[entityId];
+    const stateObj = this.hass.states[entityId] as HassEntity | undefined;
 
     const domain = computeDomain(entityId);
     const name = (stateObj && computeStateName(stateObj)) || entityId;
@@ -226,6 +226,7 @@ export class MoreInfoDialog extends LitElement {
     const title = this._childView?.viewTitle ?? name;
 
     const isInfoView = this._currView === "info" && !this._childView;
+    const isNewMoreInfo = stateObj && computeShowNewMoreInfo(stateObj);
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} .heading=${title} hideActions>
@@ -251,7 +252,7 @@ export class MoreInfoDialog extends LitElement {
                     )}
                   ></ha-icon-button-prev>
                 `}
-            ${!isInfoView || !computeShowNewMoreInfo(stateObj)
+            ${!isInfoView || !isNewMoreInfo
               ? html`<div
                   slot="title"
                   class="main-title"
@@ -427,10 +428,12 @@ export class MoreInfoDialog extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
+          /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
+          --vertical-align-dialog: flex-start;
+          --dialog-surface-margin-top: 40px;
           /* This is needed for the tooltip of the history charts to be positioned correctly */
           --dialog-surface-position: static;
           --dialog-content-position: static;
-          --vertical-align-dialog: flex-start;
           --dialog-content-padding: 0;
         }
 
@@ -453,7 +456,7 @@ export class MoreInfoDialog extends LitElement {
 
         ha-related-items,
         ha-more-info-history-and-logbook {
-          padding: 24px;
+          padding: 8px 24px 24px 24px;
           display: block;
         }
 
@@ -468,11 +471,17 @@ export class MoreInfoDialog extends LitElement {
           text-overflow: ellipsis;
         }
 
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* When in fullscreen dialog should be attached to top */
+          ha-dialog {
+            --dialog-surface-margin-top: 0px;
+          }
+        }
+
         @media all and (min-width: 600px) and (min-height: 501px) {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
             --mdc-dialog-max-width: 580px;
-            --dialog-surface-margin-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
 

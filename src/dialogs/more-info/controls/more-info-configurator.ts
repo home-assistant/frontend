@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
@@ -18,9 +18,9 @@ export class MoreInfoConfigurator extends LitElement {
 
   private _fieldInput = {};
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this.stateObj?.state !== "configure") {
-      return html``;
+      return nothing;
     }
 
     return html`

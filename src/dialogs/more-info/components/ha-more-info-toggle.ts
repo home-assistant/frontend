@@ -128,7 +128,9 @@ export class HaMoreInfoToggle extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       ha-control-switch {
-        height: 320px;
+        height: 45vh;
+        max-height: 320px;
+        min-height: 200px;
         --control-switch-thickness: 100px;
         --control-switch-border-radius: 24px;
         --control-switch-padding: 6px;
@@ -138,7 +140,9 @@ export class HaMoreInfoToggle extends LitElement {
         display: flex;
         flex-direction: column;
         width: 100px;
-        height: 320px;
+        height: 45vh;
+        max-height: 320px;
+        min-height: 200px;
         padding: 6px;
         box-sizing: border-box;
       }

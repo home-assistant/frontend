@@ -1,11 +1,11 @@
-import "@polymer/paper-tooltip/paper-tooltip";
 import "@material/mwc-button/mwc-button";
 import { mdiDelete, mdiDeleteOff } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "@polymer/paper-tooltip/paper-tooltip";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -19,14 +19,14 @@ import {
   HassioAddonRepository,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
-import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
-import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
 import {
   addStoreRepository,
   fetchStoreRepositories,
   removeStoreRepository,
 } from "../../../../src/data/supervisor/store";
+import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
+import type { HomeAssistant } from "../../../../src/types";
+import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {
@@ -82,9 +82,9 @@ class HassioRepositoriesDialog extends LitElement {
         .map((repo) => repo.slug)
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._dialogParams?.supervisor || this._repositories === undefined) {
-      return html``;
+      return nothing;
     }
     const repositories = this._filteredRepositories(this._repositories);
     const usedRepositories = this._filteredUsedRepositories(

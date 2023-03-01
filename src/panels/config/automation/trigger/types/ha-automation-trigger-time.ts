@@ -1,13 +1,13 @@
-import memoizeOne from "memoize-one";
-import { html, LitElement, PropertyValues } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { TimeTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
@@ -79,7 +79,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     const at = this.trigger.at;
 
     if (Array.isArray(at)) {
-      return html``;
+      return nothing;
     }
 
     const inputMode =

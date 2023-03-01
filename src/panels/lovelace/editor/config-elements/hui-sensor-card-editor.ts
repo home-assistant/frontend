@@ -1,4 +1,4 @@
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   assert,
@@ -97,9 +97,9 @@ export class HuiSensorCardEditor
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const data = {

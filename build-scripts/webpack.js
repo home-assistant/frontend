@@ -51,7 +51,7 @@ const createWebpackConfig = ({
           use: {
             loader: "babel-loader",
             options: {
-              ...bundle.babelOptions({ latestBuild }),
+              ...bundle.babelOptions({ latestBuild, isProdBuild }),
               cacheDirectory: !isProdBuild,
               cacheCompression: false,
             },

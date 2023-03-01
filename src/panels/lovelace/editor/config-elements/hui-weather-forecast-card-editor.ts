@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
@@ -121,9 +121,9 @@ export class HuiWeatherForecastCardEditor
       ] as const
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const schema = this._schema(this.hass.localize, this._has_forecast);

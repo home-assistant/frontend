@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { mdiHomeAssistant } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../src/components/buttons/ha-progress-button";
@@ -33,14 +33,14 @@ export class HassioUpdate extends LitElement {
       ).length
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.supervisor) {
-      return html``;
+      return nothing;
     }
 
     const updatesAvailable = this._pendingUpdates(this.supervisor);
     if (!updatesAvailable) {
-      return html``;
+      return nothing;
     }
 
     return html`
@@ -80,9 +80,9 @@ export class HassioUpdate extends LitElement {
     name: string,
     key: string,
     object: HassioHomeAssistantInfo | HassioSupervisorInfo | HassioHassOSInfo
-  ): TemplateResult {
+  ) {
     if (!object.update_available) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-card outlined>

@@ -1,13 +1,13 @@
-import "../../../../../components/ha-circular-progress";
 import "@material/mwc-button/mwc-button";
-import { mdiStethoscope, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { mdiCheckCircle, mdiCloseCircle, mdiStethoscope } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import {
-  DeviceRegistryEntry,
   computeDeviceName,
+  DeviceRegistryEntry,
 } from "../../../../../data/device_registry";
 import {
   fetchZwaveNetworkStatus,
@@ -41,9 +41,9 @@ class DialogZWaveJSHealNode extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.device) {
-      return html``;
+      return nothing;
     }
 
     return html`

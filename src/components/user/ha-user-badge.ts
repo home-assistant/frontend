@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -47,9 +47,9 @@ class UserBadge extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.user) {
-      return html``;
+      return nothing;
     }
     const picture = this._personPicture;
 

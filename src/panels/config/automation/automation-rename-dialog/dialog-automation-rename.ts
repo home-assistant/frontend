@@ -1,15 +1,15 @@
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
 import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-textarea";
+import "../../../../components/ha-textfield";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { AutomationRenameDialog } from "./show-dialog-automation-rename";
-import "../../../../components/ha-textarea";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-textfield";
 
 @customElement("ha-dialog-automation-rename")
 class DialogAutomationRename extends LitElement implements HassDialog {
@@ -43,9 +43,9 @@ class DialogAutomationRename extends LitElement implements HassDialog {
     this._opened = false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._opened) {
-      return html``;
+      return nothing;
     }
     return html`
       <ha-dialog

@@ -1,8 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiStethoscope, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import { mdiCheckCircle, mdiCloseCircle, mdiStethoscope } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
@@ -50,9 +50,9 @@ class DialogZWaveJSHealNetwork extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.entry_id) {
-      return html``;
+      return nothing;
     }
 
     return html`

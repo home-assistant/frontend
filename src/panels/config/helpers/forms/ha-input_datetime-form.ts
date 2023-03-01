@@ -1,11 +1,11 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-radio";
-import "../../../../components/ha-textfield";
 import type { HaRadio } from "../../../../components/ha-radio";
+import "../../../../components/ha-textfield";
 import { InputDateTime } from "../../../../data/input_datetime";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -52,9 +52,9 @@ class HaInputDateTimeForm extends LitElement {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
     const nameInvalid = !this._name || this._name.trim() === "";
 

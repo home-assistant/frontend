@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -55,9 +55,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params || !this._data) {
-      return html``;
+      return nothing;
     }
     const defaultPanelUrlPath = this.hass.defaultPanel;
     const titleInvalid = !this._data.title || !this._data.title.trim();

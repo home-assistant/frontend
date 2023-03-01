@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -30,9 +30,9 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
 
     return html`

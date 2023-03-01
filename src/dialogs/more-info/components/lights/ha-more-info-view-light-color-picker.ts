@@ -7,8 +7,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-button-toggle-group";
@@ -62,9 +62,9 @@ class MoreInfoViewLightColorPicker extends LitElement {
       : undefined;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.params || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const supportsRgbww = lightSupportsColorMode(
@@ -97,15 +97,19 @@ class MoreInfoViewLightColorPicker extends LitElement {
       <div class="content">
         ${this._mode === LightColorMode.COLOR_TEMP
           ? html`
+              <p class="color-temp-value">
+                ${this._ctSliderValue ? `${this._ctSliderValue} K` : nothing}
+              </p>
               <ha-control-slider
                 vertical
-                class="color_temp"
+                class="color-temp"
                 label=${this.hass.localize("ui.card.light.color_temperature")}
                 min="1"
                 max="100"
                 mode="cursor"
                 .value=${this._ctSliderValue}
                 @value-changed=${this._ctSliderChanged}
+                @slider-moved=${this._ctSliderMoved}
                 .min=${this.stateObj.attributes.min_color_temp_kelvin!}
                 .max=${this.stateObj.attributes.max_color_temp_kelvin!}
               >
@@ -114,7 +118,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
           : ""}
         ${this._mode === "color"
           ? html`
-              <div class="segmentationContainer">
+              <div class="segmentation-container">
                 <ha-color-picker
                   class="color"
                   @colorselected=${this._colorPicked}
@@ -127,7 +131,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
                 <ha-icon-button
                   .path=${mdiPalette}
                   @click=${this._segmentClick}
-                  class="segmentationButton"
+                  class="segmentation-button"
                 ></ha-icon-button>
               </div>
 
@@ -206,7 +210,11 @@ class MoreInfoViewLightColorPicker extends LitElement {
           this._brightnessAdjusted = maxVal;
         }
       }
-      this._ctSliderValue = stateObj.attributes.color_temp_kelvin;
+      this._ctSliderValue =
+        stateObj.attributes.color_mode === LightColorMode.COLOR_TEMP
+          ? stateObj.attributes.color_temp_kelvin
+          : undefined;
+
       this._wvSliderValue =
         stateObj.attributes.color_mode === LightColorMode.RGBW
           ? Math.round((stateObj.attributes.rgbw_color![3] * 100) / 255)
@@ -243,7 +251,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!changedProps.has("params") || !changedProps.has("hass")) {
+    if (!changedProps.has("params") && !changedProps.has("hass")) {
       return;
     }
 
@@ -264,10 +272,11 @@ class MoreInfoViewLightColorPicker extends LitElement {
       }
 
       this._modes = modes;
-      this._mode =
-        this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
+      this._mode = this.stateObj!.attributes.color_mode
+        ? this.stateObj!.attributes.color_mode === LightColorMode.COLOR_TEMP
           ? LightColorMode.COLOR_TEMP
-          : "color";
+          : "color"
+        : this._modes[0];
     }
 
     this._updateSliderValues();
@@ -279,6 +288,16 @@ class MoreInfoViewLightColorPicker extends LitElement {
       return;
     }
     this._mode = newMode;
+  }
+
+  private _ctSliderMoved(ev: CustomEvent) {
+    const ct = ev.detail.value;
+
+    if (isNaN(ct)) {
+      return;
+    }
+
+    this._ctSliderValue = ct;
   }
 
   private _ctSliderChanged(ev: CustomEvent) {
@@ -493,14 +512,14 @@ class MoreInfoViewLightColorPicker extends LitElement {
           flex: 1;
         }
 
-        .segmentationContainer {
+        .segmentation-container {
           position: relative;
           max-height: 500px;
           display: flex;
           justify-content: center;
         }
 
-        .segmentationButton {
+        .segmentation-button {
           position: absolute;
           top: 5%;
           left: 0;
@@ -516,17 +535,29 @@ class MoreInfoViewLightColorPicker extends LitElement {
         }
 
         ha-control-slider {
-          height: 320px;
+          height: 45vh;
+          max-height: 320px;
+          min-height: 200px;
           margin: 20px 0;
+          --control-slider-thickness: 100px;
+          --control-slider-border-radius: 24px;
         }
 
         ha-labeled-slider {
           width: 100%;
         }
 
-        .color_temp {
-          --control-slider-thickness: 100px;
-          --control-slider-border-radius: 24px;
+        .color-temp-value {
+          font-style: normal;
+          font-weight: 500;
+          font-size: 16px;
+          height: 24px;
+          line-height: 24px;
+          letter-spacing: 0.1px;
+          margin: 0;
+        }
+
+        .color-temp {
           --control-slider-background: -webkit-linear-gradient(
             top,
             rgb(166, 209, 255) 0%,
@@ -534,6 +565,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
             rgb(255, 160, 0) 100%
           );
           --control-slider-background-opacity: 1;
+          margin-bottom: 44px;
         }
 
         hr {

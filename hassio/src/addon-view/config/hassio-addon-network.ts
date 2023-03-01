@@ -4,7 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -47,9 +47,9 @@ class HassioAddonNetwork extends LitElement {
     this._setNetworkConfig();
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
     }
 
     const hasHiddenOptions = Object.keys(this._config).find(

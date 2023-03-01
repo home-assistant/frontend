@@ -2,7 +2,7 @@ import { animate } from "@lit-labs/motion";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiDelete } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -18,11 +18,11 @@ import {
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import "../ha-check-list-item";
 import "../ha-circular-progress";
 import "../ha-dialog";
 import "../ha-header-bar";
 import "../ha-svg-icon";
-import "../ha-check-list-item";
 import "./ha-media-player-browse";
 import "./ha-media-upload-button";
 import type { MediaManageDialogParams } from "./show-media-manage-dialog";
@@ -60,9 +60,9 @@ class DialogMediaManage extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
 
     const children =

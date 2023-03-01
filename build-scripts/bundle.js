@@ -53,13 +53,25 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   ...defineOverlay,
 });
 
+const htmlMinifierOptions = {
+  caseSensitive: true,
+  collapseWhitespace: true,
+  conservativeCollapse: true,
+  decodeEntities: true,
+  removeComments: true,
+  removeRedundantAttributes: true,
+  minifyCSS: {
+    level: 0,
+  },
+};
+
 module.exports.terserOptions = (latestBuild) => ({
   safari10: !latestBuild,
   ecma: latestBuild ? undefined : 5,
   output: { comments: false },
 });
 
-module.exports.babelOptions = ({ latestBuild }) => ({
+module.exports.babelOptions = ({ latestBuild, isProdBuild }) => ({
   babelrc: false,
   compact: false,
   presets: [
@@ -67,7 +79,7 @@ module.exports.babelOptions = ({ latestBuild }) => ({
       "@babel/preset-env",
       {
         useBuiltIns: "entry",
-        corejs: { version: "3.28", proposals: true },
+        corejs: { version: "3.29", proposals: true },
         bugfixes: true,
       },
     ],
@@ -93,12 +105,26 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     "@babel/plugin-syntax-import-meta",
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-syntax-top-level-await",
+    // Support  various proposals
     "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-proposal-nullish-coalescing-operator",
     ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
     ["@babel/plugin-proposal-private-methods", { loose: true }],
     ["@babel/plugin-proposal-private-property-in-object", { loose: true }],
     ["@babel/plugin-proposal-class-properties", { loose: true }],
+    // Minify template literals for production
+    isProdBuild && [
+      "template-html-minifier",
+      {
+        modules: {
+          lit: ["html", "svg", { name: "css", encapsulation: "style" }],
+          "@polymer/polymer/lib/utils/html-tag": ["html"],
+        },
+        strictCSS: true,
+        htmlMinifier: htmlMinifierOptions,
+        failOnError: true, // we can turn this off in case of false positives
+      },
+    ],
   ].filter(Boolean),
   exclude: [
     // \\ for Windows, / for Mac OS and Linux

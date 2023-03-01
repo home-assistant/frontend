@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
@@ -39,9 +39,9 @@ class IntegrationsStartupTime extends LitElement {
     this._fetchSetups();
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._setups) {
-      return html``;
+      return nothing;
     }
 
     return html`

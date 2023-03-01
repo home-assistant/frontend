@@ -359,7 +359,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
               `
             : ""}
           ${dongles?.length
-            ? html`<ha-card>
+            ? html`<ha-card outlined>
                 ${dongles.map((dongle) => {
                   const configEntry = dongle.config_entries
                     .map((id) => this._configEntries?.[id])
@@ -441,6 +441,16 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                     ></ha-chart-base>
                   </div>
                 </ha-card>`
+            : isComponentLoaded(this.hass, "hardware")
+            ? html`<ha-card outlined>
+                <div class="card-content">
+                  <div class="value">
+                    ${this.hass.localize(
+                      "ui.panel.config.hardware.loading_system_data"
+                    )}
+                  </div>
+                </div>
+              </ha-card>`
             : ""}
         </div>
       </hass-subpage>

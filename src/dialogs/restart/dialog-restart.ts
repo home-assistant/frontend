@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list";
 import { mdiAutoFix, mdiPower, mdiPowerCycle, mdiRefresh } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -74,9 +74,9 @@ class DialogRestart extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._open) {
-      return html``;
+      return nothing;
     }
 
     const showReload = this.hass.userData?.showAdvanced;

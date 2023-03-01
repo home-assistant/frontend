@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -52,9 +52,9 @@ export class HuiVacuumCommandsTileFeatureEditor
       ] as const
   );
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     const stateObj = this.context?.entity_id

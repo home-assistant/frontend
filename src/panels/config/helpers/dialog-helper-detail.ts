@@ -2,7 +2,14 @@ import "@material/mwc-button/mwc-button";
 import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -103,9 +110,9 @@ export class DialogHelperDetail extends LitElement {
     this._params = undefined;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._opened) {
-      return html``;
+      return nothing;
     }
     let content: TemplateResult;
 

@@ -18,7 +18,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -156,7 +156,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     this._newMediaExpected = false;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (this._newMediaExpected) {
       return html`
         <div class="controls-progress">
@@ -267,7 +267,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                     )}
               </div>
               ${stateObj.attributes.media_duration === Infinity
-                ? html``
+                ? nothing
                 : this.narrow
                 ? html`<mwc-linear-progress></mwc-linear-progress>`
                 : html`

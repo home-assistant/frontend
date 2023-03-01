@@ -5,7 +5,7 @@ import {
   html,
   LitElement,
   PropertyValues,
-  TemplateResult,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -31,12 +31,12 @@ class ConfigNetwork extends LitElement {
 
   @state() private _error?: { code: string; message: string };
 
-  protected render(): TemplateResult {
+  protected render() {
     if (
       !this.hass.userData?.showAdvanced ||
       !isComponentLoaded(this.hass, "network")
     ) {
-      return html``;
+      return nothing;
     }
 
     return html`

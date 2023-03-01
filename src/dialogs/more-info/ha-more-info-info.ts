@@ -1,11 +1,7 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { subscribeOne } from "../../common/util/subscribe-one";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
@@ -24,13 +20,12 @@ export class MoreInfoInfo extends LitElement {
 
   @property() public entityId!: string;
 
-  @state() private _entityEntry?: EntityRegistryEntry;
-
   protected render() {
     const entityId = this.entityId;
-    const stateObj = this.hass.states[entityId];
+    const stateObj = this.hass.states[entityId] as HassEntity | undefined;
+    const entityRegObj = this.hass.entities[entityId];
     const domain = computeDomain(entityId);
-    const newMoreInfo = computeShowNewMoreInfo(stateObj);
+    const isNewMoreInfo = stateObj && computeShowNewMoreInfo(stateObj);
 
     return html`
       <div class="container" data-domain=${domain}>
@@ -41,18 +36,18 @@ export class MoreInfoInfo extends LitElement {
               )}
             </ha-alert>`
           : ""}
-        ${stateObj?.attributes.restored && this._entityEntry
+        ${stateObj?.attributes.restored && entityRegObj
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
                 "ui.dialogs.more_info_control.restored.no_longer_provided",
                 {
-                  integration: this._entityEntry.platform,
+                  integration: entityRegObj.platform,
                 }
               )}
             </ha-alert>`
           : ""}
         <div class="content">
-          ${DOMAINS_NO_INFO.includes(domain) || computeShowNewMoreInfo(stateObj)
+          ${DOMAINS_NO_INFO.includes(domain) || isNewMoreInfo
             ? ""
             : html`
                 <state-card-content
@@ -76,7 +71,7 @@ export class MoreInfoInfo extends LitElement {
                 .entityId=${this.entityId}
               ></ha-more-info-logbook>`}
           <more-info-content
-            ?full-height=${newMoreInfo}
+            ?full-height=${isNewMoreInfo}
             .stateObj=${stateObj}
             .hass=${this.hass}
           ></more-info-content>
@@ -84,17 +79,6 @@ export class MoreInfoInfo extends LitElement {
         </div>
       </div>
     `;
-  }
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    subscribeOne(this.hass.connection, subscribeEntityRegistry).then(
-      (entries) => {
-        this._entityEntry = entries.find(
-          (entry) => entry.entity_id === this.entityId
-        );
-      }
-    );
   }
 
   static get styles() {
@@ -114,7 +98,7 @@ export class MoreInfoInfo extends LitElement {
         display: flex;
         flex-direction: column;
         flex: 1;
-        padding: 24px;
+        padding: 8px 24px 24px 24px;
         padding-bottom: max(env(safe-area-inset-bottom), 24px);
       }
 

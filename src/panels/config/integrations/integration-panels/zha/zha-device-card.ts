@@ -1,30 +1,30 @@
 import "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import memoizeOne from "memoize-one";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
+import { stringCompare } from "../../../../../common/string/compare";
+import { slugify } from "../../../../../common/string/slugify";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
+import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-service-description";
 import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
-import { ZHADevice } from "../../../../../data/zha";
-import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-area-picker";
-import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import {
-  subscribeEntityRegistry,
   EntityRegistryEntry,
+  subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../../../data/entity_registry";
+import { ZHADevice } from "../../../../../data/zha";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../types";
 import { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
-import { stringCompare } from "../../../../../common/string/compare";
 import { getIeeeTail } from "./functions";
-import { slugify } from "../../../../../common/string/slugify";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
@@ -64,9 +64,9 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.device) {
-      return html``;
+      return nothing;
     }
     const entities = this._deviceEntities(
       this.device.device_reg_id,

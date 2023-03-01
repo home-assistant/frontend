@@ -2,7 +2,14 @@ import { Ripple } from "@material/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import {
   customElement,
   eventOptions,
@@ -254,9 +261,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     this._rippleHandlers.endHover();
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config || !this.hass) {
-      return html``;
+      return nothing;
     }
     const entityId = this._config.entity;
     const stateObj = entityId ? this.hass.states[entityId] : undefined;

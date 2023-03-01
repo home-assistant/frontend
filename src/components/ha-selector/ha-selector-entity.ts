@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues } from "lit";
+import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import {
@@ -39,7 +39,7 @@ export class HaEntitySelector extends LitElement {
 
   protected render() {
     if (this._hasIntegration(this.selector) && !this._entitySources) {
-      return html``;
+      return nothing;
     }
 
     if (!this.selector.entity?.multiple) {

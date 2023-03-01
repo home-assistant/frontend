@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { HomeAssistant } from "../../../types";
@@ -18,9 +18,9 @@ class HuiDividerRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`<div

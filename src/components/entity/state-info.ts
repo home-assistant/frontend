@@ -1,6 +1,6 @@
 import "@polymer/paper-tooltip/paper-tooltip";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -21,9 +21,9 @@ class StateInfo extends LitElement {
 
   @property() public color?: string;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return html``;
+      return nothing;
     }
 
     const name = computeStateName(this.stateObj);

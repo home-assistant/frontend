@@ -9,7 +9,7 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -32,8 +32,8 @@ import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
-import "../../components/ha-textfield";
 import "../../components/ha-list-item";
+import "../../components/ha-textfield";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
@@ -136,7 +136,7 @@ export class QuickBar extends LitElement {
 
   protected render() {
     if (!this._open) {
-      return html``;
+      return nothing;
     }
 
     const items: QuickBarItem[] | undefined = this._getItems(
@@ -273,9 +273,9 @@ export class QuickBar extends LitElement {
     }
   }
 
-  private _renderItem = (item: QuickBarItem, index: number): TemplateResult => {
+  private _renderItem = (item: QuickBarItem, index: number) => {
     if (!item) {
-      return html``;
+      return nothing;
     }
     return isCommandItem(item)
       ? this._renderCommandItem(item, index)

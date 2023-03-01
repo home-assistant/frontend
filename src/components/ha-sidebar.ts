@@ -29,6 +29,7 @@ import {
   html,
   LitElement,
   PropertyValues,
+  nothing,
 } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -241,7 +242,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   protected render() {
     if (!this.hass) {
-      return html``;
+      return nothing;
     }
 
     // prettier-ignore

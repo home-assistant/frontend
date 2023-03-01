@@ -1,4 +1,4 @@
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -41,9 +41,9 @@ export class HuiGraphFooterEditor
     return this._config!.hours_to_show || 24;
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`
