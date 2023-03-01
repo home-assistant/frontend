@@ -1808,7 +1808,8 @@
           "documentation": "Documentation",
           "configure": "Configure",
           "documentation_description": "Find extra information about your device",
-          "restart_homeassistant": "[%key:ui::panel::config::system_dashboard::restart_homeassistant%]"
+          "restart_homeassistant": "[%key:ui::panel::config::system_dashboard::restart_homeassistant%]",
+          "loading_system_data": "Loading processor and memory data..."
         },
         "info": {
           "caption": "About",
