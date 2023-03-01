@@ -93,7 +93,7 @@ export class HaMoreInfoSettings extends LitElement {
     return [
       css`
         .content {
-          padding: 24px;
+          padding: 8px 24px 24px 24px;
         }
       `,
     ];
