@@ -84,7 +84,9 @@ export class HaMoreInfoLightBrightness extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       ha-control-slider {
-        height: 320px;
+        height: 45vh;
+        max-height: 320px;
+        min-height: 200px;
         --control-slider-thickness: 100px;
         --control-slider-border-radius: 24px;
         --control-slider-color: var(--primary-color);
