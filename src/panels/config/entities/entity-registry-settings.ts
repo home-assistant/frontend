@@ -1325,7 +1325,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           display: block;
         }
         .container {
-          padding: 20px 24px;
+          padding: 8px 24px 20px 24px;
         }
         .buttons {
           box-sizing: border-box;
