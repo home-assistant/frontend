@@ -13,6 +13,7 @@ import {
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import "./more-info-content";
+import "./more-info-no-state";
 
 @customElement("ha-more-info-info")
 export class MoreInfoInfo extends LitElement {
@@ -23,29 +24,20 @@ export class MoreInfoInfo extends LitElement {
   protected render() {
     const entityId = this.entityId;
     const stateObj = this.hass.states[entityId] as HassEntity | undefined;
-    const entityRegObj = this.hass.entities[entityId];
     const domain = computeDomain(entityId);
     const isNewMoreInfo = stateObj && computeShowNewMoreInfo(stateObj);
 
+    if (!stateObj) {
+      return html`
+        <more-info-no-state
+          .entityId=${entityId}
+          .hass=${this.hass}
+        ></more-info-no-state>
+      `;
+    }
+
     return html`
       <div class="container" data-domain=${domain}>
-        ${!stateObj
-          ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.unavailable"
-              )}
-            </ha-alert>`
-          : ""}
-        ${stateObj?.attributes.restored && entityRegObj
-          ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.dialogs.more_info_control.restored.no_longer_provided",
-                {
-                  integration: entityRegObj.platform,
-                }
-              )}
-            </ha-alert>`
-          : ""}
         <div class="content">
           ${DOMAINS_NO_INFO.includes(domain) || isNewMoreInfo
             ? ""
@@ -75,7 +67,6 @@ export class MoreInfoInfo extends LitElement {
             .stateObj=${stateObj}
             .hass=${this.hass}
           ></more-info-content>
-          <div class="toto"></div>
         </div>
       </div>
     `;
