@@ -50,7 +50,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @state() private _data?: StatisticData[] = [] as StatisticsMetaData[];
+  @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
 
   private _disabledEntities = new Set<string>();
 
@@ -59,8 +59,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   }
 
   private _displayData = memoizeOne(
-    (data?: StatisticData[]): DisplayedStatisticData[] =>
-      (data ?? []).map((item) => ({
+    (data: StatisticData[]): DisplayedStatisticData[] =>
+      data.map((item) => ({
         ...item,
         displayName: item.state
           ? computeStateName(item.state)
@@ -222,7 +222,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         !statsIds.has(statisticId) &&
         !this._disabledEntities.has(statisticId)
       ) {
-        this._data!.push({
+        this._data.push({
           statistic_id: statisticId,
           statistics_unit_of_measurement: "",
           source: "",
