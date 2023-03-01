@@ -9165,16 +9165,15 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"glob@npm:^8.1.0":
-  version: 8.1.0
-  resolution: "glob@npm:8.1.0"
+"glob@npm:^9.0.2":
+  version: 9.0.2
+  resolution: "glob@npm:9.0.2"
   dependencies:
     fs.realpath: ^1.0.0
-    inflight: ^1.0.4
-    inherits: 2
-    minimatch: ^5.0.1
-    once: ^1.3.0
-  checksum: 92fbea3221a7d12075f26f0227abac435de868dd0736a17170663783296d0dd8d3d532a5672b4488a439bf5d7fb85cdd07c11185d6cd39184f0385cbdfb86a47
+    minimatch: ^7.3.0
+    minipass: ^4.2.4
+    path-scurry: ^1.5.0
+  checksum: 729074e08e26e9c679a6563c63015ba1bd846f8d3c298c38d0fef149c679d37188c9cf93a66687e5c43a94a8d8b6eca9a15b948a742468b7d8b648daaa9925f0
   languageName: node
   linkType: hard
 
@@ -9687,7 +9686,7 @@ fsevents@~2.3.2:
     fancy-log: ^2.0.0
     fs-extra: ^11.1.0
     fuse.js: ^6.6.2
-    glob: ^8.1.0
+    glob: ^9.0.2
     google-timezones-json: ^1.0.2
     gulp: ^4.0.2
     gulp-flatmap: ^1.0.2
@@ -11654,6 +11653,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"lru-cache@npm:^7.14.1":
+  version: 7.17.0
+  resolution: "lru-cache@npm:7.17.0"
+  checksum: 28c2a98ad313b8d61beac1f08257b6f0ca990e39d24a9bc831030b6e209447cfb11c6d9d1a774282189bfc9609d1dfd17ebe485228dd68f7b96b6b9b7740894e
+  languageName: node
+  linkType: hard
+
 "magic-string@npm:^0.25.0, magic-string@npm:^0.25.2, magic-string@npm:^0.25.7":
   version: 0.25.7
   resolution: "magic-string@npm:0.25.7"
@@ -11944,12 +11950,12 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^5.0.1":
-  version: 5.1.6
-  resolution: "minimatch@npm:5.1.6"
+"minimatch@npm:^7.3.0":
+  version: 7.3.0
+  resolution: "minimatch@npm:7.3.0"
   dependencies:
     brace-expansion: ^2.0.1
-  checksum: 7564208ef81d7065a370f788d337cd80a689e981042cb9a1d0e6580b6c6a8c9279eba80010516e258835a988363f99f54a6f711a315089b8b42694f5da9d0d77
+  checksum: c4d9af992958339d5fc593c9ce496f4b9615597e57cdd663e57bd3a745ebd208c2bba19c3290c25ed8dcf259586fa1f68e4e1acf304f8694927b84c5381167d0
   languageName: node
   linkType: hard
 
@@ -12034,6 +12040,13 @@ fsevents@~2.3.2:
   version: 4.0.2
   resolution: "minipass@npm:4.0.2"
   checksum: 2e4f4caaf85a45c01c6042adc43b5111a6113f62e300acf1db3b193ac3ec6e955bc893d6d8a08635598771a55a0f60487dcac59a1ac39557eb524295d4778c9e
+  languageName: node
+  linkType: hard
+
+"minipass@npm:^4.0.2, minipass@npm:^4.2.4":
+  version: 4.2.4
+  resolution: "minipass@npm:4.2.4"
+  checksum: c664f2ae4401408d1e7a6e4f50aca45f87b1b0634bc9261136df5c378e313e77355765f73f59c4a5abcadcdf43d83fcd3eb14e4a7cdcce8e36508e2290345753
   languageName: node
   linkType: hard
 
@@ -13112,6 +13125,16 @@ fsevents@~2.3.2:
   dependencies:
     path-root-regex: ^0.1.0
   checksum: ff88aebfc1c59ace510cc06703d67692a11530989920427625e52b66a303ca9b3d4059b0b7d0b2a73248d1ad29bcb342b8b786ec00592f3101d38a45fd3b2e08
+  languageName: node
+  linkType: hard
+
+"path-scurry@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "path-scurry@npm:1.5.0"
+  dependencies:
+    lru-cache: ^7.14.1
+    minipass: ^4.0.2
+  checksum: d576186d8a5845edaf2344949e333ecfddf391f9dcffbfe7679006f523b6a92fb751e272c4446dfd17124ba4d63867afd3e77f6afd1bd829767111d98d5d8d94
   languageName: node
   linkType: hard
 
