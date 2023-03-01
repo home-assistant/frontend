@@ -98,7 +98,7 @@ export class MoreInfoInfo extends LitElement {
         display: flex;
         flex-direction: column;
         flex: 1;
-        padding: 24px;
+        padding: 8px 24px 24px 24px;
         padding-bottom: max(env(safe-area-inset-bottom), 24px);
       }
 

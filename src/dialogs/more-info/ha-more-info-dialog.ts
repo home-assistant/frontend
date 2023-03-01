@@ -454,7 +454,7 @@ export class MoreInfoDialog extends LitElement {
 
         ha-related-items,
         ha-more-info-history-and-logbook {
-          padding: 24px;
+          padding: 8px 24px 24px 24px;
           display: block;
         }
 
