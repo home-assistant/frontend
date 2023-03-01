@@ -1,7 +1,5 @@
 const gulp = require("gulp");
-
 const env = require("../env");
-
 require("./clean.js");
 require("./gen-icons-json.js");
 require("./webpack.js");
@@ -43,6 +41,6 @@ gulp.task(
     env.useRollup() ? "rollup-prod-hassio" : "webpack-prod-hassio",
     "gen-index-hassio-prod",
     ...// Don't compress running tests
-    (env.isTest() ? [] : ["compress-hassio"])
+    (env.isTestBuild() ? [] : ["compress-hassio"])
   )
 );

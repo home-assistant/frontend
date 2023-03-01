@@ -65,13 +65,14 @@ const htmlMinifierOptions = {
   },
 };
 
-module.exports.terserOptions = (latestBuild) => ({
+module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   safari10: !latestBuild,
   ecma: latestBuild ? undefined : 5,
-  output: { comments: false },
+  format: { comments: false },
+  sourceMap: !isTestBuild,
 });
 
-module.exports.babelOptions = ({ latestBuild, isProdBuild }) => ({
+module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
   babelrc: false,
   compact: false,
   presets: [
@@ -135,7 +136,10 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild }) => ({
     /node_modules[\\/]core-js/,
     /node_modules[\\/]webpack[\\/]buildin/,
   ],
+  sourceMaps: !isTestBuild,
 });
+
+const nameSuffix = (latestBuild) => (latestBuild ? "-latest" : "-es5");
 
 const outputPath = (outputRoot, latestBuild) =>
   path.resolve(outputRoot, latestBuild ? "frontend_latest" : "frontend_es5");
@@ -159,14 +163,17 @@ BundleConfig {
   latestBuild: boolean,
   // If we're doing a stats build (create nice chunk names)
   isStatsBuild: boolean,
+  // If it's just a test build in CI, skip time on source map generation
+  isTestBuild: boolean,
   // Names of entrypoints that should not be hashed
   dontHash: Set<string>
 }
 */
 
 module.exports.config = {
-  app({ isProdBuild, latestBuild, isStatsBuild, isWDS }) {
+  app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild, isWDS }) {
     return {
+      name: "app" + nameSuffix(latestBuild),
       entry: {
         service_worker: "./src/entrypoints/service_worker.ts",
         app: "./src/entrypoints/app.ts",
@@ -180,12 +187,14 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       isStatsBuild,
+      isTestBuild,
       isWDS,
     };
   },
 
   demo({ isProdBuild, latestBuild, isStatsBuild }) {
     return {
+      name: "demo" + nameSuffix(latestBuild),
       entry: {
         main: path.resolve(paths.demo_dir, "src/entrypoint.ts"),
       },
@@ -215,6 +224,7 @@ module.exports.config = {
     }
 
     return {
+      name: "cast" + nameSuffix(latestBuild),
       entry,
       outputPath: outputPath(paths.cast_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
@@ -226,8 +236,9 @@ module.exports.config = {
     };
   },
 
-  hassio({ isProdBuild, latestBuild }) {
+  hassio({ isProdBuild, latestBuild, isStatsBuild, isTestBuild }) {
     return {
+      name: "supervisor" + nameSuffix(latestBuild),
       entry: {
         entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.ts"),
       },
@@ -235,6 +246,8 @@ module.exports.config = {
       publicPath: publicPath(latestBuild, paths.hassio_publicPath),
       isProdBuild,
       latestBuild,
+      isStatsBuild,
+      isTestBuild,
       isHassioBuild: true,
       defineOverlay: {
         __SUPERVISOR__: true,
@@ -244,6 +257,7 @@ module.exports.config = {
 
   gallery({ isProdBuild, latestBuild }) {
     return {
+      name: "gallery" + nameSuffix(latestBuild),
       entry: {
         entrypoint: path.resolve(paths.gallery_dir, "src/entrypoint.js"),
       },
