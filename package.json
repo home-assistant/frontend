@@ -204,7 +204,7 @@
     "esprima": "^4.0.1",
     "fancy-log": "^2.0.0",
     "fs-extra": "^11.1.0",
-    "glob": "^8.1.0",
+    "glob": "^9.1.2",
     "gulp": "^4.0.2",
     "gulp-flatmap": "^1.0.2",
     "gulp-json-transform": "^0.4.8",
