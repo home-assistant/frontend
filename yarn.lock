@@ -6060,12 +6060,12 @@ __metadata:
   linkType: hard
 
 "bl@npm:^1.2.1":
-  version: 1.2.2
-  resolution: "bl@npm:1.2.2"
+  version: 1.2.3
+  resolution: "bl@npm:1.2.3"
   dependencies:
     readable-stream: ^2.3.5
     safe-buffer: ^5.1.1
-  checksum: aaa95591dbed4af648167093308c26a8d2cb17b0061525e7ba55e6fc238f172bc3d0874996e1cc61d6333423eb582c02cae53a081380b73c61de2fb510e300a2
+  checksum: 123f097989ce2fa9087ce761cd41176aaaec864e28f7dfe5c7dab8ae16d66d9844f849c3ad688eb357e3c5e4f49b573e3c0780bb8bc937206735a3b6f8569a5f
   languageName: node
   linkType: hard
 
@@ -6931,12 +6931,12 @@ __metadata:
   linkType: hard
 
 "copy-props@npm:^2.0.1":
-  version: 2.0.4
-  resolution: "copy-props@npm:2.0.4"
+  version: 2.0.5
+  resolution: "copy-props@npm:2.0.5"
   dependencies:
-    each-props: ^1.3.0
-    is-plain-object: ^2.0.1
-  checksum: 48a8cd2374f222a58eeacbe268fd52f96a039e632ee96cc3f8fe1fbb00699b76032cee47c073882aec44fcc1e2096685e811e1c65995bcfefae739b5f2b2a2a4
+    each-props: ^1.3.2
+    is-plain-object: ^5.0.0
+  checksum: e05bbd4b020fb19f3ce9edce51478d41283397af7ac393297859e2014f518d96e3e2d47ff84736e7c46c17f03fee58c5cef16a8a2420237b069873e5cfe80672
   languageName: node
   linkType: hard
 
@@ -7438,7 +7438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"each-props@npm:^1.3.0":
+"each-props@npm:^1.3.2":
   version: 1.3.2
   resolution: "each-props@npm:1.3.2"
   dependencies:
@@ -12402,7 +12402,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"object.assign@npm:^4.0.4, object.assign@npm:^4.1.2, object.assign@npm:^4.1.4":
+"object.assign@npm:^4.0.4, object.assign@npm:^4.1.0, object.assign@npm:^4.1.2, object.assign@npm:^4.1.4":
   version: 4.1.4
   resolution: "object.assign@npm:4.1.4"
   dependencies:
@@ -16793,11 +16793,12 @@ typescript@^3.8.3:
   linkType: hard
 
 "yargs-parser@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "yargs-parser@npm:5.0.0"
+  version: 5.0.1
+  resolution: "yargs-parser@npm:5.0.1"
   dependencies:
     camelcase: ^3.0.0
-  checksum: 5580caa20c4f012a681269377940d89db37563c24b2abeca08c9e616385eb9d16517fd26f58dd9796a6f12b7bc91e54ec0c46f313eac310ad80fcd12ddb1ec63
+    object.assign: ^4.1.0
+  checksum: 8eff7f3653afc9185cb917ee034d189c1ba4bc0fd5005c9588442e25557e9bf69c7331663a6f9a2bb897cd4c1544ba9675ed3335133e19e660a3086fedc259db
   languageName: node
   linkType: hard
 

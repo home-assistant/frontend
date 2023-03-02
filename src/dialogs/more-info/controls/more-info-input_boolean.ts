@@ -1,4 +1,4 @@
-import { mdiVolumeHigh, mdiVolumeOff } from "@mdi/js";
+import { mdiPower, mdiPowerOff } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -8,8 +8,8 @@ import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
 
-@customElement("more-info-siren")
-class MoreInfoSiren extends LitElement {
+@customElement("more-info-input_boolean")
+class MoreInfoInputBoolean extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
@@ -28,8 +28,8 @@ class MoreInfoSiren extends LitElement {
         <ha-more-info-toggle
           .stateObj=${this.stateObj}
           .hass=${this.hass}
-          .iconPathOn=${mdiVolumeHigh}
-          .iconPathOff=${mdiVolumeOff}
+          .iconPathOn=${mdiPower}
+          .iconPathOff=${mdiPowerOff}
         ></ha-more-info-toggle>
       </div>
       <ha-attributes
@@ -46,6 +46,6 @@ class MoreInfoSiren extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "more-info-siren": MoreInfoSiren;
+    "more-info-input_boolean": MoreInfoInputBoolean;
   }
 }

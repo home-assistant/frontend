@@ -16,7 +16,12 @@ export const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
  * */
 export const EDITABLE_DOMAINS_WITH_UNIQUE_ID = ["script"];
 /** Domains with with new more info design. */
-export const DOMAINS_WITH_NEW_MORE_INFO = ["light", "siren", "switch"];
+export const DOMAINS_WITH_NEW_MORE_INFO = [
+  "input_boolean",
+  "light",
+  "siren",
+  "switch",
+];
 /** Domains with separate more info dialog. */
 export const DOMAINS_WITH_MORE_INFO = [
   "alarm_control_panel",
@@ -29,6 +34,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "fan",
   "group",
   "humidifier",
+  "input_boolean",
   "input_datetime",
   "light",
   "lock",

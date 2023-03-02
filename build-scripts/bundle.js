@@ -117,7 +117,11 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild }) => ({
       "template-html-minifier",
       {
         modules: {
-          lit: ["html", "svg", { name: "css", encapsulation: "style" }],
+          lit: [
+            "html",
+            { name: "svg", encapsulation: "svg" },
+            { name: "css", encapsulation: "style" },
+          ],
           "@polymer/polymer/lib/utils/html-tag": ["html"],
         },
         strictCSS: true,
