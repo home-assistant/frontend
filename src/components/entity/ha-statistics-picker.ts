@@ -75,20 +75,6 @@ class HaStatisticsPicker extends LitElement {
       ? undefined
       : this.statisticTypes;
 
-    const ignoreRestrictionLastPicker =
-      this.ignoreRestrictionsOnFirstStatistic &&
-      this._currentStatistics.length === 0;
-
-    const includeStatisticsUnitCurrentLastPicker = ignoreRestrictionLastPicker
-      ? undefined
-      : this.includeStatisticsUnitOfMeasurement;
-    const includeUnitClassCurrentLastPicker = ignoreRestrictionLastPicker
-      ? undefined
-      : this.includeUnitClass;
-    const includeStatisticTypesCurrentLastPicker = ignoreRestrictionLastPicker
-      ? undefined
-      : this.statisticTypes;
-
     return html`
       ${this._currentStatistics.map(
         (statisticId) => html`
@@ -110,10 +96,11 @@ class HaStatisticsPicker extends LitElement {
       <div>
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeStatisticsUnitOfMeasurement=${includeStatisticsUnitCurrentLastPicker}
-          .includeUnitClass=${includeUnitClassCurrentLastPicker}
+          .includeStatisticsUnitOfMeasurement=${this
+            .includeStatisticsUnitOfMeasurement}
+          .includeUnitClass=${this.includeUnitClass}
           .includeDeviceClass=${this.includeDeviceClass}
-          .statisticTypes=${includeStatisticTypesCurrentLastPicker}
+          .statisticTypes=${this.statisticTypes}
           .statisticIds=${this.statisticIds}
           .label=${this.pickStatisticLabel}
           @value-changed=${this._addStatistic}
