@@ -8,8 +8,8 @@ import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
 
-@customElement("more-info-switch")
-class MoreInfoSwitch extends LitElement {
+@customElement("more-info-input_boolean")
+class MoreInfoInputBoolean extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
@@ -46,6 +46,6 @@ class MoreInfoSwitch extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "more-info-switch": MoreInfoSwitch;
+    "more-info-input_boolean": MoreInfoInputBoolean;
   }
 }
