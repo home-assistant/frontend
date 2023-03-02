@@ -64,7 +64,9 @@ export class HaMoreInfoToggle extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const color = stateColorCss(this.stateObj);
+    const onColor = stateColorCss(this.stateObj, "on");
+    const offColor = stateColorCss(this.stateObj, "off");
+
     const isOn = this.stateObj.state === "on";
     const isOff = this.stateObj.state === "off";
 
@@ -82,7 +84,7 @@ export class HaMoreInfoToggle extends LitElement {
               active: isOn,
             })}
             style=${styleMap({
-              "--color": color,
+              "--color": onColor,
             })}
           >
             <ha-svg-icon .path=${this.iconPathOn || mdiFlash}></ha-svg-icon>
@@ -97,7 +99,7 @@ export class HaMoreInfoToggle extends LitElement {
               active: isOff,
             })}
             style=${styleMap({
-              "--color": color,
+              "--color": offColor,
             })}
           >
             <ha-svg-icon .path=${this.iconPathOff || mdiFlashOff}></ha-svg-icon>
@@ -117,7 +119,8 @@ export class HaMoreInfoToggle extends LitElement {
         @change=${this._valueChanged}
         .ariaLabel=${this.hass.localize("ui.dialogs.more_info_control.toggle")}
         style=${styleMap({
-          "--control-switch-on-color": color,
+          "--control-switch-on-color": onColor,
+          "--control-switch-off-color": offColor,
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       >
