@@ -16,6 +16,7 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
   fan: () => import("./controls/more-info-fan"),
   group: () => import("./controls/more-info-group"),
   humidifier: () => import("./controls/more-info-humidifier"),
+  input_boolean: () => import("./controls/more-info-input_boolean"),
   input_datetime: () => import("./controls/more-info-input_datetime"),
   light: () => import("./controls/more-info-light"),
   lock: () => import("./controls/more-info-lock"),
