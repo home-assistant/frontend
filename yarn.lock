@@ -6060,12 +6060,12 @@ __metadata:
   linkType: hard
 
 "bl@npm:^1.2.1":
-  version: 1.2.2
-  resolution: "bl@npm:1.2.2"
+  version: 1.2.3
+  resolution: "bl@npm:1.2.3"
   dependencies:
     readable-stream: ^2.3.5
     safe-buffer: ^5.1.1
-  checksum: aaa95591dbed4af648167093308c26a8d2cb17b0061525e7ba55e6fc238f172bc3d0874996e1cc61d6333423eb582c02cae53a081380b73c61de2fb510e300a2
+  checksum: 123f097989ce2fa9087ce761cd41176aaaec864e28f7dfe5c7dab8ae16d66d9844f849c3ad688eb357e3c5e4f49b573e3c0780bb8bc937206735a3b6f8569a5f
   languageName: node
   linkType: hard
 
