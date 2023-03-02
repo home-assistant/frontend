@@ -161,6 +161,22 @@ const createWebpackConfig = ({
       publicPath,
       // To silence warning in worker plugin
       globalObject: "self",
+      // Since production source maps don't include sources, we need to point to them elsewhere
+      // For dependencies, just provide the path (no source in browser)
+      // Otherwise, point to the raw code on GitHub for browser to load
+      devtoolModuleFilenameTemplate:
+        !isTestBuild && isProdBuild
+          ? (info) => {
+              const sourcePath = info.resourcePath.replace(/^\.\//, "");
+              if (
+                sourcePath.startsWith("node_modules") ||
+                sourcePath.startsWith("webpack")
+              ) {
+                return `no-source/${sourcePath}`;
+              }
+              return `${bundle.sourceMapURL()}/${sourcePath}`;
+            }
+          : undefined,
     },
     experiments: {
       topLevelAwait: true,
