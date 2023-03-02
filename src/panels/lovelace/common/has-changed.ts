@@ -1,6 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { PropertyValues } from "lit";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
+import { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "./process-config-entities";
 
@@ -37,24 +37,19 @@ function compareEntityState(
   return oldState !== newState;
 }
 
-function compareEntityEntryOptions(
+function compareEntityDisplayEntry(
   oldHass: HomeAssistant,
   newHass: HomeAssistant,
   entityId: string
 ) {
   const oldEntry = oldHass.entities[entityId] as
-    | EntityRegistryEntry
+    | EntityRegistryDisplayEntry
     | undefined;
   const newEntry = newHass.entities[entityId] as
-    | EntityRegistryEntry
+    | EntityRegistryDisplayEntry
     | undefined;
 
-  return (
-    oldEntry?.options?.sensor?.display_precision !==
-      newEntry?.options?.sensor?.display_precision ||
-    oldEntry?.options?.sensor?.suggested_display_precision !==
-      newEntry?.options?.sensor?.suggested_display_precision
-  );
+  return oldEntry?.display_precision !== newEntry?.display_precision;
 }
 
 // Check if config or Entity changed
@@ -71,7 +66,7 @@ export function hasConfigOrEntityChanged(
 
   return (
     compareEntityState(oldHass, newHass, element._config!.entity) ||
-    compareEntityEntryOptions(oldHass, newHass, element._config!.entity)
+    compareEntityDisplayEntry(oldHass, newHass, element._config!.entity)
   );
 }
 
@@ -96,7 +91,7 @@ export function hasConfigOrEntitiesChanged(
 
     return (
       compareEntityState(oldHass, newHass, entity.entity) ||
-      compareEntityEntryOptions(oldHass, newHass, entity.entity)
+      compareEntityDisplayEntry(oldHass, newHass, entity.entity)
     );
   });
 }
