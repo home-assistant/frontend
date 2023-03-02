@@ -1,8 +1,8 @@
 import { mdiPower, mdiPowerOff } from "@mdi/js";
+import { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-attributes";
-import { LightEntity } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
@@ -12,7 +12,7 @@ import "../components/ha-more-info-toggle";
 class MoreInfoSwitch extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: LightEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   protected render(): TemplateResult | null {
     if (!this.hass || !this.stateObj) {
