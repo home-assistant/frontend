@@ -3,6 +3,7 @@
   "extends": [
     "config:js-app",
     ":disableDependencyDashboard",
+    ":semanticCommitsDisabled",
     ":label(dependencies)",
     "npm:unpublishSafe"
   ],
