@@ -59,6 +59,7 @@ export class HaSelectorAttribute extends LitElement {
 
     if (
       !this.context ||
+      !oldContext ||
       oldContext?.filter_entity === this.context.filter_entity
     ) {
       return;
