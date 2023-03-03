@@ -82,17 +82,14 @@ export const formatNumber = (
     !Number.isNaN(Number(num)) &&
     num !== "" &&
     localeOptions?.number_format === NumberFormat.none &&
-    Intl &&
-    (options?.maximumFractionDigits != null ||
-      options?.minimumFractionDigits != null)
+    Intl
   ) {
     // If NumberFormat is none, just set the digits options for precision and use en-US format without grouping.
     return new Intl.NumberFormat(
       "en-US",
       getDefaultFormatOptions(num, {
+        ...options,
         useGrouping: false,
-        maximumFractionDigits: options?.maximumFractionDigits,
-        minimumFractionDigits: options?.minimumFractionDigits,
       })
     ).format(Number(num));
   }
@@ -129,6 +126,14 @@ export const getNumberFormatOptions = (
   }
   return undefined;
 };
+
+export const getMonetaryFormatOptions = (
+  entityState: HassEntity
+): Intl.NumberFormatOptions | undefined => ({
+  style: "currency",
+  currency: entityState.attributes.unit_of_measurement,
+  minimumFractionDigits: 2,
+});
 
 /**
  * Generates default options for Intl.NumberFormat

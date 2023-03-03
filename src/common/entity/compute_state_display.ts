@@ -13,6 +13,7 @@ import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
 import {
   formatNumber,
+  getMonetaryFormatOptions,
   getNumberFormatOptions,
   isNumericFromAttributes,
 } from "../number/format_number";
@@ -68,9 +69,12 @@ export const computeStateDisplayFromEntityAttributes = (
     if (attributes.device_class === "monetary") {
       try {
         return formatNumber(state, locale, {
-          style: "currency",
-          currency: attributes.unit_of_measurement,
-          minimumFractionDigits: 2,
+          ...getMonetaryFormatOptions({ state, attributes } as HassEntity),
+          // Override Monetary options with number format
+          ...getNumberFormatOptions(
+            { state, attributes } as HassEntity,
+            entity
+          ),
         });
       } catch (_err) {
         // fallback to default
