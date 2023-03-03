@@ -3,9 +3,9 @@
   "extends": [
     "config:js-app",
     ":disableDependencyDashboard",
-    ":onlyNpm",
     ":label(dependencies)",
     "npm:unpublishSafe"
   ],
+  "enabledManagers": ["npm"],
   "postUpdateOptions": ["yarnDedupeHighest"]
 }
