@@ -84,7 +84,7 @@ export const formatNumber = (
     localeOptions?.number_format === NumberFormat.none &&
     Intl
   ) {
-    // If NumberFormat is none, just set the digits options for precision and use en-US format without grouping.
+    // If NumberFormat is none, use en-US format without grouping.
     return new Intl.NumberFormat(
       "en-US",
       getDefaultFormatOptions(num, {
@@ -126,14 +126,6 @@ export const getNumberFormatOptions = (
   }
   return undefined;
 };
-
-export const getMonetaryFormatOptions = (
-  entityState: HassEntity
-): Intl.NumberFormatOptions | undefined => ({
-  style: "currency",
-  currency: entityState.attributes.unit_of_measurement,
-  minimumFractionDigits: 2,
-});
 
 /**
  * Generates default options for Intl.NumberFormat
