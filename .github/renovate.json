@@ -6,5 +6,6 @@
     ":onlyNpm",
     ":label(dependencies)",
     "npm:unpublishSafe"
-  ]
+  ],
+  "postUpdateOptions": ["yarnDedupeHighest"]
 }
