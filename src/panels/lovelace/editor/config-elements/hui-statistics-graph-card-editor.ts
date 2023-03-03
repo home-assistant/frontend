@@ -121,7 +121,7 @@ export class HuiStatisticsGraphCardEditor
       !deepEqual(this._configEntities, changedProps.get("_configEntities"))
     ) {
       this._metaDatas = undefined;
-      if (this._configEntities && this._configEntities.length > 0) {
+      if (this._configEntities?.length) {
         this._getStatisticsMetaData(this._configEntities);
       }
     }
