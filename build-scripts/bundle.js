@@ -3,9 +3,13 @@ const env = require("./env.js");
 const paths = require("./paths.js");
 
 // GitHub base URL to use for production source maps
-// Assumes there is a tag that matches the version
-module.exports.sourceMapURL = () =>
-  `https://raw.githubusercontent.com/home-assistant/frontend/${env.version()}`;
+// Nightly builds use the commit SHA, otherwise assumes there is a tag that matches the version
+module.exports.sourceMapURL = () => {
+  const ref = env.version().endsWith("dev")
+    ? process.env.GITHUB_SHA || "dev"
+    : env.version();
+  return `https://raw.githubusercontent.com/home-assistant/frontend/${ref}`;
+};
 
 // Files from NPM Packages that should not be imported
 // eslint-disable-next-line unused-imports/no-unused-vars
