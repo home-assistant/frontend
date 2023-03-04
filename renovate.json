@@ -16,6 +16,12 @@
   "enabledManagers": ["npm"],
   "platformAutomerge": true,
   "postUpdateOptions": ["yarnDedupeHighest"],
+  "lockFileMaintenance": {
+    "description": ["Run after patch releases but before next beta"],
+    "enabled": true,
+    "schedule": ["on the 19th day of the month"],
+    "automerge": true
+  },
   "packageRules": [
     {
       "description": ["MDC packages are pinned to the same version as MWC"],
