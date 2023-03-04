@@ -1,6 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
+    ":automergeLinters",
+    ":automergeTypes",
     ":ignoreModulesAndTests",
     ":label(dependencies)",
     ":pinVersions",
@@ -12,6 +14,7 @@
     "workarounds:all"
   ],
   "enabledManagers": ["npm"],
+  "platformAutomerge": true,
   "postUpdateOptions": ["yarnDedupeHighest"],
   "packageRules": [
     {
