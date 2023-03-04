@@ -1,11 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:js-app",
-    ":disableDependencyDashboard",
-    ":semanticCommitsDisabled",
+    ":ignoreModulesAndTests",
     ":label(dependencies)",
-    "npm:unpublishSafe"
+    ":pinVersions",
+    ":prConcurrentLimit10",
+    ":semanticCommitsDisabled",
+    "group:monorepos",
+    "group:recommended",
+    "npm:unpublishSafe",
+    "workarounds:all"
   ],
   "enabledManagers": ["npm"],
   "postUpdateOptions": ["yarnDedupeHighest"]
