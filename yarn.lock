@@ -9461,7 +9461,7 @@ fsevents@~2.3.2:
     "@polymer/paper-tabs": 3.1.0
     "@polymer/paper-toast": 3.0.1
     "@polymer/paper-tooltip": 3.0.1
-    "@polymer/polymer": 3.4.1
+    "@polymer/polymer": 3.5.1
     "@rollup/plugin-babel": 5.3.1
     "@rollup/plugin-commonjs": 11.1.0
     "@rollup/plugin-json": 4.1.0
