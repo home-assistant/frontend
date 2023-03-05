@@ -1360,7 +1360,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/autocomplete@npm:^6.4.2":
+"@codemirror/autocomplete@npm:6.4.2":
   version: 6.4.2
   resolution: "@codemirror/autocomplete@npm:6.4.2"
   dependencies:
@@ -1377,7 +1377,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/commands@npm:^6.2.1":
+"@codemirror/commands@npm:6.2.1":
   version: 6.2.1
   resolution: "@codemirror/commands@npm:6.2.1"
   dependencies:
@@ -1389,7 +1389,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/language@npm:^6.0.0, @codemirror/language@npm:^6.6.0":
+"@codemirror/language@npm:6.6.0, @codemirror/language@npm:^6.0.0":
   version: 6.6.0
   resolution: "@codemirror/language@npm:6.6.0"
   dependencies:
@@ -1403,7 +1403,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/legacy-modes@npm:^6.3.1":
+"@codemirror/legacy-modes@npm:6.3.1":
   version: 6.3.1
   resolution: "@codemirror/legacy-modes@npm:6.3.1"
   dependencies:
@@ -1412,7 +1412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/search@npm:^6.2.3":
+"@codemirror/search@npm:6.2.3":
   version: 6.2.3
   resolution: "@codemirror/search@npm:6.2.3"
   dependencies:
@@ -1423,14 +1423,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.1.4, @codemirror/state@npm:^6.2.0":
+"@codemirror/state@npm:6.2.0, @codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.1.4, @codemirror/state@npm:^6.2.0":
   version: 6.2.0
   resolution: "@codemirror/state@npm:6.2.0"
   checksum: fdc99c773dc09c700dd02bf918f06132aa8d3069c262cc4eb6ca5c810ce24ae2d7e90719ae7630a8158fd263018de6d40bd78f312e6bfba754e737b64e6c6b3d
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.6.0, @codemirror/view@npm:^6.9.1":
+"@codemirror/view@npm:6.9.1, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.6.0":
   version: 6.9.1
   resolution: "@codemirror/view@npm:6.9.1"
   dependencies:
@@ -9408,13 +9408,13 @@ fsevents@~2.3.2:
     "@babel/preset-env": ^7.20.2
     "@babel/preset-typescript": ^7.21.0
     "@braintree/sanitize-url": ^6.0.2
-    "@codemirror/autocomplete": ^6.4.2
-    "@codemirror/commands": ^6.2.1
-    "@codemirror/language": ^6.6.0
-    "@codemirror/legacy-modes": ^6.3.1
-    "@codemirror/search": ^6.2.3
-    "@codemirror/state": ^6.2.0
-    "@codemirror/view": ^6.9.1
+    "@codemirror/autocomplete": 6.4.2
+    "@codemirror/commands": 6.2.1
+    "@codemirror/language": 6.6.0
+    "@codemirror/legacy-modes": 6.3.1
+    "@codemirror/search": 6.2.3
+    "@codemirror/state": 6.2.0
+    "@codemirror/view": 6.9.1
     "@egjs/hammerjs": ^2.0.17
     "@formatjs/intl-datetimeformat": ^6.5.1
     "@formatjs/intl-getcanonicallocales": ^2.1.0
