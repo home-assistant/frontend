@@ -30,6 +30,9 @@ export class HaStatisticPicker extends LitElement {
   @property({ attribute: "statistic-types" })
   public statisticTypes?: "mean" | "sum";
 
+  @property({ type: Boolean, attribute: "allow-custom-entity" })
+  public allowCustomEntity;
+
   @property({ type: Array }) public statisticIds?: StatisticsMetaData[];
 
   @property({ type: Boolean }) public disabled?: boolean;
@@ -245,6 +248,7 @@ export class HaStatisticPicker extends LitElement {
         .value=${this._value}
         .renderer=${this._rowRenderer}
         .disabled=${this.disabled}
+        .allowCustomValue=${this.allowCustomEntity}
         item-value-path="id"
         item-id-path="id"
         item-label-path="name"
