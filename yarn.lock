@@ -9579,7 +9579,7 @@ fsevents@~2.3.2:
     roboto-fontface: 0.10.0
     rollup: 2.79.1
     rollup-plugin-string: 3.0.0
-    rollup-plugin-terser: 5.3.0
+    rollup-plugin-terser: 5.3.1
     rollup-plugin-visualizer: 5.9.0
     rrule: 2.7.2
     serve-handler: 6.1.5
@@ -13825,18 +13825,18 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"rollup-plugin-terser@npm:5.3.0":
-  version: 5.3.0
-  resolution: "rollup-plugin-terser@npm:5.3.0"
+"rollup-plugin-terser@npm:5.3.1":
+  version: 5.3.1
+  resolution: "rollup-plugin-terser@npm:5.3.1"
   dependencies:
     "@babel/code-frame": ^7.5.5
     jest-worker: ^24.9.0
     rollup-pluginutils: ^2.8.2
-    serialize-javascript: ^2.1.2
+    serialize-javascript: ^4.0.0
     terser: ^4.6.2
   peerDependencies:
     rollup: ">=0.66.0 <3"
-  checksum: d5594d2a61d72ed278bcc7159cfa0f601012894558a7c29b3a04227ac873c7445f4c1b50c3261d07fb3efdb6ad9ce2d984876a85b90cee25732ee2fe946d1623
+  checksum: 50f9e8fa6737fa5e8aeca6a52b59ea3bc66faebe743bdfe9ce0484298cd1978082026721b182d79bcc88240429842dc58feae88d6c238b47cafc1684e0320a73
   languageName: node
   linkType: hard
 
@@ -14080,13 +14080,6 @@ fsevents@~2.3.2:
   dependencies:
     randombytes: ^2.1.0
   checksum: 56f90b562a1bdc92e55afb3e657c6397c01a902c588c0fe3d4c490efdcc97dcd2a3074ba12df9e94630f33a5ce5b76a74784a7041294628a6f4306e0ec84bf93
-  languageName: node
-  linkType: hard
-
-"serialize-javascript@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "serialize-javascript@npm:2.1.2"
-  checksum: 16ce4e4886aff10d5cbbc46149cae3a63f31ea1578f218ef3a363ae413fa245dde61ab039f6733cc86db7b3ff940bfcba9b5a4bfc7b5dd1b3967737c0bbc017e
   languageName: node
   linkType: hard
 
