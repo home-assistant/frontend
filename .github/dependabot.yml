@@ -6,3 +6,15 @@ updates:
       interval: weekly
       time: "06:00"
     open-pull-requests-limit: 10
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "03:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    ignore:
+      # Ignore rollup and plugins until everything else is updated
+      - dependency-name: "*rollup*"
+      - dependency-name: "@rollup/*"
