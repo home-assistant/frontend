@@ -4924,7 +4924,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-core@npm:^0.2.17, @web/dev-server-core@npm:^0.2.18":
+"@web/dev-server-core@npm:^0.2.18":
   version: 0.2.18
   resolution: "@web/dev-server-core@npm:0.2.18"
   dependencies:
@@ -4984,20 +4984,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-rollup@npm:0.2.11":
-  version: 0.2.11
-  resolution: "@web/dev-server-rollup@npm:0.2.11"
-  dependencies:
-    "@web/dev-server-core": ^0.2.17
-    chalk: ^4.1.0
-    parse5: ^6.0.1
-    rollup: ^2.33.2
-    whatwg-url: ^8.1.0
-  checksum: ff41d8405655d33a5c62ac81351d53a567d8d92128ec579c30bb78f55d9311130f6d608d9a0a96f5d7ca7a2cdad85775121f21c2f0f9eb0541c227f421343335
-  languageName: node
-  linkType: hard
-
-"@web/dev-server-rollup@npm:^0.3.19":
+"@web/dev-server-rollup@npm:0.3.21, @web/dev-server-rollup@npm:^0.3.19":
   version: 0.3.21
   resolution: "@web/dev-server-rollup@npm:0.3.21"
   dependencies:
@@ -9504,7 +9491,7 @@ fsevents@~2.3.2:
     "@vibrant/quantizer-mmcq": 3.2.1-alpha.1
     "@vue/web-component-wrapper": 1.3.0
     "@web/dev-server": 0.1.35
-    "@web/dev-server-rollup": 0.2.11
+    "@web/dev-server-rollup": 0.3.21
     "@webcomponents/scoped-custom-element-registry": 0.0.8
     "@webcomponents/webcomponentsjs": 2.7.0
     app-datepicker: 5.1.1
@@ -13882,7 +13869,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"rollup@npm:2.79.1, rollup@npm:^2.33.2, rollup@npm:^2.43.1, rollup@npm:^2.67.0":
+"rollup@npm:2.79.1, rollup@npm:^2.43.1, rollup@npm:^2.67.0":
   version: 2.79.1
   resolution: "rollup@npm:2.79.1"
   dependencies:
@@ -15200,15 +15187,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"tr46@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "tr46@npm:2.0.2"
-  dependencies:
-    punycode: ^2.1.1
-  checksum: 2b2b3dfa6bc65d027b2fac729fba0fb5b9d98af7b69ad6876c0f088ebf127f2d53e5a4d4464e5de40380cf721f392262c9183d2a05cea4967a890e8801c842f6
-  languageName: node
-  linkType: hard
-
 "tr46@npm:^3.0.0":
   version: 3.0.0
   resolution: "tr46@npm:3.0.0"
@@ -16014,13 +15992,6 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"webidl-conversions@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "webidl-conversions@npm:6.1.0"
-  checksum: 1f526507aa491f972a0c1409d07f8444e1d28778dfa269a9971f2e157182f3d496dc33296e4ed45b157fdb3bf535bb90c90bf10c50dcf1dd6caacb2a34cc84fb
-  languageName: node
-  linkType: hard
-
 "webidl-conversions@npm:^7.0.0":
   version: 7.0.0
   resolution: "webidl-conversions@npm:7.0.0"
@@ -16262,17 +16233,6 @@ typescript@^3.8.3:
     tr46: ^1.0.1
     webidl-conversions: ^4.0.2
   checksum: fecb07c87290b47d2ec2fb6d6ca26daad3c9e211e0e531dd7566e7ff95b5b3525a57d4f32640ad4adf057717e0c215731db842ad761e61d947e81010e05cf5fd
-  languageName: node
-  linkType: hard
-
-"whatwg-url@npm:^8.1.0":
-  version: 8.4.0
-  resolution: "whatwg-url@npm:8.4.0"
-  dependencies:
-    lodash.sortby: ^4.7.0
-    tr46: ^2.0.2
-    webidl-conversions: ^6.1.0
-  checksum: a206f1ee22aa1c09d2f605656d5308b214e3e05afd6ba4503bddcf20827ef379cd7f0f9c772b069a4ba0d5aee83fd854de0aeaa674bbf3a94a8e890b1de87f04
   languageName: node
   linkType: hard
 
