@@ -6401,10 +6401,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:3.3.2":
-  version: 3.3.2
-  resolution: "chart.js@npm:3.3.2"
-  checksum: 0aaebab52cb5eacfc969210f7c304cad7e20b03a37b33f4e0332b5eeb9319e2929b085e0a8654ec33752566a55982ffe6bb3f2ba620c2a9b3bc71806ca7b9cb7
+"chart.js@npm:3.9.1":
+  version: 3.9.1
+  resolution: "chart.js@npm:3.9.1"
+  checksum: 9ab0c0ac01215af0b3f020f2e313030fd6e347b48ed17d5484ee9c4e8ead45e78ae71bea16c397621c386b409ce0b14bf17f9f6c2492cd15b56c0f433efdfff6
   languageName: node
   linkType: hard
 
@@ -9511,7 +9511,7 @@ fsevents@~2.3.2:
     babel-loader: 9.1.2
     babel-plugin-template-html-minifier: 4.1.0
     chai: 4.3.7
-    chart.js: 3.3.2
+    chart.js: 3.9.1
     comlink: 4.4.1
     core-js: 3.29.0
     cropperjs: 1.5.13
