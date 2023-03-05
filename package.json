@@ -87,7 +87,7 @@
     "@polymer/paper-tabs": "3.1.0",
     "@polymer/paper-toast": "3.0.1",
     "@polymer/paper-tooltip": "3.0.1",
-    "@polymer/polymer": "3.5.1",
+    "@polymer/polymer": "3.4.1",
     "@thomasloven/round-slider": "0.6.0",
     "@vaadin/combo-box": "23.3.7",
     "@vaadin/vaadin-themable-mixin": "23.3.7",
@@ -250,7 +250,7 @@
   },
   "_comment": "Polymer 3.2 contained a bug, fixed in https://github.com/Polymer/polymer/pull/5569, add as patch",
   "resolutions": {
-    "@polymer/polymer": "patch:@polymer/polymer@3.5.1#./.yarn/patches/@polymer/polymer/pr-5569.patch"
+    "@polymer/polymer": "patch:@polymer/polymer@3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch"
   },
   "main": "src/home-assistant.js",
   "prettier": {
