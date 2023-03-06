@@ -57,7 +57,9 @@ export class HuiActionEditor extends LitElement {
   private _serviceAction = memoizeOne(
     (config: CallServiceActionConfig): ServiceAction => ({
       service: this._service,
-      data: config.data ?? config.service_data,
+      ...(config.data || config.service_data
+        ? { data: config.data ?? config.service_data }
+        : null),
       target: config.target,
     })
   );
@@ -196,9 +198,12 @@ export class HuiActionEditor extends LitElement {
     const value = {
       ...this.config!,
       service: ev.detail.value.service || "",
-      data: ev.detail.value.data || {},
+      data: ev.detail.value.data,
       target: ev.detail.value.target || {},
     };
+    if (!ev.detail.value.data) {
+      delete value.data;
+    }
     // "service_data" is allowed for backwards compatibility but replaced with "data" on write
     if ("service_data" in value) {
       delete value.service_data;
