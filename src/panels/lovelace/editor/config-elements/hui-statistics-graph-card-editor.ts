@@ -121,7 +121,9 @@ export class HuiStatisticsGraphCardEditor
       !deepEqual(this._configEntities, changedProps.get("_configEntities"))
     ) {
       this._metaDatas = undefined;
-      this._getStatisticsMetaData(this._configEntities);
+      if (this._configEntities?.length) {
+        this._getStatisticsMetaData(this._configEntities);
+      }
     }
   }
 
@@ -274,6 +276,7 @@ export class HuiStatisticsGraphCardEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
         <ha-statistics-picker
+          allow-custom-entity
           .hass=${this.hass}
           .pickStatisticLabel=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.statistics-graph.pick_statistic"
