@@ -55,7 +55,8 @@ export const showConfigFlowDialog = (
     renderShowFormStepHeader(hass, step) {
       return (
         hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.title`
+          `component.${step.handler}.config.step.${step.step_id}.title`,
+          step.description_placeholders
         ) || hass.localize(`component.${step.handler}.title`)
       );
     },
