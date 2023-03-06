@@ -77,6 +77,23 @@ export const formatNumber = (
       ).format(Number(num));
     }
   }
+
+  if (
+    !Number.isNaN(Number(num)) &&
+    num !== "" &&
+    localeOptions?.number_format === NumberFormat.none &&
+    Intl
+  ) {
+    // If NumberFormat is none, use en-US format without grouping.
+    return new Intl.NumberFormat(
+      "en-US",
+      getDefaultFormatOptions(num, {
+        ...options,
+        useGrouping: false,
+      })
+    ).format(Number(num));
+  }
+
   if (typeof num === "string") {
     return num;
   }
