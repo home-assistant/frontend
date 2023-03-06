@@ -346,6 +346,7 @@ export class HaServiceControl extends LitElement {
                     .value=${this._value?.data
                       ? this._value.data[dataField.key]
                       : undefined}
+                    .placeholder=${dataField.default}
                   ></ha-selector>
                 </ha-settings-row>`
               : "";
