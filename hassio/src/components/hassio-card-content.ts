@@ -117,11 +117,11 @@ class HassioCardContent extends LitElement {
       .topbar {
         position: absolute;
         width: 100%;
-        height: 2px;
+        height: 11px;
         top: 0;
         left: 0;
-        border-top-left-radius: 2px;
-        border-top-right-radius: 2px;
+        border-top-left-radius: 11px;
+        border-top-right-radius: 11px;
       }
       .topbar.installed {
         background-color: var(--primary-color);
