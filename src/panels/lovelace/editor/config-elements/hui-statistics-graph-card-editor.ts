@@ -304,13 +304,10 @@ export class HuiStatisticsGraphCardEditor
 
     // Save the EntityConfig objects from being replaced with strings
     const newEntities = newEntityIds.map((newEnt) => {
-      const matchEntities = this._config!.entities.filter(
+      const matchEntity = this._config!.entities.find(
         (oldEnt) => typeof oldEnt !== "string" && oldEnt.entity === newEnt
       );
-      if (matchEntities.length > 0) {
-        return matchEntities[0];
-      }
-      return newEnt;
+      return matchEntity ?? newEnt;
     });
 
     const config = { ...this._config!, entities: newEntities };
