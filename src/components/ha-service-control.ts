@@ -363,7 +363,7 @@ export class HaServiceControl extends LitElement {
         this._value?.service,
         this.hass.services
       )?.fields.find((field) => field.key === key)?.default;
-      if (defaultValue || defaultValue === 0) {
+      if (defaultValue != null) {
         data = {
           ...this._value?.data,
           [key]: defaultValue,
