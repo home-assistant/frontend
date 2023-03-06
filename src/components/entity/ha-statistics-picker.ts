@@ -22,6 +22,9 @@ class HaStatisticsPicker extends LitElement {
   @property({ attribute: "pick-statistic-label" })
   public pickStatisticLabel?: string;
 
+  @property({ type: Boolean, attribute: "allow-custom-entity" })
+  public allowCustomEntity;
+
   /**
    * Show only statistics natively stored with these units of measurements.
    * @attr include-statistics-unit-of-measurement
@@ -71,6 +74,9 @@ class HaStatisticsPicker extends LitElement {
     const includeUnitClassCurrent = ignoreRestriction
       ? undefined
       : this.includeUnitClass;
+    const includeDeviceClassCurrent = ignoreRestriction
+      ? undefined
+      : this.includeDeviceClass;
     const includeStatisticTypesCurrent = ignoreRestriction
       ? undefined
       : this.statisticTypes;
@@ -84,10 +90,12 @@ class HaStatisticsPicker extends LitElement {
               .hass=${this.hass}
               .includeStatisticsUnitOfMeasurement=${includeStatisticsUnitCurrent}
               .includeUnitClass=${includeUnitClassCurrent}
+              .includeDeviceClass=${includeDeviceClassCurrent}
               .value=${statisticId}
               .statisticTypes=${includeStatisticTypesCurrent}
               .statisticIds=${this.statisticIds}
               .label=${this.pickedStatisticLabel}
+              .allowCustomEntity=${this.allowCustomEntity}
               @value-changed=${this._statisticChanged}
             ></ha-statistic-picker>
           </div>
@@ -103,6 +111,7 @@ class HaStatisticsPicker extends LitElement {
           .statisticTypes=${this.statisticTypes}
           .statisticIds=${this.statisticIds}
           .label=${this.pickStatisticLabel}
+          .allowCustomEntity=${this.allowCustomEntity}
           @value-changed=${this._addStatistic}
         ></ha-statistic-picker>
       </div>
