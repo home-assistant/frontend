@@ -56,11 +56,11 @@ export class HassioHostname extends LitElement {
         )}
       >
         <div class="card-content">
-          <span slot="description"
-            >${this.hass.localize(
+          <p>
+            ${this.hass.localize(
               "ui.panel.config.network.supervisor.hostname.description"
-            )}</span
-          >
+            )}
+          </p>
           <ha-textfield
             .disabled=${this._processing}
             .value=${this._hostname}
@@ -111,11 +111,7 @@ export class HassioHostname extends LitElement {
       justify-content: space-between;
       align-items: center;
     }
-    .card-content {
-      display: block;
-    }
-    span[slot="description"] {
-      display: block;
+    .card-content > p {
       padding-bottom: 1em;
     }
   `;

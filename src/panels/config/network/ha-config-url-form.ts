@@ -346,8 +346,6 @@ class ConfigUrlForm extends LitElement {
       .card-actions {
         display: flex;
         flex-direction: row-reverse;
-        justify-content: space-between;
-        align-items: center;
       }
 
       a {
