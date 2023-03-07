@@ -3778,7 +3778,12 @@
             "gateway": "Gateway address",
             "dns_servers": "DNS Servers",
             "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
-            "failed_to_change": "Failed to change network settings"
+            "failed_to_change": "Failed to change network settings",
+            "hostname": {
+              "title": "Host Name",
+              "description": "The name your instance will have on your network",
+              "failed_to_set_hostname": "Setting hostname failed"
+            }
           }
         },
         "storage": {
