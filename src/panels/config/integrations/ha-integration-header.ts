@@ -1,5 +1,5 @@
 import { mdiBugPlay, mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-svg-icon";
@@ -115,8 +115,8 @@ export class HaIntegrationHeader extends LitElement {
                   ([icon, description]) => html`
                     <span>
                       <ha-svg-icon .path=${icon}></ha-svg-icon>
-                      <paper-tooltip animation-delay="0"
-                        >${description}</paper-tooltip
+                      <simple-tooltip animation-delay="0"
+                        >${description}</simple-tooltip
                       >
                     </span>
                   `
@@ -203,7 +203,7 @@ export class HaIntegrationHeader extends LitElement {
       height: 20px;
       margin: 4px;
     }
-    paper-tooltip {
+    simple-tooltip {
       white-space: nowrap;
     }
   `;

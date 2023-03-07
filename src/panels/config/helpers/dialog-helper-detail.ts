@@ -1,7 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   css,
   CSSResultGroup,
@@ -199,12 +198,12 @@ export class DialogHelperDetail extends LitElement {
               </ha-list-item>
               ${!isLoaded
                 ? html`
-                    <paper-tooltip animation-delay="0"
+                    <simple-tooltip animation-delay="0"
                       >${this.hass.localize(
                         "ui.dialogs.helper_settings.platform_not_loaded",
                         "platform",
                         domain
-                      )}</paper-tooltip
+                      )}</simple-tooltip
                     >
                   `
                 : ""}

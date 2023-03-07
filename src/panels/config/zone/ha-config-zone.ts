@@ -2,7 +2,7 @@ import { mdiCog, mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -200,11 +200,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       ></ha-icon-button>
                       ${stateObject.entity_id !== "zone.home"
                         ? html`
-                            <paper-tooltip animation-delay="0" position="left">
+                            <simple-tooltip animation-delay="0" position="left">
                               ${hass.localize(
                                 "ui.panel.config.zone.configured_in_yaml"
                               )}
-                            </paper-tooltip>
+                            </simple-tooltip>
                           `
                         : ""}
                     </div>

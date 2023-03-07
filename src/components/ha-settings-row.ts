@@ -1,4 +1,3 @@
-import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 
@@ -13,13 +12,14 @@ export class HaSettingsRow extends LitElement {
     return html`
       <div class="prefix-wrap">
         <slot name="prefix"></slot>
-        <paper-item-body
+        <div
+          class="body"
           ?two-line=${!this.threeLine}
           ?three-line=${this.threeLine}
         >
           <slot name="heading"></slot>
-          <div secondary><slot name="description"></slot></div>
-        </paper-item-body>
+          <div class="secondary"><slot name="description"></slot></div>
+        </div>
       </div>
       <div class="content"><slot></slot></div>
     `;
@@ -34,10 +34,38 @@ export class HaSettingsRow extends LitElement {
         align-self: auto;
         align-items: center;
       }
-      paper-item-body {
+      .body {
         padding: 8px 16px 8px 0;
+        overflow: hidden;
+        display: var(--layout-vertical_-_display);
+        flex-direction: var(--layout-vertical_-_flex-direction);
+        justify-content: var(--layout-center-justified_-_justify-content);
+        flex: var(--layout-flex_-_flex);
+        flex-basis: var(--layout-flex_-_flex-basis);
       }
-      paper-item-body[two-line] {
+      .body[three-line] {
+        min-height: var(--paper-item-body-three-line-min-height, 88px);
+      }
+      .body > * {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .body > .secondary {
+        font-family: var(--paper-font-body1_-_font-family);
+        -webkit-font-smoothing: var(
+          --paper-font-body1_-_-webkit-font-smoothing
+        );
+        font-size: var(--paper-font-body1_-_font-size);
+        font-weight: var(--paper-font-body1_-_font-weight);
+        line-height: var(--paper-font-body1_-_line-height);
+
+        color: var(
+          --paper-item-body-secondary-color,
+          var(--secondary-text-color)
+        );
+      }
+      .body[two-line] {
         min-height: calc(
           var(--paper-item-body-two-line-min-height, 72px) - 16px
         );

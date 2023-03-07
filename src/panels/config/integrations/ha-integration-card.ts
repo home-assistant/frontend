@@ -22,7 +22,7 @@ import {
 } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -192,11 +192,11 @@ export class HaIntegrationCard extends LitElement {
                       class="info"
                       .path=${mdiProgressHelper}
                     ></ha-svg-icon
-                    ><paper-tooltip animation-delay="0" position="left">
+                    ><simple-tooltip animation-delay="0" position="left">
                       ${this.hass.localize(
                         `ui.panel.config.integrations.config_entry.state.setup_in_progress`
                       )}
-                    </paper-tooltip>
+                    </simple-tooltip>
                   </span>`
                 : ""}
               ${ERROR_STATES.includes(item.state)
@@ -207,11 +207,11 @@ export class HaIntegrationCard extends LitElement {
                         ? mdiReloadAlert
                         : mdiAlertCircle}
                     ></ha-svg-icon
-                    ><paper-tooltip animation-delay="0" position="left">
+                    ><simple-tooltip animation-delay="0" position="left">
                       ${this.hass.localize(
                         `ui.panel.config.integrations.config_entry.state.${item.state}`
                       )}
-                    </paper-tooltip>
+                    </simple-tooltip>
                   </span>`
                 : ""}
               <ha-icon-next></ha-icon-next>

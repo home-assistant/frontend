@@ -1,4 +1,4 @@
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -45,7 +45,7 @@ class StateInfo extends LitElement {
                 .datetime=${this.stateObj.last_changed}
                 capitalize
               ></ha-relative-time>
-              <paper-tooltip animation-delay="0" for="last_changed">
+              <simple-tooltip animation-delay="0" for="last_changed">
                 <div>
                   <div class="row">
                     <span class="column-name">
@@ -72,7 +72,7 @@ class StateInfo extends LitElement {
                     ></ha-relative-time>
                   </div>
                 </div>
-              </paper-tooltip>
+              </simple-tooltip>
             </div>`
           : html`<div class="extra-info"><slot></slot></div>`}
       </div>`;
