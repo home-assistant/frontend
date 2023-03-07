@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { DateTimeSelector } from "../../data/selector";
@@ -39,13 +39,13 @@ export class HaDateTimeSelector extends LitElement {
           .locale=${this.hass.locale}
           .disabled=${this.disabled}
           .required=${this.required}
-          .value=${values?.[0]}
+          .value=${values?.[0] === "undefined" ? undefined : values?.[0]}
           @value-changed=${this._valueChanged}
         >
         </ha-date-input>
         <ha-time-input
           enable-second
-          .value=${values?.[1] || "0:00:00"}
+          .value=${values?.[1] || "00:00:00"}
           .locale=${this.hass.locale}
           .disabled=${this.disabled}
           .required=${this.required}
@@ -58,8 +58,19 @@ export class HaDateTimeSelector extends LitElement {
     `;
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("disabled") && !this.disabled && !this.value) {
+      this._sendChangedEvent();
+    }
+  }
+
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
+    this._sendChangedEvent();
+  }
+
+  private _sendChangedEvent(): void {
     fireEvent(this, "value-changed", {
       value: `${this._dateInput.value} ${this._timeInput.value}`,
     });

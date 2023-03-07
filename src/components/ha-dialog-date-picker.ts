@@ -66,11 +66,19 @@ export class HaDialogDatePicker extends LitElement {
   }
 
   private _setToday() {
-    // en-CA locale used for date format YYYY-MM-DD
-    this._value = new Date().toLocaleDateString("en-CA");
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = (today.getMonth() + 1 < 10 ? "0" : "") + (today.getMonth() + 1);
+    const d = (today.getDate() < 10 ? "0" : "") + today.getDate();
+    this._value = y + "-" + m + "-" + d;
   }
 
   private _setValue() {
+    if (!this._value) {
+      // Date picker opens to today if value is undefined. If user click OK
+      // without changing the date, should return todays date, not undefined.
+      this._setToday();
+    }
     this._params?.onChange(this._value!);
     this.closeDialog();
   }
