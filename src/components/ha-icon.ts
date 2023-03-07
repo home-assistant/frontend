@@ -65,7 +65,8 @@ export class HaIcon extends LitElement {
       return nothing;
     }
     if (this._legacy) {
-      return nothing;
+      return html`<!-- @ts-ignore we don't provice the iron-icon element -->
+        <iron-icon .icon=${this.icon}></iron-icon>`;
     }
     return html`<ha-svg-icon
       .path=${this._path}
