@@ -201,10 +201,11 @@ class MoreInfoViewLightColorPicker extends LitElement {
       this._brightnessAdjusted = undefined;
       if (
         stateObj.attributes.color_mode === LightColorMode.RGB &&
+        stateObj.attributes.rgb_color &&
         !lightSupportsColorMode(stateObj, LightColorMode.RGBWW) &&
         !lightSupportsColorMode(stateObj, LightColorMode.RGBW)
       ) {
-        const maxVal = Math.max(...stateObj.attributes.rgb_color!);
+        const maxVal = Math.max(...stateObj.attributes.rgb_color);
 
         if (maxVal < 255) {
           this._brightnessAdjusted = maxVal;
@@ -216,16 +217,19 @@ class MoreInfoViewLightColorPicker extends LitElement {
           : undefined;
 
       this._wvSliderValue =
-        stateObj.attributes.color_mode === LightColorMode.RGBW
-          ? Math.round((stateObj.attributes.rgbw_color![3] * 100) / 255)
+        stateObj.attributes.color_mode === LightColorMode.RGBW &&
+        stateObj.attributes.rgbw_color
+          ? Math.round((stateObj.attributes.rgbw_color[3] * 100) / 255)
           : undefined;
       this._cwSliderValue =
-        stateObj.attributes.color_mode === LightColorMode.RGBWW
-          ? Math.round((stateObj.attributes.rgbww_color![3] * 100) / 255)
+        stateObj.attributes.color_mode === LightColorMode.RGBWW &&
+        stateObj.attributes.rgbww_color
+          ? Math.round((stateObj.attributes.rgbww_color[3] * 100) / 255)
           : undefined;
       this._wwSliderValue =
-        stateObj.attributes.color_mode === LightColorMode.RGBWW
-          ? Math.round((stateObj.attributes.rgbww_color![4] * 100) / 255)
+        stateObj.attributes.color_mode === LightColorMode.RGBWW &&
+        stateObj.attributes.rgbww_color
+          ? Math.round((stateObj.attributes.rgbww_color[4] * 100) / 255)
           : undefined;
 
       const currentRgbColor = getLightCurrentModeRgbColor(stateObj);
