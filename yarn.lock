@@ -28,7 +28,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/code-frame@npm:^7.10.4, @babel/code-frame@npm:^7.12.11, @babel/code-frame@npm:^7.18.6, @babel/code-frame@npm:^7.5.5":
+"@babel/code-frame@npm:^7.10.4, @babel/code-frame@npm:^7.12.11, @babel/code-frame@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/code-frame@npm:7.18.6"
   dependencies:
@@ -9615,7 +9615,7 @@ fsevents@~2.3.2:
     roboto-fontface: 0.10.0
     rollup: 2.79.1
     rollup-plugin-string: 3.0.0
-    rollup-plugin-terser: 5.3.1
+    rollup-plugin-terser: 7.0.2
     rollup-plugin-visualizer: 5.9.0
     rrule: 2.7.2
     serve-handler: 6.1.5
@@ -10763,16 +10763,6 @@ fsevents@~2.3.2:
   bin:
     jake: ./bin/cli.js
   checksum: 56c913ecf5a8d74325d0af9bc17a233bad50977438d44864d925bb6c45c946e0fee8c4c1f5fe2225471ef40df5222e943047982717ebff0d624770564d3c46ba
-  languageName: node
-  linkType: hard
-
-"jest-worker@npm:^24.9.0":
-  version: 24.9.0
-  resolution: "jest-worker@npm:24.9.0"
-  dependencies:
-    merge-stream: ^2.0.0
-    supports-color: ^6.1.0
-  checksum: bd23b6c8728dcf3bad0d84543ea1bc4a95ccd3b5a40f9e2796d527ab0e87dc6afa6c30cc7b67845dce1cfe7894753812d19793de605db1976b7ac08930671bff
   languageName: node
   linkType: hard
 
@@ -13861,22 +13851,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"rollup-plugin-terser@npm:5.3.1":
-  version: 5.3.1
-  resolution: "rollup-plugin-terser@npm:5.3.1"
-  dependencies:
-    "@babel/code-frame": ^7.5.5
-    jest-worker: ^24.9.0
-    rollup-pluginutils: ^2.8.2
-    serialize-javascript: ^4.0.0
-    terser: ^4.6.2
-  peerDependencies:
-    rollup: ">=0.66.0 <3"
-  checksum: 50f9e8fa6737fa5e8aeca6a52b59ea3bc66faebe743bdfe9ce0484298cd1978082026721b182d79bcc88240429842dc58feae88d6c238b47cafc1684e0320a73
-  languageName: node
-  linkType: hard
-
-"rollup-plugin-terser@npm:^7.0.0":
+"rollup-plugin-terser@npm:7.0.2, rollup-plugin-terser@npm:^7.0.0":
   version: 7.0.2
   resolution: "rollup-plugin-terser@npm:7.0.2"
   dependencies:
@@ -13909,7 +13884,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"rollup-pluginutils@npm:^2.4.1, rollup-pluginutils@npm:^2.8.2":
+"rollup-pluginutils@npm:^2.4.1":
   version: 2.8.2
   resolution: "rollup-pluginutils@npm:2.8.2"
   dependencies:
@@ -14876,15 +14851,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"supports-color@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "supports-color@npm:6.1.0"
-  dependencies:
-    has-flag: ^3.0.0
-  checksum: 74358f9535c83ee113fbaac354b11e808060f6e7d8722082ee43af3578469134e89d00026dce2a6b93ce4e5b89d0e9a10f638b2b9f64c7838c2fb2883a47b3d5
-  languageName: node
-  linkType: hard
-
 "supports-color@npm:^7.0.0, supports-color@npm:^7.1.0, supports-color@npm:^7.2.0":
   version: 7.2.0
   resolution: "supports-color@npm:7.2.0"
@@ -15014,7 +14980,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"terser@npm:^4.6.2, terser@npm:^4.6.3":
+"terser@npm:^4.6.3":
   version: 4.8.1
   resolution: "terser@npm:4.8.1"
   dependencies:
