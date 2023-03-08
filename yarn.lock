@@ -3829,20 +3829,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-commonjs@npm:11.1.0":
-  version: 11.1.0
-  resolution: "@rollup/plugin-commonjs@npm:11.1.0"
+"@rollup/plugin-commonjs@npm:24.0.1":
+  version: 24.0.1
+  resolution: "@rollup/plugin-commonjs@npm:24.0.1"
   dependencies:
-    "@rollup/pluginutils": ^3.0.8
+    "@rollup/pluginutils": ^5.0.1
     commondir: ^1.0.1
-    estree-walker: ^1.0.1
-    glob: ^7.1.2
-    is-reference: ^1.1.2
-    magic-string: ^0.25.2
-    resolve: ^1.11.0
+    estree-walker: ^2.0.2
+    glob: ^8.0.3
+    is-reference: 1.2.1
+    magic-string: ^0.27.0
   peerDependencies:
-    rollup: ^1.20.0||^2.0.0
-  checksum: 6349c946b2cbdaf2a47b56da3ac6f4f1105cf02520cd945da15d250a2b1c0d3501e9274bf52d0d419ab55dec9c89cd9d9b2fc9ffc0a57bf89a39eb741c298c72
+    rollup: ^2.68.0||^3.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: ff5b09f5c350640fe6836fcc97bf5c5612bf78b26eaaad01bf1aee955f0b136135d1a8950a02f680779aec1f16f2c6b6cf89d6080e84ed09be62737abb6b3a5f
   languageName: node
   linkType: hard
 
@@ -9037,7 +9039,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"glob@npm:7.2.0, glob@npm:^7.1.1, glob@npm:^7.1.2, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6":
+"glob@npm:7.2.0, glob@npm:^7.1.1, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6":
   version: 7.2.0
   resolution: "glob@npm:7.2.0"
   dependencies:
@@ -9051,7 +9053,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"glob@npm:8.1.0":
+"glob@npm:8.1.0, glob@npm:^8.0.3":
   version: 8.1.0
   resolution: "glob@npm:8.1.0"
   dependencies:
@@ -9515,7 +9517,7 @@ fsevents@~2.3.2:
     "@polymer/paper-tooltip": 3.0.1
     "@polymer/polymer": 3.4.1
     "@rollup/plugin-babel": 6.0.3
-    "@rollup/plugin-commonjs": 11.1.0
+    "@rollup/plugin-commonjs": 24.0.1
     "@rollup/plugin-json": 6.0.0
     "@rollup/plugin-node-resolve": 7.1.3
     "@rollup/plugin-replace": 2.4.2
@@ -10527,12 +10529,12 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"is-reference@npm:^1.1.2":
-  version: 1.1.4
-  resolution: "is-reference@npm:1.1.4"
+"is-reference@npm:1.2.1":
+  version: 1.2.1
+  resolution: "is-reference@npm:1.2.1"
   dependencies:
-    "@types/estree": 0.0.39
-  checksum: 2514821e7d19acbfb9326e645a1a4e57a71c9caf29c0b32586109ac937af4ecf4c51d9d6a0a192a112b4d6020c85f70f7bab028f80a93850326ae5b3cc7ff65c
+    "@types/estree": "*"
+  checksum: e7b48149f8abda2c10849ea51965904d6a714193d68942ad74e30522231045acf06cbfae5a4be2702fede5d232e61bf50b3183acdc056e6e3afe07fcf4f4b2bc
   languageName: node
   linkType: hard
 
@@ -11533,12 +11535,21 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.25.0, magic-string@npm:^0.25.2, magic-string@npm:^0.25.7":
+"magic-string@npm:^0.25.0, magic-string@npm:^0.25.7":
   version: 0.25.7
   resolution: "magic-string@npm:0.25.7"
   dependencies:
     sourcemap-codec: ^1.4.4
   checksum: 727a1fb70f9610304fe384f1df0251eb7d1d9dd779c07ef1225690361b71b216f26f5d934bfb11c919b5b0e7ba50f6240c823a6f2e44cfd33d4a07d7747ca829
+  languageName: node
+  linkType: hard
+
+"magic-string@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "magic-string@npm:0.27.0"
+  dependencies:
+    "@jridgewell/sourcemap-codec": ^1.4.13
+  checksum: 273faaa50baadb7a2df6e442eac34ad611304fc08fe16e24fe2e472fd944bfcb73ffb50d2dc972dc04e92784222002af46868cb9698b1be181c81830fd95a13e
   languageName: node
   linkType: hard
 
@@ -13755,7 +13766,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"resolve@^1.1.6, resolve@^1.1.7, resolve@^1.10.0, resolve@^1.11.0, resolve@^1.14.2, resolve@^1.19.0, resolve@^1.20.0, resolve@^1.4.0, resolve@npm:^1.22.1":
+"resolve@^1.1.6, resolve@^1.1.7, resolve@^1.10.0, resolve@^1.14.2, resolve@^1.19.0, resolve@^1.20.0, resolve@^1.4.0, resolve@npm:^1.22.1":
   version: 1.22.1
   resolution: "resolve@npm:1.22.1"
   dependencies:
@@ -13768,7 +13779,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.11.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.4.0#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.4.0#~builtin<compat/resolve>":
   version: 1.22.1
   resolution: "resolve@patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"
   dependencies:
