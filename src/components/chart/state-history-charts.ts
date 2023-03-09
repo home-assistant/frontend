@@ -176,14 +176,16 @@ export class StateHistoryCharts extends LitElement {
       if (this._chartCount < this._childYWidths.length) {
         this._childYWidths.length = this._chartCount;
         this._maxYWidth =
-          this._childYWidths.length === 0 ? 0 : Math.max(...this._childYWidths);
+          this._childYWidths.length === 0
+            ? 0
+            : Math.max(...this._childYWidths.filter((x) => x != null));
       }
     }
   }
 
   private _yWidthChanged(e: CustomEvent<HASSDomEvents["y-width-changed"]>) {
     this._childYWidths[e.detail.chartIndex] = e.detail.value;
-    this._maxYWidth = Math.max(...this._childYWidths);
+    this._maxYWidth = Math.max(...this._childYWidths.filter((x) => x != null));
   }
 
   private _isHistoryEmpty(): boolean {
