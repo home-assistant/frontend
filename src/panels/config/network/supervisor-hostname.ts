@@ -51,22 +51,23 @@ export class HassioHostname extends LitElement {
       <ha-card
         class="no-padding"
         outlined
-        .header=${this.hass.localize("ui.panel.config.network.hostname.title")}
+        .header=${this.hass.localize(
+          "ui.panel.config.network.supervisor.hostname.title"
+        )}
       >
-        <div>
-          <ha-settings-row .narrow=${this.narrow}>
-            <span slot="heading">Hostname</span>
-            <span slot="description"
-              >The name your instance will have on your network</span
-            >
-            <ha-textfield
-              .disabled=${this._processing}
-              .value=${this._hostname}
-              @change=${this._handleChange}
-              placeholder="homeassistant"
-            >
-            </ha-textfield>
-          </ha-settings-row>
+        <div class="card-content">
+          <p>
+            ${this.hass.localize(
+              "ui.panel.config.network.supervisor.hostname.description"
+            )}
+          </p>
+          <ha-textfield
+            .disabled=${this._processing}
+            .value=${this._hostname}
+            @change=${this._handleChange}
+            placeholder="homeassistant"
+          >
+          </ha-textfield>
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._save} .disabled=${this._processing}>
@@ -91,7 +92,7 @@ export class HassioHostname extends LitElement {
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.network.hostname.failed_to_set_hostname"
+          "ui.panel.config.network.supervisor.hostname.failed_to_set_hostname"
         ),
         text: extractApiErrorMessage(err),
       });
@@ -110,8 +111,8 @@ export class HassioHostname extends LitElement {
       justify-content: space-between;
       align-items: center;
     }
-    ha-settings-row {
-      border-top: none;
+    .card-content > p {
+      padding-bottom: 1em;
     }
   `;
 }
