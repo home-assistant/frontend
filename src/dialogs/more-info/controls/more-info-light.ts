@@ -148,7 +148,7 @@ class MoreInfoLight extends LitElement {
                       </md-outlined-icon-button>
                     `
                   : null}
-                ${supportsEffects
+                ${supportsEffects && this.stateObj.attributes.effect_list
                   ? html`
                       <ha-button-menu
                         corner="BOTTOM_START"
@@ -169,7 +169,7 @@ class MoreInfoLight extends LitElement {
                         >
                           <ha-svg-icon .path=${mdiCreation}></ha-svg-icon>
                         </md-outlined-icon-button>
-                        ${this.stateObj.attributes.effect_list!.map(
+                        ${this.stateObj.attributes.effect_list.map(
                           (effect: string) => html`
                             <mwc-list-item
                               .value=${effect}

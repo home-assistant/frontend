@@ -136,6 +136,7 @@ export class HaServiceControl extends LitElement {
     if (oldValue?.service !== this.value?.service) {
       let updatedDefaultValue = false;
       if (this._value && serviceData) {
+        const loadDefaults = this.value && !("data" in this.value);
         // Set mandatory bools without a default value to false
         if (!this._value.data) {
           this._value.data = {};
@@ -152,6 +153,7 @@ export class HaServiceControl extends LitElement {
             this._value!.data![field.key] = false;
           }
           if (
+            loadDefaults &&
             field.selector &&
             field.default !== undefined &&
             this._value!.data![field.key] === undefined
@@ -341,10 +343,10 @@ export class HaServiceControl extends LitElement {
                     .selector=${dataField.selector}
                     .key=${dataField.key}
                     @value-changed=${this._serviceDataChanged}
-                    .value=${this._value?.data &&
-                    this._value.data[dataField.key] !== undefined
+                    .value=${this._value?.data
                       ? this._value.data[dataField.key]
-                      : dataField.default}
+                      : undefined}
+                    .placeholder=${dataField.default}
                   ></ha-selector>
                 </ha-settings-row>`
               : "";
@@ -362,7 +364,7 @@ export class HaServiceControl extends LitElement {
         this._value?.service,
         this.hass.services
       )?.fields.find((field) => field.key === key)?.default;
-      if (defaultValue) {
+      if (defaultValue != null) {
         data = {
           ...this._value?.data,
           [key]: defaultValue,
