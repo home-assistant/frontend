@@ -16,6 +16,7 @@ import { getSignedPath } from "../../../../src/data/auth";
 import {
   fetchHassioBackupInfo,
   HassioBackupDetail,
+  removeBackup,
 } from "../../../../src/data/hassio/backup";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
@@ -286,24 +287,15 @@ class HassioBackupDialog
       return;
     }
 
-    this.hass!.callApi(
-      atLeastVersion(this.hass!.config.version, 2021, 9) ? "DELETE" : "POST",
-      `hassio/${
-        atLeastVersion(this.hass!.config.version, 2021, 9)
-          ? `backups/${this._backup!.slug}`
-          : `snapshots/${this._backup!.slug}/remove`
-      }`
-    ).then(
-      () => {
-        if (this._dialogParams!.onDelete) {
-          this._dialogParams!.onDelete();
-        }
-        this.closeDialog();
-      },
-      (error) => {
-        this._error = error.body.message;
+    try {
+      await removeBackup(this.hass!, this._backup!.slug);
+      if (this._dialogParams!.onDelete) {
+        this._dialogParams!.onDelete();
       }
-    );
+      this.closeDialog();
+    } catch (err: any) {
+      this._error = err.body.message;
+    }
   }
 
   private async _downloadClicked() {
