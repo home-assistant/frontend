@@ -899,6 +899,7 @@
         "light": {
           "toggle": "Toggle",
           "change_color": "Change color",
+          "set_white": "Set white",
           "select_effect": "Select effect",
           "brightness": "Brightness",
           "color_picker": {
