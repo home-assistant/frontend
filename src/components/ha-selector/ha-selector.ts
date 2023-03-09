@@ -17,6 +17,7 @@ const LOAD_ELEMENTS = {
   boolean: () => import("./ha-selector-boolean"),
   color_rgb: () => import("./ha-selector-color-rgb"),
   config_entry: () => import("./ha-selector-config-entry"),
+  constant: () => import("./ha-selector-constant"),
   date: () => import("./ha-selector-date"),
   datetime: () => import("./ha-selector-datetime"),
   device: () => import("./ha-selector-device"),
