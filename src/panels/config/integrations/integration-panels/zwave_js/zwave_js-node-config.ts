@@ -18,7 +18,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
@@ -210,7 +209,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
             </em>`
           : ""}
         ${result?.status
-          ? html` <p
+          ? html`<p
               class="result ${classMap({
                 [result.status]: true,
               })}"
@@ -264,11 +263,9 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           .propertyKey=${item.property_key}
           .key=${id}
           .disabled=${!item.metadata.writeable}
-          @input=${this._numericInputChanged}
+          @change=${this._numericInputChanged}
+          .suffix=${item.metadata.unit}
         >
-          ${item.metadata.unit
-            ? html`<span slot="suffix">${item.metadata.unit}</span>`
-            : ""}
         </ha-textfield>`;
     }
 
@@ -340,12 +337,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     this._updateConfigParameter(ev.target, Number(ev.target.value));
   }
 
-  private debouncedUpdate = debounce((target, value) => {
-    this._config![target.key].value = value;
-
-    this._updateConfigParameter(target, value);
-  }, 1000);
-
   private _numericInputChanged(ev) {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
@@ -355,7 +346,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
     this.setResult(ev.target.key, undefined);
-    this.debouncedUpdate(ev.target, value);
+    this._updateConfigParameter(ev.target, value);
   }
 
   private async _updateConfigParameter(target, value) {
