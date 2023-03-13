@@ -14876,9 +14876,9 @@ fsevents@~2.3.2:
   linkType: hard
 
 "style-mod@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "style-mod@npm:4.0.0"
-  checksum: c19f73d660a94244f0715180a6141bf75d05e5b156cc956ba11970b83cd303c3f7edafe5fb61a3192da6186cc008bdcdd803a979070f9b64e13046463644043c
+  version: 4.0.1
+  resolution: "style-mod@npm:4.0.1"
+  checksum: 1a9c60b56415dc3a40d512b634dfd3605c90935d7fa366216784bc3870e3a7411e65b8fb1a2d1d631dd16622fb1d96aeafd8457d940b5897838fcbee829cb654
   languageName: node
   linkType: hard
 
