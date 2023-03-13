@@ -14,9 +14,11 @@ import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { navigate } from "../../common/navigate";
+import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createSearchParam,
   extractSearchParamsObject,
+  removeSearchParam,
 } from "../../common/url/search-params";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-date-range-picker";
@@ -41,6 +43,9 @@ export class HaPanelLogbook extends LitElement {
 
   @state() private _ranges?: DateRangePickerRanges;
 
+  @state()
+  private _showBack?: boolean;
+
   public constructor() {
     super();
 
@@ -53,15 +58,27 @@ export class HaPanelLogbook extends LitElement {
     this._time = { range: [start, end] };
   }
 
+  private _goBack(): void {
+    history.back();
+  }
+
   protected render() {
     return html`
       <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
+            ${this._showBack
+              ? html`
+                  <ha-icon-button-arrow-prev
+                    @click=${this._goBack}
+                  ></ha-icon-button-arrow-prev>
+                `
+              : html`
+                  <ha-menu-button
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></ha-menu-button>
+                `}
             <div main-title>${this.hass.localize("panel.logbook")}</div>
             <ha-icon-button
               @click=${this._refreshLogbook}
@@ -132,6 +149,14 @@ export class HaPanelLogbook extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+
+    const searchParams = extractSearchParamsObject();
+    if (searchParams.back === "1" && history.length > 1) {
+      this._showBack = true;
+      navigate(constructUrlCurrentPath(removeSearchParam("back")), {
+        replace: true,
+      });
+    }
   }
 
   public connectedCallback(): void {
