@@ -224,7 +224,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       this.hass!.entities
     );
 
-    if (domain === "cover" && stateObj.state === "open") {
+    if (
+      domain === "cover" &&
+      ["open", "opening", "closing"].includes(stateObj.state)
+    ) {
       const position = (stateObj as CoverEntity).attributes.current_position;
       if (position && position !== 100) {
         return `${stateDisplay} - ${Math.round(position)}${blankBeforePercent(
