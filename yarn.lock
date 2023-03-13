@@ -9626,7 +9626,7 @@ fsevents@~2.3.2:
     jszip: 3.10.1
     leaflet: 1.9.3
     leaflet-draw: 1.0.4
-    lint-staged: 13.1.4
+    lint-staged: 13.2.0
     lit: 2.6.1
     lit-analyzer: 1.2.1
     lodash.template: 4.5.0
@@ -11243,9 +11243,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:13.1.4":
-  version: 13.1.4
-  resolution: "lint-staged@npm:13.1.4"
+"lint-staged@npm:13.2.0":
+  version: 13.2.0
+  resolution: "lint-staged@npm:13.2.0"
   dependencies:
     chalk: 5.2.0
     cli-truncate: ^3.1.0
@@ -11259,11 +11259,10 @@ fsevents@~2.3.2:
     object-inspect: ^1.12.3
     pidtree: ^0.6.0
     string-argv: ^0.3.1
-    supports-color: 9.3.1
     yaml: ^2.2.1
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 75729290bd78c026351b1fd39f9bcbee3744f93e6d66a0125119c59de108205872b6fb7732437dc3bd363716bf7c3585e0c1f93a3419eae87aaa2878de0225e3
+  checksum: dcaa8fbbde567eb8ac27230a18b3a22f30c278c524c0e27cf7d4110d662d5d33ed68a585a2e1b05075ef1c262e853f557a5ae046188b723603246d63e6b9f07b
   languageName: node
   linkType: hard
 
@@ -14894,13 +14893,6 @@ fsevents@~2.3.2:
   dependencies:
     has-flag: ^4.0.0
   checksum: c052193a7e43c6cdc741eb7f378df605636e01ad434badf7324f17fb60c69a880d8d8fcdcb562cf94c2350e57b937d7425ab5b8326c67c2adc48f7c87c1db406
-  languageName: node
-  linkType: hard
-
-"supports-color@npm:9.3.1":
-  version: 9.3.1
-  resolution: "supports-color@npm:9.3.1"
-  checksum: 00c4d1082a7ba0ee21cba1d4e4a466642635412e40476777b530aa5110d035e99a420cd048e1fb6811f2254c0946095fbb87a1eccf1af1d1ca45ab0a4535db93
   languageName: node
   linkType: hard
 
