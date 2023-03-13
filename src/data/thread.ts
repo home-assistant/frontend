@@ -4,6 +4,7 @@ export interface ThreadRouter {
   brand: "google" | "apple" | "homeassistant";
   server: string;
   extended_pan_id: string;
+  extended_address: string;
   model_name: string | null;
   network_name: string;
   vendor_name: string;
