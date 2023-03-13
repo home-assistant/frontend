@@ -173,7 +173,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
                 </a>
               `
             : html`
-                <ha-tip>
+                <ha-tip .hass=${this.hass}>
                   <a
                     href=${documentationUrl(this.hass, "/get-blueprints")}
                     target="_blank"
