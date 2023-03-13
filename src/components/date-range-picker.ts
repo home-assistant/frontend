@@ -59,6 +59,7 @@ const Component = Vue.extend({
         "locale-data": {
           firstDay: this.firstDay,
         },
+        singleDatePicker: "range",
       },
       model: {
         value: {
