@@ -274,11 +274,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
       this._showBack = true;
-      window.history.replaceState(
-        null,
-        "",
-        constructUrlCurrentPath(removeSearchParam("back"))
-      );
+      navigate(constructUrlCurrentPath(removeSearchParam("back")), {
+        replace: true,
+      });
     }
   }
 
