@@ -304,9 +304,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private testDefaultCode(code_format?: string, value?: string | null) {
     if (code_format && value) {
       return RegExp(code_format).test(value);
-    } else {
-      return true;
     }
+    return true;
   }
 
   protected async updated(changedProps: PropertyValues): Promise<void> {
