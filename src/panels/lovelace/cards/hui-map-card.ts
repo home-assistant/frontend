@@ -216,6 +216,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this._config!.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW,
       this._configEntities!,
       false,
+      false,
       false
     ).catch((err) => {
       this._subscribed = undefined;
