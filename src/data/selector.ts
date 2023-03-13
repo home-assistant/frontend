@@ -91,8 +91,9 @@ export interface ConfigEntrySelector {
 
 export interface ConstantSelector {
   constant: {
-    value?: string | number | boolean;
+    value: string | number | boolean;
     label?: string;
+    translation_key?: string;
   } | null;
 }
 

@@ -8,13 +8,25 @@ export class HaSelectorConstant extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property() public localizeValue?: (key: string) => string;
+
   protected render() {
     if (this.disabled) {
       return nothing;
     }
 
+    const translationKey = this.selector.constant?.translation_key;
+
+    const translatedLabel =
+      translationKey && this.localizeValue
+        ? this.localizeValue(`${translationKey}.value`)
+        : undefined;
+
     return (
-      this.selector.constant?.label ?? this.selector.constant?.value ?? nothing
+      translatedLabel ??
+      this.selector.constant?.label ??
+      this.selector.constant?.value ??
+      nothing
     );
   }
 }
