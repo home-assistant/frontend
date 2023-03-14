@@ -186,7 +186,7 @@ export class HaControlSelect extends LitElement {
       :host {
         display: block;
         --control-select-color: var(--primary-color);
-        --control-select-focused-opacity: 0.3;
+        --control-select-focused-opacity: 0.2;
         --control-select-selected-opacity: 1;
         --control-select-background: var(--disabled-color);
         --control-select-background-opacity: 0.2;

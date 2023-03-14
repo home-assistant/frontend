@@ -14,18 +14,18 @@ const fullOptions: ControlSelectOption[] = [
     path: mdiFanOff,
   },
   {
-    value: "speed1",
-    label: "Speed 1",
+    value: "low",
+    label: "Low",
     path: mdiFanSpeed1,
   },
   {
-    value: "speed2",
-    label: "Speed 2",
+    value: "medium",
+    label: "Medium",
     path: mdiFanSpeed2,
   },
   {
-    value: "speed3",
-    label: "Speed 3",
+    value: "high",
+    label: "High",
     path: mdiFanSpeed3,
   },
 ];
@@ -36,15 +36,15 @@ const iconOptions: ControlSelectOption[] = [
     path: mdiFanOff,
   },
   {
-    value: "speed1",
+    value: "low",
     path: mdiFanSpeed1,
   },
   {
-    value: "speed2",
+    value: "medium",
     path: mdiFanSpeed2,
   },
   {
-    value: "speed3",
+    value: "high",
     path: mdiFanSpeed3,
   },
 ];
@@ -55,16 +55,16 @@ const labelOptions: ControlSelectOption[] = [
     label: "Off",
   },
   {
-    value: "speed1",
-    label: "Speed 1",
+    value: "low",
+    label: "Low",
   },
   {
-    value: "speed2",
-    label: "Speed 2",
+    value: "medium",
+    label: "medium",
   },
   {
-    value: "speed3",
-    label: "Speed 3",
+    value: "high",
+    label: "High",
   },
 ];
 
@@ -176,7 +176,7 @@ export class DemoHaControlSelect extends LitElement {
       }
       .custom {
         --mdc-icon-size: 24px;
-        --control-select-color: #ff4c4c;
+        --control-select-color: var(--state-fan-active-color);
         --control-select-thickness: 100px;
         --control-select-border-radius: 24px;
       }
