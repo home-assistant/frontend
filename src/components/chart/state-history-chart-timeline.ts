@@ -144,12 +144,11 @@ export class StateHistoryChartTimeline extends LitElement {
           },
           afterUpdate: (y) => {
             const yWidth = this.showNames
-              ? y.width
+              ? y.width ?? 0
               : computeRTL(this.hass)
               ? 0
-              : y.left;
+              : y.left ?? 0;
             if (
-              yWidth != null &&
               this._yWidth !== Math.floor(yWidth) &&
               y.ticks.length === this.data.length
             ) {
