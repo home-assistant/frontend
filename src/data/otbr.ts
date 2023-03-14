@@ -15,6 +15,15 @@ export const OTBRCreateNetwork = (hass: HomeAssistant): Promise<void> =>
     type: "otbr/create_network",
   });
 
+export const OTBRSetNetwork = (
+  hass: HomeAssistant,
+  dataset_id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "otbr/set_network",
+    dataset_id,
+  });
+
 export const OTBRGetExtendedAddress = (
   hass: HomeAssistant
 ): Promise<{ extended_address: string }> =>

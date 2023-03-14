@@ -20,11 +20,13 @@ import {
   OTBRCreateNetwork,
   OTBRGetExtendedAddress,
   OTBRInfo,
+  OTBRSetNetwork,
 } from "../../../../../data/otbr";
 import {
   addThreadDataSet,
   listThreadDataSets,
   removeThreadDataSet,
+  setPreferredThreadDataSet,
   subscribeDiscoverThreadRouters,
   ThreadDataSet,
   ThreadRouter,
@@ -199,7 +201,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                           >${this.hass.localize(
                             "ui.panel.config.thread.reset_border_router"
                           )}</ha-list-item
+                        >${network.dataset?.preferred
+                          ? ""
+                          : html`<ha-list-item
+                          >Add to preferred network</ha-list-item
                         ></ha-button-menu
+                      >`}</ha-button-menu
                       >`
                     : ""}
                 </ha-list-item>`
@@ -217,7 +224,16 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                     >Reset border router to factory settings</mwc-button
                   >`
               : this.hass.localize("ui.panel.config.thread.no_border_routers")}
-          </div>`}
+          </div> `}
+      ${network.dataset && !network.dataset.preferred
+        ? html`<div class="card-actions">
+            <mwc-button
+              .datasetId=${network.dataset.dataset_id}
+              @click=${this._setPreferred}
+              >Make preferred network</mwc-button
+            >
+          </div>`
+        : ""}
     </ha-card>`;
   }
 
@@ -362,6 +378,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       case 0:
         this._resetBorderRouter();
         break;
+      case 1:
+        this._setDataset();
+        break;
     }
   }
 
@@ -374,6 +393,22 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       return;
     }
     await OTBRCreateNetwork(this.hass);
+    this._refresh();
+  }
+
+  private async _setDataset() {
+    const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
+    const preferedDatasetId = networks.preferred?.dataset?.dataset_id;
+    if (!preferedDatasetId) {
+      return;
+    }
+    await OTBRSetNetwork(this.hass, preferedDatasetId);
+    this._refresh();
+  }
+
+  private async _setPreferred(ev) {
+    const datasetId = ev.target.datasetId;
+    await setPreferredThreadDataSet(this.hass, datasetId);
     this._refresh();
   }
 

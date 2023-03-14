@@ -88,3 +88,12 @@ export const removeThreadDataSet = (
     type: "thread/delete_dataset",
     dataset_id,
   });
+
+export const setPreferredThreadDataSet = (
+  hass: HomeAssistant,
+  dataset_id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "thread/set_preferred_dataset",
+    dataset_id,
+  });
