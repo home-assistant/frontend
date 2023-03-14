@@ -39,7 +39,7 @@ export class HaDateTimeSelector extends LitElement {
           .locale=${this.hass.locale}
           .disabled=${this.disabled}
           .required=${this.required}
-          .value=${values?.[0] === "undefined" ? undefined : values?.[0]}
+          .value=${values?.[0]}
           @value-changed=${this._valueChanged}
         >
         </ha-date-input>
@@ -72,7 +72,7 @@ export class HaDateTimeSelector extends LitElement {
 
   private _sendChangedEvent(): void {
     fireEvent(this, "value-changed", {
-      value: `${this._dateInput.value} ${this._timeInput.value}`,
+      value: `${this._dateInput.value ?? ""} ${this._timeInput.value}`,
     });
   }
 
