@@ -9,18 +9,7 @@ import "./ha-settings-row";
 import "./ha-switch";
 import type { HaSwitch } from "./ha-switch";
 
-const ADDITIONAL_PREFERENCES = [
-  {
-    key: "usage",
-    title: "Usage",
-    description: "Details of what you use with Home Assistant",
-  },
-  {
-    key: "statistics",
-    title: "Statistical data",
-    description: "Counts containing total number of datapoints",
-  },
-];
+const ADDITIONAL_PREFERENCES = ["usage", "statistics"] as const;
 
 declare global {
   interface HASSDomEvents {
@@ -40,9 +29,11 @@ export class HaAnalytics extends LitElement {
 
     return html`
       <ha-settings-row>
-        <span slot="heading" data-for="base"> Basic analytics </span>
+        <span slot="heading" data-for="base">
+          ${this.hass.localize("ui.analytics.preferences.base.title")}
+        </span>
         <span slot="description" data-for="base">
-          This includes information about your system.
+          ${this.hass.localize("ui.analytics.preferences.base.description")}
         </span>
         <ha-switch
           @change=${this._handleRowClick}
@@ -57,25 +48,28 @@ export class HaAnalytics extends LitElement {
         (preference) =>
           html`
             <ha-settings-row>
-              <span slot="heading" data-for=${preference.key}>
-                ${preference.title}
+              <span slot="heading" data-for=${preference}>
+                ${this.hass.localize(
+                  `ui.analytics.preferences.${preference}.title`
+                )}
               </span>
-              <span slot="description" data-for=${preference.key}>
-                ${preference.description}
+              <span slot="description" data-for=${preference}>
+                ${this.hass.localize(
+                  `ui.analytics.preferences.${preference}.description`
+                )}
               </span>
               <span>
                 <ha-switch
                   @change=${this._handleRowClick}
-                  .checked=${this.analytics?.preferences[preference.key]}
-                  .preference=${preference.key}
-                  name=${preference.key}
+                  .checked=${this.analytics?.preferences[preference]}
+                  .preference=${preference}
+                  name=${preference}
                 >
                 </ha-switch>
                 ${!baseEnabled
                   ? html`
                       <paper-tooltip animation-delay="0" position="right">
-                        You need to enable basic analytics for this option to be
-                        available
+                        ${this.hass.localize("ui.analytics.need_base_enabled")}
                       </paper-tooltip>
                     `
                   : ""}
@@ -84,9 +78,13 @@ export class HaAnalytics extends LitElement {
           `
       )}
       <ha-settings-row>
-        <span slot="heading" data-for="diagnostics"> Diagnostics </span>
+        <span slot="heading" data-for="diagnostics">
+          ${this.hass.localize("ui.analytics.preferences.diagnostics.title")}
+        </span>
         <span slot="description" data-for="diagnostics">
-          Share crash reports when unexpected errors occur.
+          ${this.hass.localize(
+            "ui.analytics.preferences.diagnostics.description"
+          )}
         </span>
         <ha-switch
           @change=${this._handleRowClick}
@@ -132,7 +130,7 @@ export class HaAnalytics extends LitElement {
     preferences[preference] = target.checked;
 
     if (
-      ADDITIONAL_PREFERENCES.some((entry) => entry.key === preference) &&
+      ADDITIONAL_PREFERENCES.some((entry) => entry === preference) &&
       target.checked
     ) {
       preferences.base = true;

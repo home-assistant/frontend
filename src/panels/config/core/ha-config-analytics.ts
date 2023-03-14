@@ -41,11 +41,7 @@ class ConfigAnalytics extends LitElement {
       <ha-card outlined>
         <div class="card-content">
           ${error ? html`<div class="error">${error}</div>` : ""}
-          <p>
-            Share anonymized information from your installation to help make
-            Home Assistant better and help us convince manufacturers to add
-            local control and privacy-focused features.
-          </p>
+          <p>${this.hass.localize("ui.analytics.intro")}</p>
           <ha-analytics
             @analytics-preferences-changed=${this._preferencesChanged}
             .hass=${this.hass}
