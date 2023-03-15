@@ -1,7 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { formatAttributeName } from "../../data/entity_attributes";
+import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
@@ -54,7 +54,12 @@ class HaEntityAttributePicker extends LitElement {
             .filter((key) => !this.hideAttributes?.includes(key))
             .map((key) => ({
               value: key,
-              label: formatAttributeName(key),
+              label: computeAttributeNameDisplay(
+                this.hass.localize,
+                state,
+                this.hass.entities,
+                key
+              ),
             }))
         : [];
     }
@@ -68,7 +73,14 @@ class HaEntityAttributePicker extends LitElement {
     return html`
       <ha-combo-box
         .hass=${this.hass}
-        .value=${this.value ? formatAttributeName(this.value) : ""}
+        .value=${this.value
+          ? computeAttributeNameDisplay(
+              this.hass.localize,
+              this.hass.states[this.entityId!],
+              this.hass.entities,
+              this.value
+            )
+          : ""}
         .autofocus=${this.autofocus}
         .label=${this.label ??
         this.hass.localize(

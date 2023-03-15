@@ -232,9 +232,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             ${
               stateObj.attributes.hvac_action
                 ? computeAttributeValueDisplay(
-                    this.hass.localize,
+                    this.hass,
                     stateObj,
-                    this.hass.entities,
                     "hvac_action"
                   )
                 : computeStateDisplay(
@@ -250,9 +249,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                 ? html`
                     -
                     ${computeAttributeValueDisplay(
-                      this.hass.localize,
+                      this.hass,
                       stateObj,
-                      this.hass.entities,
                       "preset_mode"
                     )}
                   `

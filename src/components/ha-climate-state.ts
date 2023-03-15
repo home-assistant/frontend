@@ -25,9 +25,8 @@ class HaClimateState extends LitElement {
                 this.stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
                   ? html`-
                     ${computeAttributeValueDisplay(
-                      this.hass.localize,
+                      this.hass,
                       this.stateObj,
-                      this.hass.entities,
                       "preset_mode"
                     )}`
                   : ""}
@@ -140,9 +139,8 @@ class HaClimateState extends LitElement {
 
     return this.stateObj.attributes.hvac_action
       ? `${computeAttributeValueDisplay(
-          this.hass.localize,
+          this.hass,
           this.stateObj,
-          this.hass.entities,
           "hvac_action"
         )} (${stateString})`
       : stateString;
