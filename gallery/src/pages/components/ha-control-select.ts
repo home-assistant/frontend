@@ -60,7 +60,7 @@ const labelOptions: ControlSelectOption[] = [
   },
   {
     value: "medium",
-    label: "medium",
+    label: "Medium",
   },
   {
     value: "high",

@@ -93,7 +93,7 @@ export class HaControlSelect extends LitElement {
     this._activeIndex = undefined;
   }
 
-  _handleKeydown(ev) {
+  _handleKeydown(ev: KeyboardEvent) {
     if (!this.options || this._activeIndex == null) return;
     switch (ev.key) {
       case " ":
@@ -117,7 +117,10 @@ export class HaControlSelect extends LitElement {
       case "End":
         this._activeIndex = this.options.length - 1;
         break;
+      default:
+        return;
     }
+    ev.preventDefault();
   }
 
   _handleOptionClick(ev: MouseEvent) {
@@ -191,7 +194,7 @@ export class HaControlSelect extends LitElement {
         --control-select-background: var(--disabled-color);
         --control-select-background-opacity: 0.2;
         --control-select-thickness: 40px;
-        --control-select-border-radius: 10px;
+        --control-select-border-radius: 12px;
         --control-select-padding: 4px;
         --mdc-icon-size: 20px;
         height: var(--control-select-thickness);
@@ -218,7 +221,6 @@ export class HaControlSelect extends LitElement {
         border-radius: var(--control-select-border-radius);
         transform: translateZ(0);
         overflow: hidden;
-        cursor: pointer;
         display: flex;
         flex-direction: row;
         padding: var(--control-select-padding);
@@ -255,6 +257,8 @@ export class HaControlSelect extends LitElement {
         );
         overflow: hidden;
         color: var(--primary-text-color);
+        /* For safari border-radius overflow */
+        z-index: 0;
       }
       .content > *:not(:last-child) {
         margin-bottom: 4px;
