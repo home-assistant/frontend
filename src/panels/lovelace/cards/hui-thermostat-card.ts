@@ -480,7 +480,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         .path=${modeIcons[mode]}
         .label=${this.hass!.localize(
           `component.climate.entity_component._.state.${mode}`
-        )}
+        ) || mode}
       >
       </ha-icon-button>
     `;
