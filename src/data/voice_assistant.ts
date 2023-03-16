@@ -131,26 +131,22 @@ export const runPipelineFromText = (
       run.events.push(updateEvent);
 
       if (updateEvent.type === "stt-start") {
-        run.stage = "stt";
-        run.stt = updateEvent.data;
+        run = { ...run, stage: "stt", stt: updateEvent.data };
       } else if (updateEvent.type === "stt-finish") {
-        run.stt = { ...run.stt!, ...updateEvent.data };
+        run = { ...run, stt: { ...run.stt!, ...updateEvent.data } };
       } else if (updateEvent.type === "intent-start") {
-        run.stage = "intent";
-        run.intent = updateEvent.data;
+        run = { ...run, stage: "intent", intent: updateEvent.data };
       } else if (updateEvent.type === "intent-finish") {
-        run.intent = { ...run.intent!, ...updateEvent.data };
+        run = { ...run, intent: { ...run.intent!, ...updateEvent.data } };
       } else if (updateEvent.type === "tts-start") {
-        run.stage = "tts";
-        run.tts = updateEvent.data;
+        run = { ...run, stage: "tts", tts: updateEvent.data };
       } else if (updateEvent.type === "tts-finish") {
-        run.tts = { ...run.tts!, ...updateEvent.data };
+        run = { ...run, tts: { ...run.tts!, ...updateEvent.data } };
       } else if (updateEvent.type === "run-finish") {
-        run.stage = "finish";
+        run = { ...run, stage: "finish" };
         unsubProm.then((unsub) => unsub());
       } else if (updateEvent.type === "error") {
-        run.stage = "error";
-        run.error = updateEvent.data;
+        run = { ...run, stage: "error", error: updateEvent.data };
         unsubProm.then((unsub) => unsub());
       }
 
