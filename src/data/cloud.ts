@@ -11,8 +11,6 @@ interface CloudStatusNotLoggedIn {
 
 export interface GoogleEntityConfig {
   should_expose?: boolean | null;
-  override_name?: string;
-  aliases?: string[];
   disable_2fa?: boolean;
 }
 
