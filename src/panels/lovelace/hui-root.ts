@@ -16,9 +16,6 @@ import {
   mdiShape,
   mdiViewDashboard,
 } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import {
@@ -77,6 +74,7 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
+import "../../components/ha-top-app-bar";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -121,16 +119,15 @@ class HUIRoot extends LitElement {
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
     return html`
-      <ha-app-layout
+      <ha-top-app-bar
         class=${classMap({
           "edit-mode": this._editMode,
         })}
         id="layout"
       >
-        <app-header slot="header" effects="waterfall" fixed condenses>
-          ${this._editMode
-            ? html`
-                <app-toolbar class="edit-mode">
+          ${
+            this._editMode
+              ? html`
                   <div main-title>
                     ${this.config.title ||
                     this.hass!.localize("ui.panel.lovelace.editor.header")}
@@ -230,10 +227,8 @@ class HUIRoot extends LitElement {
                               </mwc-list-item>`
                             : ""} `}
                   </ha-button-menu>
-                </app-toolbar>
-              `
-            : html`
-                <app-toolbar>
+                `
+              : html`
                   ${curViewConfig?.subview
                     ? html`
                         <ha-icon-button-arrow-prev
@@ -450,101 +445,104 @@ class HUIRoot extends LitElement {
                         </ha-button-menu>
                       `
                     : ""}
-                </app-toolbar>
-              `}
-          ${this._editMode
-            ? html`
-                <div sticky>
-                  <paper-tabs
-                    scrollable
-                    .selected=${this._curView}
-                    @iron-activate=${this._handleViewSelected}
-                    dir=${computeRTLDirection(this.hass!)}
-                  >
-                    ${views.map(
-                      (view) => html`
-                        <paper-tab
-                          aria-label=${ifDefined(view.title)}
-                          class=${classMap({
-                            "hide-tab": Boolean(
-                              !this._editMode &&
-                                view.visible !== undefined &&
-                                ((Array.isArray(view.visible) &&
-                                  !view.visible.some(
-                                    (e) => e.user === this.hass!.user?.id
-                                  )) ||
-                                  view.visible === false)
-                            ),
-                          })}
-                        >
-                          ${this._editMode
-                            ? html`
-                                <ha-icon-button-arrow-prev
-                                  .hass=${this.hass}
-                                  .label=${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.move_left"
-                                  )}
-                                  class="edit-icon view"
-                                  @click=${this._moveViewLeft}
-                                  ?disabled=${this._curView === 0}
-                                ></ha-icon-button-arrow-prev>
-                              `
-                            : ""}
-                          ${view.icon
-                            ? html`
-                                <ha-icon
-                                  class=${classMap({
-                                    "child-view-icon": Boolean(view.subview),
-                                  })}
-                                  title=${ifDefined(view.title)}
-                                  .icon=${view.icon}
-                                ></ha-icon>
-                              `
-                            : view.title || "Unnamed view"}
-                          ${this._editMode
-                            ? html`
-                                <ha-svg-icon
-                                  title=${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.edit"
-                                  )}
-                                  class="edit-icon view"
-                                  .path=${mdiPencil}
-                                  @click=${this._editView}
-                                ></ha-svg-icon>
-                                <ha-icon-button-arrow-next
-                                  .hass=${this.hass}
-                                  .label=${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.move_right"
-                                  )}
-                                  class="edit-icon view"
-                                  @click=${this._moveViewRight}
-                                  ?disabled=${(this._curView! as number) + 1 ===
-                                  views.length}
-                                ></ha-icon-button-arrow-next>
-                              `
-                            : ""}
-                        </paper-tab>
-                      `
-                    )}
-                    ${this._editMode
-                      ? html`
-                          <ha-icon-button
-                            id="add-view"
-                            @click=${this._addView}
-                            .label=${this.hass!.localize(
-                              "ui.panel.lovelace.editor.edit_view.add"
-                            )}
-                            .path=${mdiPlus}
-                          ></ha-icon-button>
+                `
+          }
+          ${
+            this._editMode
+              ? html`
+                  <div sticky>
+                    <paper-tabs
+                      scrollable
+                      .selected=${this._curView}
+                      @iron-activate=${this._handleViewSelected}
+                      dir=${computeRTLDirection(this.hass!)}
+                    >
+                      ${views.map(
+                        (view) => html`
+                          <paper-tab
+                            aria-label=${ifDefined(view.title)}
+                            class=${classMap({
+                              "hide-tab": Boolean(
+                                !this._editMode &&
+                                  view.visible !== undefined &&
+                                  ((Array.isArray(view.visible) &&
+                                    !view.visible.some(
+                                      (e) => e.user === this.hass!.user?.id
+                                    )) ||
+                                    view.visible === false)
+                              ),
+                            })}
+                          >
+                            ${this._editMode
+                              ? html`
+                                  <ha-icon-button-arrow-prev
+                                    .hass=${this.hass}
+                                    .label=${this.hass!.localize(
+                                      "ui.panel.lovelace.editor.edit_view.move_left"
+                                    )}
+                                    class="edit-icon view"
+                                    @click=${this._moveViewLeft}
+                                    ?disabled=${this._curView === 0}
+                                  ></ha-icon-button-arrow-prev>
+                                `
+                              : ""}
+                            ${view.icon
+                              ? html`
+                                  <ha-icon
+                                    class=${classMap({
+                                      "child-view-icon": Boolean(view.subview),
+                                    })}
+                                    title=${ifDefined(view.title)}
+                                    .icon=${view.icon}
+                                  ></ha-icon>
+                                `
+                              : view.title || "Unnamed view"}
+                            ${this._editMode
+                              ? html`
+                                  <ha-svg-icon
+                                    title=${this.hass!.localize(
+                                      "ui.panel.lovelace.editor.edit_view.edit"
+                                    )}
+                                    class="edit-icon view"
+                                    .path=${mdiPencil}
+                                    @click=${this._editView}
+                                  ></ha-svg-icon>
+                                  <ha-icon-button-arrow-next
+                                    .hass=${this.hass}
+                                    .label=${this.hass!.localize(
+                                      "ui.panel.lovelace.editor.edit_view.move_right"
+                                    )}
+                                    class="edit-icon view"
+                                    @click=${this._moveViewRight}
+                                    ?disabled=${(this._curView! as number) +
+                                      1 ===
+                                    views.length}
+                                  ></ha-icon-button-arrow-next>
+                                `
+                              : ""}
+                          </paper-tab>
                         `
-                      : ""}
-                  </paper-tabs>
-                </div>
-              `
-            : ""}
+                      )}
+                      ${this._editMode
+                        ? html`
+                            <ha-icon-button
+                              id="add-view"
+                              @click=${this._addView}
+                              .label=${this.hass!.localize(
+                                "ui.panel.lovelace.editor.edit_view.add"
+                              )}
+                              .path=${mdiPlus}
+                            ></ha-icon-button>
+                          `
+                        : ""}
+                    </paper-tabs>
+                  </div>
+                `
+              : ""
+          }
         </app-header>
         <div id="view" @ll-rebuild=${this._debouncedConfigChanged}></div>
-      </ha-app-layout>
+      </ha-top-app-bar>
     `;
   }
 
