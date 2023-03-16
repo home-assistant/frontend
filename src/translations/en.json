@@ -908,6 +908,17 @@
               "color_temp": "Temperature"
             }
           }
+        },
+        "fan": {
+          "set_forward_direction": "Set forward direction",
+          "set_reverse_direction": "Set reverse direction",
+          "turn_on_oscillating": "Turn on oscillating",
+          "turn_off_oscillating": "Turn off oscillating",
+          "speed": {
+            "low": "Low",
+            "medium": "Medium",
+            "high": "High"
+          }
         }
       },
       "entity_registry": {

@@ -235,4 +235,4 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 }
 
-customElements.define("more-info-fan", MoreInfoFan);
+customElements.define("more-info-fan-old", MoreInfoFan);
