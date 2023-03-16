@@ -76,7 +76,7 @@ const createRollupConfig = ({
         }),
       !isWDS && worker(),
       !isWDS && dontHashPlugin({ dontHash }),
-      !isWDS && isProdBuild && terser(bundle.terserOptions(latestBuild)),
+      !isWDS && isProdBuild && terser(bundle.terserOptions({ latestBuild })),
       !isWDS &&
         isStatsBuild &&
         visualizer({
