@@ -225,7 +225,10 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _localizeOperationMode(localize, mode) {
-    return localize(`component.water_heater.state._.${mode}`) || mode;
+    return (
+      localize(`component.water_heater.entity_component._.state.${mode}`) ||
+      mode
+    );
   }
 }
 

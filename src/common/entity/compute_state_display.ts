@@ -214,10 +214,10 @@ export const computeStateDisplayFromEntityAttributes = (
     // Return device class translation
     (attributes.device_class &&
       localize(
-        `component.${domain}.state.${attributes.device_class}.${state}`
+        `component.${domain}.entity_component.${attributes.device_class}.state.${state}`
       )) ||
     // Return default translation
-    localize(`component.${domain}.state._.${state}`) ||
+    localize(`component.${domain}.entity_component._.state.${state}`) ||
     // We don't know! Return the raw state.
     state
   );
