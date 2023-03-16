@@ -130,7 +130,7 @@ export const describeTrigger = (
     base += ` ${entities} changes`;
 
     if (!trigger.attribute && !("from" in trigger) && !("to" in trigger)) {
-      base += " any state or attributes";
+      base += " state or any attributes";
     }
 
     if (

@@ -13,6 +13,7 @@ import {
   union,
 } from "superstruct";
 import memoizeOne from "memoize-one";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
@@ -50,7 +51,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   private _schema = memoizeOne(
-    (entityId, attribute) =>
+    (localize: LocalizeFunc, entityId, attribute) =>
       [
         {
           name: "entity_id",
@@ -99,7 +100,9 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                 ? []
                 : [
                     {
-                      label: "Any state (ignoring attribute changes)",
+                      label: localize(
+                        "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
+                      ),
                       value: "__ANY_STATE_IGNORE_ATTRIBUTES__",
                     },
                   ]) as any,
@@ -116,7 +119,9 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                 ? []
                 : [
                     {
-                      label: "Any state (ignoring attribute changes)",
+                      label: localize(
+                        "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
+                      ),
                       value: "__ANY_STATE_IGNORE_ATTRIBUTES__",
                     },
                   ]) as any,
@@ -172,7 +177,11 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     if (!data.attribute && data.from === null) {
       data.from = "__ANY_STATE_IGNORE_ATTRIBUTES__";
     }
-    const schema = this._schema(this.trigger.entity_id, this.trigger.attribute);
+    const schema = this._schema(
+      this.hass.localize,
+      this.trigger.entity_id,
+      this.trigger.attribute
+    );
 
     return html`
       <ha-form

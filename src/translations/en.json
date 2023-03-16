@@ -2114,7 +2114,8 @@
                   "attribute": "Attribute (optional)",
                   "from": "From (optional)",
                   "for": "For",
-                  "to": "To (optional)"
+                  "to": "To (optional)",
+                  "any_state_ignore_attributes": "Any state (ignoring attribute changes)"
                 },
                 "homeassistant": {
                   "label": "Home Assistant",
