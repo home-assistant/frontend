@@ -60,40 +60,40 @@ export class HaControlSelect extends LitElement {
     }
   }
 
-  connectedCallback(): void {
+  public connectedCallback(): void {
     super.connectedCallback();
-    this.setupListeners();
+    this._setupListeners();
   }
 
-  disconnectedCallback(): void {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
-    this.destroyListeners();
+    this._destroyListeners();
   }
 
-  setupListeners() {
+  private _setupListeners() {
     this.addEventListener("focus", this._handleFocus);
     this.addEventListener("blur", this._handleBlur);
     this.addEventListener("keydown", this._handleKeydown);
   }
 
-  destroyListeners() {
+  private _destroyListeners() {
     this.removeEventListener("focus", this._handleFocus);
     this.removeEventListener("blur", this._handleBlur);
     this.removeEventListener("keydown", this._handleKeydown);
   }
 
-  _handleFocus() {
+  private _handleFocus() {
     this._activeIndex =
       (this.value != null
         ? this.options?.findIndex((option) => option.value === this.value)
         : undefined) ?? 0;
   }
 
-  _handleBlur() {
+  private _handleBlur() {
     this._activeIndex = undefined;
   }
 
-  _handleKeydown(ev: KeyboardEvent) {
+  private _handleKeydown(ev: KeyboardEvent) {
     if (!this.options || this._activeIndex == null) return;
     switch (ev.key) {
       case " ":
@@ -123,13 +123,13 @@ export class HaControlSelect extends LitElement {
     ev.preventDefault();
   }
 
-  _handleOptionClick(ev: MouseEvent) {
+  private _handleOptionClick(ev: MouseEvent) {
     const value = (ev.target as any).value;
     this.value = value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 
-  _handleOptionMouseDown(ev: MouseEvent) {
+  private _handleOptionMouseDown(ev: MouseEvent) {
     ev.preventDefault();
     const value = (ev.target as any).value;
     this._activeIndex = this.options?.findIndex(
@@ -137,7 +137,7 @@ export class HaControlSelect extends LitElement {
     );
   }
 
-  _handleOptionMouseUp(ev: MouseEvent) {
+  private _handleOptionMouseUp(ev: MouseEvent) {
     ev.preventDefault();
     this._activeIndex = undefined;
   }
@@ -149,14 +149,14 @@ export class HaControlSelect extends LitElement {
           ? repeat(
               this.options,
               (option) => option.value,
-              (option, idx) => this.renderOption(option, idx)
+              (option, idx) => this._renderOption(option, idx)
             )
           : nothing}
       </div>
     `;
   }
 
-  protected renderOption(option: ControlSelectOption, index: number) {
+  private _renderOption(option: ControlSelectOption, index: number) {
     return html`
       <div
         id=${`option-${option.value}`}
