@@ -5,6 +5,7 @@ import {
   assert,
   assign,
   literal,
+  nullable,
   number,
   object,
   optional,
@@ -30,8 +31,8 @@ const stateTriggerStruct = assign(
     platform: literal("state"),
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
-    from: optional(string()),
-    to: optional(string()),
+    from: optional(nullable(string())),
+    to: optional(nullable(string())),
     for: optional(union([number(), string(), forDictStruct])),
   })
 );
@@ -94,6 +95,14 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           name: "from",
           selector: {
             state: {
+              extra_options: (attribute
+                ? []
+                : [
+                    {
+                      label: "Any state (ignoring attribute changes)",
+                      value: "__ANY_STATE_IGNORE_ATTRIBUTES__",
+                    },
+                  ]) as any,
               entity_id: entityId ? entityId[0] : undefined,
               attribute: attribute,
             },
@@ -103,6 +112,14 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           name: "to",
           selector: {
             state: {
+              extra_options: (attribute
+                ? []
+                : [
+                    {
+                      label: "Any state (ignoring attribute changes)",
+                      value: "__ANY_STATE_IGNORE_ATTRIBUTES__",
+                    },
+                  ]) as any,
               entity_id: entityId ? entityId[0] : undefined,
               attribute: attribute,
             },
@@ -149,6 +166,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
     };
+    if (!data.attribute && data.to === null) {
+      data.to = "__ANY_STATE_IGNORE_ATTRIBUTES__";
+    }
+    if (!data.attribute && data.from === null) {
+      data.from = "__ANY_STATE_IGNORE_ATTRIBUTES__";
+    }
     const schema = this._schema(this.trigger.entity_id, this.trigger.attribute);
 
     return html`
@@ -166,6 +189,16 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
+
+    if (newTrigger.to && newTrigger.to === "__ANY_STATE_IGNORE_ATTRIBUTES__") {
+      newTrigger.to = newTrigger.attribute ? undefined : null;
+    }
+    if (
+      newTrigger.from &&
+      newTrigger.from === "__ANY_STATE_IGNORE_ATTRIBUTES__"
+    ) {
+      newTrigger.from = newTrigger.attribute ? undefined : null;
+    }
 
     Object.keys(newTrigger).forEach((key) =>
       newTrigger[key] === undefined || newTrigger[key] === ""

@@ -34,6 +34,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
         this.context?.filter_entity}
         .attribute=${this.selector.state?.attribute ||
         this.context?.filter_attribute}
+        .extra_options=${this.selector.state?.extra_options}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}

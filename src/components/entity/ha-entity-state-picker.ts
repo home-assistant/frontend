@@ -20,6 +20,8 @@ class HaEntityStatePicker extends LitElement {
 
   @property() public attribute?: string;
 
+  @property() public extra_options?: any[];
+
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public disabled = false;
@@ -44,10 +46,16 @@ class HaEntityStatePicker extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("_opened") && this._opened) {
+    if (
+      (changedProps.has("_opened") && this._opened) ||
+      changedProps.has("entityId") ||
+      changedProps.has("attribute") ||
+      changedProps.has("extra_options")
+    ) {
       const state = this.entityId ? this.hass.states[this.entityId] : undefined;
-      (this._comboBox as any).items =
-        this.entityId && state
+      (this._comboBox as any).items = [
+        ...(this.extra_options ?? []),
+        ...(this.entityId && state
           ? getStates(state, this.attribute).map((key) => ({
               value: key,
               label: !this.attribute
@@ -60,7 +68,8 @@ class HaEntityStatePicker extends LitElement {
                   )
                 : formatAttributeValue(this.hass, key),
             }))
-          : [];
+          : []),
+      ];
     }
   }
 
