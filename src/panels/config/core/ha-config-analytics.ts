@@ -41,8 +41,9 @@ class ConfigAnalytics extends LitElement {
       <ha-card outlined>
         <div class="card-content">
           ${error ? html`<div class="error">${error}</div>` : ""}
-          <p>${this.hass.localize("ui.analytics.intro")}</p>
+          <p>${this.hass.localize("ui.panel.config.analytics.intro")}</p>
           <ha-analytics
+            translation_key_panel="config"
             @analytics-preferences-changed=${this._preferencesChanged}
             .hass=${this.hass}
             .analytics=${this._analyticsDetails}

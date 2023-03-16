@@ -23,6 +23,10 @@ export class HaAnalytics extends LitElement {
 
   @property({ attribute: false }) public analytics?: Analytics;
 
+  @property({ attribute: "translation_key_panel" }) public translationKeyPanel:
+    | "page-onboarding"
+    | "config" = "config";
+
   protected render(): TemplateResult {
     const loading = this.analytics === undefined;
     const baseEnabled = !loading && this.analytics!.preferences.base;
@@ -30,10 +34,14 @@ export class HaAnalytics extends LitElement {
     return html`
       <ha-settings-row>
         <span slot="heading" data-for="base">
-          ${this.hass.localize("ui.analytics.preferences.base.title")}
+          ${this.hass.localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
+          )}
         </span>
         <span slot="description" data-for="base">
-          ${this.hass.localize("ui.analytics.preferences.base.description")}
+          ${this.hass.localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
+          )}
         </span>
         <ha-switch
           @change=${this._handleRowClick}
@@ -50,12 +58,12 @@ export class HaAnalytics extends LitElement {
             <ha-settings-row>
               <span slot="heading" data-for=${preference}>
                 ${this.hass.localize(
-                  `ui.analytics.preferences.${preference}.title`
+                  `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
                 )}
               </span>
               <span slot="description" data-for=${preference}>
                 ${this.hass.localize(
-                  `ui.analytics.preferences.${preference}.description`
+                  `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
                 )}
               </span>
               <span>
@@ -69,7 +77,9 @@ export class HaAnalytics extends LitElement {
                 ${!baseEnabled
                   ? html`
                       <paper-tooltip animation-delay="0" position="right">
-                        ${this.hass.localize("ui.analytics.need_base_enabled")}
+                        ${this.hass.localize(
+                          `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
+                        )}
                       </paper-tooltip>
                     `
                   : ""}
@@ -79,11 +89,13 @@ export class HaAnalytics extends LitElement {
       )}
       <ha-settings-row>
         <span slot="heading" data-for="diagnostics">
-          ${this.hass.localize("ui.analytics.preferences.diagnostics.title")}
+          ${this.hass.localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
+          )}
         </span>
         <span slot="description" data-for="diagnostics">
           ${this.hass.localize(
-            "ui.analytics.preferences.diagnostics.description"
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
           )}
         </span>
         <ha-switch

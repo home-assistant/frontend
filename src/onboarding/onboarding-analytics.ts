@@ -23,8 +23,9 @@ class OnboardingAnalytics extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <p>${this.hass.localize("ui.analytics.intro")}</p>
+      <p>${this.hass.localize("ui.panel.page-onboarding.analytics.intro")}</p>
       <ha-analytics
+        translation_key_panel="page-onboarding"
         @analytics-preferences-changed=${this._preferencesChanged}
         .hass=${this.hass}
         .analytics=${this._analyticsDetails}
