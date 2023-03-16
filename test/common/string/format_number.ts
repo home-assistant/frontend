@@ -22,7 +22,7 @@ describe("formatNumber", () => {
     first_weekday: FirstWeekday.language,
   };
 
-  // Node only ships with English support for `Intl`, so we can not test for other number formats here.
+  // Node only ships with English support for `Intl`, so we cannot test for other number formats here.
   it("Formats English numbers", () => {
     assert.strictEqual(formatNumber(1234.5, defaultLocale), "1,234.5");
   });

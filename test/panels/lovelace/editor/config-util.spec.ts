@@ -126,7 +126,7 @@ describe("moveCard", () => {
     assert.throws(
       result,
       Error,
-      "You can not move a card to the view it is in."
+      "You cannot move a card to the view it is in."
     );
   });
 });
