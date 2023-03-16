@@ -204,7 +204,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                         >${network.dataset?.preferred
                           ? ""
                           : html`<ha-list-item
-                          >Add to preferred network</ha-list-item
+                          >${this.hass.localize(
+                            "ui.panel.config.thread.add_to_my_network"
+                          )}</ha-list-item
                         ></ha-button-menu
                       >`}</ha-button-menu
                       >`
@@ -217,11 +219,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             this._otbrInfo?.active_dataset_tlvs?.includes(
               network.dataset.extended_pan_id
             )
-              ? html`No border routers where found, maybe the border router is
-                  not configured correctly. You can try to reset it to the
-                  factory settings.
+              ? html`${this.hass.localize(
+                    "ui.panel.config.thread.no_routers_otbr_network"
+                  )}
                   <mwc-button @click=${this._resetBorderRouter}
-                    >Reset border router to factory settings</mwc-button
+                    >${this.hass.localize(
+                      "ui.panel.config.thread.reset_border_router"
+                    )}</mwc-button
                   >`
               : this.hass.localize("ui.panel.config.thread.no_border_routers")}
           </div> `}
@@ -386,13 +390,24 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   private async _resetBorderRouter() {
     const confirm = await showConfirmationDialog(this, {
-      title: "Reset border router?",
-      text: "This will reset the Home Assistant border router to its factory defaults and form a new Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+      title: this.hass.localize(
+        "ui.panel.config.thread.confirm_reset_border_router"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.thread.confirm_reset_border_router_text"
+      ),
     });
     if (!confirm) {
       return;
     }
-    await OTBRCreateNetwork(this.hass);
+    try {
+      await OTBRCreateNetwork(this.hass);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.thread.otbr_config_failed"),
+        text: err.message,
+      });
+    }
     this._refresh();
   }
 
@@ -402,7 +417,25 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     if (!preferedDatasetId) {
       return;
     }
-    await OTBRSetNetwork(this.hass, preferedDatasetId);
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.thread.confirm_set_dataset_border_router"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.thread.confirm_set_dataset_border_router_text"
+      ),
+    });
+    if (!confirm) {
+      return;
+    }
+    try {
+      await OTBRSetNetwork(this.hass, preferedDatasetId);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.thread.otbr_config_failed"),
+        text: err.message,
+      });
+    }
     this._refresh();
   }
 
