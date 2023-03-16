@@ -32,7 +32,7 @@ describe("computeStateDisplay", () => {
     };
     assert.strictEqual(
       computeStateDisplay(localize, stateObj, localeData, {}),
-      "component.binary_sensor.state._.off"
+      "component.binary_sensor.entity_component._.state.off"
     );
   });
 
@@ -154,7 +154,9 @@ describe("computeStateDisplay", () => {
 
   it("Localizes sensor value with component translation", () => {
     const altLocalize = (message, ...args) => {
-      if (message !== "component.sensor.state._.custom_state") {
+      if (
+        message !== "component.sensor.entity_component._.state.custom_state"
+      ) {
         return "";
       }
       return localize(message, ...args);
@@ -166,7 +168,7 @@ describe("computeStateDisplay", () => {
     };
     assert.strictEqual(
       computeStateDisplay(altLocalize, stateObj, localeData, {}),
-      "component.sensor.state._.custom_state"
+      "component.sensor.entity_component._.state.custom_state"
     );
   });
 
