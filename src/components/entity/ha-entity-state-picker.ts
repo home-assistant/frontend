@@ -20,7 +20,7 @@ class HaEntityStatePicker extends LitElement {
 
   @property() public attribute?: string;
 
-  @property() public extra_options?: any[];
+  @property() public extraOptions?: any[];
 
   @property({ type: Boolean }) public autofocus = false;
 
@@ -50,11 +50,11 @@ class HaEntityStatePicker extends LitElement {
       (changedProps.has("_opened") && this._opened) ||
       changedProps.has("entityId") ||
       changedProps.has("attribute") ||
-      changedProps.has("extra_options")
+      changedProps.has("extraOptions")
     ) {
       const state = this.entityId ? this.hass.states[this.entityId] : undefined;
       (this._comboBox as any).items = [
-        ...(this.extra_options ?? []),
+        ...(this.extraOptions ?? []),
         ...(this.entityId && state
           ? getStates(state, this.attribute).map((key) => ({
               value: key,
