@@ -1,8 +1,7 @@
 // Run HA develop mode
+
 const gulp = require("gulp");
-
 const env = require("../env");
-
 require("./clean.js");
 require("./translations.js");
 require("./locale-data.js");
@@ -50,7 +49,7 @@ gulp.task(
     "copy-static-app",
     env.useRollup() ? "rollup-prod-app" : "webpack-prod-app",
     // Don't compress running tests
-    ...(env.isTest() ? [] : ["compress-app"]),
+    ...(env.isTestBuild() ? [] : ["compress-app"]),
     gulp.parallel(
       "gen-pages-prod",
       "gen-index-app-prod",
