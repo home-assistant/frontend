@@ -8,6 +8,8 @@ interface PipelineEventBase {
 interface PipelineRunStartEvent extends PipelineEventBase {
   type: "run-start";
   data: {
+    pipeline: string;
+    language: string;
     session_id?: string;
   };
 }
@@ -82,10 +84,10 @@ interface PipelineRunOptions {
 }
 
 export interface PipelineRun {
-  options: PipelineRunOptions;
+  init_options: PipelineRunOptions;
   events: PipelineRunEvent[];
   stage: "initialized" | "stt" | "intent" | "tts" | "finish" | "error";
-  session: PipelineRunStartEvent["data"];
+  run: PipelineRunStartEvent["data"];
   error?: PipelineErrorEvent["data"];
   stt?: PipelineSTTStartEvent["data"] & Partial<PipelineSTTFinishEvent["data"]>;
   intent?: PipelineIntentStartEvent["data"] &
@@ -98,19 +100,15 @@ export const runPipelineFromText = (
   callback: (event: PipelineRun) => void,
   options: PipelineRunOptions = {}
 ) => {
-  if (!options.pipeline) {
-    options.pipeline = "default";
-  }
-
   let run: PipelineRun | undefined;
 
   const unsubProm = hass.connection.subscribeMessage<PipelineRunEvent>(
     (updateEvent) => {
       if (updateEvent.type === "run-start") {
         run = {
-          options,
+          init_options: options,
           stage: "initialized",
-          session: updateEvent.data,
+          run: updateEvent.data,
           error: undefined,
           stt: undefined,
           intent: undefined,
