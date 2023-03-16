@@ -1,4 +1,4 @@
-import { css, html, LitElement, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { DateTimeSelector } from "../../data/selector";
@@ -58,22 +58,13 @@ export class HaDateTimeSelector extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-    if (changedProps.has("disabled") && !this.disabled && !this.value) {
-      this._sendChangedEvent();
-    }
-  }
-
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    this._sendChangedEvent();
-  }
-
-  private _sendChangedEvent(): void {
-    fireEvent(this, "value-changed", {
-      value: `${this._dateInput.value ?? ""} ${this._timeInput.value}`,
-    });
+    if (this._dateInput.value && this._timeInput.value) {
+      fireEvent(this, "value-changed", {
+        value: `${this._dateInput.value} ${this._timeInput.value}`,
+      });
+    }
   }
 
   static styles = css`
