@@ -9,6 +9,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { computeAttributeNameDisplay } from "../../../../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../../../../common/entity/compute_state_display";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import "../../../../components/ha-control-select";
@@ -139,7 +140,12 @@ export class HaMoreInfoFanPercentage extends LitElement {
           .options=${options}
           .value=${speed}
           @value-changed=${this._speedValueChanged}
-          .ariaLabel=${"Speed"}
+          .ariaLabel=${computeAttributeNameDisplay(
+            this.hass.localize,
+            this.stateObj,
+            this.hass.entities,
+            "percentage"
+          )}
           style=${styleMap({
             "--control-select-color": color,
           })}
@@ -156,7 +162,12 @@ export class HaMoreInfoFanPercentage extends LitElement {
         max="100"
         .step=${this.stateObj.attributes.percentage_step ?? 1}
         @value-changed=${this._valueChanged}
-        .ariaLabel=${"Percentage"}
+        .ariaLabel=${computeAttributeNameDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.entities,
+          "percentage"
+        )}
         style=${styleMap({
           "--control-slider-color": color,
         })}

@@ -10,6 +10,11 @@ import {
 } from "@mdi/js";
 import { CSSResultGroup, html, LitElement, nothing, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import {
+  computeAttributeNameDisplay,
+  computeAttributeValueDisplay,
+} from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -36,11 +41,17 @@ class MoreInfoFan extends LitElement {
     });
   };
 
-  _toggleDirection() {
-    const current_direction = this.stateObj!.attributes.direction;
+  _setReverseDirection() {
     this.hass.callService("fan", "set_direction", {
       entity_id: this.stateObj!.entity_id,
-      direction: current_direction === "forward" ? "reverse" : "forward",
+      direction: "reverse",
+    });
+  }
+
+  _setForwardDirection() {
+    this.hass.callService("fan", "set_direction", {
+      entity_id: this.stateObj!.entity_id,
+      direction: "forward",
     });
   }
 
@@ -49,6 +60,18 @@ class MoreInfoFan extends LitElement {
     this.hass.callService("fan", "oscillate", {
       entity_id: this.stateObj!.entity_id,
       oscillating: !oscillating,
+    });
+  }
+
+  _handlePresetMode(ev) {
+    const oldVal = this.stateObj!.attributes.preset_mode;
+    const newVal = ev.target.value;
+
+    if (!newVal || oldVal === newVal) return;
+
+    this.hass.callService("fan", "set_preset_mode", {
+      entity_id: this.stateObj!.entity_id,
+      preset_mode: newVal,
     });
   }
 
@@ -69,6 +92,10 @@ class MoreInfoFan extends LitElement {
     const supportsOscillate = supportsFeature(
       this.stateObj,
       FanEntityFeature.OSCILLATE
+    );
+    const supportsPresetMode = supportsFeature(
+      this.stateObj,
+      FanEntityFeature.PRESET_MODE
     );
 
     return html`
@@ -104,28 +131,30 @@ class MoreInfoFan extends LitElement {
           ${supportsDirection
             ? html`
                 <md-outlined-icon-button
-                  .disabled=${this.stateObj.state === UNAVAILABLE}
+                  .disabled=${this.stateObj.state === UNAVAILABLE ||
+                  this.stateObj.attributes.direction === "reverse"}
                   .title=${this.hass.localize(
-                    `ui.dialogs.more_info_control.fan.${
-                      this.stateObj.attributes.direction === "forward"
-                        ? "set_reverse_direction"
-                        : "set_forward_direction"
-                    }`
+                    "ui.dialogs.more_info_control.fan.set_reverse_direction"
                   )}
                   .ariaLabel=${this.hass.localize(
-                    `ui.dialogs.more_info_control.fan.${
-                      this.stateObj.attributes.direction === "forward"
-                        ? "set_reverse_direction"
-                        : "set_forward_direction"
-                    }`
+                    "ui.dialogs.more_info_control.fan.set_reverse_direction"
                   )}
-                  @click=${this._toggleDirection}
+                  @click=${this._setReverseDirection}
                 >
-                  <ha-svg-icon
-                    .path=${this.stateObj.attributes.direction === "forward"
-                      ? mdiRotateRight
-                      : mdiRotateLeft}
-                  ></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiRotateLeft}></ha-svg-icon>
+                </md-outlined-icon-button>
+                <md-outlined-icon-button
+                  .disabled=${this.stateObj.state === UNAVAILABLE ||
+                  this.stateObj.attributes.direction === "forward"}
+                  .title=${this.hass.localize(
+                    "ui.dialogs.more_info_control.fan.set_forward_direction"
+                  )}
+                  .ariaLabel=${this.hass.localize(
+                    "ui.dialogs.more_info_control.fan.set_forward_direction"
+                  )}
+                  @click=${this._setForwardDirection}
+                >
+                  <ha-svg-icon .path=${mdiRotateRight}></ha-svg-icon>
                 </md-outlined-icon-button>
               `
             : nothing}
@@ -158,16 +187,46 @@ class MoreInfoFan extends LitElement {
               `
             : nothing}
         </div>
+        ${supportsPresetMode && this.stateObj.attributes.preset_modes
+          ? html`
+              <ha-select
+                outlined
+                .label=${computeAttributeNameDisplay(
+                  this.hass.localize,
+                  this.stateObj,
+                  this.hass.entities,
+                  "preset_mode"
+                )}
+                .value=${this.stateObj.attributes.preset_mode ?? ""}
+                @selected=${this._handlePresetMode}
+                fixedMenuPosition
+                naturalMenuWidth
+                @closed=${stopPropagation}
+                .disabled=${this.stateObj.state === UNAVAILABLE}
+              >
+                ${this.stateObj.attributes.preset_modes?.map(
+                  (mode) =>
+                    html`
+                      <ha-list-item value=${mode}>
+                        ${computeAttributeValueDisplay(
+                          this.hass.localize,
+                          this.stateObj!,
+                          this.hass.entities,
+                          "preset_mode",
+                          mode
+                        )}
+                      </ha-list-item>
+                    `
+                )}
+              </ha-select>
+            `
+          : nothing}
       </div>
       <ha-attributes
         .hass=${this.hass}
         .stateObj=${this.stateObj}
         extra-filters="percentage_step,speed,preset_mode,preset_modes,speed_list,percentage,oscillating,direction"
       ></ha-attributes>
-      <more-info-fan-old
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-      ></more-info-fan-old>
     `;
   }
 
