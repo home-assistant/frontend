@@ -8,10 +8,11 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../common/dom/fire_event";
-import "./ha-svg-icon";
 import "./ha-icon";
+import "./ha-svg-icon";
 
 export type ControlSelectOption = {
   value: string;
@@ -32,6 +33,9 @@ export class HaControlSelect extends LitElement {
 
   @property({ type: Boolean, reflect: true })
   public vertical = false;
+
+  @property({ type: Boolean, attribute: "hide-label" })
+  public hideLabel = false;
 
   @state() private _activeIndex?: number;
 
@@ -83,6 +87,7 @@ export class HaControlSelect extends LitElement {
   }
 
   private _handleFocus() {
+    if (this.disabled) return;
     this._activeIndex =
       (this.value != null
         ? this.options?.findIndex((option) => option.value === this.value)
@@ -94,7 +99,7 @@ export class HaControlSelect extends LitElement {
   }
 
   private _handleKeydown(ev: KeyboardEvent) {
-    if (!this.options || this._activeIndex == null) return;
+    if (!this.options || this._activeIndex == null || this.disabled) return;
     switch (ev.key) {
       case " ":
         this.value = this.options[this._activeIndex].value;
@@ -124,12 +129,14 @@ export class HaControlSelect extends LitElement {
   }
 
   private _handleOptionClick(ev: MouseEvent) {
+    if (this.disabled) return;
     const value = (ev.target as any).value;
     this.value = value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 
   private _handleOptionMouseDown(ev: MouseEvent) {
+    if (this.disabled) return;
     ev.preventDefault();
     const value = (ev.target as any).value;
     this._activeIndex = this.options?.findIndex(
@@ -168,6 +175,7 @@ export class HaControlSelect extends LitElement {
         role="option"
         .value=${option.value}
         aria-selected=${this.value === option.value}
+        aria-label=${ifDefined(option.label)}
         @click=${this._handleOptionClick}
         @mousedown=${this._handleOptionMouseDown}
         @mouseup=${this._handleOptionMouseUp}
@@ -178,7 +186,9 @@ export class HaControlSelect extends LitElement {
             : option.icon
             ? html`<ha-icon .icon=${option.icon}></ha-icon> `
             : nothing}
-          ${option.label ? html`<span>${option.label}</span>` : nothing}
+          ${option.label && !this.hideLabel
+            ? html`<span>${option.label}</span>`
+            : nothing}
         </div>
       </div>
     `;
@@ -304,6 +314,13 @@ export class HaControlSelect extends LitElement {
         margin-right: initial;
         margin-inline-end: initial;
         margin-bottom: var(--control-select-padding);
+      }
+      :host([disabled]) {
+        --control-select-color: var(--disabled-color);
+        --control-select-focused-opacity: 0;
+      }
+      :host([disabled]) .option {
+        cursor: not-allowed;
       }
     `;
   }

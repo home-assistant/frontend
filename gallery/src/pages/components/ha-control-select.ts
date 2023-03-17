@@ -73,6 +73,7 @@ const selects: {
   label: string;
   class?: string;
   options: ControlSelectOption[];
+  disabled?: boolean;
 }[] = [
   {
     id: "label",
@@ -83,6 +84,12 @@ const selects: {
     id: "icon",
     label: "Select with icons",
     options: iconOptions,
+  },
+  {
+    id: "icon",
+    label: "Disabled select",
+    options: iconOptions,
+    disabled: true,
   },
   {
     id: "custom",
@@ -128,6 +135,7 @@ export class DemoHaControlSelect extends LitElement {
                 class=${ifDefined(config.class)}
                 @value-changed=${this.handleValueChanged}
                 aria-labelledby=${id}
+                disabled=${ifDefined(config.disabled)}
               >
               </ha-control-select>
             </div>
@@ -148,6 +156,7 @@ export class DemoHaControlSelect extends LitElement {
                   class=${ifDefined(config.class)}
                   @value-changed=${this.handleValueChanged}
                   aria-labelledby=${id}
+                  disabled=${ifDefined(config.disabled)}
                 >
                 </ha-control-select>
               `;
