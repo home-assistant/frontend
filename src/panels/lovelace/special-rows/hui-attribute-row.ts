@@ -72,8 +72,10 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
             ></hui-timestamp-display>`
           : attribute !== undefined
           ? computeAttributeValueDisplay(
-              this.hass,
+              this.hass.localize,
               stateObj,
+              this.hass.locale,
+              this.hass.entities,
               this._config.attribute,
               attribute
             )

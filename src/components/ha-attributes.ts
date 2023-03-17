@@ -59,8 +59,10 @@ class HaAttributes extends LitElement {
                       </div>
                       <div class="value">
                         ${computeAttributeValueDisplay(
-                          this.hass,
+                          this.hass.localize,
                           this.stateObj!,
+                          this.hass.locale,
+                          this.hass.entities,
                           attribute
                         )}
                       </div>

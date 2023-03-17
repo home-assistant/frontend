@@ -233,8 +233,10 @@ class MoreInfoClimate extends LitElement {
                     (mode) => html`
                       <mwc-list-item .value=${mode}>
                         ${computeAttributeValueDisplay(
-                          hass,
+                          hass.localize,
                           stateObj,
+                          hass.locale,
+                          hass.entities,
                           "preset_mode",
                           mode
                         )}
@@ -265,8 +267,10 @@ class MoreInfoClimate extends LitElement {
                     (mode) => html`
                       <mwc-list-item .value=${mode}>
                         ${computeAttributeValueDisplay(
-                          hass,
+                          hass.localize,
                           stateObj,
+                          hass.locale,
+                          hass.entities,
                           "fan_mode",
                           mode
                         )}
@@ -297,8 +301,10 @@ class MoreInfoClimate extends LitElement {
                     (mode) => html`
                       <mwc-list-item .value=${mode}>
                         ${computeAttributeValueDisplay(
-                          hass,
+                          hass.localize,
                           stateObj,
+                          hass.locale,
+                          hass.entities,
                           "swing_mode",
                           mode
                         )}

@@ -12,16 +12,18 @@ import { isDate } from "../string/is_date";
 import { isTimestamp } from "../string/is_timestamp";
 import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
+import { FrontendLocaleData } from "../../data/translation";
 
 let jsYamlPromise: Promise<typeof import("../../resources/js-yaml-dump")>;
 
 export const computeAttributeValueDisplay = (
-  hass: HomeAssistant,
-  entity: HassEntity | string,
+  localize: LocalizeFunc,
+  stateObj: HassEntity,
+  locale: FrontendLocaleData,
+  entities: HomeAssistant["entities"],
   attribute: string,
   value?: any
 ): string | TemplateResult => {
-  const stateObj = typeof entity === "string" ? hass.states[entity] : entity;
   const attributeValue =
     value !== undefined ? value : stateObj.attributes[attribute];
 
@@ -32,7 +34,7 @@ export const computeAttributeValueDisplay = (
 
   // Number value, return formatted number
   if (typeof attributeValue === "number") {
-    return formatNumber(attributeValue, hass.locale);
+    return formatNumber(attributeValue, locale);
   }
 
   // Special handling in case this is a string with an known format
@@ -57,14 +59,14 @@ export const computeAttributeValueDisplay = (
       if (isTimestamp(attributeValue)) {
         const date = new Date(attributeValue);
         if (checkValidDate(date)) {
-          return formatDateTimeWithSeconds(date, hass.locale);
+          return formatDateTimeWithSeconds(date, locale);
         }
       }
 
       // Value was not a timestamp, so only do date formatting
       const date = new Date(attributeValue);
       if (checkValidDate(date)) {
-        return formatDate(date, hass.locale);
+        return formatDate(date, locale);
       }
     }
   }
@@ -86,7 +88,14 @@ export const computeAttributeValueDisplay = (
   if (Array.isArray(attributeValue)) {
     return attributeValue
       .map((item) =>
-        computeAttributeValueDisplay(hass, stateObj, attribute, item)
+        computeAttributeValueDisplay(
+          localize,
+          stateObj,
+          locale,
+          entities,
+          attribute,
+          item
+        )
       )
       .join(", ");
   }
@@ -96,21 +105,21 @@ export const computeAttributeValueDisplay = (
   const entityId = stateObj.entity_id;
   const domain = computeDomain(entityId);
   const deviceClass = stateObj.attributes.device_class;
-  const registryEntry = hass.entities[entityId] as
+  const registryEntry = entities[entityId] as
     | EntityRegistryDisplayEntry
     | undefined;
   const translationKey = registryEntry?.translation_key;
 
   return (
     (translationKey &&
-      hass.localize(
+      localize(
         `component.${registryEntry.platform}.entity.${domain}.${translationKey}.state_attributes.${attribute}.state.${attributeValue}`
       )) ||
     (deviceClass &&
-      hass.localize(
+      localize(
         `component.${domain}.entity_component.${deviceClass}.state_attributes.${attribute}.state.${attributeValue}`
       )) ||
-    hass.localize(
+    localize(
       `component.${domain}.entity_component._.state_attributes.${attribute}.state.${attributeValue}`
     ) ||
     attributeValue

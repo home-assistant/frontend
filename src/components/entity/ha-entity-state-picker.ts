@@ -59,8 +59,10 @@ class HaEntityStatePicker extends LitElement {
                     key
                   )
                 : computeAttributeValueDisplay(
-                    this.hass,
+                    this.hass.localize,
                     state,
+                    this.hass.locale,
+                    this.hass.entities,
                     this.attribute,
                     key
                   ),
