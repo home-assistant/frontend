@@ -5066,6 +5066,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web/dev-server-core@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@web/dev-server-core@npm:0.4.0"
+  dependencies:
+    "@types/koa": ^2.11.6
+    "@types/ws": ^7.4.0
+    "@web/parse5-utils": ^1.2.0
+    chokidar: ^3.4.3
+    clone: ^2.1.2
+    es-module-lexer: ^1.0.0
+    get-stream: ^6.0.0
+    is-stream: ^2.0.0
+    isbinaryfile: ^4.0.6
+    koa: ^2.13.0
+    koa-etag: ^4.0.0
+    koa-send: ^5.0.1
+    koa-static: ^5.0.0
+    lru-cache: ^6.0.0
+    mime-types: ^2.1.27
+    parse5: ^6.0.1
+    picomatch: ^2.2.2
+    ws: ^7.4.2
+  checksum: d6c48fb7d349626c7d4083601126b31c84414c36a7829b8b14e8bef54611b6b342bebc6dd5c4dc9bb5ba361f1b8373cebe306f8ace3ab4fa0e9b5bf83882b718
+  languageName: node
+  linkType: hard
+
 "@web/dev-server-hmr@npm:^0.1.6":
   version: 0.1.6
   resolution: "@web/dev-server-hmr@npm:0.1.6"
@@ -5075,7 +5101,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-rollup@npm:0.3.21, @web/dev-server-rollup@npm:^0.3.19":
+"@web/dev-server-rollup@npm:0.3.21":
   version: 0.3.21
   resolution: "@web/dev-server-rollup@npm:0.3.21"
   dependencies:
@@ -5089,15 +5115,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server@npm:0.1.35":
-  version: 0.1.35
-  resolution: "@web/dev-server@npm:0.1.35"
+"@web/dev-server-rollup@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@web/dev-server-rollup@npm:0.4.0"
+  dependencies:
+    "@rollup/plugin-node-resolve": ^13.0.4
+    "@web/dev-server-core": ^0.4.0
+    nanocolors: ^0.2.1
+    parse5: ^6.0.1
+    rollup: ^2.67.0
+    whatwg-url: ^11.0.0
+  checksum: e9ad742108a02f8e6c78c17a9769d28b54129d7bacefa89bf72ea55202a4f7ab03e24be51c5bbaf90302393f0832a3fc37c6932d014df7f039ff1ec0562f229d
+  languageName: node
+  linkType: hard
+
+"@web/dev-server@npm:0.1.36":
+  version: 0.1.36
+  resolution: "@web/dev-server@npm:0.1.36"
   dependencies:
     "@babel/code-frame": ^7.12.11
     "@types/command-line-args": ^5.0.0
     "@web/config-loader": ^0.1.3
-    "@web/dev-server-core": ^0.3.19
-    "@web/dev-server-rollup": ^0.3.19
+    "@web/dev-server-core": ^0.4.0
+    "@web/dev-server-rollup": ^0.4.0
     camelcase: ^6.2.0
     command-line-args: ^5.1.1
     command-line-usage: ^6.1.1
@@ -5110,7 +5150,7 @@ __metadata:
   bin:
     wds: dist/bin.js
     web-dev-server: dist/bin.js
-  checksum: eccaf90e2bcb25c8a1584a714e3139b63a67b969dc9df40910848e6f56de7eea22de67b80a2400580cab625cab7a00b2711aea742c112207d3e80a2791f6fc9c
+  checksum: 4bbf3334380ebceb7dac12f985681194c8ea7eb5ab48e35a65b54602c4a2be5087b41c03daa28b9912257b988759ac5fedf79a23a7dbbaf794bbf914a3b82876
   languageName: node
   linkType: hard
 
@@ -9603,7 +9643,7 @@ fsevents@~2.3.2:
     "@vibrant/core": 3.2.1-alpha.1
     "@vibrant/quantizer-mmcq": 3.2.1-alpha.1
     "@vue/web-component-wrapper": 1.3.0
-    "@web/dev-server": 0.1.35
+    "@web/dev-server": 0.1.36
     "@web/dev-server-rollup": 0.3.21
     "@webcomponents/scoped-custom-element-registry": 0.0.8
     "@webcomponents/webcomponentsjs": 2.7.0
