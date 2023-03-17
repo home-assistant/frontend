@@ -27,6 +27,7 @@ class HaClimateState extends LitElement {
                     ${computeAttributeValueDisplay(
                       this.hass.localize,
                       this.stateObj,
+                      this.hass.locale,
                       this.hass.entities,
                       "preset_mode"
                     )}`
@@ -142,6 +143,7 @@ class HaClimateState extends LitElement {
       ? `${computeAttributeValueDisplay(
           this.hass.localize,
           this.stateObj,
+          this.hass.locale,
           this.hass.entities,
           "hvac_action"
         )} (${stateString})`

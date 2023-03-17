@@ -1,18 +1,11 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  TemplateResult,
-  nothing,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
-  formatAttributeName,
-  formatAttributeValue,
-  STATE_ATTRIBUTES,
-} from "../data/entity_attributes";
+  computeAttributeNameDisplay,
+  computeAttributeValueDisplay,
+} from "../common/entity/compute_attribute_display";
+import { STATE_ATTRIBUTES } from "../data/entity_attributes";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 
@@ -56,9 +49,22 @@ class HaAttributes extends LitElement {
                 ${attributes.map(
                   (attribute) => html`
                     <div class="data-entry">
-                      <div class="key">${formatAttributeName(attribute)}</div>
+                      <div class="key">
+                        ${computeAttributeNameDisplay(
+                          this.hass.localize,
+                          this.stateObj!,
+                          this.hass.entities,
+                          attribute
+                        )}
+                      </div>
                       <div class="value">
-                        ${this.formatAttribute(attribute)}
+                        ${computeAttributeValueDisplay(
+                          this.hass.localize,
+                          this.stateObj!,
+                          this.hass.locale,
+                          this.hass.entities,
+                          attribute
+                        )}
                       </div>
                     </div>
                   `
@@ -126,14 +132,6 @@ class HaAttributes extends LitElement {
     return Object.keys(this.stateObj.attributes).filter(
       (key) => filtersArray.indexOf(key) === -1
     );
-  }
-
-  private formatAttribute(attribute: string): string | TemplateResult {
-    if (!this.stateObj) {
-      return "—";
-    }
-    const value = this.stateObj.attributes[attribute];
-    return formatAttributeValue(this.hass, value);
   }
 
   private expandedChanged(ev) {
