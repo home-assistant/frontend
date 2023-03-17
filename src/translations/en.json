@@ -3753,7 +3753,28 @@
         },
         "analytics": {
           "caption": "Analytics",
-          "description": "Learn how to share data to improve Home Assistant"
+          "description": "Learn how to share data to improve Home Assistant",
+          "preferences": {
+            "base": {
+              "title": "Basic analytics",
+              "description": "This includes information about your system."
+            },
+            "usage": {
+              "title": "Usage",
+              "description": "Details of what you use with Home Assistant"
+            },
+            "statistics": {
+              "title": "Statistical data",
+              "description": "Counts containing total number of datapoints."
+            },
+            "diagnostics": {
+              "title": "Diagnostics",
+              "description": "Share crash reports when unexpected errors occur."
+            }
+          },
+          "need_base_enabled": "You need to enable basic analytics for this option to be available",
+          "learn_more": "How we process your data",
+          "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features."
         },
         "network": {
           "caption": "Network",
@@ -5026,7 +5047,28 @@
           "finish": "Finish"
         },
         "analytics": {
-          "finish": "Next"
+          "finish": "Next",
+          "preferences": {
+            "base": {
+              "title": "[%key:ui::panel::config::analytics::preferences::base::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::base::description%]"
+            },
+            "usage": {
+              "title": "[%key:ui::panel::config::analytics::preferences::usage::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::usage::description%]"
+            },
+            "statistics": {
+              "title": "[%key:ui::panel::config::analytics::preferences::statistics::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::statistics::description%]"
+            },
+            "diagnostics": {
+              "title": "[%key:ui::panel::config::analytics::preferences::diagnostics::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::diagnostics::description%]"
+            }
+          },
+          "need_base_enabled": "[%key:ui::panel::config::analytics::need_base_enabled%]",
+          "learn_more": "[%key:ui::panel::config::analytics::learn_more%]",
+          "intro": "[%key:ui::panel::config::analytics::intro%]"
         },
         "restore": {
           "description": "Alternatively you can restore from a previous backup.",
