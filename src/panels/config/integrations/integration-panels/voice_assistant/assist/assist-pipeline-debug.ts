@@ -1,7 +1,7 @@
-import "@material/mwc-button";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import "../../../../../../components/ha-card";
+import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-textfield";
 import {
   PipelineRun,
@@ -41,13 +41,13 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
               ></ha-textfield>
             </div>
             <div class="card-actions">
-              <mwc-button
+              <ha-button
                 @click=${this._runPipeline}
                 .disabled=${this._pipelineRun &&
                 !["error", "done"].includes(this._pipelineRun.stage)}
               >
                 Run
-              </mwc-button>
+              </ha-button>
             </div>
           </ha-card>
           ${this._pipelineRun
