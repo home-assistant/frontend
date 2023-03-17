@@ -119,8 +119,6 @@ export const runPipelineFromText = (
         return;
       }
 
-      run.events.push(updateEvent);
-
       if (updateEvent.type === "stt-start") {
         run = { ...run, stage: "stt", stt: updateEvent.data };
       } else if (updateEvent.type === "stt-finish") {
@@ -139,7 +137,11 @@ export const runPipelineFromText = (
       } else if (updateEvent.type === "error") {
         run = { ...run, stage: "error", error: updateEvent.data };
         unsubProm.then((unsub) => unsub());
+      } else {
+        run = { ...run };
       }
+
+      run.events = [...run.events, updateEvent];
 
       callback(run);
     },

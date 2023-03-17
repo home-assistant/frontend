@@ -2,6 +2,8 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import "../../../../../../components/ha-card";
 import "../../../../../../components/ha-button";
+import "../../../../../../components/ha-circular-progress";
+import "../../../../../../components/ha-expansion-panel";
 import "../../../../../../components/ha-textfield";
 import {
   PipelineRun,
@@ -11,6 +13,58 @@ import "../../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
+
+const RUN_DATA = {
+  pipeline: "Pipeline",
+  language: "Language",
+};
+
+const ERROR_DATA = {
+  code: "Code",
+  message: "Message",
+};
+
+const INTENT_DATA = {
+  engine: "Engine",
+  intent_input: "Input",
+};
+
+const renderProgress = (
+  pipelineRun: PipelineRun,
+  stage: PipelineRun["stage"]
+) =>
+  pipelineRun.stage !== stage && stage in pipelineRun
+    ? html`✅`
+    : pipelineRun.stage === stage
+    ? html`<ha-circular-progress size="tiny" active></ha-circular-progress>`
+    : "";
+
+const renderData = (data: Record<string, any>, keys: Record<string, string>) =>
+  Object.entries(keys).map(
+    ([key, label]) =>
+      html`
+        <div class="row">
+          <div>${label}</div>
+          <div>${data[key]}</div>
+        </div>
+      `
+  );
+
+const dataMinusKeysRender = (
+  data: Record<string, any>,
+  keys: Record<string, string>
+) => {
+  const result = {};
+  let render = false;
+  for (const key in data) {
+    if (key in keys) {
+      continue;
+    }
+    render = true;
+    result[key] = data[key];
+  }
+  return render ? html`<pre>${JSON.stringify(result, null, 2)}</pre>` : "";
+};
 
 @customElement("assist-pipeline-debug")
 export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
@@ -52,10 +106,43 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
           </ha-card>
           ${this._pipelineRun
             ? html`
-                <ha-card heading="Pipeline Run">
+                <ha-card>
                   <div class="card-content">
-                    <pre>${JSON.stringify(this._pipelineRun, null, 2)}</pre>
+                    <div class="row heading">
+                      <div>Run</div>
+                      <div>${this._pipelineRun.stage}</div>
+                    </div>
+
+                    ${renderData(this._pipelineRun.run, RUN_DATA)}
+                    ${this._pipelineRun.error
+                      ? renderData(this._pipelineRun.error, ERROR_DATA)
+                      : ""}
                   </div>
+                </ha-card>
+                <ha-card>
+                  <div class="card-content">
+                    <div class="row heading">
+                      <span>Natural Language Processing</span>
+                      ${renderProgress(this._pipelineRun, "intent")}
+                    </div>
+                    ${this._pipelineRun.intent
+                      ? html`
+                          <div class="card-content">
+                            ${renderData(this._pipelineRun.intent, INTENT_DATA)}
+                            ${dataMinusKeysRender(
+                              this._pipelineRun.intent,
+                              INTENT_DATA
+                            )}
+                          </div>
+                        `
+                      : ""}
+                  </div>
+                </ha-card>
+                <ha-card>
+                  <ha-expansion-panel>
+                    <span slot="header">Raw</span>
+                    <pre>${JSON.stringify(this._pipelineRun, null, 2)}</pre>
+                  </ha-expansion-panel>
                 </ha-card>
               `
             : ""}
@@ -92,8 +179,18 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
       .run-pipeline-card ha-textfield {
         display: block;
       }
+      .row {
+        display: flex;
+        justify-content: space-between;
+      }
       pre {
         margin: 0;
+      }
+      ha-expansion-panel {
+        padding-left: 8px;
+      }
+      .heading {
+        font-weight: 500;
       }
     `,
   ];
