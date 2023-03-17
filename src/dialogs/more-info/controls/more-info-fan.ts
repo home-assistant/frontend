@@ -211,6 +211,7 @@ class MoreInfoFan extends LitElement {
                         ${computeAttributeValueDisplay(
                           this.hass.localize,
                           this.stateObj!,
+                          this.hass.locale,
                           this.hass.entities,
                           "preset_mode",
                           mode
