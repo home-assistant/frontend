@@ -1,10 +1,10 @@
 import "@material/web/iconbutton/outlined-icon-button";
 import {
-  mdiClose,
+  mdiAutorenew,
+  mdiAutorenewOff,
   mdiFan,
   mdiFanOff,
   mdiPower,
-  mdiRotate360,
   mdiRotateLeft,
   mdiRotateRight,
 } from "@mdi/js";
@@ -151,8 +151,8 @@ class MoreInfoFan extends LitElement {
                 >
                   <ha-svg-icon
                     .path=${this.stateObj.attributes.oscillating
-                      ? mdiRotate360
-                      : mdiClose}
+                      ? mdiAutorenew
+                      : mdiAutorenewOff}
                   ></ha-svg-icon>
                 </md-outlined-icon-button>
               `
