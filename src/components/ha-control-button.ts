@@ -107,8 +107,9 @@ export class HaControlButton extends LitElement {
         outline: none;
         overflow: hidden;
         background: none;
-        z-index: 1;
         --mdc-ripple-color: var(--control-button-background-color);
+        /* For safari border-radius overflow */
+        z-index: 0;
       }
       .button::before {
         content: "";
