@@ -9100,15 +9100,15 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"glob@npm:9.2.1":
-  version: 9.2.1
-  resolution: "glob@npm:9.2.1"
+"glob@npm:9.3.0":
+  version: 9.3.0
+  resolution: "glob@npm:9.3.0"
   dependencies:
     fs.realpath: ^1.0.0
     minimatch: ^7.4.1
     minipass: ^4.2.4
     path-scurry: ^1.6.1
-  checksum: ef9b1c32491e6b532bdd0d2abcc3c9f48e83446609e11285869156982fc5a756dfbaa6f59f797712343bd1e22500ac15708692806633653fde4ef67c85e2aab7
+  checksum: 9beb4f1cdc9585412efd991a9786c1ee6816dfd0537494fd552c333fa3d4b041fce5681bce21d14651e41479f60866e10a35a2ce2571fd40b7cf73842ea12192
   languageName: node
   linkType: hard
 
@@ -9635,7 +9635,7 @@ fsevents@~2.3.2:
     fancy-log: 2.0.0
     fs-extra: 11.1.0
     fuse.js: 6.6.2
-    glob: 9.2.1
+    glob: 9.3.0
     google-timezones-json: 1.0.2
     gulp: 4.0.2
     gulp-flatmap: 1.0.2
