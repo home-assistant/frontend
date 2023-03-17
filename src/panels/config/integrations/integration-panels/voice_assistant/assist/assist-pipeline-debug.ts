@@ -1,8 +1,8 @@
 import "@material/mwc-button";
-import "@material/mwc-textfield";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import "../../../../../../components/ha-card";
+import "../../../../../../components/ha-textfield";
 import {
   PipelineRun,
   runPipelineFromText,
@@ -18,7 +18,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @query(".run-pipeline-card mwc-textfield", true)
+  @query("#run-input", true)
   private _newRunInput!: HTMLInputElement;
 
   @state()
@@ -34,10 +34,11 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
         <div class="content">
           <ha-card header="Run pipeline" class="run-pipeline-card">
             <div class="card-content">
-              <mwc-textfield
+              <ha-textfield
+                id="run-input"
                 label="Input"
                 value="Are the lights on?"
-              ></mwc-textfield>
+              ></ha-textfield>
             </div>
             <div class="card-actions">
               <mwc-button
