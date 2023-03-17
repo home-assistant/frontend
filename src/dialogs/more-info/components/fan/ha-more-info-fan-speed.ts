@@ -55,8 +55,8 @@ function speedToPercentage(stateObj: HassEntity, speed: Speed): number {
 
 const SPEED_ICON_NUMBER: string[] = [mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3];
 
-@customElement("ha-more-info-fan-percentage")
-export class HaMoreInfoFanPercentage extends LitElement {
+@customElement("ha-more-info-fan-speed")
+export class HaMoreInfoFanSpeed extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: FanEntity;
@@ -205,6 +205,6 @@ export class HaMoreInfoFanPercentage extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-fan-percentage": HaMoreInfoFanPercentage;
+    "ha-more-info-fan-speed": HaMoreInfoFanSpeed;
   }
 }

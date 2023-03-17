@@ -21,11 +21,10 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { FanEntity, FanEntityFeature } from "../../../data/fan";
 import { forwardHaptic } from "../../../data/haptics";
 import type { HomeAssistant } from "../../../types";
-import "../components/fan/ha-more-info-fan-percentage";
+import "../components/fan/ha-more-info-fan-speed";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
-import "./more-info-fan-old";
 
 @customElement("more-info-fan")
 class MoreInfoFan extends LitElement {
