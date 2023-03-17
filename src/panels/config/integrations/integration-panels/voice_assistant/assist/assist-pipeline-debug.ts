@@ -89,7 +89,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
       ha-card {
         margin-bottom: 16px;
       }
-      .run-pipeline-card mwc-textfield {
+      .run-pipeline-card ha-textfield {
         display: block;
       }
       pre {
