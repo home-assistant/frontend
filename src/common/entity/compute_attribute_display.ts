@@ -27,9 +27,9 @@ export const computeAttributeValueDisplay = (
   const attributeValue =
     value !== undefined ? value : stateObj.attributes[attribute];
 
-  // Null value, return dash
+  // Null value, the state is unknown
   if (attributeValue === null) {
-    return "—";
+    return localize("state.default.unknown");
   }
 
   // Number value, return formatted number
