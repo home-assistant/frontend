@@ -55,6 +55,14 @@ function speedToPercentage(stateObj: HassEntity, speed: Speed): number {
 
 const SPEED_ICON_NUMBER: string[] = [mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3];
 
+export function getFanSpeedCount(stateObj: HassEntity) {
+  const step = stateObj.attributes.percentage_step ?? 1;
+  const speedCount = Math.round(100 / step) + 1;
+  return speedCount;
+}
+
+export const FAN_SPEED_COUNT_MAX_FOR_BUTTONS = 4;
+
 @customElement("ha-more-info-fan-speed")
 export class HaMoreInfoFanSpeed extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -112,10 +120,9 @@ export class HaMoreInfoFanSpeed extends LitElement {
   protected render() {
     const color = stateColorCss(this.stateObj);
 
-    const step = this.stateObj.attributes.percentage_step ?? 1;
-    const speedCount = Math.round(100 / step) + 1;
+    const speedCount = getFanSpeedCount(this.stateObj);
 
-    if (speedCount >= 2 && speedCount <= 4) {
+    if (speedCount <= FAN_SPEED_COUNT_MAX_FOR_BUTTONS) {
       const options = SPEEDS[speedCount]!.map<ControlSelectOption>(
         (speed, index) => ({
           value: speed,
