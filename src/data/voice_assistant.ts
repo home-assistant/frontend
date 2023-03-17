@@ -2,7 +2,7 @@ import { HomeAssistant } from "../types";
 import { ConversationResult } from "./conversation";
 
 interface PipelineEventBase {
-  timestamp: number;
+  timestamp: string;
 }
 
 interface PipelineRunStartEvent extends PipelineEventBase {
@@ -10,15 +10,13 @@ interface PipelineRunStartEvent extends PipelineEventBase {
   data: {
     pipeline: string;
     language: string;
-    session_id?: string;
   };
 }
 interface PipelineRunFinishEvent extends PipelineEventBase {
   type: "run-finish";
-  data: {
-    url: string;
-  };
+  data: Record<string, never>;
 }
+
 interface PipelineErrorEvent extends PipelineEventBase {
   type: "error";
   data: {
@@ -26,44 +24,37 @@ interface PipelineErrorEvent extends PipelineEventBase {
     message: string;
   };
 }
+
 interface PipelineSTTStartEvent extends PipelineEventBase {
   type: "stt-start";
-  data: {
-    engine: string;
-  };
+  data: Record<string, never>;
 }
 interface PipelineSTTFinishEvent extends PipelineEventBase {
   type: "stt-finish";
-  data: {
-    text: string;
-  };
+  data: Record<string, never>;
 }
 
 interface PipelineIntentStartEvent extends PipelineEventBase {
   type: "intent-start";
   data: {
-    agent_id: string;
+    engine: string;
+    intent_input: string;
   };
 }
 interface PipelineIntentFinishEvent extends PipelineEventBase {
   type: "intent-finish";
   data: {
-    speech: string;
-    response: ConversationResult;
+    intent_output: ConversationResult;
   };
 }
 
 interface PipelineTTSStartEvent extends PipelineEventBase {
   type: "tts-start";
-  data: {
-    engine: string;
-  };
+  data: Record<string, never>;
 }
 interface PipelineTTSFinishEvent extends PipelineEventBase {
   type: "tts-finish";
-  data: {
-    url: string;
-  };
+  data: Record<string, never>;
 }
 
 type PipelineRunEvent =
@@ -79,14 +70,14 @@ type PipelineRunEvent =
 
 interface PipelineRunOptions {
   pipeline?: string;
-  stt_text?: string;
+  intent_input?: string;
   conversation_id?: string | null;
 }
 
 export interface PipelineRun {
   init_options: PipelineRunOptions;
   events: PipelineRunEvent[];
-  stage: "initialized" | "stt" | "intent" | "tts" | "finish" | "error";
+  stage: "ready" | "stt" | "intent" | "tts" | "done" | "error";
   run: PipelineRunStartEvent["data"];
   error?: PipelineErrorEvent["data"];
   stt?: PipelineSTTStartEvent["data"] & Partial<PipelineSTTFinishEvent["data"]>;
@@ -107,7 +98,7 @@ export const runPipelineFromText = (
       if (updateEvent.type === "run-start") {
         run = {
           init_options: options,
-          stage: "initialized",
+          stage: "ready",
           run: updateEvent.data,
           error: undefined,
           stt: undefined,
@@ -143,7 +134,7 @@ export const runPipelineFromText = (
       } else if (updateEvent.type === "tts-finish") {
         run = { ...run, tts: { ...run.tts!, ...updateEvent.data } };
       } else if (updateEvent.type === "run-finish") {
-        run = { ...run, stage: "finish" };
+        run = { ...run, stage: "done" };
         unsubProm.then((unsub) => unsub());
       } else if (updateEvent.type === "error") {
         run = { ...run, stage: "error", error: updateEvent.data };

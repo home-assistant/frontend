@@ -43,7 +43,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
               <mwc-button
                 @click=${this._runPipeline}
                 .disabled=${this._pipelineRun &&
-                !["error", "finish"].includes(this._pipelineRun.stage)}
+                !["error", "done"].includes(this._pipelineRun.stage)}
               >
                 Run
               </mwc-button>
@@ -71,7 +71,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
         this._pipelineRun = run;
       },
       {
-        stt_text: this._newRunInput.value,
+        intent_input: this._newRunInput.value,
       }
     );
   }
@@ -85,21 +85,14 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
         margin: 0 auto;
         direction: ltr;
       }
-      ha-button-menu a {
-        text-decoration: none;
-      }
       ha-card {
         margin-bottom: 16px;
       }
       .run-pipeline-card mwc-textfield {
         display: block;
       }
-      h4 {
+      pre {
         margin: 0;
-      }
-      .card-header {
-        display: flex;
-        justify-content: space-between;
       }
     `,
   ];
