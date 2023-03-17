@@ -27,6 +27,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { hasLocation } from "../../../../common/entity/has_location";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -93,6 +94,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         <hui-entity-editor
           .hass=${this.hass}
           .entities=${this._configEntities}
+          .entityFilter=${hasLocation}
           @entities-changed=${this._entitiesValueChanged}
         ></hui-entity-editor>
         <h3>
