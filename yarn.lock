@@ -4365,12 +4365,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet@npm:*, @types/leaflet@npm:1.9.2":
-  version: 1.9.2
-  resolution: "@types/leaflet@npm:1.9.2"
+"@types/leaflet@npm:*, @types/leaflet@npm:1.9.3":
+  version: 1.9.3
+  resolution: "@types/leaflet@npm:1.9.3"
   dependencies:
     "@types/geojson": "*"
-  checksum: 77e9a0c6388998427de00558fa2cb5121c57981c49df63b3a95bec62a52b7fd0f5a446c057f1861a4b94d1212ff6bea1473786fb07cbbc0de915c1c3f49699ab
+  checksum: d12042edc3a043d074b4fd3b4c4800f479dfb01db3980d8c1151edbc70b23ca9e84ab7da72ce0d1c36c040f89ba1421bd36d9d9796ec3704a0d3c942985a87ae
   languageName: node
   linkType: hard
 
@@ -9586,7 +9586,7 @@ fsevents@~2.3.2:
     "@types/esprima": 4.0.3
     "@types/glob": 8.1.0
     "@types/js-yaml": 4.0.5
-    "@types/leaflet": 1.9.2
+    "@types/leaflet": 1.9.3
     "@types/leaflet-draw": 1.0.6
     "@types/marked": 4.0.8
     "@types/mocha": 10.0.1
