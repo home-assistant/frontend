@@ -22,6 +22,7 @@ class LogStartCompilePlugin {
 }
 
 const createWebpackConfig = ({
+  name,
   entry,
   outputPath,
   publicPath,
@@ -29,6 +30,7 @@ const createWebpackConfig = ({
   isProdBuild,
   latestBuild,
   isStatsBuild,
+  isTestBuild,
   isHassioBuild,
   dontHash,
 }) => {
@@ -37,10 +39,16 @@ const createWebpackConfig = ({
   }
   const ignorePackages = bundle.ignorePackages({ latestBuild });
   return {
+    name,
     mode: isProdBuild ? "production" : "development",
     target: ["web", latestBuild ? "es2017" : "es5"],
-    devtool: isProdBuild
-      ? "cheap-module-source-map"
+    // For tests/CI, source maps are skipped to gain build speed
+    // For production, generate source maps for accurate stack traces without source code
+    // For development, generate "cheap" versions that can map to original line numbers
+    devtool: isTestBuild
+      ? false
+      : isProdBuild
+      ? "nosources-source-map"
       : "eval-cheap-module-source-map",
     entry,
     node: false,
@@ -51,7 +59,7 @@ const createWebpackConfig = ({
           use: {
             loader: "babel-loader",
             options: {
-              ...bundle.babelOptions({ latestBuild, isProdBuild }),
+              ...bundle.babelOptions({ latestBuild, isProdBuild, isTestBuild }),
               cacheDirectory: !isProdBuild,
               cacheCompression: false,
             },
@@ -68,7 +76,7 @@ const createWebpackConfig = ({
         new TerserPlugin({
           parallel: true,
           extractComments: true,
-          terserOptions: bundle.terserOptions(latestBuild),
+          terserOptions: bundle.terserOptions({ latestBuild, isTestBuild }),
         }),
       ],
       moduleIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
@@ -153,6 +161,22 @@ const createWebpackConfig = ({
       publicPath,
       // To silence warning in worker plugin
       globalObject: "self",
+      // Since production source maps don't include sources, we need to point to them elsewhere
+      // For dependencies, just provide the path (no source in browser)
+      // Otherwise, point to the raw code on GitHub for browser to load
+      devtoolModuleFilenameTemplate:
+        !isTestBuild && isProdBuild
+          ? (info) => {
+              const sourcePath = info.resourcePath.replace(/^\.\//, "");
+              if (
+                sourcePath.startsWith("node_modules") ||
+                sourcePath.startsWith("webpack")
+              ) {
+                return `no-source/${sourcePath}`;
+              }
+              return `${bundle.sourceMapURL()}/${sourcePath}`;
+            }
+          : undefined,
     },
     experiments: {
       topLevelAwait: true,
@@ -160,9 +184,14 @@ const createWebpackConfig = ({
   };
 };
 
-const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
+const createAppConfig = ({
+  isProdBuild,
+  latestBuild,
+  isStatsBuild,
+  isTestBuild,
+}) =>
   createWebpackConfig(
-    bundle.config.app({ isProdBuild, latestBuild, isStatsBuild })
+    bundle.config.app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild })
   );
 
 const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
@@ -173,8 +202,20 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
 const createCastConfig = ({ isProdBuild, latestBuild }) =>
   createWebpackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
 
-const createHassioConfig = ({ isProdBuild, latestBuild }) =>
-  createWebpackConfig(bundle.config.hassio({ isProdBuild, latestBuild }));
+const createHassioConfig = ({
+  isProdBuild,
+  latestBuild,
+  isStatsBuild,
+  isTestBuild,
+}) =>
+  createWebpackConfig(
+    bundle.config.hassio({
+      isProdBuild,
+      latestBuild,
+      isStatsBuild,
+      isTestBuild,
+    })
+  );
 
 const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
   createWebpackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));

@@ -5,6 +5,7 @@ const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
 const log = require("fancy-log");
 const path = require("path");
+const env = require("../env");
 const paths = require("../paths");
 const {
   createAppConfig,
@@ -104,6 +105,8 @@ gulp.task("webpack-prod-app", () =>
   prodBuild(
     bothBuilds(createAppConfig, {
       isProdBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
     })
   )
 );
@@ -161,6 +164,8 @@ gulp.task("webpack-prod-hassio", () =>
   prodBuild(
     bothBuilds(createHassioConfig, {
       isProdBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
     })
   )
 );

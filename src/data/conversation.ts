@@ -44,7 +44,7 @@ interface IntentResultError extends IntentResultBase {
   };
 }
 
-interface ConversationResult {
+export interface ConversationResult {
   conversation_id: string | null;
   response:
     | IntentResultActionDone

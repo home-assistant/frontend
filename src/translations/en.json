@@ -2004,7 +2004,7 @@
             "enable": "[%key:ui::common::enable%]",
             "disable": "[%key:ui::common::disable%]",
             "disabled": "Automation is disabled",
-            "read_only": "This automation can not be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
+            "read_only": "This automation cannot be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
@@ -2495,7 +2495,7 @@
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
-            "read_only": "This script can not be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
+            "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "header": "Script: {name}",
@@ -3150,7 +3150,7 @@
             "submit": "Submit",
             "next": "Next",
             "found_following_devices": "We found the following devices",
-            "yaml_only_title": "This device can not be added from the UI",
+            "yaml_only_title": "This device cannot be added from the UI",
             "yaml_only": "You can add this device by adding it to your ''configuration.yaml''. See the documentation for more information.",
             "open_documentation": "Open documentation",
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
@@ -3757,7 +3757,28 @@
         },
         "analytics": {
           "caption": "Analytics",
-          "description": "Learn how to share data to improve Home Assistant"
+          "description": "Learn how to share data to improve Home Assistant",
+          "preferences": {
+            "base": {
+              "title": "Basic analytics",
+              "description": "This includes information about your system."
+            },
+            "usage": {
+              "title": "Usage",
+              "description": "Details of what you use with Home Assistant"
+            },
+            "statistics": {
+              "title": "Statistical data",
+              "description": "Counts containing total number of datapoints."
+            },
+            "diagnostics": {
+              "title": "Diagnostics",
+              "description": "Share crash reports when unexpected errors occur."
+            }
+          },
+          "need_base_enabled": "You need to enable basic analytics for this option to be available",
+          "learn_more": "How we process your data",
+          "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features."
         },
         "network": {
           "caption": "Network",
@@ -5030,7 +5051,28 @@
           "finish": "Finish"
         },
         "analytics": {
-          "finish": "Next"
+          "finish": "Next",
+          "preferences": {
+            "base": {
+              "title": "[%key:ui::panel::config::analytics::preferences::base::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::base::description%]"
+            },
+            "usage": {
+              "title": "[%key:ui::panel::config::analytics::preferences::usage::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::usage::description%]"
+            },
+            "statistics": {
+              "title": "[%key:ui::panel::config::analytics::preferences::statistics::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::statistics::description%]"
+            },
+            "diagnostics": {
+              "title": "[%key:ui::panel::config::analytics::preferences::diagnostics::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::diagnostics::description%]"
+            }
+          },
+          "need_base_enabled": "[%key:ui::panel::config::analytics::need_base_enabled%]",
+          "learn_more": "[%key:ui::panel::config::analytics::learn_more%]",
+          "intro": "[%key:ui::panel::config::analytics::intro%]"
         },
         "restore": {
           "description": "Alternatively you can restore from a previous backup.",

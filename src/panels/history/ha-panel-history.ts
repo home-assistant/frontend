@@ -21,9 +21,11 @@ import { ensureArray } from "../../common/array/ensure-array";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { navigate } from "../../common/navigate";
+import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createSearchParam,
   extractSearchParamsObject,
+  removeSearchParam,
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
@@ -83,6 +85,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _areaDeviceLookup?: AreaDeviceLookup;
 
+  @state()
+  private _showBack?: boolean;
+
   @query("state-history-charts")
   private _stateHistoryCharts?: StateHistoryCharts;
 
@@ -126,15 +131,27 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     ];
   }
 
+  private _goBack(): void {
+    history.back();
+  }
+
   protected render() {
     return html`
       <ha-app-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
+            ${this._showBack
+              ? html`
+                  <ha-icon-button-arrow-prev
+                    @click=${this._goBack}
+                  ></ha-icon-button-arrow-prev>
+                `
+              : html`
+                  <ha-menu-button
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></ha-menu-button>
+                `}
             <div main-title>${this.hass.localize("panel.history")}</div>
             ${this._targetPickerValue
               ? html`
@@ -249,6 +266,17 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     const endDate = searchParams.end_date;
     if (endDate) {
       this._endDate = new Date(endDate);
+    }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    const searchParams = extractSearchParamsObject();
+    if (searchParams.back === "1" && history.length > 1) {
+      this._showBack = true;
+      navigate(constructUrlCurrentPath(removeSearchParam("back")), {
+        replace: true,
+      });
     }
   }
 

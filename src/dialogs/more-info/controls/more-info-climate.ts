@@ -235,6 +235,7 @@ class MoreInfoClimate extends LitElement {
                         ${computeAttributeValueDisplay(
                           hass.localize,
                           stateObj,
+                          hass.locale,
                           hass.entities,
                           "preset_mode",
                           mode
@@ -268,6 +269,7 @@ class MoreInfoClimate extends LitElement {
                         ${computeAttributeValueDisplay(
                           hass.localize,
                           stateObj,
+                          hass.locale,
                           hass.entities,
                           "fan_mode",
                           mode
@@ -301,6 +303,7 @@ class MoreInfoClimate extends LitElement {
                         ${computeAttributeValueDisplay(
                           hass.localize,
                           stateObj,
+                          hass.locale,
                           hass.entities,
                           "swing_mode",
                           mode

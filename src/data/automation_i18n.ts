@@ -10,7 +10,7 @@ import {
   localizeDeviceAutomationCondition,
   localizeDeviceAutomationTrigger,
 } from "./device_automation";
-import { formatAttributeName } from "./entity_attributes";
+import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 
 const describeDuration = (forTime: number | string | ForDict) => {
   let duration: string | null;
@@ -67,7 +67,12 @@ export const describeTrigger = (
     const entity = stateObj ? computeStateName(stateObj) : trigger.entity_id;
 
     if (trigger.attribute) {
-      base += ` ${formatAttributeName(trigger.attribute)} from`;
+      base += ` ${computeAttributeNameDisplay(
+        hass.localize,
+        stateObj,
+        hass.entities,
+        trigger.attribute
+      )} from`;
     }
 
     base += ` ${entity} is`;
@@ -98,11 +103,18 @@ export const describeTrigger = (
   if (trigger.platform === "state") {
     let base = "When";
     let entities = "";
-
     const states = hass.states;
 
     if (trigger.attribute) {
-      base += ` ${formatAttributeName(trigger.attribute)} from`;
+      const stateObj = Array.isArray(trigger.entity_id)
+        ? hass.states[trigger.entity_id[0]]
+        : hass.states[trigger.entity_id];
+      base += ` ${computeAttributeNameDisplay(
+        hass.localize,
+        stateObj,
+        hass.entities,
+        trigger.attribute
+      )} from`;
     }
 
     if (Array.isArray(trigger.entity_id)) {

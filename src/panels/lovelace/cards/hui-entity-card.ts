@@ -27,7 +27,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { isUnavailableState } from "../../../data/entity";
-import { formatAttributeValue } from "../../../data/entity_attributes";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 import { LightEntity } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
@@ -159,9 +159,12 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           <span class="value"
             >${"attribute" in this._config
               ? stateObj.attributes[this._config.attribute!] !== undefined
-                ? formatAttributeValue(
-                    this.hass,
-                    stateObj.attributes[this._config.attribute!]
+                ? computeAttributeValueDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.entities,
+                    this._config.attribute!
                   )
                 : this.hass.localize("state.default.unknown")
               : isNumericState(stateObj) || this._config.unit
