@@ -13,6 +13,7 @@ import "../../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
+import { formatNumber } from "../../../../../../common/number/format_number";
 
 const RUN_DATA = {
   pipeline: "Pipeline",
@@ -30,6 +31,7 @@ const INTENT_DATA = {
 };
 
 const renderProgress = (
+  hass: HomeAssistant,
   pipelineRun: PipelineRun,
   stage: PipelineRun["stage"]
 ) => {
@@ -54,8 +56,10 @@ const renderProgress = (
   const duration =
     new Date(finishEvent.timestamp).getTime() -
     new Date(startEvent.timestamp).getTime();
-
-  return html`${(duration / 1000).toFixed(2)}s ✅`;
+  const durationString = formatNumber(duration / 1000, hass.locale, {
+    maximumFractionDigits: 2,
+  });
+  return html`${durationString}s ✅`;
 };
 
 const renderData = (data: Record<string, any>, keys: Record<string, string>) =>
@@ -142,7 +146,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
                   <div class="card-content">
                     <div class="row heading">
                       <span>Natural Language Processing</span>
-                      ${renderProgress(this._pipelineRun, "intent")}
+                      ${renderProgress(this.hass, this._pipelineRun, "intent")}
                     </div>
                     ${this._pipelineRun.intent
                       ? html`
