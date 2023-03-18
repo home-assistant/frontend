@@ -32,12 +32,31 @@ const INTENT_DATA = {
 const renderProgress = (
   pipelineRun: PipelineRun,
   stage: PipelineRun["stage"]
-) =>
-  pipelineRun.stage !== stage && stage in pipelineRun
-    ? html`✅`
-    : pipelineRun.stage === stage
-    ? html`<ha-circular-progress size="tiny" active></ha-circular-progress>`
-    : "";
+) => {
+  const startEvent = pipelineRun.events.find(
+    (ev) => ev.type === `${stage}-start`
+  );
+  const finishEvent = pipelineRun.events.find(
+    (ev) => ev.type === `${stage}-finish`
+  );
+
+  if (!startEvent) {
+    return "";
+  }
+
+  if (!finishEvent) {
+    return html`<ha-circular-progress
+      size="tiny"
+      active
+    ></ha-circular-progress>`;
+  }
+
+  const duration =
+    new Date(finishEvent.timestamp).getTime() -
+    new Date(startEvent.timestamp).getTime();
+
+  return html`${(duration / 1000).toFixed(2)}s ✅`;
+};
 
 const renderData = (data: Record<string, any>, keys: Record<string, string>) =>
   Object.entries(keys).map(
@@ -191,6 +210,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
       }
       .heading {
         font-weight: 500;
+        margin-bottom: 16px;
       }
     `,
   ];
