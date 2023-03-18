@@ -48,7 +48,7 @@ class MediaSearchButton extends LitElement {
     `;
   }
 
-    private _search() {
+  private _search() {
     let newValue = this.currentItem?.can_search ? "*" : "Not Searchable";
     showPromptDialog(this, {
         title: this.hass.localize("ui.components.media-browser.media_search.title"),
