@@ -129,19 +129,6 @@ export const describeTrigger = (
 
     base += ` ${entities} changes`;
 
-    if (!trigger.attribute && !("from" in trigger) && !("to" in trigger)) {
-      base += " state or any attributes";
-    }
-
-    if (
-      !trigger.attribute &&
-      !trigger.from &&
-      !trigger.to &&
-      (trigger.from === null || trigger.to === null)
-    ) {
-      base += " state (ignoring attribute changes)";
-    }
-
     if (trigger.from) {
       let from = "";
       if (Array.isArray(trigger.from)) {
@@ -171,6 +158,21 @@ export const describeTrigger = (
       }
 
       base += ` to ${to}`;
+    }
+
+    if (
+      !trigger.attribute &&
+      trigger.from === undefined &&
+      trigger.to === undefined
+    ) {
+      base += " state or any attributes";
+    } else if (
+      !trigger.attribute &&
+      trigger.from == null &&
+      trigger.to == null &&
+      (trigger.from === null || trigger.to === null)
+    ) {
+      base += " state (ignoring attribute changes)";
     }
 
     if (trigger.for) {
