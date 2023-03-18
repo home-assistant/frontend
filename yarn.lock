@@ -4552,10 +4552,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/sortablejs@npm:1.15.0":
-  version: 1.15.0
-  resolution: "@types/sortablejs@npm:1.15.0"
-  checksum: 34846bfcd1947a010c1e1d43ccbedbcda84462fcb6a3933d8d1a36d4eeced442dd889be7d1b6402f4491a61997ac29548e4f10cb35b14870a5f3d4ad6cafc0ec
+"@types/sortablejs@npm:1.15.1":
+  version: 1.15.1
+  resolution: "@types/sortablejs@npm:1.15.1"
+  checksum: 242c0350f63b86541d667d5aa5d1695a9b98644a1c1f52b537f7733baf187dd2618fadde4deab01e655ebf06294cebf0a889ebebf9202ef0a8750a7afed3ecfd
   languageName: node
   linkType: hard
 
@@ -9592,7 +9592,7 @@ fsevents@~2.3.2:
     "@types/mocha": 10.0.1
     "@types/qrcode": 1.5.0
     "@types/serve-handler": 6.1.1
-    "@types/sortablejs": 1.15.0
+    "@types/sortablejs": 1.15.1
     "@types/tar": 6.1.4
     "@types/webspeechapi": 0.0.29
     "@typescript-eslint/eslint-plugin": 5.55.0
