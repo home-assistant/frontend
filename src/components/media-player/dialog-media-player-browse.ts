@@ -14,6 +14,7 @@ import "../ha-dialog";
 import "../ha-header-bar";
 import "./ha-media-manage-button";
 import "./ha-media-player-browse";
+import "./ha-media-search-button";
 import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
@@ -92,6 +93,13 @@ class DialogMediaPlayerBrowse extends LitElement {
             .currentItem=${this._currentItem}
             @media-refresh=${this._refreshMedia}
           ></ha-media-manage-button>
+          <ha-media-search-button
+              .hass=${this.hass}
+              .navigateIds=${this._navigateIds}
+              .currentItem=${this._currentItem}
+              @media-refresh=${this._refreshMedia}
+              @media-browsed=${this._mediaBrowsed}
+            ></ha-media-search-button>
           <ha-icon-button
             .label=${this.hass.localize("ui.dialogs.generic.close")}
             .path=${mdiClose}
@@ -177,7 +185,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
         }
 
-        ha-media-manage-button {
+        ha-media-manage-button, ha-media-search-button {
           --mdc-theme-primary: var(--mdc-theme-on-primary);
         }
       `,

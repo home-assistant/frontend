@@ -577,6 +577,10 @@
           "delete": "Delete {count}",
           "deleting": "Deleting {count}"
         },
+        "media_search": {
+           "title": "Search Media",
+           "search": "Search"
+        },
         "class": {
           "album": "Album",
           "app": "App",

@@ -19,6 +19,7 @@ import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/media-player/ha-media-player-browse";
 import "../../components/media-player/ha-media-manage-button";
+import "../../components/media-player/ha-media-search-button";
 import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
@@ -110,6 +111,13 @@ class PanelMediaBrowser extends LitElement {
               .currentItem=${this._currentItem}
               @media-refresh=${this._refreshMedia}
             ></ha-media-manage-button>
+            <ha-media-search-button
+              .hass=${this.hass}
+              .navigateIds=${this._navigateIds}
+              .currentItem=${this._currentItem}
+              @media-refresh=${this._refreshMedia}
+              @media-browsed=${this._mediaBrowsed}
+            ></ha-media-search-button>
           </app-toolbar>
         </app-header>
         <ha-media-player-browse
