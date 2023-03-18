@@ -192,6 +192,7 @@ export interface MediaPlayerItem {
   thumbnail?: string;
   children?: MediaPlayerItem[];
   not_shown?: number;
+  can_search?: boolean;
 }
 
 export const browseMediaPlayer = (
