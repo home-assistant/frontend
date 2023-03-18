@@ -3400,18 +3400,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@open-wc/dev-server-hmr@npm:0.1.3":
-  version: 0.1.3
-  resolution: "@open-wc/dev-server-hmr@npm:0.1.3"
+"@open-wc/dev-server-hmr@npm:0.1.4":
+  version: 0.1.4
+  resolution: "@open-wc/dev-server-hmr@npm:0.1.4"
   dependencies:
     "@babel/core": ^7.12.3
     "@babel/plugin-syntax-class-properties": ^7.12.13
     "@babel/plugin-syntax-import-assertions": ^7.12.1
     "@babel/plugin-syntax-top-level-await": ^7.12.1
-    "@web/dev-server-core": ^0.3.10
-    "@web/dev-server-hmr": ^0.1.6
+    "@web/dev-server-core": ^0.4.0
+    "@web/dev-server-hmr": ^0.1.11
     picomatch: ^2.2.2
-  checksum: 993ddbdea4d919d5414ce2cbed8d49253658f4a0311b66f2e45d03ab9ea7354596144d46622a915683f72ca2b3c045b47362104327b4033bede1456446e085ff
+  checksum: 4fc1e2fb465ec85f5e4dc0ef54886023e4c65dda16912d78f0fe96c14db7650e2b3986f0c2fbbfbf621c40dd597b721f44d9b707ff796a95498ed0c3d9edd2d1
   languageName: node
   linkType: hard
 
@@ -4583,7 +4583,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^7.2.6, @types/ws@npm:^7.4.0":
+"@types/ws@npm:^7.4.0":
   version: 7.4.7
   resolution: "@types/ws@npm:7.4.7"
   dependencies:
@@ -5015,57 +5015,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-core@npm:^0.2.18":
-  version: 0.2.18
-  resolution: "@web/dev-server-core@npm:0.2.18"
-  dependencies:
-    "@types/koa": ^2.11.6
-    "@types/ws": ^7.2.6
-    "@web/parse5-utils": ^1.0.0
-    chokidar: ^3.4.3
-    clone: ^2.1.2
-    es-module-lexer: ^0.3.26
-    get-stream: ^6.0.0
-    is-stream: ^2.0.0
-    isbinaryfile: ^4.0.6
-    koa: ^2.13.0
-    koa-etag: ^3.0.0
-    koa-static: ^5.0.0
-    lru-cache: ^5.1.1
-    mime-types: ^2.1.27
-    parse5: ^6.0.1
-    picomatch: ^2.2.2
-    ws: ^7.3.1
-  checksum: 07afc7578cb34f6ea0341b47b233f496ff9838f1b3205e25a9f3ceb6016940973afce83b81ee0f43fe48e0c38f73d647dea331c8070529bbf7ec7da43303dc49
-  languageName: node
-  linkType: hard
-
-"@web/dev-server-core@npm:^0.3.10":
-  version: 0.3.19
-  resolution: "@web/dev-server-core@npm:0.3.19"
-  dependencies:
-    "@types/koa": ^2.11.6
-    "@types/ws": ^7.4.0
-    "@web/parse5-utils": ^1.2.0
-    chokidar: ^3.4.3
-    clone: ^2.1.2
-    es-module-lexer: ^1.0.0
-    get-stream: ^6.0.0
-    is-stream: ^2.0.0
-    isbinaryfile: ^4.0.6
-    koa: ^2.13.0
-    koa-etag: ^4.0.0
-    koa-send: ^5.0.1
-    koa-static: ^5.0.0
-    lru-cache: ^6.0.0
-    mime-types: ^2.1.27
-    parse5: ^6.0.1
-    picomatch: ^2.2.2
-    ws: ^7.4.2
-  checksum: 00b3cafc7d9c25806ae4af824d34d44928b09e039c7cf87e66ddc7b2f7d3198ab667f860282f8f8287cf26aeea1e8f4b348609eba4e05259cc52f4a7451c174f
-  languageName: node
-  linkType: hard
-
 "@web/dev-server-core@npm:^0.4.0":
   version: 0.4.0
   resolution: "@web/dev-server-core@npm:0.4.0"
@@ -5092,12 +5041,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-hmr@npm:^0.1.6":
-  version: 0.1.6
-  resolution: "@web/dev-server-hmr@npm:0.1.6"
+"@web/dev-server-hmr@npm:^0.1.11":
+  version: 0.1.11
+  resolution: "@web/dev-server-hmr@npm:0.1.11"
   dependencies:
-    "@web/dev-server-core": ^0.2.18
-  checksum: af1a3120baffec5a32d4a13754f309a5eb5181449cf15010d8eb1820148fe6279a7e503e20ca5c79c75acfd4be24df64886015d26da939f5832892297d88d8ba
+    "@web/dev-server-core": ^0.4.0
+  checksum: a0c156c7c46f3463607a7ed87a6d149d372a2b1abd8ef2ce5a4d7ce3d7b0cd7e1375d93e28e87735e25617c322dd5c3d74c354a971712eb001e69adc6406698b
   languageName: node
   linkType: hard
 
@@ -5140,7 +5089,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/parse5-utils@npm:^1.0.0, @web/parse5-utils@npm:^1.2.0":
+"@web/parse5-utils@npm:^1.2.0":
   version: 1.3.0
   resolution: "@web/parse5-utils@npm:1.3.0"
   dependencies:
@@ -5639,7 +5588,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"any-promise@npm:^1.0.0, any-promise@npm:^1.1.0":
+"any-promise@npm:^1.1.0":
   version: 1.3.0
   resolution: "any-promise@npm:1.3.0"
   checksum: 0ee8a9bdbe882c90464d75d1f55cf027f5458650c4bd1f0467e65aec38ccccda07ca5844969ee77ed46d04e7dded3eaceb027e8d32f385688523fe305fa7e1de
@@ -7769,13 +7718,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-module-lexer@npm:^0.3.26":
-  version: 0.3.26
-  resolution: "es-module-lexer@npm:0.3.26"
-  checksum: 06d7abe4df61935bbfcf710bb20487ffa44fd6c3d67bb493310acc90825f0ac62a483918d46c13bf45441f3c84bd47681c8e942ba9b0a675debb9238ca63fe5c
-  languageName: node
-  linkType: hard
-
 "es-module-lexer@npm:^0.9.0":
   version: 0.9.1
   resolution: "es-module-lexer@npm:0.9.1"
@@ -8254,7 +8196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"etag@npm:^1.3.0, etag@npm:^1.8.1, etag@npm:~1.8.1":
+"etag@npm:^1.8.1, etag@npm:~1.8.1":
   version: 1.8.1
   resolution: "etag@npm:1.8.1"
   checksum: 571aeb3dbe0f2bbd4e4fadbdb44f325fc75335cd5f6f6b6a091e6a06a9f25ed5392f0863c5442acb0646787446e816f13cbfc6edce5b07658541dff573cab1ff
@@ -9593,7 +9535,7 @@ fsevents@~2.3.2:
     "@mdi/svg": 7.1.96
     "@octokit/auth-oauth-device": 4.0.4
     "@octokit/rest": 19.0.7
-    "@open-wc/dev-server-hmr": 0.1.3
+    "@open-wc/dev-server-hmr": 0.1.4
     "@polymer/app-layout": 3.1.0
     "@polymer/iron-flex-layout": 3.0.1
     "@polymer/iron-icon": 3.0.1
@@ -11117,16 +11059,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"koa-etag@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "koa-etag@npm:3.0.0"
-  dependencies:
-    etag: ^1.3.0
-    mz: ^2.1.0
-  checksum: 022aefab29f56009b3698c55a60d91317e24ee6622fb45251b7cc0b1e4f0d9ba0db5ad5743fc39872da9790d31f0162c6d7b792dbda39c214926ff2bc62be0a7
-  languageName: node
-  linkType: hard
-
 "koa-etag@npm:^4.0.0":
   version: 4.0.0
   resolution: "koa-etag@npm:4.0.0"
@@ -12138,17 +12070,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"mz@npm:^2.1.0":
-  version: 2.7.0
-  resolution: "mz@npm:2.7.0"
-  dependencies:
-    any-promise: ^1.0.0
-    object-assign: ^4.0.1
-    thenify-all: ^1.0.0
-  checksum: 8427de0ece99a07e9faed3c0c6778820d7543e3776f9a84d22cf0ec0a8eb65f6e9aee9c9d353ff9a105ff62d33a9463c6ca638974cc652ee8140cd1e35951c87
-  languageName: node
-  linkType: hard
-
 "nan@npm:^2.12.1":
   version: 2.13.2
   resolution: "nan@npm:2.13.2"
@@ -12502,7 +12423,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"object-assign@npm:^4.0.1, object-assign@npm:^4.1.0":
+"object-assign@npm:^4.1.0":
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: fcc6e4ea8c7fe48abfbb552578b1c53e0d194086e2e6bbbf59e0a536381a292f39943c6e9628af05b5528aa5e3318bb30d6b2e53cadaf5b8fe9e12c4b69af23f
@@ -15165,24 +15086,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"thenify-all@npm:^1.0.0":
-  version: 1.6.0
-  resolution: "thenify-all@npm:1.6.0"
-  dependencies:
-    thenify: ">= 3.1.0 < 4"
-  checksum: dba7cc8a23a154cdcb6acb7f51d61511c37a6b077ec5ab5da6e8b874272015937788402fd271fdfc5f187f8cb0948e38d0a42dcc89d554d731652ab458f5343e
-  languageName: node
-  linkType: hard
-
-"thenify@npm:>= 3.1.0 < 4":
-  version: 3.3.1
-  resolution: "thenify@npm:3.3.1"
-  dependencies:
-    any-promise: ^1.0.0
-  checksum: 84e1b804bfec49f3531215f17b4a6e50fd4397b5f7c1bccc427b9c656e1ecfb13ea79d899930184f78bc2f57285c54d9a50a590c8868f4f0cef5c1d9f898b05e
-  languageName: node
-  linkType: hard
-
 "through2-filter@npm:^3.0.0":
   version: 3.0.0
   resolution: "through2-filter@npm:3.0.0"
@@ -16754,7 +16657,7 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"ws@npm:^7.3.1, ws@npm:^7.4.2":
+"ws@npm:^7.4.2":
   version: 7.5.9
   resolution: "ws@npm:7.5.9"
   peerDependencies:
