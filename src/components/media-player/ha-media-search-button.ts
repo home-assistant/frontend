@@ -33,7 +33,7 @@ class MediaSearchButton extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.currentItem ||
-      !this.currentItem?.can_search) {
+      !this.currentItem?.can_search || "") {
       return html``;
     }
     return html`
@@ -48,13 +48,13 @@ class MediaSearchButton extends LitElement {
     `;
   }
 
-  private _search() {
+    private _search() {
     let newValue = this.currentItem?.can_search ? "*" : "Not Searchable";
     showPromptDialog(this, {
         title: this.hass.localize("ui.components.media-browser.media_search.title"),
         text: this.hass.localize("ui.components.media-browser.media_search.search"),
         confirmText: this.hass.localize("ui.components.media-browser.media_search.search"),
-        inputLabel: this.hass.localize("ui.components.area-picker.add_dialog.name"),
+        //inputLabel: this.hass.localize("ui.components.area-picker.add_dialog.name"),
         defaultValue: newValue,
         confirm: async (name) => {
           if (!name || !this.currentItem) {

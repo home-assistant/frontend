@@ -86,7 +86,6 @@ class DialogMediaPlayerBrowse extends LitElement {
                 )
               : this._currentItem.title}
           </span>
-
           <ha-media-manage-button
             slot="actionItems"
             .hass=${this.hass}
@@ -94,12 +93,13 @@ class DialogMediaPlayerBrowse extends LitElement {
             @media-refresh=${this._refreshMedia}
           ></ha-media-manage-button>
           <ha-media-search-button
-              .hass=${this.hass}
-              .navigateIds=${this._navigateIds}
-              .currentItem=${this._currentItem}
-              @media-refresh=${this._refreshMedia}
-              @media-browsed=${this._mediaBrowsed}
-            ></ha-media-search-button>
+            slot="actionItems"
+            .hass=${this.hass}
+            .navigateIds=${this._navigateIds}
+            .currentItem=${this._currentItem}
+            @media-refresh=${this._refreshMedia}
+            @media-browsed=${this._mediaBrowsed}
+          ></ha-media-search-button>
           <ha-icon-button
             .label=${this.hass.localize("ui.dialogs.generic.close")}
             .path=${mdiClose}
