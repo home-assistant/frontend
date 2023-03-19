@@ -3,7 +3,7 @@ import "@material/mwc-button";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { MediaPlayerItem } from "../../data/media-player";
-import { MediaPlayerItemId } from "./ha-media-player-browse"
+import { MediaPlayerItemId } from "./ha-media-player-browse";
 import "../ha-svg-icon";
 import type { HomeAssistant } from "../../types";
 import { showPromptDialog } from "../../dialogs/generic/show-dialog-box";
@@ -11,15 +11,15 @@ import { fireEvent } from "../../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {
-      "media-refresh": unknown;
-      "media-browsed": {
-        // Items of the new browse stack
-        ids: MediaPlayerItemId[];
-        // Current fetched item for this browse stack
-        current?: MediaPlayerItem;
-        // If the new stack should replace the old stack
-        replace?: boolean;
-      };
+    "media-refresh": unknown;
+    "media-browsed": {
+      // Items of the new browse stack
+      ids: MediaPlayerItemId[];
+      // Current fetched item for this browse stack
+      current?: MediaPlayerItem;
+      // If the new stack should replace the old stack
+      replace?: boolean;
+    };
   }
 }
 
@@ -32,8 +32,7 @@ class MediaSearchButton extends LitElement {
   @property() currentItem?: MediaPlayerItem;
 
   protected render() {
-    if (!this.currentItem ||
-      !this.currentItem?.can_search) {
+    if (!this.currentItem || !this.currentItem?.can_search) {
       return nothing;
     }
     return html`
@@ -48,33 +47,37 @@ class MediaSearchButton extends LitElement {
     `;
   }
 
-    private _search() {
+  private _search() {
     const newValue = this.currentItem?.can_search ? "" : "Not Searchable";
     showPromptDialog(this, {
-        title: this.hass.localize("ui.components.media-browser.media_search.title"),
-        text: this.hass.localize("ui.components.media-browser.media_search.search"),
-        confirmText: this.hass.localize("ui.components.media-browser.media_search.search"),
-        defaultValue: newValue,
-        confirm: async (query) => {
-          if (!query || !this.currentItem) {
-            return;
-          }
+      title: this.hass.localize(
+        "ui.components.media-browser.media_search.title"
+      ),
+      text: this.hass.localize(
+        "ui.components.media-browser.media_search.search"
+      ),
+      confirmText: this.hass.localize(
+        "ui.components.media-browser.media_search.search"
+      ),
+      defaultValue: newValue,
+      confirm: async (query) => {
+        if (!query || !this.currentItem) {
+          return;
+        }
 
-          if (!query.includes("*"))
-            query = "*" + query + "*";
+        if (!query.includes("*")) query = "*" + query + "*";
 
-          const navNew = [...this.navigateIds];
-          navNew.push(this.currentItem);
-          this.currentItem.media_content_id = query;
+        const navNew = [...this.navigateIds];
+        navNew.push(this.currentItem);
+        this.currentItem.media_content_id = query;
 
-          fireEvent(this, "media-browsed", {
-              ids: navNew,
-              current: this.currentItem,
-          });
-        },
-        cancel: () => {
-        },
-      });
+        fireEvent(this, "media-browsed", {
+          ids: navNew,
+          current: this.currentItem,
+        });
+      },
+      cancel: () => {},
+    });
   }
 
   static styles = css`

@@ -185,7 +185,8 @@ class DialogMediaPlayerBrowse extends LitElement {
           border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
         }
 
-        ha-media-manage-button, ha-media-search-button {
+        ha-media-manage-button,
+        ha-media-search-button {
           --mdc-theme-primary: var(--mdc-theme-on-primary);
         }
       `,

@@ -578,8 +578,8 @@
           "deleting": "Deleting {count}"
         },
         "media_search": {
-           "title": "Search Media",
-           "search": "Search"
+          "title": "Search Media",
+          "search": "Search"
         },
         "class": {
           "album": "Album",
