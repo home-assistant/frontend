@@ -49,21 +49,24 @@ class MediaSearchButton extends LitElement {
   }
 
     private _search() {
-    let newValue = this.currentItem?.can_search ? "*" : "Not Searchable";
+    let newValue = this.currentItem?.can_search ? "" : "Not Searchable";
     showPromptDialog(this, {
         title: this.hass.localize("ui.components.media-browser.media_search.title"),
         text: this.hass.localize("ui.components.media-browser.media_search.search"),
         confirmText: this.hass.localize("ui.components.media-browser.media_search.search"),
         //inputLabel: this.hass.localize("ui.components.area-picker.add_dialog.name"),
         defaultValue: newValue,
-        confirm: async (name) => {
-          if (!name || !this.currentItem) {
+        confirm: async (query) => {
+          if (!query || !this.currentItem) {
             return;
           }
 
+          if (!query.includes("*"))
+            query = "*" + query + "*";
+
           let navNew = [...this.navigateIds];
           navNew.push(this.currentItem);
-          this.currentItem.media_content_id = name;
+          this.currentItem.media_content_id = query;
 
           fireEvent(this, "media-browsed", {
               ids: navNew,
