@@ -1,6 +1,6 @@
 import { mdiFilter } from "@mdi/js";
 import "@material/mwc-button";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { MediaPlayerItem } from "../../data/media-player";
 import { MediaPlayerItemId } from "./ha-media-player-browse"
@@ -31,10 +31,10 @@ class MediaSearchButton extends LitElement {
 
   @property() currentItem?: MediaPlayerItem;
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this.currentItem ||
       !this.currentItem?.can_search) {
-      return html``;
+      return nothing;
     }
     return html`
       <mwc-button
@@ -79,7 +79,6 @@ class MediaSearchButton extends LitElement {
 
   static styles = css`
     mwc-button {
-      /* We use icon + text to show disabled state */
       --mdc-button-disabled-ink-color: --mdc-theme-primary;
     }
 
