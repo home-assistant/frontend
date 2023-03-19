@@ -13,6 +13,7 @@ import "../../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
+import { formatNumber } from "../../../../../../common/number/format_number";
 
 const RUN_DATA = {
   pipeline: "Pipeline",
@@ -30,14 +31,36 @@ const INTENT_DATA = {
 };
 
 const renderProgress = (
+  hass: HomeAssistant,
   pipelineRun: PipelineRun,
   stage: PipelineRun["stage"]
-) =>
-  pipelineRun.stage !== stage && stage in pipelineRun
-    ? html`✅`
-    : pipelineRun.stage === stage
-    ? html`<ha-circular-progress size="tiny" active></ha-circular-progress>`
-    : "";
+) => {
+  const startEvent = pipelineRun.events.find(
+    (ev) => ev.type === `${stage}-start`
+  );
+  const finishEvent = pipelineRun.events.find(
+    (ev) => ev.type === `${stage}-finish`
+  );
+
+  if (!startEvent) {
+    return "";
+  }
+
+  if (!finishEvent) {
+    return html`<ha-circular-progress
+      size="tiny"
+      active
+    ></ha-circular-progress>`;
+  }
+
+  const duration =
+    new Date(finishEvent.timestamp).getTime() -
+    new Date(startEvent.timestamp).getTime();
+  const durationString = formatNumber(duration / 1000, hass.locale, {
+    maximumFractionDigits: 2,
+  });
+  return html`${durationString}s ✅`;
+};
 
 const renderData = (data: Record<string, any>, keys: Record<string, string>) =>
   Object.entries(keys).map(
@@ -123,7 +146,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
                   <div class="card-content">
                     <div class="row heading">
                       <span>Natural Language Processing</span>
-                      ${renderProgress(this._pipelineRun, "intent")}
+                      ${renderProgress(this.hass, this._pipelineRun, "intent")}
                     </div>
                     ${this._pipelineRun.intent
                       ? html`
@@ -191,6 +214,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
       }
       .heading {
         font-weight: 500;
+        margin-bottom: 16px;
       }
     `,
   ];
