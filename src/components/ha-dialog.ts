@@ -100,6 +100,11 @@ export class HaDialog extends DialogBase {
         position: var(--dialog-content-position, relative);
         padding: var(--dialog-content-padding, 24px);
       }
+
+      :host([overflowVisible]) .mdc-dialog__content {
+        overflow: visible;
+      }
+
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
         padding-bottom: max(
           var(--dialog-content-padding, 24px),

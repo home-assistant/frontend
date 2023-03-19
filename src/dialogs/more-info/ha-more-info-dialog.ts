@@ -242,8 +242,16 @@ export class MoreInfoDialog extends LitElement {
     const isInfoView = this._currView === "info" && !this._childView;
     const isNewMoreInfo = stateObj && computeShowNewMoreInfo(stateObj);
 
+    const overflow = domain === "input_number" || domain === "number";
+
     return html`
-      <ha-dialog open @closed=${this.closeDialog} .heading=${title} hideActions>
+      <ha-dialog
+        open
+        ?overflowVisible=${overflow}
+        @closed=${this.closeDialog}
+        .heading=${title}
+        hideActions
+      >
         <div slot="heading" class="heading">
           <ha-header-bar>
             ${isInfoView
