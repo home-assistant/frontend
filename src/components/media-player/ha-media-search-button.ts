@@ -1,7 +1,7 @@
 import { mdiFilter } from "@mdi/js";
 import "@material/mwc-button";
 import { css, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { MediaPlayerItem } from "../../data/media-player";
 import { MediaPlayerItemId } from "./ha-media-player-browse"
 import "../ha-svg-icon";
@@ -49,12 +49,11 @@ class MediaSearchButton extends LitElement {
   }
 
     private _search() {
-    let newValue = this.currentItem?.can_search ? "" : "Not Searchable";
+    const newValue = this.currentItem?.can_search ? "" : "Not Searchable";
     showPromptDialog(this, {
         title: this.hass.localize("ui.components.media-browser.media_search.title"),
         text: this.hass.localize("ui.components.media-browser.media_search.search"),
         confirmText: this.hass.localize("ui.components.media-browser.media_search.search"),
-        //inputLabel: this.hass.localize("ui.components.area-picker.add_dialog.name"),
         defaultValue: newValue,
         confirm: async (query) => {
           if (!query || !this.currentItem) {
@@ -64,7 +63,7 @@ class MediaSearchButton extends LitElement {
           if (!query.includes("*"))
             query = "*" + query + "*";
 
-          let navNew = [...this.navigateIds];
+          const navNew = [...this.navigateIds];
           navNew.push(this.currentItem);
           this.currentItem.media_content_id = query;
 
@@ -72,7 +71,6 @@ class MediaSearchButton extends LitElement {
               ids: navNew,
               current: this.currentItem,
           });
-          //fireEvent(this, "media-refresh");
         },
         cancel: () => {
         },
