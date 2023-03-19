@@ -33,7 +33,7 @@ class MediaSearchButton extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.currentItem ||
-      !this.currentItem?.can_search || "") {
+      !this.currentItem?.can_search) {
       return html``;
     }
     return html`
