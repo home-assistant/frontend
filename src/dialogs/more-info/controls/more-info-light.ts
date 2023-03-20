@@ -237,16 +237,6 @@ class MoreInfoLight extends LitElement {
     return [
       moreInfoControlStyle,
       css`
-        .buttons {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 12px;
-        }
-        .buttons > * {
-          margin: 4px;
-        }
-
         md-outlined-icon-button-toggle,
         md-outlined-icon-button {
           --ha-icon-display: block;

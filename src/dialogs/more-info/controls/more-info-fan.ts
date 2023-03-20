@@ -1,3 +1,4 @@
+import "@material/web/button/outlined-button";
 import "@material/web/iconbutton/outlined-icon-button";
 import {
   mdiAutorenew,
@@ -9,8 +10,16 @@ import {
   mdiRotateLeft,
   mdiRotateRight,
 } from "@mdi/js";
-import { CSSResultGroup, html, LitElement, nothing, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import {
   computeAttributeNameDisplay,
@@ -35,6 +44,8 @@ class MoreInfoFan extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: FanEntity;
+
+  @state() public presetMode?: string;
 
   private _toggle = () => {
     const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
@@ -67,15 +78,26 @@ class MoreInfoFan extends LitElement {
   }
 
   _handlePresetMode(ev) {
-    const oldVal = this.stateObj!.attributes.preset_mode;
-    const newVal = ev.target.value;
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    const index = ev.detail.index;
+    const newVal = this.stateObj!.attributes.preset_modes![index];
+    const oldVal = this.presetMode;
 
     if (!newVal || oldVal === newVal) return;
 
+    this.presetMode = newVal;
     this.hass.callService("fan", "set_preset_mode", {
       entity_id: this.stateObj!.entity_id,
       preset_mode: newVal,
     });
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("stateObj")) {
+      this.presetMode = this.stateObj?.attributes.preset_mode;
+    }
   }
 
   protected render(): TemplateResult | null {
@@ -206,27 +228,36 @@ class MoreInfoFan extends LitElement {
           ${
             supportsPresetMode && this.stateObj.attributes.preset_modes
               ? html`
-                  <ha-select
-                    icon
-                    rounded
-                    .label=${computeAttributeNameDisplay(
-                      this.hass.localize,
-                      this.stateObj,
-                      this.hass.entities,
-                      "preset_mode"
-                    )}
-                    .value=${this.stateObj.attributes.preset_mode ?? ""}
-                    @selected=${this._handlePresetMode}
-                    fixedMenuPosition
-                    naturalMenuWidth
+                  <ha-button-menu
+                    corner="BOTTOM_START"
+                    @action=${this._handlePresetMode}
                     @closed=${stopPropagation}
+                    fixed
                     .disabled=${this.stateObj.state === UNAVAILABLE}
                   >
-                    <ha-svg-icon slot="icon" path=${mdiCreation}></ha-svg-icon>
+                    <md-outlined-button
+                      slot="trigger"
+                      .disabled=${this.stateObj.state === UNAVAILABLE}
+                      .label=${this.presetMode ||
+                      computeAttributeNameDisplay(
+                        this.hass.localize,
+                        this.stateObj,
+                        this.hass.entities,
+                        "preset_mode"
+                      )}
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        path=${mdiCreation}
+                      ></ha-svg-icon>
+                    </md-outlined-button>
                     ${this.stateObj.attributes.preset_modes?.map(
                       (mode) =>
                         html`
-                          <ha-list-item value=${mode}>
+                          <ha-list-item
+                            .value=${mode}
+                            .activated=${this.presetMode === mode}
+                          >
                             ${computeAttributeValueDisplay(
                               this.hass.localize,
                               this.stateObj!,
@@ -238,7 +269,7 @@ class MoreInfoFan extends LitElement {
                           </ha-list-item>
                         `
                     )}
-                  </ha-select>
+                  </ha-button-menu>
                 `
               : nothing
           }
@@ -253,7 +284,15 @@ class MoreInfoFan extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return moreInfoControlStyle;
+    return [
+      moreInfoControlStyle,
+      css`
+        md-outlined-button {
+          --ha-icon-display: block;
+          --md-sys-color-primary: var(--primary-text-color);
+        }
+      `,
+    ];
   }
 }
 
