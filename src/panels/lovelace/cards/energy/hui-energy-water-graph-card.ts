@@ -157,6 +157,11 @@ export class HuiEnergyWaterGraphCard
       const options: ChartOptions = {
         parsing: false,
         animation: false,
+        interaction: {
+          mode: "nearest",
+          axis: "x",
+          intersect: false,
+        },
         scales: {
           x: {
             type: "time",
@@ -171,9 +176,6 @@ export class HuiEnergyWaterGraphCard
               maxRotation: 0,
               sampleSize: 5,
               autoSkipPadding: 20,
-              major: {
-                enabled: true,
-              },
               font: (context) =>
                 context.tick && context.tick.major
                   ? ({ weight: "bold" } as any)
@@ -213,7 +215,6 @@ export class HuiEnergyWaterGraphCard
         },
         plugins: {
           tooltip: {
-            mode: "nearest",
             callbacks: {
               title: (datasets) => {
                 if (dayDifference > 0) {
@@ -243,9 +244,6 @@ export class HuiEnergyWaterGraphCard
               usePointStyle: true,
             },
           },
-        },
-        hover: {
-          mode: "nearest",
         },
         elements: {
           bar: { borderWidth: 1.5, borderRadius: 4 },

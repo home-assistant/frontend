@@ -148,6 +148,11 @@ export class HuiEnergyUsageGraphCard
       const options: ChartOptions = {
         parsing: false,
         animation: false,
+        interaction: {
+          mode: "nearest",
+          axis: "x",
+          intersect: false,
+        },
         scales: {
           x: {
             type: "time",
@@ -162,9 +167,6 @@ export class HuiEnergyUsageGraphCard
               maxRotation: 0,
               sampleSize: 5,
               autoSkipPadding: 20,
-              major: {
-                enabled: true,
-              },
               font: (context) =>
                 context.tick && context.tick.major
                   ? ({ weight: "bold" } as any)
@@ -204,9 +206,6 @@ export class HuiEnergyUsageGraphCard
         },
         plugins: {
           tooltip: {
-            mode: "x",
-            intersect: true,
-            position: "nearest",
             filter: (val) => val.formattedValue !== "0",
             callbacks: {
               title: (datasets) => {
@@ -264,9 +263,6 @@ export class HuiEnergyUsageGraphCard
               usePointStyle: true,
             },
           },
-        },
-        hover: {
-          mode: "nearest",
         },
         elements: {
           bar: { borderWidth: 1.5, borderRadius: 4 },

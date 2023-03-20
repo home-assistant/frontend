@@ -154,6 +154,11 @@ export class HuiEnergySolarGraphCard
       const options: ChartOptions = {
         parsing: false,
         animation: false,
+        interaction: {
+          mode: "nearest",
+          axis: "x",
+          intersect: false,
+        },
         scales: {
           x: {
             type: "time",
@@ -168,9 +173,6 @@ export class HuiEnergySolarGraphCard
               maxRotation: 0,
               sampleSize: 5,
               autoSkipPadding: 20,
-              major: {
-                enabled: true,
-              },
               font: (context) =>
                 context.tick && context.tick.major
                   ? ({ weight: "bold" } as any)
@@ -209,7 +211,6 @@ export class HuiEnergySolarGraphCard
         },
         plugins: {
           tooltip: {
-            mode: "nearest",
             callbacks: {
               title: (datasets) => {
                 if (dayDifference > 0) {
@@ -239,9 +240,6 @@ export class HuiEnergySolarGraphCard
               usePointStyle: true,
             },
           },
-        },
-        hover: {
-          mode: "nearest",
         },
         elements: {
           line: {

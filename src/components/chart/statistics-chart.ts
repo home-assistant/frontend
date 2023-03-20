@@ -102,6 +102,7 @@ class StatisticsChart extends LitElement {
     if (
       changedProps.has("statisticsData") ||
       changedProps.has("statTypes") ||
+      changedProps.has("chartType") ||
       changedProps.has("hideLegend")
     ) {
       this._generateData();
@@ -149,6 +150,11 @@ class StatisticsChart extends LitElement {
     this._chartOptions = {
       parsing: false,
       animation: false,
+      interaction: {
+        mode: "nearest",
+        axis: "x",
+        intersect: false,
+      },
       scales: {
         x: {
           type: "time",
@@ -186,7 +192,6 @@ class StatisticsChart extends LitElement {
       },
       plugins: {
         tooltip: {
-          mode: "nearest",
           callbacks: {
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
@@ -207,9 +212,6 @@ class StatisticsChart extends LitElement {
             usePointStyle: true,
           },
         },
-      },
-      hover: {
-        mode: "nearest",
       },
       elements: {
         line: {
@@ -316,6 +318,7 @@ class StatisticsChart extends LitElement {
         }
         statDataSets.forEach((d, i) => {
           if (
+            this.chartType === "line" &&
             prevEndTime &&
             prevValues &&
             prevEndTime.getTime() !== start.getTime()

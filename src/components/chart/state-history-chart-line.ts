@@ -61,6 +61,11 @@ class StateHistoryChartLine extends LitElement {
       this._chartOptions = {
         parsing: false,
         animation: false,
+        interaction: {
+          mode: "nearest",
+          axis: "x",
+          intersect: false,
+        },
         scales: {
           x: {
             type: "time",
@@ -108,7 +113,6 @@ class StateHistoryChartLine extends LitElement {
         },
         plugins: {
           tooltip: {
-            mode: "nearest",
             callbacks: {
               label: (context) =>
                 `${context.dataset.label}: ${formatNumber(
@@ -126,9 +130,6 @@ class StateHistoryChartLine extends LitElement {
               usePointStyle: true,
             },
           },
-        },
-        hover: {
-          mode: "nearest",
         },
         elements: {
           line: {
