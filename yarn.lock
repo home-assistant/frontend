@@ -9459,10 +9459,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"hls.js@npm:1.3.4":
-  version: 1.3.4
-  resolution: "hls.js@npm:1.3.4"
-  checksum: bdc0ad130853737c08705c1aa12035ee6d81b4edba17cf0d0d1304af19ee1b65e63bbdf2e96d49f1b5e605767ffd9c8fcf145160d8af2d1aad3407c9918ce7b5
+"hls.js@npm:1.3.5":
+  version: 1.3.5
+  resolution: "hls.js@npm:1.3.5"
+  checksum: 83d62ce319a392edb432b2140e65f4e073d56b001f1f72707c5ce382cc462039f517b7c81e2b49651ee2237ca772202281e0e8358efcf61259409da2bc26ad48
   languageName: node
   linkType: hard
 
@@ -9618,7 +9618,7 @@ fsevents@~2.3.2:
     gulp-merge-json: 2.1.2
     gulp-rename: 2.0.0
     gulp-zopfli-green: 6.0.1
-    hls.js: 1.3.4
+    hls.js: 1.3.5
     home-assistant-js-websocket: 8.0.1
     html-minifier: 4.0.0
     husky: 8.0.3
