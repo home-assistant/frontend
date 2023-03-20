@@ -3,10 +3,7 @@ import { HistoryStates } from "../../../src/data/history";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 const generateStateHistory = (
-  state: {
-    entity_id: HassEntity["entity_id"];
-    attributes: HassEntity["attributes"];
-  },
+  state: HassEntity,
   deltas,
   start_date: Date,
   end_date: Date
@@ -119,10 +116,7 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
         }
 
         states[entityId] = generateStateHistory(
-          {
-            entity_id: state.entity_id,
-            attributes: state.attributes,
-          },
+          state,
           Array.from({ length: statesToGenerate }, genFunc),
           start,
           end
