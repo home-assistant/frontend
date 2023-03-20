@@ -64,6 +64,9 @@ const createWebpackConfig = ({
               cacheCompression: false,
             },
           },
+          resolve: {
+            fullySpecified: false,
+          },
         },
         {
           test: /\.css$/,

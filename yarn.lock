@@ -424,16 +424,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-class-static-block@npm:^7.18.6":
-  version: 7.18.6
-  resolution: "@babel/plugin-proposal-class-static-block@npm:7.18.6"
+"@babel/plugin-proposal-class-static-block@npm:7.21.0, @babel/plugin-proposal-class-static-block@npm:^7.18.6":
+  version: 7.21.0
+  resolution: "@babel/plugin-proposal-class-static-block@npm:7.21.0"
   dependencies:
-    "@babel/helper-create-class-features-plugin": ^7.18.6
-    "@babel/helper-plugin-utils": ^7.18.6
+    "@babel/helper-create-class-features-plugin": ^7.21.0
+    "@babel/helper-plugin-utils": ^7.20.2
     "@babel/plugin-syntax-class-static-block": ^7.14.5
   peerDependencies:
     "@babel/core": ^7.12.0
-  checksum: b8d7ae99ed5ad784f39e7820e3ac03841f91d6ed60ab4a98c61d6112253da36013e12807bae4ffed0ef3cb318e47debac112ed614e03b403fb8b075b09a828ee
+  checksum: 236c0ad089e7a7acab776cc1d355330193314bfcd62e94e78f2df35817c6144d7e0e0368976778afd6b7c13e70b5068fa84d7abbf967d4f182e60d03f9ef802b
   languageName: node
   linkType: hard
 
@@ -1966,21 +1966,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:1.0.0-rc.4, @lit/reactive-element@npm:^1.3.0, @lit/reactive-element@npm:^1.6.0":
+"@lit/reactive-element@npm:^1.3.0, @lit/reactive-element@npm:^1.6.0":
   version: 1.6.1
   resolution: "@lit/reactive-element@npm:1.6.1"
   dependencies:
     "@lit-labs/ssr-dom-shim": ^1.0.0
   checksum: fab0bcfdade9c26af2ad5115fb564bcf8ba0732a3a8be86c157851c2771e3fdc65ab38f2cd60fa121946058bf6e487461fd217f87b01f96e88ee7a95d5d866ba
-  languageName: node
-  linkType: hard
-
-"@material/animation@npm:14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/animation@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: de125a476effec28a055a5e7025271f6d530c9953ac3814ea58e9602fc22b39612d24bc38d5c2e5d6ec2228d46b4c77b7e4acc9cfd6180d7dcacca4992e403fd
   languageName: node
   linkType: hard
 
@@ -1990,15 +1981,6 @@ __metadata:
   dependencies:
     tslib: ^2.1.0
   checksum: 9b5190654c3752468db00345d947ce68b95877734846cc33e73f85e3b13f9bc41bc8fdf588cbf22e17bec80d021d43597f638f811946555d2e11b383f4cb3812
-  languageName: node
-  linkType: hard
-
-"@material/base@npm:14.0.0-canary.261f2db59.0, @material/base@npm:=14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/base@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: 9e4074a14ba8055437589bd9be67c03627e61711a4757f2723e7d07559a3abf1374718592620bf2efa8f4dd80718cd3e2e6ab8d0c7b2f65ff279eeab5249b96a
   languageName: node
   linkType: hard
 
@@ -2147,16 +2129,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/dom@npm:14.0.0-canary.261f2db59.0, @material/dom@npm:=14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/dom@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    "@material/feature-targeting": 14.0.0-canary.261f2db59.0
-    tslib: ^2.1.0
-  checksum: d43a19439f4000f283d02046ffe73854c6568fbdf8572ddfb183f33dbfe91d7426b92f1acd5f1d5f80f135ab6e86f2e72efab367f8d40e07ba995a7209639554
-  languageName: node
-  linkType: hard
-
 "@material/dom@npm:14.0.0-canary.53b3cad2f.0, @material/dom@npm:=14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/dom@npm:14.0.0-canary.53b3cad2f.0"
@@ -2198,15 +2170,6 @@ __metadata:
     "@material/theme": 14.0.0-canary.53b3cad2f.0
     tslib: ^2.1.0
   checksum: 2f8945c7b64cc2b6f9786e17ecddf3edcb9e5b4dd11e8bd451be57aaf439c755864ee09c3f62c671cb52d128d50f5da0a1f817a40d4d0b573915343d4505a238
-  languageName: node
-  linkType: hard
-
-"@material/feature-targeting@npm:14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/feature-targeting@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: e73f98c59b1b2bb0753368d5257b81ac0c836e14db82524c5897c58d95dbbaef4f936f711b4d3f9e07adfef8c68cb9c0bc095e2a3f42f50cb3c9f0f7a4c4e00e
   languageName: node
   linkType: hard
 
@@ -2361,19 +2324,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-base@npm:^0.25.3":
-  version: 0.25.3
-  resolution: "@material/mwc-base@npm:0.25.3"
-  dependencies:
-    "@lit/reactive-element": 1.0.0-rc.4
-    "@material/base": =14.0.0-canary.261f2db59.0
-    "@material/dom": =14.0.0-canary.261f2db59.0
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 81efc38cd1d295182de05dba36a4e3407cb81aafe9fa31b8f48439646e962630c27af11c23820bd07b9f153b73a86f89dbede481a75a89e7d3976d02abab4109
-  languageName: node
-  linkType: hard
-
 "@material/mwc-base@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-base@npm:0.27.0"
@@ -2395,18 +2345,6 @@ __metadata:
     lit: ^2.0.0
     tslib: ^2.0.1
   checksum: 2ef5cc09515540ada2b132ff614e894ad9f184790b6ae5c4254ce39383b6c16bbf3e823f945e4e57bd93597992469c40a3be4eca40f7bc08cd13f7bcf8abf9b2
-  languageName: node
-  linkType: hard
-
-"@material/mwc-button@npm:^0.25.3":
-  version: 0.25.3
-  resolution: "@material/mwc-button@npm:0.25.3"
-  dependencies:
-    "@material/mwc-icon": ^0.25.3
-    "@material/mwc-ripple": ^0.25.3
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 4d1ccbe481033b55f154a28cdb743596876bf77fb03399d530b117a58ea37af6228512d6cea7499d5c601a3b07e6b6db2d0fa54ff3cd5832e1ac71dd94c1b133
   languageName: node
   linkType: hard
 
@@ -2435,7 +2373,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-dialog@npm:0.27.0":
+"@material/mwc-dialog@npm:0.27.0, @material/mwc-dialog@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-dialog@npm:0.27.0"
   dependencies:
@@ -2499,7 +2437,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-icon-button@npm:0.27.0":
+"@material/mwc-icon-button@npm:0.27.0, @material/mwc-icon-button@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-icon-button@npm:0.27.0"
   dependencies:
@@ -2507,16 +2445,6 @@ __metadata:
     lit: ^2.0.0
     tslib: ^2.0.1
   checksum: 7315c0735ba40559d447297e81960b39ad94e86436a2360b7123ea2b70d70ece391b106d1564964f522c75e1f6e73c1133fc76f621a9909b2d1d9f097a5fd22c
-  languageName: node
-  linkType: hard
-
-"@material/mwc-icon@npm:^0.25.3":
-  version: 0.25.3
-  resolution: "@material/mwc-icon@npm:0.25.3"
-  dependencies:
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 117ba023ec388f90b42510d0c109960dc12bfcecef9bb65ff04edf48c13061af1e3c6c857d0eb636c9e91b030b9fb5cdca73c98e36ac7849fd2e4a236810cd3f
   languageName: node
   linkType: hard
 
@@ -2622,19 +2550,6 @@ __metadata:
     lit: ^2.0.0
     tslib: ^2.0.1
   checksum: 9cd73fdfe46f92b97991323489cea644d9d7b1dccb94145ee3398b73ef540d99a9253664690779714d070312c8aec513d562a395fdb1d8033d75b66b6d26bdd7
-  languageName: node
-  linkType: hard
-
-"@material/mwc-ripple@npm:^0.25.3":
-  version: 0.25.3
-  resolution: "@material/mwc-ripple@npm:0.25.3"
-  dependencies:
-    "@material/dom": =14.0.0-canary.261f2db59.0
-    "@material/mwc-base": ^0.25.3
-    "@material/ripple": =14.0.0-canary.261f2db59.0
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 4d75604f659c91788dc8c60cf8731f3d5f7f68138a529b100dfee89783ea3dc7dabe23f0381e2b92a06585a2562f5e70e0036628fb2020aa8a9c4eeca2db041e
   languageName: node
   linkType: hard
 
@@ -2851,31 +2766,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/ripple@npm:=14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/ripple@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    "@material/animation": 14.0.0-canary.261f2db59.0
-    "@material/base": 14.0.0-canary.261f2db59.0
-    "@material/dom": 14.0.0-canary.261f2db59.0
-    "@material/feature-targeting": 14.0.0-canary.261f2db59.0
-    "@material/rtl": 14.0.0-canary.261f2db59.0
-    "@material/theme": 14.0.0-canary.261f2db59.0
-    tslib: ^2.1.0
-  checksum: 72cc53474102b8e6b0e7145e70d9593018493b780a1c935dcb69ad899fcd8d70f10a769f34c8903db3f2e377badbb7886a9add34fcab27798f3cb42158d4c474
-  languageName: node
-  linkType: hard
-
-"@material/rtl@npm:14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/rtl@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    "@material/theme": 14.0.0-canary.261f2db59.0
-    tslib: ^2.1.0
-  checksum: 48aced264f8818e0dcf7c5f57b523e955b70cb1127126285b03a896bd214057c3338a0150f29441b9d791404878c99c3b7a019d3fd17a79720635e3d80dce44c
-  languageName: node
-  linkType: hard
-
 "@material/rtl@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/rtl@npm:14.0.0-canary.53b3cad2f.0"
@@ -3048,16 +2938,6 @@ __metadata:
     "@material/typography": 14.0.0-canary.53b3cad2f.0
     tslib: ^2.1.0
   checksum: 7072e3c9dfa80c69659cdf16c687fdb0ca58c29eba47c966d1bebd90a70eeb6b068a0ec337cb4c26b09477561c72b66601280ccc47026a864afb9fb1877ca18d
-  languageName: node
-  linkType: hard
-
-"@material/theme@npm:14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/theme@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    "@material/feature-targeting": 14.0.0-canary.261f2db59.0
-    tslib: ^2.1.0
-  checksum: 5029cc6c7937981d4dc90a49f7e765f563edd7bf77e3d30ae5088add40193c8d4c26fb050bf32a9ff525e75ef934e4642bf9ecb4905bb5eb2e366fd4fee639ec
   languageName: node
   linkType: hard
 
@@ -3804,13 +3684,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reallyland/esm@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "@reallyland/esm@npm:0.0.1"
-  checksum: 08ba000c1c6970a15f06649b33861e775bfd0aef41b76e4d58430580ddf1fbc35a00637fbd14a8ecdfa06069d96bc29331b60b1aaeb77b233de8463f4aa4c885
-  languageName: node
-  linkType: hard
-
 "@rollup/plugin-babel@npm:6.0.3":
   version: 6.0.3
   resolution: "@rollup/plugin-babel@npm:6.0.3"
@@ -4374,22 +4247,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash-es@npm:^4.17.4":
-  version: 4.17.6
-  resolution: "@types/lodash-es@npm:4.17.6"
-  dependencies:
-    "@types/lodash": "*"
-  checksum: 9bd239dd525086e278821949ce12fbdd4f100a060fed9323fc7ad5661113e1641f28a7ebab617230ed3474680d8f4de705c1928b48252bb684be6ec9eed715db
-  languageName: node
-  linkType: hard
-
-"@types/lodash@npm:*":
-  version: 4.14.191
-  resolution: "@types/lodash@npm:4.14.191"
-  checksum: ba0d5434e10690869f32d5ea49095250157cae502f10d57de0a723fd72229ce6c6a4979576f0f13e0aa9fbe3ce2457bfb9fa7d4ec3d6daba56730a51906d1491
-  languageName: node
-  linkType: hard
-
 "@types/marked@npm:4.0.8":
   version: 4.0.8
   resolution: "@types/marked@npm:4.0.8"
@@ -4448,17 +4305,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/parse5@npm:^6.0.0, @types/parse5@npm:^6.0.1":
+"@types/parse5@npm:^6.0.1":
   version: 6.0.3
   resolution: "@types/parse5@npm:6.0.3"
   checksum: ddb59ee4144af5dfcc508a8dcf32f37879d11e12559561e65788756b95b33e6f03ea027d88e1f5408f9b7bfb656bf630ace31a2169edf44151daaf8dd58df1b7
-  languageName: node
-  linkType: hard
-
-"@types/prismjs@npm:^1.16.5":
-  version: 1.26.0
-  resolution: "@types/prismjs@npm:1.26.0"
-  checksum: cd5e7a6214c1f4213ec512a5fcf6d8fe37a56b813fc57ac95b5ff5ee074742bfdbd2f2730d9fd985205bf4586728e09baa97023f739e5aa1c9735a7c1ecbd11a
   languageName: node
   linkType: hard
 
@@ -5615,15 +5465,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app-datepicker@npm:5.1.1":
-  version: 5.1.1
-  resolution: "app-datepicker@npm:5.1.1"
+"app-datepicker@npm:6.0.0-rc.32":
+  version: 6.0.0-rc.32
+  resolution: "app-datepicker@npm:6.0.0-rc.32"
   dependencies:
-    "@material/mwc-button": ^0.25.3
-    lit: ^2.2.1
-    nodemod: 2.8.4
-    tslib: ^2.3.1
-  checksum: 1d733bf76bb18f2b60618b58809b3ba52b0e68e90cd5a921819c462df3dab960beb3daad3323e0e587c3a6a614f7d837e15b5bfa866cda5fcd938326447749c1
+    "@material/mwc-base": ^0.27.0
+    "@material/mwc-button": ^0.27.0
+    "@material/mwc-dialog": ^0.27.0
+    "@material/mwc-icon-button": ^0.27.0
+    "@material/mwc-menu": ^0.27.0
+    "@material/mwc-textfield": ^0.27.0
+    lit: ^2.4.1
+    nodemod: ^3.0.6
+    tslib: ^2.4.1
+  checksum: 973290e72cf232e1c6704888e527f278ef8cd56d723e05ba0bc028484fda09176980ef085d1f1f6b2cb31368a69a2d4e6efb8cebd97c8d6077e35a49a5d418f9
   languageName: node
   linkType: hard
 
@@ -9473,6 +9328,7 @@ fsevents@~2.3.2:
     "@babel/core": 7.21.3
     "@babel/plugin-external-helpers": 7.18.6
     "@babel/plugin-proposal-class-properties": 7.18.6
+    "@babel/plugin-proposal-class-static-block": 7.21.0
     "@babel/plugin-proposal-decorators": 7.21.0
     "@babel/plugin-proposal-nullish-coalescing-operator": 7.18.6
     "@babel/plugin-proposal-object-rest-spread": 7.20.7
@@ -9582,7 +9438,7 @@ fsevents@~2.3.2:
     "@web/dev-server-rollup": 0.4.0
     "@webcomponents/scoped-custom-element-registry": 0.0.8
     "@webcomponents/webcomponentsjs": 2.7.0
-    app-datepicker: 5.1.1
+    app-datepicker: 6.0.0-rc.32
     babel-loader: 9.1.2
     babel-plugin-template-html-minifier: 4.1.0
     chai: 4.3.7
@@ -11327,18 +11183,17 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"lit-ntml@npm:^2.18.2":
-  version: 2.20.0
-  resolution: "lit-ntml@npm:2.20.0"
+"lit-ntml@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "lit-ntml@npm:3.0.6"
   dependencies:
-    "@reallyland/esm": ^0.0.1
     parse5: ^6.0.1
     tslib: ^2.0.2
-  checksum: 49d59ff05959ed725799c69691aa81d759426900150f91edd17debb1cd05ace1ac766172d80b196610e1f1b7b87215cccd9ba13e93638e4f75afeab87303471c
+  checksum: 2917c778d9d7072dce71cfd09dad9ea0ba200b290087407258bcdbc1fbd16777006eb4b6af5898e4dd51fd410fefb39a0f29aa02ec345eaaf497641bc54b98c2
   languageName: node
   linkType: hard
 
-"lit@npm:2.6.1, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.3.0, lit@npm:^2.5.0":
+"lit@npm:2.6.1, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.3.0, lit@npm:^2.4.1, lit@npm:^2.5.0":
   version: 2.6.1
   resolution: "lit@npm:2.6.1"
   dependencies:
@@ -11400,6 +11255,13 @@ fsevents@~2.3.2:
   dependencies:
     p-locate: ^5.0.0
   checksum: 72eb661788a0368c099a184c59d2fee760b3831c9c1c33955e8a19ae4a21b4116e53fa736dc086cdeb9fce9f7cc508f2f92d2d3aae516f133e16a2bb59a39f5a
+  languageName: node
+  linkType: hard
+
+"lodash-es@npm:^4.17.21":
+  version: 4.17.21
+  resolution: "lodash-es@npm:4.17.21"
+  checksum: 05cbffad6e2adbb331a4e16fbd826e7faee403a1a04873b82b42c0f22090f280839f85b95393f487c1303c8a3d2a010048bf06151a6cbe03eee4d388fb0a12d2
   languageName: node
   linkType: hard
 
@@ -12286,17 +12148,15 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"nodemod@npm:2.8.4":
-  version: 2.8.4
-  resolution: "nodemod@npm:2.8.4"
+"nodemod@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "nodemod@npm:3.0.6"
   dependencies:
-    "@types/lodash-es": ^4.17.4
-    "@types/parse5": ^6.0.0
-    "@types/prismjs": ^1.16.5
-    lit-ntml: ^2.18.2
-    normalize-diacritics: ^2.13.2
-    tslib: ^2.1.0
-  checksum: 6dbf61aeca7d1c58d8e122a0801179daccdbd23a0ded0b602cc94c1a20bf664d08b817c57b7489af4193b3b044505bb7c849491eea5eea9248fa65e16b217da0
+    lit-ntml: ^3.0.6
+    lodash-es: ^4.17.21
+    normalize-diacritics: ^3.0.6
+    tslib: ^2.3.0
+  checksum: 47ffe619b365472966829cfa3e14e66c1d710206d1741f97977d6aaf676d6abf85ef0cd1a2deb648173440380ee6191df766af5c383b91734a9dcf3d2e65cbac
   languageName: node
   linkType: hard
 
@@ -12323,12 +12183,12 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"normalize-diacritics@npm:^2.13.2":
-  version: 2.14.0
-  resolution: "normalize-diacritics@npm:2.14.0"
+"normalize-diacritics@npm:^3.0.6":
+  version: 3.0.12
+  resolution: "normalize-diacritics@npm:3.0.12"
   dependencies:
     tslib: ^2.1.0
-  checksum: f29169bebce5227ac270545fde176db2d52890fb0caa8c394454dbd8553c7f4e3c09a5535e9ee6b139c558ccabbdf1e08bb153ded69cfc58f2f9e472f48703c3
+  checksum: 5ddc2cfaf8f1b60f465e3c1cdeaf46352f6c3db04cc7df75fb264be0d027ae9c0e24f887348cd6e7b61d6b925e9431dcaf9518f57322a49a486fadf629da5269
   languageName: node
   linkType: hard
 
@@ -15307,10 +15167,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.1, tslib@npm:^2.0.2, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
-  version: 2.4.1
-  resolution: "tslib@npm:2.4.1"
-  checksum: 19480d6e0313292bd6505d4efe096a6b31c70e21cf08b5febf4da62e95c265c8f571f7b36fcc3d1a17e068032f59c269fab3459d6cd3ed6949eafecf64315fca
+"tslib@npm:^2.0.1, tslib@npm:^2.0.2, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.0, tslib@npm:^2.4.0, tslib@npm:^2.4.1":
+  version: 2.5.0
+  resolution: "tslib@npm:2.5.0"
+  checksum: ae3ed5f9ce29932d049908ebfdf21b3a003a85653a9a140d614da6b767a93ef94f460e52c3d787f0e4f383546981713f165037dc2274df212ea9f8a4541004e1
   languageName: node
   linkType: hard
 
