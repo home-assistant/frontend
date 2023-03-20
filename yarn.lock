@@ -9679,7 +9679,7 @@ fsevents@~2.3.2:
     vue2-daterange-picker: 0.6.8
     webpack: =5.72.1
     webpack-cli: 5.0.1
-    webpack-dev-server: 4.12.0
+    webpack-dev-server: 4.13.0
     webpack-manifest-plugin: 5.0.0
     webpackbar: 5.0.2
     weekstart: 2.0.0
@@ -16115,9 +16115,9 @@ typescript@^3.8.3:
   languageName: node
   linkType: hard
 
-"webpack-dev-server@npm:4.12.0":
-  version: 4.12.0
-  resolution: "webpack-dev-server@npm:4.12.0"
+"webpack-dev-server@npm:4.13.0":
+  version: 4.13.0
+  resolution: "webpack-dev-server@npm:4.13.0"
   dependencies:
     "@types/bonjour": ^3.5.9
     "@types/connect-history-api-fallback": ^1.3.5
@@ -16156,7 +16156,7 @@ typescript@^3.8.3:
       optional: true
   bin:
     webpack-dev-server: bin/webpack-dev-server.js
-  checksum: 3e33acb774457ee787038d66c12e04c3e4a9f91bbff7ca143083e4ac1937b1615a1b9e7387ec623df8ebc36f56b3c34742578c09f665fe811b6e38d2e8222a94
+  checksum: 7546dd3b5a05f886209caf3c06265c717dea292e5a1a8e392bb8f1c9c58c7f87cc03daa0b92fa6eb56812c8c88304044bef923642e18c54b0a17ea233c02fdf4
   languageName: node
   linkType: hard
 
