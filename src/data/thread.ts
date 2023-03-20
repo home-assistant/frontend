@@ -4,6 +4,7 @@ export interface ThreadRouter {
   brand: "google" | "apple" | "homeassistant";
   server: string;
   extended_pan_id: string;
+  extended_address: string;
   model_name: string | null;
   network_name: string;
   vendor_name: string;
@@ -85,5 +86,14 @@ export const removeThreadDataSet = (
 ): Promise<void> =>
   hass.callWS({
     type: "thread/delete_dataset",
+    dataset_id,
+  });
+
+export const setPreferredThreadDataSet = (
+  hass: HomeAssistant,
+  dataset_id: string
+): Promise<void> =>
+  hass.callWS({
+    type: "thread/set_preferred_dataset",
     dataset_id,
   });
