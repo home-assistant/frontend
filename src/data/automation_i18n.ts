@@ -181,9 +181,9 @@ export const describeTrigger = (
                   state
                 )
           }'`;
-          if (from) {
-            base += ` from ${from}`;
-          }
+        }
+        if (from) {
+          base += ` from ${from}`;
         }
       } else {
         base += ` from '${
