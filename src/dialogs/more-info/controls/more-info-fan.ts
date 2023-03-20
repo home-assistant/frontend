@@ -26,6 +26,7 @@ import {
   computeAttributeValueDisplay,
 } from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
 import { UNAVAILABLE } from "../../../data/entity";
 import { FanEntity, FanEntityFeature } from "../../../data/fan";
@@ -45,7 +46,15 @@ class MoreInfoFan extends LitElement {
 
   @property({ attribute: false }) public stateObj?: FanEntity;
 
-  @state() public presetMode?: string;
+  @state() public _presetMode?: string;
+
+  @state() private _selectedPercentage?: number;
+
+  private _percentageChanged(ev) {
+    const value = (ev.detail as any).value;
+    if (isNaN(value)) return;
+    this._selectedPercentage = value;
+  }
 
   private _toggle = () => {
     const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
@@ -83,11 +92,11 @@ class MoreInfoFan extends LitElement {
 
     const index = ev.detail.index;
     const newVal = this.stateObj!.attributes.preset_modes![index];
-    const oldVal = this.presetMode;
+    const oldVal = this._presetMode;
 
     if (!newVal || oldVal === newVal) return;
 
-    this.presetMode = newVal;
+    this._presetMode = newVal;
     this.hass.callService("fan", "set_preset_mode", {
       entity_id: this.stateObj!.entity_id,
       preset_mode: newVal,
@@ -96,7 +105,10 @@ class MoreInfoFan extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("stateObj")) {
-      this.presetMode = this.stateObj?.attributes.preset_mode;
+      this._presetMode = this.stateObj?.attributes.preset_mode;
+      this._selectedPercentage = this.stateObj?.attributes.percentage
+        ? Math.round(this.stateObj.attributes.percentage)
+        : undefined;
     }
   }
 
@@ -127,10 +139,17 @@ class MoreInfoFan extends LitElement {
       supportsSpeed &&
       getFanSpeedCount(this.stateObj) > FAN_SPEED_COUNT_MAX_FOR_BUTTONS;
 
+    const stateOverride = this._selectedPercentage
+      ? `${Math.round(this._selectedPercentage)}${blankBeforePercent(
+          this.hass!.locale
+        )}%`
+      : undefined;
+
     return html`
       <ha-more-info-state-header
         .hass=${this.hass}
         .stateObj=${this.stateObj}
+        .stateOverride=${stateOverride}
       ></ha-more-info-state-header>
       <div class="controls">
         ${
@@ -139,6 +158,7 @@ class MoreInfoFan extends LitElement {
                 <ha-more-info-fan-speed
                   .stateObj=${this.stateObj}
                   .hass=${this.hass}
+                  @slider-moved=${this._percentageChanged}
                 >
                 </ha-more-info-fan-speed>
               `
@@ -238,7 +258,7 @@ class MoreInfoFan extends LitElement {
                     <md-outlined-button
                       slot="trigger"
                       .disabled=${this.stateObj.state === UNAVAILABLE}
-                      .label=${this.presetMode ||
+                      .label=${this._presetMode ||
                       computeAttributeNameDisplay(
                         this.hass.localize,
                         this.stateObj,
@@ -256,7 +276,7 @@ class MoreInfoFan extends LitElement {
                         html`
                           <ha-list-item
                             .value=${mode}
-                            .activated=${this.presetMode === mode}
+                            .activated=${this._presetMode === mode}
                           >
                             ${computeAttributeValueDisplay(
                               this.hass.localize,
