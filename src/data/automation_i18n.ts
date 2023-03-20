@@ -186,7 +186,7 @@ export const describeTrigger = (
           }
         }
       } else {
-        base += `to '${
+        base += ` to '${
           trigger.attribute
             ? computeAttributeValueDisplay(
                 hass.localize,
