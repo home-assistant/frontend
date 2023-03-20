@@ -1,6 +1,6 @@
 import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { styles } from "@material/mwc-select/mwc-select.css";
-import { css, html, nothing } from "lit";
+import { css, html, nothing, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
@@ -9,6 +9,8 @@ import { nextRender } from "../common/util/render-status";
 export class HaSelect extends SelectBase {
   // @ts-ignore
   @property({ type: Boolean }) public icon?: boolean;
+
+  @property({ type: Boolean }) public rounded?: boolean;
 
   protected override renderLeadingIcon() {
     if (!this.icon) {
@@ -31,6 +33,13 @@ export class HaSelect extends SelectBase {
       "translations-updated",
       this._translationsUpdated
     );
+  }
+
+  protected updated(changesProps: PropertyValues): void {
+    super.updated(changesProps);
+    if (changesProps.has("rounded")) {
+      this.outlined = this.rounded ?? false;
+    }
   }
 
   private _translationsUpdated = debounce(async () => {
@@ -57,13 +66,31 @@ export class HaSelect extends SelectBase {
         inset-inline-end: initial;
         direction: var(--direction);
       }
-      .mdc-select .mdc-select__anchor {
+      .mdc-select--filled .mdc-select__anchor {
         padding-inline-start: 12px;
         padding-inline-end: 0px;
         direction: var(--direction);
       }
-      .mdc-select__anchor .mdc-floating-label--float-above {
+      .mdc-select--filled .mdc-select__anchor .mdc-floating-label--float-above {
         transform-origin: var(--float-start);
+      }
+      :host([rounded]) {
+        --mdc-shape-small: 16px;
+      }
+      :host([rounded]) .mdc-select--outlined .mdc-select__anchor {
+        height: 48px;
+      }
+      :host([rounded])
+        .mdc-select--outlined
+        .mdc-select__anchor
+        .mdc-floating-label--float-above {
+        transform: translateY(-31px) scale(1);
+      }
+      :host([rounded][icon])
+        .mdc-select--outlined
+        .mdc-select__anchor
+        .mdc-floating-label--float-above {
+        transform: translateY(-31px) translateX(-32px) scale(1);
       }
     `,
   ];

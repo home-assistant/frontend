@@ -2,6 +2,7 @@ import "@material/web/iconbutton/outlined-icon-button";
 import {
   mdiAutorenew,
   mdiAutorenewOff,
+  mdiCreation,
   mdiFan,
   mdiFanOff,
   mdiPower,
@@ -206,7 +207,8 @@ class MoreInfoFan extends LitElement {
             supportsPresetMode && this.stateObj.attributes.preset_modes
               ? html`
                   <ha-select
-                    outlined
+                    icon
+                    rounded
                     .label=${computeAttributeNameDisplay(
                       this.hass.localize,
                       this.stateObj,
@@ -220,6 +222,7 @@ class MoreInfoFan extends LitElement {
                     @closed=${stopPropagation}
                     .disabled=${this.stateObj.state === UNAVAILABLE}
                   >
+                    <ha-svg-icon slot="icon" path=${mdiCreation}></ha-svg-icon>
                     ${this.stateObj.attributes.preset_modes?.map(
                       (mode) =>
                         html`
