@@ -163,7 +163,7 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
       ha-control-select {
         height: 45vh;
         max-height: max(320px, var(--modes-count, 1) * 80px);
-        min-height: 200px;
+        min-height: max(200px, var(--modes-count, 1) * 70px);
         --control-select-thickness: 100px;
         --control-select-border-radius: 24px;
         --control-select-color: var(--primary-color);

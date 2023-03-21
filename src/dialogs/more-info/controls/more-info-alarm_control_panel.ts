@@ -29,6 +29,7 @@ class MoreAlarmControlPanel extends LitElement {
         >
         </ha-more-info-alarm_control_panel-modes>
       </div>
+      <span></span>
     `;
   }
 
