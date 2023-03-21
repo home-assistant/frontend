@@ -172,7 +172,7 @@ export class HuiStatisticsGraphCardEditor
             },
             {
               name: "days_to_show",
-              required: true,
+              default: 30,
               selector: { number: { min: 1, mode: "box" } },
             },
             {
@@ -258,7 +258,6 @@ export class HuiStatisticsGraphCardEditor
     const data = {
       chart_type: "line",
       period: "hour",
-      days_to_show: 30,
       ...this._config,
       stat_types: configured_stat_types,
     };
