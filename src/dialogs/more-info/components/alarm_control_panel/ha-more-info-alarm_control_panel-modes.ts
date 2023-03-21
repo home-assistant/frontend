@@ -96,12 +96,7 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
     if (changedProp.has("stateObj") && this.stateObj) {
       const oldStateObj = changedProp.get("stateObj") as HassEntity | undefined;
 
-      if (
-        !oldStateObj ||
-        (this.stateObj &&
-          this.stateObj.state !== "arming" &&
-          this.stateObj.state !== oldStateObj.state)
-      ) {
+      if (!oldStateObj || this.stateObj.state !== oldStateObj.state) {
         this._currentMode = this._modes(this.stateObj).find(
           (mode) => ALARM_MODES[mode].state === this.stateObj.state
         );
@@ -163,7 +158,7 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
       ha-control-select {
         height: 45vh;
         max-height: max(320px, var(--modes-count, 1) * 80px);
-        min-height: max(200px, var(--modes-count, 1) * 70px);
+        min-height: max(200px, var(--modes-count, 1) * 80px);
         --control-select-thickness: 100px;
         --control-select-border-radius: 24px;
         --control-select-color: var(--primary-color);
