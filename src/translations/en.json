@@ -924,6 +924,16 @@
             "medium": "Medium",
             "high": "High"
           }
+        },
+        "alarm_control_panel": {
+          "modes": {
+            "away": "Away",
+            "home": "Home",
+            "night": "Night",
+            "vacation": "Vacation",
+            "custom_bypass": "Custom bypass",
+            "disarmed": "Disarmed"
+          }
         }
       },
       "entity_registry": {
