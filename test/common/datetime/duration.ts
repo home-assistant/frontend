@@ -4,7 +4,20 @@ import { formatDuration } from "../../../src/common/datetime/duration";
 
 describe("formatDuration", () => {
   it("works", () => {
+    assert.strictEqual(formatDuration("0", "ms"), "0");
+    assert.strictEqual(formatDuration("1", "ms"), "0.001");
+    assert.strictEqual(formatDuration("10", "ms"), "0.010");
+    assert.strictEqual(formatDuration("100", "ms"), "0.100");
+    assert.strictEqual(formatDuration("1000", "ms"), "1");
+    assert.strictEqual(formatDuration("1001", "ms"), "1.001");
+    assert.strictEqual(formatDuration("65000", "ms"), "1:05");
+    assert.strictEqual(formatDuration("3665000", "ms"), "1:01:05");
+    assert.strictEqual(formatDuration("39665050", "ms"), "11:01:05");
+    assert.strictEqual(formatDuration("932093000", "ms"), "258:54:53");
+
     assert.strictEqual(formatDuration("0", "s"), "0");
+    assert.strictEqual(formatDuration("1", "s"), "1");
+    assert.strictEqual(formatDuration("1.1", "s"), "1.100");
     assert.strictEqual(formatDuration("65", "s"), "1:05");
     assert.strictEqual(formatDuration("3665", "s"), "1:01:05");
     assert.strictEqual(formatDuration("39665", "s"), "11:01:05");
