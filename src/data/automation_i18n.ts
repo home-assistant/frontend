@@ -267,13 +267,6 @@ export const describeTrigger = (
       trigger.to === undefined
     ) {
       base += " state or any attributes";
-    } else if (
-      !trigger.attribute &&
-      trigger.from == null &&
-      trigger.to == null &&
-      (trigger.from === null || trigger.to === null)
-    ) {
-      base += " state (ignoring attribute changes)";
     }
 
     if (trigger.for) {

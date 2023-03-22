@@ -38,6 +38,8 @@ const stateTriggerStruct = assign(
   })
 );
 
+const ANY_STATE_VALUE = "__ANY_STATE_IGNORE_ATTRIBUTES__";
+
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -126,7 +128,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                       label: localize(
                         "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
                       ),
-                      value: "__ANY_STATE_IGNORE_ATTRIBUTES__",
+                      value: ANY_STATE_VALUE,
                     },
                   ]) as any,
               entity_id: entityId ? entityId[0] : undefined,
@@ -145,7 +147,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                       label: localize(
                         "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
                       ),
-                      value: "__ANY_STATE_IGNORE_ATTRIBUTES__",
+                      value: ANY_STATE_VALUE,
                     },
                   ]) as any,
               entity_id: entityId ? entityId[0] : undefined,
@@ -195,10 +197,10 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       for: trgFor,
     };
     if (!data.attribute && data.to === null) {
-      data.to = "__ANY_STATE_IGNORE_ATTRIBUTES__";
+      data.to = ANY_STATE_VALUE;
     }
     if (!data.attribute && data.from === null) {
-      data.from = "__ANY_STATE_IGNORE_ATTRIBUTES__";
+      data.from = ANY_STATE_VALUE;
     }
     const schema = this._schema(
       this.hass.localize,
@@ -222,13 +224,10 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
 
-    if (newTrigger.to && newTrigger.to === "__ANY_STATE_IGNORE_ATTRIBUTES__") {
+    if (newTrigger.to && newTrigger.to === ANY_STATE_VALUE) {
       newTrigger.to = newTrigger.attribute ? undefined : null;
     }
-    if (
-      newTrigger.from &&
-      newTrigger.from === "__ANY_STATE_IGNORE_ATTRIBUTES__"
-    ) {
+    if (newTrigger.from && newTrigger.from === ANY_STATE_VALUE) {
       newTrigger.from = newTrigger.attribute ? undefined : null;
     }
 
