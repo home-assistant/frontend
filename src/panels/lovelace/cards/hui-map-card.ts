@@ -202,7 +202,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _subscribeHistory() {
-    if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
+    if (
+      !isComponentLoaded(this.hass!, "history") ||
+      this._subscribed ||
+      !(this._config?.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)
+    ) {
       return;
     }
     this._subscribed = subscribeHistoryStatesTimeWindow(
@@ -323,7 +327,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       config: MapCardConfig,
       history?: HistoryStates
     ): HaMapPaths[] | undefined => {
-      if (!history) {
+      if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;
       }
 
