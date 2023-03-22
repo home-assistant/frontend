@@ -9,6 +9,7 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../types";
 import "../components/alarm_control_panel/ha-more-info-alarm_control_panel-modes";
+import { showEnterCodeDialogDialog } from "../components/alarm_control_panel/show-enter-code-dialog";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 
@@ -18,10 +19,25 @@ class MoreAlarmControlPanel extends LitElement {
 
   @property({ attribute: false }) public stateObj?: AlarmControlPanelEntity;
 
-  private _disarm() {
+  private async _disarm() {
+    let code: string | undefined;
+    let cancelled = false;
+
+    if (this.stateObj!.attributes.code_format) {
+      try {
+        code = await showEnterCodeDialogDialog(this, {
+          codeFormat: this.stateObj!.attributes.code_format,
+        });
+      } catch (err) {
+        cancelled = true;
+      }
+    }
+
+    if (cancelled) return;
+
     this.hass.callService("alarm_control_panel", "alarm_disarm", {
       entity_id: this.stateObj!.entity_id,
-      code: "1234",
+      code,
     });
   }
 

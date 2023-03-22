@@ -22,6 +22,7 @@ import {
   AlarmControlPanelEntityFeature,
 } from "../../../../data/alarm_control_panel";
 import { HomeAssistant } from "../../../../types";
+import { showEnterCodeDialogDialog } from "./show-enter-code-dialog";
 
 type AlarmMode =
   | "away"
@@ -104,18 +105,36 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
     }
   }
 
-  private _valueChanged(ev: CustomEvent) {
+  private async _valueChanged(ev: CustomEvent) {
     const mode = (ev.detail as any).value as AlarmMode;
 
     const { state: modeState, service } = ALARM_MODES[mode];
 
     if (modeState === this.stateObj.state) return;
 
-    this._currentMode = mode;
+    let code: string | undefined;
+    let cancelled = false;
+
+    if (
+      (mode === "disarmed" &&
+        this.stateObj.attributes.code_arm_required &&
+        this.stateObj.attributes.code_format) ||
+      this.stateObj.attributes.code_format
+    ) {
+      try {
+        code = await showEnterCodeDialogDialog(this, {
+          codeFormat: this.stateObj.attributes.code_format,
+        });
+      } catch (err) {
+        cancelled = true;
+      }
+    }
+
+    if (cancelled) return;
 
     this.hass.callService("alarm_control_panel", service, {
       entity_id: this.stateObj!.entity_id,
-      code: "1234",
+      code,
     });
   }
 
@@ -138,6 +157,7 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
         .options=${options}
         .value=${this._currentMode}
         @value-changed=${this._valueChanged}
+        no-optimistic-update
         .ariaLabel=${computeAttributeNameDisplay(
           this.hass.localize,
           this.stateObj,

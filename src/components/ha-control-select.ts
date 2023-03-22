@@ -37,6 +37,9 @@ export class HaControlSelect extends LitElement {
   @property({ type: Boolean, attribute: "hide-label" })
   public hideLabel = false;
 
+  @property({ type: Boolean, attribute: "no-optimistic-update" })
+  public noOptimisticUpdate = false;
+
   @state() private _activeIndex?: number;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -100,10 +103,13 @@ export class HaControlSelect extends LitElement {
 
   private _handleKeydown(ev: KeyboardEvent) {
     if (!this.options || this._activeIndex == null || this.disabled) return;
+    const value = this.options[this._activeIndex].value;
     switch (ev.key) {
       case " ":
-        this.value = this.options[this._activeIndex].value;
-        fireEvent(this, "value-changed", { value: this.value });
+        if (!this.noOptimisticUpdate) {
+          this.value = value;
+        }
+        fireEvent(this, "value-changed", { value });
         break;
       case "ArrowUp":
       case "ArrowLeft":
@@ -131,8 +137,10 @@ export class HaControlSelect extends LitElement {
   private _handleOptionClick(ev: MouseEvent) {
     if (this.disabled) return;
     const value = (ev.target as any).value;
-    this.value = value;
-    fireEvent(this, "value-changed", { value: this.value });
+    if (!this.noOptimisticUpdate) {
+      this.value = value;
+    }
+    fireEvent(this, "value-changed", { value });
   }
 
   private _handleOptionMouseDown(ev: MouseEvent) {
