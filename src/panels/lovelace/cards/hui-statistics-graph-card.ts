@@ -28,6 +28,8 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
 import { StatisticsGraphCardConfig } from "./types";
 
+export const DEFAULT_DAYS_TO_SHOW = 30;
+
 @customElement("hui-statistics-graph-card")
 export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
@@ -225,7 +227,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     const startDate = new Date();
     startDate.setTime(
       startDate.getTime() -
-        1000 * 60 * 60 * (24 * (this._config!.days_to_show || 30) + 1)
+        1000 *
+          60 *
+          60 *
+          (24 * (this._config!.days_to_show || DEFAULT_DAYS_TO_SHOW) + 1)
     );
     try {
       let unitClass;

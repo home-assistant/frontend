@@ -16,6 +16,7 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { GridCardConfig } from "../../cards/types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { HuiStackCardEditor } from "./hui-stack-card-editor";
+import { DEFAULT_COLUMNS } from "../../cards/hui-grid-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -32,7 +33,11 @@ const SCHEMA = [
     type: "grid",
     name: "",
     schema: [
-      { name: "columns", selector: { number: { min: 1, mode: "box" } } },
+      {
+        name: "columns",
+        default: DEFAULT_COLUMNS,
+        selector: { number: { min: 1, mode: "box" } },
+      },
       { name: "square", selector: { boolean: {} } },
     ],
   },
@@ -50,7 +55,7 @@ export class HuiGridCardEditor extends HuiStackCardEditor {
       return nothing;
     }
 
-    const data = { square: true, columns: 3, ...this._config };
+    const data = { square: true, ...this._config };
 
     return html`
       <ha-form
