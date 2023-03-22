@@ -41,14 +41,14 @@ export class HaDialogDatePicker extends LitElement {
       return nothing;
     }
     return html`<ha-dialog open @closed=${this.closeDialog}>
-      <app-datepicker
+      <app-date-picker
         .value=${this._value}
         .min=${this._params.min}
         .max=${this._params.max}
         .locale=${this._params.locale}
-        @datepicker-value-updated=${this._valueChanged}
+        @date-updated=${this._valueChanged}
         .firstDayOfWeek=${this._params.firstWeekday}
-      ></app-datepicker>
+      ></app-date-picker>
       <mwc-button slot="secondaryAction" @click=${this._setToday}>
         ${this.hass.localize("ui.dialogs.date-picker.today")}
       </mwc-button>
@@ -79,32 +79,32 @@ export class HaDialogDatePicker extends LitElement {
     haStyleDialog,
     css`
       ha-dialog {
-        --dialog-content-padding: 0;
         --justify-action-buttons: space-between;
       }
-      app-datepicker {
-        --app-datepicker-accent-color: var(--primary-color);
-        --app-datepicker-bg-color: transparent;
-        --app-datepicker-color: var(--primary-text-color);
-        --app-datepicker-disabled-day-color: var(--disabled-text-color);
-        --app-datepicker-focused-day-color: var(--text-primary-color);
-        --app-datepicker-focused-year-bg-color: var(--primary-color);
-        --app-datepicker-selector-color: var(--secondary-text-color);
-        --app-datepicker-separator-color: var(--divider-color);
-        --app-datepicker-weekday-color: var(--secondary-text-color);
+      app-date-picker {
+        --app-focus: var(--primary-text-color);
+        --app-hover: var(--primary-color);
+        --app-on-disabled: var(--disabled-color);
+        --app-on-focus: var(--primary-text-color);
+        --app-on-hover: var(--primary-text-color);
+        --app-on-primary: var(--text-primary-color);
+        --app-on-surface: var(--primary-text-color);
+        --app-on-today: var(--primary-text-color);
+        --app-on-week-number: var(--secondary-text-color);
+        --app-on-weekday: var(--secondary-text-color);
+        --app-primary: var(--primary-color);
+        --app-selected-focus: var(--primary-text-color);
+        --app-selected-hover: var(--primary-color);
+        --app-selected-on-focus: var(--text-primary-color);
+        --app-selected-on-hover: var(--text-primary-color);
+        --app-shape: var(--mdc-shape-medium);
+        --app-surface: transparent;
+        --app-today: var(--primary-text-color);
+
+        margin: auto;
       }
-      app-datepicker::part(calendar-day):focus {
-        outline: none;
-      }
-      @media all and (min-width: 450px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 300px;
-        }
-      }
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        app-datepicker {
-          width: 100%;
-        }
+      ha-dialog {
+        --mdc-dialog-min-width: 300px;
       }
     `,
   ];
