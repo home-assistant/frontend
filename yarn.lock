@@ -9543,7 +9543,7 @@ __metadata:
     leaflet: 1.9.3
     leaflet-draw: 1.0.4
     lint-staged: 13.2.0
-    lit: 2.6.1
+    lit: 2.7.0
     lit-analyzer: 1.2.1
     lodash.template: 4.5.0
     magic-string: 0.30.0
@@ -11199,7 +11199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-element@npm:^3.2.0, lit-element@npm:^3.3.0":
+"lit-element@npm:^3.3.0":
   version: 3.3.0
   resolution: "lit-element@npm:3.3.0"
   dependencies:
@@ -11210,7 +11210,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:^2.6.0, lit-html@npm:^2.7.0":
+"lit-html@npm:^2.7.0":
   version: 2.7.0
   resolution: "lit-html@npm:2.7.0"
   dependencies:
@@ -11230,18 +11230,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.6.1":
-  version: 2.6.1
-  resolution: "lit@npm:2.6.1"
-  dependencies:
-    "@lit/reactive-element": ^1.6.0
-    lit-element: ^3.2.0
-    lit-html: ^2.6.0
-  checksum: 74f2813152a48f195784f01b6b4ff7e4e7d8fa90ac272b725d1953fa3e1d6c9dca60b77da435f34144fcdd38705480889a8ea986835676932a8559c897cea517
-  languageName: node
-  linkType: hard
-
-"lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.3.0, lit@npm:^2.5.0":
+"lit@npm:2.7.0, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.3.0, lit@npm:^2.5.0":
   version: 2.7.0
   resolution: "lit@npm:2.7.0"
   dependencies:
