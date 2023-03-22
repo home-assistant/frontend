@@ -11,7 +11,7 @@ export const enum FanEntityFeature {
 }
 
 interface FanEntityAttributes extends HassEntityAttributeBase {
-  direction?: number;
+  direction?: string;
   oscillating?: boolean;
   percentage?: number;
   percentage_step?: number;
