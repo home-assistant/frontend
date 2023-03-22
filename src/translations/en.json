@@ -899,6 +899,7 @@
         "light": {
           "toggle": "Toggle",
           "change_color": "Change color",
+          "set_white": "Set white",
           "select_effect": "Select effect",
           "brightness": "Brightness",
           "color_picker": {
@@ -907,6 +908,17 @@
               "color": "Color",
               "color_temp": "Temperature"
             }
+          }
+        },
+        "fan": {
+          "set_forward_direction": "Set forward direction",
+          "set_reverse_direction": "Set reverse direction",
+          "turn_on_oscillating": "Turn on oscillating",
+          "turn_off_oscillating": "Turn off oscillating",
+          "speed": {
+            "low": "Low",
+            "medium": "Medium",
+            "high": "High"
           }
         }
       },
@@ -2000,7 +2012,7 @@
             "enable": "[%key:ui::common::enable%]",
             "disable": "[%key:ui::common::disable%]",
             "disabled": "Automation is disabled",
-            "read_only": "This automation can not be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
+            "read_only": "This automation cannot be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
@@ -2492,7 +2504,7 @@
             "introduction": "Use scripts to run a sequence of actions.",
             "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "show_info": "[%key:ui::panel::config::automation::editor::show_info%]",
-            "read_only": "This script can not be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
+            "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "header": "Script: {name}",
@@ -3147,7 +3159,7 @@
             "submit": "Submit",
             "next": "Next",
             "found_following_devices": "We found the following devices",
-            "yaml_only_title": "This device can not be added from the UI",
+            "yaml_only_title": "This device cannot be added from the UI",
             "yaml_only": "You can add this device by adding it to your ''configuration.yaml''. See the documentation for more information.",
             "open_documentation": "Open documentation",
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
@@ -3293,10 +3305,18 @@
           "my_network": "My network",
           "no_preferred_network": "You don't have a preferred network yet.",
           "add_open_thread_border_router": "Add an OpenThread border router",
+          "reset_border_router": "Reset border router",
+          "add_to_my_network": "Add to my network",
+          "no_routers_otbr_network": "No border routers where found, maybe the border router is not configured correctly. You can try to reset it to the factory settings.",
           "add_dataset_from_tlv": "Add dataset from TLV",
           "add_dataset": "Add Thread dataset",
           "add_dataset_label": "Operational dataset TLV",
           "add_dataset_button": "Add dataset",
+          "confirm_reset_border_router": "Reset border router?",
+          "confirm_reset_border_router_text": "This will reset the Home Assistant border router to its factory defaults and form a new Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+          "confirm_set_dataset_border_router": "Reconfigure border router?",
+          "confirm_set_dataset_border_router_text": "This will reconfigure the Home Assistant border router to use a different Thread network. The old network may no longer be available, and any devices that were attached to this network may need to be recomissioned.",
+          "otbr_config_failed": "Failed to configure the border router",
           "confirm_delete_dataset": "Delete {name} dataset?",
           "confirm_delete_dataset_text": "This network will be removed from Home Assistant.",
           "no_border_routers": "No border routers found",
@@ -3754,7 +3774,28 @@
         },
         "analytics": {
           "caption": "Analytics",
-          "description": "Learn how to share data to improve Home Assistant"
+          "description": "Learn how to share data to improve Home Assistant",
+          "preferences": {
+            "base": {
+              "title": "Basic analytics",
+              "description": "This includes information about your system."
+            },
+            "usage": {
+              "title": "Usage",
+              "description": "Details of what you use with Home Assistant"
+            },
+            "statistics": {
+              "title": "Statistical data",
+              "description": "Counts containing total number of datapoints."
+            },
+            "diagnostics": {
+              "title": "Diagnostics",
+              "description": "Share crash reports when unexpected errors occur."
+            }
+          },
+          "need_base_enabled": "You need to enable basic analytics for this option to be available",
+          "learn_more": "How we process your data",
+          "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features."
         },
         "network": {
           "caption": "Network",
@@ -5027,7 +5068,28 @@
           "finish": "Finish"
         },
         "analytics": {
-          "finish": "Next"
+          "finish": "Next",
+          "preferences": {
+            "base": {
+              "title": "[%key:ui::panel::config::analytics::preferences::base::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::base::description%]"
+            },
+            "usage": {
+              "title": "[%key:ui::panel::config::analytics::preferences::usage::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::usage::description%]"
+            },
+            "statistics": {
+              "title": "[%key:ui::panel::config::analytics::preferences::statistics::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::statistics::description%]"
+            },
+            "diagnostics": {
+              "title": "[%key:ui::panel::config::analytics::preferences::diagnostics::title%]",
+              "description": "[%key:ui::panel::config::analytics::preferences::diagnostics::description%]"
+            }
+          },
+          "need_base_enabled": "[%key:ui::panel::config::analytics::need_base_enabled%]",
+          "learn_more": "[%key:ui::panel::config::analytics::learn_more%]",
+          "intro": "[%key:ui::panel::config::analytics::intro%]"
         },
         "restore": {
           "description": "Alternatively you can restore from a previous backup.",

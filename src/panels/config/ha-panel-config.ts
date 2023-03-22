@@ -353,6 +353,13 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-areas",
         load: () => import("./areas/ha-config-areas"),
       },
+      voice_assistant: {
+        tag: "assist-pipeline-debug",
+        load: () =>
+          import(
+            "./integrations/integration-panels/voice_assistant/assist/assist-pipeline-debug"
+          ),
+      },
       automation: {
         tag: "ha-config-automation",
         load: () => import("./automation/ha-config-automation"),

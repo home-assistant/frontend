@@ -29,19 +29,6 @@ const A11Y_KEY_CODES = new Set([
   "End",
 ]);
 
-const getPercentageFromEvent = (e: HammerInput, vertical: boolean) => {
-  if (vertical) {
-    const y = e.center.y;
-    const offset = e.target.getBoundingClientRect().top;
-    const total = e.target.clientHeight;
-    return Math.max(Math.min(1, 1 - (y - offset) / total), 0);
-  }
-  const x = e.center.x;
-  const offset = e.target.getBoundingClientRect().left;
-  const total = e.target.clientWidth;
-  return Math.max(Math.min(1, (x - offset) / total), 0);
-};
-
 @customElement("ha-control-slider")
 export class HaControlSlider extends LitElement {
   @property({ type: Boolean, reflect: true })
@@ -157,7 +144,7 @@ export class HaControlSlider extends LitElement {
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;
-        const percentage = getPercentageFromEvent(e, this.vertical);
+        const percentage = this._getPercentageFromEvent(e);
         this.value = this.percentageToValue(percentage);
         const value = this.steppedValue(this.value);
         fireEvent(this, "slider-moved", { value });
@@ -165,7 +152,7 @@ export class HaControlSlider extends LitElement {
       this._mc.on("panend", (e) => {
         if (this.disabled) return;
         this.pressed = false;
-        const percentage = getPercentageFromEvent(e, this.vertical);
+        const percentage = this._getPercentageFromEvent(e);
         this.value = this.steppedValue(this.percentageToValue(percentage));
         fireEvent(this, "slider-moved", { value: undefined });
         fireEvent(this, "value-changed", { value: this.value });
@@ -173,7 +160,7 @@ export class HaControlSlider extends LitElement {
 
       this._mc.on("singletap", (e) => {
         if (this.disabled) return;
-        const percentage = getPercentageFromEvent(e, this.vertical);
+        const percentage = this._getPercentageFromEvent(e);
         this.value = this.steppedValue(this.percentageToValue(percentage));
         fireEvent(this, "value-changed", { value: this.value });
       });
@@ -234,6 +221,19 @@ export class HaControlSlider extends LitElement {
     fireEvent(this, "value-changed", { value: this.value });
   }
 
+  private _getPercentageFromEvent = (e: HammerInput) => {
+    if (this.vertical) {
+      const y = e.center.y;
+      const offset = e.target.getBoundingClientRect().top;
+      const total = e.target.clientHeight;
+      return Math.max(Math.min(1, 1 - (y - offset) / total), 0);
+    }
+    const x = e.center.x;
+    const offset = e.target.getBoundingClientRect().left;
+    const total = e.target.clientWidth;
+    return Math.max(Math.min(1, (x - offset) / total), 0);
+  };
+
   protected render(): TemplateResult {
     return html`
       <div
@@ -250,7 +250,6 @@ export class HaControlSlider extends LitElement {
                 <div
                   class=${classMap({
                     "slider-track-cursor": true,
-                    vertical: this.vertical,
                   })}
                 ></div>
               `
@@ -259,7 +258,6 @@ export class HaControlSlider extends LitElement {
               <div
                 class=${classMap({
                   "slider-track-bar": true,
-                  vertical: this.vertical,
                   [this.mode ?? "start"]: true,
                   "show-handle": this.showHandle,
                 })}
@@ -369,7 +367,7 @@ export class HaControlSlider extends LitElement {
         left: var(--handle-margin);
       }
 
-      .slider .slider-track-bar.vertical {
+      :host([vertical]) .slider .slider-track-bar {
         bottom: 0;
         left: 0;
         transform: translate3d(
@@ -379,7 +377,7 @@ export class HaControlSlider extends LitElement {
         );
         border-radius: var(--border-radius) var(--border-radius) 0 0;
       }
-      .slider .slider-track-bar.vertical:after {
+      :host([vertical]) .slider .slider-track-bar:after {
         top: var(--handle-margin);
         right: 0;
         left: 0;
@@ -387,7 +385,7 @@ export class HaControlSlider extends LitElement {
         width: 50%;
         height: var(--handle-size);
       }
-      .slider .slider-track-bar.vertical.end {
+      :host([vertical]) .slider .slider-track-bar.end {
         top: 0;
         bottom: initial;
         transform: translate3d(
@@ -397,7 +395,7 @@ export class HaControlSlider extends LitElement {
         );
         border-radius: 0 0 var(--border-radius) var(--border-radius);
       }
-      .slider .slider-track-bar.vertical.end::after {
+      :host([vertical]) .slider .slider-track-bar.end::after {
         top: initial;
         bottom: var(--handle-margin);
       }
@@ -432,7 +430,7 @@ export class HaControlSlider extends LitElement {
         width: var(--handle-size);
       }
 
-      .slider .slider-track-cursor.vertical {
+      :host([vertical]) .slider .slider-track-cursor {
         top: initial;
         right: 0;
         left: 0;
@@ -440,7 +438,7 @@ export class HaControlSlider extends LitElement {
         height: var(--cursor-size);
         width: 100%;
       }
-      .slider .slider-track-cursor.vertical:after {
+      :host([vertical]) .slider .slider-track-cursor:after {
         height: var(--handle-size);
         width: 50%;
       }

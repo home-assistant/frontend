@@ -102,9 +102,9 @@
       }
     </script>
     <script>
-    {% for extra_module in extra_modules -%}
+    {%- for extra_module in extra_modules -%}
     import("{{ extra_module }}");
-    {% endfor -%}
+    {%- endfor -%}
     </script>
 
     <script>
@@ -127,9 +127,9 @@
     </script>
     <script>
       if (!window.latestJS) {
-        {% for extra_script in extra_js_es5 -%}
+        {%- for extra_script in extra_js_es5 -%}
         _ls("{{ extra_script }}");
-        {% endfor -%}
+        {%- endfor -%}
       }
     </script>
   </body>

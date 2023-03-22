@@ -20,7 +20,7 @@ require("./rollup.js");
 
 gulp.task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
-  const files = glob.sync(path.resolve(pageDir, "**/*"));
+  const files = await glob(path.resolve(pageDir, "**/*"));
 
   const galleryBuild = path.resolve(paths.gallery_dir, "build");
   fs.mkdirSync(galleryBuild, { recursive: true });

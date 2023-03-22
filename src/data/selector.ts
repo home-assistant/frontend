@@ -13,6 +13,7 @@ export type Selector =
   | ColorRGBSelector
   | ColorTempSelector
   | ConfigEntrySelector
+  | ConstantSelector
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
@@ -85,6 +86,14 @@ export interface ColorTempSelector {
 export interface ConfigEntrySelector {
   config_entry: {
     integration?: string;
+  } | null;
+}
+
+export interface ConstantSelector {
+  constant: {
+    value: string | number | boolean;
+    label?: string;
+    translation_key?: string;
   } | null;
 }
 

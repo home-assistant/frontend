@@ -4,7 +4,7 @@ import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { getStates } from "../../common/entity/get_states";
-import { formatAttributeValue } from "../../data/entity_attributes";
+import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
@@ -66,7 +66,14 @@ class HaEntityStatePicker extends LitElement {
                     this.hass.entities,
                     key
                   )
-                : formatAttributeValue(this.hass, key),
+                : computeAttributeValueDisplay(
+                    this.hass.localize,
+                    state,
+                    this.hass.locale,
+                    this.hass.entities,
+                    this.attribute,
+                    key
+                  ),
             }))
           : []),
       ];

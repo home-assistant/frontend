@@ -96,6 +96,9 @@ export class HaDialogDatePicker extends LitElement {
       app-datepicker::part(calendar-day):focus {
         outline: none;
       }
+      app-datepicker::part(body) {
+        direction: ltr;
+      }
       @media all and (min-width: 450px) {
         ha-dialog {
           --mdc-dialog-min-width: 300px;
