@@ -10,7 +10,11 @@ import {
   localizeDeviceAutomationCondition,
   localizeDeviceAutomationTrigger,
 } from "./device_automation";
-import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
+import {
+  computeAttributeNameDisplay,
+  computeAttributeValueDisplay,
+} from "../common/entity/compute_attribute_display";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 
 const describeDuration = (forTime: number | string | ForDict) => {
   let duration: string | null;
@@ -114,7 +118,7 @@ export const describeTrigger = (
         stateObj,
         hass.entities,
         trigger.attribute
-      )} from`;
+      )} of`;
     }
 
     if (Array.isArray(trigger.entity_id)) {
@@ -141,35 +145,120 @@ export const describeTrigger = (
 
     base += ` ${entities} changes`;
 
-    if (trigger.from) {
-      let from = "";
-      if (Array.isArray(trigger.from)) {
+    const stateObj =
+      hass.states[
+        Array.isArray(trigger.entity_id)
+          ? trigger.entity_id[0]
+          : trigger.entity_id
+      ];
+    if (trigger.from !== undefined) {
+      if (trigger.from === null) {
+        if (!trigger.attribute) {
+          base += " from any state";
+        }
+      } else if (Array.isArray(trigger.from)) {
+        let from = "";
         for (const [index, state] of trigger.from.entries()) {
           from += `${index > 0 ? "," : ""} ${
             trigger.from.length > 1 && index === trigger.from.length - 1
               ? "or"
               : ""
-          } ${state}`;
+          } '${
+            trigger.attribute
+              ? computeAttributeValueDisplay(
+                  hass.localize,
+                  stateObj,
+                  hass.locale,
+                  hass.entities,
+                  trigger.attribute,
+                  state
+                )
+              : computeStateDisplay(
+                  hass.localize,
+                  stateObj,
+                  hass.locale,
+                  hass.entities,
+                  state
+                )
+          }'`;
+        }
+        if (from) {
+          base += ` from ${from}`;
         }
       } else {
-        from = trigger.from.toString();
+        base += ` from '${
+          trigger.attribute
+            ? computeAttributeValueDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                trigger.attribute,
+                trigger.from
+              ).toString()
+            : computeStateDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                trigger.from.toString()
+              ).toString()
+        }'`;
       }
-      base += ` from ${from}`;
     }
 
-    if (trigger.to) {
-      let to = "";
-      if (Array.isArray(trigger.to)) {
+    if (trigger.to !== undefined) {
+      if (trigger.to === null) {
+        if (!trigger.attribute) {
+          base += " to any state";
+        }
+      } else if (Array.isArray(trigger.to)) {
+        let to = "";
         for (const [index, state] of trigger.to.entries()) {
           to += `${index > 0 ? "," : ""} ${
             trigger.to.length > 1 && index === trigger.to.length - 1 ? "or" : ""
-          } ${state}`;
+          } '${
+            trigger.attribute
+              ? computeAttributeValueDisplay(
+                  hass.localize,
+                  stateObj,
+                  hass.locale,
+                  hass.entities,
+                  trigger.attribute,
+                  state
+                ).toString()
+              : computeStateDisplay(
+                  hass.localize,
+                  stateObj,
+                  hass.locale,
+                  hass.entities,
+                  state
+                ).toString()
+          }'`;
         }
-      } else if (trigger.to) {
-        to = trigger.to.toString();
+        if (to) {
+          base += ` to ${to}`;
+        }
+      } else {
+        base += ` to '${
+          trigger.attribute
+            ? computeAttributeValueDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                trigger.attribute,
+                trigger.to
+              ).toString()
+            : computeStateDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                trigger.to.toString()
+              ).toString()
+        }'`;
       }
-
-      base += ` to ${to}`;
     }
 
     if (trigger.for) {
