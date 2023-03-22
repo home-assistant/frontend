@@ -88,16 +88,16 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     },
     watch: ["_config"],
   })
-  private _state?: HassEntity;
+  _state?: HassEntity;
 
   @consume({ context: themesContext, subscribe: true })
-  private _themes!: Themes;
+  _themes!: Themes;
 
   @consume({ context: localizeContext, subscribe: true })
-  private _localize!: LocalizeFunc;
+  _localize!: LocalizeFunc;
 
   @consume({ context: localeContext, subscribe: true })
-  private _locale!: FrontendLocaleData;
+  _locale!: FrontendLocaleData;
 
   @consume({ context: entitiesContext, subscribe: true })
   @transform<HomeAssistant["entities"], HomeAssistant["entities"]>({
@@ -108,7 +108,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     },
     watch: ["_config"],
   })
-  private _entities!: HomeAssistant["entities"];
+  _entities!: HomeAssistant["entities"];
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
