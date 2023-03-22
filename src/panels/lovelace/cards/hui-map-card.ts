@@ -33,6 +33,7 @@ import {
   HistoryStates,
   subscribeHistoryStatesTimeWindow,
 } from "../../../data/history";
+import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -185,7 +186,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return true;
     }
 
-    return false;
+    return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
   public connectedCallback() {
