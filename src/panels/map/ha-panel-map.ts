@@ -38,7 +38,12 @@ class HaPanelMap extends LitElement {
               : ""}
           </app-toolbar>
         </app-header>
-        <ha-map .hass=${this.hass} .entities=${this._entities} autoFit></ha-map>
+        <ha-map
+          .hass=${this.hass}
+          .entities=${this._entities}
+          autoFit
+          interactiveZones
+        ></ha-map>
       </ha-app-layout>
     `;
   }
