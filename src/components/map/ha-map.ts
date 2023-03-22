@@ -50,6 +50,10 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Boolean }) public autoFit = false;
 
+  @property({ type: Boolean }) public renderPassive = false;
+
+  @property({ type: Boolean }) public interactiveZones = false;
+
   @property({ type: Boolean }) public fitZones?: boolean;
 
   @property({ type: Boolean }) public darkMode?: boolean;
@@ -321,6 +325,10 @@ export class HaMap extends ReactiveElement {
 
     const computedStyles = getComputedStyle(this);
     const zoneColor = computedStyles.getPropertyValue("--accent-color");
+    const passiveZoneColor = computedStyles.getPropertyValue(
+      "--secondary-text-color"
+    );
+
     const darkPrimaryColor = computedStyles.getPropertyValue(
       "--dark-primary-color"
     );
@@ -350,7 +358,7 @@ export class HaMap extends ReactiveElement {
 
       if (computeStateDomain(stateObj) === "zone") {
         // DRAW ZONE
-        if (passive) {
+        if (passive && !this.renderPassive) {
           continue;
         }
 
@@ -374,7 +382,7 @@ export class HaMap extends ReactiveElement {
               iconSize: [24, 24],
               className,
             }),
-            interactive: false,
+            interactive: this.interactiveZones,
             title,
           })
         );
@@ -383,7 +391,7 @@ export class HaMap extends ReactiveElement {
         this._mapZones.push(
           Leaflet.circle([latitude, longitude], {
             interactive: false,
-            color: zoneColor,
+            color: passive ? passiveZoneColor : zoneColor,
             radius,
           })
         );

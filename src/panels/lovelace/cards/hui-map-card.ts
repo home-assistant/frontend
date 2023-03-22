@@ -16,7 +16,7 @@ import { getColorByIndex } from "../../../common/color/colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import {
-  formatTime,
+  formatTimeWithSeconds,
   formatTimeWeekday,
 } from "../../../common/datetime/format_time";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -152,6 +152,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit}
             .darkMode=${this._config.dark_mode}
+            interactiveZones
+            renderPassive
           ></ha-map>
           <ha-icon-button
             .label=${this.hass!.localize(
@@ -329,6 +331,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       const paths: HaMapPaths[] = [];
 
       for (const entityId of Object.keys(history)) {
+        if (computeDomain(entityId) === "zone") {
+          continue;
+        }
         const entityStates = history[entityId];
         if (!entityStates?.length) {
           continue;
@@ -349,7 +354,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             // date and time
             p.tooltip = formatDateTime(t, this.hass.locale);
           } else if (isToday(t)) {
-            p.tooltip = formatTime(t, this.hass.locale);
+            p.tooltip = formatTimeWithSeconds(t, this.hass.locale);
           } else {
             p.tooltip = formatTimeWeekday(t, this.hass.locale);
           }
