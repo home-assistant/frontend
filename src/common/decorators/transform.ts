@@ -6,7 +6,7 @@ import { shallowEqual } from "../util/shallow-equal";
  * Transform function type.
  */
 export interface Transformer<T = any, V = any> {
-  (value: V, oldValue: V): T;
+  (value: V): T;
 }
 
 type ReactiveTransformElement = ReactiveElement & {
@@ -40,7 +40,7 @@ export const transform =
           const trnsformr: Transformer<T, V> | undefined =
             this._transformers.get(key);
           if (trnsformr) {
-            this[`__transform_${key}`] = trnsformr.call(this, value, oldValue);
+            this[`__transform_${key}`] = trnsformr.call(this, value);
           } else {
             this[`__transform_${key}`] = value;
           }
