@@ -43,6 +43,9 @@ import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ButtonCardConfig } from "./types";
+import { LocalizeFunc } from "../../../common/translations/localize";
+import { FrontendLocaleData } from "../../../data/translation";
+import { Themes } from "../../../data/ws-themes";
 
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
@@ -88,15 +91,23 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   private _state?: HassEntity;
 
   @consume({ context: themesContext, subscribe: true })
-  private _themes!: HomeAssistant["themes"];
+  private _themes!: Themes;
 
   @consume({ context: localizeContext, subscribe: true })
-  private _localize!: HomeAssistant["localize"];
+  private _localize!: LocalizeFunc;
 
   @consume({ context: localeContext, subscribe: true })
-  private _locale!: HomeAssistant["locale"];
+  private _locale!: FrontendLocaleData;
 
   @consume({ context: entitiesContext, subscribe: true })
+  @transform<HomeAssistant["entities"], HomeAssistant["entities"]>({
+    transformer: function (this: HuiButtonCard, value) {
+      return this._config?.entity
+        ? { [this._config?.entity]: value[this._config?.entity] }
+        : {};
+    },
+    watch: ["_config"],
+  })
   private _entities!: HomeAssistant["entities"];
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
