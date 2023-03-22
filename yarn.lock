@@ -1509,12 +1509,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/fast-memoize@npm:1.2.8":
-  version: 1.2.8
-  resolution: "@formatjs/fast-memoize@npm:1.2.8"
+"@formatjs/fast-memoize@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@formatjs/fast-memoize@npm:2.0.0"
   dependencies:
     tslib: ^2.4.0
-  checksum: 19f7f04657363d3ca4854ba3e5ecf4ae5bf0575c12ba8b2b24a7128131b38d91cf2692aeab778d42e9aa2e27cd2ea3b1e23cabf8ce4dff42988dcf65582c3a94
+  checksum: 0afca38e57a90bbb204cf56116f96c18066c4df6a46dbed010f4f9e724ff4efa0e3a9e73717a4112096b31a93cc2136d26ccce0acb16400843a30ef82440c8ae
   languageName: node
   linkType: hard
 
@@ -9638,7 +9638,7 @@ fsevents@~2.3.2:
     husky: 8.0.3
     idb-keyval: 6.2.0
     instant-mocha: 1.5.0
-    intl-messageformat: 10.3.1
+    intl-messageformat: 10.3.2
     js-yaml: 4.1.0
     jszip: 3.10.1
     leaflet: 1.9.3
@@ -10142,15 +10142,15 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"intl-messageformat@npm:10.3.1":
-  version: 10.3.1
-  resolution: "intl-messageformat@npm:10.3.1"
+"intl-messageformat@npm:10.3.2":
+  version: 10.3.2
+  resolution: "intl-messageformat@npm:10.3.2"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
-    "@formatjs/fast-memoize": 1.2.8
+    "@formatjs/fast-memoize": 2.0.0
     "@formatjs/icu-messageformat-parser": 2.3.0
     tslib: ^2.4.0
-  checksum: 926f07c8a09ad10feaf2619119b8fc77057cb263d6dec1a06a74ca62b530cfcdfa36f58bd40691c1d3cd41c350b75bc7d96f0e402a81e0ecb700d4d7d0d8cce9
+  checksum: 466f2d01e6b7acc621699539266a24a0fbf66099fa0e3f1b74cbdba223280f9aef736236527b5248fef420743c5070244cc2d76506c323590e9b445ff10b4e00
   languageName: node
   linkType: hard
 
