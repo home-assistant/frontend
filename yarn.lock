@@ -1439,18 +1439,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.9.2":
-  version: 6.9.2
-  resolution: "@codemirror/view@npm:6.9.2"
-  dependencies:
-    "@codemirror/state": ^6.1.4
-    style-mod: ^4.0.0
-    w3c-keyname: ^2.2.4
-  checksum: e6faaf1b2daf9e4605eafd1782a0a6363cf0ee8a6c4e1aa57ebea2b2cc2b402914f07448f12210da0144126860adab052442c51831911a326867a53c745a60cf
-  languageName: node
-  linkType: hard
-
-"@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.6.0":
+"@codemirror/view@npm:6.9.3, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.6.0":
   version: 6.9.3
   resolution: "@codemirror/view@npm:6.9.3"
   dependencies:
@@ -1642,25 +1631,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/core@npm:6.1.4":
-  version: 6.1.4
-  resolution: "@fullcalendar/core@npm:6.1.4"
+"@fullcalendar/core@npm:6.1.5":
+  version: 6.1.5
+  resolution: "@fullcalendar/core@npm:6.1.5"
   dependencies:
-    preact: ^10.0.5
-  checksum: 3c659bbaf814a1f084ddd3e2eeaf68bb48f268a36560abb399c4aa29a40d6017c5bb1cd87c43664f333a1f6682c32b6a85ffb661538ea0faa78a1c119760a381
+    preact: ~10.12.1
+  checksum: 6892c11c40899fc986edc3d36b8e764c8e78f1c53df2c6e23d418d0191fc0bd1562bd0d9cfc74fd986d02ac1e18c8a4a9d34a40b8329964cc9fb9f8ab8367635
   languageName: node
   linkType: hard
 
-"@fullcalendar/daygrid@npm:6.1.4":
-  version: 6.1.4
-  resolution: "@fullcalendar/daygrid@npm:6.1.4"
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.4
-  checksum: 24b3c6e521c5e5288cb05d34e080daace1138b4b421a5dd059938a8c9b7730374b7f07908984b124d48e810276a3c24f1e1c7b6080d375ca80e4d7ef387d7774
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/daygrid@npm:~6.1.4":
+"@fullcalendar/daygrid@npm:6.1.5, @fullcalendar/daygrid@npm:~6.1.5":
   version: 6.1.5
   resolution: "@fullcalendar/daygrid@npm:6.1.5"
   peerDependencies:
@@ -1669,32 +1649,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/interaction@npm:6.1.4":
-  version: 6.1.4
-  resolution: "@fullcalendar/interaction@npm:6.1.4"
+"@fullcalendar/interaction@npm:6.1.5":
+  version: 6.1.5
+  resolution: "@fullcalendar/interaction@npm:6.1.5"
   peerDependencies:
-    "@fullcalendar/core": ~6.1.4
-  checksum: 5e282ba36bfbc306e8e36ea88b9df0c5a11b7bcdf4c8952377396da24a3ca058b436a39e9002eba9fc1ca8ce70ca23ef2fd74ef08f48d4b8b45576f7e30a6bea
+    "@fullcalendar/core": ~6.1.5
+  checksum: dd3d7fb8ba33b13b79ee0788f81fd6831f90d3663e04467fd4b72f1c82af6d6e7d1a91ea8ea8c2c203c39d7f6a388d1bbfd501f79f7198629da03c9c9385588d
   languageName: node
   linkType: hard
 
-"@fullcalendar/list@npm:6.1.4":
-  version: 6.1.4
-  resolution: "@fullcalendar/list@npm:6.1.4"
+"@fullcalendar/list@npm:6.1.5":
+  version: 6.1.5
+  resolution: "@fullcalendar/list@npm:6.1.5"
   peerDependencies:
-    "@fullcalendar/core": ~6.1.4
-  checksum: 0338a8bb1546e103921d1d6a5baf54b9d43759d9aaf905357c2272e01cbd42e120812128b2f2661d0ef82abc0b8447b16e6f1618968487ffa4c6f0a570f907d5
+    "@fullcalendar/core": ~6.1.5
+  checksum: 4879294b57445a47a15c0316b3fa79265afaf02155b4fd250429a9af9fcb90eadf0842b105fa2a984efe2f044b205dbd48dffe7237d5ec9341c549fea251ad08
   languageName: node
   linkType: hard
 
-"@fullcalendar/timegrid@npm:6.1.4":
-  version: 6.1.4
-  resolution: "@fullcalendar/timegrid@npm:6.1.4"
+"@fullcalendar/timegrid@npm:6.1.5":
+  version: 6.1.5
+  resolution: "@fullcalendar/timegrid@npm:6.1.5"
   dependencies:
-    "@fullcalendar/daygrid": ~6.1.4
+    "@fullcalendar/daygrid": ~6.1.5
   peerDependencies:
-    "@fullcalendar/core": ~6.1.4
-  checksum: 1329b941f94e2c17a866e612e7d92adacbca0364ba7e76908caa2a936f526c0cde43fa050f571634dd2db2e779f1cbd3115b64cbc0b524d34f0c4d61243659b8
+    "@fullcalendar/core": ~6.1.5
+  checksum: 236aabb57a3a8e8f41c43bf3a76b074731fee8a4e815b3c32a3532a7503678d488bbc1b2c74c270580ef37fb2d9ed9edf0b4646943812a5c238cd1cd7104e5f8
   languageName: node
   linkType: hard
 
@@ -2002,13 +1982,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:1.0.0-rc.4":
-  version: 1.0.0-rc.4
-  resolution: "@lit/reactive-element@npm:1.0.0-rc.4"
-  checksum: 89bf91f68e264e5ce12d5bd7e903bca53cd07886e644c5fc5c475b5261a76fd47433f561f2827aa60fc0f92a11936fa60d51cd6690fdd883a32c7053cc9a9314
-  languageName: node
-  linkType: hard
-
 "@lit/reactive-element@npm:^1.3.0, @lit/reactive-element@npm:^1.6.0":
   version: 1.6.1
   resolution: "@lit/reactive-element@npm:1.6.1"
@@ -2018,30 +1991,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/animation@npm:14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/animation@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: de125a476effec28a055a5e7025271f6d530c9953ac3814ea58e9602fc22b39612d24bc38d5c2e5d6ec2228d46b4c77b7e4acc9cfd6180d7dcacca4992e403fd
-  languageName: node
-  linkType: hard
-
 "@material/animation@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/animation@npm:14.0.0-canary.53b3cad2f.0"
   dependencies:
     tslib: ^2.1.0
   checksum: 9b5190654c3752468db00345d947ce68b95877734846cc33e73f85e3b13f9bc41bc8fdf588cbf22e17bec80d021d43597f638f811946555d2e11b383f4cb3812
-  languageName: node
-  linkType: hard
-
-"@material/base@npm:14.0.0-canary.261f2db59.0, @material/base@npm:=14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/base@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: 9e4074a14ba8055437589bd9be67c03627e61711a4757f2723e7d07559a3abf1374718592620bf2efa8f4dd80718cd3e2e6ab8d0c7b2f65ff279eeab5249b96a
   languageName: node
   linkType: hard
 
@@ -2190,16 +2145,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/dom@npm:14.0.0-canary.261f2db59.0, @material/dom@npm:=14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/dom@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    "@material/feature-targeting": 14.0.0-canary.261f2db59.0
-    tslib: ^2.1.0
-  checksum: d43a19439f4000f283d02046ffe73854c6568fbdf8572ddfb183f33dbfe91d7426b92f1acd5f1d5f80f135ab6e86f2e72efab367f8d40e07ba995a7209639554
-  languageName: node
-  linkType: hard
-
 "@material/dom@npm:14.0.0-canary.53b3cad2f.0, @material/dom@npm:=14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/dom@npm:14.0.0-canary.53b3cad2f.0"
@@ -2241,15 +2186,6 @@ __metadata:
     "@material/theme": 14.0.0-canary.53b3cad2f.0
     tslib: ^2.1.0
   checksum: 2f8945c7b64cc2b6f9786e17ecddf3edcb9e5b4dd11e8bd451be57aaf439c755864ee09c3f62c671cb52d128d50f5da0a1f817a40d4d0b573915343d4505a238
-  languageName: node
-  linkType: hard
-
-"@material/feature-targeting@npm:14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/feature-targeting@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: e73f98c59b1b2bb0753368d5257b81ac0c836e14db82524c5897c58d95dbbaef4f936f711b4d3f9e07adfef8c68cb9c0bc095e2a3f42f50cb3c9f0f7a4c4e00e
   languageName: node
   linkType: hard
 
@@ -2404,19 +2340,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-base@npm:^0.25.3":
-  version: 0.25.3
-  resolution: "@material/mwc-base@npm:0.25.3"
-  dependencies:
-    "@lit/reactive-element": 1.0.0-rc.4
-    "@material/base": =14.0.0-canary.261f2db59.0
-    "@material/dom": =14.0.0-canary.261f2db59.0
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 81efc38cd1d295182de05dba36a4e3407cb81aafe9fa31b8f48439646e962630c27af11c23820bd07b9f153b73a86f89dbede481a75a89e7d3976d02abab4109
-  languageName: node
-  linkType: hard
-
 "@material/mwc-base@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-base@npm:0.27.0"
@@ -2429,7 +2352,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-button@npm:0.27.0, @material/mwc-button@npm:^0.27.0":
+"@material/mwc-button@npm:0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-button@npm:0.27.0"
   dependencies:
@@ -2438,18 +2361,6 @@ __metadata:
     lit: ^2.0.0
     tslib: ^2.0.1
   checksum: 2ef5cc09515540ada2b132ff614e894ad9f184790b6ae5c4254ce39383b6c16bbf3e823f945e4e57bd93597992469c40a3be4eca40f7bc08cd13f7bcf8abf9b2
-  languageName: node
-  linkType: hard
-
-"@material/mwc-button@npm:^0.25.3":
-  version: 0.25.3
-  resolution: "@material/mwc-button@npm:0.25.3"
-  dependencies:
-    "@material/mwc-icon": ^0.25.3
-    "@material/mwc-ripple": ^0.25.3
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 4d1ccbe481033b55f154a28cdb743596876bf77fb03399d530b117a58ea37af6228512d6cea7499d5c601a3b07e6b6db2d0fa54ff3cd5832e1ac71dd94c1b133
   languageName: node
   linkType: hard
 
@@ -2550,16 +2461,6 @@ __metadata:
     lit: ^2.0.0
     tslib: ^2.0.1
   checksum: 7315c0735ba40559d447297e81960b39ad94e86436a2360b7123ea2b70d70ece391b106d1564964f522c75e1f6e73c1133fc76f621a9909b2d1d9f097a5fd22c
-  languageName: node
-  linkType: hard
-
-"@material/mwc-icon@npm:^0.25.3":
-  version: 0.25.3
-  resolution: "@material/mwc-icon@npm:0.25.3"
-  dependencies:
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 117ba023ec388f90b42510d0c109960dc12bfcecef9bb65ff04edf48c13061af1e3c6c857d0eb636c9e91b030b9fb5cdca73c98e36ac7849fd2e4a236810cd3f
   languageName: node
   linkType: hard
 
@@ -2665,19 +2566,6 @@ __metadata:
     lit: ^2.0.0
     tslib: ^2.0.1
   checksum: 9cd73fdfe46f92b97991323489cea644d9d7b1dccb94145ee3398b73ef540d99a9253664690779714d070312c8aec513d562a395fdb1d8033d75b66b6d26bdd7
-  languageName: node
-  linkType: hard
-
-"@material/mwc-ripple@npm:^0.25.3":
-  version: 0.25.3
-  resolution: "@material/mwc-ripple@npm:0.25.3"
-  dependencies:
-    "@material/dom": =14.0.0-canary.261f2db59.0
-    "@material/mwc-base": ^0.25.3
-    "@material/ripple": =14.0.0-canary.261f2db59.0
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 4d75604f659c91788dc8c60cf8731f3d5f7f68138a529b100dfee89783ea3dc7dabe23f0381e2b92a06585a2562f5e70e0036628fb2020aa8a9c4eeca2db041e
   languageName: node
   linkType: hard
 
@@ -2894,31 +2782,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/ripple@npm:=14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/ripple@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    "@material/animation": 14.0.0-canary.261f2db59.0
-    "@material/base": 14.0.0-canary.261f2db59.0
-    "@material/dom": 14.0.0-canary.261f2db59.0
-    "@material/feature-targeting": 14.0.0-canary.261f2db59.0
-    "@material/rtl": 14.0.0-canary.261f2db59.0
-    "@material/theme": 14.0.0-canary.261f2db59.0
-    tslib: ^2.1.0
-  checksum: 72cc53474102b8e6b0e7145e70d9593018493b780a1c935dcb69ad899fcd8d70f10a769f34c8903db3f2e377badbb7886a9add34fcab27798f3cb42158d4c474
-  languageName: node
-  linkType: hard
-
-"@material/rtl@npm:14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/rtl@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    "@material/theme": 14.0.0-canary.261f2db59.0
-    tslib: ^2.1.0
-  checksum: 48aced264f8818e0dcf7c5f57b523e955b70cb1127126285b03a896bd214057c3338a0150f29441b9d791404878c99c3b7a019d3fd17a79720635e3d80dce44c
-  languageName: node
-  linkType: hard
-
 "@material/rtl@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/rtl@npm:14.0.0-canary.53b3cad2f.0"
@@ -3091,16 +2954,6 @@ __metadata:
     "@material/typography": 14.0.0-canary.53b3cad2f.0
     tslib: ^2.1.0
   checksum: 7072e3c9dfa80c69659cdf16c687fdb0ca58c29eba47c966d1bebd90a70eeb6b068a0ec337cb4c26b09477561c72b66601280ccc47026a864afb9fb1877ca18d
-  languageName: node
-  linkType: hard
-
-"@material/theme@npm:14.0.0-canary.261f2db59.0":
-  version: 14.0.0-canary.261f2db59.0
-  resolution: "@material/theme@npm:14.0.0-canary.261f2db59.0"
-  dependencies:
-    "@material/feature-targeting": 14.0.0-canary.261f2db59.0
-    tslib: ^2.1.0
-  checksum: 5029cc6c7937981d4dc90a49f7e765f563edd7bf77e3d30ae5088add40193c8d4c26fb050bf32a9ff525e75ef934e4642bf9ecb4905bb5eb2e366fd4fee639ec
   languageName: node
   linkType: hard
 
@@ -9548,7 +9401,7 @@ __metadata:
     "@codemirror/legacy-modes": 6.3.1
     "@codemirror/search": 6.2.3
     "@codemirror/state": 6.2.0
-    "@codemirror/view": 6.9.2
+    "@codemirror/view": 6.9.3
     "@egjs/hammerjs": 2.0.17
     "@formatjs/intl-datetimeformat": 6.5.1
     "@formatjs/intl-getcanonicallocales": 2.1.0
@@ -9556,11 +9409,11 @@ __metadata:
     "@formatjs/intl-numberformat": 8.3.5
     "@formatjs/intl-pluralrules": 5.1.10
     "@formatjs/intl-relativetimeformat": 11.1.10
-    "@fullcalendar/core": 6.1.4
-    "@fullcalendar/daygrid": 6.1.4
-    "@fullcalendar/interaction": 6.1.4
-    "@fullcalendar/list": 6.1.4
-    "@fullcalendar/timegrid": 6.1.4
+    "@fullcalendar/core": 6.1.5
+    "@fullcalendar/daygrid": 6.1.5
+    "@fullcalendar/interaction": 6.1.5
+    "@fullcalendar/list": 6.1.5
+    "@fullcalendar/timegrid": 6.1.5
     "@koa/cors": 4.0.0
     "@lezer/highlight": 1.1.3
     "@lit-labs/motion": 1.0.3
@@ -13122,10 +12975,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"preact@npm:^10.0.5":
-  version: 10.13.1
-  resolution: "preact@npm:10.13.1"
-  checksum: a10555d18f60a42e29b4ef5bf42f7a6ce4097a2e772c047fab53226e3edef4cfceb6d709452485a41017479750aa6834ab02b6a8269ceb06d489d7c3495b3d04
+"preact@npm:~10.12.1":
+  version: 10.12.1
+  resolution: "preact@npm:10.12.1"
+  checksum: 0de99f477563ab7f94a0f964952ad216375973c0dcd9eb49881f8eb5effc5ed6948da062548c87d5bb0d82f1a1e516b649020e760eab3a0503dfdd8e64d34a26
   languageName: node
   linkType: hard
 
