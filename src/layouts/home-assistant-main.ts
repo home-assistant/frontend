@@ -181,6 +181,10 @@ export class HomeAssistantMain extends LitElement {
       this.drawer.close();
     }
 
+    if (!changedProps.has("hass")) {
+      return;
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
     // Make app-drawer adjust to a potential LTR/RTL change
