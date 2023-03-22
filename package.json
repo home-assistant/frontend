@@ -73,7 +73,7 @@
     "@material/top-app-bar": "=14.0.0-canary.53b3cad2f.0",
     "@material/web": "=1.0.0-pre.4",
     "@mdi/js": "7.1.96",
-    "@mdi/svg": "7.1.96",
+    "@mdi/svg": "7.2.96",
     "@polymer/app-layout": "3.1.0",
     "@polymer/iron-flex-layout": "3.0.1",
     "@polymer/iron-icon": "3.0.1",
