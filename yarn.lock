@@ -2352,7 +2352,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-button@npm:0.27.0":
+"@material/mwc-button@npm:0.27.0, @material/mwc-button@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-button@npm:0.27.0"
   dependencies:
