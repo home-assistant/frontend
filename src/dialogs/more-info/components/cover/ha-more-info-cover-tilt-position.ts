@@ -91,12 +91,10 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
         )}
         style=${styleMap({
           "--control-slider-color": color,
-          "--control-slider-background-opacity": isUnavailable
-            ? undefined
-            : "0.4",
         })}
         .disabled=${isUnavailable}
       >
+        <div slot="background" class="gradient"></div>
       </ha-control-slider>
     `;
   }
@@ -113,7 +111,11 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
         --control-slider-border-radius: 24px;
         --control-slider-color: var(--primary-color);
         --control-slider-background-opacity: 0.2;
-        --control-slider-background: -webkit-linear-gradient(top, ${GRADIENT});
+        --control-slider-background: var(--control-slider-color);
+      }
+      .gradient {
+        background: -webkit-linear-gradient(top, ${GRADIENT});
+        opacity: 0.6;
       }
     `;
   }
