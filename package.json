@@ -204,7 +204,7 @@
     "eslint-plugin-wc": "1.4.0",
     "esprima": "4.0.1",
     "fancy-log": "2.0.0",
-    "fs-extra": "11.1.0",
+    "fs-extra": "11.1.1",
     "glob": "9.3.0",
     "gulp": "4.0.2",
     "gulp-flatmap": "1.0.2",
