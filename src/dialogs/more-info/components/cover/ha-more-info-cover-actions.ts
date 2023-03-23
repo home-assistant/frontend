@@ -30,6 +30,7 @@ import {
   CoverEntityFeature,
 } from "../../../../data/cover";
 import { HomeAssistant } from "../../../../types";
+import "./ha-more-info-cover-toggle";
 
 type CoverAction =
   | "open"
@@ -39,10 +40,14 @@ type CoverAction =
   | "close-tilt"
   | "none";
 
-type CoverLayout = {
-  type: "line" | "cross";
-  actions: CoverAction[];
-};
+type CoverLayout =
+  | {
+      type: "line" | "cross";
+      actions: CoverAction[];
+    }
+  | {
+      type: "toggle";
+    };
 
 export const getCoverLayout = memoizeOne(
   (stateObj: CoverEntity): CoverLayout => {
@@ -75,6 +80,12 @@ export const getCoverLayout = memoizeOne(
           supportsOpenTilt ? "open-tilt" : "none",
           supportsClose ? "close" : "none",
         ],
+      };
+    }
+
+    if (supportsOpen && supportsClose && !supportsStop) {
+      return {
+        type: "toggle",
       };
     }
 
@@ -233,6 +244,14 @@ export class HaMoreInfoCoverActions extends LitElement {
     const layout = getCoverLayout(this.stateObj);
 
     return html`
+      ${layout.type === "toggle"
+        ? html`
+            <ha-more-info-cover-toggle
+              .stateObj=${this.stateObj}
+              .hass=${this.hass}
+            ></ha-more-info-cover-toggle>
+          `
+        : nothing}
       ${layout.type === "line"
         ? html`
             <ha-control-button-group vertical>

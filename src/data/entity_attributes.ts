@@ -1,4 +1,5 @@
 export const STATE_ATTRIBUTES = [
+  "entity_id",
   "assumed_state",
   "attribution",
   "custom_ui_more_info",
