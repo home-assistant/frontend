@@ -3026,10 +3026,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdi/js@npm:7.1.96":
-  version: 7.1.96
-  resolution: "@mdi/js@npm:7.1.96"
-  checksum: cd3102a0120c06b4af7a153e30ee964807746ce55f84a35479d382841d0ab1a10f986059e0c6af0c240444393679b7330d306d0688e1193a23fc03bb8cee0b82
+"@mdi/js@npm:7.2.96":
+  version: 7.2.96
+  resolution: "@mdi/js@npm:7.2.96"
+  checksum: f8e22da5d994a4b764580d22290c825c1d789a6e015c166e271e2164fb80d33551d6632632897e30ae9033a3fe4aa6a28f2e97c5d3ad56c823f89f859944899e
   languageName: node
   linkType: hard
 
@@ -9443,7 +9443,7 @@ __metadata:
     "@material/mwc-top-app-bar-fixed": 0.27.0
     "@material/top-app-bar": =14.0.0-canary.53b3cad2f.0
     "@material/web": =1.0.0-pre.4
-    "@mdi/js": 7.1.96
+    "@mdi/js": 7.2.96
     "@mdi/svg": 7.2.96
     "@octokit/auth-oauth-device": 4.0.4
     "@octokit/rest": 19.0.7
