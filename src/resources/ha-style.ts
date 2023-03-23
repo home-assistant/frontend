@@ -96,7 +96,7 @@ documentContainer.innerHTML = `<custom-style>
       --disabled-color: #bdbdbd;
       --red-color: #f44336;
       --pink-color: #e91e63;
-      --purple-color: #9c27b0;
+      --purple-color: #ab47bc;
       --deep-purple-color: #6e41ab;
       --indigo-color: #3f51b5;
       --blue-color: #2196f3;
@@ -153,7 +153,7 @@ documentContainer.innerHTML = `<custom-style>
       --state-climate-fan_only-color: var(--cyan-color);
       --state-climate-heat-color: var(--deep-orange-color);
       --state-climate-heat-cool-color: var(--amber-color);
-      --state-cover-active-color: var(--deep-purple-color);
+      --state-cover-active-color: var(--purple-color);
       --state-device_tracker-active-color: var(--blue-color);
       --state-device_tracker-home-color: var(--green-color);
       --state-fan-active-color: var(--cyan-color);
