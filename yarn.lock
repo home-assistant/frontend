@@ -3660,21 +3660,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/polymer@npm:3.4.1":
-  version: 3.4.1
-  resolution: "@polymer/polymer@npm:3.4.1"
+"@polymer/polymer@npm:3.5.1":
+  version: 3.5.1
+  resolution: "@polymer/polymer@npm:3.5.1"
   dependencies:
     "@webcomponents/shadycss": ^1.9.1
-  checksum: 0f80eb8af291ac900d93daac36be2ec98ebb618df3e9ef6e904742ffbd9c82132373082953ddda67d68f32c4a17fafc311ba496b56937535c3f4eb360b55fd51
+  checksum: 4c499cd817e8ca79ad192d1006f7063a20173c425d00ba99ea93b25d47feccc72ccee7acdd41ad9aeba48f52f2e88aad632ba1651852d8170bc66d8717ec059c
   languageName: node
   linkType: hard
 
-"@polymer/polymer@patch:@polymer/polymer@3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::locator=home-assistant-frontend%40workspace%3A.":
-  version: 3.4.1
-  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.4.1&hash=0f00db&locator=home-assistant-frontend%40workspace%3A."
+"@polymer/polymer@patch:@polymer/polymer@3.5.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::locator=home-assistant-frontend%40workspace%3A.":
+  version: 3.5.1
+  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.5.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.5.1&hash=0f00db&locator=home-assistant-frontend%40workspace%3A."
   dependencies:
     "@webcomponents/shadycss": ^1.9.1
-  checksum: 3d8ffd3a55808269016785db20758e71e32d17bee45a8055720cefbbef2c24d86939ef743e1416276facab6ef1748b819f9af617a89550293397a27977e7a6d4
+  checksum: b64b5b67592ffe0b1f83a43cfb1457d7213035032f0c3f12a9b9d69bfdd7c94edbe011a30541f419e05869df81bd9a87bfd8ace4b85fd6a975e61e3277607005
   languageName: node
   linkType: hard
 
@@ -9461,7 +9461,7 @@ __metadata:
     "@polymer/paper-tabs": 3.1.0
     "@polymer/paper-toast": 3.0.1
     "@polymer/paper-tooltip": 3.0.1
-    "@polymer/polymer": 3.4.1
+    "@polymer/polymer": 3.5.1
     "@rollup/plugin-babel": 6.0.3
     "@rollup/plugin-commonjs": 24.0.1
     "@rollup/plugin-json": 6.0.0
