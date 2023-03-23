@@ -12,7 +12,7 @@ import {
 import "../../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../../types";
+import type { HomeAssistant } from "../../../../../../types";
 import { formatNumber } from "../../../../../../common/number/format_number";
 
 const RUN_DATA = {

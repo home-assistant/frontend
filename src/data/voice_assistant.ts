@@ -1,7 +1,7 @@
-import { HomeAssistant } from "../types";
-import { ConversationResult } from "./conversation";
-import { ResolvedMediaSource } from "./media_source";
-import { SpeechMetadata } from "./stt";
+import type { HomeAssistant } from "../types";
+import type { ConversationResult } from "./conversation";
+import type { ResolvedMediaSource } from "./media_source";
+import type { SpeechMetadata } from "./stt";
 
 interface PipelineEventBase {
   timestamp: string;
