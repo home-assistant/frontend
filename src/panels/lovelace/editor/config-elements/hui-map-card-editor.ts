@@ -28,6 +28,7 @@ import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { hasLocation } from "../../../../common/entity/has_location";
+import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -50,9 +51,17 @@ const SCHEMA = [
     type: "grid",
     schema: [
       { name: "aspect_ratio", selector: { text: {} } },
-      { name: "default_zoom", selector: { number: { mode: "box", min: 0 } } },
+      {
+        name: "default_zoom",
+        default: DEFAULT_ZOOM,
+        selector: { number: { mode: "box", min: 0 } },
+      },
       { name: "dark_mode", selector: { boolean: {} } },
-      { name: "hours_to_show", selector: { number: { mode: "box", min: 1 } } },
+      {
+        name: "hours_to_show",
+        default: DEFAULT_HOURS_TO_SHOW,
+        selector: { number: { mode: "box", min: 0 } },
+      },
     ],
   },
 ] as const;

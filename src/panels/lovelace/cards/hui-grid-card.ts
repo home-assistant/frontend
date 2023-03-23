@@ -4,7 +4,7 @@ import { LovelaceCardEditor } from "../types";
 import { HuiStackCard } from "./hui-stack-card";
 import { GridCardConfig } from "./types";
 
-const DEFAULT_COLUMNS = 3;
+export const DEFAULT_COLUMNS = 3;
 const SQUARE_ROW_HEIGHTS_BY_COLUMNS = {
   1: 5,
   2: 3,

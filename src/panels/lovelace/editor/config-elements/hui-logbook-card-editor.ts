@@ -18,6 +18,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { LogbookCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-logbook-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -36,7 +37,11 @@ const SCHEMA = [
     type: "grid",
     schema: [
       { name: "theme", selector: { theme: {} } },
-      { name: "hours_to_show", selector: { number: { mode: "box", min: 1 } } },
+      {
+        name: "hours_to_show",
+        default: DEFAULT_HOURS_TO_SHOW,
+        selector: { number: { mode: "box", min: 1 } },
+      },
     ],
   },
 ] as const;
