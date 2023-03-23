@@ -188,8 +188,8 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
                                 </div>
                               `
                             : ""}
-                        </div></ha-card
-                      >
+                        </div>
+                      </ha-card>
                     `
                   : ""}
                 ${hasStage(this._pipelineRun, "intent")
@@ -245,8 +245,8 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
                                 </div>
                               `
                             : ""}
-                        </div></ha-card
-                      >
+                        </div>
+                      </ha-card>
                     `
                   : ""}
                 <ha-card>
