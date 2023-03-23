@@ -27,7 +27,6 @@ const ERROR_DATA = {
 
 const STT_DATA = {
   engine: "Engine",
-  tts_input: "Input",
 };
 
 const INTENT_DATA = {
