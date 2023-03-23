@@ -1,5 +1,7 @@
 import { HomeAssistant } from "../types";
 import { ConversationResult } from "./conversation";
+import { ResolvedMediaSource } from "./media_source";
+import { SpeechMetadata } from "./stt";
 
 interface PipelineEventBase {
   timestamp: string;
@@ -12,8 +14,8 @@ interface PipelineRunStartEvent extends PipelineEventBase {
     language: string;
   };
 }
-interface PipelineRunFinishEvent extends PipelineEventBase {
-  type: "run-finish";
+interface PipelineRunEndEvent extends PipelineEventBase {
+  type: "run-end";
   data: Record<string, never>;
 }
 
@@ -27,11 +29,16 @@ interface PipelineErrorEvent extends PipelineEventBase {
 
 interface PipelineSTTStartEvent extends PipelineEventBase {
   type: "stt-start";
-  data: Record<string, never>;
+  data: {
+    engine: string;
+    metadata: SpeechMetadata;
+  };
 }
-interface PipelineSTTFinishEvent extends PipelineEventBase {
-  type: "stt-finish";
-  data: Record<string, never>;
+interface PipelineSTTEndEvent extends PipelineEventBase {
+  type: "stt-end";
+  data: {
+    text: string;
+  };
 }
 
 interface PipelineIntentStartEvent extends PipelineEventBase {
@@ -41,8 +48,8 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
     intent_input: string;
   };
 }
-interface PipelineIntentFinishEvent extends PipelineEventBase {
-  type: "intent-finish";
+interface PipelineIntentEndEvent extends PipelineEventBase {
+  type: "intent-end";
   data: {
     intent_output: ConversationResult;
   };
@@ -50,27 +57,35 @@ interface PipelineIntentFinishEvent extends PipelineEventBase {
 
 interface PipelineTTSStartEvent extends PipelineEventBase {
   type: "tts-start";
-  data: Record<string, never>;
+  data: {
+    engine: string;
+    tts_input: string;
+  };
 }
-interface PipelineTTSFinishEvent extends PipelineEventBase {
-  type: "tts-finish";
-  data: Record<string, never>;
+interface PipelineTTSEndEvent extends PipelineEventBase {
+  type: "tts-end";
+  data: {
+    tts_output: ResolvedMediaSource;
+  };
 }
 
 type PipelineRunEvent =
   | PipelineRunStartEvent
-  | PipelineRunFinishEvent
+  | PipelineRunEndEvent
   | PipelineErrorEvent
   | PipelineSTTStartEvent
-  | PipelineSTTFinishEvent
+  | PipelineSTTEndEvent
   | PipelineIntentStartEvent
-  | PipelineIntentFinishEvent
+  | PipelineIntentEndEvent
   | PipelineTTSStartEvent
-  | PipelineTTSFinishEvent;
+  | PipelineTTSEndEvent;
 
 interface PipelineRunOptions {
+  start_stage: "stt" | "intent" | "tts";
+  end_stage: "stt" | "intent" | "tts";
+  language?: string;
   pipeline?: string;
-  intent_input?: string;
+  input?: { text: string };
   conversation_id?: string | null;
 }
 
@@ -80,16 +95,16 @@ export interface PipelineRun {
   stage: "ready" | "stt" | "intent" | "tts" | "done" | "error";
   run: PipelineRunStartEvent["data"];
   error?: PipelineErrorEvent["data"];
-  stt?: PipelineSTTStartEvent["data"] & Partial<PipelineSTTFinishEvent["data"]>;
+  stt?: PipelineSTTStartEvent["data"] & Partial<PipelineSTTEndEvent["data"]>;
   intent?: PipelineIntentStartEvent["data"] &
-    Partial<PipelineIntentFinishEvent["data"]>;
-  tts?: PipelineTTSStartEvent["data"] & Partial<PipelineTTSFinishEvent["data"]>;
+    Partial<PipelineIntentEndEvent["data"]>;
+  tts?: PipelineTTSStartEvent["data"] & Partial<PipelineTTSEndEvent["data"]>;
 }
 
 export const runPipelineFromText = (
   hass: HomeAssistant,
   callback: (event: PipelineRun) => void,
-  options: PipelineRunOptions = {}
+  options: PipelineRunOptions
 ) => {
   let run: PipelineRun | undefined;
 
@@ -121,17 +136,17 @@ export const runPipelineFromText = (
 
       if (updateEvent.type === "stt-start") {
         run = { ...run, stage: "stt", stt: updateEvent.data };
-      } else if (updateEvent.type === "stt-finish") {
+      } else if (updateEvent.type === "stt-end") {
         run = { ...run, stt: { ...run.stt!, ...updateEvent.data } };
       } else if (updateEvent.type === "intent-start") {
         run = { ...run, stage: "intent", intent: updateEvent.data };
-      } else if (updateEvent.type === "intent-finish") {
+      } else if (updateEvent.type === "intent-end") {
         run = { ...run, intent: { ...run.intent!, ...updateEvent.data } };
       } else if (updateEvent.type === "tts-start") {
         run = { ...run, stage: "tts", tts: updateEvent.data };
-      } else if (updateEvent.type === "tts-finish") {
+      } else if (updateEvent.type === "tts-end") {
         run = { ...run, tts: { ...run.tts!, ...updateEvent.data } };
-      } else if (updateEvent.type === "run-finish") {
+      } else if (updateEvent.type === "run-end") {
         run = { ...run, stage: "done" };
         unsubProm.then((unsub) => unsub());
       } else if (updateEvent.type === "error") {
