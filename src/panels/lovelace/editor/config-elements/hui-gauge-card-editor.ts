@@ -19,6 +19,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { GaugeCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { DEFAULT_MIN, DEFAULT_MAX } from "../../cards/hui-gauge-card";
 
 const gaugeSegmentStruct = object({
   from: number(),
@@ -79,8 +80,16 @@ export class HuiGaugeCardEditor
           name: "",
           type: "grid",
           schema: [
-            { name: "min", selector: { number: { mode: "box" } } },
-            { name: "max", selector: { number: { mode: "box" } } },
+            {
+              name: "min",
+              default: DEFAULT_MIN,
+              selector: { number: { mode: "box" } },
+            },
+            {
+              name: "max",
+              default: DEFAULT_MAX,
+              selector: { number: { mode: "box" } },
+            },
           ],
         },
         {

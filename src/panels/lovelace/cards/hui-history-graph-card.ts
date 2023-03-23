@@ -22,6 +22,8 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
 import { HistoryGraphCardConfig } from "./types";
 
+export const DEFAULT_HOURS_TO_SHOW = 24;
+
 @customElement("hui-history-graph-card")
 export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
@@ -46,7 +48,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _entityIds: string[] = [];
 
-  private _hoursToShow = 24;
+  private _hoursToShow = DEFAULT_HOURS_TO_SHOW;
 
   private _interval?: number;
 
@@ -77,7 +79,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       }
     });
 
-    this._hoursToShow = config.hours_to_show || 24;
+    this._hoursToShow = config.hours_to_show || DEFAULT_HOURS_TO_SHOW;
 
     this._config = config;
   }

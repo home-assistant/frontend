@@ -41,7 +41,9 @@ import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
 
-const DEFAULT_HOURS_TO_SHOW = 0;
+export const DEFAULT_HOURS_TO_SHOW = 0;
+export const DEFAULT_ZOOM = 14;
+
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -149,7 +151,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._config,
               this._configEntities
             )}
-            .zoom=${this._config.default_zoom ?? 14}
+            .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit}
             .darkMode=${this._config.dark_mode}
