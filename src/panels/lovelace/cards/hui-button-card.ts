@@ -88,7 +88,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     },
     watch: ["_config"],
   })
-  _state?: HassEntity;
+  _stateObj?: HassEntity;
 
   @consume({ context: themesContext, subscribe: true })
   _themes!: Themes;
@@ -153,7 +153,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     if (!this._config) {
       return nothing;
     }
-    const stateObj = this._state;
+    const stateObj = this._stateObj;
 
     if (this._config.entity && !stateObj) {
       return html`
