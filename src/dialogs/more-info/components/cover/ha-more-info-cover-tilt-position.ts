@@ -8,6 +8,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { computeAttributeNameDisplay } from "../../../../common/entity/compute_attribute_display";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import "../../../../components/ha-control-slider";
 import { CoverEntity } from "../../../../data/cover";
@@ -83,8 +84,11 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
         max="100"
         mode="cursor"
         @value-changed=${this._valueChanged}
-        .ariaLabel=${this.hass.localize(
-          "ui.dialogs.more_info_control.cover.tilt_position"
+        .ariaLabel=${computeAttributeNameDisplay(
+          this.hass.localize,
+          this.stateObj,
+          this.hass.entities,
+          "tilt_position"
         )}
         style=${styleMap({
           "--control-slider-color": color,
@@ -105,6 +109,8 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
         height: 45vh;
         max-height: 320px;
         min-height: 200px;
+        /* Force inactive state to be colored for the slider */
+        --state-cover-inactive-color: var(--state-cover-active-color);
         --control-slider-thickness: 100px;
         --control-slider-border-radius: 24px;
         --control-slider-color: var(--primary-color);

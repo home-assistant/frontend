@@ -1,4 +1,4 @@
-import { mdiMenu, mdiSwapVertical } from "@mdi/js";
+import { mdiArrowExpandVertical, mdiPanVertical } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -14,9 +14,8 @@ import { blankBeforePercent } from "../../../common/translations/blank_before_pe
 import "../../../components/ha-attributes";
 import { CoverEntity, CoverEntityFeature } from "../../../data/cover";
 import type { HomeAssistant } from "../../../types";
-import "../components/cover/ha-more-info-cover-open-close";
+import "../components/cover/ha-more-info-cover-actions";
 import "../components/cover/ha-more-info-cover-position";
-import "../components/cover/ha-more-info-cover-tilt";
 import "../components/cover/ha-more-info-cover-tilt-position";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
@@ -90,9 +89,15 @@ class MoreInfoCover extends LitElement {
       return nothing;
     }
 
-    const supportsPosition =
-      supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) ||
-      supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION);
+    const supportsPosition = supportsFeature(
+      this.stateObj,
+      CoverEntityFeature.SET_POSITION
+    );
+
+    const supportsTiltPosition = supportsFeature(
+      this.stateObj,
+      CoverEntityFeature.SET_TILT_POSITION
+    );
 
     const supportsOpenClose =
       supportsFeature(this.stateObj, CoverEntityFeature.OPEN) ||
@@ -114,10 +119,7 @@ class MoreInfoCover extends LitElement {
         ${this._mode === "position"
           ? html`
               <div class="mode">
-                ${supportsFeature(
-                  this.stateObj,
-                  CoverEntityFeature.SET_POSITION
-                )
+                ${supportsPosition
                   ? html`
                       <ha-more-info-cover-position
                         .stateObj=${this.stateObj}
@@ -126,10 +128,7 @@ class MoreInfoCover extends LitElement {
                       ></ha-more-info-cover-position>
                     `
                   : nothing}
-                ${supportsFeature(
-                  this.stateObj,
-                  CoverEntityFeature.SET_TILT_POSITION
-                )
+                ${supportsTiltPosition
                   ? html`
                       <ha-more-info-cover-tilt-position
                         .stateObj=${this.stateObj}
@@ -143,30 +142,30 @@ class MoreInfoCover extends LitElement {
         ${this._mode === "button"
           ? html`
               <div class="mode">
-                ${supportsOpenClose
+                ${supportsOpenClose || supportsTilt
                   ? html`
-                      <ha-more-info-cover-open-close
+                      <ha-more-info-cover-actions
                         .stateObj=${this.stateObj}
                         .hass=${this.hass}
-                      ></ha-more-info-cover-open-close>
-                    `
-                  : nothing}
-                ${supportsTilt
-                  ? html`
-                      <ha-more-info-cover-tilt
-                        .stateObj=${this.stateObj}
-                        .hass=${this.hass}
-                      ></ha-more-info-cover-tilt>
+                      ></ha-more-info-cover-actions>
                     `
                   : nothing}
               </div>
             `
           : nothing}
-        ${supportsPosition
+        ${(supportsPosition || supportsTiltPosition) &&
+        (supportsOpenClose || supportsTilt)
           ? html`
               <div class="actions">
                 <ha-icon-button
-                  .path=${this._mode === "button" ? mdiMenu : mdiSwapVertical}
+                  .label=${this.hass.localize(
+                    `ui.dialogs.more_info_control.cover.switch_mode.${
+                      this._mode || "position"
+                    }`
+                  )}
+                  .path=${this._mode === "position"
+                    ? mdiPanVertical
+                    : mdiArrowExpandVertical}
                   @click=${this._toggleMode}
                 ></ha-icon-button>
               </div>
