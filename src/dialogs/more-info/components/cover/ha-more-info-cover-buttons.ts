@@ -30,9 +30,8 @@ import {
   CoverEntityFeature,
 } from "../../../../data/cover";
 import { HomeAssistant } from "../../../../types";
-import "./ha-more-info-cover-toggle";
 
-type CoverAction =
+type CoverButton =
   | "open"
   | "close"
   | "stop"
@@ -40,14 +39,10 @@ type CoverAction =
   | "close-tilt"
   | "none";
 
-type CoverLayout =
-  | {
-      type: "line" | "cross";
-      actions: CoverAction[];
-    }
-  | {
-      type: "toggle";
-    };
+type CoverLayout = {
+  type: "line" | "cross";
+  buttons: CoverButton[];
+};
 
 export const getCoverLayout = memoizeOne(
   (stateObj: CoverEntity): CoverLayout => {
@@ -73,7 +68,7 @@ export const getCoverLayout = memoizeOne(
     ) {
       return {
         type: "cross",
-        actions: [
+        buttons: [
           supportsOpen ? "open" : "none",
           supportsCloseTilt ? "close-tilt" : "none",
           supportsStop || supportsStopTilt ? "stop" : "none",
@@ -83,43 +78,37 @@ export const getCoverLayout = memoizeOne(
       };
     }
 
-    if (supportsOpen && supportsClose && !supportsStop) {
-      return {
-        type: "toggle",
-      };
-    }
-
     if (supportsOpen || supportsClose) {
-      const actions: CoverAction[] = [];
-      if (supportsOpen) actions.push("open");
-      if (supportsStop) actions.push("stop");
-      if (supportsClose) actions.push("close");
+      const buttons: CoverButton[] = [];
+      if (supportsOpen) buttons.push("open");
+      if (supportsStop) buttons.push("stop");
+      if (supportsClose) buttons.push("close");
       return {
         type: "line",
-        actions,
+        buttons,
       };
     }
 
     if (supportsOpenTilt || supportsCloseTilt) {
-      const actions: CoverAction[] = [];
-      if (supportsOpenTilt) actions.push("open-tilt");
-      if (supportsStopTilt) actions.push("stop");
-      if (supportsCloseTilt) actions.push("close-tilt");
+      const buttons: CoverButton[] = [];
+      if (supportsOpenTilt) buttons.push("open-tilt");
+      if (supportsStopTilt) buttons.push("stop");
+      if (supportsCloseTilt) buttons.push("close-tilt");
       return {
         type: "line",
-        actions,
+        buttons,
       };
     }
 
     return {
       type: "line",
-      actions: [],
+      buttons: [],
     };
   }
 );
 
-@customElement("ha-more-info-cover-actions")
-export class HaMoreInfoCoverActions extends LitElement {
+@customElement("ha-more-info-cover-buttons")
+export class HaMoreInfoCoverButtons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
@@ -166,8 +155,8 @@ export class HaMoreInfoCoverActions extends LitElement {
     }
   }
 
-  protected renderAction(action: CoverAction | undefined) {
-    if (action === "open") {
+  protected renderButton(button: CoverButton | undefined) {
+    if (button === "open") {
       return html`
         <ha-control-button
           .label=${this.hass.localize(
@@ -181,7 +170,7 @@ export class HaMoreInfoCoverActions extends LitElement {
         </ha-control-button>
       `;
     }
-    if (action === "close") {
+    if (button === "close") {
       return html`
         <ha-control-button
           .label=${this.hass.localize(
@@ -195,7 +184,7 @@ export class HaMoreInfoCoverActions extends LitElement {
         </ha-control-button>
       `;
     }
-    if (action === "stop") {
+    if (button === "stop") {
       return html`
         <ha-control-button
           .label=${this.hass.localize(
@@ -209,7 +198,7 @@ export class HaMoreInfoCoverActions extends LitElement {
         </ha-control-button>
       `;
     }
-    if (action === "open-tilt") {
+    if (button === "open-tilt") {
       return html`
         <ha-control-button
           .label=${this.hass.localize(
@@ -223,7 +212,7 @@ export class HaMoreInfoCoverActions extends LitElement {
         </ha-control-button>
       `;
     }
-    if (action === "close-tilt") {
+    if (button === "close-tilt") {
       return html`
         <ha-control-button
           .label=${this.hass.localize(
@@ -244,21 +233,13 @@ export class HaMoreInfoCoverActions extends LitElement {
     const layout = getCoverLayout(this.stateObj);
 
     return html`
-      ${layout.type === "toggle"
-        ? html`
-            <ha-more-info-cover-toggle
-              .stateObj=${this.stateObj}
-              .hass=${this.hass}
-            ></ha-more-info-cover-toggle>
-          `
-        : nothing}
       ${layout.type === "line"
         ? html`
             <ha-control-button-group vertical>
               ${repeat(
-                layout.actions,
+                layout.buttons,
                 (action) => action,
-                (action) => this.renderAction(action)
+                (action) => this.renderButton(action)
               )}
             </ha-control-button-group>
           `
@@ -267,9 +248,9 @@ export class HaMoreInfoCoverActions extends LitElement {
         ? html`
             <div class="cross-container">
               ${repeat(
-                layout.actions,
+                layout.buttons,
                 (action) => action,
-                (action) => this.renderAction(action)
+                (action) => this.renderButton(action)
               )}
             </div>
           `
@@ -325,6 +306,6 @@ export class HaMoreInfoCoverActions extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-cover-actions": HaMoreInfoCoverActions;
+    "ha-more-info-cover-buttons": HaMoreInfoCoverButtons;
   }
 }
