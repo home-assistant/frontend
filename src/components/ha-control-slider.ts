@@ -424,6 +424,7 @@ export class HaControlSlider extends LitElement {
         bottom: 0;
         left: calc(var(--value, 0) * (100% - var(--cursor-size)));
         width: var(--cursor-size);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       }
       .slider .slider-track-cursor:after {
         height: 50%;

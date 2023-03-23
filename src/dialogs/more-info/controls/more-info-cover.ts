@@ -29,7 +29,7 @@ class MoreInfoCover extends LitElement {
 
   @state() private _displayedPosition?: number;
 
-  @state() private _mode: "position" | "button" = "button";
+  @state() private _mode?: "position" | "button";
 
   private _toggleMode() {
     this._mode = this._mode === "position" ? "button" : "position";
@@ -42,14 +42,19 @@ class MoreInfoCover extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("stateObj")) {
-      if (
-        this.stateObj &&
-        supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION)
-      ) {
+    super.updated(changedProps);
+    if (changedProps.has("stateObj") && this.stateObj) {
+      if (supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION)) {
         const currentPosition = this.stateObj?.attributes.current_position;
         this._displayedPosition =
           currentPosition != null ? Math.round(currentPosition) : undefined;
+      }
+      if (!this._mode) {
+        this._mode =
+          supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) ||
+          supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION)
+            ? "position"
+            : "button";
       }
     }
   }
