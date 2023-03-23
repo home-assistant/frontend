@@ -70,12 +70,7 @@ module.exports.htmlMinifierOptions = {
   removeComments: true,
   removeRedundantAttributes: true,
   minifyCSS: {
-    level: {
-      1: {
-        all: false,
-        removeWhitespace: true,
-      },
-    },
+    compatibility: "*,-properties.zeroUnits",
   },
 };
 
