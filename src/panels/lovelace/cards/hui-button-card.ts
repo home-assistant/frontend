@@ -1,25 +1,21 @@
+import { consume } from "@lit-labs/context";
 import "@material/mwc-ripple";
 import type { Ripple } from "@material/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResultGroup,
-  html,
   LitElement,
   PropertyValues,
+  css,
+  html,
   nothing,
 } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  queryAsync,
-  state,
-} from "lit/decorators";
+import { customElement, eventOptions, queryAsync, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
+import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -30,6 +26,13 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import { HVAC_ACTION_TO_MODE } from "../../../data/climate";
+import {
+  entitiesContext,
+  localeContext,
+  localizeContext,
+  statesContext,
+  themesContext,
+} from "../../../data/context";
 import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -40,6 +43,9 @@ import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ButtonCardConfig } from "./types";
+import { LocalizeFunc } from "../../../common/translations/localize";
+import { FrontendLocaleData } from "../../../data/translation";
+import { Themes } from "../../../data/ws-themes";
 
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
@@ -71,9 +77,38 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  public hass!: HomeAssistant;
 
   @state() private _config?: ButtonCardConfig;
+
+  @consume<any>({ context: statesContext, subscribe: true })
+  @transform({
+    transformer: function (this: HuiButtonCard, value: HassEntities) {
+      return this._config?.entity ? value[this._config?.entity] : undefined;
+    },
+    watch: ["_config"],
+  })
+  _stateObj?: HassEntity;
+
+  @consume({ context: themesContext, subscribe: true })
+  _themes!: Themes;
+
+  @consume({ context: localizeContext, subscribe: true })
+  _localize!: LocalizeFunc;
+
+  @consume({ context: localeContext, subscribe: true })
+  _locale!: FrontendLocaleData;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  @transform<HomeAssistant["entities"], HomeAssistant["entities"]>({
+    transformer: function (this: HuiButtonCard, value) {
+      return this._config?.entity
+        ? { [this._config?.entity]: value[this._config?.entity] }
+        : {};
+    },
+    watch: ["_config"],
+  })
+  _entities!: HomeAssistant["entities"];
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
@@ -114,35 +149,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     };
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
-      return true;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    if (
-      !oldHass ||
-      oldHass.themes !== this.hass!.themes ||
-      oldHass.locale !== this.hass!.locale
-    ) {
-      return true;
-    }
-
-    return (
-      Boolean(this._config!.entity) &&
-      oldHass.states[this._config!.entity!] !==
-        this.hass!.states[this._config!.entity!]
-    );
-  }
-
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return nothing;
     }
-    const stateObj = this._config.entity
-      ? this.hass.states[this._config.entity]
-      : undefined;
+    const stateObj = this._stateObj;
 
     if (this._config.entity && !stateObj) {
       return html`
@@ -207,10 +218,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         ${this._config.show_state && stateObj
           ? html`<span class="state">
               ${computeStateDisplay(
-                this.hass.localize,
+                this._localize,
                 stateObj,
-                this.hass.locale,
-                this.hass.entities
+                this._locale,
+                this._entities
               )}
             </span>`
           : ""}
@@ -221,21 +232,23 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return;
     }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldThemes = changedProps.get("_themes") as
+      | HomeAssistant["themes"]
+      | undefined;
     const oldConfig = changedProps.get("_config") as
       | ButtonCardConfig
       | undefined;
 
     if (
-      !oldHass ||
+      !oldThemes ||
       !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
+      oldThemes !== this._themes ||
       oldConfig.theme !== this._config.theme
     ) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+      applyThemesOnElement(this, this._themes, this._config.theme);
     }
   }
 
