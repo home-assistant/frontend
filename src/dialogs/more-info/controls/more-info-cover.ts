@@ -14,10 +14,10 @@ import { blankBeforePercent } from "../../../common/translations/blank_before_pe
 import "../../../components/ha-attributes";
 import { CoverEntity, CoverEntityFeature } from "../../../data/cover";
 import type { HomeAssistant } from "../../../types";
-import "../components/cover/ha-more-info-cover-toggle";
 import "../components/cover/ha-more-info-cover-buttons";
 import "../components/cover/ha-more-info-cover-position";
 import "../components/cover/ha-more-info-cover-tilt-position";
+import "../components/cover/ha-more-info-cover-toggle";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 
@@ -41,8 +41,8 @@ class MoreInfoCover extends LitElement {
     this._displayedPosition = value;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
     if (changedProps.has("stateObj") && this.stateObj) {
       if (supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION)) {
         const currentPosition = this.stateObj?.attributes.current_position;

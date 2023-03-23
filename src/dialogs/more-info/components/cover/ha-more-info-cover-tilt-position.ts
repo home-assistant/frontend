@@ -15,10 +15,9 @@ import { CoverEntity } from "../../../../data/cover";
 import { UNAVAILABLE } from "../../../../data/entity";
 import { HomeAssistant } from "../../../../types";
 
-function createTiltSliderTrackBackgroundGradient(
-  count = 24,
-  minStrokeWidth = 0.2
-) {
+function generateTiltSliderTrackBackgroundGradient() {
+  const count = 24;
+  const minStrokeWidth = 0.2;
   const gradient: [number, string][] = [];
 
   for (let i = 0; i < count; i++) {
@@ -43,7 +42,7 @@ function createTiltSliderTrackBackgroundGradient(
   );
 }
 
-const GRADIENT = createTiltSliderTrackBackgroundGradient();
+const GRADIENT = generateTiltSliderTrackBackgroundGradient();
 
 @customElement("ha-more-info-cover-tilt-position")
 export class HaMoreInfoCoverTiltPosition extends LitElement {
@@ -92,7 +91,6 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
         )}
         style=${styleMap({
           "--control-slider-color": color,
-          "--control-slider-background": `-webkit-linear-gradient(top, ${GRADIENT})`,
           "--control-slider-background-opacity": isUnavailable
             ? undefined
             : "0.4",
@@ -114,8 +112,8 @@ export class HaMoreInfoCoverTiltPosition extends LitElement {
         --control-slider-thickness: 100px;
         --control-slider-border-radius: 24px;
         --control-slider-color: var(--primary-color);
-        --control-slider-background: red;
         --control-slider-background-opacity: 0.2;
+        --control-slider-background: -webkit-linear-gradient(top, ${GRADIENT});
       }
     `;
   }
