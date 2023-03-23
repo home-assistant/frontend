@@ -12,7 +12,7 @@ import {
 import "../../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../../types";
+import type { HomeAssistant } from "../../../../../../types";
 import { formatNumber } from "../../../../../../common/number/format_number";
 
 const RUN_DATA = {
@@ -25,10 +25,32 @@ const ERROR_DATA = {
   message: "Message",
 };
 
+const STT_DATA = {
+  engine: "Engine",
+};
+
 const INTENT_DATA = {
   engine: "Engine",
   intent_input: "Input",
 };
+
+const TTS_DATA = {
+  engine: "Engine",
+  tts_input: "Input",
+};
+
+const STAGES: Record<PipelineRun["stage"], number> = {
+  ready: 0,
+  stt: 1,
+  intent: 2,
+  tts: 3,
+  done: 4,
+  error: 5,
+};
+
+const hasStage = (run: PipelineRun, stage: PipelineRun["stage"]) =>
+  STAGES[run.init_options.start_stage] <= STAGES[stage] &&
+  STAGES[stage] <= STAGES[run.init_options.end_stage];
 
 const renderProgress = (
   hass: HomeAssistant,
@@ -39,7 +61,7 @@ const renderProgress = (
     (ev) => ev.type === `${stage}-start`
   );
   const finishEvent = pipelineRun.events.find(
-    (ev) => ev.type === `${stage}-finish`
+    (ev) => ev.type === `${stage}-end`
   );
 
   if (!startEvent) {
@@ -142,25 +164,91 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
                       : ""}
                   </div>
                 </ha-card>
-                <ha-card>
-                  <div class="card-content">
-                    <div class="row heading">
-                      <span>Natural Language Processing</span>
-                      ${renderProgress(this.hass, this._pipelineRun, "intent")}
-                    </div>
-                    ${this._pipelineRun.intent
-                      ? html`
-                          <div class="card-content">
-                            ${renderData(this._pipelineRun.intent, INTENT_DATA)}
-                            ${dataMinusKeysRender(
-                              this._pipelineRun.intent,
-                              INTENT_DATA
+
+                ${hasStage(this._pipelineRun, "stt")
+                  ? html`
+                      <ha-card>
+                        <div class="card-content">
+                          <div class="row heading">
+                            <span>Speech-to-Text</span>
+                            ${renderProgress(
+                              this.hass,
+                              this._pipelineRun,
+                              "stt"
                             )}
                           </div>
-                        `
-                      : ""}
-                  </div>
-                </ha-card>
+                          ${this._pipelineRun.stt
+                            ? html`
+                                <div class="card-content">
+                                  ${renderData(this._pipelineRun.stt, STT_DATA)}
+                                  ${dataMinusKeysRender(
+                                    this._pipelineRun.stt,
+                                    STT_DATA
+                                  )}
+                                </div>
+                              `
+                            : ""}
+                        </div>
+                      </ha-card>
+                    `
+                  : ""}
+                ${hasStage(this._pipelineRun, "intent")
+                  ? html`
+                      <ha-card>
+                        <div class="card-content">
+                          <div class="row heading">
+                            <span>Natural Language Processing</span>
+                            ${renderProgress(
+                              this.hass,
+                              this._pipelineRun,
+                              "intent"
+                            )}
+                          </div>
+                          ${this._pipelineRun.intent
+                            ? html`
+                                <div class="card-content">
+                                  ${renderData(
+                                    this._pipelineRun.intent,
+                                    INTENT_DATA
+                                  )}
+                                  ${dataMinusKeysRender(
+                                    this._pipelineRun.intent,
+                                    INTENT_DATA
+                                  )}
+                                </div>
+                              `
+                            : ""}
+                        </div>
+                      </ha-card>
+                    `
+                  : ""}
+                ${hasStage(this._pipelineRun, "tts")
+                  ? html`
+                      <ha-card>
+                        <div class="card-content">
+                          <div class="row heading">
+                            <span>Text-to-Speech</span>
+                            ${renderProgress(
+                              this.hass,
+                              this._pipelineRun,
+                              "tts"
+                            )}
+                          </div>
+                          ${this._pipelineRun.tts
+                            ? html`
+                                <div class="card-content">
+                                  ${renderData(this._pipelineRun.tts, TTS_DATA)}
+                                  ${dataMinusKeysRender(
+                                    this._pipelineRun.tts,
+                                    TTS_DATA
+                                  )}
+                                </div>
+                              `
+                            : ""}
+                        </div>
+                      </ha-card>
+                    `
+                  : ""}
                 <ha-card>
                   <ha-expansion-panel>
                     <span slot="header">Raw</span>
@@ -182,7 +270,9 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
         this._pipelineRun = run;
       },
       {
-        intent_input: this._newRunInput.value,
+        start_stage: "intent",
+        end_stage: "intent",
+        input: { text: this._newRunInput.value },
       }
     );
   }
