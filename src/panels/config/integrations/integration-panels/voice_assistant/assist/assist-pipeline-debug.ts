@@ -14,6 +14,9 @@ import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../../types";
 import { formatNumber } from "../../../../../../common/number/format_number";
+import "../../../../../../components/ha-formfield";
+import "../../../../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../../../../components/ha-checkbox";
 
 const RUN_DATA = {
   pipeline: "Pipeline",
@@ -120,6 +123,9 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
   @query("#run-input", true)
   private _newRunInput!: HTMLInputElement;
 
+  @query("#run-tts-checkbox", true)
+  private _runTtsCheckbox!: HaCheckbox;
+
   @state()
   private _pipelineRun?: PipelineRun;
 
@@ -138,6 +144,9 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
                 label="Input"
                 value="Are the lights on?"
               ></ha-textfield>
+              <ha-formfield label="Text-to-Speech">
+                <ha-checkbox id="run-tts-checkbox"></ha-checkbox>
+              </ha-formfield>
             </div>
             <div class="card-actions">
               <ha-button
@@ -238,14 +247,19 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
                             ? html`
                                 <div class="card-content">
                                   ${renderData(this._pipelineRun.tts, TTS_DATA)}
-                                  ${dataMinusKeysRender(
-                                    this._pipelineRun.tts,
-                                    TTS_DATA
-                                  )}
                                 </div>
                               `
                             : ""}
                         </div>
+                        ${this._pipelineRun?.tts?.tts_output
+                          ? html`
+                              <div class="card-actions">
+                                <ha-button @click=${this._playTTS}>
+                                  Play Audio
+                                </ha-button>
+                              </div>
+                            `
+                          : ""}
                       </ha-card>
                     `
                   : ""}
@@ -271,10 +285,16 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
       },
       {
         start_stage: "intent",
-        end_stage: "intent",
+        end_stage: this._runTtsCheckbox.checked ? "tts" : "intent",
         input: { text: this._newRunInput.value },
       }
     );
+  }
+
+  private _playTTS(): void {
+    const url = this._pipelineRun!.tts!.tts_output!.url;
+    const audio = new Audio(url);
+    audio.play();
   }
 
   static styles = [
