@@ -9586,7 +9586,7 @@ __metadata:
     sortablejs: 1.15.0
     source-map-url: 0.4.1
     superstruct: 1.0.3
-    systemjs: 6.14.0
+    systemjs: 6.14.1
     tar: 6.1.13
     terser-webpack-plugin: 5.3.7
     tinykeys: 1.4.0
@@ -14690,10 +14690,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"systemjs@npm:6.14.0":
-  version: 6.14.0
-  resolution: "systemjs@npm:6.14.0"
-  checksum: df82c38a5f23012dfee693e97dacfc48eef787a80cc41bc3bd594567ba9441c6392978841c6555d88df7451a2e22c8df9fcbf9c88c78f9f9b9027393ac38d84b
+"systemjs@npm:6.14.1":
+  version: 6.14.1
+  resolution: "systemjs@npm:6.14.1"
+  checksum: a72992339e858000892596705ec8cabf5166fc2db6272b5994c788641c3755115920b7a7914c9b8894ef08bfb75f4f96c3086c6b18399a2b22e303ecd5ac6570
   languageName: node
   linkType: hard
 
