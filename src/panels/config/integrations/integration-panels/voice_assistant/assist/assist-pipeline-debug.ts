@@ -361,8 +361,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
 
     this.hass.connection.socket!.binaryType = "arraybuffer";
     this._stopRecording = () => {
-      source.disconnect();
-      recorder.disconnect();
+      stream.getTracks()[0].stop();
       context.close();
       this._stopRecording = undefined;
       this._audioBuffer = undefined;
