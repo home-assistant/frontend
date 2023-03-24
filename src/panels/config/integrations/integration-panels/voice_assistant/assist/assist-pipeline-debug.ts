@@ -134,7 +134,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
 
   @state() private _pipelineRun?: PipelineRun;
 
-  @state() private _audioContext?: AudioContext;
+  @state() private _stopRecording?: () => void;
 
   private _audioBuffer?: Int16Array[];
 
@@ -210,7 +210,7 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
                             : ""}
                         </div>
                         ${this._pipelineRun.stage === "stt" &&
-                        this._audioContext
+                        this._stopRecording
                           ? html`
                               <div class="card-actions">
                                 <ha-button @click=${this._stopRecording}>
@@ -319,10 +319,8 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
       this._audioBuffer = undefined;
     }
 
-    if (this._pipelineRun.stage !== "stt" && this._audioContext) {
-      this._audioContext.close();
-      this._audioContext = undefined;
-      this._audioBuffer = undefined;
+    if (this._pipelineRun.stage !== "stt" && this._stopRecording) {
+      this._stopRecording();
     }
   }
 
@@ -362,7 +360,15 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
     const recorder = new AudioWorkletNode(context, "recorder.worklet");
 
     this.hass.connection.socket!.binaryType = "arraybuffer";
-    this._audioContext = context;
+    this._stopRecording = () => {
+      source.disconnect();
+      recorder.disconnect();
+      context.close();
+      this._stopRecording = undefined;
+      this._audioBuffer = undefined;
+      // Send empty message to indicate we're done streaming.
+      this._sendAudioChunk(new Int16Array());
+    };
     this._audioBuffer = [];
     source.connect(recorder).connect(context.destination);
     recorder.port.onmessage = (e) => {
@@ -396,14 +402,6 @@ export class AssistPipelineDebug extends SubscribeMixin(LitElement) {
     data.set(new Uint8Array(chunk.buffer), 1);
 
     this.hass.connection.socket!.send(data);
-  }
-
-  private _stopRecording(): void {
-    this._audioContext!.close();
-    this._audioContext = undefined;
-    this._audioBuffer = undefined;
-    // Send empty message to indicate we're done streaming.
-    this._sendAudioChunk(new Int16Array());
   }
 
   private _playTTS(): void {
