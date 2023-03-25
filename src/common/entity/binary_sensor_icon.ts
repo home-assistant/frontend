@@ -61,6 +61,8 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
       return is_off ? mdiThermometer : mdiSnowflake;
     case "connectivity":
       return is_off ? mdiCloseNetworkOutline : mdiCheckNetworkOutline;
+    case "custom":
+      return is_off ? stateObj?.attributes.icon_off : stateObj?.attributes.icon_on;
     case "door":
       return is_off ? mdiDoorClosed : mdiDoorOpen;
     case "garage_door":
