@@ -532,13 +532,13 @@ export const describeCondition = (
     let entities = "";
     if (Array.isArray(condition.entity_id)) {
       for (const [index, entity] of condition.entity_id.entries()) {
-        if (condition[entity]) {
+        if (hass.states[entity]) {
           entities += `${index > 0 ? "," : ""} ${
             condition.entity_id.length > 1 &&
             index === condition.entity_id.length - 1
-              ? condition.match === "all"
-                ? "and"
-                : "or"
+              ? condition.match === "any"
+                ? "or"
+                : "and"
               : ""
           } ${computeStateName(hass.states[entity]) || entity}`;
         }
