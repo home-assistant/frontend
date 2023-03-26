@@ -7,7 +7,10 @@ import {
   UPDATE_SUPPORT_PROGRESS,
 } from "../../data/update";
 import { HomeAssistant } from "../../types";
-import { formatDuration, UNIT_TO_SECOND_CONVERT } from "../datetime/duration";
+import {
+  formatDuration,
+  UNIT_TO_MILLISECOND_CONVERT,
+} from "../datetime/duration";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
@@ -57,7 +60,7 @@ export const computeStateDisplayFromEntityAttributes = (
     if (
       attributes.device_class === "duration" &&
       attributes.unit_of_measurement &&
-      UNIT_TO_SECOND_CONVERT[attributes.unit_of_measurement]
+      UNIT_TO_MILLISECOND_CONVERT[attributes.unit_of_measurement]
     ) {
       try {
         return formatDuration(state, attributes.unit_of_measurement);
