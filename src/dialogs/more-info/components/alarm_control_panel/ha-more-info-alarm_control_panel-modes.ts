@@ -113,7 +113,6 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
     if (modeState === this.stateObj.state) return;
 
     let code: string | undefined;
-    let cancelled = false;
 
     if (
       (mode === "disarmed" &&
@@ -121,16 +120,26 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
         this.stateObj.attributes.code_format) ||
       this.stateObj.attributes.code_format
     ) {
-      try {
-        code = await showEnterCodeDialogDialog(this, {
-          codeFormat: this.stateObj.attributes.code_format,
-        });
-      } catch (err) {
-        cancelled = true;
-      }
-    }
+      const disarm = mode === "disarmed";
 
-    if (cancelled) return;
+      const response = await showEnterCodeDialogDialog(this, {
+        codeFormat: this.stateObj.attributes.code_format,
+        title: this.hass.localize(
+          `ui.dialogs.more_info_control.alarm_control_panel.${
+            disarm ? "code_disarm_title" : "code_arm_title"
+          }`
+        ),
+        submitText: this.hass.localize(
+          `ui.dialogs.more_info_control.alarm_control_panel.${
+            disarm ? "code_disarm_action" : "code_arm_action"
+          }`
+        ),
+      });
+      if (!response) {
+        return;
+      }
+      code = response;
+    }
 
     this.hass.callService("alarm_control_panel", service, {
       entity_id: this.stateObj!.entity_id,

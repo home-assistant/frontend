@@ -85,6 +85,7 @@ export class HaControlButton extends LitElement {
         --control-button-background-opacity: 0.2;
         --control-button-border-radius: 10px;
         --mdc-icon-size: 20px;
+        color: var(--primary-text-color);
         width: 40px;
         height: 40px;
         -webkit-tap-highlight-color: transparent;
@@ -110,6 +111,8 @@ export class HaControlButton extends LitElement {
         --mdc-ripple-color: var(--control-button-background-color);
         /* For safari border-radius overflow */
         z-index: 0;
+        font-size: inherit;
+        color: inherit;
       }
       .button::before {
         content: "";

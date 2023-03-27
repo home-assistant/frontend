@@ -21,19 +21,22 @@ class MoreAlarmControlPanel extends LitElement {
 
   private async _disarm() {
     let code: string | undefined;
-    let cancelled = false;
 
     if (this.stateObj!.attributes.code_format) {
-      try {
-        code = await showEnterCodeDialogDialog(this, {
-          codeFormat: this.stateObj!.attributes.code_format,
-        });
-      } catch (err) {
-        cancelled = true;
+      const response = await showEnterCodeDialogDialog(this, {
+        codeFormat: this.stateObj!.attributes.code_format,
+        title: this.hass.localize(
+          "ui.dialogs.more_info_control.alarm_control_panel.code_disarm_title"
+        ),
+        submitText: this.hass.localize(
+          "ui.dialogs.more_info_control.alarm_control_panel.code_disarm_action"
+        ),
+      });
+      if (!response) {
+        return;
       }
+      code = response;
     }
-
-    if (cancelled) return;
 
     this.hass.callService("alarm_control_panel", "alarm_disarm", {
       entity_id: this.stateObj!.entity_id,

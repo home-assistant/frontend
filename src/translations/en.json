@@ -933,7 +933,11 @@
             "vacation": "Vacation",
             "custom_bypass": "Custom",
             "disarmed": "Disarmed"
-          }
+          },
+          "code_disarm_title": "Disarm",
+          "code_disarm_action": "Disarm",
+          "code_arm_title": "Arm",
+          "code_arm_action": "Arm"
         }
       },
       "entity_registry": {
@@ -1293,6 +1297,10 @@
         "release_items": "This includes beta releases for:",
         "view_documentation": "View documentation",
         "join": "Join"
+      },
+      "enter_code": {
+        "title": "Enter code",
+        "input_label": "Code"
       }
     },
     "duration": {

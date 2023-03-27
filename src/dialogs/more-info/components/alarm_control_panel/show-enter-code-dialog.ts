@@ -2,7 +2,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface EnterCodeDialogParams {
   codeFormat: "text" | "number";
-  submit?: (code: string) => void;
+  submitText?: string;
+  cancelText?: string;
+  title?: string;
+  submit?: (code?: string) => void;
   cancel?: () => void;
 }
 
@@ -10,7 +13,7 @@ export const showEnterCodeDialogDialog = (
   element: HTMLElement,
   dialogParams: EnterCodeDialogParams
 ) =>
-  new Promise<string>((resolve, reject) => {
+  new Promise<string | null>((resolve) => {
     const origCancel = dialogParams.cancel;
     const origSubmit = dialogParams.submit;
 
@@ -20,7 +23,7 @@ export const showEnterCodeDialogDialog = (
       dialogParams: {
         ...dialogParams,
         cancel: () => {
-          reject();
+          resolve(null);
           if (origCancel) {
             origCancel();
           }
