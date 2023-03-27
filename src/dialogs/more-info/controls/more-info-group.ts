@@ -59,6 +59,7 @@ class MoreInfoGroup extends LitElement {
         attributes: {
           ...baseStateObj.attributes,
           friendly_name: this.stateObj.attributes.friendly_name,
+          entity_id: this.stateObj.attributes.entity_id,
         },
       };
       const type = domainMoreInfoType(groupDomain);

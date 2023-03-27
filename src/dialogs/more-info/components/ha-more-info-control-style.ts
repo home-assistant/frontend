@@ -14,6 +14,10 @@ export const moreInfoControlStyle = css`
     align-items: center;
   }
 
+  .controls:not(:last-child) {
+    margin-bottom: 24px;
+  }
+
   .controls > *:not(:last-child) {
     margin-bottom: 24px;
   }

@@ -96,8 +96,8 @@ documentContainer.innerHTML = `<custom-style>
       --disabled-color: #bdbdbd;
       --red-color: #f44336;
       --pink-color: #e91e63;
-      --purple-color: #9c27b0;
-      --deep-purple-color: #673ab7;
+      --purple-color: #926bc7;
+      --deep-purple-color: #6e41ab;
       --indigo-color: #3f51b5;
       --blue-color: #2196f3;
       --light-blue-color: #03a9f4;
