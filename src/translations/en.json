@@ -4389,7 +4389,7 @@
         "log": "Log"
       },
       "configuration": {
-        "no_configuration": "This add-on does not have configurations…",
+        "no_configuration": "This add-on has no configuration.",
         "audio": {
           "header": "Audio",
           "default": "Default",
