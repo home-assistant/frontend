@@ -115,10 +115,10 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
     let code: string | undefined;
 
     if (
-      (mode === "disarmed" &&
+      (mode !== "disarmed" &&
         this.stateObj.attributes.code_arm_required &&
         this.stateObj.attributes.code_format) ||
-      this.stateObj.attributes.code_format
+      (mode === "disarmed" && this.stateObj.attributes.code_format)
     ) {
       const disarm = mode === "disarmed";
 
