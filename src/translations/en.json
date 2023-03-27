@@ -891,7 +891,11 @@
           "close_cover": "Close cover",
           "open_tilt_cover": "Open cover tilt",
           "close_tilt_cover": "Close cover tilt",
-          "stop_cover": "Stop cover"
+          "stop_cover": "Stop cover",
+          "switch_mode": {
+            "button": "Switch to button mode",
+            "position": "Switch to position mode"
+          }
         },
         "zone": {
           "graph_unit": "People home"

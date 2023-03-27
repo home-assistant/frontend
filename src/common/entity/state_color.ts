@@ -1,6 +1,7 @@
 /** Return an color representing a state. */
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE } from "../../data/entity";
+import { computeGroupDomain, GroupEntity } from "../../data/group";
 import { computeCssVariable } from "../../resources/css-variables";
 import { slugify } from "../string/slugify";
 import { batteryStateColorProperty } from "./color/battery_color";
@@ -52,11 +53,11 @@ export const stateColorCss = (stateObj: HassEntity, state?: string) => {
 };
 
 export const domainStateColorProperties = (
+  domain: string,
   stateObj: HassEntity,
   state?: string
 ): string[] => {
   const compareState = state !== undefined ? state : stateObj.state;
-  const domain = computeDomain(stateObj.entity_id);
   const active = stateActive(stateObj, state);
 
   const properties: string[] = [];
@@ -95,8 +96,16 @@ export const stateColorProperties = (
     }
   }
 
+  // Special rules for group coloring
+  if (domain === "group") {
+    const groupDomain = computeGroupDomain(stateObj as GroupEntity);
+    if (groupDomain && STATE_COLORED_DOMAIN.has(groupDomain)) {
+      return domainStateColorProperties(groupDomain, stateObj, state);
+    }
+  }
+
   if (STATE_COLORED_DOMAIN.has(domain)) {
-    return domainStateColorProperties(stateObj, state);
+    return domainStateColorProperties(domain, stateObj, state);
   }
 
   return undefined;
