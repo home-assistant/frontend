@@ -126,12 +126,12 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
         codeFormat: this.stateObj.attributes.code_format,
         title: this.hass.localize(
           `ui.dialogs.more_info_control.alarm_control_panel.${
-            disarm ? "code_disarm_title" : "code_arm_title"
+            disarm ? "disarm_title" : "arm_title"
           }`
         ),
         submitText: this.hass.localize(
           `ui.dialogs.more_info_control.alarm_control_panel.${
-            disarm ? "code_disarm_action" : "code_arm_action"
+            disarm ? "disarm_action" : "arm_action"
           }`
         ),
       });

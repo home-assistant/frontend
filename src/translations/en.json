@@ -934,10 +934,10 @@
             "custom_bypass": "Custom",
             "disarmed": "Disarmed"
           },
-          "code_disarm_title": "Disarm",
-          "code_disarm_action": "Disarm",
-          "code_arm_title": "Arm",
-          "code_arm_action": "Arm"
+          "disarm_title": "Disarm",
+          "disarm_action": "Disarm",
+          "arm_title": "Arm",
+          "arm_action": "Arm"
         }
       },
       "entity_registry": {

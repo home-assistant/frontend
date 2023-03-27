@@ -1,5 +1,4 @@
 import "@material/web/button/outlined-button";
-import "@material/web/iconbutton/outlined-icon-button";
 import { mdiShieldOff } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -14,7 +13,7 @@ import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 
 @customElement("more-info-alarm_control_panel")
-class MoreAlarmControlPanel extends LitElement {
+class MoreInfoAlarmControlPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: AlarmControlPanelEntity;
@@ -26,10 +25,10 @@ class MoreAlarmControlPanel extends LitElement {
       const response = await showEnterCodeDialogDialog(this, {
         codeFormat: this.stateObj!.attributes.code_format,
         title: this.hass.localize(
-          "ui.dialogs.more_info_control.alarm_control_panel.code_disarm_title"
+          "ui.dialogs.more_info_control.alarm_control_panel.disarm_title"
         ),
         submitText: this.hass.localize(
-          "ui.dialogs.more_info_control.alarm_control_panel.code_disarm_action"
+          "ui.dialogs.more_info_control.alarm_control_panel.disarm_action"
         ),
       });
       if (!response) {
@@ -68,7 +67,12 @@ class MoreAlarmControlPanel extends LitElement {
                     .path=${domainIcon("alarm_control_panel", this.stateObj)}
                   ></ha-svg-icon>
                 </div>
-                <md-outlined-button .label=${"Disarm"} @click=${this._disarm}>
+                <md-outlined-button
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.alarm_control_panel.disarm_action"
+                  )}
+                  @click=${this._disarm}
+                >
                   <ha-svg-icon slot="icon" .path=${mdiShieldOff}></ha-svg-icon>
                 </md-outlined-button>
               </div>
@@ -146,6 +150,6 @@ class MoreAlarmControlPanel extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "more-info-alarm_control_panel": MoreAlarmControlPanel;
+    "more-info-alarm_control_panel": MoreInfoAlarmControlPanel;
   }
 }
