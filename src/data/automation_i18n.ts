@@ -544,7 +544,7 @@ export const describeCondition = (
         }
       }
       if (entities) {
-        base += ` ${entities} are`;
+        base += ` ${entities} ${condition.entity_id.length > 1 ? "are" : "is"}`;
       } else {
         // no entity_id or empty array
         base += " an entity";
@@ -556,6 +556,7 @@ export const describeCondition = (
           : condition.entity_id
       } is`;
     }
+
     let states = "";
     const stateObj =
       hass.states[
