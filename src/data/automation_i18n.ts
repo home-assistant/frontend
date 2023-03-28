@@ -529,8 +529,8 @@ export const describeCondition = (
       )} of`;
     }
 
-    let entities = "";
     if (Array.isArray(condition.entity_id)) {
+      let entities = "";
       for (const [index, entity] of condition.entity_id.entries()) {
         if (hass.states[entity]) {
           entities += `${index > 0 ? "," : ""} ${
@@ -543,19 +543,19 @@ export const describeCondition = (
           } ${computeStateName(hass.states[entity]) || entity}`;
         }
       }
+      if (entities) {
+        base += ` ${entities} are`;
+      } else {
+        // no entity_id or empty array
+        base += " an entity";
+      }
     } else if (condition.entity_id) {
-      entities = hass.states[condition.entity_id]
-        ? computeStateName(hass.states[condition.entity_id])
-        : condition.entity_id;
+      base += ` ${
+        hass.states[condition.entity_id]
+          ? computeStateName(hass.states[condition.entity_id])
+          : condition.entity_id
+      } is`;
     }
-
-    if (!entities) {
-      // no entity_id or empty array
-      entities = "an entity";
-    }
-
-    base += ` ${entities} is`;
-
     let states = "";
     const stateObj =
       hass.states[
