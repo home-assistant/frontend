@@ -27,15 +27,17 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
 import { UNAVAILABLE } from "../../../data/entity";
-import { FanEntity, FanEntityFeature } from "../../../data/fan";
+import {
+  computeFanSpeedCount,
+  FanEntity,
+  FanEntityFeature,
+  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
+} from "../../../data/fan";
 import { forwardHaptic } from "../../../data/haptics";
 import { haOscillating } from "../../../data/icons/haOscillating";
 import { haOscillatingOff } from "../../../data/icons/haOscillatingOff";
 import type { HomeAssistant } from "../../../types";
-import {
-  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
-  getFanSpeedCount,
-} from "../components/fan/ha-more-info-fan-speed";
+import "../components/fan/ha-more-info-fan-speed";
 import { moreInfoControlStyle } from "../components/ha-more-info-control-style";
 import "../components/ha-more-info-state-header";
 import "../components/ha-more-info-toggle";
@@ -137,7 +139,7 @@ class MoreInfoFan extends LitElement {
 
     const supportSpeedPercentage =
       supportsSpeed &&
-      getFanSpeedCount(this.stateObj) > FAN_SPEED_COUNT_MAX_FOR_BUTTONS;
+      computeFanSpeedCount(this.stateObj) > FAN_SPEED_COUNT_MAX_FOR_BUTTONS;
 
     const stateOverride = this._selectedPercentage
       ? `${Math.round(this._selectedPercentage)}${blankBeforePercent(

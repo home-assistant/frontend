@@ -10,6 +10,10 @@ export interface LightBrightnessTileFeatureConfig {
   type: "light-brightness";
 }
 
+export interface FanSpeedTileFeatureConfig {
+  type: "fan-speed";
+}
+
 export const VACUUM_COMMANDS = [
   "start_pause",
   "stop",
@@ -29,7 +33,8 @@ export type LovelaceTileFeatureConfig =
   | CoverOpenCloseTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | LightBrightnessTileFeatureConfig
-  | VacuumCommandsTileFeatureConfig;
+  | VacuumCommandsTileFeatureConfig
+  | FanSpeedTileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;

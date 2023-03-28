@@ -27,6 +27,7 @@ import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
 import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
+import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
@@ -39,6 +40,7 @@ const FEATURE_TYPES: FeatureType[] = [
   "cover-tilt",
   "light-brightness",
   "vacuum-commands",
+  "fan-speed",
 ];
 
 const EDITABLES_FEATURE_TYPES = new Set<FeatureType>(["vacuum-commands"]);
@@ -49,6 +51,7 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "cover-tilt": supportsCoverTiltTileFeature,
     "light-brightness": supportsLightBrightnessTileFeature,
     "vacuum-commands": supportsVacuumCommandTileFeature,
+    "fan-speed": supportsFanSpeedTileFeature,
   };
 
 const CUSTOM_FEATURE_ENTRIES: Record<
