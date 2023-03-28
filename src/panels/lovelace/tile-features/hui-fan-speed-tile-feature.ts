@@ -169,9 +169,12 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
       }
       ha-control-select {
         --control-select-color: var(--tile-color);
-        --control-select-thickness: 40px;
+        --control-select-background: var(--tile-color);
+        --control-select-background-opacity: 0.2;
         --control-select-padding: 0;
+        --control-select-thickness: 40px;
         --control-select-border-radius: 10px;
+        --control-select-button-border-radius: 10px;
       }
       .container {
         padding: 0 12px 12px 12px;

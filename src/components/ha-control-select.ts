@@ -204,8 +204,11 @@ export class HaControlSelect extends LitElement {
         --control-select-background: var(--disabled-color);
         --control-select-background-opacity: 0.2;
         --control-select-thickness: 40px;
-        --control-select-border-radius: 12px;
+        --control-select-border-radius: 10px;
         --control-select-padding: 4px;
+        --control-select-button-border-radius: calc(
+          var(--control-select-border-radius) - var(--control-select-padding)
+        );
         --mdc-icon-size: 20px;
         height: var(--control-select-thickness);
         width: 100%;
@@ -262,9 +265,7 @@ export class HaControlSelect extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: calc(
-          var(--control-select-border-radius) - var(--control-select-padding)
-        );
+        border-radius: var(--control-select-button-border-radius);
         overflow: hidden;
         color: var(--primary-text-color);
         /* For safari border-radius overflow */
