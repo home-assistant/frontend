@@ -190,10 +190,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         >
           ${this._error
             ? html`
-                <div>
-                  ${this.hass.localize("ui.components.history_charts.error")} :
+                <ha-alert alert-type="error">
+                  ${this.hass.localize("ui.components.history_charts.error")}:
                   ${this._error.message || this._error.code}
-                </div>
+                </ha-alert>
               `
             : html`
                 <state-history-charts

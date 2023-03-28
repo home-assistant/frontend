@@ -63,7 +63,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _colorIndex = 0;
 
-  private _error?: { code: string; message: string };
+  @state() private _error?: { code: string; message: string };
 
   private _subscribed?: Promise<(() => Promise<void>) | void>;
 
@@ -137,10 +137,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return nothing;
     }
     if (this._error) {
-      return html`<div class="error">
-        ${this.hass.localize("ui.components.map.error")} :
-        ${this._error.message} (${this._error.code})
-      </div>`;
+      return html`<ha-alert alert-type="error">
+        ${this.hass.localize("ui.components.map.error")}: ${this._error.message}
+        (${this._error.code})
+      </ha-alert>`;
     }
     return html`
       <ha-card id="card" .header=${this._config.title}>
