@@ -513,36 +513,108 @@ export const describeCondition = (
   // State Condition
   if (condition.condition === "state") {
     let base = "Confirm";
-    const stateObj = hass.states[condition.entity_id];
-    const entity = stateObj
-      ? computeStateName(stateObj)
-      : condition.entity_id
-      ? condition.entity_id
-      : "an entity";
+    if (!condition.entity_id) {
+      return `${base} state`;
+    }
 
-    if ("attribute" in condition) {
-      base += ` ${condition.attribute} from`;
+    if (condition.attribute) {
+      const stateObj = Array.isArray(condition.entity_id)
+        ? hass.states[condition.entity_id[0]]
+        : hass.states[condition.entity_id];
+      base += ` ${computeAttributeNameDisplay(
+        hass.localize,
+        stateObj,
+        hass.entities,
+        condition.attribute
+      )} of`;
+    }
+
+    if (Array.isArray(condition.entity_id)) {
+      let entities = "";
+      for (const [index, entity] of condition.entity_id.entries()) {
+        if (hass.states[entity]) {
+          entities += `${index > 0 ? "," : ""} ${
+            condition.entity_id.length > 1 &&
+            index === condition.entity_id.length - 1
+              ? condition.match === "any"
+                ? "or"
+                : "and"
+              : ""
+          } ${computeStateName(hass.states[entity]) || entity}`;
+        }
+      }
+      if (entities) {
+        base += ` ${entities} ${condition.entity_id.length > 1 ? "are" : "is"}`;
+      } else {
+        // no entity_id or empty array
+        base += " an entity";
+      }
+    } else if (condition.entity_id) {
+      base += ` ${
+        hass.states[condition.entity_id]
+          ? computeStateName(hass.states[condition.entity_id])
+          : condition.entity_id
+      } is`;
     }
 
     let states = "";
-
+    const stateObj =
+      hass.states[
+        Array.isArray(condition.entity_id)
+          ? condition.entity_id[0]
+          : condition.entity_id
+      ];
     if (Array.isArray(condition.state)) {
       for (const [index, state] of condition.state.entries()) {
         states += `${index > 0 ? "," : ""} ${
           condition.state.length > 1 && index === condition.state.length - 1
             ? "or"
             : ""
-        } ${state}`;
+        } '${
+          condition.attribute
+            ? computeAttributeValueDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                condition.attribute,
+                state
+              )
+            : computeStateDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                state
+              )
+        }'`;
       }
-    } else if (condition.state) {
-      states = condition.state.toString();
+    } else if (condition.state !== "") {
+      states = `'${
+        condition.attribute
+          ? computeAttributeValueDisplay(
+              hass.localize,
+              stateObj,
+              hass.locale,
+              hass.entities,
+              condition.attribute,
+              condition.state
+            ).toString()
+          : computeStateDisplay(
+              hass.localize,
+              stateObj,
+              hass.locale,
+              hass.entities,
+              condition.state.toString()
+            ).toString()
+      }'`;
     }
 
     if (!states) {
       states = "a state";
     }
 
-    base += ` ${entity} is ${states}`;
+    base += ` ${states}`;
 
     if (condition.for) {
       const duration = describeDuration(condition.for);
