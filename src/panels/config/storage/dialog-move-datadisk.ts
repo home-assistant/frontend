@@ -136,9 +136,15 @@ class MoveDatadiskDialog extends LitElement {
                 ${this._disks.map(
                   (disk) =>
                     html`<mwc-list-item twoline .value=${disk.id}>
-                      <span>${disk.name}</span>
+                      <span>${disk.vendor} ${disk.model}</span>
                       <span slot="secondary">
-                        ${bytesToString(disk.size)}
+                        ${this.hass.localize(
+                          "ui.panel.config.storage.datadisk.extra_information",
+                          {
+                            size: bytesToString(disk.size),
+                            serial: disk.serial,
+                          }
+                        )}
                       </span>
                     </mwc-list-item>`
                 )}
