@@ -1,11 +1,3 @@
-import {
-  mdiFan,
-  mdiFanOff,
-  mdiFanSpeed1,
-  mdiFanSpeed2,
-  mdiFanSpeed3,
-} from "@mdi/js";
-import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -16,52 +8,17 @@ import "../../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../../components/ha-control-select";
 import "../../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../../data/entity";
-import { FanEntity } from "../../../../data/fan";
+import {
+  computeFanSpeedCount,
+  computeFanSpeedIcon,
+  FanEntity,
+  fanPercentageToSpeed,
+  FanSpeed,
+  fanSpeedToPercentage,
+  FAN_SPEEDS,
+  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
+} from "../../../../data/fan";
 import { HomeAssistant } from "../../../../types";
-
-type Speed = "off" | "low" | "medium" | "high" | "on";
-
-const SPEEDS: Partial<Record<number, Speed[]>> = {
-  2: ["off", "on"],
-  3: ["off", "low", "high"],
-  4: ["off", "low", "medium", "high"],
-};
-
-function percentageToSpeed(stateObj: HassEntity, value: number): string {
-  const step = stateObj.attributes.percentage_step ?? 1;
-  const speedValue = Math.round(value / step);
-  const speedCount = Math.round(100 / step) + 1;
-
-  const speeds = SPEEDS[speedCount];
-  return speeds?.[speedValue] ?? "off";
-}
-
-function speedToPercentage(stateObj: HassEntity, speed: Speed): number {
-  const step = stateObj.attributes.percentage_step ?? 1;
-  const speedCount = Math.round(100 / step) + 1;
-
-  const speeds = SPEEDS[speedCount];
-
-  if (!speeds) {
-    return 0;
-  }
-
-  const speedValue = speeds.indexOf(speed);
-  if (speedValue === -1) {
-    return 0;
-  }
-  return Math.round(speedValue * step);
-}
-
-const SPEED_ICON_NUMBER: string[] = [mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3];
-
-export function getFanSpeedCount(stateObj: HassEntity) {
-  const step = stateObj.attributes.percentage_step ?? 1;
-  const speedCount = Math.round(100 / step) + 1;
-  return speedCount;
-}
-
-export const FAN_SPEED_COUNT_MAX_FOR_BUTTONS = 4;
 
 @customElement("ha-more-info-fan-speed")
 export class HaMoreInfoFanSpeed extends LitElement {
@@ -81,9 +38,9 @@ export class HaMoreInfoFanSpeed extends LitElement {
   }
 
   private _speedValueChanged(ev: CustomEvent) {
-    const speed = (ev.detail as any).value as Speed;
+    const speed = (ev.detail as any).value as FanSpeed;
 
-    const percentage = speedToPercentage(this.stateObj, speed);
+    const percentage = fanSpeedToPercentage(this.stateObj, speed);
 
     this.hass.callService("fan", "set_percentage", {
       entity_id: this.stateObj!.entity_id,
@@ -101,7 +58,7 @@ export class HaMoreInfoFanSpeed extends LitElement {
     });
   }
 
-  private _localizeSpeed(speed: Speed) {
+  private _localizeSpeed(speed: FanSpeed) {
     if (speed === "on" || speed === "off") {
       return computeStateDisplay(
         this.hass.localize,
@@ -120,23 +77,18 @@ export class HaMoreInfoFanSpeed extends LitElement {
   protected render() {
     const color = stateColorCss(this.stateObj);
 
-    const speedCount = getFanSpeedCount(this.stateObj);
+    const speedCount = computeFanSpeedCount(this.stateObj);
 
     if (speedCount <= FAN_SPEED_COUNT_MAX_FOR_BUTTONS) {
-      const options = SPEEDS[speedCount]!.map<ControlSelectOption>(
-        (speed, index) => ({
+      const options = FAN_SPEEDS[speedCount]!.map<ControlSelectOption>(
+        (speed) => ({
           value: speed,
           label: this._localizeSpeed(speed),
-          path:
-            speed === "on"
-              ? mdiFan
-              : speed === "off"
-              ? mdiFanOff
-              : SPEED_ICON_NUMBER[index - 1],
+          path: computeFanSpeedIcon(this.stateObj, speed),
         })
       ).reverse();
 
-      const speed = percentageToSpeed(
+      const speed = fanPercentageToSpeed(
         this.stateObj,
         this.stateObj.attributes.percentage ?? 0
       );
