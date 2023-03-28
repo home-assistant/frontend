@@ -100,10 +100,11 @@ export class HaControlSelect extends LitElement {
 
   private _handleKeydown(ev: KeyboardEvent) {
     if (!this.options || this._activeIndex == null || this.disabled) return;
+    const value = this.options[this._activeIndex].value;
     switch (ev.key) {
       case " ":
-        this.value = this.options[this._activeIndex].value;
-        fireEvent(this, "value-changed", { value: this.value });
+        this.value = value;
+        fireEvent(this, "value-changed", { value });
         break;
       case "ArrowUp":
       case "ArrowLeft":
@@ -132,7 +133,7 @@ export class HaControlSelect extends LitElement {
     if (this.disabled) return;
     const value = (ev.target as any).value;
     this.value = value;
-    fireEvent(this, "value-changed", { value: this.value });
+    fireEvent(this, "value-changed", { value });
   }
 
   private _handleOptionMouseDown(ev: MouseEvent) {

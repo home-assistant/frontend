@@ -98,15 +98,21 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
       const oldStateObj = changedProp.get("stateObj") as HassEntity | undefined;
 
       if (!oldStateObj || this.stateObj.state !== oldStateObj.state) {
-        this._currentMode = this._modes(this.stateObj).find(
-          (mode) => ALARM_MODES[mode].state === this.stateObj.state
-        );
+        this._currentMode = this._getCurrentMode(this.stateObj);
       }
     }
   }
 
+  private _getCurrentMode(stateObj: AlarmControlPanelEntity) {
+    return this._modes(stateObj).find(
+      (mode) => ALARM_MODES[mode].state === stateObj.state
+    );
+  }
+
   private async _valueChanged(ev: CustomEvent) {
     const mode = (ev.detail as any).value as AlarmMode;
+
+    this._currentMode = mode;
 
     const { state: modeState, service } = ALARM_MODES[mode];
 
@@ -136,15 +142,20 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
         ),
       });
       if (!response) {
+        this._currentMode = this._getCurrentMode(this.stateObj);
         return;
       }
       code = response;
     }
 
-    this.hass.callService("alarm_control_panel", service, {
-      entity_id: this.stateObj!.entity_id,
-      code,
-    });
+    try {
+      await this.hass.callService("alarm_control_panel", service, {
+        entity_id: this.stateObj!.entity_id,
+        code,
+      });
+    } catch (_err) {
+      this._currentMode = this._getCurrentMode(this.stateObj);
+    }
   }
 
   protected render() {
