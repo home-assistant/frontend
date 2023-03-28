@@ -40,7 +40,7 @@ interface PipelineSTTStartEvent extends PipelineEventBase {
 interface PipelineSTTEndEvent extends PipelineEventBase {
   type: "stt-end";
   data: {
-    text: string;
+    stt_output: { text: string };
   };
 }
 
