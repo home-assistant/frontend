@@ -11,6 +11,7 @@ import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/chart/state-history-charts";
 import "../../../components/ha-card";
+import "../../../components/ha-alert";
 import {
   computeHistory,
   HistoryResult,
@@ -192,10 +193,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         >
           ${this._error
             ? html`
-                <div>
-                  ${this.hass.localize("ui.components.history_charts.error")} :
+                <ha-alert alert-type="error">
+                  ${this.hass.localize("ui.components.history_charts.error")}:
                   ${this._error.message || this._error.code}
-                </div>
+                </ha-alert>
               `
             : html`
                 <state-history-charts
