@@ -4437,6 +4437,9 @@
                   "cover-tilt": {
                     "label": "Cover tilt"
                   },
+                  "fan-speed": {
+                    "label": "Fan speed"
+                  },
                   "light-brightness": {
                     "label": "Light brightness"
                   },
