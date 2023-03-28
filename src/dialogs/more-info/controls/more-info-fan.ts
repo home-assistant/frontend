@@ -1,8 +1,6 @@
 import "@material/web/button/outlined-button";
 import "@material/web/iconbutton/outlined-icon-button";
 import {
-  mdiAutorenew,
-  mdiAutorenewOff,
   mdiCreation,
   mdiFan,
   mdiFanOff,
@@ -31,6 +29,8 @@ import "../../../components/ha-attributes";
 import { UNAVAILABLE } from "../../../data/entity";
 import { FanEntity, FanEntityFeature } from "../../../data/fan";
 import { forwardHaptic } from "../../../data/haptics";
+import { haOscillating } from "../../../data/icons/haOscillating";
+import { haOscillatingOff } from "../../../data/icons/haOscillatingOff";
 import type { HomeAssistant } from "../../../types";
 import {
   FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
@@ -236,8 +236,8 @@ class MoreInfoFan extends LitElement {
                       >
                         <ha-svg-icon
                           .path=${this.stateObj.attributes.oscillating
-                            ? mdiAutorenew
-                            : mdiAutorenewOff}
+                            ? haOscillating
+                            : haOscillatingOff}
                         ></ha-svg-icon>
                       </md-outlined-icon-button>
                     `
