@@ -1,6 +1,6 @@
 import "@material/web/button/outlined-button";
 import { mdiShieldOff } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { domainIcon } from "../../../common/entity/domain_icon";
@@ -43,9 +43,9 @@ class MoreInfoAlarmControlPanel extends LitElement {
     });
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return null;
+      return nothing;
     }
 
     const color = stateColorCss(this.stateObj);
