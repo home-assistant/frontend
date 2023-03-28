@@ -1,3 +1,7 @@
+import {
+  HassEntityAttributeBase,
+  HassEntityBase,
+} from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 
 export const FORMAT_TEXT = "text";
@@ -10,6 +14,16 @@ export const enum AlarmControlPanelEntityFeature {
   TRIGGER = 8,
   ARM_CUSTOM_BYPASS = 16,
   ARM_VACATION = 32,
+}
+
+interface AlarmControlPanelEntityAttributes extends HassEntityAttributeBase {
+  code_format?: "text" | "number";
+  changed_by?: string | null;
+  code_arm_required?: boolean;
+}
+
+export interface AlarmControlPanelEntity extends HassEntityBase {
+  attributes: AlarmControlPanelEntityAttributes;
 }
 
 export const callAlarmAction = (
