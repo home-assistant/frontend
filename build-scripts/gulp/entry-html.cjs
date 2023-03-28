@@ -4,9 +4,9 @@ const fs = require("fs-extra");
 const path = require("path");
 const template = require("lodash.template");
 const { minify } = require("html-minifier-terser");
-const paths = require("../paths.js");
-const env = require("../env.js");
-const { htmlMinifierOptions, terserOptions } = require("../bundle.js");
+const paths = require("../paths.cjs");
+const env = require("../env.cjs");
+const { htmlMinifierOptions, terserOptions } = require("../bundle.cjs");
 
 const templatePath = (tpl) =>
   path.resolve(paths.polymer_dir, "src/html/", `${tpl}.html.template`);

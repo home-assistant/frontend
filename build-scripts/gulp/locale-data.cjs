@@ -2,7 +2,7 @@ const del = import("del");
 const path = require("path");
 const gulp = require("gulp");
 const fs = require("fs");
-const paths = require("../paths");
+const paths = require("../paths.cjs");
 
 const outDir = "build/locale-data";
 

@@ -1,7 +1,7 @@
 const del = import("del");
 const gulp = require("gulp");
-const paths = require("../paths");
-require("./translations");
+const paths = require("../paths.cjs");
+require("./translations.cjs");
 
 gulp.task(
   "clean",

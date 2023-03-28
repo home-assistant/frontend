@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   {
     // This section has no header and so all page links are shown directly in the sidebar
     category: "concepts",
