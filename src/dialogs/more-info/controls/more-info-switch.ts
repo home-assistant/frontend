@@ -1,6 +1,6 @@
 import { mdiPower, mdiPowerOff } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-attributes";
 import type { HomeAssistant } from "../../../types";
@@ -14,9 +14,9 @@ class MoreInfoSwitch extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return null;
+      return nothing;
     }
 
     return html`

@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -67,14 +67,14 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
     );
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (
       !this._config ||
       !this.hass ||
       !this.stateObj ||
       !supportsFanSpeedTileFeature(this.stateObj)
     ) {
-      return null;
+      return nothing;
     }
 
     const speedCount = computeFanSpeedCount(this.stateObj);

@@ -1,6 +1,6 @@
 import { mdiStop } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import {
@@ -74,14 +74,14 @@ class HuiCoverOpenCloseTileFeature
     });
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (
       !this._config ||
       !this.hass ||
       !this.stateObj ||
       !supportsCoverOpenCloseTileFeature(this.stateObj)
     ) {
-      return null;
+      return nothing;
     }
 
     return html`
@@ -100,7 +100,7 @@ class HuiCoverOpenCloseTileFeature
                 ></ha-svg-icon>
               </ha-control-button>
             `
-          : null}
+          : nothing}
         ${supportsFeature(this.stateObj, CoverEntityFeature.STOP)
           ? html`
               <ha-control-button
@@ -113,7 +113,7 @@ class HuiCoverOpenCloseTileFeature
                 <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
               </ha-control-button>
             `
-          : null}
+          : nothing}
         ${supportsFeature(this.stateObj, CoverEntityFeature.CLOSE)
           ? html`
               <ha-control-button
@@ -128,7 +128,7 @@ class HuiCoverOpenCloseTileFeature
                 ></ha-svg-icon>
               </ha-control-button>
             `
-          : undefined}
+          : nothing}
       </ha-control-button-group>
     `;
   }
