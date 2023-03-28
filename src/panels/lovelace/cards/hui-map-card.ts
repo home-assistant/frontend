@@ -22,6 +22,7 @@ import {
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
+import "../../../components/ha-alert";
 import "../../../components/ha-icon-button";
 import "../../../components/map/ha-map";
 import type {

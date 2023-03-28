@@ -11,6 +11,7 @@ import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/chart/state-history-charts";
 import "../../../components/ha-card";
+import "../../../components/ha-alert";
 import {
   computeHistory,
   HistoryResult,
