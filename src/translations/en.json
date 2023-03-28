@@ -924,6 +924,20 @@
             "medium": "Medium",
             "high": "High"
           }
+        },
+        "alarm_control_panel": {
+          "modes": {
+            "away": "Away",
+            "home": "Home",
+            "night": "Night",
+            "vacation": "Vacation",
+            "custom_bypass": "Custom",
+            "disarmed": "Disarmed"
+          },
+          "disarm_title": "Disarm",
+          "disarm_action": "Disarm",
+          "arm_title": "Arm",
+          "arm_action": "Arm"
         }
       },
       "entity_registry": {
@@ -1283,6 +1297,10 @@
         "release_items": "This includes beta releases for:",
         "view_documentation": "View documentation",
         "join": "Join"
+      },
+      "enter_code": {
+        "title": "Enter code",
+        "input_label": "Code"
       }
     },
     "duration": {

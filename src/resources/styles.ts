@@ -342,7 +342,8 @@ export const haStyleDialog = css`
       --ha-dialog-border-radius: 0px;
     }
   }
-  mwc-button.warning {
+  mwc-button.warning,
+  ha-button.warning {
     --mdc-theme-primary: var(--error-color);
   }
   .error {
