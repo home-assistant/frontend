@@ -4461,6 +4461,18 @@
                   "fan-speed": {
                     "label": "Fan speed"
                   },
+                  "alarm-modes": {
+                    "label": "Alarm modes",
+                    "modes": "Modes",
+                    "modes_list": {
+                      "away": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::away%]",
+                      "home": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::home%]",
+                      "night": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::night%]",
+                      "vacation": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::vacation%]",
+                      "custom_bypass": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::custom_bypass%]",
+                      "disarmed": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::disarmed%]"
+                    }
+                  },
                   "light-brightness": {
                     "label": "Light brightness"
                   },

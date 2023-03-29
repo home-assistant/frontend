@@ -1,11 +1,3 @@
-import {
-  mdiAirplane,
-  mdiHome,
-  mdiLock,
-  mdiMoonWaningCrescent,
-  mdiShield,
-  mdiShieldOff,
-} from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -19,62 +11,11 @@ import type { ControlSelectOption } from "../../../../components/ha-control-sele
 import "../../../../components/ha-control-slider";
 import {
   AlarmControlPanelEntity,
-  AlarmControlPanelEntityFeature,
+  AlarmMode,
+  ALARM_MODES,
 } from "../../../../data/alarm_control_panel";
 import { HomeAssistant } from "../../../../types";
 import { showEnterCodeDialogDialog } from "./show-enter-code-dialog";
-
-type AlarmMode =
-  | "away"
-  | "home"
-  | "night"
-  | "vacation"
-  | "custom_bypass"
-  | "disarmed";
-
-type AlarmConfig = {
-  service: string;
-  feature?: AlarmControlPanelEntityFeature;
-  state: string;
-  path: string;
-};
-const ALARM_MODES: Record<AlarmMode, AlarmConfig> = {
-  away: {
-    feature: AlarmControlPanelEntityFeature.ARM_AWAY,
-    service: "alarm_arm_away",
-    state: "armed_away",
-    path: mdiLock,
-  },
-  home: {
-    feature: AlarmControlPanelEntityFeature.ARM_HOME,
-    service: "alarm_arm_home",
-    state: "armed_home",
-    path: mdiHome,
-  },
-  custom_bypass: {
-    feature: AlarmControlPanelEntityFeature.ARM_CUSTOM_BYPASS,
-    service: "alarm_arm_custom_bypass",
-    state: "armed_custom_bypass",
-    path: mdiShield,
-  },
-  night: {
-    feature: AlarmControlPanelEntityFeature.ARM_NIGHT,
-    service: "alarm_arm_night",
-    state: "armed_night",
-    path: mdiMoonWaningCrescent,
-  },
-  vacation: {
-    feature: AlarmControlPanelEntityFeature.ARM_VACATION,
-    service: "alarm_arm_vacation",
-    state: "armed_vacation",
-    path: mdiAirplane,
-  },
-  disarmed: {
-    service: "alarm_disarm",
-    state: "disarmed",
-    path: mdiShieldOff,
-  },
-};
 
 @customElement("ha-more-info-alarm_control_panel-modes")
 export class HaMoreInfoAlarmControlPanelModes extends LitElement {
@@ -112,11 +53,14 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
   private async _valueChanged(ev: CustomEvent) {
     const mode = (ev.detail as any).value as AlarmMode;
 
-    this._currentMode = mode;
-
     const { state: modeState, service } = ALARM_MODES[mode];
 
     if (modeState === this.stateObj.state) return;
+
+    // Force ha-control-select to previous mode because we don't known if the service call will succeed due to code check
+    this._currentMode = mode;
+    await this.requestUpdate("_currentMode");
+    this._currentMode = this._getCurrentMode(this.stateObj!);
 
     let code: string | undefined;
 
@@ -142,20 +86,15 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
         ),
       });
       if (!response) {
-        this._currentMode = this._getCurrentMode(this.stateObj);
         return;
       }
       code = response;
     }
 
-    try {
-      await this.hass.callService("alarm_control_panel", service, {
-        entity_id: this.stateObj!.entity_id,
-        code,
-      });
-    } catch (_err) {
-      this._currentMode = this._getCurrentMode(this.stateObj);
-    }
+    await this.hass.callService("alarm_control_panel", service, {
+      entity_id: this.stateObj!.entity_id,
+      code,
+    });
   }
 
   protected render() {
@@ -177,8 +116,7 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
         .options=${options}
         .value=${this._currentMode}
         @value-changed=${this._valueChanged}
-        no-optimistic-update
-        .ariaLabel=${computeAttributeNameDisplay(
+        .label=${computeAttributeNameDisplay(
           this.hass.localize,
           this.stateObj,
           this.hass.entities,

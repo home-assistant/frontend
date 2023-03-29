@@ -177,6 +177,7 @@ export class HaControlSelect extends LitElement {
         .value=${option.value}
         aria-selected=${this.value === option.value}
         aria-label=${ifDefined(option.label)}
+        title=${ifDefined(option.label)}
         @click=${this._handleOptionClick}
         @mousedown=${this._handleOptionMouseDown}
         @mouseup=${this._handleOptionMouseUp}
