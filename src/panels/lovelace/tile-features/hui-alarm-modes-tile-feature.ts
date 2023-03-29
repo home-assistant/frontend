@@ -1,3 +1,4 @@
+import { mdiShieldOff } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -10,6 +11,8 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-slider";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import {
   AlarmControlPanelEntity,
   AlarmMode,
@@ -149,6 +152,31 @@ class HuiAlarmModeTileFeature
     }
   }
 
+  private async _disarm() {
+    let code: string | undefined;
+
+    if (this.stateObj!.attributes.code_format) {
+      const response = await showEnterCodeDialogDialog(this, {
+        codeFormat: this.stateObj!.attributes.code_format,
+        title: this.hass!.localize(
+          "ui.dialogs.more_info_control.alarm_control_panel.disarm_title"
+        ),
+        submitText: this.hass!.localize(
+          "ui.dialogs.more_info_control.alarm_control_panel.disarm_action"
+        ),
+      });
+      if (!response) {
+        return;
+      }
+      code = response;
+    }
+
+    this.hass!.callService("alarm_control_panel", "alarm_disarm", {
+      entity_id: this.stateObj!.entity_id,
+      code,
+    });
+  }
+
   protected render(): TemplateResult | null {
     if (
       !this._config ||
@@ -171,6 +199,20 @@ class HuiAlarmModeTileFeature
       path: ALARM_MODES[mode].path,
     }));
 
+    if (["triggered", "arming", "pending"].includes(this.stateObj.state)) {
+      return html`
+        <ha-control-button-group>
+          <ha-control-button
+            .label=${this.hass.localize(
+              "ui.dialogs.more_info_control.alarm_control_panel.disarm_action"
+            )}
+            @click=${this._disarm}
+          >
+            <ha-svg-icon .path=${mdiShieldOff}></ha-svg-icon>
+          </ha-control-button>
+        </ha-control-button-group>
+      `;
+    }
     return html`
       <div class="container">
         <ha-control-select
@@ -202,6 +244,10 @@ class HuiAlarmModeTileFeature
         --control-select-thickness: 40px;
         --control-select-border-radius: 10px;
         --control-select-button-border-radius: 10px;
+      }
+      ha-control-button-group {
+        margin: 0 12px 12px 12px;
+        --control-button-group-spacing: 12px;
       }
       .container {
         padding: 0 12px 12px 12px;
