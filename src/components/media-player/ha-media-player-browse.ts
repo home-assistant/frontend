@@ -5,7 +5,7 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   css,
   CSSResultGroup,
@@ -600,8 +600,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           </div>
           <div class="title">
             ${child.title}
-            <paper-tooltip fitToVisibleBounds position="top" offset="4"
-              >${child.title}</paper-tooltip
+            <simple-tooltip fitToVisibleBounds position="top" offset="4"
+              >${child.title}</simple-tooltip
             >
           </div>
         </ha-card>

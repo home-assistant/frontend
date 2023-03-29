@@ -1,5 +1,5 @@
 import { mdiDelete } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -86,11 +86,11 @@ class HaRefreshTokens extends LitElement {
                 </div>
                 <div>
                   ${token.is_current
-                    ? html`<paper-tooltip animation-delay="0" position="left">
+                    ? html`<simple-tooltip animation-delay="0" position="left">
                         ${this.hass.localize(
                           "ui.panel.profile.refresh_tokens.current_token_tooltip"
                         )}
-                      </paper-tooltip>`
+                      </simple-tooltip>`
                     : ""}
                   <ha-icon-button
                     .token=${token}
@@ -141,6 +141,8 @@ class HaRefreshTokens extends LitElement {
       css`
         ha-settings-row {
           padding: 0;
+          --settings-row-prefix-display: contents;
+          --settings-row-content-display: contents;
         }
         ha-icon-button {
           color: var(--primary-text-color);

@@ -1,9 +1,9 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "../components/ha-icon-next";
+import "../components/ha-list-item";
 import { AuthProvider } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 
@@ -20,18 +20,21 @@ export class HaPickAuthProvider extends litLocalizeLiteMixin(LitElement) {
   protected render() {
     return html`
       <p>${this.localize("ui.panel.page-authorize.pick_auth_provider")}:</p>
-      ${this.authProviders.map(
-        (provider) => html`
-          <paper-item
-            role="button"
-            .auth_provider=${provider}
-            @click=${this._handlePick}
-          >
-            <paper-item-body>${provider.name}</paper-item-body>
-            <ha-icon-next></ha-icon-next>
-          </paper-item>
-        `
-      )}
+      <mwc-list>
+        ${this.authProviders.map(
+          (provider) => html`
+            <ha-list-item
+              hasMeta
+              role="button"
+              .auth_provider=${provider}
+              @click=${this._handlePick}
+            >
+              ${provider.name}
+              <ha-icon-next slot="meta"></ha-icon-next>
+            </ha-list-item>
+          `
+        )}</mwc-list
+      >
     `;
   }
 
@@ -40,11 +43,12 @@ export class HaPickAuthProvider extends litLocalizeLiteMixin(LitElement) {
   }
 
   static styles = css`
-    paper-item {
-      cursor: pointer;
-    }
     p {
       margin-top: 0;
+    }
+    mwc-list {
+      margin: 0 -16px;
+      --mdc-list-side-padding: 16px;
     }
   `;
 }

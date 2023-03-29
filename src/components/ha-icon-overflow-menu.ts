@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -75,9 +75,12 @@ export class HaIconOverflowMenu extends LitElement {
                 ? html`<div role="separator"></div>`
                 : html`<div>
                     ${item.tooltip
-                      ? html`<paper-tooltip animation-delay="0" position="left">
+                      ? html`<simple-tooltip
+                          animation-delay="0"
+                          position="left"
+                        >
                           ${item.tooltip}
-                        </paper-tooltip>`
+                        </simple-tooltip>`
                       : ""}
                     <ha-icon-button
                       @click=${item.action}
