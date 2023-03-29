@@ -169,7 +169,7 @@ class MoreInfoLight extends LitElement {
                         <ha-svg-icon .path=${mdiFileWordBox}></ha-svg-icon>
                       </md-outlined-icon-button>
                     `
-                  : null}
+                  : nothing}
                 ${supportsEffects && this.stateObj.attributes.effect_list
                   ? html`
                       <ha-button-menu

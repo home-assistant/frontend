@@ -126,7 +126,7 @@ class DialogRestart extends LitElement {
                         </span>
                       </ha-list-item>
                     `
-                  : null}
+                  : nothing}
                 <ha-list-item
                   graphic="avatar"
                   twoline
@@ -201,7 +201,7 @@ class DialogRestart extends LitElement {
                       </mwc-list>
                     </ha-expansion-panel>
                   `
-                : null}
+                : nothing}
             `}
       </ha-dialog>
     `;

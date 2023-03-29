@@ -7,8 +7,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -357,7 +357,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     if (!this._configEntries) {
       return html`<hass-loading-screen
         .hass=${this.hass}
@@ -531,7 +531,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     .supportsDiagnostics=${this._diagnosticHandlers
                       ? this._diagnosticHandlers[domain]
                       : false}
-                    .logInfo=${this._logInfos ? this._logInfos[domain] : null}
+                    .logInfo=${this._logInfos
+                      ? this._logInfos[domain]
+                      : nothing}
                   ></ha-integration-card>`
               )
             : this._filter &&
