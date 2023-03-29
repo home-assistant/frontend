@@ -1,6 +1,6 @@
 import { mdiDelete, mdiDrag, mdiListBox, mdiPencil, mdiPlus } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
@@ -150,9 +150,9 @@ export class HuiTileCardFeaturesEditor extends LitElement {
       .filter((type) => this._supportsFeatureType(type));
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (!this.features || !this.hass) {
-      return null;
+      return nothing;
     }
 
     const supportedFeaturesType = this._getSupportedFeaturesType();
@@ -179,7 +179,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                   )}
                 </ha-alert>
               `
-            : null}
+            : nothing}
           <div class="features">
             ${repeat(
               this.features,
@@ -204,7 +204,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                                 )}
                               </span>
                             `
-                          : null}
+                          : nothing}
                       </div>
                     </div>
                     ${editable
@@ -220,7 +220,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                             .disabled=${!supported}
                           ></ha-icon-button>
                         `
-                      : null}
+                      : nothing}
                     <ha-icon-button
                       .label=${this.hass!.localize(
                         `ui.panel.lovelace.editor.card.tile.features.remove`
@@ -260,7 +260,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                   )}
                   ${types.length > 0 && customTypes.length > 0
                     ? html`<li divider role="separator"></li>`
-                    : null}
+                    : nothing}
                   ${customTypes.map(
                     (type) => html`
                       <ha-list-item .value=${type}>
@@ -270,7 +270,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                   )}
                 </ha-button-menu>
               `
-            : null}
+            : nothing}
         </div>
       </ha-expansion-panel>
     `;

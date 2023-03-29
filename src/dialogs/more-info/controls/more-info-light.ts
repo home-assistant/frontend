@@ -13,8 +13,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -62,9 +62,9 @@ class MoreInfoLight extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return null;
+      return nothing;
     }
 
     const supportsColorTemp = lightSupportsColorMode(
@@ -137,7 +137,7 @@ class MoreInfoLight extends LitElement {
                         <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
                       </md-outlined-icon-button>
                     `
-                  : null}
+                  : nothing}
                 ${supportsColorTemp || supportsColor
                   ? html`
                       <md-outlined-icon-button
@@ -153,7 +153,7 @@ class MoreInfoLight extends LitElement {
                         <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
                       </md-outlined-icon-button>
                     `
-                  : null}
+                  : nothing}
                 ${supportsWhite
                   ? html`
                       <md-outlined-icon-button
@@ -169,7 +169,7 @@ class MoreInfoLight extends LitElement {
                         <ha-svg-icon .path=${mdiFileWordBox}></ha-svg-icon>
                       </md-outlined-icon-button>
                     `
-                  : null}
+                  : nothing}
                 ${supportsEffects && this.stateObj.attributes.effect_list
                   ? html`
                       <ha-button-menu
@@ -204,10 +204,10 @@ class MoreInfoLight extends LitElement {
                         )}
                       </ha-button-menu>
                     `
-                  : null}
+                  : nothing}
               </div>
             `
-          : null}
+          : nothing}
       </div>
 
       <ha-attributes

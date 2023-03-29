@@ -15,7 +15,6 @@ import {
   LitElement,
   nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -114,9 +113,9 @@ class MoreInfoFan extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return null;
+      return nothing;
     }
 
     const supportsSpeed = supportsFeature(
@@ -185,7 +184,7 @@ class MoreInfoFan extends LitElement {
                         <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
                       </md-outlined-icon-button>
                     `
-                  : null}
+                  : nothing}
                 ${supportsDirection
                   ? html`
                       <md-outlined-icon-button

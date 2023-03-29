@@ -320,7 +320,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
-        ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : null}
+        ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : nothing}
         <div class="tile">
           <div
             class="background"
@@ -369,7 +369,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                       })}
                     ></ha-tile-badge>
                   `
-                : null}
+                : nothing}
             </div>
             <ha-tile-info
               class="info"

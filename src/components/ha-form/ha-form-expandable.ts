@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
 import "./ha-form";
@@ -26,7 +26,7 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
 
   @property() public computeHelper?: (schema: HaFormSchema) => string;
 
-  protected render(): TemplateResult {
+  protected render() {
     return html`
       <ha-expansion-panel outlined .expanded=${Boolean(this.schema.expanded)}>
         <div
@@ -38,7 +38,7 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
             ? html` <ha-icon .icon=${this.schema.icon}></ha-icon> `
             : this.schema.iconPath
             ? html` <ha-svg-icon .path=${this.schema.iconPath}></ha-svg-icon> `
-            : null}
+            : nothing}
           ${this.schema.title}
         </div>
         <div class="content">
