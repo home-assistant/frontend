@@ -24,66 +24,62 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       string,
       ContextProvider<any> | undefined
     > = {
-      states: new ContextProvider(
-        this,
-        statesContext,
-        this.hass ? this.hass.states : this._pendingHass.states
-      ),
-      entities: new ContextProvider(
-        this,
-        entitiesContext,
-        this.hass ? this.hass.entities : this._pendingHass.entities
-      ),
-      devices: new ContextProvider(
-        this,
-        devicesContext,
-        this.hass ? this.hass.devices : this._pendingHass.devices
-      ),
-      areas: new ContextProvider(
-        this,
-        areasContext,
-        this.hass ? this.hass.areas : this._pendingHass.areas
-      ),
-      localize: new ContextProvider(
-        this,
-        localizeContext,
-        this.hass ? this.hass.localize : this._pendingHass.localize
-      ),
-      locale: new ContextProvider(
-        this,
-        localeContext,
-        this.hass ? this.hass.locale : this._pendingHass.locale
-      ),
-      config: new ContextProvider(
-        this,
-        configContext,
-        this.hass ? this.hass.config : this._pendingHass.config
-      ),
-      themes: new ContextProvider(
-        this,
-        themesContext,
-        this.hass ? this.hass.themes : this._pendingHass.themes
-      ),
-      selectedTheme: new ContextProvider(
-        this,
-        selectedThemeContext,
-        this.hass ? this.hass.selectedTheme : this._pendingHass.selectedTheme
-      ),
-      user: new ContextProvider(
-        this,
-        userContext,
-        this.hass ? this.hass.user : this._pendingHass.user
-      ),
-      userData: new ContextProvider(
-        this,
-        userDataContext,
-        this.hass ? this.hass.userData : this._pendingHass.userData
-      ),
-      panels: new ContextProvider(
-        this,
-        panelsContext,
-        this.hass ? this.hass.panels : this._pendingHass.panels
-      ),
+      states: new ContextProvider(this, {
+        context: statesContext,
+        initialValue: this.hass ? this.hass.states : this._pendingHass.states,
+      }),
+      entities: new ContextProvider(this, {
+        context: entitiesContext,
+        initialValue: this.hass
+          ? this.hass.entities
+          : this._pendingHass.entities,
+      }),
+      devices: new ContextProvider(this, {
+        context: devicesContext,
+        initialValue: this.hass ? this.hass.devices : this._pendingHass.devices,
+      }),
+      areas: new ContextProvider(this, {
+        context: areasContext,
+        initialValue: this.hass ? this.hass.areas : this._pendingHass.areas,
+      }),
+      localize: new ContextProvider(this, {
+        context: localizeContext,
+        initialValue: this.hass
+          ? this.hass.localize
+          : this._pendingHass.localize,
+      }),
+      locale: new ContextProvider(this, {
+        context: localeContext,
+        initialValue: this.hass ? this.hass.locale : this._pendingHass.locale,
+      }),
+      config: new ContextProvider(this, {
+        context: configContext,
+        initialValue: this.hass ? this.hass.config : this._pendingHass.config,
+      }),
+      themes: new ContextProvider(this, {
+        context: themesContext,
+        initialValue: this.hass ? this.hass.themes : this._pendingHass.themes,
+      }),
+      selectedTheme: new ContextProvider(this, {
+        context: selectedThemeContext,
+        initialValue: this.hass
+          ? this.hass.selectedTheme
+          : this._pendingHass.selectedTheme,
+      }),
+      user: new ContextProvider(this, {
+        context: userContext,
+        initialValue: this.hass ? this.hass.user : this._pendingHass.user,
+      }),
+      userData: new ContextProvider(this, {
+        context: userDataContext,
+        initialValue: this.hass
+          ? this.hass.userData
+          : this._pendingHass.userData,
+      }),
+      panels: new ContextProvider(this, {
+        context: panelsContext,
+        initialValue: this.hass ? this.hass.panels : this._pendingHass.panels,
+      }),
     };
 
     protected _updateHass(obj: Partial<HomeAssistant>) {
