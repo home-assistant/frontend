@@ -566,11 +566,6 @@ export class HassioNetwork extends LitElement {
         mwc-button.scan {
           margin-left: 8px;
         }
-
-        :host([rtl]) app-toolbar {
-          direction: rtl;
-          text-align: right;
-        }
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 16px;
           margin: 4px 0;

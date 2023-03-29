@@ -14,6 +14,15 @@ export class HaTopAppBar extends TopAppBarBase {
       .mdc-top-app-bar--fixed-adjust {
         padding-top: var(--header-height);
       }
+      .mdc-top-app-bar {
+        --mdc-typography-headline6-font-weight: 400;
+        color: var(--app-header-text-color, var(--mdc-theme-on-primary, #fff));
+        background-color: var(
+          --app-header-background-color,
+          var(--mdc-theme-primary)
+        );
+        border-bottom: var(--app-header-border-bottom);
+      }
     `,
   ];
 }
