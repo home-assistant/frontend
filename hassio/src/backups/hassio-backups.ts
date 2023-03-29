@@ -248,9 +248,9 @@ export class HassioBackups extends LitElement {
                         class="warning"
                         @click=${this._deleteSelected}
                       ></ha-icon-button>
-                      <paper-tooltip animation-delay="0" for="delete-btn">
+                      <simple-tooltip animation-delay="0" for="delete-btn">
                         ${this.supervisor.localize("backup.delete_selected")}
-                      </paper-tooltip>
+                      </simple-tooltip>
                     `}
               </div>
             </div> `

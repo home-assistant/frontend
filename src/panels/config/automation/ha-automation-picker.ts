@@ -10,7 +10,7 @@ import {
   mdiStopCircleOutline,
   mdiTransitConnection,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -159,11 +159,11 @@ class HaAutomationPicker extends LitElement {
             template: (disabled: boolean) =>
               disabled
                 ? html`
-                    <paper-tooltip animation-delay="0" position="left">
+                    <simple-tooltip animation-delay="0" position="left">
                       ${this.hass.localize(
                         "ui.panel.config.automation.picker.disabled"
                       )}
-                    </paper-tooltip>
+                    </simple-tooltip>
                     <ha-svg-icon
                       .path=${mdiCancel}
                       style="color: var(--secondary-text-color)"

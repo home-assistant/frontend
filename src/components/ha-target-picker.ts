@@ -9,7 +9,7 @@ import {
   mdiSofa,
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { HassEntity, HassServiceTarget } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, unsafeCSS, nothing } from "lit";
@@ -248,10 +248,10 @@ export class HaTargetPicker extends LitElement {
                 .type=${type}
                 @click=${this._handleExpand}
               ></ha-icon-button>
-              <paper-tooltip class="expand" animation-delay="0"
+              <simple-tooltip class="expand" animation-delay="0"
                 >${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
-                )}</paper-tooltip
+                )}</simple-tooltip
               >
             </span>`}
         <span role="gridcell">
@@ -266,10 +266,10 @@ export class HaTargetPicker extends LitElement {
             .type=${type}
             @click=${this._handleRemove}
           ></ha-icon-button>
-          <paper-tooltip animation-delay="0"
+          <simple-tooltip animation-delay="0"
             >${this.hass.localize(
               `ui.components.target-picker.remove_${type}`
-            )}</paper-tooltip
+            )}</simple-tooltip
           >
         </span>
       </div>
@@ -670,7 +670,7 @@ export class HaTargetPicker extends LitElement {
       .mdc-chip:hover {
         z-index: 5;
       }
-      paper-tooltip.expand {
+      simple-tooltip.expand {
         min-width: 200px;
       }
       :host([disabled]) .mdc-chip {
