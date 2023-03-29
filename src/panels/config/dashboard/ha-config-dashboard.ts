@@ -6,8 +6,6 @@ import {
   mdiPower,
   mdiUpdate,
 } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -28,6 +26,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
+import "../../../components/ha-top-app-bar-fixed";
 import { CloudStatus } from "../../../data/cloud";
 import {
   RepairsIssue,
@@ -41,7 +40,6 @@ import {
 } from "../../../data/update";
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
-import "../../../layouts/ha-app-layout";
 import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -182,43 +180,43 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
       this._repairsIssues;
 
     return html`
-      <ha-app-layout>
-        <app-header fixed slot="header">
-          <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.config")}</div>
-            <ha-icon-button
-              .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
-              .path=${mdiMagnify}
-              @click=${this._showQuickBar}
-            ></ha-icon-button>
-            <ha-button-menu
-              corner="BOTTOM_START"
-              @action=${this._handleMenuAction}
-            >
-              <ha-icon-button
-                slot="trigger"
-                .label=${this.hass.localize("ui.common.menu")}
-                .path=${mdiDotsVertical}
-              ></ha-icon-button>
+      <ha-top-app-bar-fixed>
+        <ha-menu-button
+          slot="navigationIcon"
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+        ></ha-menu-button>
+        <div slot="title">${this.hass.localize("panel.config")}</div>
 
-              <ha-list-item graphic="icon">
-                ${this.hass.localize("ui.panel.config.updates.check_updates")}
-                <ha-svg-icon slot="graphic" .path=${mdiUpdate}></ha-svg-icon>
-              </ha-list-item>
+        <ha-icon-button
+          slot="actionItems"
+          .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+          .path=${mdiMagnify}
+          @click=${this._showQuickBar}
+        ></ha-icon-button>
+        <ha-button-menu
+          slot="actionItems"
+          corner="BOTTOM_START"
+          @action=${this._handleMenuAction}
+        >
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
 
-              <ha-list-item graphic="icon">
-                ${this.hass.localize(
-                  "ui.panel.config.system_dashboard.restart_homeassistant"
-                )}
-                <ha-svg-icon slot="graphic" .path=${mdiPower}></ha-svg-icon>
-              </ha-list-item>
-            </ha-button-menu>
-          </app-toolbar>
-        </app-header>
+          <ha-list-item graphic="icon">
+            ${this.hass.localize("ui.panel.config.updates.check_updates")}
+            <ha-svg-icon slot="graphic" .path=${mdiUpdate}></ha-svg-icon>
+          </ha-list-item>
+
+          <ha-list-item graphic="icon">
+            ${this.hass.localize(
+              "ui.panel.config.system_dashboard.restart_homeassistant"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiPower}></ha-svg-icon>
+          </ha-list-item>
+        </ha-button-menu>
 
         <ha-config-section
           .narrow=${this.narrow}
@@ -292,7 +290,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           </ha-card>
           <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
         </ha-config-section>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
     `;
   }
 

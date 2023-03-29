@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-header-bar";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
