@@ -45,7 +45,10 @@ const FEATURE_TYPES: FeatureType[] = [
   "alarm-modes",
 ];
 
-const EDITABLES_FEATURE_TYPES = new Set<FeatureType>(["vacuum-commands"]);
+const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
+  "vacuum-commands",
+  "alarm-modes",
+]);
 
 const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
   {

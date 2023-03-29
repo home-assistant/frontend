@@ -17,7 +17,7 @@ import {
 } from "../../../data/alarm_control_panel";
 import { showEnterCodeDialogDialog } from "../../../dialogs/more-info/components/alarm_control_panel/show-enter-code-dialog";
 import { HomeAssistant } from "../../../types";
-import { LovelaceTileFeature } from "../types";
+import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
 import { AlarmModesFileFeatureConfig } from "./types";
 
 export const supportsAlarmModesTileFeature = (stateObj: HassEntity) => {
@@ -38,10 +38,23 @@ class HuiAlarmModeTileFeature
 
   @state() _currentMode?: AlarmMode;
 
-  static getStubConfig(): AlarmModesFileFeatureConfig {
+  static getStubConfig(_, stateObj?: HassEntity): AlarmModesFileFeatureConfig {
     return {
       type: "alarm-modes",
+      modes: stateObj
+        ? (Object.keys(ALARM_MODES) as AlarmMode[]).filter((mode) => {
+            const feature = ALARM_MODES[mode as AlarmMode].feature;
+            return !feature || supportsFeature(stateObj, feature);
+          })
+        : [],
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceTileFeatureEditor> {
+    await import(
+      "../editor/config-elements/hui-alarm-modes-tile-feature-editor"
+    );
+    return document.createElement("hui-alarm-modes-tile-feature-editor");
   }
 
   public setConfig(config: AlarmModesFileFeatureConfig): void {
@@ -62,16 +75,27 @@ class HuiAlarmModeTileFeature
     }
   }
 
-  private _modes = memoizeOne((stateObj: AlarmControlPanelEntity) => {
-    const modes = Object.keys(ALARM_MODES) as AlarmMode[];
-    return modes.filter((mode) => {
-      const feature = ALARM_MODES[mode as AlarmMode].feature;
-      return !feature || supportsFeature(stateObj, feature);
-    });
-  });
+  private _modes = memoizeOne(
+    (
+      stateObj: AlarmControlPanelEntity,
+      selectedModes: AlarmMode[] | undefined
+    ) => {
+      if (!selectedModes) {
+        return [];
+      }
+
+      return (Object.keys(ALARM_MODES) as AlarmMode[]).filter((mode) => {
+        const feature = ALARM_MODES[mode].feature;
+        return (
+          (!feature || supportsFeature(stateObj, feature)) &&
+          selectedModes.includes(mode)
+        );
+      });
+    }
+  );
 
   private _getCurrentMode(stateObj: AlarmControlPanelEntity) {
-    return this._modes(stateObj).find(
+    return this._modes(stateObj, this._config?.modes).find(
       (mode) => ALARM_MODES[mode].state === stateObj.state
     );
   }
@@ -137,7 +161,7 @@ class HuiAlarmModeTileFeature
 
     const color = stateColorCss(this.stateObj);
 
-    const modes = this._modes(this.stateObj);
+    const modes = this._modes(this.stateObj, this._config.modes);
 
     const options = modes.map<ControlSelectOption>((mode) => ({
       value: mode,

@@ -1,3 +1,5 @@
+import { AlarmMode } from "../../../data/alarm_control_panel";
+
 export interface CoverOpenCloseTileFeatureConfig {
   type: "cover-open-close";
 }
@@ -16,6 +18,7 @@ export interface FanSpeedTileFeatureConfig {
 
 export interface AlarmModesFileFeatureConfig {
   type: "alarm-modes";
+  modes?: AlarmMode[];
 }
 
 export const VACUUM_COMMANDS = [

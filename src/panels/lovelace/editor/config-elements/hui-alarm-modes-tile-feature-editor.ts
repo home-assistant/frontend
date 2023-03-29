@@ -3,19 +3,20 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { AlarmMode, ALARM_MODES } from "../../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../../types";
-import { supportsVacuumCommand } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import {
   LovelaceTileFeatureContext,
-  VacuumCommandsTileFeatureConfig,
-  VACUUM_COMMANDS,
+  AlarmModesFileFeatureConfig,
 } from "../../tile-features/types";
 import type { LovelaceTileFeatureEditor } from "../../types";
+import "../../../../components/ha-form/ha-form";
 
-@customElement("hui-vacuum-commands-tile-feature-editor")
-export class HuiVacuumCommandsTileFeatureEditor
+@customElement("hui-alarm-modes-tile-feature-editor")
+export class HuiAlarmModesTileFeatureEditor
   extends LitElement
   implements LovelaceTileFeatureEditor
 {
@@ -23,9 +24,9 @@ export class HuiVacuumCommandsTileFeatureEditor
 
   @property({ attribute: false }) public context?: LovelaceTileFeatureContext;
 
-  @state() private _config?: VacuumCommandsTileFeatureConfig;
+  @state() private _config?: AlarmModesFileFeatureConfig;
 
-  public setConfig(config: VacuumCommandsTileFeatureConfig): void {
+  public setConfig(config: AlarmModesFileFeatureConfig): void {
     this._config = config;
   }
 
@@ -33,20 +34,24 @@ export class HuiVacuumCommandsTileFeatureEditor
     (localize: LocalizeFunc, stateObj?: HassEntity) =>
       [
         {
-          name: "commands",
+          name: "modes",
           selector: {
             select: {
               multiple: true,
               mode: "list",
-              options: VACUUM_COMMANDS.filter(
-                (command) =>
-                  stateObj && supportsVacuumCommand(stateObj, command)
-              ).map((command) => ({
-                value: command,
-                label: `${localize(
-                  `ui.panel.lovelace.editor.card.tile.features.types.vacuum-commands.commands_list.${command}`
-                )}`,
-              })),
+              options: Object.keys(ALARM_MODES)
+                .filter((mode) => {
+                  const feature = ALARM_MODES[mode as AlarmMode].feature;
+                  return (
+                    stateObj && (!feature || supportsFeature(stateObj, feature))
+                  );
+                })
+                .map((mode) => ({
+                  value: mode,
+                  label: `${localize(
+                    `ui.panel.lovelace.editor.card.tile.features.types.alarm-modes.modes_list.${mode}`
+                  )}`,
+                })),
             },
           },
         },
@@ -83,9 +88,9 @@ export class HuiVacuumCommandsTileFeatureEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
-      case "commands":
+      case "modes":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.tile.features.types.vacuum-commands.${schema.name}`
+          `ui.panel.lovelace.editor.card.tile.features.types.alarm-modes.${schema.name}`
         );
       default:
         return this.hass!.localize(
@@ -97,6 +102,6 @@ export class HuiVacuumCommandsTileFeatureEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-vacuum-commands-tile-feature-editor": HuiVacuumCommandsTileFeatureEditor;
+    "hui-alarm-modes-tile-feature-editor": HuiAlarmModesTileFeatureEditor;
   }
 }
