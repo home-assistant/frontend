@@ -597,10 +597,6 @@ export class DialogHassioNetwork
           margin-left: 8px;
         }
 
-        :host([rtl]) app-toolbar {
-          direction: rtl;
-          text-align: right;
-        }
         .container {
           padding: 0 8px 4px;
         }

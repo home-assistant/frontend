@@ -175,24 +175,6 @@ export const haStyle = css`
     line-height: var(--paper-font-body1_-_line-height);
   }
 
-  app-header-layout,
-  ha-app-layout {
-    background-color: var(--primary-background-color);
-  }
-
-  app-header,
-  app-toolbar {
-    background-color: var(--app-header-background-color);
-    font-weight: 400;
-    color: var(--app-header-text-color, white);
-  }
-
-  app-toolbar {
-    height: var(--header-height);
-    border-bottom: var(--app-header-border-bottom);
-    box-sizing: border-box;
-  }
-
   app-header div[sticky] {
     height: 48px;
   }

@@ -44,7 +44,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @property() public collectionKey?: string;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow?;
 
   @state() _startDate?: Date;
 
@@ -56,7 +56,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   public connectedCallback() {
     super.connectedCallback();
-    toggleAttribute(this, "narrow", this.offsetWidth < 600);
+    if (this.narrow !== false) {
+      toggleAttribute(this, "narrow", this.offsetWidth < 600);
+    }
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {

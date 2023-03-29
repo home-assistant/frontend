@@ -1,6 +1,4 @@
 import { mdiFilterRemove, mdiRefresh } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   addDays,
   differenceInHours,
@@ -54,10 +52,11 @@ import {
   HistoryResult,
   subscribeHistory,
 } from "../../data/history";
-import "../../layouts/ha-app-layout";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import "../../components/ha-top-app-bar-fixed";
+import "../../components/ha-icon-button-arrow-prev";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -137,40 +136,40 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   protected render() {
     return html`
-      <ha-app-layout>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            ${this._showBack
-              ? html`
-                  <ha-icon-button-arrow-prev
-                    @click=${this._goBack}
-                  ></ha-icon-button-arrow-prev>
-                `
-              : html`
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `}
-            <div main-title>${this.hass.localize("panel.history")}</div>
-            ${this._targetPickerValue
-              ? html`
-                  <ha-icon-button
-                    @click=${this._removeAll}
-                    .disabled=${this._isLoading}
-                    .path=${mdiFilterRemove}
-                    .label=${this.hass.localize("ui.panel.history.remove_all")}
-                  ></ha-icon-button>
-                `
-              : ""}
-            <ha-icon-button
-              @click=${this._getHistory}
-              .disabled=${this._isLoading || !this._targetPickerValue}
-              .path=${mdiRefresh}
-              .label=${this.hass.localize("ui.common.refresh")}
-            ></ha-icon-button>
-          </app-toolbar>
-        </app-header>
+      <ha-top-app-bar-fixed>
+        ${this._showBack
+          ? html`
+              <ha-icon-button-arrow-prev
+                slot="navigationIcon"
+                @click=${this._goBack}
+              ></ha-icon-button-arrow-prev>
+            `
+          : html`
+              <ha-menu-button
+                slot="navigationIcon"
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+            `}
+        <div slot="title">${this.hass.localize("panel.history")}</div>
+        ${this._targetPickerValue
+          ? html`
+              <ha-icon-button
+                slot="actionItems"
+                @click=${this._removeAll}
+                .disabled=${this._isLoading}
+                .path=${mdiFilterRemove}
+                .label=${this.hass.localize("ui.panel.history.remove_all")}
+              ></ha-icon-button>
+            `
+          : ""}
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._getHistory}
+          .disabled=${this._isLoading || !this._targetPickerValue}
+          .path=${mdiRefresh}
+          .label=${this.hass.localize("ui.common.refresh")}
+        ></ha-icon-button>
 
         <div class="flex content">
           <div class="filters">
@@ -210,7 +209,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                 </state-history-charts>
               `}
         </div>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
     `;
   }
 

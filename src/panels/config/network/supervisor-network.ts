@@ -14,7 +14,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
-import "../../../components/ha-header-bar";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-radio";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -549,12 +548,6 @@ export class HassioNetwork extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-        }
-
         mwc-tab-bar {
           border-bottom: 1px solid
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
@@ -572,11 +565,6 @@ export class HassioNetwork extends LitElement {
 
         mwc-button.scan {
           margin-left: 8px;
-        }
-
-        :host([rtl]) app-toolbar {
-          direction: rtl;
-          text-align: right;
         }
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 16px;
