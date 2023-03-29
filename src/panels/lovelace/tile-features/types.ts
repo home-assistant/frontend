@@ -14,6 +14,10 @@ export interface FanSpeedTileFeatureConfig {
   type: "fan-speed";
 }
 
+export interface AlarmModesFileFeatureConfig {
+  type: "alarm-modes";
+}
+
 export const VACUUM_COMMANDS = [
   "start_pause",
   "stop",
@@ -34,7 +38,8 @@ export type LovelaceTileFeatureConfig =
   | CoverTiltTileFeatureConfig
   | LightBrightnessTileFeatureConfig
   | VacuumCommandsTileFeatureConfig
-  | FanSpeedTileFeatureConfig;
+  | FanSpeedTileFeatureConfig
+  | AlarmModesFileFeatureConfig;
 
 export type LovelaceTileFeatureContext = {
   entity_id?: string;

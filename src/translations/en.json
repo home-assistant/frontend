@@ -4461,6 +4461,9 @@
                   "fan-speed": {
                     "label": "Fan speed"
                   },
+                  "alarm-modes": {
+                    "label": "Alarm modes"
+                  },
                   "light-brightness": {
                     "label": "Light brightness"
                   },
