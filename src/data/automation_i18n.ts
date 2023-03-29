@@ -10,7 +10,11 @@ import {
   localizeDeviceAutomationCondition,
   localizeDeviceAutomationTrigger,
 } from "./device_automation";
-import { formatAttributeName } from "./entity_attributes";
+import {
+  computeAttributeNameDisplay,
+  computeAttributeValueDisplay,
+} from "../common/entity/compute_attribute_display";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 
 const describeDuration = (forTime: number | string | ForDict) => {
   let duration: string | null;
@@ -67,7 +71,12 @@ export const describeTrigger = (
     const entity = stateObj ? computeStateName(stateObj) : trigger.entity_id;
 
     if (trigger.attribute) {
-      base += ` ${formatAttributeName(trigger.attribute)} from`;
+      base += ` ${computeAttributeNameDisplay(
+        hass.localize,
+        stateObj,
+        hass.entities,
+        trigger.attribute
+      )} from`;
     }
 
     base += ` ${entity} is`;
@@ -98,11 +107,18 @@ export const describeTrigger = (
   if (trigger.platform === "state") {
     let base = "When";
     let entities = "";
-
     const states = hass.states;
 
     if (trigger.attribute) {
-      base += ` ${formatAttributeName(trigger.attribute)} from`;
+      const stateObj = Array.isArray(trigger.entity_id)
+        ? hass.states[trigger.entity_id[0]]
+        : hass.states[trigger.entity_id];
+      base += ` ${computeAttributeNameDisplay(
+        hass.localize,
+        stateObj,
+        hass.entities,
+        trigger.attribute
+      )} of`;
     }
 
     if (Array.isArray(trigger.entity_id)) {
@@ -129,35 +145,120 @@ export const describeTrigger = (
 
     base += ` ${entities} changes`;
 
-    if (trigger.from) {
-      let from = "";
-      if (Array.isArray(trigger.from)) {
+    const stateObj =
+      hass.states[
+        Array.isArray(trigger.entity_id)
+          ? trigger.entity_id[0]
+          : trigger.entity_id
+      ];
+    if (trigger.from !== undefined) {
+      if (trigger.from === null) {
+        if (!trigger.attribute) {
+          base += " from any state";
+        }
+      } else if (Array.isArray(trigger.from)) {
+        let from = "";
         for (const [index, state] of trigger.from.entries()) {
           from += `${index > 0 ? "," : ""} ${
             trigger.from.length > 1 && index === trigger.from.length - 1
               ? "or"
               : ""
-          } ${state}`;
+          } '${
+            trigger.attribute
+              ? computeAttributeValueDisplay(
+                  hass.localize,
+                  stateObj,
+                  hass.locale,
+                  hass.entities,
+                  trigger.attribute,
+                  state
+                )
+              : computeStateDisplay(
+                  hass.localize,
+                  stateObj,
+                  hass.locale,
+                  hass.entities,
+                  state
+                )
+          }'`;
+        }
+        if (from) {
+          base += ` from ${from}`;
         }
       } else {
-        from = trigger.from.toString();
+        base += ` from '${
+          trigger.attribute
+            ? computeAttributeValueDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                trigger.attribute,
+                trigger.from
+              ).toString()
+            : computeStateDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                trigger.from.toString()
+              ).toString()
+        }'`;
       }
-      base += ` from ${from}`;
     }
 
-    if (trigger.to) {
-      let to = "";
-      if (Array.isArray(trigger.to)) {
+    if (trigger.to !== undefined) {
+      if (trigger.to === null) {
+        if (!trigger.attribute) {
+          base += " to any state";
+        }
+      } else if (Array.isArray(trigger.to)) {
+        let to = "";
         for (const [index, state] of trigger.to.entries()) {
           to += `${index > 0 ? "," : ""} ${
             trigger.to.length > 1 && index === trigger.to.length - 1 ? "or" : ""
-          } ${state}`;
+          } '${
+            trigger.attribute
+              ? computeAttributeValueDisplay(
+                  hass.localize,
+                  stateObj,
+                  hass.locale,
+                  hass.entities,
+                  trigger.attribute,
+                  state
+                ).toString()
+              : computeStateDisplay(
+                  hass.localize,
+                  stateObj,
+                  hass.locale,
+                  hass.entities,
+                  state
+                ).toString()
+          }'`;
         }
-      } else if (trigger.to) {
-        to = trigger.to.toString();
+        if (to) {
+          base += ` to ${to}`;
+        }
+      } else {
+        base += ` to '${
+          trigger.attribute
+            ? computeAttributeValueDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                trigger.attribute,
+                trigger.to
+              ).toString()
+            : computeStateDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                trigger.to.toString()
+              ).toString()
+        }'`;
       }
-
-      base += ` to ${to}`;
     }
 
     if (trigger.for) {
@@ -412,36 +513,108 @@ export const describeCondition = (
   // State Condition
   if (condition.condition === "state") {
     let base = "Confirm";
-    const stateObj = hass.states[condition.entity_id];
-    const entity = stateObj
-      ? computeStateName(stateObj)
-      : condition.entity_id
-      ? condition.entity_id
-      : "an entity";
+    if (!condition.entity_id) {
+      return `${base} state`;
+    }
 
-    if ("attribute" in condition) {
-      base += ` ${condition.attribute} from`;
+    if (condition.attribute) {
+      const stateObj = Array.isArray(condition.entity_id)
+        ? hass.states[condition.entity_id[0]]
+        : hass.states[condition.entity_id];
+      base += ` ${computeAttributeNameDisplay(
+        hass.localize,
+        stateObj,
+        hass.entities,
+        condition.attribute
+      )} of`;
+    }
+
+    if (Array.isArray(condition.entity_id)) {
+      let entities = "";
+      for (const [index, entity] of condition.entity_id.entries()) {
+        if (hass.states[entity]) {
+          entities += `${index > 0 ? "," : ""} ${
+            condition.entity_id.length > 1 &&
+            index === condition.entity_id.length - 1
+              ? condition.match === "any"
+                ? "or"
+                : "and"
+              : ""
+          } ${computeStateName(hass.states[entity]) || entity}`;
+        }
+      }
+      if (entities) {
+        base += ` ${entities} ${condition.entity_id.length > 1 ? "are" : "is"}`;
+      } else {
+        // no entity_id or empty array
+        base += " an entity";
+      }
+    } else if (condition.entity_id) {
+      base += ` ${
+        hass.states[condition.entity_id]
+          ? computeStateName(hass.states[condition.entity_id])
+          : condition.entity_id
+      } is`;
     }
 
     let states = "";
-
+    const stateObj =
+      hass.states[
+        Array.isArray(condition.entity_id)
+          ? condition.entity_id[0]
+          : condition.entity_id
+      ];
     if (Array.isArray(condition.state)) {
       for (const [index, state] of condition.state.entries()) {
         states += `${index > 0 ? "," : ""} ${
           condition.state.length > 1 && index === condition.state.length - 1
             ? "or"
             : ""
-        } ${state}`;
+        } '${
+          condition.attribute
+            ? computeAttributeValueDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                condition.attribute,
+                state
+              )
+            : computeStateDisplay(
+                hass.localize,
+                stateObj,
+                hass.locale,
+                hass.entities,
+                state
+              )
+        }'`;
       }
-    } else if (condition.state) {
-      states = condition.state.toString();
+    } else if (condition.state !== "") {
+      states = `'${
+        condition.attribute
+          ? computeAttributeValueDisplay(
+              hass.localize,
+              stateObj,
+              hass.locale,
+              hass.entities,
+              condition.attribute,
+              condition.state
+            ).toString()
+          : computeStateDisplay(
+              hass.localize,
+              stateObj,
+              hass.locale,
+              hass.entities,
+              condition.state.toString()
+            ).toString()
+      }'`;
     }
 
     if (!states) {
       states = "a state";
     }
 
-    base += ` ${entity} is ${states}`;
+    base += ` ${states}`;
 
     if (condition.for) {
       const duration = describeDuration(condition.for);

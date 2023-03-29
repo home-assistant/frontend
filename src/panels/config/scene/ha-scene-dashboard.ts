@@ -7,7 +7,7 @@ import {
   mdiPlay,
   mdiPlus,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -131,11 +131,11 @@ class HaSceneDashboard extends LitElement {
         template: (_info, scene: any) =>
           !scene.attributes.id
             ? html`
-                <paper-tooltip animation-delay="0" position="left">
+                <simple-tooltip animation-delay="0" position="left">
                   ${this.hass.localize(
                     "ui.panel.config.scene.picker.only_editable"
                   )}
-                </paper-tooltip>
+                </simple-tooltip>
                 <ha-svg-icon
                   .path=${mdiPencilOff}
                   style="color: var(--secondary-text-color)"

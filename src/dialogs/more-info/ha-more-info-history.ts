@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { createSearchParam } from "../../common/url/search-params";
 import "../../components/chart/state-history-charts";
 import "../../components/chart/statistics-chart";
 import {
@@ -100,9 +101,13 @@ export class MoreInfoHistory extends LitElement {
         return;
       }
 
-      this._showMoreHref = `/history?entity_id=${
-        this.entityId
-      }&start_date=${startOfYesterday().toISOString()}`;
+      const params = {
+        entity_id: this.entityId,
+        start_date: startOfYesterday().toISOString(),
+        back: "1",
+      };
+
+      this._showMoreHref = `/history?${createSearchParam(params)}`;
 
       this._getStateHistory();
     }

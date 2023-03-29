@@ -8,14 +8,13 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import checkValidDate from "../../../common/datetime/check_valid_date";
-import { formatNumber } from "../../../common/number/format_number";
-import { formatAttributeValue } from "../../../data/entity_attributes";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
 
 @customElement("hui-attribute-row")
 class HuiAttributeRow extends LitElement implements LovelaceRow {
@@ -71,10 +70,15 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
               .format=${this._config.format}
               capitalize
             ></hui-timestamp-display>`
-          : typeof attribute === "number"
-          ? formatNumber(attribute, this.hass.locale)
           : attribute !== undefined
-          ? formatAttributeValue(this.hass, attribute)
+          ? computeAttributeValueDisplay(
+              this.hass.localize,
+              stateObj,
+              this.hass.locale,
+              this.hass.entities,
+              this._config.attribute,
+              attribute
+            )
           : "—"}
         ${this._config.suffix}
       </hui-generic-entity-row>

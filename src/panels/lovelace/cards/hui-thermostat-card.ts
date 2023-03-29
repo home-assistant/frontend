@@ -234,6 +234,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                 ? computeAttributeValueDisplay(
                     this.hass.localize,
                     stateObj,
+                    this.hass.locale,
                     this.hass.entities,
                     "hvac_action"
                   )
@@ -252,6 +253,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                     ${computeAttributeValueDisplay(
                       this.hass.localize,
                       stateObj,
+                      this.hass.locale,
                       this.hass.entities,
                       "preset_mode"
                     )}
@@ -478,7 +480,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         @click=${this._handleAction}
         tabindex="0"
         .path=${modeIcons[mode]}
-        .label=${this.hass!.localize(`component.climate.state._.${mode}`)}
+        .label=${this.hass!.localize(
+          `component.climate.entity_component._.state.${mode}`
+        ) || mode}
       >
       </ha-icon-button>
     `;

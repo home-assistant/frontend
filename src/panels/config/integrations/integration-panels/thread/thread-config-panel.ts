@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { ActionDetail } from "@material/mwc-list";
 import {
   mdiDeleteOutline,
   mdiDevices,
@@ -14,11 +15,18 @@ import { extractSearchParam } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-card";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
-import { getOTBRInfo } from "../../../../../data/otbr";
+import {
+  getOTBRInfo,
+  OTBRCreateNetwork,
+  OTBRGetExtendedAddress,
+  OTBRInfo,
+  OTBRSetNetwork,
+} from "../../../../../data/otbr";
 import {
   addThreadDataSet,
   listThreadDataSets,
   removeThreadDataSet,
+  setPreferredThreadDataSet,
   subscribeDiscoverThreadRouters,
   ThreadDataSet,
   ThreadRouter,
@@ -54,6 +62,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
   @state() private _datasets: ThreadDataSet[] = [];
 
+  @state() private _otbrInfo?: OTBRInfo & { extended_address?: string };
+
   protected render(): TemplateResult {
     const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
 
@@ -82,11 +92,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               "ui.panel.config.thread.add_dataset_from_tlv"
             )}</mwc-list-item
           >
-          <mwc-list-item @click=${this._addOTBR}
-            >${this.hass.localize(
-              "ui.panel.config.thread.add_open_thread_border_router"
-            )}</mwc-list-item
-          >
+          ${!this._otbrInfo
+            ? html`<mwc-list-item @click=${this._addOTBR}
+                >${this.hass.localize(
+                  "ui.panel.config.thread.add_open_thread_border_router"
+                )}</mwc-list-item
+              >`
+            : ""}
         </ha-button-menu>
         <div class="content">
           <h1>${this.hass.localize("ui.panel.config.thread.my_network")}</h1>
@@ -150,7 +162,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             </div>
             ${network.routers.map(
               (router) =>
-                html`<ha-list-item noninteractive twoline graphic="avatar">
+                html`<ha-list-item
+                  class="router"
+                  twoline
+                  graphic="avatar"
+                  .hasMeta=${router.extended_address ===
+                  this._otbrInfo?.extended_address}
+                >
                   <img
                     slot="graphic"
                     .src=${brandsUrl({
@@ -166,22 +184,69 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   />
                   ${router.model_name || router.server.replace(".local.", "")}
                   <span slot="secondary">${router.server}</span>
+                  ${router.extended_address === this._otbrInfo?.extended_address
+                    ? html`<ha-button-menu
+                        corner="BOTTOM_START"
+                        slot="meta"
+                        @action=${this._handleRouterAction}
+                      >
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.common.overflow_menu"
+                          )}
+                          .path=${mdiDotsVertical}
+                          slot="trigger"
+                        ></ha-icon-button
+                        ><ha-list-item
+                          >${this.hass.localize(
+                            "ui.panel.config.thread.reset_border_router"
+                          )}</ha-list-item
+                        >${network.dataset?.preferred
+                          ? ""
+                          : html`<ha-list-item
+                          >${this.hass.localize(
+                            "ui.panel.config.thread.add_to_my_network"
+                          )}</ha-list-item
+                        ></ha-button-menu
+                      >`}</ha-button-menu
+                      >`
+                    : ""}
                 </ha-list-item>`
             )}`
         : html`<div class="card-content no-routers">
             <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.thread.no_border_routers")}
-          </div>`}
+            ${network.dataset?.extended_pan_id &&
+            this._otbrInfo?.active_dataset_tlvs?.includes(
+              network.dataset.extended_pan_id
+            )
+              ? html`${this.hass.localize(
+                    "ui.panel.config.thread.no_routers_otbr_network"
+                  )}
+                  <mwc-button @click=${this._resetBorderRouter}
+                    >${this.hass.localize(
+                      "ui.panel.config.thread.reset_border_router"
+                    )}</mwc-button
+                  >`
+              : this.hass.localize("ui.panel.config.thread.no_border_routers")}
+          </div> `}
+      ${network.dataset && !network.dataset.preferred
+        ? html`<div class="card-actions">
+            <mwc-button
+              .datasetId=${network.dataset.dataset_id}
+              @click=${this._setPreferred}
+              >Make preferred network</mwc-button
+            >
+          </div>`
+        : ""}
     </ha-card>`;
   }
 
   private async _showDatasetInfo(ev: Event) {
     const dataset = (ev.currentTarget as any).networkDataset as ThreadDataSet;
-    if (isComponentLoaded(this.hass, "otbr")) {
-      const otbrInfo = await getOTBRInfo(this.hass);
+    if (this._otbrInfo) {
       if (
         dataset.extended_pan_id &&
-        otbrInfo.active_dataset_tlvs?.includes(dataset.extended_pan_id)
+        this._otbrInfo.active_dataset_tlvs?.includes(dataset.extended_pan_id)
       ) {
         showAlertDialog(this, {
           title: dataset.network_name,
@@ -189,8 +254,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             Dataset id: ${dataset.dataset_id}<br />
             Pan id: ${dataset.pan_id}<br />
             Extended Pan id: ${dataset.extended_pan_id}<br />
-            OTBR URL: ${otbrInfo.url}<br />
-            Active dataset TLVs: ${otbrInfo.active_dataset_tlvs}`,
+            OTBR URL: ${this._otbrInfo.url}<br />
+            Active dataset TLVs: ${this._otbrInfo.active_dataset_tlvs}`,
         });
         return;
       }
@@ -236,18 +301,21 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       let preferred: ThreadNetwork | undefined;
       const networks: { [key: string]: ThreadNetwork } = {};
       for (const router of routers) {
-        const network = router.network_name;
+        const network = router.extended_pan_id;
         if (network in networks) {
           networks[network].routers!.push(router);
         } else {
-          networks[network] = { name: network, routers: [router] };
+          networks[network] = { name: router.network_name, routers: [router] };
         }
       }
       for (const dataset of datasets) {
-        const network = dataset.network_name;
+        const network = dataset.extended_pan_id;
+        if (!network) {
+          continue;
+        }
         if (dataset.preferred) {
           preferred = {
-            name: network,
+            name: dataset.network_name,
             dataset: dataset,
             routers: networks[network]?.routers,
           };
@@ -257,7 +325,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         if (network in networks) {
           networks[network].dataset = dataset;
         } else {
-          networks[network] = { name: network, dataset: dataset };
+          networks[network] = { name: dataset.network_name, dataset: dataset };
         }
       }
       return {
@@ -269,10 +337,24 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     }
   );
 
-  private _refresh() {
+  private async _refresh() {
     listThreadDataSets(this.hass).then((datasets) => {
       this._datasets = datasets.datasets;
     });
+    if (!isComponentLoaded(this.hass, "otbr")) {
+      return;
+    }
+    try {
+      const _otbrAddress = OTBRGetExtendedAddress(this.hass);
+      const _otbrInfo = getOTBRInfo(this.hass);
+      const [otbrAddress, otbrInfo] = await Promise.all([
+        _otbrAddress,
+        _otbrInfo,
+      ]);
+      this._otbrInfo = { ...otbrAddress, ...otbrInfo };
+    } catch (err) {
+      this._otbrInfo = undefined;
+    }
   }
 
   private async _signUrl(ev) {
@@ -293,6 +375,74 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       startFlowHandler: "otbr",
       showAdvanced: this.hass.userData?.showAdvanced,
     });
+  }
+
+  private _handleRouterAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._resetBorderRouter();
+        break;
+      case 1:
+        this._setDataset();
+        break;
+    }
+  }
+
+  private async _resetBorderRouter() {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.thread.confirm_reset_border_router"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.thread.confirm_reset_border_router_text"
+      ),
+    });
+    if (!confirm) {
+      return;
+    }
+    try {
+      await OTBRCreateNetwork(this.hass);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.thread.otbr_config_failed"),
+        text: err.message,
+      });
+    }
+    this._refresh();
+  }
+
+  private async _setDataset() {
+    const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
+    const preferedDatasetId = networks.preferred?.dataset?.dataset_id;
+    if (!preferedDatasetId) {
+      return;
+    }
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.thread.confirm_set_dataset_border_router"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.thread.confirm_set_dataset_border_router_text"
+      ),
+    });
+    if (!confirm) {
+      return;
+    }
+    try {
+      await OTBRSetNetwork(this.hass, preferedDatasetId);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.thread.otbr_config_failed"),
+        text: err.message,
+      });
+    }
+    this._refresh();
+  }
+
+  private async _setPreferred(ev) {
+    const datasetId = ev.target.datasetId;
+    await setPreferredThreadDataSet(this.hass, datasetId);
+    this._refresh();
   }
 
   private async _addTLV() {
@@ -355,6 +505,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         margin: 0 auto;
         direction: ltr;
       }
+      ha-list-item.router {
+        --mdc-list-side-padding: 16px;
+        --mdc-list-item-meta-size: 48px;
+        cursor: default;
+        overflow: visible;
+      }
       ha-button-menu a {
         text-decoration: none;
       }
@@ -365,6 +521,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         display: flex;
         flex-direction: column;
         align-items: center;
+        text-align: center;
       }
       .no-routers ha-svg-icon {
         background-color: var(--light-primary-color);

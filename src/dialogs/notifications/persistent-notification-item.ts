@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
@@ -33,9 +33,9 @@ export class HuiPersistentNotificationItem extends LitElement {
               .datetime=${this.notification.created_at}
               capitalize
             ></ha-relative-time>
-            <paper-tooltip animation-delay="0">
+            <simple-tooltip animation-delay="0">
               ${this._computeTooltip(this.hass, this.notification)}
-            </paper-tooltip>
+            </simple-tooltip>
           </span>
         </div>
 

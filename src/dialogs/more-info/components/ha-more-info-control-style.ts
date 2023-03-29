@@ -14,8 +14,23 @@ export const moreInfoControlStyle = css`
     align-items: center;
   }
 
+  .controls:not(:last-child) {
+    margin-bottom: 24px;
+  }
+
   .controls > *:not(:last-child) {
     margin-bottom: 24px;
+  }
+
+  .buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .buttons > * {
+    margin: 4px;
   }
 
   ha-attributes {

@@ -1,6 +1,4 @@
 import { mdiArrowLeft } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-button";
 import {
   css,
@@ -33,7 +31,6 @@ import {
   ResolvedMediaSource,
   resolveMediaSource,
 } from "../../data/media_source";
-import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-bar-media-player";
@@ -44,6 +41,7 @@ import {
   getEntityIdFromCameraMediaSource,
   isCameraMediaSource,
 } from "../../data/camera";
+import "../../components/ha-top-app-bar-fixed";
 
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
   let path = `/media-browser/${entityId}`;
@@ -82,36 +80,35 @@ class PanelMediaBrowser extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-app-layout>
-        <app-header fixed slot="header">
-          <app-toolbar>
-            ${this._navigateIds.length > 1
-              ? html`
-                  <ha-icon-button-arrow-prev
-                    .path=${mdiArrowLeft}
-                    @click=${this._goBack}
-                  ></ha-icon-button-arrow-prev>
-                `
-              : html`
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `}
-            <div main-title>
-              ${!this._currentItem
-                ? this.hass.localize(
-                    "ui.components.media-browser.media-player-browser"
-                  )
-                : this._currentItem.title}
-            </div>
-            <ha-media-manage-button
-              .hass=${this.hass}
-              .currentItem=${this._currentItem}
-              @media-refresh=${this._refreshMedia}
-            ></ha-media-manage-button>
-          </app-toolbar>
-        </app-header>
+      <ha-top-app-bar-fixed>
+        ${this._navigateIds.length > 1
+          ? html`
+              <ha-icon-button-arrow-prev
+                slot="navigationIcon"
+                .path=${mdiArrowLeft}
+                @click=${this._goBack}
+              ></ha-icon-button-arrow-prev>
+            `
+          : html`
+              <ha-menu-button
+                slot="navigationIcon"
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+            `}
+        <div slot="title">
+          ${!this._currentItem
+            ? this.hass.localize(
+                "ui.components.media-browser.media-player-browser"
+              )
+            : this._currentItem.title}
+        </div>
+        <ha-media-manage-button
+          slot="actionItems"
+          .hass=${this.hass}
+          .currentItem=${this._currentItem}
+          @media-refresh=${this._refreshMedia}
+        ></ha-media-manage-button>
         <ha-media-player-browse
           .hass=${this.hass}
           .entityId=${this._entityId}
@@ -119,7 +116,7 @@ class PanelMediaBrowser extends LitElement {
           @media-picked=${this._mediaPicked}
           @media-browsed=${this._mediaBrowsed}
         ></ha-media-player-browse>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
       <ha-bar-media-player
         .hass=${this.hass}
         .entityId=${this._entityId}
@@ -275,7 +272,7 @@ class PanelMediaBrowser extends LitElement {
     return [
       haStyle,
       css`
-        app-toolbar {
+        ha-media-manage-button {
           --mdc-theme-primary: var(--app-header-text-color);
         }
 

@@ -197,6 +197,7 @@ export interface StateCondition extends BaseCondition {
   attribute?: string;
   state: string | number | string[];
   for?: string | number | ForDict;
+  match?: "all" | "any";
 }
 
 export interface NumericStateCondition extends BaseCondition {

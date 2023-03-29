@@ -3,7 +3,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiPower } from "@mdi/js";
 import type { ChartOptions } from "chart.js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -209,7 +209,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     let boardId: string | undefined;
     let boardName: string | undefined;
     let imageURL: string | undefined;
@@ -343,7 +343,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                                 )}
                               </mwc-button>
                             `
-                          : null}
+                          : nothing}
                         ${isComponentLoaded(this.hass, "hassio")
                           ? html`
                               <mwc-button @click=${this._openHardware}>
@@ -352,7 +352,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                                 )}
                               </mwc-button>
                             `
-                          : null}
+                          : nothing}
                       </div>`
                     : ""}
                 </ha-card>

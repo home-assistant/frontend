@@ -4,7 +4,7 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -128,7 +128,7 @@ class HassioRepositoriesDialog extends LitElement {
                         @click=${this._removeRepository}
                       >
                       </ha-icon-button>
-                      <paper-tooltip
+                      <simple-tooltip
                         animation-delay="0"
                         position="bottom"
                         offset="1"
@@ -138,7 +138,7 @@ class HassioRepositoriesDialog extends LitElement {
                             ? "dialog.repositories.used"
                             : "dialog.repositories.remove"
                         )}
-                      </paper-tooltip>
+                      </simple-tooltip>
                     </div>
                   </paper-item>
                 `

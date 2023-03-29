@@ -76,7 +76,7 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
       ? this.localize(
           `ui.card.vacuum.actions.${STATES_INTERCEPTABLE[state].action}`
         )
-      : this.localize(`component.vacuum._.${state}`);
+      : this.localize(`component.vacuum.entity_component._.state.${state}`);
   }
 
   _callService(ev) {

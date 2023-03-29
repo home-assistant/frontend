@@ -1,6 +1,4 @@
 import { mdiRefresh } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   addDays,
   endOfToday,
@@ -14,17 +12,20 @@ import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { navigate } from "../../common/navigate";
+import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createSearchParam,
   extractSearchParamsObject,
+  removeSearchParam,
 } from "../../common/url/search-params";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
+import "../../components/ha-top-app-bar-fixed";
 import { filterLogbookCompatibleEntities } from "../../data/logbook";
-import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook";
@@ -41,6 +42,9 @@ export class HaPanelLogbook extends LitElement {
 
   @state() private _ranges?: DateRangePickerRanges;
 
+  @state()
+  private _showBack?: boolean;
+
   public constructor() {
     super();
 
@@ -53,23 +57,34 @@ export class HaPanelLogbook extends LitElement {
     this._time = { range: [start, end] };
   }
 
+  private _goBack(): void {
+    history.back();
+  }
+
   protected render() {
     return html`
-      <ha-app-layout>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.logbook")}</div>
-            <ha-icon-button
-              @click=${this._refreshLogbook}
-              .path=${mdiRefresh}
-              .label=${this.hass!.localize("ui.common.refresh")}
-            ></ha-icon-button>
-          </app-toolbar>
-        </app-header>
+      <ha-top-app-bar-fixed>
+        ${this._showBack
+          ? html`
+              <ha-icon-button-arrow-prev
+                slot="navigationIcon"
+                @click=${this._goBack}
+              ></ha-icon-button-arrow-prev>
+            `
+          : html`
+              <ha-menu-button
+                slot="navigationIcon"
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+            `}
+        <div slot="title">${this.hass.localize("panel.logbook")}</div>
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._refreshLogbook}
+          .path=${mdiRefresh}
+          .label=${this.hass!.localize("ui.common.refresh")}
+        ></ha-icon-button>
 
         <div class="filters">
           <ha-date-range-picker
@@ -97,7 +112,7 @@ export class HaPanelLogbook extends LitElement {
           .entityIds=${this._entityIds}
           virtualize
         ></ha-logbook>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
     `;
   }
 
@@ -132,6 +147,14 @@ export class HaPanelLogbook extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+
+    const searchParams = extractSearchParamsObject();
+    if (searchParams.back === "1" && history.length > 1) {
+      this._showBack = true;
+      navigate(constructUrlCurrentPath(removeSearchParam("back")), {
+        replace: true,
+      });
+    }
   }
 
   public connectedCallback(): void {

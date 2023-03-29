@@ -151,20 +151,34 @@ export class MoreInfoDialog extends LitElement {
     return entity?.device_id ?? null;
   }
 
+  private setView(view: View) {
+    history.replaceState(
+      {
+        ...history.state,
+        dialogParams: {
+          ...history.state?.dialogParams,
+          view,
+        },
+      },
+      ""
+    );
+    this._currView = view;
+  }
+
   private _goBack() {
     if (this._childView) {
       this._childView = undefined;
     } else {
-      this._currView = "info";
+      this.setView("info");
     }
   }
 
   private _goToHistory() {
-    this._currView = "history";
+    this.setView("history");
   }
 
   private _goToSettings(): void {
-    this._currView = "settings";
+    this.setView("settings");
   }
 
   private async _showChildView(ev: CustomEvent): Promise<void> {
@@ -206,7 +220,7 @@ export class MoreInfoDialog extends LitElement {
 
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
-    this._currView = "related";
+    this.setView("related");
   }
 
   protected render() {

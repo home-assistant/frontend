@@ -263,7 +263,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         showAlertDialog(this, {
           title: "Entity not recorded",
           text: html`State changes of this entity are not recorded, therefore,
-            we can not track long term statistics for it. <br /><br />You
+            we cannot track long term statistics for it. <br /><br />You
             probably excluded this entity, or have just included some
             entities.<br /><br />See the
             <a
@@ -281,9 +281,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           title: "Entity no longer recorded",
           text: html`We have generated statistics for this entity in the past,
             but state changes of this entity are no longer recorded, therefore,
-            we can not track long term statistics for it anymore.
-            <br /><br />You probably excluded this entity, or have just included
-            some entities.<br /><br />See the
+            we cannot track long term statistics for it anymore. <br /><br />You
+            probably excluded this entity, or have just included some
+            entities.<br /><br />See the
             <a
               href="https://www.home-assistant.io/integrations/recorder/#configure-filter"
               target="_blank"
@@ -298,7 +298,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         showConfirmationDialog(this, {
           title: "Unsupported state class",
           text: html`The state class of this entity, ${issue.data.state_class}
-            is not supported. <br />Statistics can not be generated until this
+            is not supported. <br />Statistics cannot be generated until this
             entity has a supported state class.<br /><br />If this state class
             was provided by an integration, this is a bug. Please report an
             issue.<br /><br />If you have set this state class yourself, please

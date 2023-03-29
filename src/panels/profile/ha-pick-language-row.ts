@@ -27,7 +27,7 @@ export class HaPickLanguageRow extends LitElement {
         >
         <span slot="description">
           <a
-            href="https://developers.home-assistant.io/docs/en/internationalization_translation.html"
+            href="https://developers.home-assistant.io/docs/translations/"
             target="_blank"
             rel="noreferrer"
             >${this.hass.localize("ui.panel.profile.language.link_promo")}</a

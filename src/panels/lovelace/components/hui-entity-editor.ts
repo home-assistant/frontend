@@ -5,7 +5,10 @@ import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
-import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
+import type {
+  HaEntityPicker,
+  HaEntityPickerEntityFilterFunc,
+} from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import {
@@ -20,6 +23,8 @@ export class HuiEntityEditor extends LitElement {
   @property({ attribute: false }) protected hass?: HomeAssistant;
 
   @property({ attribute: false }) protected entities?: EntityConfig[];
+
+  @property() protected entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property() protected label?: string;
 
@@ -65,6 +70,7 @@ export class HuiEntityEditor extends LitElement {
                 .hass=${this.hass}
                 .value=${entityConf.entity}
                 .index=${index}
+                .entityFilter=${this.entityFilter}
                 @value-changed=${this._valueChanged}
                 allow-custom-entity
               ></ha-entity-picker>
@@ -75,6 +81,7 @@ export class HuiEntityEditor extends LitElement {
       <ha-entity-picker
         class="add-entity"
         .hass=${this.hass}
+        .entityFilter=${this.entityFilter}
         @value-changed=${this._addEntity}
       ></ha-entity-picker>
     `;
