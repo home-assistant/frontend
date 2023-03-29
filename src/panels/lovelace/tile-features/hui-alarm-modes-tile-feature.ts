@@ -147,7 +147,7 @@ class HuiAlarmModeTileFeature
         ),
       });
       if (!response) {
-        throw new Error("no code provided");
+        return;
       }
       code = response;
     }
