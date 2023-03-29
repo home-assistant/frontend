@@ -1,9 +1,9 @@
 import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
-import "../../components/ha-tabs";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant, Route } from "../../types";
 import "./developer-tools-router";
@@ -35,7 +35,7 @@ class PanelDeveloperTools extends LitElement {
             ${this.hass.localize("panel.developer_tools")}
           </div>
         </div>
-        <ha-tabs
+        <paper-tabs
           scrollable
           attr-for-selected="page-name"
           .selected=${page}
@@ -65,7 +65,7 @@ class PanelDeveloperTools extends LitElement {
               "ui.panel.developer-tools.tabs.statistics.title"
             )}
           </paper-tab>
-        </ha-tabs>
+        </paper-tabs>
       </div>
       <developer-tools-router
         .route=${this.route}
@@ -123,7 +123,7 @@ class PanelDeveloperTools extends LitElement {
           height: calc(100% - var(--header-height) - 48px);
           overflow: auto;
         }
-        ha-tabs {
+        paper-tabs {
           margin-left: max(env(safe-area-inset-left), 24px);
           margin-right: max(env(safe-area-inset-right), 24px);
           --paper-tabs-selection-bar-color: var(
