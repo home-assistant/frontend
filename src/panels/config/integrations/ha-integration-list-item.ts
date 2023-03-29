@@ -72,20 +72,20 @@ export class HaIntegrationListItem extends ListItemBase {
       ${this.integration.cloud
         ? html`<span
             ><ha-svg-icon .path=${mdiCloudOutline}></ha-svg-icon
-            ><paper-tooltip animation-delay="0" position="left"
+            ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.depends_on_cloud"
-              )}</paper-tooltip
+              )}</simple-tooltip
             ></span
           >`
         : ""}
       ${!this.integration.is_built_in
         ? html`<span
             ><ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon
-            ><paper-tooltip animation-delay="0" position="left"
+            ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.provided_by_custom_integration"
-              )}</paper-tooltip
+              )}</simple-tooltip
             ></span
           >`
         : ""}
@@ -93,10 +93,10 @@ export class HaIntegrationListItem extends ListItemBase {
       !this.integration.integrations &&
       !this.integration.iot_standards
         ? html`<span
-            ><paper-tooltip animation-delay="0" position="left"
+            ><simple-tooltip animation-delay="0" position="left"
               >${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.yaml_only"
-              )}</paper-tooltip
+              )}</simple-tooltip
             ><ha-svg-icon
               .path=${mdiOpenInNew}
               class="open-in-new"

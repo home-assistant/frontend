@@ -1,8 +1,6 @@
 import { undoDepth } from "@codemirror/commands";
 import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { dump, load } from "js-yaml";
 import {
   css,
@@ -25,11 +23,11 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import type { Lovelace } from "./types";
+import "../../components/ha-top-app-bar-fixed";
 
 const lovelaceStruct = type({
   title: optional(string()),
@@ -50,43 +48,38 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <ha-app-layout>
-        <app-header slot="header">
-          <app-toolbar>
-            <ha-icon-button
-              .path=${mdiClose}
-              @click=${this._closeEditor}
-              .label=${this.hass!.localize("ui.common.close")}
-            ></ha-icon-button>
-            <div main-title>
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.raw_editor.header"
-              )}
-            </div>
-            <div
-              class="save-button
+      <ha-top-app-bar-fixed>
+        <ha-icon-button
+          slot="navigationIcon"
+          .path=${mdiClose}
+          @click=${this._closeEditor}
+          .label=${this.hass!.localize("ui.common.close")}
+        ></ha-icon-button>
+        <div slot="title">
+          ${this.hass!.localize("ui.panel.lovelace.editor.raw_editor.header")}
+        </div>
+        <div
+          slot="actionItems"
+          class="save-button
               ${classMap({
-                saved: this._saving! === false || this._changed === true,
-              })}"
-            >
-              ${this._changed
-                ? this.hass!.localize(
-                    "ui.panel.lovelace.editor.raw_editor.unsaved_changes"
-                  )
-                : this.hass!.localize(
-                    "ui.panel.lovelace.editor.raw_editor.saved"
-                  )}
-            </div>
-            <mwc-button
-              raised
-              @click=${this._handleSave}
-              .disabled=${!this._changed}
-              >${this.hass!.localize(
-                "ui.panel.lovelace.editor.raw_editor.save"
-              )}</mwc-button
-            >
-          </app-toolbar>
-        </app-header>
+            saved: this._saving! === false || this._changed === true,
+          })}"
+        >
+          ${this._changed
+            ? this.hass!.localize(
+                "ui.panel.lovelace.editor.raw_editor.unsaved_changes"
+              )
+            : this.hass!.localize("ui.panel.lovelace.editor.raw_editor.saved")}
+        </div>
+        <mwc-button
+          raised
+          slot="actionItems"
+          @click=${this._handleSave}
+          .disabled=${!this._changed}
+          >${this.hass!.localize(
+            "ui.panel.lovelace.editor.raw_editor.save"
+          )}</mwc-button
+        >
         <div class="content">
           <ha-code-editor
             mode="yaml"
@@ -100,7 +93,7 @@ class LovelaceFullConfigEditor extends LitElement {
           >
           </ha-code-editor>
         </div>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
     `;
   }
 
@@ -142,15 +135,11 @@ class LovelaceFullConfigEditor extends LitElement {
       css`
         :host {
           --code-mirror-height: 100%;
-        }
-
-        ha-app-layout {
-          height: 100vh;
-        }
-
-        app-toolbar {
-          background-color: var(--app-header-edit-background-color, #455a64);
-          color: var(--app-header-edit-text-color, #fff);
+          --app-header-background-color: var(
+            --app-header-edit-background-color,
+            #455a64
+          );
+          --app-header-text-color: var(--app-header-edit-text-color, #fff);
         }
 
         mwc-button[disabled] {
@@ -158,12 +147,12 @@ class LovelaceFullConfigEditor extends LitElement {
           border-radius: 4px;
         }
 
-        .comments {
-          font-size: 16px;
-        }
-
         .content {
           height: calc(100vh - var(--header-height));
+        }
+
+        .comments {
+          font-size: 16px;
         }
 
         .save-button {

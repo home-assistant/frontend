@@ -1,6 +1,6 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -70,14 +70,14 @@ class HuiCoverTiltTileFeature
     });
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (
       !this._config ||
       !this.hass ||
       !this.stateObj ||
       !supportsCoverTiltTileFeature
     ) {
-      return null;
+      return nothing;
     }
 
     return html`
@@ -94,7 +94,7 @@ class HuiCoverTiltTileFeature
                 <ha-svg-icon .path=${mdiArrowTopRight}></ha-svg-icon>
               </ha-control-button>
             `
-          : null}
+          : nothing}
         ${supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT)
           ? html`
               <ha-control-button
@@ -107,7 +107,7 @@ class HuiCoverTiltTileFeature
                 <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
               </ha-control-button>
             `
-          : null}
+          : nothing}
         ${supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT)
           ? html`
               <ha-control-button
@@ -120,7 +120,7 @@ class HuiCoverTiltTileFeature
                 <ha-svg-icon .path=${mdiArrowBottomLeft}></ha-svg-icon>
               </ha-control-button>
             `
-          : undefined}
+          : nothing}
       </ha-control-button-group>
     `;
   }

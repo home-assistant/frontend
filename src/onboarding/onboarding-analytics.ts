@@ -4,10 +4,10 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-analytics";
-import { analyticsLearnMore } from "../components/ha-analytics-learn-more";
 import { Analytics, setAnalyticsPreferences } from "../data/analytics";
 import { onboardAnalyticsStep } from "../data/onboarding";
 import type { HomeAssistant } from "../types";
+import { documentationUrl } from "../util/documentation-url";
 
 @customElement("onboarding-analytics")
 class OnboardingAnalytics extends LitElement {
@@ -23,12 +23,9 @@ class OnboardingAnalytics extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <p>
-        Share anonymized information from your installation to help make Home
-        Assistant better and help us convince manufacturers to add local control
-        and privacy-focused features.
-      </p>
+      <p>${this.hass.localize("ui.panel.page-onboarding.analytics.intro")}</p>
       <ha-analytics
+        translation_key_panel="page-onboarding"
         @analytics-preferences-changed=${this._preferencesChanged}
         .hass=${this.hass}
         .analytics=${this._analyticsDetails}
@@ -39,7 +36,13 @@ class OnboardingAnalytics extends LitElement {
         <mwc-button @click=${this._save} .disabled=${!this._analyticsDetails}>
           ${this.localize("ui.panel.page-onboarding.analytics.finish")}
         </mwc-button>
-        ${analyticsLearnMore(this.hass)}
+        <a
+          .href=${documentationUrl(this.hass, "/integrations/analytics/")}
+          target="_blank"
+          rel="noreferrer"
+        >
+          ${this.hass.localize("ui.panel.page-onboarding.analytics.learn_more")}
+        </a>
       </div>
     `;
   }

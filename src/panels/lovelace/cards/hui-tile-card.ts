@@ -18,6 +18,7 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -224,7 +225,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       this.hass!.entities
     );
 
-    if (domain === "cover" && stateObj.state === "open") {
+    if (
+      domain === "cover" &&
+      ["open", "opening", "closing"].includes(stateObj.state)
+    ) {
       const position = (stateObj as CoverEntity).attributes.current_position;
       if (position && position !== 100) {
         return `${stateDisplay} - ${Math.round(position)}${blankBeforePercent(
@@ -305,6 +309,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
+    const domain = computeDomain(stateObj.entity_id);
 
     const style = {
       "--tile-color": color,
@@ -317,7 +322,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
-        ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : null}
+        ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : nothing}
         <div class="tile">
           <div
             class="background"
@@ -350,6 +355,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                   `
                 : html`
                     <ha-tile-icon
+                      data-domain=${ifDefined(domain)}
+                      data-state=${ifDefined(stateObj?.state)}
                       class="icon"
                       .icon=${icon}
                       .iconPath=${iconPath}
@@ -366,7 +373,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                       })}
                     ></ha-tile-badge>
                   `
-                : null}
+                : nothing}
             </div>
             <ha-tile-info
               class="info"
@@ -502,6 +509,25 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       .features {
         position: relative;
+      }
+
+      ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
+      ha-tile-icon[data-domain="alarm_control_panel"][data-state="arming"],
+      ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
+      ha-tile-icon[data-domain="lock"][data-state="jammed"] {
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
       }
     `;
   }

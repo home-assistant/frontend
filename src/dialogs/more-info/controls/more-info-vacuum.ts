@@ -115,7 +115,7 @@ class MoreInfoVacuum extends LitElement {
                       <strong>
                         ${stateObj.attributes.status ||
                         this.hass.localize(
-                          `component.vacuum.state._.${stateObj.state}`
+                          `component.vacuum.entity_component._.state.${stateObj.state}`
                         ) ||
                         stateObj.state}
                       </strong>

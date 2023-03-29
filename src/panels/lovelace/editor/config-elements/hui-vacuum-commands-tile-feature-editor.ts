@@ -37,6 +37,7 @@ export class HuiVacuumCommandsTileFeatureEditor
           selector: {
             select: {
               multiple: true,
+              mode: "list",
               options: VACUUM_COMMANDS.filter(
                 (command) =>
                   stateObj && supportsVacuumCommand(stateObj, command)

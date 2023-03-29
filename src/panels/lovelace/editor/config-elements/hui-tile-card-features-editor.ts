@@ -1,6 +1,6 @@
 import { mdiDelete, mdiDrag, mdiListBox, mdiPencil, mdiPlus } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import type { SortableEvent } from "sortablejs";
@@ -25,8 +25,10 @@ import {
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
+import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-modes-tile-feature";
 import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
+import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
@@ -39,9 +41,14 @@ const FEATURE_TYPES: FeatureType[] = [
   "cover-tilt",
   "light-brightness",
   "vacuum-commands",
+  "fan-speed",
+  "alarm-modes",
 ];
 
-const EDITABLES_FEATURE_TYPES = new Set<FeatureType>(["vacuum-commands"]);
+const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
+  "vacuum-commands",
+  "alarm-modes",
+]);
 
 const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
   {
@@ -49,6 +56,8 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "cover-tilt": supportsCoverTiltTileFeature,
     "light-brightness": supportsLightBrightnessTileFeature,
     "vacuum-commands": supportsVacuumCommandTileFeature,
+    "fan-speed": supportsFanSpeedTileFeature,
+    "alarm-modes": supportsAlarmModesTileFeature,
   };
 
 const CUSTOM_FEATURE_ENTRIES: Record<
@@ -147,9 +156,9 @@ export class HuiTileCardFeaturesEditor extends LitElement {
       .filter((type) => this._supportsFeatureType(type));
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (!this.features || !this.hass) {
-      return null;
+      return nothing;
     }
 
     const supportedFeaturesType = this._getSupportedFeaturesType();
@@ -176,7 +185,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                   )}
                 </ha-alert>
               `
-            : null}
+            : nothing}
           <div class="features">
             ${repeat(
               this.features,
@@ -201,7 +210,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                                 )}
                               </span>
                             `
-                          : null}
+                          : nothing}
                       </div>
                     </div>
                     ${editable
@@ -217,7 +226,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                             .disabled=${!supported}
                           ></ha-icon-button>
                         `
-                      : null}
+                      : nothing}
                     <ha-icon-button
                       .label=${this.hass!.localize(
                         `ui.panel.lovelace.editor.card.tile.features.remove`
@@ -257,7 +266,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                   )}
                   ${types.length > 0 && customTypes.length > 0
                     ? html`<li divider role="separator"></li>`
-                    : null}
+                    : nothing}
                   ${customTypes.map(
                     (type) => html`
                       <ha-list-item .value=${type}>
@@ -267,7 +276,7 @@ export class HuiTileCardFeaturesEditor extends LitElement {
                   )}
                 </ha-button-menu>
               `
-            : null}
+            : nothing}
         </div>
       </ha-expansion-panel>
     `;

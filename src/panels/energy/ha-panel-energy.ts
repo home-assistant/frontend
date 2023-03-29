@@ -1,5 +1,3 @@
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
   CSSResultGroup,
@@ -11,12 +9,12 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
 import { LovelaceConfig } from "../../data/lovelace";
-import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-energy-period-selector";
 import { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
+import "../../components/ha-top-app-bar-fixed";
 
 const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
@@ -62,24 +60,23 @@ class PanelEnergy extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-app-layout>
-        <app-header fixed slot="header">
-          <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.energy")}</div>
-            ${this.narrow
-              ? ""
-              : html`
-                  <hui-energy-period-selector
-                    .hass=${this.hass}
-                    collectionKey="energy_dashboard"
-                  ></hui-energy-period-selector>
-                `}
-          </app-toolbar>
-        </app-header>
+      <ha-top-app-bar-fixed>
+        <ha-menu-button
+          slot="navigationIcon"
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+        ></ha-menu-button>
+        <div slot="title">${this.hass.localize("panel.energy")}</div>
+        ${this.narrow
+          ? ""
+          : html`
+              <hui-energy-period-selector
+                slot="actionItems"
+                .hass=${this.hass}
+                collectionKey="energy_dashboard"
+                .narrow=${false}
+              ></hui-energy-period-selector>
+            `}
         <hui-view
           .hass=${this.hass}
           .narrow=${this.narrow}
@@ -87,7 +84,7 @@ class PanelEnergy extends LitElement {
           .index=${this._viewIndex}
           @reload-energy-panel=${this._reloadView}
         ></hui-view>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
     `;
   }
 
@@ -119,10 +116,6 @@ class PanelEnergy extends LitElement {
     return [
       haStyle,
       css`
-        app-toolbar {
-          display: flex;
-          justify-content: space-between;
-        }
         hui-energy-period-selector {
           width: 100%;
           padding-left: 16px;

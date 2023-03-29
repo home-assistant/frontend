@@ -3,9 +3,10 @@ const gulp = require("gulp");
 const fs = require("fs-extra");
 const path = require("path");
 const template = require("lodash.template");
-const minify = require("html-minifier").minify;
+const { minify } = require("html-minifier-terser");
 const paths = require("../paths.js");
 const env = require("../env.js");
+const { htmlMinifierOptions, terserOptions } = require("../bundle.js");
 
 const templatePath = (tpl) =>
   path.resolve(paths.polymer_dir, "src/html/", `${tpl}.html.template`);
@@ -39,10 +40,12 @@ const renderGalleryTemplate = (pth, data = {}) =>
 
 const minifyHtml = (content) =>
   minify(content, {
-    collapseWhitespace: true,
-    minifyJS: true,
-    minifyCSS: true,
-    removeComments: true,
+    ...htmlMinifierOptions,
+    conservativeCollapse: false,
+    minifyJS: terserOptions({
+      latestBuild: false, // Shared scripts should be ES5
+      isTestBuild: true, // Don't need source maps
+    }),
   });
 
 const PAGES = ["onboarding", "authorize"];
@@ -63,7 +66,7 @@ gulp.task("gen-pages-dev", (done) => {
   done();
 });
 
-gulp.task("gen-pages-prod", (done) => {
+gulp.task("gen-pages-prod", async () => {
   const latestManifest = require(path.resolve(
     paths.app_output_latest,
     "manifest.json"
@@ -73,19 +76,23 @@ gulp.task("gen-pages-prod", (done) => {
     "manifest.json"
   ));
 
+  const minifiedHTML = [];
   for (const page of PAGES) {
     const content = renderTemplate(page, {
       latestPageJS: latestManifest[`${page}.js`],
-
       es5PageJS: es5Manifest[`${page}.js`],
     });
 
-    fs.outputFileSync(
-      path.resolve(paths.app_output_root, `${page}.html`),
-      minifyHtml(content)
+    minifiedHTML.push(
+      minifyHtml(content).then((minified) =>
+        fs.outputFileSync(
+          path.resolve(paths.app_output_root, `${page}.html`),
+          minified
+        )
+      )
     );
   }
-  done();
+  await Promise.all(minifiedHTML);
 });
 
 gulp.task("gen-index-app-dev", (done) => {
@@ -118,7 +125,7 @@ gulp.task("gen-index-app-dev", (done) => {
   done();
 });
 
-gulp.task("gen-index-app-prod", (done) => {
+gulp.task("gen-index-app-prod", async () => {
   const latestManifest = require(path.resolve(
     paths.app_output_latest,
     "manifest.json"
@@ -136,13 +143,15 @@ gulp.task("gen-index-app-prod", (done) => {
     es5CoreJS: es5Manifest["core.js"],
     es5CustomPanelJS: es5Manifest["custom-panel.js"],
   });
-  const minified = minifyHtml(content).replace(/#THEMEC/g, "{{ theme_color }}");
+  const minified = (await minifyHtml(content)).replace(
+    /#THEMEC/g,
+    "{{ theme_color }}"
+  );
 
   fs.outputFileSync(
     path.resolve(paths.app_output_root, "index.html"),
     minified
   );
-  done();
 });
 
 gulp.task("gen-index-cast-dev", (done) => {
@@ -244,7 +253,7 @@ gulp.task("gen-index-demo-dev", (done) => {
   done();
 });
 
-gulp.task("gen-index-demo-prod", (done) => {
+gulp.task("gen-index-demo-prod", async () => {
   const latestManifest = require(path.resolve(
     paths.demo_output_latest,
     "manifest.json"
@@ -258,13 +267,12 @@ gulp.task("gen-index-demo-prod", (done) => {
 
     es5DemoJS: es5Manifest["main.js"],
   });
-  const minified = minifyHtml(content);
+  const minified = await minifyHtml(content);
 
   fs.outputFileSync(
     path.resolve(paths.demo_output_root, "index.html"),
     minified
   );
-  done();
 });
 
 gulp.task("gen-index-gallery-dev", (done) => {
@@ -279,7 +287,7 @@ gulp.task("gen-index-gallery-dev", (done) => {
   done();
 });
 
-gulp.task("gen-index-gallery-prod", (done) => {
+gulp.task("gen-index-gallery-prod", async () => {
   const latestManifest = require(path.resolve(
     paths.gallery_output_latest,
     "manifest.json"
@@ -287,13 +295,12 @@ gulp.task("gen-index-gallery-prod", (done) => {
   const content = renderGalleryTemplate("index", {
     latestGalleryJS: latestManifest["entrypoint.js"],
   });
-  const minified = minifyHtml(content);
+  const minified = await minifyHtml(content);
 
   fs.outputFileSync(
     path.resolve(paths.gallery_output_root, "index.html"),
     minified
   );
-  done();
 });
 
 gulp.task("gen-index-hassio-dev", async () => {

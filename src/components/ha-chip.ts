@@ -1,13 +1,6 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  TemplateResult,
-  unsafeCSS,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing, unsafeCSS } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-chip")
@@ -18,14 +11,14 @@ export class HaChip extends LitElement {
 
   @property({ type: Boolean }) public noText = false;
 
-  protected render(): TemplateResult {
+  protected render() {
     return html`
       <div class="mdc-chip ${this.noText ? "no-text" : ""}">
         ${this.hasIcon
           ? html`<div class="mdc-chip__icon mdc-chip__icon--leading">
               <slot name="icon"></slot>
             </div>`
-          : null}
+          : nothing}
         <div class="mdc-chip__ripple"></div>
         <span role="gridcell">
           <span role="button" tabindex="0" class="mdc-chip__primary-action">
@@ -36,7 +29,7 @@ export class HaChip extends LitElement {
           ? html`<div class="mdc-chip__icon mdc-chip__icon--trailing">
               <slot name="trailing-icon"></slot>
             </div>`
-          : null}
+          : nothing}
       </div>
     `;
   }

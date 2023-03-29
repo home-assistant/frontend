@@ -19,6 +19,7 @@ import type { SensorCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-sensor-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -77,6 +78,7 @@ const SCHEMA = [
       { name: "theme", selector: { theme: {} } },
       {
         name: "hours_to_show",
+        default: DEFAULT_HOURS_TO_SHOW,
         selector: { number: { min: 1, mode: "box" } },
       },
     ],
@@ -103,7 +105,6 @@ export class HuiSensorCardEditor
     }
 
     const data = {
-      hours_to_show: 24,
       graph: "none",
       ...this._config,
       detail: this._config!.detail === 2,

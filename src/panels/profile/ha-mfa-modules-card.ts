@@ -1,6 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -19,11 +17,9 @@ class HaMfaModulesCard extends LitElement {
     return html`
       <ha-card .header=${this.hass.localize("ui.panel.profile.mfa.header")}>
         ${this.mfaModules.map(
-          (module) => html`<paper-item>
-            <paper-item-body two-line="">
-              <div>${module.name}</div>
-              <div secondary>${module.id}</div>
-            </paper-item-body>
+          (module) => html`<ha-settings-row two-line>
+            <span slot="heading">${module.name}</span>
+            <span slot="description">${module.id}</span>
             ${module.enabled
               ? html`<mwc-button .module=${module} @click=${this._disable}
                   >${this.hass.localize(
@@ -35,7 +31,7 @@ class HaMfaModulesCard extends LitElement {
                     "ui.panel.profile.mfa.enable"
                   )}</mwc-button
                 >`}
-          </paper-item>`
+          </ha-settings-row>`
         )}
       </ha-card>
     `;
@@ -45,6 +41,9 @@ class HaMfaModulesCard extends LitElement {
     return css`
       mwc-button {
         margin-right: -0.57em;
+      }
+      ha-list-item {
+        --mdc-list-item-meta-size: auto;
       }
     `;
   }

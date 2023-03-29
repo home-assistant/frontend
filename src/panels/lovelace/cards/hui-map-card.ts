@@ -16,12 +16,13 @@ import { getColorByIndex } from "../../../common/color/colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import {
-  formatTime,
+  formatTimeWithSeconds,
   formatTimeWeekday,
 } from "../../../common/datetime/format_time";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
+import "../../../components/ha-alert";
 import "../../../components/ha-icon-button";
 import "../../../components/map/ha-map";
 import type {
@@ -33,6 +34,7 @@ import {
   HistoryStates,
   subscribeHistoryStatesTimeWindow,
 } from "../../../data/history";
+import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -40,7 +42,9 @@ import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
 
-const DEFAULT_HOURS_TO_SHOW = 0;
+export const DEFAULT_HOURS_TO_SHOW = 0;
+export const DEFAULT_ZOOM = 14;
+
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -62,7 +66,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _colorIndex = 0;
 
-  private _error?: string;
+  @state() private _error?: { code: string; message: string };
 
   private _subscribed?: Promise<(() => Promise<void>) | void>;
 
@@ -136,7 +140,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return nothing;
     }
     if (this._error) {
-      return html`<div class="error">${this._error}</div>`;
+      return html`<ha-alert alert-type="error">
+        ${this.hass.localize("ui.components.map.error")}: ${this._error.message}
+        (${this._error.code})
+      </ha-alert>`;
     }
     return html`
       <ha-card id="card" .header=${this._config.title}>
@@ -148,10 +155,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._config,
               this._configEntities
             )}
-            .zoom=${this._config.default_zoom ?? 14}
+            .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit}
             .darkMode=${this._config.dark_mode}
+            interactiveZones
+            renderPassive
           ></ha-map>
           <ha-icon-button
             .label=${this.hass!.localize(
@@ -185,7 +194,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return true;
     }
 
-    return false;
+    return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
   public connectedCallback() {
@@ -201,7 +210,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _subscribeHistory() {
-    if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
+    if (
+      !isComponentLoaded(this.hass!, "history") ||
+      this._subscribed ||
+      !(this._config?.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)
+    ) {
       return;
     }
     this._subscribed = subscribeHistoryStatesTimeWindow(
@@ -215,6 +228,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       },
       this._config!.hours_to_show! ?? DEFAULT_HOURS_TO_SHOW,
       this._configEntities!,
+      false,
       false,
       false
     ).catch((err) => {
@@ -321,13 +335,16 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       config: MapCardConfig,
       history?: HistoryStates
     ): HaMapPaths[] | undefined => {
-      if (!history) {
+      if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;
       }
 
       const paths: HaMapPaths[] = [];
 
       for (const entityId of Object.keys(history)) {
+        if (computeDomain(entityId) === "zone") {
+          continue;
+        }
         const entityStates = history[entityId];
         if (!entityStates?.length) {
           continue;
@@ -348,7 +365,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             // date and time
             p.tooltip = formatDateTime(t, this.hass.locale);
           } else if (isToday(t)) {
-            p.tooltip = formatTime(t, this.hass.locale);
+            p.tooltip = formatTimeWithSeconds(t, this.hass.locale);
           } else {
             p.tooltip = formatTimeWeekday(t, this.hass.locale);
           }

@@ -1,5 +1,5 @@
 import { mdiDelete, mdiDownload, mdiPlus } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   css,
   CSSResultGroup,

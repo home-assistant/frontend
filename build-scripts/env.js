@@ -17,7 +17,7 @@ module.exports = {
   isStatsBuild() {
     return process.env.STATS === "1";
   },
-  isTest() {
+  isTestBuild() {
     return process.env.IS_TEST === "true";
   },
   isNetlify() {

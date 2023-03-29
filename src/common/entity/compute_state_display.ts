@@ -7,7 +7,10 @@ import {
   UPDATE_SUPPORT_PROGRESS,
 } from "../../data/update";
 import { HomeAssistant } from "../../types";
-import { formatDuration, UNIT_TO_SECOND_CONVERT } from "../datetime/duration";
+import {
+  formatDuration,
+  UNIT_TO_MILLISECOND_CONVERT,
+} from "../datetime/duration";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
@@ -57,7 +60,7 @@ export const computeStateDisplayFromEntityAttributes = (
     if (
       attributes.device_class === "duration" &&
       attributes.unit_of_measurement &&
-      UNIT_TO_SECOND_CONVERT[attributes.unit_of_measurement]
+      UNIT_TO_MILLISECOND_CONVERT[attributes.unit_of_measurement]
     ) {
       try {
         return formatDuration(state, attributes.unit_of_measurement);
@@ -214,10 +217,10 @@ export const computeStateDisplayFromEntityAttributes = (
     // Return device class translation
     (attributes.device_class &&
       localize(
-        `component.${domain}.state.${attributes.device_class}.${state}`
+        `component.${domain}.entity_component.${attributes.device_class}.state.${state}`
       )) ||
     // Return default translation
-    localize(`component.${domain}.state._.${state}`) ||
+    localize(`component.${domain}.entity_component._.state.${state}`) ||
     // We don't know! Return the raw state.
     state
   );

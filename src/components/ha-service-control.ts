@@ -360,10 +360,21 @@ export class HaServiceControl extends LitElement {
 
     if (checked) {
       this._checkedKeys.add(key);
-      const defaultValue = this._getServiceInfo(
+      const field = this._getServiceInfo(
         this._value?.service,
         this.hass.services
-      )?.fields.find((field) => field.key === key)?.default;
+      )?.fields.find((_field) => _field.key === key);
+
+      let defaultValue = field?.default;
+
+      if (
+        defaultValue == null &&
+        field?.selector &&
+        "constant" in field.selector
+      ) {
+        defaultValue = field.selector.constant?.value;
+      }
+
       if (defaultValue != null) {
         data = {
           ...this._value?.data,

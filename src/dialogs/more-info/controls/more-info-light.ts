@@ -2,6 +2,7 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/web/iconbutton/outlined-icon-button";
 import {
   mdiCreation,
+  mdiFileWordBox,
   mdiLightbulb,
   mdiLightbulbOff,
   mdiPalette,
@@ -12,8 +13,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -61,9 +62,9 @@ class MoreInfoLight extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (!this.hass || !this.stateObj) {
-      return null;
+      return nothing;
     }
 
     const supportsColorTemp = lightSupportsColorMode(
@@ -72,6 +73,11 @@ class MoreInfoLight extends LitElement {
     );
 
     const supportsColor = lightSupportsColor(this.stateObj);
+
+    const supportsWhite = lightSupportsColorMode(
+      this.stateObj,
+      LightColorMode.WHITE
+    );
 
     const supportsBrightness = lightSupportsBrightness(this.stateObj);
 
@@ -131,7 +137,7 @@ class MoreInfoLight extends LitElement {
                         <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
                       </md-outlined-icon-button>
                     `
-                  : null}
+                  : nothing}
                 ${supportsColorTemp || supportsColor
                   ? html`
                       <md-outlined-icon-button
@@ -147,7 +153,23 @@ class MoreInfoLight extends LitElement {
                         <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
                       </md-outlined-icon-button>
                     `
-                  : null}
+                  : nothing}
+                ${supportsWhite
+                  ? html`
+                      <md-outlined-icon-button
+                        .disabled=${this.stateObj.state === UNAVAILABLE}
+                        .title=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.set_white"
+                        )}
+                        .ariaLabel=${this.hass.localize(
+                          "ui.dialogs.more_info_control.light.set_white"
+                        )}
+                        @click=${this._setWhiteColor}
+                      >
+                        <ha-svg-icon .path=${mdiFileWordBox}></ha-svg-icon>
+                      </md-outlined-icon-button>
+                    `
+                  : nothing}
                 ${supportsEffects && this.stateObj.attributes.effect_list
                   ? html`
                       <ha-button-menu
@@ -182,10 +204,10 @@ class MoreInfoLight extends LitElement {
                         )}
                       </ha-button-menu>
                     `
-                  : null}
+                  : nothing}
               </div>
             `
-          : null}
+          : nothing}
       </div>
 
       <ha-attributes
@@ -216,6 +238,13 @@ class MoreInfoLight extends LitElement {
     );
   };
 
+  private _setWhiteColor = () => {
+    this.hass.callService("light", "turn_on", {
+      entity_id: this.stateObj!.entity_id,
+      white: true,
+    });
+  };
+
   private _handleEffectButton(ev) {
     ev.stopPropagation();
     ev.preventDefault();
@@ -237,16 +266,6 @@ class MoreInfoLight extends LitElement {
     return [
       moreInfoControlStyle,
       css`
-        .buttons {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 12px;
-        }
-        .buttons > * {
-          margin: 4px;
-        }
-
         md-outlined-icon-button-toggle,
         md-outlined-icon-button {
           --ha-icon-display: block;

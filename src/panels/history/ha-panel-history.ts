@@ -1,6 +1,4 @@
 import { mdiFilterRemove, mdiRefresh } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   addDays,
   differenceInHours,
@@ -21,9 +19,11 @@ import { ensureArray } from "../../common/array/ensure-array";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { navigate } from "../../common/navigate";
+import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createSearchParam,
   extractSearchParamsObject,
+  removeSearchParam,
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
@@ -52,10 +52,11 @@ import {
   HistoryResult,
   subscribeHistory,
 } from "../../data/history";
-import "../../layouts/ha-app-layout";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import "../../components/ha-top-app-bar-fixed";
+import "../../components/ha-icon-button-arrow-prev";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -82,6 +83,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   @state() private _areaEntityLookup?: AreaEntityLookup;
 
   @state() private _areaDeviceLookup?: AreaDeviceLookup;
+
+  @state()
+  private _showBack?: boolean;
 
   @query("state-history-charts")
   private _stateHistoryCharts?: StateHistoryCharts;
@@ -126,34 +130,46 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     ];
   }
 
+  private _goBack(): void {
+    history.back();
+  }
+
   protected render() {
     return html`
-      <ha-app-layout>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.history")}</div>
-            ${this._targetPickerValue
-              ? html`
-                  <ha-icon-button
-                    @click=${this._removeAll}
-                    .disabled=${this._isLoading}
-                    .path=${mdiFilterRemove}
-                    .label=${this.hass.localize("ui.panel.history.remove_all")}
-                  ></ha-icon-button>
-                `
-              : ""}
-            <ha-icon-button
-              @click=${this._getHistory}
-              .disabled=${this._isLoading || !this._targetPickerValue}
-              .path=${mdiRefresh}
-              .label=${this.hass.localize("ui.common.refresh")}
-            ></ha-icon-button>
-          </app-toolbar>
-        </app-header>
+      <ha-top-app-bar-fixed>
+        ${this._showBack
+          ? html`
+              <ha-icon-button-arrow-prev
+                slot="navigationIcon"
+                @click=${this._goBack}
+              ></ha-icon-button-arrow-prev>
+            `
+          : html`
+              <ha-menu-button
+                slot="navigationIcon"
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+            `}
+        <div slot="title">${this.hass.localize("panel.history")}</div>
+        ${this._targetPickerValue
+          ? html`
+              <ha-icon-button
+                slot="actionItems"
+                @click=${this._removeAll}
+                .disabled=${this._isLoading}
+                .path=${mdiFilterRemove}
+                .label=${this.hass.localize("ui.panel.history.remove_all")}
+              ></ha-icon-button>
+            `
+          : ""}
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._getHistory}
+          .disabled=${this._isLoading || !this._targetPickerValue}
+          .path=${mdiRefresh}
+          .label=${this.hass.localize("ui.common.refresh")}
+        ></ha-icon-button>
 
         <div class="flex content">
           <div class="filters">
@@ -193,7 +209,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                 </state-history-charts>
               `}
         </div>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
     `;
   }
 
@@ -249,6 +265,17 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     const endDate = searchParams.end_date;
     if (endDate) {
       this._endDate = new Date(endDate);
+    }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    const searchParams = extractSearchParamsObject();
+    if (searchParams.back === "1" && history.length > 1) {
+      this._showBack = true;
+      navigate(constructUrlCurrentPath(removeSearchParam("back")), {
+        replace: true,
+      });
     }
   }
 

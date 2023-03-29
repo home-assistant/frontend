@@ -1,6 +1,6 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -370,9 +370,9 @@ export class HaConfigDeviceDashboard extends LitElement {
                   style="display:inline-block; position: relative;"
                 >
                   <ha-svg-icon .path=${mdiCancel}></ha-svg-icon>
-                  <paper-tooltip animation-delay="0" position="left">
+                  <simple-tooltip animation-delay="0" position="left">
                     ${this.hass.localize("ui.panel.config.devices.disabled")}
-                  </paper-tooltip>
+                  </simple-tooltip>
                 </div>`
               : "—",
         };

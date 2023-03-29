@@ -6,6 +6,21 @@ import DateRangePicker from "vue2-daterange-picker";
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
 
+// Set the current date to the left picker instead of the right picker because the right is hidden
+const CustomDateRangePicker = Vue.extend({
+  mixins: [DateRangePicker],
+  methods: {
+    selectMonthDate() {
+      const dt: Date = this.end || new Date();
+      // @ts-ignore
+      this.changeLeftMonth({
+        year: dt.getFullYear(),
+        month: dt.getMonth() + 1,
+      });
+    },
+  },
+});
+
 const Component = Vue.extend({
   props: {
     timePicker: {
@@ -47,7 +62,7 @@ const Component = Vue.extend({
   },
   render(createElement) {
     // @ts-expect-error
-    return createElement(DateRangePicker, {
+    return createElement(CustomDateRangePicker, {
       props: {
         "time-picker": this.timePicker,
         "auto-apply": this.autoApply,

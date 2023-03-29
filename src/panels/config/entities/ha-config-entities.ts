@@ -10,7 +10,7 @@ import {
   mdiRestoreAlert,
   mdiUndo,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -276,7 +276,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       ? mdiEyeOff
                       : mdiPencilOff}
                   ></ha-svg-icon>
-                  <paper-tooltip animation-delay="0" position="left">
+                  <simple-tooltip animation-delay="0" position="left">
                     ${entity.restored
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.restored"
@@ -296,7 +296,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       : this.hass.localize(
                           "ui.panel.config.entities.picker.status.readonly"
                         )}
-                  </paper-tooltip>
+                  </simple-tooltip>
                 </div>
               `
             : "—",
@@ -576,33 +576,33 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                           .path=${mdiUndo}
                           .label=${this.hass.localize("ui.common.enable")}
                         ></ha-icon-button>
-                        <paper-tooltip animation-delay="0" for="enable-btn">
+                        <simple-tooltip animation-delay="0" for="enable-btn">
                           ${this.hass.localize(
                             "ui.panel.config.entities.picker.enable_selected.button"
                           )}
-                        </paper-tooltip>
+                        </simple-tooltip>
                         <ha-icon-button
                           id="disable-btn"
                           @click=${this._disableSelected}
                           .path=${mdiCancel}
                           .label=${this.hass.localize("ui.common.disable")}
                         ></ha-icon-button>
-                        <paper-tooltip animation-delay="0" for="disable-btn">
+                        <simple-tooltip animation-delay="0" for="disable-btn">
                           ${this.hass.localize(
                             "ui.panel.config.entities.picker.disable_selected.button"
                           )}
-                        </paper-tooltip>
+                        </simple-tooltip>
                         <ha-icon-button
                           id="hide-btn"
                           @click=${this._hideSelected}
                           .path=${mdiEyeOff}
                           .label=${this.hass.localize("ui.common.hide")}
                         ></ha-icon-button>
-                        <paper-tooltip animation-delay="0" for="hide-btn">
+                        <simple-tooltip animation-delay="0" for="hide-btn">
                           ${this.hass.localize(
                             "ui.panel.config.entities.picker.hide_selected.button"
                           )}
-                        </paper-tooltip>
+                        </simple-tooltip>
                         <ha-icon-button
                           class="warning"
                           id="remove-btn"
@@ -610,11 +610,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                           .path=${mdiDelete}
                           .label=${this.hass.localize("ui.common.remove")}
                         ></ha-icon-button>
-                        <paper-tooltip animation-delay="0" for="remove-btn">
+                        <simple-tooltip animation-delay="0" for="remove-btn">
                           ${this.hass.localize(
                             "ui.panel.config.entities.picker.remove_selected.button"
                           )}
-                        </paper-tooltip>
+                        </simple-tooltip>
                       `}
                 </div>
               </div>
