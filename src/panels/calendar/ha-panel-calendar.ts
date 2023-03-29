@@ -26,7 +26,7 @@ import {
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
-import "../../components/ha-top-app-bar";
+import "../../components/ha-top-app-bar-fixed";
 
 @customElement("ha-panel-calendar")
 class PanelCalendar extends LitElement {
@@ -57,7 +57,7 @@ class PanelCalendar extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-top-app-bar>
+      <ha-top-app-bar-fixed>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -104,7 +104,7 @@ class PanelCalendar extends LitElement {
             @view-changed=${this._handleViewChanged}
           ></ha-full-calendar>
         </div>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
     `;
   }
 

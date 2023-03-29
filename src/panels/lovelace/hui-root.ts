@@ -72,7 +72,7 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
-import "../../components/ha-top-app-bar";
+import "../../components/ha-top-app-bar-fixed";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -115,7 +115,7 @@ class HUIRoot extends LitElement {
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
     return html`
-      <ha-top-app-bar
+      <ha-top-app-bar-fixed
         class=${classMap({
           "edit-mode": this._editMode,
         })}
@@ -527,7 +527,7 @@ class HUIRoot extends LitElement {
             `
           : ""}
         <div id="view" @ll-rebuild=${this._debouncedConfigChanged}></div>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
     `;
   }
 
@@ -941,7 +941,7 @@ class HUIRoot extends LitElement {
           );
           text-transform: uppercase;
         }
-        ha-top-app-bar.edit-mode {
+        ha-top-app-bar-fixed.edit-mode {
           --mdc-theme-primary: var(--app-header-edit-background-color, #455a64);
           --mdc-theme-on-primary: var(--app-header-edit-text-color, #fff);
         }

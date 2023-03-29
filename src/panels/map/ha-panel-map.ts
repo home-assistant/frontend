@@ -5,7 +5,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import "../../components/ha-top-app-bar";
+import "../../components/ha-top-app-bar-fixed";
 import "../../components/map/ha-map";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -20,7 +20,7 @@ class HaPanelMap extends LitElement {
 
   protected render() {
     return html`
-      <ha-top-app-bar>
+      <ha-top-app-bar-fixed>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -41,7 +41,7 @@ class HaPanelMap extends LitElement {
           autoFit
           interactiveZones
         ></ha-map>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
     `;
   }
 

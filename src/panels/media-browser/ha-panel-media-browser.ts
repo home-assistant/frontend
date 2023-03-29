@@ -41,7 +41,7 @@ import {
   getEntityIdFromCameraMediaSource,
   isCameraMediaSource,
 } from "../../data/camera";
-import "../../components/ha-top-app-bar";
+import "../../components/ha-top-app-bar-fixed";
 
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
   let path = `/media-browser/${entityId}`;
@@ -80,7 +80,7 @@ class PanelMediaBrowser extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-top-app-bar>
+      <ha-top-app-bar-fixed>
         ${this._navigateIds.length > 1
           ? html`
               <ha-icon-button-arrow-prev
@@ -116,7 +116,7 @@ class PanelMediaBrowser extends LitElement {
           @media-picked=${this._mediaPicked}
           @media-browsed=${this._mediaBrowsed}
         ></ha-media-player-browse>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
       <ha-bar-media-player
         .hass=${this.hass}
         .entityId=${this._entityId}

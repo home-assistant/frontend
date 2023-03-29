@@ -14,7 +14,7 @@ import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-energy-period-selector";
 import { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
-import "../../components/ha-top-app-bar";
+import "../../components/ha-top-app-bar-fixed";
 
 const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
@@ -60,7 +60,7 @@ class PanelEnergy extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-top-app-bar>
+      <ha-top-app-bar-fixed>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -84,7 +84,7 @@ class PanelEnergy extends LitElement {
           .index=${this._viewIndex}
           @reload-energy-panel=${this._reloadView}
         ></hui-view>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
     `;
   }
 

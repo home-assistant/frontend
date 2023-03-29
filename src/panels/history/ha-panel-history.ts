@@ -55,7 +55,7 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import "../../components/ha-top-app-bar";
+import "../../components/ha-top-app-bar-fixed";
 import "../../components/ha-icon-button-arrow-prev";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
@@ -136,7 +136,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   protected render() {
     return html`
-      <ha-top-app-bar>
+      <ha-top-app-bar-fixed>
         ${this._showBack
           ? html`
               <ha-icon-button-arrow-prev
@@ -209,7 +209,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                 </state-history-charts>
               `}
         </div>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
     `;
   }
 

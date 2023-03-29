@@ -12,7 +12,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import "../../components/ha-top-app-bar";
+import "../../components/ha-top-app-bar-fixed";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -49,7 +49,7 @@ class PanelShoppingList extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-top-app-bar>
+      <ha-top-app-bar-fixed>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -71,7 +71,7 @@ class PanelShoppingList extends LitElement {
         <div id="columns">
           <div class="column">${this._card}</div>
         </div>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
     `;
   }
 

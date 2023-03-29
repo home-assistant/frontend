@@ -30,7 +30,7 @@ import "./ha-push-notifications-row";
 import "./ha-refresh-tokens-card";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
-import "../../components/ha-top-app-bar";
+import "../../components/ha-top-app-bar-fixed";
 
 @customElement("ha-panel-profile")
 class HaPanelProfile extends LitElement {
@@ -65,7 +65,7 @@ class HaPanelProfile extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-top-app-bar>
+      <ha-top-app-bar-fixed>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -200,7 +200,7 @@ class HaPanelProfile extends LitElement {
             @hass-refresh-tokens=${this._refreshRefreshTokens}
           ></ha-long-lived-access-tokens-card>
         </div>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
     `;
   }
 

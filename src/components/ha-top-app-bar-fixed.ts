@@ -15,6 +15,7 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
         padding-top: var(--header-height);
       }
       .mdc-top-app-bar {
+        --mdc-typography-headline6-font-weight: 400;
         color: var(--app-header-text-color, var(--mdc-theme-on-primary, #fff));
         background-color: var(
           --app-header-background-color,

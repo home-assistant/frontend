@@ -26,6 +26,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
+import "../../../components/ha-top-app-bar-fixed";
 import { CloudStatus } from "../../../data/cloud";
 import {
   RepairsIssue,
@@ -49,7 +50,6 @@ import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
-import "../../../components/ha-top-app-bar";
 
 const randomTip = (hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
@@ -180,7 +180,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
       this._repairsIssues;
 
     return html`
-      <ha-top-app-bar>
+      <ha-top-app-bar-fixed>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -290,7 +290,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           </ha-card>
           <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
         </ha-config-section>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
     `;
   }
 

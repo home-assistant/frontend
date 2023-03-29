@@ -24,7 +24,7 @@ import type { DateRangePickerRanges } from "../../components/ha-date-range-picke
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
-import "../../components/ha-top-app-bar";
+import "../../components/ha-top-app-bar-fixed";
 import { filterLogbookCompatibleEntities } from "../../data/logbook";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -63,7 +63,7 @@ export class HaPanelLogbook extends LitElement {
 
   protected render() {
     return html`
-      <ha-top-app-bar>
+      <ha-top-app-bar-fixed>
         ${this._showBack
           ? html`
               <ha-icon-button-arrow-prev
@@ -112,7 +112,7 @@ export class HaPanelLogbook extends LitElement {
           .entityIds=${this._entityIds}
           virtualize
         ></ha-logbook>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
     `;
   }
 

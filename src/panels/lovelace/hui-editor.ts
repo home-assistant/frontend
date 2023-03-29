@@ -27,7 +27,7 @@ import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import type { Lovelace } from "./types";
-import "../../components/ha-top-app-bar";
+import "../../components/ha-top-app-bar-fixed";
 
 const lovelaceStruct = type({
   title: optional(string()),
@@ -48,7 +48,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <ha-top-app-bar>
+      <ha-top-app-bar-fixed>
         <ha-icon-button
           slot="navigationIcon"
           .path=${mdiClose}
@@ -93,7 +93,7 @@ class LovelaceFullConfigEditor extends LitElement {
           >
           </ha-code-editor>
         </div>
-      </ha-top-app-bar>
+      </ha-top-app-bar-fixed>
     `;
   }
 
