@@ -945,7 +945,7 @@ class HUIRoot extends LitElement {
           border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
-          width: var(--mdc-top-app-bar-width);
+          width: var(--mdc-top-app-bar-width, 100%);
           z-index: 2;
         }
         .edit-mode .header {
@@ -968,6 +968,8 @@ class HUIRoot extends LitElement {
         }
         .action-items {
           white-space: nowrap;
+          display: flex;
+          align-items: center;
         }
         ha-tabs {
           width: 100%;
