@@ -232,7 +232,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config) {
+    if (!this._config || !this._themes) {
+      return;
+    }
+    if (!changedProps.has("_themes") && !changedProps.has("_config")) {
       return;
     }
     const oldThemes = changedProps.get("_themes") as
@@ -243,10 +246,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       | undefined;
 
     if (
-      !oldThemes ||
-      !oldConfig ||
-      oldThemes !== this._themes ||
-      oldConfig.theme !== this._config.theme
+      (changedProps.has("_themes") &&
+        (!oldThemes || oldThemes !== this._themes)) ||
+      (changedProps.has("_config") &&
+        (!oldConfig || oldConfig.theme !== this._config.theme))
     ) {
       applyThemesOnElement(this, this._themes, this._config.theme);
     }

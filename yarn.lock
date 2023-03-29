@@ -1955,13 +1955,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/context@npm:0.2.0":
-  version: 0.2.0
-  resolution: "@lit-labs/context@npm:0.2.0"
+"@lit-labs/context@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@lit-labs/context@npm:0.3.0"
   dependencies:
     "@lit/reactive-element": ^1.5.0
-    lit: ^2.5.0
-  checksum: 0b3d803ba81683d9650ba384e5f138656ecd52d6a54448535e867e0a0ba0cb23e4526ec52e82ed657e9c3598a103c0e8b164bfe927222467e349fb070c770af3
+    lit: ^2.7.0
+  checksum: 85c66a67d12d3a9e3753337ef8f5566789ccacbb98b40b01c79db98ea6186c0bcdb5c16b4a27673cd5b4fb807bf3970c376b8c96797a9b20a78b0681f391efdb
   languageName: node
   linkType: hard
 
@@ -9425,7 +9425,7 @@ __metadata:
     "@fullcalendar/timegrid": 6.1.5
     "@koa/cors": 4.0.0
     "@lezer/highlight": 1.1.4
-    "@lit-labs/context": 0.2.0
+    "@lit-labs/context": 0.3.0
     "@lit-labs/motion": 1.0.3
     "@lit-labs/virtualizer": 1.0.1
     "@lrnwebcomponents/simple-tooltip": 4.1.0
@@ -11238,7 +11238,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.7.0, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.2.8, lit@npm:^2.3.0, lit@npm:^2.5.0":
+"lit@npm:2.7.0, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.2.8, lit@npm:^2.3.0, lit@npm:^2.5.0, lit@npm:^2.7.0":
   version: 2.7.0
   resolution: "lit@npm:2.7.0"
   dependencies:
