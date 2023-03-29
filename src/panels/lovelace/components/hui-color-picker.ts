@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import {
@@ -51,7 +51,7 @@ export class HuiColorPicker extends LitElement {
                 ${this.renderColorCircle(this.value || "grey")}
               </span>
             `
-          : null}
+          : nothing}
         <mwc-list-item value="default">
           ${this.hass.localize(
             `ui.panel.lovelace.editor.color-picker.default_color`

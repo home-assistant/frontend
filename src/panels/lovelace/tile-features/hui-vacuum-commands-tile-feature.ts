@@ -8,7 +8,7 @@ import {
   mdiTargetVariant,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -169,14 +169,14 @@ class HuiVacuumCommandTileFeature
     });
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (
       !this._config ||
       !this.hass ||
       !this.stateObj ||
       !supportsVacuumCommandTileFeature(this.stateObj)
     ) {
-      return null;
+      return nothing;
     }
 
     const stateObj = this.stateObj as VacuumEntity;

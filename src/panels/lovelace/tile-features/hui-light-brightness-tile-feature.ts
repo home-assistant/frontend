@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
@@ -39,14 +39,14 @@ class HuiLightBrightnessTileFeature
     this._config = config;
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (
       !this._config ||
       !this.hass ||
       !this.stateObj ||
       !supportsLightBrightnessTileFeature(this.stateObj)
     ) {
-      return null;
+      return nothing;
     }
 
     const position =

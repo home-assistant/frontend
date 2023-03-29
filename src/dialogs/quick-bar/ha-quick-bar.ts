@@ -308,7 +308,7 @@ export class QuickBar extends LitElement {
                 >${item.altText}</span
               >
             `
-          : null}
+          : nothing}
       </ha-list-item>
     `;
   }
