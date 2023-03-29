@@ -53,11 +53,14 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
   private async _valueChanged(ev: CustomEvent) {
     const mode = (ev.detail as any).value as AlarmMode;
 
-    this._currentMode = mode;
-
     const { state: modeState, service } = ALARM_MODES[mode];
 
     if (modeState === this.stateObj.state) return;
+
+    // Force ha-control-select to previous mode because we don't known if the service call will succeed due to code check
+    this._currentMode = mode;
+    await this.requestUpdate("_currentMode");
+    this._currentMode = this._getCurrentMode(this.stateObj!);
 
     let code: string | undefined;
 
@@ -83,20 +86,15 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
         ),
       });
       if (!response) {
-        this._currentMode = this._getCurrentMode(this.stateObj);
         return;
       }
       code = response;
     }
 
-    try {
-      await this.hass.callService("alarm_control_panel", service, {
-        entity_id: this.stateObj!.entity_id,
-        code,
-      });
-    } catch (_err) {
-      this._currentMode = this._getCurrentMode(this.stateObj);
-    }
+    await this.hass.callService("alarm_control_panel", service, {
+      entity_id: this.stateObj!.entity_id,
+      code,
+    });
   }
 
   protected render() {

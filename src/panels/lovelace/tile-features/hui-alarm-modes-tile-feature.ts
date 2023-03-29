@@ -106,11 +106,22 @@ class HuiAlarmModeTileFeature
   private async _valueChanged(ev: CustomEvent) {
     const mode = (ev.detail as any).value as AlarmMode;
 
+    if (ALARM_MODES[mode].state === this.stateObj!.state) return;
+
+    // Force ha-control-select to previous mode because we don't known if the service call will succeed due to code check
     this._currentMode = mode;
+    await this.requestUpdate("_currentMode");
+    this._currentMode = this._getCurrentMode(this.stateObj!);
 
-    const { state: modeState, service } = ALARM_MODES[mode];
+    this._setMode(mode);
+  }
 
-    if (modeState === this.stateObj!.state) return;
+  private async _disarm() {
+    this._setMode("disarmed");
+  }
+
+  private async _setMode(mode: AlarmMode) {
+    const { service } = ALARM_MODES[mode];
 
     let code: string | undefined;
 
@@ -136,42 +147,12 @@ class HuiAlarmModeTileFeature
         ),
       });
       if (!response) {
-        this._currentMode = this._getCurrentMode(this.stateObj!);
-        return;
+        throw new Error("no code provided");
       }
       code = response;
     }
 
-    try {
-      await this.hass!.callService("alarm_control_panel", service, {
-        entity_id: this.stateObj!.entity_id,
-        code,
-      });
-    } catch (_err) {
-      this._currentMode = this._getCurrentMode(this.stateObj!);
-    }
-  }
-
-  private async _disarm() {
-    let code: string | undefined;
-
-    if (this.stateObj!.attributes.code_format) {
-      const response = await showEnterCodeDialogDialog(this, {
-        codeFormat: this.stateObj!.attributes.code_format,
-        title: this.hass!.localize(
-          "ui.dialogs.more_info_control.alarm_control_panel.disarm_title"
-        ),
-        submitText: this.hass!.localize(
-          "ui.dialogs.more_info_control.alarm_control_panel.disarm_action"
-        ),
-      });
-      if (!response) {
-        return;
-      }
-      code = response;
-    }
-
-    this.hass!.callService("alarm_control_panel", "alarm_disarm", {
+    this.hass!.callService("alarm_control_panel", service, {
       entity_id: this.stateObj!.entity_id,
       code,
     });
