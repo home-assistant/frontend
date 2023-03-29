@@ -30,6 +30,7 @@ export class HuiNotificationDrawer extends LitElement {
   }
 
   disconnectedCallback() {
+    super.disconnectedCallback();
     window.addEventListener("location-changed", this.closeDialog);
   }
 
@@ -86,7 +87,11 @@ export class HuiNotificationDrawer extends LitElement {
     });
 
     return html`
-      <ha-drawer type="modal" .open=${this._open}>
+      <ha-drawer
+        type="modal"
+        .open=${this._open}
+        @MDCDrawer:closed=${this._closeDrawer}
+      >
         <ha-header-bar>
           <div slot="title">
             ${this.hass.localize("ui.notification_drawer.title")}
