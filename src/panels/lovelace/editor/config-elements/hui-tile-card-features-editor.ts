@@ -25,6 +25,7 @@ import {
 } from "../../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
+import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-modes-tile-feature";
 import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
 import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
@@ -41,9 +42,13 @@ const FEATURE_TYPES: FeatureType[] = [
   "light-brightness",
   "vacuum-commands",
   "fan-speed",
+  "alarm-modes",
 ];
 
-const EDITABLES_FEATURE_TYPES = new Set<FeatureType>(["vacuum-commands"]);
+const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
+  "vacuum-commands",
+  "alarm-modes",
+]);
 
 const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
   {
@@ -52,6 +57,7 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "light-brightness": supportsLightBrightnessTileFeature,
     "vacuum-commands": supportsVacuumCommandTileFeature,
     "fan-speed": supportsFanSpeedTileFeature,
+    "alarm-modes": supportsAlarmModesTileFeature,
   };
 
 const CUSTOM_FEATURE_ENTRIES: Record<
