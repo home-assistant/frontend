@@ -1062,8 +1062,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         .notification-badge,
         .configuration-badge {
-          left: calc(var(--app-drawer-width) - 42px);
           position: absolute;
+          left: calc(var(--app-drawer-width, 248px) - 42px);
           min-width: 20px;
           box-sizing: border-box;
           border-radius: 50%;

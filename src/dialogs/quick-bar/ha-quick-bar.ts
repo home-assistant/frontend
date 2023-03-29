@@ -30,7 +30,6 @@ import {
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
-import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/ha-textfield";
