@@ -109,7 +109,6 @@ class PanelDeveloperTools extends LitElement {
           align-items: center;
           font-size: 20px;
           padding: 0 16px;
-          pointer-events: none;
           font-weight: 400;
           box-sizing: border-box;
         }
