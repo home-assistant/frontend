@@ -93,7 +93,7 @@ export const applyThemesOnElement = (
     }
 
     // Nothing was changed
-    if (element._themes?.cacheKey === cacheKey) {
+    if (element.__themes?.cacheKey === cacheKey) {
       return;
     }
   }
@@ -119,7 +119,7 @@ export const applyThemesOnElement = (
     }
   }
 
-  if (!element._themes?.keys && !Object.keys(themeRules).length) {
+  if (!element.__themes?.keys && !Object.keys(themeRules).length) {
     // No styles to reset, and no styles to set
     return;
   }
@@ -130,8 +130,8 @@ export const applyThemesOnElement = (
       : undefined;
 
   // Add previous set keys to reset them, and new theme
-  const styles = { ...element._themes?.keys, ...newTheme?.styles };
-  element._themes = { cacheKey, keys: newTheme?.keys };
+  const styles = { ...element.__themes?.keys, ...newTheme?.styles };
+  element.__themes = { cacheKey, keys: newTheme?.keys };
 
   // Set and/or reset styles
   if (element.updateStyles) {
