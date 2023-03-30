@@ -142,10 +142,12 @@ export class HomeAssistantMain extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
+    toggleAttribute(this, "expanded", this.hass.dockedSidebar === "docked");
+
     toggleAttribute(
       this,
-      "expanded",
-      this.narrow || this.hass.dockedSidebar !== "auto"
+      "modal",
+      this._sidebarNarrow || this._externalSidebar
     );
   }
 
@@ -165,19 +167,19 @@ export class HomeAssistantMain extends LitElement {
         /* remove the grey tap highlights in iOS on the fullscreen touch targets */
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         --mdc-drawer-width: 56px;
+        --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
       }
       :host([expanded]) {
         --mdc-drawer-width: calc(256px + env(safe-area-inset-left));
+      }
+      :host([modal]) {
+        --mdc-drawer-width: unset;
+        --mdc-top-app-bar-width: unset;
       }
       partial-panel-resolver,
       ha-sidebar {
         /* allow a light tap highlight on the actual interface elements  */
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-      }
-      @media (min-width: 870px) {
-        partial-panel-resolver {
-          --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
-        }
       }
     `;
   }
