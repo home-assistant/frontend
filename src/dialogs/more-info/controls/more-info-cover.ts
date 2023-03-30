@@ -10,9 +10,12 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-attributes";
-import { CoverEntity, CoverEntityFeature } from "../../../data/cover";
+import {
+  computeCoverPositionStateDisplay,
+  CoverEntity,
+  CoverEntityFeature,
+} from "../../../data/cover";
 import type { HomeAssistant } from "../../../types";
 import "../components/cover/ha-more-info-cover-buttons";
 import "../components/cover/ha-more-info-cover-position";
@@ -27,7 +30,9 @@ class MoreInfoCover extends LitElement {
 
   @property({ attribute: false }) public stateObj?: CoverEntity;
 
-  @state() private _displayedPosition?: number;
+  @state() private _livePosition?: number;
+
+  @state() private _liveTilt?: number;
 
   @state() private _mode?: "position" | "button";
 
@@ -35,20 +40,29 @@ class MoreInfoCover extends LitElement {
     this._mode = this._mode === "position" ? "button" : "position";
   }
 
-  private _positionChanged(ev) {
+  private _positionSliderMoved(ev) {
     const value = (ev.detail as any).value;
     if (isNaN(value)) return;
-    this._displayedPosition = value;
+    this._livePosition = value;
+  }
+
+  private _positionValueChanged() {
+    this._livePosition = undefined;
+  }
+
+  private _tiltSliderMoved(ev) {
+    const value = (ev.detail as any).value;
+    if (isNaN(value)) return;
+    this._liveTilt = value;
+  }
+
+  private _tiltValueChanged() {
+    this._liveTilt = undefined;
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj") && this.stateObj) {
-      if (supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION)) {
-        const currentPosition = this.stateObj?.attributes.current_position;
-        this._displayedPosition =
-          currentPosition != null ? Math.round(currentPosition) : undefined;
-      }
       if (!this._mode) {
         this._mode =
           supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) ||
@@ -60,29 +74,29 @@ class MoreInfoCover extends LitElement {
   }
 
   private get _stateOverride() {
-    if (this._displayedPosition == null) return undefined;
+    const liveValue = this._livePosition ?? this._liveTilt;
 
-    const tempState = {
-      ...this.stateObj,
-      state: this._displayedPosition ? "open" : "closed",
-      attributes: {
-        ...this.stateObj!.attributes,
-        current_position: this._displayedPosition,
-      },
-    } as CoverEntity;
+    const forcedState =
+      liveValue != null ? (liveValue ? "open" : "closed") : undefined;
 
     const stateDisplay = computeStateDisplay(
       this.hass.localize,
-      tempState!,
+      this.stateObj!,
       this.hass.locale,
-      this.hass.entities
+      this.hass.entities,
+      forcedState
     );
 
-    return this._displayedPosition && this._displayedPosition !== 100
-      ? `${stateDisplay} - ${Math.round(
-          this._displayedPosition
-        )}${blankBeforePercent(this.hass!.locale)}%`
-      : stateDisplay;
+    const positionStateDisplay = computeCoverPositionStateDisplay(
+      this.stateObj!,
+      this.hass.locale,
+      liveValue
+    );
+
+    if (positionStateDisplay) {
+      return `${stateDisplay} ⸱ ${positionStateDisplay}`;
+    }
+    return stateDisplay;
   }
 
   protected render() {
@@ -133,7 +147,8 @@ class MoreInfoCover extends LitElement {
                         <ha-more-info-cover-position
                           .stateObj=${this.stateObj}
                           .hass=${this.hass}
-                          @slider-moved=${this._positionChanged}
+                          @slider-moved=${this._positionSliderMoved}
+                          @value-changed=${this._positionValueChanged}
                         ></ha-more-info-cover-position>
                       `
                     : nothing}
@@ -142,6 +157,8 @@ class MoreInfoCover extends LitElement {
                         <ha-more-info-cover-tilt-position
                           .stateObj=${this.stateObj}
                           .hass=${this.hass}
+                          @slider-moved=${this._tiltSliderMoved}
+                          @value-changed=${this._tiltValueChanged}
                         ></ha-more-info-cover-tilt-position>
                       `
                     : nothing}
