@@ -41,7 +41,7 @@ import {
   CoverEntity,
 } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity";
-import { FanEntity } from "../../../data/fan";
+import { computeFanSpeedStateDisplay, FanEntity } from "../../../data/fan";
 import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
@@ -215,9 +215,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
 
     if (domain === "fan" && stateActive(stateObj)) {
-      const speed = (stateObj as FanEntity).attributes.percentage;
-      if (speed) {
-        return `${Math.round(speed)}${blankBeforePercent(this.hass!.locale)}%`;
+      const speedStateDisplay = computeFanSpeedStateDisplay(
+        stateObj as FanEntity,
+        this.hass!.locale
+      );
+      if (speedStateDisplay) {
+        return speedStateDisplay;
       }
     }
 
