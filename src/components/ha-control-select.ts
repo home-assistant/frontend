@@ -25,8 +25,6 @@ export type ControlSelectOption = {
 export class HaControlSelect extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
 
-  @property() public label?: string;
-
   @property() public options?: ControlSelectOption[];
 
   @property() public value?: string;

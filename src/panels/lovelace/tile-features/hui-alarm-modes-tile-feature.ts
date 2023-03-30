@@ -4,20 +4,20 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-slider";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
 import {
   AlarmControlPanelEntity,
   AlarmMode,
   ALARM_MODES,
 } from "../../../data/alarm_control_panel";
+import { UNAVAILABLE } from "../../../data/entity";
 import { showEnterCodeDialogDialog } from "../../../dialogs/more-info/components/alarm_control_panel/show-enter-code-dialog";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
@@ -201,16 +201,14 @@ class HuiAlarmModeTileFeature
           .value=${this._currentMode}
           @value-changed=${this._valueChanged}
           hide-label
-          .label=${computeAttributeNameDisplay(
-            this.hass.localize,
-            this.stateObj,
-            this.hass.entities,
-            "percentage"
+          .ariaLabel=${this.hass.localize(
+            "ui.dialogs.more_info_control.alarm_control_panel.modes_label"
           )}
           style=${styleMap({
             "--control-select-color": color,
             "--modes-count": modes.length.toString(),
           })}
+          .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
         </ha-control-select>
       </div>
