@@ -143,7 +143,7 @@ export class HuiDialogSuggestCard extends LitElement {
         }
         ha-dialog {
           max-width: 845px;
-          --dialog-z-index: 5;
+          --dialog-z-index: 6;
         }
         .hidden {
           display: none;
