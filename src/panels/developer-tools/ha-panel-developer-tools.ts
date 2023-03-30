@@ -108,9 +108,14 @@ class PanelDeveloperTools extends LitElement {
           display: flex;
           align-items: center;
           font-size: 20px;
-          padding: 4px;
+          padding: 8px 12px;
           font-weight: 400;
           box-sizing: border-box;
+        }
+        @media (max-width: 599px) {
+          .toolbar {
+            padding: 4px;
+          }
         }
         .main-title {
           margin: 0 0 0 24px;
