@@ -394,7 +394,7 @@ export class HuiDialogEditCard
 
         ha-dialog {
           --mdc-dialog-max-width: 845px;
-          --dialog-z-index: 5;
+          --dialog-z-index: 6;
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {
