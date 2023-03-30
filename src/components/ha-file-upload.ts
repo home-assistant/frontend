@@ -191,6 +191,9 @@ export class HaFileUpload extends LitElement {
           inset-inline-end: initial !important;
           direction: var(--direction);
         }
+        .mdc-text-field__icon--trailing {
+          pointer-events: auto !important;
+        }
         .dragged:before {
           position: var(--layout-fit_-_position);
           top: var(--layout-fit_-_top);
