@@ -1,6 +1,6 @@
 const path = require("path");
-const env = require("./env.js");
-const paths = require("./paths.js");
+const env = require("./env.cjs");
+const paths = require("./paths.cjs");
 
 // GitHub base URL to use for production source maps
 // Nightly builds use the commit SHA, otherwise assumes there is a tag that matches the version
@@ -99,7 +99,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     [
       path.resolve(
         paths.polymer_dir,
-        "build-scripts/babel-plugins/inline-constants-plugin.js"
+        "build-scripts/babel-plugins/inline-constants-plugin.cjs"
       ),
       {
         modules: ["@mdi/js"],

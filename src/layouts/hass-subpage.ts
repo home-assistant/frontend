@@ -111,13 +111,18 @@ class HassSubpage extends LitElement {
         align-items: center;
         font-size: 20px;
         height: var(--header-height);
-        padding: 0 16px;
+        padding: 8px 12px;
         pointer-events: none;
         background-color: var(--app-header-background-color);
         font-weight: 400;
         color: var(--app-header-text-color, white);
         border-bottom: var(--app-header-border-bottom, none);
         box-sizing: border-box;
+      }
+      @media (max-width: 599px) {
+        .toolbar {
+          padding: 4px;
+        }
       }
       .toolbar a {
         color: var(--sidebar-text-color);

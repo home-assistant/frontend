@@ -6,17 +6,17 @@ const { marked } = require("marked");
 const glob = require("glob");
 const yaml = require("js-yaml");
 
-const env = require("../env");
-const paths = require("../paths");
+const env = require("../env.cjs");
+const paths = require("../paths.cjs");
 
-require("./clean.js");
-require("./translations.js");
-require("./gen-icons-json.js");
-require("./gather-static.js");
-require("./webpack.js");
-require("./service-worker.js");
-require("./entry-html.js");
-require("./rollup.js");
+require("./clean.cjs");
+require("./translations.cjs");
+require("./gen-icons-json.cjs");
+require("./gather-static.cjs");
+require("./webpack.cjs");
+require("./service-worker.cjs");
+require("./entry-html.cjs");
+require("./rollup.cjs");
 
 gulp.task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
@@ -89,9 +89,7 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 
   // Generate sidebar
   const sidebarPath = path.resolve(paths.gallery_dir, "sidebar.js");
-  // To make watch work during development
-  delete require.cache[sidebarPath];
-  const sidebar = require(sidebarPath);
+  const sidebar = (await import(sidebarPath)).default;
 
   const pagesToProcess = {};
   for (const key of processed) {

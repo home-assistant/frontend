@@ -145,7 +145,7 @@ export class HuiCreateDialogHeaderFooter
         ha-dialog {
           --mdc-dialog-max-width: 550px;
           --dialog-content-padding: 2px 24px 20px 24px;
-          --dialog-z-index: 5;
+          --dialog-z-index: 6;
         }
 
         .elements {

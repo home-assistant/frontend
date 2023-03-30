@@ -302,6 +302,7 @@ export default class HaChartBase extends LitElement {
     return css`
       :host {
         display: block;
+        position: relative;
       }
       .chartContainer {
         overflow: hidden;

@@ -134,11 +134,11 @@ gulp.task("gen-icons-json", (done) => {
   });
 
   const file = fs.readFileSync(PACKAGE_PATH, { encoding });
-  const package = JSON.parse(file);
+  const packageMeta = JSON.parse(file);
 
   fs.writeFileSync(
     path.resolve(OUTPUT_DIR, "iconMetadata.json"),
-    JSON.stringify({ version: package.version, parts })
+    JSON.stringify({ version: packageMeta.version, parts })
   );
 
   fs.writeFileSync(
