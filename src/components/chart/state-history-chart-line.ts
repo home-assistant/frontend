@@ -64,7 +64,6 @@ class StateHistoryChartLine extends LitElement {
         interaction: {
           mode: "nearest",
           axis: "xy",
-          intersect: false,
         },
         scales: {
           x: {
@@ -137,7 +136,7 @@ class StateHistoryChartLine extends LitElement {
             borderWidth: 1.5,
           },
           point: {
-            hitRadius: 5,
+            hitRadius: 50,
           },
         },
         // @ts-expect-error

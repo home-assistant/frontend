@@ -157,7 +157,6 @@ export class HuiEnergySolarGraphCard
         interaction: {
           mode: "nearest",
           axis: "x",
-          intersect: false,
         },
         scales: {
           x: {
@@ -248,7 +247,7 @@ export class HuiEnergySolarGraphCard
           },
           bar: { borderWidth: 1.5, borderRadius: 4 },
           point: {
-            hitRadius: 5,
+            hitRadius: 50,
           },
         },
         // @ts-expect-error
