@@ -1,5 +1,5 @@
-const rollup = require("../build-scripts/rollup.js");
-const env = require("../build-scripts/env.js");
+import rollup from "../build-scripts/rollup.cjs";
+import env from "../build-scripts/env.cjs";
 
 const config = rollup.createCastConfig({
   isProdBuild: env.isProdBuild(),
@@ -7,4 +7,4 @@ const config = rollup.createCastConfig({
   isStatsBuild: env.isStatsBuild(),
 });
 
-module.exports = { ...config.inputOptions, output: config.outputOptions };
+export default { ...config.inputOptions, output: config.outputOptions };

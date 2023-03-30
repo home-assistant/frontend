@@ -3,7 +3,7 @@
 const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs-extra");
-const paths = require("../paths");
+const paths = require("../paths.cjs");
 
 const npmPath = (...parts) =>
   path.resolve(paths.polymer_dir, "node_modules", ...parts);

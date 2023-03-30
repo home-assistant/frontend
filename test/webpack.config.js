@@ -1,7 +1,8 @@
-const { createAppConfig } = require("../build-scripts/webpack.js");
+import webpack from "../build-scripts/webpack.cjs";
 
-module.exports = createAppConfig({
+export default webpack.createAppConfig({
   isProdBuild: false,
   latestBuild: true,
   isStatsBuild: false,
+  isTestBuild: true,
 });

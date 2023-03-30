@@ -9,11 +9,11 @@ const flatmap = require("gulp-flatmap");
 const merge = require("gulp-merge-json");
 const rename = require("gulp-rename");
 const transform = require("gulp-json-transform");
-const { mapFiles } = require("../util");
-const env = require("../env");
-const paths = require("../paths");
+const { mapFiles } = require("../util.cjs");
+const env = require("../env.cjs");
+const paths = require("../paths.cjs");
 
-require("./fetch-nightly-translations");
+require("./fetch-nightly-translations.cjs");
 
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";

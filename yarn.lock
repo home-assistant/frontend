@@ -9571,7 +9571,6 @@ __metadata:
     qr-scanner: 1.4.2
     qrcode: 1.5.1
     regenerator-runtime: 0.13.11
-    require-dir: 1.2.0
     resize-observer-polyfill: 1.5.1
     roboto-fontface: 0.10.0
     rollup: 2.79.1
@@ -13440,13 +13439,6 @@ __metadata:
     is-absolute: ^1.0.0
     remove-trailing-separator: ^1.1.0
   checksum: a330e7c4fda2ba7978472dcaf9ee9129755ca0d704f903b4fc5f0384170f74fdaf1b3f10977ec3fc910cb992f90896c17c8e44d0de327cb9f01ee9bb7eed8d24
-  languageName: node
-  linkType: hard
-
-"require-dir@npm:1.2.0":
-  version: 1.2.0
-  resolution: "require-dir@npm:1.2.0"
-  checksum: 8bbc4757d7e3fae0799e24cb363f165a89e0cc83172de9d5fd95f8e75cf2368764199e5fd557434d6318ab1f271415cc9d3ef190076393e6e993a7b1add8ef27
   languageName: node
   linkType: hard
 
