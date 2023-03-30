@@ -41,7 +41,9 @@ export class HaDialog extends DialogBase {
       SUPPRESS_DEFAULT_PRESS_SELECTOR,
     ].join(", ");
     this._updateScrolledAttribute();
-    this.contentElement?.addEventListener("scroll", this._onScroll);
+    this.contentElement?.addEventListener("scroll", this._onScroll, {
+      passive: true,
+    });
   }
 
   disconnectedCallback(): void {

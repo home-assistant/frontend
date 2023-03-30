@@ -323,7 +323,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         --text-field-overflow: initial;
         display: flex;
         justify-content: flex-end;
-        margin-right: 8px;
+        margin-right: -8px;
         color: var(--primary-text-color);
       }
       .active-filters {

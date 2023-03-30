@@ -376,7 +376,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     );
 
     const filterMenu = html`
-      <div slot=${ifDefined(this.narrow ? "toolbar-icon" : "suffix")}>
+      <div slot=${ifDefined(this.narrow ? "toolbar-icon" : undefined)}>
         <div class="menu-badge-container">
           ${!this._showDisabled && this.narrow && disabledCount
             ? html`<span class="badge">${disabledCount}</span>`
@@ -455,24 +455,25 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                   )}
                 >
                   ${!this._showDisabled && disabledCount
-                    ? html`<div
-                        class="active-filters"
-                        slot="suffix"
-                        @click=${this._preventDefault}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.integrations.disable.disabled_integrations",
-                          { number: disabledCount }
-                        )}
-                        <mwc-button
-                          @click=${this._toggleShowDisabled}
-                          .label=${this.hass.localize(
-                            "ui.panel.config.integrations.disable.show"
+                    ? html`<div class="filters" slot="suffix">
+                        <div
+                          class="active-filters"
+                          @click=${this._preventDefault}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.integrations.disable.disabled_integrations",
+                            { number: disabledCount }
                           )}
-                        ></mwc-button>
+                          <mwc-button
+                            @click=${this._toggleShowDisabled}
+                            .label=${this.hass.localize(
+                              "ui.panel.config.integrations.disable.show"
+                            )}
+                          ></mwc-button>
+                        </div>
+                        ${filterMenu}
                       </div>`
                     : ""}
-                  ${filterMenu}
                 </search-input>
               </div>
             `}
@@ -845,7 +846,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .container > * {
           max-width: 500px;
         }
-
         .empty-message {
           margin: auto;
           text-align: center;
@@ -883,6 +883,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           top: 0;
           right: 0;
           left: 0;
+        }
+        .filters {
+          --mdc-text-field-fill-color: var(--input-fill-color);
+          --mdc-text-field-idle-line-color: var(--input-idle-line-color);
+          --mdc-shape-small: 4px;
+          --text-field-overflow: initial;
+          display: flex;
+          justify-content: flex-end;
+          margin-right: -8px;
+          color: var(--primary-text-color);
         }
         .active-filters {
           color: var(--primary-text-color);
