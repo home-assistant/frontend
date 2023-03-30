@@ -3,18 +3,18 @@ const path = require("path");
 const commonjs = require("@rollup/plugin-commonjs");
 const resolve = require("@rollup/plugin-node-resolve");
 const json = require("@rollup/plugin-json");
-const babel = require("@rollup/plugin-babel").babel;
+const { babel } = require("@rollup/plugin-babel");
 const replace = require("@rollup/plugin-replace");
 const visualizer = require("rollup-plugin-visualizer");
 const { string } = require("rollup-plugin-string");
 const { terser } = require("rollup-plugin-terser");
-const manifest = require("./rollup-plugins/manifest-plugin");
-const worker = require("./rollup-plugins/worker-plugin");
-const dontHashPlugin = require("./rollup-plugins/dont-hash-plugin");
-const ignore = require("./rollup-plugins/ignore-plugin");
+const manifest = require("./rollup-plugins/manifest-plugin.cjs");
+const worker = require("./rollup-plugins/worker-plugin.cjs");
+const dontHashPlugin = require("./rollup-plugins/dont-hash-plugin.cjs");
+const ignore = require("./rollup-plugins/ignore-plugin.cjs");
 
-const bundle = require("./bundle");
-const paths = require("./paths");
+const bundle = require("./bundle.cjs");
+const paths = require("./paths.cjs");
 
 const extensions = [".js", ".ts"];
 

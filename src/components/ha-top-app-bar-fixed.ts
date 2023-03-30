@@ -10,6 +10,7 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
     css`
       .mdc-top-app-bar__row {
         height: var(--header-height);
+        border-bottom: var(--app-header-border-bottom);
       }
       .mdc-top-app-bar--fixed-adjust {
         padding-top: var(--header-height);
@@ -21,7 +22,6 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
           --app-header-background-color,
           var(--mdc-theme-primary)
         );
-        border-bottom: var(--app-header-border-bottom);
       }
     `,
   ];

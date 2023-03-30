@@ -4,8 +4,8 @@ const TerserPlugin = require("terser-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const log = require("fancy-log");
 const WebpackBar = require("webpackbar");
-const paths = require("./paths.js");
-const bundle = require("./bundle.js");
+const paths = require("./paths.cjs");
+const bundle = require("./bundle.cjs");
 
 class LogStartCompilePlugin {
   ignoredFirst = false;
@@ -63,6 +63,9 @@ const createWebpackConfig = ({
               cacheDirectory: !isProdBuild,
               cacheCompression: false,
             },
+          },
+          resolve: {
+            fullySpecified: false,
           },
         },
         {

@@ -5,7 +5,7 @@ const path = require("path");
 const fs = require("fs-extra");
 const workboxBuild = require("workbox-build");
 const sourceMapUrl = require("source-map-url");
-const paths = require("../paths.js");
+const paths = require("../paths.cjs");
 
 const swDest = path.resolve(paths.app_output_root, "service_worker.js");
 

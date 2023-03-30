@@ -36,9 +36,12 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-image";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
-import { CoverEntity } from "../../../data/cover";
-import { isUnavailableState, ON } from "../../../data/entity";
-import { FanEntity } from "../../../data/fan";
+import {
+  computeCoverPositionStateDisplay,
+  CoverEntity,
+} from "../../../data/cover";
+import { isUnavailableState } from "../../../data/entity";
+import { computeFanSpeedStateDisplay, FanEntity } from "../../../data/fan";
 import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
@@ -202,7 +205,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    if (domain === "light" && stateObj.state === ON) {
+    if (domain === "light" && stateActive(stateObj)) {
       const brightness = (stateObj as LightEntity).attributes.brightness;
       if (brightness) {
         return `${Math.round((brightness * 100) / 255)}${blankBeforePercent(
@@ -211,10 +214,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
     }
 
-    if (domain === "fan" && stateObj.state === ON) {
-      const speed = (stateObj as FanEntity).attributes.percentage;
-      if (speed) {
-        return `${Math.round(speed)}${blankBeforePercent(this.hass!.locale)}%`;
+    if (domain === "fan" && stateActive(stateObj)) {
+      const speedStateDisplay = computeFanSpeedStateDisplay(
+        stateObj as FanEntity,
+        this.hass!.locale
+      );
+      if (speedStateDisplay) {
+        return speedStateDisplay;
       }
     }
 
@@ -225,15 +231,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       this.hass!.entities
     );
 
-    if (
-      domain === "cover" &&
-      ["open", "opening", "closing"].includes(stateObj.state)
-    ) {
-      const position = (stateObj as CoverEntity).attributes.current_position;
-      if (position && position !== 100) {
-        return `${stateDisplay} - ${Math.round(position)}${blankBeforePercent(
-          this.hass!.locale
-        )}%`;
+    if (domain === "cover" && stateActive(stateObj)) {
+      const positionStateDisplay = computeCoverPositionStateDisplay(
+        stateObj as CoverEntity,
+        this.hass!.locale
+      );
+
+      if (positionStateDisplay) {
+        return `${stateDisplay} ⸱ ${positionStateDisplay}`;
       }
     }
     return stateDisplay;

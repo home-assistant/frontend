@@ -1,8 +1,8 @@
-const { createCastConfig } = require("../build-scripts/webpack.js");
-const { isProdBuild, isStatsBuild } = require("../build-scripts/env.js");
+import webpack from "../build-scripts/webpack.cjs";
+import env from "../build-scripts/env.cjs";
 
-module.exports = createCastConfig({
-  isProdBuild: isProdBuild(),
-  isStatsBuild: isStatsBuild(),
+export default webpack.createCastConfig({
+  isProdBuild: env.isProdBuild(),
+  isStatsBuild: env.isStatsBuild(),
   latestBuild: true,
 });

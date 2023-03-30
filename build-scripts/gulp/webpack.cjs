@@ -5,15 +5,15 @@ const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
 const log = require("fancy-log");
 const path = require("path");
-const env = require("../env");
-const paths = require("../paths");
+const env = require("../env.cjs");
+const paths = require("../paths.cjs");
 const {
   createAppConfig,
   createDemoConfig,
   createCastConfig,
   createHassioConfig,
   createGalleryConfig,
-} = require("../webpack");
+} = require("../webpack.cjs");
 
 const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: true }),

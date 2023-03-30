@@ -103,7 +103,7 @@ module.exports = function (opts = {}) {
         }
         delete optionsObject.type;
 
-        if (!new RegExp("^.*/").test(workerFile)) {
+        if (!/^.*\//.test(workerFile)) {
           this.warn(
             `Paths passed to the Worker constructor must be relative or absolute, i.e. start with /, ./ or ../ (just like dynamic import!). Ignoring "${workerFile}".`
           );
