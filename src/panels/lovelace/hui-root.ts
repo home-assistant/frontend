@@ -976,9 +976,14 @@ class HUIRoot extends LitElement {
           display: flex;
           align-items: center;
           font-size: 20px;
-          padding: 0 4px;
+          padding: 0px 12px;
           font-weight: 400;
           box-sizing: border-box;
+        }
+        @media (max-width: 599px) {
+          .toolbar {
+            padding: 0 4px;
+          }
         }
         .main-title {
           margin: 0 0 0 24px;
