@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const paths = require("./paths.js");
+const paths = require("./paths.cjs");
 
 module.exports = {
   useRollup() {

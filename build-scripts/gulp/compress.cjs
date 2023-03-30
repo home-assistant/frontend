@@ -4,7 +4,7 @@ const gulp = require("gulp");
 const zopfli = require("gulp-zopfli-green");
 const merge = require("merge-stream");
 const path = require("path");
-const paths = require("../paths");
+const paths = require("../paths.cjs");
 
 const zopfliOptions = { threshold: 150 };
 
