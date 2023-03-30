@@ -149,8 +149,7 @@ export class HuiEnergyUsageGraphCard
         parsing: false,
         animation: false,
         interaction: {
-          mode: "nearest",
-          axis: "x",
+          mode: "x",
         },
         scales: {
           x: {
@@ -205,6 +204,7 @@ export class HuiEnergyUsageGraphCard
         },
         plugins: {
           tooltip: {
+            position: "nearest",
             filter: (val) => val.formattedValue !== "0",
             callbacks: {
               title: (datasets) => {

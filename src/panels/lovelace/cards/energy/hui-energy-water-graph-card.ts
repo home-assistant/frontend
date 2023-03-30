@@ -158,8 +158,7 @@ export class HuiEnergyWaterGraphCard
         parsing: false,
         animation: false,
         interaction: {
-          mode: "nearest",
-          axis: "x",
+          mode: "x",
         },
         scales: {
           x: {
@@ -214,6 +213,7 @@ export class HuiEnergyWaterGraphCard
         },
         plugins: {
           tooltip: {
+            position: "nearest",
             callbacks: {
               title: (datasets) => {
                 if (dayDifference > 0) {

@@ -155,8 +155,7 @@ export class HuiEnergySolarGraphCard
         parsing: false,
         animation: false,
         interaction: {
-          mode: "nearest",
-          axis: "x",
+          mode: "x",
         },
         scales: {
           x: {
@@ -210,6 +209,7 @@ export class HuiEnergySolarGraphCard
         },
         plugins: {
           tooltip: {
+            position: "nearest",
             callbacks: {
               title: (datasets) => {
                 if (dayDifference > 0) {
@@ -247,7 +247,7 @@ export class HuiEnergySolarGraphCard
           },
           bar: { borderWidth: 1.5, borderRadius: 4 },
           point: {
-            hitRadius: 50,
+            hitRadius: 5,
           },
         },
         // @ts-expect-error
