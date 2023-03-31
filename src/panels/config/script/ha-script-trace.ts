@@ -508,7 +508,7 @@ export class HaScriptTrace extends LitElement {
         }
 
         .main {
-          height: calc(100% - 56px);
+          height: calc(100% - var(--header-height));
           display: flex;
           background-color: var(--card-background-color);
         }
