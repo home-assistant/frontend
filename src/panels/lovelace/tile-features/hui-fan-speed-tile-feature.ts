@@ -100,12 +100,13 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
             .value=${speed}
             @value-changed=${this._speedValueChanged}
             hide-label
-            .label=${computeAttributeNameDisplay(
+            .ariaLabel=${computeAttributeNameDisplay(
               this.hass.localize,
               this.stateObj,
               this.hass.entities,
               "percentage"
             )}
+            .disabled=${this.stateObj!.state === UNAVAILABLE}
           >
           </ha-control-select>
         </div>
@@ -124,14 +125,14 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
           min="0"
           max="100"
           .step=${this.stateObj.attributes.percentage_step ?? 1}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
           @value-changed=${this._valueChanged}
-          .label=${computeAttributeNameDisplay(
+          .ariaLabel=${computeAttributeNameDisplay(
             this.hass.localize,
             this.stateObj,
             this.hass.entities,
             "percentage"
           )}
+          .disabled=${this.stateObj!.state === UNAVAILABLE}
         ></ha-control-slider>
       </div>
     `;

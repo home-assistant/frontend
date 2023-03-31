@@ -92,7 +92,7 @@ export class HaSettingsRow extends LitElement {
       ::slotted(ha-switch) {
         padding: 16px 0;
       }
-      div[secondary] {
+      .secondary {
         white-space: normal;
       }
       .prefix-wrap {

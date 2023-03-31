@@ -1,23 +1,23 @@
 import { mdiShieldOff } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-slider";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
 import {
   AlarmControlPanelEntity,
   AlarmMode,
   ALARM_MODES,
 } from "../../../data/alarm_control_panel";
+import { UNAVAILABLE } from "../../../data/entity";
 import { showEnterCodeDialogDialog } from "../../../dialogs/more-info/components/alarm_control_panel/show-enter-code-dialog";
 import { HomeAssistant } from "../../../types";
 import { LovelaceTileFeature, LovelaceTileFeatureEditor } from "../types";
@@ -67,14 +67,10 @@ class HuiAlarmModeTileFeature
     this._config = config;
   }
 
-  protected updated(changedProp: Map<string | number | symbol, unknown>): void {
-    super.updated(changedProp);
+  protected willUpdate(changedProp: PropertyValues): void {
+    super.willUpdate(changedProp);
     if (changedProp.has("stateObj") && this.stateObj) {
-      const oldStateObj = changedProp.get("stateObj") as HassEntity | undefined;
-
-      if (!oldStateObj || this.stateObj.state !== oldStateObj.state) {
-        this._currentMode = this._getCurrentMode(this.stateObj);
-      }
+      this._currentMode = this._getCurrentMode(this.stateObj);
     }
   }
 
@@ -108,12 +104,14 @@ class HuiAlarmModeTileFeature
 
     if (ALARM_MODES[mode].state === this.stateObj!.state) return;
 
-    // Force ha-control-select to previous mode because we don't known if the service call will succeed due to code check
+    const oldMode = this._getCurrentMode(this.stateObj!);
     this._currentMode = mode;
-    await this.requestUpdate("_currentMode");
-    this._currentMode = this._getCurrentMode(this.stateObj!);
 
-    this._setMode(mode);
+    try {
+      await this._setMode(mode);
+    } catch (err) {
+      this._currentMode = oldMode;
+    }
   }
 
   private async _disarm() {
@@ -146,13 +144,13 @@ class HuiAlarmModeTileFeature
           }`
         ),
       });
-      if (!response) {
-        return;
+      if (response == null) {
+        throw new Error("cancel");
       }
       code = response;
     }
 
-    this.hass!.callService("alarm_control_panel", service, {
+    await this.hass!.callService("alarm_control_panel", service, {
       entity_id: this.stateObj!.entity_id,
       code,
     });
@@ -201,16 +199,14 @@ class HuiAlarmModeTileFeature
           .value=${this._currentMode}
           @value-changed=${this._valueChanged}
           hide-label
-          .label=${computeAttributeNameDisplay(
-            this.hass.localize,
-            this.stateObj,
-            this.hass.entities,
-            "percentage"
+          .ariaLabel=${this.hass.localize(
+            "ui.dialogs.more_info_control.alarm_control_panel.modes_label"
           )}
           style=${styleMap({
             "--control-select-color": color,
             "--modes-count": modes.length.toString(),
           })}
+          .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
         </ha-control-select>
       </div>

@@ -152,7 +152,6 @@ export class HuiNotificationDrawer extends LitElement {
       --mdc-theme-primary: var(--primary-background-color);
       border-bottom: 1px solid var(--divider-color);
       display: block;
-      --header-bar-height: var(--header-height);
     }
 
     .notifications {

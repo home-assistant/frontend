@@ -929,6 +929,7 @@
           }
         },
         "alarm_control_panel": {
+          "modes_label": "Modes",
           "modes": {
             "away": "Away",
             "home": "Home",
@@ -4463,7 +4464,7 @@
                   },
                   "alarm-modes": {
                     "label": "Alarm modes",
-                    "modes": "Modes",
+                    "modes": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes_label%]",
                     "modes_list": {
                       "away": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::away%]",
                       "home": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::home%]",
