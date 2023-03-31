@@ -31,7 +31,7 @@ class MoreInfoAlarmControlPanel extends LitElement {
           "ui.dialogs.more_info_control.alarm_control_panel.disarm_action"
         ),
       });
-      if (!response) {
+      if (response == null) {
         return;
       }
       code = response;
