@@ -3,6 +3,7 @@ import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { UiAction } from "../panels/lovelace/components/hui-action-editor";
+import { HomeAssistant } from "../types";
 import type { DeviceRegistryEntry } from "./device_registry";
 import type { EntitySources } from "./entity_sources";
 
@@ -360,6 +361,50 @@ export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   ui_color: {} | null;
 }
+
+export const expandAreaTarget = (
+  areaId: string,
+  devices: HomeAssistant["devices"],
+  entities: HomeAssistant["entities"],
+  _targetSelector: TargetSelector
+) => {
+  const newEntities: string[] = [];
+  const newDevices: string[] = [];
+  Object.values(devices).forEach((device) => {
+    if (
+      device.area_id === areaId
+      // && deviceMeetsTargetFilter(device, targetSelector)
+    ) {
+      newDevices.push(device.id);
+    }
+  });
+  Object.values(entities).forEach((entity) => {
+    if (
+      entity.area_id === areaId
+      // && entityMeetsTargetFilter(entity, targetSelector)
+    ) {
+      newEntities.push(entity.entity_id);
+    }
+  });
+  return { devices: newDevices, entities: newEntities };
+};
+
+export const expandDeviceTarget = (
+  deviceId: string,
+  entities: HomeAssistant["entities"],
+  _targetSelector: TargetSelector
+) => {
+  const newEntities: string[] = [];
+  Object.values(entities).forEach((entity) => {
+    if (
+      entity.device_id === deviceId
+      // && entityMeetsTargetFilter(entity, targetSelector)
+    ) {
+      newEntities.push(entity.entity_id);
+    }
+  });
+  return { entities: newEntities };
+};
 
 export const filterSelectorDevices = (
   filterDevice: DeviceSelectorFilter,
