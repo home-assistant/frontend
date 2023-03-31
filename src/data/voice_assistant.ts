@@ -14,6 +14,7 @@ interface PipelineRunStartEvent extends PipelineEventBase {
     language: string;
     runner_data: {
       stt_binary_handler_id: number | null;
+      timeout: number;
     };
   };
 }
