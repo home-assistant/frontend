@@ -106,8 +106,8 @@ export class AssistPipelineDebug extends LitElement {
     `;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     if (
       !changedProperties.has("_pipelineRuns") ||
