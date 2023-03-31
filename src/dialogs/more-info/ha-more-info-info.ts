@@ -90,7 +90,7 @@ export class MoreInfoInfo extends LitElement {
 
       @media all and (max-width: 450px) {
         .container {
-          min-height: calc(100vh - 56px);
+          min-height: calc(100vh - var(--header-height));
         }
       }
 

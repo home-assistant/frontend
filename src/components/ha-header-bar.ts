@@ -33,7 +33,7 @@ export class HaHeaderBar extends LitElement {
       unsafeCSS(topAppBarStyles),
       css`
         .mdc-top-app-bar__row {
-          height: var(--header-bar-height, 64px);
+          height: var(--header-height);
         }
         .mdc-top-app-bar {
           position: static;
