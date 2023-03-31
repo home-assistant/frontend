@@ -2,7 +2,6 @@ import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeAttributeNameDisplay } from "../../../../common/entity/compute_attribute_display";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import "../../../../components/ha-control-select";
@@ -13,6 +12,7 @@ import {
   AlarmMode,
   ALARM_MODES,
 } from "../../../../data/alarm_control_panel";
+import { UNAVAILABLE } from "../../../../data/entity";
 import { HomeAssistant } from "../../../../types";
 import { showEnterCodeDialogDialog } from "./show-enter-code-dialog";
 
@@ -117,16 +117,14 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
         .options=${options}
         .value=${this._currentMode}
         @value-changed=${this._valueChanged}
-        .label=${computeAttributeNameDisplay(
-          this.hass.localize,
-          this.stateObj,
-          this.hass.entities,
-          "percentage"
+        .ariaLabel=${this.hass.localize(
+          "ui.dialogs.more_info_control.alarm_control_panel.modes_label"
         )}
         style=${styleMap({
           "--control-select-color": color,
           "--modes-count": modes.length.toString(),
         })}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
       >
       </ha-control-select>
     `;
