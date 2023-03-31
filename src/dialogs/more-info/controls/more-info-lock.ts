@@ -185,6 +185,10 @@ class MoreInfoLock extends LitElement {
           display: flex;
           align-items: center;
           flex-direction: column;
+          justify-content: center;
+          height: 45vh;
+          max-height: 320px;
+          min-height: 200px;
         }
         .status .icon {
           position: relative;

@@ -5,7 +5,6 @@ import {
   computeAttributeNameDisplay,
   computeAttributeValueDisplay,
 } from "../common/entity/compute_attribute_display";
-import { STATE_ATTRIBUTES } from "../data/entity_attributes";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 
@@ -26,11 +25,7 @@ class HaAttributes extends LitElement {
       return nothing;
     }
 
-    const attributes = this.computeDisplayAttributes(
-      STATE_ATTRIBUTES.concat(
-        this.extraFilters ? this.extraFilters.split(",") : []
-      )
-    );
+    const attributes = this.computeDisplayAttributes([]);
     if (attributes.length === 0) {
       return nothing;
     }
