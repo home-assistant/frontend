@@ -19,12 +19,13 @@ import "./partial-panel-resolver";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "hass-toggle-menu": undefined;
+    "hass-toggle-menu": undefined | { open?: boolean };
     "hass-edit-sidebar": EditSideBarEvent;
     "hass-show-notifications": undefined;
   }
   interface HTMLElementEventMap {
     "hass-edit-sidebar": HASSDomEvent<EditSideBarEvent>;
+    "hass-toggle-menu": HASSDomEvent<HASSDomEvents["hass-toggle-menu"]>;
   }
 }
 
@@ -107,7 +108,7 @@ export class HomeAssistantMain extends LitElement {
       }
     );
 
-    this.addEventListener("hass-toggle-menu", () => {
+    this.addEventListener("hass-toggle-menu", (ev) => {
       if (this._sidebarEditMode) {
         return;
       }
@@ -118,10 +119,16 @@ export class HomeAssistantMain extends LitElement {
         return;
       }
       if (this._sidebarNarrow) {
-        this._drawerOpen = !this._drawerOpen;
+        this._drawerOpen = ev.detail?.open ?? !this._drawerOpen;
       } else {
         fireEvent(this, "hass-dock-sidebar", {
-          dock: this.hass.dockedSidebar === "auto" ? "docked" : "auto",
+          dock: ev.detail?.open
+            ? "docked"
+            : ev.detail?.open === false
+            ? "auto"
+            : this.hass.dockedSidebar === "auto"
+            ? "docked"
+            : "auto",
         });
       }
     });
