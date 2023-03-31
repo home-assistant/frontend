@@ -303,6 +303,14 @@ export class HaControlSelect extends LitElement {
         justify-content: center;
         flex-direction: column;
         text-align: center;
+        padding: 2px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .option .content span {
+        display: block;
+        width: 100%;
+        hyphens: auto;
       }
       :host([vertical]) {
         width: var(--control-select-thickness);
