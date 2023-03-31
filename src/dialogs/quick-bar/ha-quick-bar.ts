@@ -755,6 +755,9 @@ export class QuickBar extends LitElement {
       haStyleScrollbar,
       haStyleDialog,
       css`
+        mwc-list {
+          --mdc-list-vertical-padding: 0;
+        }
         .heading {
           display: flex;
           align-items: center;

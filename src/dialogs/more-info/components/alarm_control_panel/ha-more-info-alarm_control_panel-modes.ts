@@ -1,9 +1,7 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeAttributeNameDisplay } from "../../../../common/entity/compute_attribute_display";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import "../../../../components/ha-control-select";
@@ -14,6 +12,7 @@ import {
   AlarmMode,
   ALARM_MODES,
 } from "../../../../data/alarm_control_panel";
+import { UNAVAILABLE } from "../../../../data/entity";
 import { HomeAssistant } from "../../../../types";
 import { showEnterCodeDialogDialog } from "./show-enter-code-dialog";
 
@@ -33,14 +32,10 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
     });
   });
 
-  protected updated(changedProp: Map<string | number | symbol, unknown>): void {
-    super.updated(changedProp);
-    if (changedProp.has("stateObj") && this.stateObj) {
-      const oldStateObj = changedProp.get("stateObj") as HassEntity | undefined;
-
-      if (!oldStateObj || this.stateObj.state !== oldStateObj.state) {
-        this._currentMode = this._getCurrentMode(this.stateObj);
-      }
+  protected willUpdate(changedProp: PropertyValues): void {
+    super.willUpdate(changedProp);
+    if (changedProp.has("stateObj")) {
+      this._currentMode = this._getCurrentMode(this.stateObj);
     }
   }
 
@@ -50,51 +45,57 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
     );
   }
 
-  private async _valueChanged(ev: CustomEvent) {
-    const mode = (ev.detail as any).value as AlarmMode;
-
-    const { state: modeState, service } = ALARM_MODES[mode];
-
-    if (modeState === this.stateObj.state) return;
-
-    // Force ha-control-select to previous mode because we don't known if the service call will succeed due to code check
-    this._currentMode = mode;
-    await this.requestUpdate("_currentMode");
-    this._currentMode = this._getCurrentMode(this.stateObj!);
+  private async _setMode(mode: AlarmMode) {
+    const { service } = ALARM_MODES[mode];
 
     let code: string | undefined;
 
     if (
       (mode !== "disarmed" &&
-        this.stateObj.attributes.code_arm_required &&
-        this.stateObj.attributes.code_format) ||
-      (mode === "disarmed" && this.stateObj.attributes.code_format)
+        this.stateObj!.attributes.code_arm_required &&
+        this.stateObj!.attributes.code_format) ||
+      (mode === "disarmed" && this.stateObj!.attributes.code_format)
     ) {
       const disarm = mode === "disarmed";
 
       const response = await showEnterCodeDialogDialog(this, {
-        codeFormat: this.stateObj.attributes.code_format,
-        title: this.hass.localize(
+        codeFormat: this.stateObj!.attributes.code_format,
+        title: this.hass!.localize(
           `ui.dialogs.more_info_control.alarm_control_panel.${
             disarm ? "disarm_title" : "arm_title"
           }`
         ),
-        submitText: this.hass.localize(
+        submitText: this.hass!.localize(
           `ui.dialogs.more_info_control.alarm_control_panel.${
             disarm ? "disarm_action" : "arm_action"
           }`
         ),
       });
-      if (!response) {
-        return;
+      if (response == null) {
+        throw new Error("cancel");
       }
       code = response;
     }
 
-    await this.hass.callService("alarm_control_panel", service, {
+    await this.hass!.callService("alarm_control_panel", service, {
       entity_id: this.stateObj!.entity_id,
       code,
     });
+  }
+
+  private async _valueChanged(ev: CustomEvent) {
+    const mode = (ev.detail as any).value as AlarmMode;
+
+    if (ALARM_MODES[mode].state === this.stateObj!.state) return;
+
+    const oldMode = this._getCurrentMode(this.stateObj!);
+    this._currentMode = mode;
+
+    try {
+      await this._setMode(mode);
+    } catch (err) {
+      this._currentMode = oldMode;
+    }
   }
 
   protected render() {
@@ -116,16 +117,14 @@ export class HaMoreInfoAlarmControlPanelModes extends LitElement {
         .options=${options}
         .value=${this._currentMode}
         @value-changed=${this._valueChanged}
-        .label=${computeAttributeNameDisplay(
-          this.hass.localize,
-          this.stateObj,
-          this.hass.entities,
-          "percentage"
+        .ariaLabel=${this.hass.localize(
+          "ui.dialogs.more_info_control.alarm_control_panel.modes_label"
         )}
         style=${styleMap({
           "--control-select-color": color,
           "--modes-count": modes.length.toString(),
         })}
+        .disabled=${this.stateObj!.state === UNAVAILABLE}
       >
       </ha-control-select>
     `;

@@ -25,8 +25,6 @@ export type ControlSelectOption = {
 export class HaControlSelect extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
 
-  @property() public label?: string;
-
   @property() public options?: ControlSelectOption[];
 
   @property() public value?: string;
@@ -305,6 +303,14 @@ export class HaControlSelect extends LitElement {
         justify-content: center;
         flex-direction: column;
         text-align: center;
+        padding: 2px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .option .content span {
+        display: block;
+        width: 100%;
+        hyphens: auto;
       }
       :host([vertical]) {
         width: var(--control-select-thickness);

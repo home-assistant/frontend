@@ -44,6 +44,22 @@ const handleExternalMessage = (
       success: true,
       result: null,
     });
+  } else if (msg.command === "sidebar/toggle") {
+    fireEvent(hassMainEl, "hass-toggle-menu");
+    bus.fireMessage({
+      id: msg.id,
+      type: "result",
+      success: true,
+      result: null,
+    });
+  } else if (msg.command === "sidebar/show") {
+    fireEvent(hassMainEl, "hass-toggle-menu", { open: true });
+    bus.fireMessage({
+      id: msg.id,
+      type: "result",
+      success: true,
+      result: null,
+    });
   } else {
     return false;
   }

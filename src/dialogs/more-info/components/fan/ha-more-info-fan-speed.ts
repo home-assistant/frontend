@@ -108,6 +108,7 @@ export class HaMoreInfoFanSpeed extends LitElement {
           style=${styleMap({
             "--control-select-color": color,
           })}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
         >
         </ha-control-select>
       `;
@@ -116,9 +117,9 @@ export class HaMoreInfoFanSpeed extends LitElement {
     return html`
       <ha-control-slider
         vertical
-        .value=${this.value}
         min="0"
         max="100"
+        .value=${this.value}
         .step=${this.stateObj.attributes.percentage_step ?? 1}
         @value-changed=${this._valueChanged}
         .ariaLabel=${computeAttributeNameDisplay(
