@@ -7,11 +7,11 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import "@material/mwc-drawer/mwc-drawer";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
+import "../components/ha-drawer";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
@@ -58,7 +58,7 @@ export class HomeAssistantMain extends LitElement {
     const sidebarNarrow = this._sidebarNarrow || this._externalSidebar;
 
     return html`
-      <mwc-drawer
+      <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : undefined}
         @MDCDrawer:closed=${this._drawerClosed}
@@ -76,7 +76,7 @@ export class HomeAssistantMain extends LitElement {
           .route=${this.route}
           slot="appContent"
         ></partial-panel-resolver>
-      </mwc-drawer>
+      </ha-drawer>
     `;
   }
 

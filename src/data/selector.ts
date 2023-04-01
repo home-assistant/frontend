@@ -1,5 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { supportsFeature } from "../common/entity/supports-feature";
 import { UiAction } from "../panels/lovelace/components/hui-action-editor";
 import type { DeviceRegistryEntry } from "./device_registry";
 import type { EntitySources } from "./entity_sources";
@@ -149,6 +151,7 @@ interface EntitySelectorFilter {
   integration?: string;
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
+  supported_features?: number | [number];
 }
 
 export interface EntitySelector {
@@ -358,6 +361,7 @@ export const filterSelectorEntities = (
   const {
     domain: filterDomain,
     device_class: filterDeviceClass,
+    supported_features: filterSupportedFeature,
     integration: filterIntegration,
   } = filterEntity;
 
@@ -378,6 +382,16 @@ export const filterSelectorEntities = (
       entityDeviceClass && Array.isArray(filterDeviceClass)
         ? !filterDeviceClass.includes(entityDeviceClass)
         : entityDeviceClass !== filterDeviceClass
+    ) {
+      return false;
+    }
+  }
+
+  if (filterSupportedFeature) {
+    if (
+      ensureArray(filterSupportedFeature).some(
+        (feature) => !supportsFeature(entity, feature)
+      )
     ) {
       return false;
     }
