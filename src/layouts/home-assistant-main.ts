@@ -19,7 +19,9 @@ import "./partial-panel-resolver";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "hass-toggle-menu": undefined | { open?: boolean };
+    "hass-toggle-menu":
+      | undefined
+      | { open?: boolean; screenPercentage?: number };
     "hass-edit-sidebar": EditSideBarEvent;
     "hass-show-notifications": undefined;
   }
@@ -120,6 +122,10 @@ export class HomeAssistantMain extends LitElement {
       }
       if (this._sidebarNarrow) {
         this._drawerOpen = ev.detail?.open ?? !this._drawerOpen;
+        const offset = ev.detail?.screenPercentage
+          ? -256 + screen.width * (ev.detail.screenPercentage / 100)
+          : 0;
+        this.style.setProperty("--drawer-modal-left-offset", `${offset}px`);
       } else {
         fireEvent(this, "hass-dock-sidebar", {
           dock: ev.detail?.open

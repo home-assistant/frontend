@@ -53,7 +53,10 @@ const handleExternalMessage = (
       result: null,
     });
   } else if (msg.command === "sidebar/show") {
-    fireEvent(hassMainEl, "hass-toggle-menu", { open: true });
+    fireEvent(hassMainEl, "hass-toggle-menu", {
+      open: true,
+      screenPercentage: msg.data?.screenPercentage,
+    });
     bus.fireMessage({
       id: msg.id,
       type: "result",

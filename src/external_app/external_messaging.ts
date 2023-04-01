@@ -131,6 +131,7 @@ interface EMIncomingMessageShowSidebar {
   id: number;
   type: "command";
   command: "sidebar/show";
+  data?: { screenPercentage: number };
 }
 
 export type EMIncomingMessageCommands =

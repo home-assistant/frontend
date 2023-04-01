@@ -11,6 +11,9 @@ export class HaDrawer extends DrawerBase {
       .mdc-drawer {
         top: 0;
       }
+      .mdc-drawer--modal.mdc-drawer--open {
+        left: min(0px, var(--drawer-modal-left-offset));
+      }
     `,
   ];
 }
