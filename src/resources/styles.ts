@@ -56,9 +56,12 @@ export const derivedStyles = {
   "state-unavailable-color":
     "var(--state-icon-unavailable-color, var(--disabled-text-color))",
   "sidebar-text-color": "var(--primary-text-color)",
+  "rgb-sidebar-text-color": "var(--rgb-primary-text-color)",
   "sidebar-background-color": "var(--card-background-color)",
-  "sidebar-selected-text-color": "var(--primary-color)",
-  "sidebar-selected-icon-color": "var(--primary-color)",
+  "sidebar-selected-color":
+    "var(--sidebar-selected-text-color, var(--primary-color))",
+  "rgb-sidebar-selected-color":
+    "var(--rgb-sidebar-selected-text-color, var(--rgb-primary-color))",
   "sidebar-icon-color": "rgba(var(--rgb-primary-text-color), 0.6)",
   "switch-checked-color": "var(--primary-color)",
   "switch-checked-button-color":
@@ -330,6 +333,79 @@ export const haStyleDialog = css`
   }
   .error {
     color: var(--error-color);
+  }
+`;
+
+export const haStyleSidebarItem = css`
+  .item {
+    --rgb-text: var(--rgb-sidebar-text-color);
+    background-color: transparent;
+    color: rgb(var(--rgb-text));
+    font-family: inherit;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-radius: var(--sidebar-item-radius, 56px);
+    height: 56px;
+    width: 56px;
+    margin: auto;
+  }
+  .item .icon {
+    position: relative;
+    text-align: left;
+    width: 24px;
+  }
+  .item .name {
+    display: none;
+  }
+  .item:hover {
+    color: rgb(var(--rgb-text));
+    background-color: rgba(var(--rgb-text), 0.08);
+  }
+  .item:focus-visible,
+  .item:active {
+    color: rgb(var(--rgb-text));
+    background-color: rgba(var(--rgb-text), 0.12);
+  }
+  .item[aria-selected="true"] {
+    --rgb-text: var(--rgb-sidebar-selected-color);
+    background-color: rgba(var(--rgb-text), 0.12);
+  }
+  .item.expanded {
+    margin: 0;
+    padding-right: 24px;
+    width: auto;
+  }
+  .item.expanded .icon {
+    margin-right: 12px;
+  }
+  .item.expanded .name {
+    display: initial;
+  }
+  .icon .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    transform: translateX(50%);
+    border-radius: 16px;
+    background-color: var(--accent-color);
+    color: var(--text-accent-color, var(--text-primary-color));
+    font-weight: 500;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
