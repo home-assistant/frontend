@@ -153,15 +153,15 @@ const createWebpackConfig = ({
     },
     output: {
       filename: ({ chunk }) =>
-        !isProdBuild || isStatsBuild || dontHash.has(chunk.name)
-          ? "[name].js"
-          : "[name]-[contenthash].js",
+        isProdBuild && !isStatsBuild && !dontHash.has(chunk.name)
+          ? "[name]-[contenthash].js"
+          : "[name].js",
       chunkFilename:
         isProdBuild && !isStatsBuild ? "[id]-[contenthash].js" : "[name].js",
       assetModuleFilename:
         isProdBuild && !isStatsBuild ? "[id]-[contenthash][ext]" : "[id][ext]",
       hashFunction: "xxhash64",
-      hashDigest: "base64url",
+      hashDigest: isProdBuild && !isStatsBuild ? "base64url" : undefined,
       hashDigestLength: 11, // full length of 64 bit base64url
       path: outputPath,
       publicPath,
