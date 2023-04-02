@@ -57,10 +57,12 @@ class HuiEntitiesToggle extends LitElement {
       :host {
         width: 38px;
         display: block;
+        position: relative;
       }
       ha-switch {
-        padding: 13px 5px;
-        margin: -4px -8px;
+        position: absolute;
+        top: 8px;
+        right: 0;
       }
     `;
   }

@@ -2624,19 +2624,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-switch@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-switch@npm:0.27.0"
-  dependencies:
-    "@material/mwc-base": ^0.27.0
-    "@material/mwc-ripple": ^0.27.0
-    "@material/switch": =14.0.0-canary.53b3cad2f.0
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: edf2e9ae29c0c07b7bcd6d3e05697e308bb996748968d8a4a5fd622f2b04d2f4713412e1ac7cbf0be018da88243c8785f6c1b0185028027a89b0b4dddc6ed847
-  languageName: node
-  linkType: hard
-
 "@material/mwc-tab-bar@npm:0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-tab-bar@npm:0.27.0"
@@ -2865,27 +2852,6 @@ __metadata:
     "@material/typography": 14.0.0-canary.53b3cad2f.0
     tslib: ^2.1.0
   checksum: 136d6c6f77e4fa586ac375b5a108be06a394f0c55fbb10e73eaa990cd6cb38d2787e278911705571b5336402690e0b88b5fe9de9916704db948247a6b6b0c1fb
-  languageName: node
-  linkType: hard
-
-"@material/switch@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/switch@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": 14.0.0-canary.53b3cad2f.0
-    "@material/base": 14.0.0-canary.53b3cad2f.0
-    "@material/density": 14.0.0-canary.53b3cad2f.0
-    "@material/dom": 14.0.0-canary.53b3cad2f.0
-    "@material/elevation": 14.0.0-canary.53b3cad2f.0
-    "@material/feature-targeting": 14.0.0-canary.53b3cad2f.0
-    "@material/focus-ring": 14.0.0-canary.53b3cad2f.0
-    "@material/ripple": 14.0.0-canary.53b3cad2f.0
-    "@material/rtl": 14.0.0-canary.53b3cad2f.0
-    "@material/shape": 14.0.0-canary.53b3cad2f.0
-    "@material/theme": 14.0.0-canary.53b3cad2f.0
-    "@material/tokens": 14.0.0-canary.53b3cad2f.0
-    tslib: ^2.1.0
-  checksum: a5f2f5e5d5a25b71c80ff8841e3b875cb50dfabdfd53caa640ba13a7c5613f9a57e8bee5a87c6527b61fe6ca8bf53986720d42a04be7578b21c63b1d18877e43
   languageName: node
   linkType: hard
 
@@ -9465,7 +9431,6 @@ __metadata:
     "@material/mwc-ripple": 0.27.0
     "@material/mwc-select": 0.27.0
     "@material/mwc-slider": 0.27.0
-    "@material/mwc-switch": 0.27.0
     "@material/mwc-tab": 0.27.0
     "@material/mwc-tab-bar": 0.27.0
     "@material/mwc-textarea": 0.27.0

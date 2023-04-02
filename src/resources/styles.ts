@@ -9,8 +9,6 @@ export const darkStyles = {
   "disabled-text-color": "#6f6f6f",
   "app-header-text-color": "#e1e1e1",
   "app-header-background-color": "#101e24",
-  "switch-unchecked-button-color": "#999999",
-  "switch-unchecked-track-color": "#9b9b9b",
   "divider-color": "rgba(225, 225, 225, .12)",
   "mdc-ripple-color": "#AAAAAA",
 
@@ -61,12 +59,11 @@ export const derivedStyles = {
   "sidebar-selected-icon-color": "var(--primary-color)",
   "sidebar-icon-color": "rgba(var(--rgb-primary-text-color), 0.6)",
   "switch-checked-color": "var(--primary-color)",
-  "switch-checked-button-color":
-    "var(--switch-checked-color, var(--primary-background-color))",
+  "switch-checked-foreground-color": "var(--card-background-color)",
   "switch-checked-track-color": "var(--switch-checked-color, #000000)",
-  "switch-unchecked-button-color":
-    "var(--switch-unchecked-color, var(--primary-background-color))",
-  "switch-unchecked-track-color": "var(--switch-unchecked-color, #000000)",
+  "switch-unchecked-foreground-color": "var(--secondary-text-color)",
+  "switch-unchecked-track-color":
+    "var(--switch-unchecked-color, var(--card-background-color, #000000))",
   "slider-color": "var(--primary-color)",
   "slider-secondary-color": "var(--light-primary-color)",
   "slider-track-color": "var(--scrollbar-thumb-color)",

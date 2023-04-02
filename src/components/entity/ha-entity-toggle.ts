@@ -168,9 +168,6 @@ export class HaEntityToggle extends LitElement {
       ha-icon-button.state-active {
         color: var(--ha-icon-button-active-color, var(--primary-color));
       }
-      ha-switch {
-        padding: 13px 5px;
-      }
     `;
   }
 }
