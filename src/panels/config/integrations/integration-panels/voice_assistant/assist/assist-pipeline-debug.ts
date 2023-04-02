@@ -96,6 +96,12 @@ export class AssistPipelineDebug extends LitElement {
                     Send
                   </ha-button>
                 `
+              : this._finished
+              ? html`
+                  <ha-button @click=${this._runAudioPipeline}>
+                    Continue talking
+                  </ha-button>
+                `
               : html`
                   <ha-formfield label="Continue conversation">
                     <ha-checkbox
