@@ -3240,6 +3240,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/plugin-retry@npm:4.1.3":
+  version: 4.1.3
+  resolution: "@octokit/plugin-retry@npm:4.1.3"
+  dependencies:
+    "@octokit/types": ^9.0.0
+    bottleneck: ^2.15.3
+  peerDependencies:
+    "@octokit/core": ">=3"
+  checksum: f9ed5869be23dddcf1ee896ce996e46a412a586259b55612ba44c82cdeed91436102e6e3ec57db879bd91a4446dcafbaa94632e4e059c6af56d9cca9b163eacb
+  languageName: node
+  linkType: hard
+
 "@octokit/request-error@npm:^3.0.0, @octokit/request-error@npm:^3.0.3":
   version: 3.0.3
   resolution: "@octokit/request-error@npm:3.0.3"
@@ -6081,6 +6093,13 @@ __metadata:
     fast-deep-equal: ^3.1.3
     multicast-dns: ^7.2.5
   checksum: 832d0cf78b91368fac8bb11fd7a714e46f4c4fb1bb14d7283bce614a6fb3aae2f3fe209aba5b4fa051811c1cab6921d073a83db8432fb23292f27dd4161fb0f1
+  languageName: node
+  linkType: hard
+
+"bottleneck@npm:^2.15.3":
+  version: 2.19.5
+  resolution: "bottleneck@npm:2.19.5"
+  checksum: c5eef1bbea12cef1f1405e7306e7d24860568b0f7ac5eeab706a86762b3fc65ef6d1c641c8a166e4db90f412fc5c948fc5ce8008a8cd3d28c7212ef9c3482bda
   languageName: node
   linkType: hard
 
@@ -9458,6 +9477,7 @@ __metadata:
     "@mdi/js": 7.2.96
     "@mdi/svg": 7.2.96
     "@octokit/auth-oauth-device": 4.0.4
+    "@octokit/plugin-retry": 4.1.3
     "@octokit/rest": 19.0.7
     "@open-wc/dev-server-hmr": 0.1.4
     "@polymer/app-layout": 3.1.0
