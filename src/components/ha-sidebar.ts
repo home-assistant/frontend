@@ -57,7 +57,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         .expanded=${this.alwaysExpand}
         .editMode=${this.editMode}
       ></ha-sidebar-title>
-      <div class="items" @mouseleave=${this._mouseLeave}>
+      <div class="items" @mouseleave=${this._mouseLeave} tabindex="-1">
         <ha-sidebar-panels
           .hass=${this.hass}
           .expanded=${this.alwaysExpand}
