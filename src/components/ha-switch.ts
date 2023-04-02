@@ -13,7 +13,6 @@ export class HaSwitch extends MdSwitch {
 
   constructor() {
     super();
-    this.icons = true;
     this.showOnlySelectedIcon = true;
   }
 
