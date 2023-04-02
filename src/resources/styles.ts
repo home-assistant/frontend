@@ -353,10 +353,9 @@ export const haStyleSidebarItem = css`
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    padding: 0 16px;
+    justify-content: center;
     border-radius: var(--sidebar-item-radius, 56px);
     height: 56px;
-    width: 56px;
     margin: auto;
   }
   .item .icon {
@@ -382,8 +381,8 @@ export const haStyleSidebarItem = css`
   }
   .item.expanded {
     margin: 0;
-    padding-right: 24px;
-    width: auto;
+    padding: 0 24px 0 16px;
+    justify-content: initial;
   }
   .item.expanded .icon {
     margin-right: 12px;

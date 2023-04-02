@@ -62,6 +62,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           .expanded=${this.alwaysExpand}
           .currentPanel=${this.currentPanel}
+          .editMode=${this.editMode}
           @panel-hover=${this._panelHover}
           @panel-leave=${this._mouseLeave}
         ></ha-sidebar-panels>
