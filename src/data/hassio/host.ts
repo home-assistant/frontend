@@ -28,8 +28,19 @@ export interface HassioHassOSInfo {
   data_disk: string;
 }
 
+export interface Datadisk {
+  name: string;
+  vendor: string;
+  model: string;
+  serial: string;
+  size: number;
+  id: string;
+  dev_path: string;
+}
+
 export interface DatadiskList {
   devices: string[];
+  disks: Datadisk[];
 }
 
 export const fetchHassioHostInfo = async (
