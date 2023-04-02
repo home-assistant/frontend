@@ -58,7 +58,8 @@ export const derivedStyles = {
   "sidebar-selected-text-color": "var(--primary-color)",
   "sidebar-selected-icon-color": "var(--primary-color)",
   "sidebar-icon-color": "rgba(var(--rgb-primary-text-color), 0.6)",
-  "switch-checked-color": "var(--switch-checked-track-color, var(--primary-color))",
+  "switch-checked-color":
+    "var(--switch-checked-track-color, var(--primary-color))",
   "switch-checked-thumb-color": "var(--primary-background-color)",
   "switch-unchecked-track-color":
     "var(--switch-unchecked-color, var(--secondary-background-color, #000000))",
