@@ -19,6 +19,7 @@ import "./assist-render-pipeline-run";
 import type { HaCheckbox } from "../../../../../../components/ha-checkbox";
 import type { HaTextField } from "../../../../../../components/ha-textfield";
 import "../../../../../../components/ha-textfield";
+import { fileDownload } from "../../../../../../util/file_download";
 
 @customElement("assist-pipeline-debug")
 export class AssistPipelineDebug extends LitElement {
@@ -55,6 +56,12 @@ export class AssistPipelineDebug extends LitElement {
                 .disabled=${!this._finished}
               >
                 Clear
+              </ha-button>
+              <ha-button
+                slot="toolbar-icon"
+                @click=${this._downloadConversation}
+              >
+                Download
               </ha-button>
             `
           : html`
@@ -295,6 +302,15 @@ export class AssistPipelineDebug extends LitElement {
 
   private _clearConversation() {
     this._pipelineRuns = [];
+  }
+
+  private _downloadConversation() {
+    fileDownload(
+      `data:text/plain;charset=utf-8,${encodeURIComponent(
+        JSON.stringify(this._pipelineRuns, null, 2)
+      )}`,
+      `conversation.json`
+    );
   }
 
   private async _setLanguage() {
