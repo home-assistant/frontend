@@ -15,15 +15,15 @@ const styles = css`
   :host {
     width: 100%;
   }
-  .item.expanded {
+  .item {
     width: 100%;
   }
   .count {
     margin-left: auto;
   }
 `;
-@customElement("ha-sidebar-notifications")
-class HaSidebarNotifications extends LitElement {
+@customElement("ha-sidebar-panel-notifications")
+class HaSidebarPanelNotifications extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public expanded = false;
@@ -69,6 +69,6 @@ class HaSidebarNotifications extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-sidebar-notifications": HaSidebarNotifications;
+    "ha-sidebar-panel-notifications": HaSidebarPanelNotifications;
   }
 }

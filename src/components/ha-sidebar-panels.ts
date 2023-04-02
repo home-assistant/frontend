@@ -17,7 +17,8 @@ import { LocalStorage } from "../common/decorators/local-storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { HomeAssistant, PanelInfo } from "../types";
-import "./ha-sidebar-config";
+import "./ha-sidebar-panel-config";
+import "./ha-sidebar-panel-ext-config";
 import "./ha-sidebar-panel";
 import "./ha-sidebar-edit-panels";
 
@@ -169,7 +170,7 @@ class HaSidebarPanels extends LitElement {
         : undefined;
     const renderPanel = (panel: PanelInfo) =>
       panel.url_path === "config"
-        ? html`<ha-sidebar-config
+        ? html`<ha-sidebar-panel-config
             .hass=${this.hass}
             .expanded=${this.expanded}
             .selected=${this.currentPanel === "config"}
@@ -178,7 +179,7 @@ class HaSidebarPanels extends LitElement {
             ""}
             @mouseenter=${this._panelOver}
             @mouseleave=${this._panelLeave}
-          ></ha-sidebar-config>`
+          ></ha-sidebar-panel-config>`
         : html`<ha-sidebar-panel
             .expanded=${this.expanded}
             .selected=${this.currentPanel === panel.url_path}
@@ -216,6 +217,20 @@ class HaSidebarPanels extends LitElement {
         : html`${beforeSpacer.map(renderPanel)}`,
       html`<div class="spacer"></div>`,
       ...afterSpacer.map(renderPanel),
+      ...(!this.hass.user?.is_admin &&
+      this.hass.auth.external?.config.hasSettingsScreen
+        ? [
+            html`<ha-sidebar-panel-ext-config
+              .hass=${this.hass}
+              .expanded=${this.expanded}
+              .name=${this.hass.localize(
+                "ui.sidebar.external_app_configuration"
+              )}
+              @mouseenter=${this._panelOver}
+              @mouseleave=${this._panelLeave}
+            ></ha-sidebar-panel-ext-config>`,
+          ]
+        : []),
     ];
   }
 

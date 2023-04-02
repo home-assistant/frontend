@@ -4,8 +4,8 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../types";
 import "./ha-sidebar-title";
 import "./ha-sidebar-panels";
-import "./ha-sidebar-notifications";
-import "./ha-sidebar-user";
+import "./ha-sidebar-panel-notifications";
+import "./ha-sidebar-panel-user";
 import "./ha-sidebar-tooltip";
 
 const styles = css`
@@ -67,19 +67,19 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           @panel-leave=${this._mouseLeave}
         ></ha-sidebar-panels>
         <hr />
-        <ha-sidebar-notifications
+        <ha-sidebar-panel-notifications
           .hass=${this.hass}
           .expanded=${this.alwaysExpand}
           @mouseenter=${this._mouseOverItem}
           @mouseleave=${this._mouseLeave}
-        ></ha-sidebar-notifications>
-        <ha-sidebar-user
+        ></ha-sidebar-panel-notifications>
+        <ha-sidebar-panel-user
           .hass=${this.hass}
           .expanded=${this.alwaysExpand}
           .selected=${this.currentPanel === "profile"}
           @mouseenter=${this._mouseOverItem}
           @mouseleave=${this._mouseLeave}
-        ></ha-sidebar-user>
+        ></ha-sidebar-panel-user>
       </div>
       <ha-sidebar-tooltip></ha-sidebar-tooltip>
     `;

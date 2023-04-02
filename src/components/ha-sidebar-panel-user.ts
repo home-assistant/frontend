@@ -17,8 +17,8 @@ const styles = css`
     transform: translate(-50%, -50%) scale(0.8);
   }
 `;
-@customElement("ha-sidebar-user")
-class HaSidebarUser extends LitElement {
+@customElement("ha-sidebar-panel-user")
+class HaSidebarPanelUser extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public expanded = false;
@@ -49,6 +49,6 @@ class HaSidebarUser extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-sidebar-user": HaSidebarUser;
+    "ha-sidebar-panel-user": HaSidebarPanelUser;
   }
 }

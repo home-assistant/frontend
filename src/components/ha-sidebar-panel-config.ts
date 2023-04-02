@@ -21,8 +21,8 @@ const styles = css`
     margin-left: auto;
   }
 `;
-@customElement("ha-sidebar-config")
-class HaSidebarConfig extends LitElement {
+@customElement("ha-sidebar-panel-config")
+class HaSidebarPanelConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public name = "";
@@ -85,6 +85,6 @@ class HaSidebarConfig extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-sidebar-config": HaSidebarConfig;
+    "ha-sidebar-panel-config": HaSidebarPanelConfig;
   }
 }
