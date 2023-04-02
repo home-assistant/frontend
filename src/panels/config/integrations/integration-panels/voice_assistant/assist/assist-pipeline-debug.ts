@@ -1,16 +1,20 @@
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import "../../../../../../components/ha-button";
 import {
   PipelineRun,
-  runPipelineFromText,
+  PipelineRunOptions,
+  runVoiceAssistantPipeline,
 } from "../../../../../../data/voice_assistant";
 import "../../../../../../layouts/hass-subpage";
 import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-checkbox";
 import { haStyle } from "../../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../../types";
-import { showPromptDialog } from "../../../../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showPromptDialog,
+} from "../../../../../../dialogs/generic/show-dialog-box";
 import "./assist-render-pipeline-run";
 import type { HaCheckbox } from "../../../../../../components/ha-checkbox";
 import type { HaTextField } from "../../../../../../components/ha-textfield";
@@ -24,8 +28,6 @@ export class AssistPipelineDebug extends LitElement {
 
   @state() private _pipelineRuns: PipelineRun[] = [];
 
-  @state() private _stopRecording?: () => void;
-
   @query("#continue-conversation")
   private _continueConversationCheckbox!: HaCheckbox;
 
@@ -35,6 +37,8 @@ export class AssistPipelineDebug extends LitElement {
   private _audioBuffer?: Int16Array[];
 
   @state() private _finished = false;
+
+  @state() private _languageOverride?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -53,7 +57,11 @@ export class AssistPipelineDebug extends LitElement {
                 Clear
               </ha-button>
             `
-          : ""}
+          : html`
+              <ha-button slot="toolbar-icon" @click=${this._setLanguage}>
+                Set Language
+              </ha-button>
+            `}
 
         <div class="content">
           <div class="start-row">
@@ -106,53 +114,6 @@ export class AssistPipelineDebug extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
-    super.willUpdate(changedProperties);
-
-    if (
-      !changedProperties.has("_pipelineRuns") ||
-      this._pipelineRuns.length === 0
-    ) {
-      return;
-    }
-
-    const currentRun = this._pipelineRuns[0];
-
-    if (currentRun.init_options.start_stage !== "stt") {
-      if (["error", "done"].includes(currentRun.stage)) {
-        this._finished = true;
-      }
-      return;
-    }
-
-    if (currentRun.stage === "stt" && this._audioBuffer) {
-      // Send the buffer over the WS to the STT engine.
-      for (const buffer of this._audioBuffer) {
-        this._sendAudioChunk(buffer);
-      }
-      this._audioBuffer = undefined;
-    }
-
-    if (currentRun.stage !== "stt" && this._stopRecording) {
-      this._stopRecording();
-    }
-
-    if (currentRun.stage === "done") {
-      const url = currentRun.tts!.tts_output!.url;
-      const audio = new Audio(url);
-      audio.addEventListener("ended", () => {
-        if (this._continueConversationCheckbox.checked) {
-          this._runAudioPipeline();
-        } else {
-          this._finished = true;
-        }
-      });
-      audio.play();
-    } else if (currentRun.stage === "error") {
-      this._finished = true;
-    }
-  }
-
   private get conversationId(): string | null {
     return this._pipelineRuns.length === 0
       ? null
@@ -177,26 +138,19 @@ export class AssistPipelineDebug extends LitElement {
       return;
     }
 
-    let added = false;
-    runPipelineFromText(
-      this.hass,
+    await this._doRunPipeline(
       (run) => {
-        if (textfield && ["done", "error"].includes(run.stage)) {
-          textfield.value = "";
-        }
-
-        if (added) {
-          this._pipelineRuns = [run, ...this._pipelineRuns.slice(1)];
-        } else {
-          this._pipelineRuns = [run, ...this._pipelineRuns];
-          added = true;
+        if (["done", "error"].includes(run.stage)) {
+          this._finished = true;
+          if (textfield) {
+            textfield.value = "";
+          }
         }
       },
       {
         start_stage: "intent",
         end_stage: "intent",
         input: { text },
-        conversation_id: this.conversationId,
       }
     );
   }
@@ -204,7 +158,13 @@ export class AssistPipelineDebug extends LitElement {
   private async _runAudioPipeline() {
     // @ts-ignore-next-line
     const context = new (window.AudioContext || window.webkitAudioContext)();
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      return;
+    }
+
     await context.audioWorklet.addModule(
       new URL("./recorder.worklet.js", import.meta.url)
     );
@@ -213,45 +173,109 @@ export class AssistPipelineDebug extends LitElement {
     const recorder = new AudioWorkletNode(context, "recorder.worklet");
 
     this.hass.connection.socket!.binaryType = "arraybuffer";
-    this._stopRecording = () => {
+
+    let run: PipelineRun | undefined;
+
+    let stopRecording: (() => void) | undefined = () => {
+      stopRecording = undefined;
+      // We're currently STTing, so finish audio
+      if (run?.stage === "stt" && run.stt!.done === false) {
+        if (this._audioBuffer) {
+          for (const chunk of this._audioBuffer) {
+            this._sendAudioChunk(chunk);
+          }
+        }
+        // Send empty message to indicate we're done streaming.
+        this._sendAudioChunk(new Int16Array());
+      }
+      this._audioBuffer = undefined;
       stream.getTracks()[0].stop();
       context.close();
-      this._stopRecording = undefined;
-      this._audioBuffer = undefined;
-      // Send empty message to indicate we're done streaming.
-      this._sendAudioChunk(new Int16Array());
     };
     this._audioBuffer = [];
     source.connect(recorder).connect(context.destination);
     recorder.port.onmessage = (e) => {
+      if (!stopRecording) {
+        return;
+      }
       if (this._audioBuffer) {
         this._audioBuffer.push(e.data);
-        return;
+      } else {
+        this._sendAudioChunk(e.data);
       }
-      if (this._pipelineRuns[0].stage !== "stt") {
-        return;
-      }
-      this._sendAudioChunk(e.data);
     };
 
-    this._finished = false;
-    let added = false;
-    runPipelineFromText(
-      this.hass,
-      (run) => {
-        if (added) {
-          this._pipelineRuns = [run, ...this._pipelineRuns.slice(1)];
-        } else {
-          this._pipelineRuns = [run, ...this._pipelineRuns];
-          added = true;
+    await this._doRunPipeline(
+      (updatedRun) => {
+        run = updatedRun;
+
+        // When we start STT stage, the WS has a binary handler
+        if (updatedRun.stage === "stt" && this._audioBuffer) {
+          // Send the buffer over the WS to the STT engine.
+          for (const buffer of this._audioBuffer) {
+            this._sendAudioChunk(buffer);
+          }
+          this._audioBuffer = undefined;
+        }
+
+        // Stop recording if the server is done with STT stage
+        if (!["ready", "stt"].includes(updatedRun.stage) && stopRecording) {
+          stopRecording();
+        }
+
+        // Play audio when we're done.
+        if (updatedRun.stage === "done") {
+          const url = updatedRun.tts!.tts_output!.url;
+          const audio = new Audio(url);
+          audio.addEventListener("ended", () => {
+            if (this._continueConversationCheckbox.checked) {
+              this._runAudioPipeline();
+            } else {
+              this._finished = true;
+            }
+          });
+          audio.play();
+        } else if (updatedRun.stage === "error") {
+          this._finished = true;
         }
       },
       {
         start_stage: "stt",
         end_stage: "tts",
-        conversation_id: this.conversationId,
       }
     );
+  }
+
+  private async _doRunPipeline(
+    callback: (event: PipelineRun) => void,
+    options: PipelineRunOptions
+  ) {
+    this._finished = false;
+    let added = false;
+    try {
+      await runVoiceAssistantPipeline(
+        this.hass,
+        (updatedRun) => {
+          if (added) {
+            this._pipelineRuns = [updatedRun, ...this._pipelineRuns.slice(1)];
+          } else {
+            this._pipelineRuns = [updatedRun, ...this._pipelineRuns];
+            added = true;
+          }
+          callback(updatedRun);
+        },
+        {
+          ...options,
+          language: this._languageOverride,
+          conversation_id: this.conversationId,
+        }
+      );
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        title: "Error starting pipeline",
+        text: err.message || err,
+      });
+    }
   }
 
   private _sendAudioChunk(chunk: Int16Array) {
@@ -271,6 +295,18 @@ export class AssistPipelineDebug extends LitElement {
 
   private _clearConversation() {
     this._pipelineRuns = [];
+  }
+
+  private async _setLanguage() {
+    const language = await showPromptDialog(this, {
+      title: "Language override",
+      inputLabel: "Language",
+      inputType: "text",
+      confirmText: "Set",
+    });
+    if (language) {
+      this._languageOverride = language;
+    }
   }
 
   static styles = [
