@@ -1,103 +1,61 @@
-import { mdiCheck } from "@mdi/js";
-import { LitElement, css, html } from "lit";
+import { MdSwitch } from "@material/web/switch/switch";
+import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 import { forwardHaptic } from "../data/haptics";
-import "./ha-svg-icon";
 
 @customElement("ha-switch")
-export class HaSwitch extends LitElement {
+// @ts-ignore
+export class HaSwitch extends MdSwitch {
   // Generate a haptic vibration.
   // Only set to true if the new value of the switch is applied right away when toggling.
   // Do not add haptic when a user is required to press save.
   @property({ type: Boolean }) public haptic = false;
 
-  @property({ type: Boolean }) public checked = false;
-
-  protected render() {
-    return html`<div class="switch">
-      <input type="checkbox" .checked=${this.checked} @change=${this._change} />
-      <div class="track"></div>
-      <div class="thumb"><ha-svg-icon .path=${mdiCheck}></ha-svg-icon></div>
-    </div>`;
+  constructor() {
+    super();
+    this.icons = true;
+    this.showOnlySelectedIcon = true;
   }
 
-  protected _change(ev: CustomEvent) {
-    const target = ev.target as HTMLInputElement;
-    this.checked = target.checked;
+  get checked() {
+    return this.selected;
+  }
+
+  set checked(value) {
+    this.selected = value;
+  }
+
+  static override styles = [
+    MdSwitch.styles,
+    css`
+      :host {
+        --md-sys-color-primary: var(--switch-checked-color);
+        --md-sys-color-primary-container: var(--light-primary-color);
+        --md-sys-color-on-primary-container: var(--switch-checked-color);
+        --md-sys-color-on-primary: var(--switch-checked-thumb-color);
+        --md-sys-color-outline: var(--switch-unchecked-foreground-color);
+        --md-sys-color-surface-variant: var(--switch-unchecked-track-color);
+        --md-sys-color-on-surface-variant: var(--primary-text-color);
+      }
+    `,
+  ];
+
+  // @ts-ignore
+  private handleClick() {
+    if (this.disabled) {
+      return;
+    }
     if (this.haptic) {
       forwardHaptic("light");
     }
-    const changeEvent = new InputEvent("change");
-    this.dispatchEvent(changeEvent);
+    this.selected = !this.selected;
+    this.dispatchEvent(
+      new InputEvent("input", { bubbles: true, composed: true })
+    );
+    // Bubbles but does not compose to mimic native browser <input> & <select>
+    // Additionally, native change event is not an InputEvent.
+    this.dispatchEvent(new Event("change", { bubbles: true }));
   }
-
-  static override styles = css`
-    .switch {
-      width: 52px;
-      height: 32px;
-      border-radius: 32px;
-      position: relative;
-    }
-    input {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      appearance: none;
-      margin: 0;
-      opacity: 0;
-      cursor: pointer;
-    }
-    .track {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: var(--switch-unchecked-track-color);
-      outline: solid var(--switch-unchecked-foreground-color) 2px;
-      outline-offset: -2px;
-      border-radius: 32px;
-      pointer-events: none;
-    }
-    input:checked + .track {
-      background-color: var(--switch-checked-track-color);
-      outline-color: transparent;
-    }
-    .thumb {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      left: 8px;
-      width: 16px;
-      height: 16px;
-      border-radius: 16px;
-      background-color: var(--switch-unchecked-foreground-color);
-      pointer-events: none;
-    }
-    input:checked ~ .thumb {
-      left: 24px;
-      width: 24px;
-      height: 24px;
-      background-color: var(--switch-checked-foreground-color);
-    }
-    .thumb ha-svg-icon {
-      opacity: 0;
-      width: 16px;
-      height: 16px;
-      color: var(--switch-checked-track-color);
-    }
-    input:checked ~ .thumb ha-svg-icon {
-      opacity: 1;
-    }
-    .switch * {
-      transition: cubic-bezier(0.254, 0.029, 0, 1.2) all 300ms;
-    }
-  `;
 }
 
 declare global {

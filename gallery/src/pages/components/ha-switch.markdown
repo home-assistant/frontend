@@ -25,15 +25,12 @@ Disabled switch
 
 ## CSS variables
 
-For the switch / toggle there are always two variables, one for the on / checked state and one for the off / unchecked state.
+The switch extends the Material 3 switch. In the unselected state, these variables are used for the color:
 
-The track element (background rounded rectangle that the round circular handle travels on) is set to being half transparent, so the final color will also be impacted by the color behind the track.
+- `--switch-unchecked-track-color`: The color of the track
+- `--switch-unchecked-foreground-color`: The color of the track outline and the thumb
 
-`switch-checked-color` / `switch-unchecked-color`  
-Set both the color of the round handle  and the track behind it. If you want to control them separately, use the variables below instead.
+In the selected state, these variables are used for the color:
 
-`switch-checked-button-color` / `switch-unchecked-button-color`  
-Color of the round handle
-
-`switch-checked-track-color` / `switch-unchecked-track-color`  
-Color of the track behind the round handle
+- `--switch-checked-color`: The color of the track and the icon inside the thumb
+- `--switch-checked-thumb-color`: The background in the thumb
