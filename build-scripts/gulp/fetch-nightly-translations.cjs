@@ -8,6 +8,7 @@ const gulp = require("gulp");
 const jszip = require("jszip");
 const tar = require("tar");
 const { Octokit } = require("@octokit/rest");
+const { retry } = require("@octokit/plugin-retry");
 const { createOAuthDeviceAuth } = require("@octokit/auth-oauth-device");
 
 const MAX_AGE = 24; // hours
@@ -95,7 +96,7 @@ gulp.task("fetch-nightly-translations", async function () {
 
   // Authenticate with token and request workflow runs from GitHub
   console.log("Fetching new translations...");
-  const octokit = new Octokit({
+  const octokit = new (Octokit.plugin(retry))({
     userAgent: "Fetch Nightly Translations",
     auth: tokenAuth.token,
   });
