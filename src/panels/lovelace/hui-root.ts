@@ -961,11 +961,17 @@ class HUIRoot extends LitElement {
           position: fixed;
           top: 0;
           width: var(--mdc-top-app-bar-width, 100%);
-          z-index: 2;
-          transition: box-shadow 0.3s ease-out;
+          padding-top: env(safe-area-inset-top);
+          z-index: 4;
+          transition: box-shadow 200ms linear;
         }
         :host([scrolled]) .header {
-          box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.75);
+          box-shadow: var(
+            --mdc-top-app-bar-fixed-box-shadow,
+            0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+            0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 10px 0px rgba(0, 0, 0, 0.12)
+          );
         }
         .edit-mode .header {
           background-color: var(--app-header-edit-background-color, #455a64);
@@ -1044,27 +1050,27 @@ class HUIRoot extends LitElement {
           color: var(--error-color);
         }
         #view {
-          margin-top: var(--header-height);
-          height: calc(
-            100vh - var(--header-height) - env(safe-area-inset-top) -
-              env(safe-area-inset-bottom)
-          );
+          margin-top: calc(var(--header-height) + env(safe-area-inset-top));
+          height: calc(100vh - var(--header-height) - env(safe-area-inset-top));
+          padding-left: env(safe-area-inset-left);
+          padding-right: env(safe-area-inset-right);
           background: var(
             --lovelace-background,
             var(--primary-background-color)
           );
-          display: flex;
           overflow: auto;
+          transform: translateZ(0);
         }
         /**
          * In edit mode we have the tab bar on a new line *
          */
         .edit-mode #view {
           height: calc(
-            100vh - var(--header-height) - 48px - env(safe-area-inset-top) -
-              env(safe-area-inset-bottom)
+            100vh - var(--header-height) - 48px - env(safe-area-inset-top)
           );
-          margin-top: calc(var(--header-height) + 48px);
+          margin-top: calc(
+            var(--header-height) + 48px + env(safe-area-inset-top)
+          );
         }
         #view > * {
           /**
@@ -1077,6 +1083,8 @@ class HUIRoot extends LitElement {
           */
           flex: 1 1 100%;
           max-width: 100%;
+          padding-bottom: env(safe-area-inset-bottom);
+          display: block;
         }
         .hide-tab {
           display: none;
