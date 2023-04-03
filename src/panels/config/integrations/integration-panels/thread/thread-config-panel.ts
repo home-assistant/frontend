@@ -251,6 +251,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         showAlertDialog(this, {
           title: dataset.network_name,
           text: html`Network name: ${dataset.network_name}<br />
+            Channel: ${dataset.channel}<br />
             Dataset id: ${dataset.dataset_id}<br />
             Pan id: ${dataset.pan_id}<br />
             Extended Pan id: ${dataset.extended_pan_id}<br />
@@ -263,6 +264,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     showAlertDialog(this, {
       title: dataset.network_name,
       text: html`Network name: ${dataset.network_name}<br />
+        Channel: ${dataset.channel}<br />
         Dataset id: ${dataset.dataset_id}<br />
         Pan id: ${dataset.pan_id}<br />
         Extended Pan id: ${dataset.extended_pan_id}`,
