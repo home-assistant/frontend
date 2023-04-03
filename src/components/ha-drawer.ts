@@ -7,16 +7,18 @@ import {
 import { DrawerBase } from "@material/mwc-drawer/mwc-drawer-base";
 import { styles } from "@material/mwc-drawer/mwc-drawer.css";
 import { css, PropertyValues } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 
 const blockingElements = (document as any).$blockingElements;
 
 @customElement("ha-drawer")
 export class HaDrawer extends DrawerBase {
+  @property() public direction: "ltr" | "rtl" = "ltr";
+
   firstUpdated() {
     super.firstUpdated();
-    this.mdcRoot.dir = document.dir;
+    this.mdcRoot.dir = this.direction;
   }
 
   private _mc?: HammerManager;
@@ -39,14 +41,16 @@ export class HaDrawer extends DrawerBase {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    if (changedProps.has("direction")) {
+      this.mdcRoot.dir = this.direction;
+    }
     if (changedProps.has("open") && this.open && this.type === "modal") {
       this._mc = new Manager(document, {
         touchAction: "pan-y",
       });
       this._mc.add(
         new Swipe({
-          direction:
-            this.mdcRoot.dir === "rtl" ? DIRECTION_RIGHT : DIRECTION_LEFT,
+          direction: this.dir === "rtl" ? DIRECTION_RIGHT : DIRECTION_LEFT,
         })
       );
       this._mc.on("swipeleft swiperight", () => {
