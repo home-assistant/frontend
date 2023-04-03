@@ -517,22 +517,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           padding: 0 16px 16px;
         }
 
-        state-history-charts {
-          height: calc(100vh - 136px);
-        }
-
-        :host([narrow]) state-history-charts {
-          height: calc(100vh - 198px);
-        }
-
-        .progress-wrapper {
-          height: calc(100vh - 136px);
-        }
-
-        :host([narrow]) .progress-wrapper {
-          height: calc(100vh - 198px);
-        }
-
         :host([virtualize]) {
           height: 100%;
         }
