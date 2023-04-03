@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
+import "../../components/ha-top-app-bar-fixed";
 import { isExternal } from "../../data/external";
 import {
   CoreFrontendUserData,
@@ -30,7 +31,6 @@ import "./ha-push-notifications-row";
 import "./ha-refresh-tokens-card";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
-import "../../components/ha-top-app-bar-fixed";
 
 @customElement("ha-panel-profile")
 class HaPanelProfile extends LitElement {
