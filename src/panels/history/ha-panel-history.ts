@@ -515,22 +515,11 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       css`
         .content {
           padding: 0 16px 16px;
+          padding-bottom: max(env(safe-area-inset-bottom), 16px);
         }
 
         state-history-charts {
-          height: calc(100vh - 136px);
-        }
-
-        :host([narrow]) state-history-charts {
-          height: calc(100vh - 198px);
-        }
-
-        .progress-wrapper {
-          height: calc(100vh - 136px);
-        }
-
-        :host([narrow]) .progress-wrapper {
-          height: calc(100vh - 198px);
+          overflow-x: hidden;
         }
 
         :host([virtualize]) {
@@ -539,6 +528,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
         .progress-wrapper {
           position: relative;
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          padding: 16px;
         }
 
         .filters {
@@ -564,13 +557,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
             margin-inline-end: 0;
             width: 100%;
           }
-        }
-
-        ha-circular-progress {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
         }
 
         .start-search {
