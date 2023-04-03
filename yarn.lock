@@ -5166,10 +5166,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webcomponents/scoped-custom-element-registry@npm:0.0.8":
-  version: 0.0.8
-  resolution: "@webcomponents/scoped-custom-element-registry@npm:0.0.8"
-  checksum: b758bd34723834eedeabe53decadeaa3a655a0fb6b264f1ad55d9fb617f1cff44c72f7722e78cfb953a82c06f85c1e640929d65e775df85202c34419091d2cdf
+"@webcomponents/scoped-custom-element-registry@npm:0.0.9":
+  version: 0.0.9
+  resolution: "@webcomponents/scoped-custom-element-registry@npm:0.0.9"
+  checksum: 02595d7b184a04fab16b12599f80a3e405ed9cee347e42079423bf4b7d4c794201d1553d818c0663d83c8b047a77eec7b32318267927673bd4218eb0f75a1b5e
   languageName: node
   linkType: hard
 
@@ -9522,7 +9522,7 @@ __metadata:
     "@vue/web-component-wrapper": 1.3.0
     "@web/dev-server": 0.1.37
     "@web/dev-server-rollup": 0.4.0
-    "@webcomponents/scoped-custom-element-registry": 0.0.8
+    "@webcomponents/scoped-custom-element-registry": 0.0.9
     "@webcomponents/webcomponentsjs": 2.7.0
     app-datepicker: 5.1.1
     babel-loader: 9.1.2
