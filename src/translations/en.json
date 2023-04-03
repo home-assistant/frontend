@@ -931,11 +931,11 @@
         "alarm_control_panel": {
           "modes_label": "Modes",
           "modes": {
-            "away": "Away",
-            "home": "Home",
-            "night": "Night",
-            "vacation": "Vacation",
-            "custom_bypass": "Custom",
+            "armed_away": "Away",
+            "armed_home": "Home",
+            "armed_night": "Night",
+            "armed_vacation": "Vacation",
+            "armed_custom_bypass": "Custom",
             "disarmed": "Disarmed"
           },
           "disarm_title": "Disarm",
@@ -4467,11 +4467,11 @@
                     "label": "Alarm modes",
                     "modes": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes_label%]",
                     "modes_list": {
-                      "away": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::away%]",
-                      "home": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::home%]",
-                      "night": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::night%]",
-                      "vacation": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::vacation%]",
-                      "custom_bypass": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::custom_bypass%]",
+                      "armed_away": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_away%]",
+                      "armed_home": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_home%]",
+                      "armed_night": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_night%]",
+                      "armed_vacation": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_vacation%]",
+                      "armed_custom_bypass": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::armed_custom_bypass%]",
                       "disarmed": "[%key:ui::dialogs::more_info_control::alarm_control_panel::modes::disarmed%]"
                     }
                   },
