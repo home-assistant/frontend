@@ -389,8 +389,8 @@ export const filterSelectorEntities = (
 
   if (filterSupportedFeature) {
     if (
-      ensureArray(filterSupportedFeature).some(
-        (feature) => !supportsFeature(entity, feature)
+      !ensureArray(filterSupportedFeature).some((feature) =>
+        supportsFeature(entity, feature)
       )
     ) {
       return false;
