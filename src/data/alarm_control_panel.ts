@@ -53,8 +53,8 @@ export const callAlarmAction = (
 };
 
 export type AlarmMode =
-  | "armed_away"
   | "armed_home"
+  | "armed_away"
   | "armed_night"
   | "armed_vacation"
   | "armed_custom_bypass"
@@ -66,20 +66,15 @@ type AlarmConfig = {
   path: string;
 };
 export const ALARM_MODES: Record<AlarmMode, AlarmConfig> = {
-  armed_away: {
-    feature: AlarmControlPanelEntityFeature.ARM_AWAY,
-    service: "alarm_arm_away",
-    path: mdiLock,
-  },
   armed_home: {
     feature: AlarmControlPanelEntityFeature.ARM_HOME,
     service: "alarm_arm_home",
     path: mdiHome,
   },
-  armed_custom_bypass: {
-    feature: AlarmControlPanelEntityFeature.ARM_CUSTOM_BYPASS,
-    service: "alarm_arm_custom_bypass",
-    path: mdiShield,
+  armed_away: {
+    feature: AlarmControlPanelEntityFeature.ARM_AWAY,
+    service: "alarm_arm_away",
+    path: mdiLock,
   },
   armed_night: {
     feature: AlarmControlPanelEntityFeature.ARM_NIGHT,
@@ -90,6 +85,11 @@ export const ALARM_MODES: Record<AlarmMode, AlarmConfig> = {
     feature: AlarmControlPanelEntityFeature.ARM_VACATION,
     service: "alarm_arm_vacation",
     path: mdiAirplane,
+  },
+  armed_custom_bypass: {
+    feature: AlarmControlPanelEntityFeature.ARM_CUSTOM_BYPASS,
+    service: "alarm_arm_custom_bypass",
+    path: mdiShield,
   },
   disarmed: {
     service: "alarm_disarm",
