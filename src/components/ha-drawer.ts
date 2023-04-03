@@ -16,11 +16,6 @@ const blockingElements = (document as any).$blockingElements;
 export class HaDrawer extends DrawerBase {
   @property() public direction: "ltr" | "rtl" = "ltr";
 
-  firstUpdated() {
-    super.firstUpdated();
-    this.mdcRoot.dir = this.direction;
-  }
-
   private _mc?: HammerManager;
 
   protected createAdapter() {
