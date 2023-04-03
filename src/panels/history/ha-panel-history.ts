@@ -528,6 +528,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
         .progress-wrapper {
           position: relative;
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          padding: 16px;
         }
 
         .filters {
@@ -553,13 +557,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
             margin-inline-end: 0;
             width: 100%;
           }
-        }
-
-        ha-circular-progress {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
         }
 
         .start-search {
