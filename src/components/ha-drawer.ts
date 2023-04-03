@@ -1,12 +1,16 @@
+import { DIRECTION_LEFT, Manager, Swipe } from "@egjs/hammerjs";
 import { DrawerBase } from "@material/mwc-drawer/mwc-drawer-base";
 import { styles } from "@material/mwc-drawer/mwc-drawer.css";
-import { css } from "lit";
+import { css, PropertyValues } from "lit";
 import { customElement } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 
 const blockingElements = (document as any).$blockingElements;
 
 @customElement("ha-drawer")
 export class HaDrawer extends DrawerBase {
+  private _mc?: HammerManager;
+
   protected createAdapter() {
     return {
       ...super.createAdapter(),
@@ -21,6 +25,26 @@ export class HaDrawer extends DrawerBase {
         document.body.style.overflow = "";
       },
     };
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("open") && this.open && this.type === "modal") {
+      this._mc = new Manager(document, {
+        touchAction: "pan-y",
+      });
+      this._mc.add(
+        new Swipe({
+          direction: DIRECTION_LEFT,
+        })
+      );
+      this._mc.on("swipeleft", () => {
+        fireEvent(this, "hass-toggle-menu", { open: false });
+      });
+    } else if (this._mc) {
+      this._mc.destroy();
+      this._mc = undefined;
+    }
   }
 
   static override styles = [
