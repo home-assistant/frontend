@@ -595,7 +595,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize(
             "ui.panel.config.integrations.add_integration"
           )}
-          extended
           @click=${this._createFlow}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

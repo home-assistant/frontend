@@ -401,7 +401,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           .label=${this.hass.localize(
             "ui.panel.config.script.editor.save_script"
           )}
-          extended
           @click=${this._saveScript}
           class=${classMap({
             dirty: this._dirty,

@@ -368,7 +368,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                                   ${this._narrow && currentItem?.can_play
                                     ? html`
                                         <ha-fab
-                                          mini
                                           .item=${currentItem}
                                           @click=${this._actionClicked}
                                         >

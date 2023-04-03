@@ -220,7 +220,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize(
             "ui.panel.config.helpers.picker.create_helper"
           )}
-          extended
           @click=${this._createHelpler}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

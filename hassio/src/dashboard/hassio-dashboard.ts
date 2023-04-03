@@ -38,7 +38,6 @@ class HassioDashboard extends LitElement {
         <a href="/hassio/store">
           <ha-fab
             .label=${this.supervisor.localize("panel.store")}
-            extended
             class="non-tabs"
           >
             <ha-svg-icon

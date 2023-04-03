@@ -98,7 +98,6 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
               )}
-              extended
               @click=${this._addCard}
               class=${classMap({
                 rtl: computeRTL(this.hass!),

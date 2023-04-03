@@ -198,7 +198,6 @@ export class HAFullCalendar extends LitElement {
         ? html`<ha-fab
             slot="fab"
             .label=${this.hass.localize("ui.components.calendar.event.add")}
-            extended
             @click=${this._createEvent}
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

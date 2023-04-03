@@ -467,7 +467,6 @@ export class HaSceneEditor extends SubscribeMixin(
         <ha-fab
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.scene.editor.save")}
-          extended
           .disabled=${this._saving}
           @click=${this._saveScene}
           class=${classMap({ dirty: this._dirty, saving: this._saving })}

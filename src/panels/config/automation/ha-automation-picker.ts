@@ -300,7 +300,6 @@ class HaAutomationPicker extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.config.automation.picker.add_automation"
           )}
-          extended
           @click=${this._createNew}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

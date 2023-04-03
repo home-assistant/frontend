@@ -442,7 +442,6 @@ export class HaConfigDeviceDashboard extends LitElement {
         <ha-fab
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.devices.add_device")}
-          extended
           @click=${this._addDevice}
           ?rtl=${computeRTL(this.hass)}
         >

@@ -485,7 +485,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize(
             "ui.panel.config.zwave_js.common.add_node"
           )}
-          extended
           ?rtl=${computeRTL(this.hass)}
           @click=${this._addNodeClicked}
           .disabled=${this._status !== "connected" ||

@@ -290,7 +290,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
           )}
-          extended
           @click=${this._addDashboard}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

@@ -160,7 +160,6 @@ export class HaConfigApplicationCredentials extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.config.application_credentials.picker.add_application_credential"
           )}
-          extended
           @click=${this._addApplicationCredential}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

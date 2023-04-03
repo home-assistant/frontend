@@ -1,32 +1,26 @@
-import { FabBase } from "@material/mwc-fab/mwc-fab-base";
-import { styles } from "@material/mwc-fab/mwc-fab.css";
+import { MdFabExtended } from "@material/web/fab/fab-extended";
 import { customElement } from "lit/decorators";
 import { css } from "lit";
 
 @customElement("ha-fab")
-export class HaFab extends FabBase {
-  protected firstUpdated(changedProperties) {
-    super.firstUpdated(changedProperties);
-    this.style.setProperty("--mdc-theme-secondary", "var(--primary-color)");
-  }
-
+export class HaFab extends MdFabExtended {
   static override styles = [
-    styles,
+    ...MdFabExtended.styles,
     css`
-      :host .mdc-fab--extended .mdc-fab__icon {
-        margin-inline-start: -8px;
-        margin-inline-end: 12px;
-        direction: var(--direction);
+      :host {
+        --md-sys-color-surface: var(--card-background-color);
+        --md-sys-color-primary: var(--primary-color);
+      }
+      .md3-fab {
+        padding-inline-end: 16px;
+      }
+      .md3-fab__label {
+        padding-inline-end: 4px;
+      }
+      .md3-fab__label:empty {
+        padding: 0;
       }
     `,
-    // safari workaround - must be explicit
-    document.dir === "rtl"
-      ? css`
-          :host .mdc-fab--extended .mdc-fab__icon {
-            direction: rtl;
-          }
-        `
-      : css``,
   ];
 }
 

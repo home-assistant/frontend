@@ -2438,17 +2438,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-fab@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-fab@npm:0.27.0"
-  dependencies:
-    "@material/mwc-ripple": ^0.27.0
-    lit: ^2.0.0
-    tslib: ^2.0.1
-  checksum: 86c68a6c0b3a14c141e7409c9d82b0d2a88b89c102d9b71691f2f8da62c2cceef649fcc275054cca3adfd69c0f98be098f6053a9b97abf2ce64216b83ae258b8
-  languageName: node
-  linkType: hard
-
 "@material/mwc-floating-label@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-floating-label@npm:0.27.0"
@@ -9455,7 +9444,6 @@ __metadata:
     "@material/mwc-circular-progress": 0.27.0
     "@material/mwc-dialog": 0.27.0
     "@material/mwc-drawer": 0.27.0
-    "@material/mwc-fab": 0.27.0
     "@material/mwc-formfield": 0.27.0
     "@material/mwc-icon-button": 0.27.0
     "@material/mwc-linear-progress": 0.27.0

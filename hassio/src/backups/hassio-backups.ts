@@ -260,7 +260,6 @@ export class HassioBackups extends LitElement {
           slot="fab"
           @click=${this._createBackup}
           .label=${this.supervisor.localize("backup.create_backup")}
-          extended
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>

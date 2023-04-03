@@ -242,7 +242,6 @@ class HaScriptPicker extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.script.picker.add_script"
             )}
-            extended
             ?rtl=${computeRTL(this.hass)}
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

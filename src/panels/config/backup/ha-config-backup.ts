@@ -151,7 +151,6 @@ class HaConfigBackup extends LitElement {
           .label=${this._backupData.backing_up
             ? this.hass.localize("ui.panel.config.backup.creating_backup")
             : this.hass.localize("ui.panel.config.backup.create_backup")}
-          extended
           @click=${this._generateBackup}
         >
           ${this._backupData.backing_up

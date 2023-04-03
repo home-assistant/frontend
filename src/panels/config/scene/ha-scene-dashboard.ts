@@ -238,7 +238,6 @@ class HaSceneDashboard extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.scene.picker.add_scene"
             )}
-            extended
           >
             <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
           </ha-fab>

@@ -189,7 +189,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         <ha-fab
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.tag.add_tag")}
-          extended
           @click=${this._addTag}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>

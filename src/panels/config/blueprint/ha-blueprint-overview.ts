@@ -263,7 +263,6 @@ class HaBlueprintOverview extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.config.blueprint.overview.add_blueprint"
           )}
-          extended
           @click=${this._addBlueprintClicked}
         >
           <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>

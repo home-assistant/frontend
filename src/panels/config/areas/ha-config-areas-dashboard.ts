@@ -177,7 +177,6 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize(
             "ui.panel.config.areas.picker.create_area"
           )}
-          extended
           @click=${this._createArea}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
