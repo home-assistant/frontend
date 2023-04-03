@@ -3,18 +3,17 @@ import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
-let drawerContent: HTMLElement | undefined | null;
+let drawerContent: HTMLElement | undefined;
 
 @customElement("ha-top-app-bar-fixed")
 export class HaTopAppBarFixed extends TopAppBarFixedBase {
   private get _drawerContent() {
     if (!drawerContent) {
-      // @ts-ignore
       drawerContent = document
-        .querySelector("home-assistant")
-        ?.shadowRoot?.querySelector("home-assistant-main")
-        ?.shadowRoot?.querySelector("ha-drawer")
-        ?.shadowRoot?.querySelector(".mdc-drawer-app-content");
+        .querySelector("home-assistant")!
+        .renderRoot.querySelector("home-assistant-main")!
+        .renderRoot.querySelector("ha-drawer")!
+        .renderRoot.querySelector(".mdc-drawer-app-content") as HTMLElement;
     }
     return drawerContent;
   }
