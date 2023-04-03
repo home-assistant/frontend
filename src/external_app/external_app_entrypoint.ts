@@ -6,6 +6,7 @@ This is the entry point for providing external app stuff from app entrypoint.
 */
 
 import { fireEvent } from "../common/dom/fire_event";
+import { mainWindow } from "../common/dom/get_main_window";
 import { HomeAssistantMain } from "../layouts/home-assistant-main";
 import type { EMIncomingMessageCommands } from "./external_messaging";
 
@@ -45,6 +46,15 @@ const handleExternalMessage = (
       result: null,
     });
   } else if (msg.command === "sidebar/toggle") {
+    if (mainWindow.history.state?.open) {
+      bus.fireMessage({
+        id: msg.id,
+        type: "result",
+        success: false,
+        error: { code: "not_allowed", message: "dialog open" },
+      });
+      return true;
+    }
     fireEvent(hassMainEl, "hass-toggle-menu");
     bus.fireMessage({
       id: msg.id,
@@ -53,6 +63,15 @@ const handleExternalMessage = (
       result: null,
     });
   } else if (msg.command === "sidebar/show") {
+    if (mainWindow.history.state?.open) {
+      bus.fireMessage({
+        id: msg.id,
+        type: "result",
+        success: false,
+        error: { code: "not_allowed", message: "dialog open" },
+      });
+      return true;
+    }
     fireEvent(hassMainEl, "hass-toggle-menu", { open: true });
     bus.fireMessage({
       id: msg.id,
