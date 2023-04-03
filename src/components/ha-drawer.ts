@@ -1,14 +1,21 @@
-import { DIRECTION_LEFT, Manager, Swipe } from "@egjs/hammerjs";
+import {
+  DIRECTION_LEFT,
+  DIRECTION_RIGHT,
+  Manager,
+  Swipe,
+} from "@egjs/hammerjs";
 import { DrawerBase } from "@material/mwc-drawer/mwc-drawer-base";
 import { styles } from "@material/mwc-drawer/mwc-drawer.css";
 import { css, PropertyValues } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 
 const blockingElements = (document as any).$blockingElements;
 
 @customElement("ha-drawer")
 export class HaDrawer extends DrawerBase {
+  @property() public direction: "ltr" | "rtl" = "ltr";
+
   private _mc?: HammerManager;
 
   protected createAdapter() {
@@ -29,16 +36,20 @@ export class HaDrawer extends DrawerBase {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    if (changedProps.has("direction")) {
+      this.mdcRoot.dir = this.direction;
+    }
     if (changedProps.has("open") && this.open && this.type === "modal") {
       this._mc = new Manager(document, {
         touchAction: "pan-y",
       });
       this._mc.add(
         new Swipe({
-          direction: DIRECTION_LEFT,
+          direction:
+            this.direction === "rtl" ? DIRECTION_RIGHT : DIRECTION_LEFT,
         })
       );
-      this._mc.on("swipeleft", () => {
+      this._mc.on("swipeleft swiperight", () => {
         fireEvent(this, "hass-toggle-menu", { open: false });
       });
     } else if (this._mc) {
