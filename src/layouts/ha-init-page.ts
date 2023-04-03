@@ -1,11 +1,8 @@
-import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
-
-  @state() private _showProgressIndicator = false;
 
   @state() private _retryInSeconds = 60;
 
@@ -36,9 +33,7 @@ class HaInitPage extends LitElement {
         `
       : html`
           <div id="progress-indicator-wrapper">
-            ${this._showProgressIndicator
-              ? html`<ha-circular-progress active></ha-circular-progress>`
-              : ""}
+            <ha-circular-progress active></ha-circular-progress>
           </div>
           <div id="loading-text">Loading data</div>
         `;
@@ -54,10 +49,15 @@ class HaInitPage extends LitElement {
     }
   }
 
+  protected updated(changedProperties: PropertyValues) {
+    if (changedProperties.has("error") && this.error) {
+      import("@material/mwc-button");
+    }
+  }
+
   protected firstUpdated() {
-    this._showProgressIndicatorTimeout = setTimeout(async () => {
-      await import("../components/ha-circular-progress");
-      this._showProgressIndicator = true;
+    this._showProgressIndicatorTimeout = setTimeout(() => {
+      import("../components/ha-circular-progress");
     }, 5000);
 
     this._retryInterval = setInterval(() => {

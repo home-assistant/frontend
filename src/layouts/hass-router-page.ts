@@ -3,8 +3,6 @@ import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../common/navigate";
 import { Route } from "../types";
-import "./hass-error-screen";
-import "./hass-loading-screen";
 
 const extractPage = (path: string, defaultPage: string) => {
   if (path === "") {
@@ -256,10 +254,12 @@ export class HassRouterPage extends ReactiveElement {
   }
 
   protected createLoadingScreen() {
+    import("./hass-loading-screen");
     return document.createElement("hass-loading-screen");
   }
 
   protected createErrorScreen(error: string) {
+    import("./hass-error-screen");
     const errorEl = document.createElement("hass-error-screen");
     errorEl.error = error;
     return errorEl;
