@@ -95,14 +95,14 @@ class HuiAlarmModeTileFeature
 
   private _getCurrentMode(stateObj: AlarmControlPanelEntity) {
     return this._modes(stateObj, this._config?.modes).find(
-      (mode) => ALARM_MODES[mode].state === stateObj.state
+      (mode) => mode === stateObj.state
     );
   }
 
   private async _valueChanged(ev: CustomEvent) {
     const mode = (ev.detail as any).value as AlarmMode;
 
-    if (ALARM_MODES[mode].state === this.stateObj!.state) return;
+    if (mode === this.stateObj!.state) return;
 
     const oldMode = this._getCurrentMode(this.stateObj!);
     this._currentMode = mode;
