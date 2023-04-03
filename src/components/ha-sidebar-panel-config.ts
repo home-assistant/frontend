@@ -18,7 +18,7 @@ const styles = css`
     width: 100%;
   }
   .count {
-    margin-left: auto;
+    margin-inline-start: auto;
   }
 `;
 @customElement("ha-sidebar-panel-config")

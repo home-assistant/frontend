@@ -1,9 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import { mdiMenu, mdiMenuOpen } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeRTL } from "../common/util/compute_rtl";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
@@ -28,6 +29,9 @@ const styles = css`
     margin: 0 auto;
     color: var(--sidebar-icon-color);
   }
+  .menu.rtl ha-icon-button {
+    transform: scaleX(-1);
+  }
   .menu mwc-button {
     width: 100%;
   }
@@ -35,7 +39,7 @@ const styles = css`
     padding: calc((var(--header-height) - 20px) / 5) 12px 0 12px;
   }
   .menu.expanded ha-icon-button {
-    margin-right: 0;
+    margin-inline-end: 0;
   }
 `;
 @customElement("ha-sidebar-title")
@@ -51,7 +55,11 @@ class HaSidebarTitle extends LitElement {
   static styles = styles;
 
   protected render() {
-    const classes = classMap({ menu: true, expanded: this.expanded });
+    const classes = classMap({
+      menu: true,
+      expanded: this.expanded,
+      rtl: computeRTL(this.hass),
+    });
     const saveEdits = html`<mwc-button outlined @click=${this._editModeOff}>
       ${this.hass.localize("ui.sidebar.done")}
     </mwc-button>`;

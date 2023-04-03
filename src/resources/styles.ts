@@ -381,11 +381,12 @@ export const haStyleSidebarItem = css`
   }
   .item.expanded {
     margin: 0;
-    padding: 0 24px 0 16px;
+    padding-inline-start: 16px;
+    padding-inline-end: 24px;
     justify-content: initial;
   }
   .item.expanded .icon {
-    margin-right: 12px;
+    margin-inline-end: 12px;
   }
   .item.expanded .name {
     display: initial;
