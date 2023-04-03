@@ -18,6 +18,7 @@ export interface ThreadDataSet {
   network_name: string;
   extended_pan_id?: string;
   pan_id?: string;
+  channel?: number;
 }
 
 export interface ThreadRouterDiscoveryEvent {
