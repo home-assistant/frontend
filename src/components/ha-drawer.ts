@@ -7,6 +7,11 @@ const blockingElements = (document as any).$blockingElements;
 
 @customElement("ha-drawer")
 export class HaDrawer extends DrawerBase {
+  firstUpdated() {
+    super.firstUpdated();
+    this.mdcRoot.dir = document.dir;
+  }
+
   protected createAdapter() {
     return {
       ...super.createAdapter(),
