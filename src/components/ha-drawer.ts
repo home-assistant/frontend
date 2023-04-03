@@ -50,7 +50,8 @@ export class HaDrawer extends DrawerBase {
       });
       this._mc.add(
         new Swipe({
-          direction: this.dir === "rtl" ? DIRECTION_RIGHT : DIRECTION_LEFT,
+          direction:
+            this.direction === "rtl" ? DIRECTION_RIGHT : DIRECTION_LEFT,
         })
       );
       this._mc.on("swipeleft swiperight", () => {
