@@ -1,19 +1,44 @@
 import { TopAppBarFixedBase } from "@material/mwc-top-app-bar-fixed/mwc-top-app-bar-fixed-base";
 import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
 import { css } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
+
+let drawerContent: HTMLElement | undefined | null;
 
 @customElement("ha-top-app-bar-fixed")
 export class HaTopAppBarFixed extends TopAppBarFixedBase {
+  private get _drawerContent() {
+    if (!drawerContent) {
+      // @ts-ignore
+      drawerContent = document
+        .querySelector("home-assistant")
+        ?.shadowRoot?.querySelector("home-assistant-main")
+        ?.shadowRoot?.querySelector("ha-drawer")
+        ?.shadowRoot?.querySelector(".mdc-drawer-app-content");
+    }
+    return drawerContent;
+  }
+
+  @property({ type: Object })
+  get scrollTarget() {
+    return this._scrollTarget || this._drawerContent || window;
+  }
+
+  protected updateRootPosition() {}
+
   static override styles = [
     styles,
     css`
+      .mdc-top-app-bar {
+        position: sticky;
+        top: 0;
+      }
       .mdc-top-app-bar__row {
         height: var(--header-height);
         border-bottom: var(--app-header-border-bottom);
       }
       .mdc-top-app-bar--fixed-adjust {
-        padding-top: var(--header-height);
+        padding-top: 0;
       }
       .mdc-top-app-bar {
         --mdc-typography-headline6-font-weight: 400;
