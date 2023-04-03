@@ -29,6 +29,9 @@ export class HaDrawer extends DrawerBase {
       .mdc-drawer {
         top: 0;
       }
+      .mdc-drawer.mdc-drawer--modal.mdc-drawer--open {
+        z-index: 200;
+      }
     `,
   ];
 }
