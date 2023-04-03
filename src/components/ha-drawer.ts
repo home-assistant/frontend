@@ -1,4 +1,9 @@
-import { DIRECTION_LEFT, DIRECTION_RIGHT, Manager, Swipe } from "@egjs/hammerjs";
+import {
+  DIRECTION_LEFT,
+  DIRECTION_RIGHT,
+  Manager,
+  Swipe,
+} from "@egjs/hammerjs";
 import { DrawerBase } from "@material/mwc-drawer/mwc-drawer-base";
 import { styles } from "@material/mwc-drawer/mwc-drawer.css";
 import { css, PropertyValues } from "lit";
@@ -13,7 +18,7 @@ export class HaDrawer extends DrawerBase {
     super.firstUpdated();
     this.mdcRoot.dir = document.dir;
   }
-  
+
   private _mc?: HammerManager;
 
   protected createAdapter() {
@@ -40,7 +45,8 @@ export class HaDrawer extends DrawerBase {
       });
       this._mc.add(
         new Swipe({
-          direction: this.mdcRoot.dir === "rtl" ? DIRECTION_RIGHT : DIRECTION_LEFT,
+          direction:
+            this.mdcRoot.dir === "rtl" ? DIRECTION_RIGHT : DIRECTION_LEFT,
         })
       );
       this._mc.on("swipeleft swiperight", () => {
