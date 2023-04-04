@@ -16,7 +16,9 @@ const handler = {
     console.warn(message);
     document
       .querySelector("home-assistant")
-      .dispatchEvent(new CustomEvent("write_log", { detail: { message } }));
+      .dispatchEvent(
+        new CustomEvent("write_log", { detail: { message, level: "warning" } })
+      );
     return Reflect.get(target, prop, receiver);
   },
   apply: function (target, thisArg, argumentsList) {
@@ -24,7 +26,9 @@ const handler = {
     console.warn(message);
     document
       .querySelector("home-assistant")
-      .dispatchEvent(new CustomEvent("write_log", { detail: { message } }));
+      .dispatchEvent(
+        new CustomEvent("write_log", { detail: { message, level: "warning" } })
+      );
     return Reflect.apply(target, thisArg, argumentsList);
   },
 };
