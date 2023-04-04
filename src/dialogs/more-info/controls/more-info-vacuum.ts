@@ -12,6 +12,8 @@ import {
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeAttributeValueDisplay } from "../../../common/entity/compute_attribute_display";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
@@ -113,11 +115,19 @@ class MoreInfoVacuum extends LitElement {
                     </span>
                     <span>
                       <strong>
-                        ${stateObj.attributes.status ||
-                        this.hass.localize(
-                          `component.vacuum.entity_component._.state.${stateObj.state}`
+                        ${computeAttributeValueDisplay(
+                          this.hass.localize,
+                          stateObj,
+                          this.hass.locale,
+                          this.hass.entities,
+                          "status"
                         ) ||
-                        stateObj.state}
+                        computeStateDisplay(
+                          this.hass.localize,
+                          stateObj,
+                          this.hass.locale,
+                          this.hass.entities
+                        )}
                       </strong>
                     </span>
                   </div>
