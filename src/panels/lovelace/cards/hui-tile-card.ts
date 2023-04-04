@@ -214,7 +214,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
     }
 
-    if (domain === "fan" && stateActive(stateObj)) {
+    if (domain === "fan") {
       const speedStateDisplay = computeFanSpeedStateDisplay(
         stateObj as FanEntity,
         this.hass!.locale
@@ -231,12 +231,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       this.hass!.entities
     );
 
-    if (domain === "cover" && stateActive(stateObj)) {
+    if (domain === "cover") {
       const positionStateDisplay = computeCoverPositionStateDisplay(
         stateObj as CoverEntity,
         this.hass!.locale
       );
-
       if (positionStateDisplay) {
         return `${stateDisplay} ⸱ ${positionStateDisplay}`;
       }
