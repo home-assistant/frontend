@@ -93,7 +93,6 @@ export class HuiViewEditor extends LitElement {
     const schema = this._schema(this.hass.localize);
 
     const data = {
-      theme: "Backend-selected",
       ...this._config,
       type: this._type,
     };
