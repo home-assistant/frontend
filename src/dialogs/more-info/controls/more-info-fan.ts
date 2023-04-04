@@ -23,6 +23,7 @@ import {
   computeAttributeValueDisplay,
 } from "../../../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -119,7 +120,7 @@ class MoreInfoFan extends LitElement {
     const liveValue = this._liveSpeed;
 
     const forcedState =
-      this._liveSpeed != null ? (this._liveSpeed ? "on" : "off") : undefined;
+      liveValue != null ? (liveValue ? "on" : "off") : undefined;
 
     const stateDisplay = computeStateDisplay(
       this.hass.localize,
@@ -135,7 +136,7 @@ class MoreInfoFan extends LitElement {
       liveValue
     );
 
-    if (positionStateDisplay) {
+    if (positionStateDisplay && (stateActive(this.stateObj!) || liveValue)) {
       return positionStateDisplay;
     }
     return stateDisplay;

@@ -9,6 +9,7 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { stateActive } from "../common/entity/state_active";
 import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { FrontendLocaleData } from "./translation";
 
@@ -69,7 +70,7 @@ export function fanSpeedToPercentage(
   if (speedValue === -1) {
     return 0;
   }
-  return Math.round(speedValue * step);
+  return Math.floor(speedValue * step);
 }
 
 export function computeFanSpeedCount(stateObj: FanEntity): number {
@@ -99,9 +100,12 @@ export function computeFanSpeedStateDisplay(
   locale: FrontendLocaleData,
   speed?: number
 ) {
-  const currentSpeed = speed ?? stateObj.attributes.percentage;
+  const percentage = stateActive(stateObj)
+    ? stateObj.attributes.percentage
+    : undefined;
+  const currentSpeed = speed ?? percentage;
 
   return currentSpeed
-    ? `${Math.round(currentSpeed)}${blankBeforePercent(locale)}%`
+    ? `${Math.floor(currentSpeed)}${blankBeforePercent(locale)}%`
     : "";
 }
