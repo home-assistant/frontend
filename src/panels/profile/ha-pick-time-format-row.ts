@@ -32,6 +32,7 @@ class TimeFormatRow extends LitElement {
           .disabled=${this.hass.locale === undefined}
           .value=${this.hass.locale.time_format}
           @selected=${this._handleFormatSelection}
+          naturalMenuWidth
         >
           ${Object.values(TimeFormat).map((format) => {
             const formattedTime = formatTime(date, {
