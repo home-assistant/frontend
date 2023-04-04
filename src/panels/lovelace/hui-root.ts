@@ -165,7 +165,7 @@ class HUIRoot extends LitElement {
                         .path=${mdiHelpCircle}
                       ></ha-icon-button>
                     </a>
-                    <ha-button-menu corner="BOTTOM_START">
+                    <ha-button-menu>
                       <ha-icon-button
                         slot="trigger"
                         .label=${this.hass!.localize(
@@ -319,10 +319,7 @@ class HUIRoot extends LitElement {
                       : ""}
                     ${this._showButtonMenu
                       ? html`
-                          <ha-button-menu
-                            corner="BOTTOM_START"
-                            slot="actionItems"
-                          >
+                          <ha-button-menu slot="actionItems">
                             <ha-icon-button
                               slot="trigger"
                               .label=${this.hass!.localize(

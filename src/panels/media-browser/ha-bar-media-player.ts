@@ -292,7 +292,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         stateObj &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
           ? html`
-              <ha-button-menu corner="BOTTOM_START" y="0" x="76">
+              <ha-button-menu y="0" x="76">
                 <ha-icon-button
                   slot="trigger"
                   .path=${mdiVolumeHigh}
@@ -310,7 +310,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
           : ""
       }
 
-          <ha-button-menu corner="BOTTOM_START">
+          <ha-button-menu >
             ${
               this.narrow
                 ? html`

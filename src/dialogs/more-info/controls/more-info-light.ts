@@ -173,7 +173,6 @@ class MoreInfoLight extends LitElement {
                 ${supportsEffects && this.stateObj.attributes.effect_list
                   ? html`
                       <ha-button-menu
-                        corner="BOTTOM_START"
                         @action=${this._handleEffectButton}
                         @closed=${stopPropagation}
                         fixed
