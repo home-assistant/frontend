@@ -168,7 +168,6 @@ class CloudAlexa extends LitElement {
               ${!emptyFilter
                 ? html`${iconButton}`
                 : html`<ha-button-menu
-                    corner="BOTTOM_START"
                     .entityId=${stateObj.entity_id}
                     @action=${this._exposeChanged}
                   >
@@ -225,7 +224,7 @@ class CloudAlexa extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass!.localize("ui.panel.config.cloud.alexa.title")}
       >
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}

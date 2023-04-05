@@ -274,7 +274,6 @@ class MoreInfoFan extends LitElement {
             supportsPresetMode && this.stateObj.attributes.preset_modes
               ? html`
                   <ha-button-menu
-                    corner="BOTTOM_START"
                     @action=${this._handlePresetMode}
                     @closed=${stopPropagation}
                     fixed

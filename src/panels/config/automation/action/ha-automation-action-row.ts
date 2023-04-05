@@ -182,8 +182,6 @@ export default class HaAutomationActionRow extends LitElement {
             : html`
                 <ha-button-menu
                   slot="icons"
-                  fixed
-                  corner="BOTTOM_START"
                   @action=${this._handleAction}
                   @click=${preventDefault}
                 >

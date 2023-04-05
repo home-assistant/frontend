@@ -99,6 +99,8 @@ class HassSubpage extends LitElement {
         display: block;
         height: 100%;
         background-color: var(--primary-background-color);
+        overflow: hidden;
+        position: relative;
       }
 
       :host([narrow]) {
@@ -152,7 +154,7 @@ class HassSubpage extends LitElement {
       }
 
       #fab {
-        position: fixed;
+        position: absolute;
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
         z-index: 1;

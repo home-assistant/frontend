@@ -194,11 +194,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           .path=${mdiMagnify}
           @click=${this._showQuickBar}
         ></ha-icon-button>
-        <ha-button-menu
-          slot="actionItems"
-          corner="BOTTOM_START"
-          @action=${this._handleMenuAction}
-        >
+        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}

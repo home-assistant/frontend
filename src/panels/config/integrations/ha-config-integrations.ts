@@ -382,7 +382,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             ? html`<span class="badge">${disabledCount}</span>`
             : ""}
           <ha-button-menu
-            corner="BOTTOM_START"
             multi
             @action=${this._handleMenuAction}
             @click=${this._preventDefault}
