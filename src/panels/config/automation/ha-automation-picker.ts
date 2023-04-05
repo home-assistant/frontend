@@ -287,7 +287,6 @@ class HaAutomationPicker extends LitElement {
         ></ha-icon-button>
         <ha-button-related-filter-menu
           slot="filter-menu"
-          corner="BOTTOM_START"
           .narrow=${this.narrow}
           .hass=${this.hass}
           .value=${this._filterValue}

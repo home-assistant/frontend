@@ -30,6 +30,7 @@ class FirstWeekdayRow extends LitElement {
           .disabled=${this.hass.locale === undefined}
           .value=${this.hass.locale.first_weekday}
           @selected=${this._handleFormatSelection}
+          naturalMenuWidth
         >
           ${[
             FirstWeekday.language,

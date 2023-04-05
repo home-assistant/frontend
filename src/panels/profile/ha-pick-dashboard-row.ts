@@ -37,6 +37,7 @@ class HaPickDashboardRow extends LitElement {
               .disabled=${!this._dashboards?.length}
               .value=${this.hass.defaultPanel}
               @selected=${this._dashboardChanged}
+              naturalMenuWidth
             >
               <mwc-list-item value="lovelace">
                 ${this.hass.localize(

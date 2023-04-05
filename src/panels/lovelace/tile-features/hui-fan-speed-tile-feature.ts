@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
@@ -12,6 +13,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import {
   computeFanSpeedCount,
   computeFanSpeedIcon,
+  FanEntity,
   FanEntityFeature,
   fanPercentageToSpeed,
   FanSpeed,
@@ -34,7 +36,7 @@ export const supportsFanSpeedTileFeature = (stateObj: HassEntity) => {
 class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: FanEntity;
 
   @state() private _config?: FanSpeedTileFeatureConfig;
 
@@ -79,6 +81,10 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
 
     const speedCount = computeFanSpeedCount(this.stateObj);
 
+    const percentage = stateActive(this.stateObj)
+      ? this.stateObj.attributes.percentage ?? 0
+      : 0;
+
     if (speedCount <= FAN_SPEED_COUNT_MAX_FOR_BUTTONS) {
       const options = FAN_SPEEDS[speedCount]!.map<ControlSelectOption>(
         (speed) => ({
@@ -88,10 +94,7 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
         })
       );
 
-      const speed = fanPercentageToSpeed(
-        this.stateObj,
-        this.stateObj.attributes.percentage ?? 0
-      );
+      const speed = fanPercentageToSpeed(this.stateObj, percentage);
 
       return html`
         <div class="container">
@@ -113,15 +116,12 @@ class HuiFanSpeedTileFeature extends LitElement implements LovelaceTileFeature {
       `;
     }
 
-    const percentage =
-      this.stateObj.attributes.percentage != null
-        ? Math.max(Math.round(this.stateObj.attributes.percentage), 0)
-        : undefined;
+    const value = Math.max(Math.round(percentage), 0);
 
     return html`
       <div class="container">
         <ha-control-slider
-          .value=${percentage}
+          .value=${value}
           min="0"
           max="100"
           .step=${this.stateObj.attributes.percentage_step ?? 1}

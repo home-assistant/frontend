@@ -92,11 +92,7 @@ export class HassioAddonStore extends LitElement {
         .route=${this.route}
         .header=${this.supervisor.localize("panel.store")}
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._handleAction}
-        >
+        <ha-button-menu slot="toolbar-icon" @action=${this._handleAction}>
           <ha-icon-button
             .label=${this.supervisor.localize("common.menu")}
             .path=${mdiDotsVertical}

@@ -70,11 +70,7 @@ class HaQrScanner extends LitElement {
       ? html`<video></video>
           <div id="canvas-container">
             ${this._cameras && this._cameras.length > 1
-              ? html`<ha-button-menu
-                  corner="BOTTOM_START"
-                  fixed
-                  @closed=${stopPropagation}
-                >
+              ? html`<ha-button-menu fixed @closed=${stopPropagation}>
                   <ha-icon-button
                     slot="trigger"
                     .label=${this.localize(

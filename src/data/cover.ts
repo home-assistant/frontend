@@ -2,6 +2,7 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { UNAVAILABLE } from "./entity";
@@ -114,10 +115,12 @@ export function computeCoverPositionStateDisplay(
   locale: FrontendLocaleData,
   position?: number
 ) {
-  const currentPosition =
-    position ??
-    stateObj.attributes.current_position ??
-    stateObj.attributes.current_tilt_position;
+  const statePosition = stateActive(stateObj)
+    ? stateObj.attributes.current_position ??
+      stateObj.attributes.current_tilt_position
+    : undefined;
+
+  const currentPosition = position ?? statePosition;
 
   return currentPosition && currentPosition !== 100
     ? `${Math.round(currentPosition)}${blankBeforePercent(locale)}%`

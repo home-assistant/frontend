@@ -39,6 +39,7 @@ export class HaPickLanguageRow extends LitElement {
           )}
           .value=${this.hass.locale.language}
           @selected=${this._languageSelectionChanged}
+          naturalMenuWidth
         >
           ${this._languages.map(
             (language) => html`<mwc-list-item

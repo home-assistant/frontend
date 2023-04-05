@@ -248,7 +248,7 @@ export class HassioNetwork extends LitElement {
               </ha-circular-progress>`
             : this.hass.localize("ui.common.save")}
         </mwc-button>
-        <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+        <ha-button-menu @action=${this._handleAction}>
           <ha-icon-button
             slot="trigger"
             .label=${"ui.common.menu"}
