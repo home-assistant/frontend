@@ -11,6 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/ha-drawer";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
@@ -61,6 +62,7 @@ export class HomeAssistantMain extends LitElement {
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : undefined}
+        .direction=${computeRTLDirection(this.hass)}
         @MDCDrawer:closed=${this._drawerClosed}
       >
         <ha-sidebar
@@ -174,7 +176,6 @@ export class HomeAssistantMain extends LitElement {
         /* remove the grey tap highlights in iOS on the fullscreen touch targets */
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         --mdc-drawer-width: 80px;
-        --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
       }
       :host([expanded]) {
         --mdc-drawer-width: calc(256px + env(safe-area-inset-left));

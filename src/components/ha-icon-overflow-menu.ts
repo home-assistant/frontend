@@ -38,7 +38,6 @@ export class HaIconOverflowMenu extends LitElement {
               @click=${this._handleIconOverflowMenuOpened}
               @closed=${this._handleIconOverflowMenuClosed}
               class="ha-icon-overflow-menu-overflow"
-              corner="BOTTOM_START"
               absolute
             >
               <ha-icon-button

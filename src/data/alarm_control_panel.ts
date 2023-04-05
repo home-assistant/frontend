@@ -53,53 +53,46 @@ export const callAlarmAction = (
 };
 
 export type AlarmMode =
-  | "away"
-  | "home"
-  | "night"
-  | "vacation"
-  | "custom_bypass"
+  | "armed_home"
+  | "armed_away"
+  | "armed_night"
+  | "armed_vacation"
+  | "armed_custom_bypass"
   | "disarmed";
 
 type AlarmConfig = {
   service: string;
   feature?: AlarmControlPanelEntityFeature;
-  state: string;
   path: string;
 };
 export const ALARM_MODES: Record<AlarmMode, AlarmConfig> = {
-  away: {
-    feature: AlarmControlPanelEntityFeature.ARM_AWAY,
-    service: "alarm_arm_away",
-    state: "armed_away",
-    path: mdiLock,
-  },
-  home: {
+  armed_home: {
     feature: AlarmControlPanelEntityFeature.ARM_HOME,
     service: "alarm_arm_home",
-    state: "armed_home",
     path: mdiHome,
   },
-  custom_bypass: {
-    feature: AlarmControlPanelEntityFeature.ARM_CUSTOM_BYPASS,
-    service: "alarm_arm_custom_bypass",
-    state: "armed_custom_bypass",
-    path: mdiShield,
+  armed_away: {
+    feature: AlarmControlPanelEntityFeature.ARM_AWAY,
+    service: "alarm_arm_away",
+    path: mdiLock,
   },
-  night: {
+  armed_night: {
     feature: AlarmControlPanelEntityFeature.ARM_NIGHT,
     service: "alarm_arm_night",
-    state: "armed_night",
     path: mdiMoonWaningCrescent,
   },
-  vacation: {
+  armed_vacation: {
     feature: AlarmControlPanelEntityFeature.ARM_VACATION,
     service: "alarm_arm_vacation",
-    state: "armed_vacation",
     path: mdiAirplane,
+  },
+  armed_custom_bypass: {
+    feature: AlarmControlPanelEntityFeature.ARM_CUSTOM_BYPASS,
+    service: "alarm_arm_custom_bypass",
+    path: mdiShield,
   },
   disarmed: {
     service: "alarm_disarm",
-    state: "disarmed",
     path: mdiShieldOff,
   },
 };

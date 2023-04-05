@@ -50,9 +50,11 @@ const maybeRenderError = (
     return "";
   }
 
-  return html`<ha-alert alert-type="error">
-    ${run.error!.message} (${run.error!.code})
-  </ha-alert>`;
+  return html`
+    <ha-alert alert-type="error">
+      ${run.error!.message} (${run.error!.code})
+    </ha-alert>
+  `;
 };
 
 const renderProgress = (
@@ -76,10 +78,9 @@ const renderProgress = (
   }
 
   if (!finishEvent) {
-    return html`<ha-circular-progress
-      size="tiny"
-      active
-    ></ha-circular-progress>`;
+    return html`
+      <ha-circular-progress size="tiny" active></ha-circular-progress>
+    `;
   }
 
   const duration =
@@ -109,7 +110,7 @@ const dataMinusKeysRender = (
   const result = {};
   let render = false;
   for (const key in data) {
-    if (key in keys) {
+    if (key in keys || key === "done") {
       continue;
     }
     render = true;
