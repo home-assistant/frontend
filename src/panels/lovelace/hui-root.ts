@@ -1057,6 +1057,7 @@ class HUIRoot extends LitElement {
           );
           overflow: auto;
           transform: translateZ(0);
+          display: flex;
         }
         /**
          * In edit mode we have the tab bar on a new line *
@@ -1079,6 +1080,7 @@ class HUIRoot extends LitElement {
           * https://github.com/home-assistant/home-assistant-polymer/pull/3806
           */
           flex: 1 1 100%;
+          height: 100%;
           max-width: 100%;
           padding-bottom: env(safe-area-inset-bottom);
           display: block;
