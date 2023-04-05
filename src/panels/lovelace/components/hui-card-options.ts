@@ -80,7 +80,7 @@ export class HuiCardOptions extends LitElement {
               @click=${this._cardUp}
               ?disabled=${this.path![1] === 0}
             ></ha-icon-button>
-            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+            <ha-button-menu @action=${this._handleAction}>
               <ha-icon-button
                 slot="trigger"
                 .label=${this.hass!.localize(

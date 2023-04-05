@@ -69,7 +69,7 @@ class HaConfigSectionUpdates extends LitElement {
             .path=${mdiUpdate}
             @click=${this._checkUpdates}
           ></ha-icon-button>
-          <ha-button-menu corner="BOTTOM_START" multi>
+          <ha-button-menu multi>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}

@@ -4711,7 +4711,9 @@
           },
           "primary_color": "Primary color",
           "accent_color": "Accent color",
-          "reset": "Reset"
+          "reset": "Reset",
+          "backend-selected": "Use backend preferred theme",
+          "default": "Default"
         },
         "dashboard": {
           "header": "Dashboard",

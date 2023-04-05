@@ -267,11 +267,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       >
         ${this.hass.userData?.showAdvanced
           ? html`
-              <ha-button-menu
-                corner="BOTTOM_START"
-                slot="toolbar-icon"
-                activatable
-              >
+              <ha-button-menu slot="toolbar-icon" activatable>
                 <ha-icon-button
                   slot="trigger"
                   .label=${this.hass.localize("ui.common.menu")}

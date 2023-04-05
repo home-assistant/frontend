@@ -620,7 +620,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               </div>
             `
           : html`
-              <ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
+              <ha-button-menu slot="filter-menu" multi>
                 <ha-icon-button
                   slot="trigger"
                   .label=${this.hass!.localize(
