@@ -451,6 +451,7 @@ export class MoreInfoDialog extends LitElement {
           --dialog-surface-position: static;
           --dialog-content-position: static;
           --dialog-content-padding: 0;
+          --chart-base-position: static;
         }
 
         ha-header-bar {
