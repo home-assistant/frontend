@@ -748,7 +748,7 @@ export class HaConfigDevicePage extends LitElement {
 
                           ${actions.length
                             ? html`
-                                <ha-button-menu corner="BOTTOM_START">
+                                <ha-button-menu>
                                   <ha-icon-button
                                     slot="trigger"
                                     .label=${this.hass.localize(

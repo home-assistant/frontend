@@ -60,7 +60,7 @@ export class HaConfigFlowCard extends LitElement {
             }`
           )}
         ></mwc-button>
-        <ha-button-menu corner="BOTTOM_START">
+        <ha-button-menu>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}

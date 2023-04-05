@@ -283,7 +283,6 @@ export class HaTargetPicker extends LitElement {
     return html`<mwc-menu-surface
       open
       .anchor=${this._addContainer}
-      .corner=${"BOTTOM_START"}
       @closed=${this._onClosed}
       @opened=${this._onOpened}
       @opened-changed=${this._openedChanged}

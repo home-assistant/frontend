@@ -448,7 +448,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
-        <ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
+        <ha-button-menu slot="filter-menu" multi>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass!.localize(

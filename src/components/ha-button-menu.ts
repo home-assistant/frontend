@@ -10,7 +10,7 @@ import type { HaIconButton } from "./ha-icon-button";
 export class HaButtonMenu extends LitElement {
   protected readonly [FOCUS_TARGET];
 
-  @property() public corner: Corner = "TOP_START";
+  @property() public corner: Corner = "BOTTOM_START";
 
   @property() public menuCorner: MenuCorner = "START";
 

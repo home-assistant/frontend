@@ -228,7 +228,6 @@ class CloudGoogleAssistant extends LitElement {
               ${!emptyFilter
                 ? html`${iconButton}`
                 : html`<ha-button-menu
-                    corner="BOTTOM_START"
                     .entityId=${entity.entity_id}
                     @action=${this._exposeChanged}
                   >
@@ -302,7 +301,7 @@ class CloudGoogleAssistant extends LitElement {
         .hass=${this.hass}
         .header=${this.hass!.localize("ui.panel.config.cloud.google.title")}
         .narrow=${this.narrow}>
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu  slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}

@@ -228,7 +228,6 @@ export class HaSceneEditor extends SubscribeMixin(
           : this.hass.localize("ui.panel.config.scene.editor.default_name")}
       >
         <ha-button-menu
-          corner="BOTTOM_START"
           slot="toolbar-icon"
           @action=${this._handleMenuAction}
           activatable

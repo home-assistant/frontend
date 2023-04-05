@@ -115,7 +115,7 @@ export class HaConfigLogs extends LitElement {
         ${isComponentLoaded(this.hass, "hassio") &&
         this.hass.userData?.showAdvanced
           ? html`
-              <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+              <ha-button-menu slot="toolbar-icon">
                 <ha-button
                   slot="trigger"
                   .label=${this._logProviders.find(

@@ -35,7 +35,7 @@ interface FilterValue {
 export class HaRelatedFilterButtonMenu extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public corner: Corner = "TOP_START";
+  @property() public corner: Corner = "BOTTOM_START";
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 

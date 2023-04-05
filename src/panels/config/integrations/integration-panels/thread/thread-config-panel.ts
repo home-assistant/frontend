@@ -69,7 +69,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
 
     return html`
       <hass-subpage .narrow=${this.narrow} .hass=${this.hass} header="Thread">
-        <ha-button-menu slot="toolbar-icon" corner="BOTTOM_START">
+        <ha-button-menu slot="toolbar-icon">
           <ha-icon-button
             .path=${mdiDotsVertical}
             slot="trigger"
@@ -186,7 +186,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   <span slot="secondary">${router.server}</span>
                   ${router.extended_address === this._otbrInfo?.extended_address
                     ? html`<ha-button-menu
-                        corner="BOTTOM_START"
                         slot="meta"
                         @action=${this._handleRouterAction}
                       >
