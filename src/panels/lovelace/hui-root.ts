@@ -1049,6 +1049,13 @@ class HUIRoot extends LitElement {
         #view {
           margin-top: calc(var(--header-height) + env(safe-area-inset-top));
           height: calc(100vh - var(--header-height) - env(safe-area-inset-top));
+          padding-left: env(safe-area-inset-left);
+          padding-right: env(safe-area-inset-right);
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
+          overflow: auto;
           transform: translateZ(0);
           display: flex;
         }
@@ -1072,15 +1079,11 @@ class HUIRoot extends LitElement {
           *
           * https://github.com/home-assistant/home-assistant-polymer/pull/3806
           */
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
-          overflow: auto;
-          width: 100%;
+          flex: 1 1 100%;
           height: 100%;
+          max-width: 100%;
+          padding-bottom: env(safe-area-inset-bottom);
+          display: block;
         }
         .hide-tab {
           display: none;
