@@ -46,6 +46,7 @@ class ConfigAnalytics extends LitElement {
             translation_key_panel="config"
             @analytics-preferences-changed=${this._preferencesChanged}
             .hass=${this.hass}
+            .localize=${this.hass.localize}
             .analytics=${this._analyticsDetails}
           ></ha-analytics>
         </div>

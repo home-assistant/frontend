@@ -23,11 +23,12 @@ class OnboardingAnalytics extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <p>${this.hass.localize("ui.panel.page-onboarding.analytics.intro")}</p>
+      <p>${this.localize("ui.panel.page-onboarding.analytics.intro")}</p>
       <ha-analytics
         translation_key_panel="page-onboarding"
         @analytics-preferences-changed=${this._preferencesChanged}
         .hass=${this.hass}
+        .localize=${this.localize}
         .analytics=${this._analyticsDetails}
       >
       </ha-analytics>
@@ -41,7 +42,7 @@ class OnboardingAnalytics extends LitElement {
           target="_blank"
           rel="noreferrer"
         >
-          ${this.hass.localize("ui.panel.page-onboarding.analytics.learn_more")}
+          ${this.localize("ui.panel.page-onboarding.analytics.learn_more")}
         </a>
       </div>
     `;
