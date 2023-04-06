@@ -111,7 +111,12 @@ export class HUIView extends ReactiveElement {
 
   private _applyBackgroundTheme() {
     if (this._viewConfigTheme) {
-      const theme = this.hass.themes.themes[this._viewConfigTheme];
+      const theme = this.hass.themes?.themes[this._viewConfigTheme];
+      if (!theme) {
+        this.parentElement?.style.removeProperty("--lovelace-background");
+        this.parentElement?.style.removeProperty("--primary-background-color");
+        return;
+      }
       if (theme["lovelace-background"]) {
         this.parentElement?.style.setProperty(
           "--lovelace-background",

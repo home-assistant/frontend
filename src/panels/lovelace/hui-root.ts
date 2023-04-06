@@ -1070,7 +1070,7 @@ class HUIRoot extends LitElement {
             var(--header-height) + 48px + env(safe-area-inset-top)
           );
         }
-        #view > * {
+        hui-view {
           /**
           * The view could get larger than the window in Firefox
           * to prevent that we set the max-width to 100%
@@ -1082,7 +1082,6 @@ class HUIRoot extends LitElement {
           flex: 1 1 100%;
           height: 100%;
           max-width: 100%;
-          padding-bottom: env(safe-area-inset-bottom);
           display: block;
         }
         .hide-tab {
