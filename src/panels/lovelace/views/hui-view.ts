@@ -161,9 +161,8 @@ export class HUIView extends ReactiveElement {
           | undefined;
 
         if (
-          !oldHass ||
-          this.hass.themes !== oldHass.themes ||
-          this.hass.selectedTheme !== oldHass.selectedTheme
+          changedProperties.has("hass") &&
+          (!oldHass || this.hass.themes !== oldHass.themes)
         ) {
           applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
         }

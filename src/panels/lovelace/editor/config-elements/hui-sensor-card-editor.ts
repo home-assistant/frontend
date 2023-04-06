@@ -11,7 +11,6 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { entityId } from "../../../../common/structs/is-entity-id";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
@@ -24,7 +23,7 @@ import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-sensor-card";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    entity: optional(entityId()),
+    entity: optional(string()),
     name: optional(string()),
     icon: optional(string()),
     graph: optional(union([literal("line"), literal("none")])),
