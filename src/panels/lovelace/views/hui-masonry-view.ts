@@ -298,7 +298,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       :host {
         display: block;
         padding-top: 4px;
-        box-sizing: border-box;
         padding-bottom: env(safe-area-inset-bottom);
       }
 
@@ -328,15 +327,13 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       }
 
       ha-fab {
-        position: sticky;
-        float: right;
+        position: absolute;
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
         z-index: 1;
       }
 
       ha-fab.rtl {
-        float: left;
         right: auto;
         left: calc(16px + env(safe-area-inset-left));
       }
