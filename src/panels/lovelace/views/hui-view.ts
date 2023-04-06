@@ -104,6 +104,36 @@ export class HUIView extends ReactiveElement {
     return this;
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this._applyBackgroundTheme();
+  }
+
+  private _applyBackgroundTheme() {
+    if (this._viewConfigTheme) {
+      const theme = this.hass.themes.themes[this._viewConfigTheme];
+      if (theme["lovelace-background"]) {
+        this.parentElement?.style.setProperty(
+          "--lovelace-background",
+          theme["lovelace-background"]
+        );
+      } else {
+        this.parentElement?.style.removeProperty("--lovelace-background");
+      }
+      if (theme["primary-background-color"]) {
+        this.parentElement?.style.setProperty(
+          "--primary-background-color",
+          theme["primary-background-color"]
+        );
+      } else {
+        this.parentElement?.style.removeProperty("--primary-background-color");
+      }
+    } else {
+      this.parentElement?.style.removeProperty("--lovelace-background");
+      this.parentElement?.style.removeProperty("--primary-background-color");
+    }
+  }
+
   public willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
@@ -166,6 +196,7 @@ export class HUIView extends ReactiveElement {
           this.hass.selectedTheme !== oldHass.selectedTheme
         ) {
           applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
+          this._applyBackgroundTheme();
         }
       }
       if (changedProperties.has("narrow")) {
@@ -224,6 +255,8 @@ export class HUIView extends ReactiveElement {
 
     applyThemesOnElement(this, this.hass.themes, viewConfig.theme);
     this._viewConfigTheme = viewConfig.theme;
+
+    this._applyBackgroundTheme();
 
     if (addLayoutElement) {
       while (this.lastChild) {
