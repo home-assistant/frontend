@@ -27,7 +27,6 @@ class OnboardingAnalytics extends LitElement {
       <ha-analytics
         translation_key_panel="page-onboarding"
         @analytics-preferences-changed=${this._preferencesChanged}
-        .hass=${this.hass}
         .localize=${this.localize}
         .analytics=${this._analyticsDetails}
       >

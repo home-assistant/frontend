@@ -5,7 +5,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
 import type { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-settings-row";
 import "./ha-switch";
 import type { HaSwitch } from "./ha-switch";
@@ -20,8 +19,6 @@ declare global {
 
 @customElement("ha-analytics")
 export class HaAnalytics extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ attribute: false }) public analytics?: Analytics;
