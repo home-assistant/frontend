@@ -518,10 +518,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           padding-bottom: max(env(safe-area-inset-bottom), 16px);
         }
 
-        state-history-charts {
-          overflow-x: hidden;
-        }
-
         :host([virtualize]) {
           height: 100%;
         }
