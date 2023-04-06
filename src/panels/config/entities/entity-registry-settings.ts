@@ -663,7 +663,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               )}
             </ha-select>`
           : ""}
-        ${this._helperConfigEntry
+        ${this._helperConfigEntry && this._helperConfigEntry.supports_options
           ? html`
               <div class="row">
                 <mwc-button
