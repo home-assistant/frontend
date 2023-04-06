@@ -901,7 +901,7 @@
           }
         },
         "zone": {
-          "graph_unit": "People home"
+          "graph_unit": "People in zone"
         },
         "light": {
           "toggle": "Toggle",
