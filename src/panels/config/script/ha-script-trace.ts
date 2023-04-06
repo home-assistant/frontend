@@ -116,7 +116,7 @@ export class HaScriptTrace extends LitElement {
             `
           : ""}
 
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -508,7 +508,7 @@ export class HaScriptTrace extends LitElement {
         }
 
         .main {
-          height: calc(100% - 56px);
+          height: calc(100% - var(--header-height));
           display: flex;
           background-color: var(--card-background-color);
         }

@@ -45,6 +45,7 @@ import { processConfigEntities } from "../../common/process-config-entities";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
+import { DEFAULT_DAYS_TO_SHOW } from "../../cards/hui-statistics-graph-card";
 
 const statTypeStruct = union([
   literal("state"),
@@ -172,7 +173,7 @@ export class HuiStatisticsGraphCardEditor
             },
             {
               name: "days_to_show",
-              default: 30,
+              default: DEFAULT_DAYS_TO_SHOW,
               selector: { number: { min: 1, mode: "box" } },
             },
             {

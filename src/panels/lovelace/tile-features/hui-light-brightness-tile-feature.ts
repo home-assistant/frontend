@@ -1,9 +1,9 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
-import "../../../components/tile/ha-tile-slider";
+import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity";
 import { lightSupportsBrightness } from "../../../data/light";
 import { HomeAssistant } from "../../../types";
@@ -39,14 +39,14 @@ class HuiLightBrightnessTileFeature
     this._config = config;
   }
 
-  protected render(): TemplateResult | null {
+  protected render() {
     if (
       !this._config ||
       !this.hass ||
       !this.stateObj ||
       !supportsLightBrightnessTileFeature(this.stateObj)
     ) {
-      return null;
+      return nothing;
     }
 
     const position =
@@ -59,7 +59,7 @@ class HuiLightBrightnessTileFeature
 
     return html`
       <div class="container">
-        <ha-tile-slider
+        <ha-control-slider
           .value=${position}
           min="1"
           max="100"
@@ -67,7 +67,7 @@ class HuiLightBrightnessTileFeature
           .disabled=${this.stateObj!.state === UNAVAILABLE}
           @value-changed=${this._valueChanged}
           .label=${this.hass.localize("ui.card.light.brightness")}
-        ></ha-tile-slider>
+        ></ha-control-slider>
       </div>
     `;
   }
@@ -84,10 +84,12 @@ class HuiLightBrightnessTileFeature
 
   static get styles() {
     return css`
-      ha-tile-slider {
-        --tile-slider-color: var(--tile-color);
-        --tile-slider-background: var(--tile-color);
-        --tile-slider-background-opacity: 0.2;
+      ha-control-slider {
+        --control-slider-color: var(--tile-color);
+        --control-slider-background: var(--tile-color);
+        --control-slider-background-opacity: 0.2;
+        --control-slider-thickness: 40px;
+        --control-slider-border-radius: 10px;
       }
       .container {
         padding: 0 12px 12px 12px;

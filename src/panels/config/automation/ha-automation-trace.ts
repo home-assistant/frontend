@@ -113,7 +113,7 @@ export class HaAutomationTrace extends LitElement {
               </a>
             `
           : ""}
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -511,7 +511,7 @@ export class HaAutomationTrace extends LitElement {
           justify-content: center;
           font-size: 20px;
           height: var(--header-height);
-          padding: 0 16px;
+          padding: 4px;
           background-color: var(--primary-background-color);
           font-weight: 400;
           color: var(--app-header-text-color, white);
@@ -520,7 +520,7 @@ export class HaAutomationTrace extends LitElement {
         }
 
         .main {
-          height: calc(100% - 56px);
+          height: calc(100% - var(--header-height));
           display: flex;
           background-color: var(--card-background-color);
           direction: ltr;

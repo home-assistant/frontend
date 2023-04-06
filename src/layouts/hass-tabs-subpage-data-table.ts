@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -323,7 +323,6 @@ export class HaTabsSubpageDataTable extends LitElement {
         --text-field-overflow: initial;
         display: flex;
         justify-content: flex-end;
-        margin-right: 8px;
         color: var(--primary-text-color);
       }
       .active-filters {

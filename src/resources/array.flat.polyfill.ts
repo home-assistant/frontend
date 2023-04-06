@@ -1,5 +1,4 @@
 /* eslint-disable no-extend-native */
-// @ts-expect-error
 if (!Array.prototype.flat) {
   Object.defineProperty(Array.prototype, "flat", {
     configurable: true,

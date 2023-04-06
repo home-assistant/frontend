@@ -5,7 +5,7 @@ import {
   mdiOpenInNew,
   mdiPlus,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { html, LitElement, nothing, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -91,11 +91,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
                       style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
                       .path=${mdiCheckCircleOutline}
                     ></ha-svg-icon>
-                    <paper-tooltip animation-delay="0">
+                    <simple-tooltip animation-delay="0">
                       ${this.hass.localize(
                         `ui.panel.config.lovelace.dashboards.default_dashboard`
                       )}
-                    </paper-tooltip>
+                    </simple-tooltip>
                   `
                 : ""}
             `;
@@ -267,11 +267,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       >
         ${this.hass.userData?.showAdvanced
           ? html`
-              <ha-button-menu
-                corner="BOTTOM_START"
-                slot="toolbar-icon"
-                activatable
-              >
+              <ha-button-menu slot="toolbar-icon" activatable>
                 <ha-icon-button
                   slot="trigger"
                   .label=${this.hass.localize("ui.common.menu")}

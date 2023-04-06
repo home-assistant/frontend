@@ -48,8 +48,8 @@ class HaDataTableIcon extends LitElement {
         outline: none;
         font-size: 10px;
         line-height: 1;
-        background-color: var(--paper-tooltip-background, #616161);
-        color: var(--paper-tooltip-text-color, white);
+        background-color: var(--simple-tooltip-background, #616161);
+        color: var(--simple-tooltip-text-color, white);
         padding: 8px;
         border-radius: 2px;
       }

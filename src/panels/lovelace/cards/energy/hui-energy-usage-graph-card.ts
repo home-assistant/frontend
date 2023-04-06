@@ -148,6 +148,9 @@ export class HuiEnergyUsageGraphCard
       const options: ChartOptions = {
         parsing: false,
         animation: false,
+        interaction: {
+          mode: "x",
+        },
         scales: {
           x: {
             type: "time",
@@ -162,9 +165,6 @@ export class HuiEnergyUsageGraphCard
               maxRotation: 0,
               sampleSize: 5,
               autoSkipPadding: 20,
-              major: {
-                enabled: true,
-              },
               font: (context) =>
                 context.tick && context.tick.major
                   ? ({ weight: "bold" } as any)
@@ -204,8 +204,6 @@ export class HuiEnergyUsageGraphCard
         },
         plugins: {
           tooltip: {
-            mode: "x",
-            intersect: true,
             position: "nearest",
             filter: (val) => val.formattedValue !== "0",
             callbacks: {
@@ -265,13 +263,10 @@ export class HuiEnergyUsageGraphCard
             },
           },
         },
-        hover: {
-          mode: "nearest",
-        },
         elements: {
           bar: { borderWidth: 1.5, borderRadius: 4 },
           point: {
-            hitRadius: 5,
+            hitRadius: 50,
           },
         },
         // @ts-expect-error

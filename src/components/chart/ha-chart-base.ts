@@ -276,7 +276,11 @@ export default class HaChartBase extends LitElement {
       top: this.chart!.canvas.offsetTop + context.tooltip.caretY + 12 + "px",
       left:
         this.chart!.canvas.offsetLeft +
-        clamp(context.tooltip.caretX, 100, this.clientWidth - 100) -
+        clamp(
+          context.tooltip.caretX,
+          100,
+          this.clientWidth - 100 - this.paddingYAxis
+        ) -
         100 +
         "px",
     };
@@ -302,6 +306,7 @@ export default class HaChartBase extends LitElement {
     return css`
       :host {
         display: block;
+        position: var(--chart-base-position, relative);
       }
       .chartContainer {
         overflow: hidden;

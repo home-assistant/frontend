@@ -451,6 +451,7 @@ export class MoreInfoDialog extends LitElement {
           --dialog-surface-position: static;
           --dialog-content-position: static;
           --dialog-content-padding: 0;
+          --chart-base-position: static;
         }
 
         ha-header-bar {
@@ -478,7 +479,7 @@ export class MoreInfoDialog extends LitElement {
 
         @media all and (max-width: 450px) {
           .child-view > * {
-            min-height: calc(100vh - 56px);
+            min-height: calc(100vh - var(--header-height));
           }
         }
 

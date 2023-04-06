@@ -121,9 +121,23 @@ interface EMIncomingMessageShowNotifications {
   command: "notifications/show";
 }
 
+interface EMIncomingMessageToggleSidebar {
+  id: number;
+  type: "command";
+  command: "sidebar/toggle";
+}
+
+interface EMIncomingMessageShowSidebar {
+  id: number;
+  type: "command";
+  command: "sidebar/show";
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
-  | EMIncomingMessageShowNotifications;
+  | EMIncomingMessageShowNotifications
+  | EMIncomingMessageToggleSidebar
+  | EMIncomingMessageShowSidebar;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess

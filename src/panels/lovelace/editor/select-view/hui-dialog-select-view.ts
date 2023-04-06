@@ -111,7 +111,7 @@ export class HuiDialogSelectView extends LitElement {
                       <mwc-radio-list-item
                         .graphic=${this._config?.views.some(({ icon }) => icon)
                           ? "icon"
-                          : null}
+                          : nothing}
                         @click=${this._viewChanged}
                         .value=${idx.toString()}
                         .selected=${this._selectedViewIdx === idx}

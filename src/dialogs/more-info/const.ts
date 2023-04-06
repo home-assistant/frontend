@@ -17,6 +17,8 @@ export const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
 export const EDITABLE_DOMAINS_WITH_UNIQUE_ID = ["script"];
 /** Domains with with new more info design. */
 export const DOMAINS_WITH_NEW_MORE_INFO = [
+  "alarm_control_panel",
+  "cover",
   "fan",
   "input_boolean",
   "light",

@@ -62,7 +62,7 @@ export const showDialog = async (
   dialogParams: unknown,
   dialogImport?: () => Promise<unknown>,
   addHistory = true
-) => {
+): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
     if (!dialogImport) {
       if (__DEV__) {
@@ -71,7 +71,7 @@ export const showDialog = async (
           "Asked to show dialog that's not loaded and can't be imported"
         );
       }
-      return;
+      return false;
     }
     LOADED[dialogTag] = {
       element: dialogImport().then(() => {
@@ -128,6 +128,8 @@ export const showDialog = async (
   // so it's guaranteed to be on top of the other elements
   root.appendChild(dialogElement);
   dialogElement.showDialog(dialogParams);
+
+  return true;
 };
 
 export const replaceDialog = (dialogElement: HassDialog) => {

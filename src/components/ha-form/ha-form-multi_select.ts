@@ -82,7 +82,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       <ha-button-menu
         .disabled=${this.disabled}
         fixed
-        corner="BOTTOM_START"
         @opened=${this._handleOpen}
         @closed=${this._handleClose}
         multi

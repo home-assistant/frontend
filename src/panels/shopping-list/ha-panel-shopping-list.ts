@@ -1,6 +1,4 @@
 import { mdiMicrophone } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
   CSSResultGroup,
@@ -14,8 +12,8 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
+import "../../components/ha-top-app-bar-fixed";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { HuiErrorCard } from "../lovelace/cards/hui-error-card";
@@ -51,31 +49,29 @@ class PanelShoppingList extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-app-layout>
-        <app-header fixed slot="header">
-          <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.shopping_list")}</div>
-            ${this._conversation(this.hass.config.components)
-              ? html`
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.shopping_list.start_conversation"
-                    )}
-                    .path=${mdiMicrophone}
-                    @click=${this._showVoiceCommandDialog}
-                  ></ha-icon-button>
-                `
-              : ""}
-          </app-toolbar>
-        </app-header>
+      <ha-top-app-bar-fixed>
+        <ha-menu-button
+          slot="navigationIcon"
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+        ></ha-menu-button>
+        <div slot="title">${this.hass.localize("panel.shopping_list")}</div>
+        ${this._conversation(this.hass.config.components)
+          ? html`
+              <ha-icon-button
+                slot="actionItems"
+                .label=${this.hass!.localize(
+                  "ui.panel.shopping_list.start_conversation"
+                )}
+                .path=${mdiMicrophone}
+                @click=${this._showVoiceCommandDialog}
+              ></ha-icon-button>
+            `
+          : ""}
         <div id="columns">
           <div class="column">${this._card}</div>
         </div>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
     `;
   }
 
@@ -87,21 +83,6 @@ class PanelShoppingList extends LitElement {
     return [
       haStyle,
       css`
-        :host {
-          display: block;
-          height: 100%;
-        }
-        app-header {
-          --mdc-theme-primary: var(--app-header-text-color);
-        }
-        :host([narrow]) app-toolbar mwc-button {
-          width: 65px;
-        }
-        .heading {
-          overflow: hidden;
-          white-space: nowrap;
-          margin-top: 4px;
-        }
         #columns {
           display: flex;
           flex-direction: row;

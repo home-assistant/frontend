@@ -25,8 +25,6 @@ export type ControlSelectOption = {
 export class HaControlSelect extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
 
-  @property() public label?: string;
-
   @property() public options?: ControlSelectOption[];
 
   @property() public value?: string;
@@ -100,10 +98,11 @@ export class HaControlSelect extends LitElement {
 
   private _handleKeydown(ev: KeyboardEvent) {
     if (!this.options || this._activeIndex == null || this.disabled) return;
+    const value = this.options[this._activeIndex].value;
     switch (ev.key) {
       case " ":
-        this.value = this.options[this._activeIndex].value;
-        fireEvent(this, "value-changed", { value: this.value });
+        this.value = value;
+        fireEvent(this, "value-changed", { value });
         break;
       case "ArrowUp":
       case "ArrowLeft":
@@ -132,7 +131,7 @@ export class HaControlSelect extends LitElement {
     if (this.disabled) return;
     const value = (ev.target as any).value;
     this.value = value;
-    fireEvent(this, "value-changed", { value: this.value });
+    fireEvent(this, "value-changed", { value });
   }
 
   private _handleOptionMouseDown(ev: MouseEvent) {
@@ -176,6 +175,7 @@ export class HaControlSelect extends LitElement {
         .value=${option.value}
         aria-selected=${this.value === option.value}
         aria-label=${ifDefined(option.label)}
+        title=${ifDefined(option.label)}
         @click=${this._handleOptionClick}
         @mousedown=${this._handleOptionMouseDown}
         @mouseup=${this._handleOptionMouseUp}
@@ -204,8 +204,11 @@ export class HaControlSelect extends LitElement {
         --control-select-background: var(--disabled-color);
         --control-select-background-opacity: 0.2;
         --control-select-thickness: 40px;
-        --control-select-border-radius: 12px;
+        --control-select-border-radius: 10px;
         --control-select-padding: 4px;
+        --control-select-button-border-radius: calc(
+          var(--control-select-border-radius) - var(--control-select-padding)
+        );
         --mdc-icon-size: 20px;
         height: var(--control-select-thickness);
         width: 100%;
@@ -262,9 +265,7 @@ export class HaControlSelect extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: calc(
-          var(--control-select-border-radius) - var(--control-select-padding)
-        );
+        border-radius: var(--control-select-button-border-radius);
         overflow: hidden;
         color: var(--primary-text-color);
         /* For safari border-radius overflow */
@@ -302,6 +303,16 @@ export class HaControlSelect extends LitElement {
         justify-content: center;
         flex-direction: column;
         text-align: center;
+        padding: 2px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .option .content span {
+        display: block;
+        width: 100%;
+        -webkit-hyphens: auto;
+        -moz-hyphens: auto;
+        hyphens: auto;
       }
       :host([vertical]) {
         width: var(--control-select-thickness);

@@ -1,12 +1,11 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
+import "../../components/ha-top-app-bar-fixed";
 import { isExternal } from "../../data/external";
 import {
   CoreFrontendUserData,
@@ -14,7 +13,6 @@ import {
 } from "../../data/frontend";
 import { RefreshToken } from "../../data/refresh_token";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
-import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-advanced-mode-row";
@@ -67,16 +65,13 @@ class HaPanelProfile extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-app-layout>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.profile")}</div>
-          </app-toolbar>
-        </app-header>
+      <ha-top-app-bar-fixed>
+        <ha-menu-button
+          slot="navigationIcon"
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+        ></ha-menu-button>
+        <div slot="title">${this.hass.localize("panel.profile")}</div>
 
         <div class="content">
           <ha-card .header=${this.hass.user!.name}>
@@ -205,7 +200,7 @@ class HaPanelProfile extends LitElement {
             @hass-refresh-tokens=${this._refreshRefreshTokens}
           ></ha-long-lived-access-tokens-card>
         </div>
-      </ha-app-layout>
+      </ha-top-app-bar-fixed>
     `;
   }
 

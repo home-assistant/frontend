@@ -27,7 +27,7 @@ export class HaPickLanguageRow extends LitElement {
         >
         <span slot="description">
           <a
-            href="https://developers.home-assistant.io/docs/en/internationalization_translation.html"
+            href="https://developers.home-assistant.io/docs/translations/"
             target="_blank"
             rel="noreferrer"
             >${this.hass.localize("ui.panel.profile.language.link_promo")}</a
@@ -39,6 +39,7 @@ export class HaPickLanguageRow extends LitElement {
           )}
           .value=${this.hass.locale.language}
           @selected=${this._languageSelectionChanged}
+          naturalMenuWidth
         >
           ${this._languages.map(
             (language) => html`<mwc-list-item

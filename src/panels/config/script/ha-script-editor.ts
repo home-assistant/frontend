@@ -9,8 +9,6 @@ import {
   mdiPlay,
   mdiTransitConnection,
 } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
   CSSResultGroup,
@@ -54,7 +52,6 @@ import {
   triggerScript,
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -194,7 +191,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               </mwc-button>
             `
           : ""}
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}

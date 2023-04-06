@@ -90,7 +90,7 @@ export class MoreInfoInfo extends LitElement {
 
       @media all and (max-width: 450px) {
         .container {
-          min-height: calc(100vh - 56px);
+          min-height: calc(100vh - var(--header-height));
         }
       }
 
@@ -98,7 +98,7 @@ export class MoreInfoInfo extends LitElement {
         display: flex;
         flex-direction: column;
         flex: 1;
-        padding: 8px 24px 24px 24px;
+        padding: 24px;
         padding-bottom: max(env(safe-area-inset-bottom), 24px);
       }
 

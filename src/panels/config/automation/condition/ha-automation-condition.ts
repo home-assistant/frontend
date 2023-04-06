@@ -180,11 +180,7 @@ export default class HaAutomationCondition extends LitElement {
           `
         )}
       </div>
-      <ha-button-menu
-        fixed
-        @action=${this._addCondition}
-        .disabled=${this.disabled}
-      >
+      <ha-button-menu @action=${this._addCondition} .disabled=${this.disabled}>
         <ha-button
           slot="trigger"
           outlined

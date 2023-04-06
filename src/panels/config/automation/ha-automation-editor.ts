@@ -14,8 +14,6 @@ import {
   mdiStopCircleOutline,
   mdiTransitConnection,
 } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -54,7 +52,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/ha-app-layout";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -144,7 +141,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               </mwc-button>
             `
           : ""}
-        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+        <ha-button-menu slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}

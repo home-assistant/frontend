@@ -21,6 +21,7 @@ import type { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-history-graph-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -39,7 +40,11 @@ const SCHEMA = [
     name: "",
     type: "grid",
     schema: [
-      { name: "hours_to_show", selector: { number: { min: 1, mode: "box" } } },
+      {
+        name: "hours_to_show",
+        default: DEFAULT_HOURS_TO_SHOW,
+        selector: { number: { min: 1, mode: "box" } },
+      },
     ],
   },
 ] as const;

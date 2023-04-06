@@ -244,6 +244,7 @@ export class HaControlSlider extends LitElement {
         })}
       >
         <div class="slider-track-background"></div>
+        <slot name="background"></slot>
         ${this.mode === "cursor"
           ? this.value != null
             ? html`
@@ -309,6 +310,13 @@ export class HaControlSlider extends LitElement {
         width: 100%;
         background: var(--control-slider-background);
         opacity: var(--control-slider-background-opacity);
+      }
+      ::slotted([slot="background"]) {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
       }
       .slider .slider-track-bar {
         --border-radius: var(--control-slider-border-radius);
@@ -424,6 +432,7 @@ export class HaControlSlider extends LitElement {
         bottom: 0;
         left: calc(var(--value, 0) * (100% - var(--cursor-size)));
         width: var(--cursor-size);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       }
       .slider .slider-track-cursor:after {
         height: 50%;

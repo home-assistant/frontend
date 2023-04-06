@@ -10,6 +10,8 @@ import { EntityCardConfig, SensorCardConfig } from "./types";
 
 const includeDomains = ["counter", "input_number", "number", "sensor"];
 
+export const DEFAULT_HOURS_TO_SHOW = 24;
+
 @customElement("hui-sensor-card")
 class HuiSensorCard extends HuiEntityCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -59,7 +61,7 @@ class HuiSensorCard extends HuiEntityCard {
         type: "graph",
         entity: config.entity,
         detail: detail || 1,
-        hours_to_show: hours_to_show || 24,
+        hours_to_show: hours_to_show || DEFAULT_HOURS_TO_SHOW,
         limits: config.limits!,
       };
 

@@ -63,7 +63,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
 
   public connectedCallback() {
     Object.assign(this.style, {
-      position: "absolute",
+      position: "fixed",
       width: isTouch ? "100px" : "50px",
       height: isTouch ? "100px" : "50px",
       transform: "translate(-50%, -50%)",
@@ -147,11 +147,11 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       let x;
       let y;
       if ((ev as TouchEvent).touches) {
-        x = (ev as TouchEvent).touches[0].pageX;
-        y = (ev as TouchEvent).touches[0].pageY;
+        x = (ev as TouchEvent).touches[0].clientX;
+        y = (ev as TouchEvent).touches[0].clientY;
       } else {
-        x = (ev as MouseEvent).pageX;
-        y = (ev as MouseEvent).pageY;
+        x = (ev as MouseEvent).clientX;
+        y = (ev as MouseEvent).clientY;
       }
 
       if (options.hasHold) {

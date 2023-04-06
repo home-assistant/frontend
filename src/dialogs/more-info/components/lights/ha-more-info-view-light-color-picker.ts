@@ -11,6 +11,7 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-color-picker";
 import "../../../../components/ha-control-slider";
@@ -297,17 +298,26 @@ class MoreInfoViewLightColorPicker extends LitElement {
   private _ctSliderMoved(ev: CustomEvent) {
     const ct = ev.detail.value;
 
-    if (isNaN(ct)) {
+    if (isNaN(ct) || this._ctSliderValue === ct) {
       return;
     }
 
     this._ctSliderValue = ct;
+
+    this._throttleUpdateColorTemp();
   }
+
+  private _throttleUpdateColorTemp = throttle(() => {
+    this.hass.callService("light", "turn_on", {
+      entity_id: this.stateObj!.entity_id,
+      color_temp_kelvin: this._ctSliderValue,
+    });
+  }, 500);
 
   private _ctSliderChanged(ev: CustomEvent) {
     const ct = ev.detail.value;
 
-    if (isNaN(ct)) {
+    if (isNaN(ct) || this._ctSliderValue === ct) {
       return;
     }
 

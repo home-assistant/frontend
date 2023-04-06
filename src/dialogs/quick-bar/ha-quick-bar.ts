@@ -30,7 +30,6 @@ import {
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
-import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/ha-textfield";
@@ -308,7 +307,7 @@ export class QuickBar extends LitElement {
                 >${item.altText}</span
               >
             `
-          : null}
+          : nothing}
       </ha-list-item>
     `;
   }
@@ -756,6 +755,9 @@ export class QuickBar extends LitElement {
       haStyleScrollbar,
       haStyleDialog,
       css`
+        mwc-list {
+          --mdc-list-vertical-padding: 0;
+        }
         .heading {
           display: flex;
           align-items: center;
