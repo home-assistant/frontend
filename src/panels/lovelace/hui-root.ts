@@ -26,7 +26,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -87,7 +93,7 @@ class HUIRoot extends LitElement {
 
   @state() private _curView?: number | "hass-unused-entities";
 
-  @query("#view", true) _viewRoot!: HTMLDivElement;
+  @query("#view", true) _view!: HTMLDivElement;
 
   private _viewCache?: { [viewId: string]: HUIView };
 
@@ -544,14 +550,19 @@ class HUIRoot extends LitElement {
               `
             : ""}
         </div>
-        <div id="view" @ll-rebuild=${this._debouncedConfigChanged}></div>
+        <div
+          id="view"
+          @ll-rebuild=${this._debouncedConfigChanged}
+          @scroll=${this._viewScrolled}
+        ></div>
       </div>
     `;
   }
 
-  private _viewScrolled = (ev) => {
+  @eventOptions({ passive: true })
+  private _viewScrolled(ev) {
     this.toggleAttribute("scrolled", ev.currentTarget.scrollTop !== 0);
-  };
+  }
 
   private _isVisible = (view: LovelaceViewConfig) =>
     Boolean(
@@ -671,6 +682,10 @@ class HUIRoot extends LitElement {
 
   private get _editMode() {
     return this.lovelace!.editMode;
+  }
+
+  private get _viewRoot(): HTMLDivElement {
+    return this.shadowRoot!.getElementById("view") as HTMLDivElement;
   }
 
   private get _showButtonMenu(): boolean {
@@ -859,6 +874,7 @@ class HUIRoot extends LitElement {
       const path = this.config.views[viewIndex].path || viewIndex;
       this._navigateToView(path);
     }
+    this._view.scrollTo(0, 0);
   }
 
   private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
@@ -878,7 +894,6 @@ class HUIRoot extends LitElement {
     const root = this._viewRoot;
 
     if (root.lastChild) {
-      root.lastChild.removeEventListener("scroll", this._viewScrolled);
       root.removeChild(root.lastChild);
     }
 
@@ -913,7 +928,6 @@ class HUIRoot extends LitElement {
     view.lovelace = this.lovelace;
     view.hass = this.hass;
     view.narrow = this.narrow;
-    view.addEventListener("scroll", this._viewScrolled, { passive: true });
 
     const configBackground = viewConfig.background || this.config.background;
 
@@ -922,7 +936,6 @@ class HUIRoot extends LitElement {
     } else {
       this.style.removeProperty("--lovelace-background");
     }
-    this.removeAttribute("scrolled");
 
     root.appendChild(view);
     // Recalculate to see if we need to adjust content area for tab bar
@@ -1033,20 +1046,9 @@ class HUIRoot extends LitElement {
         mwc-button.warning:not([disabled]) {
           color: var(--error-color);
         }
-        hui-view {
+        #view {
           margin-top: calc(var(--header-height) + env(safe-area-inset-top));
           height: calc(100vh - var(--header-height) - env(safe-area-inset-top));
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
-          width: 100%;
-          padding-bottom: env(safe-area-inset-bottom);
-          display: block;
-          overflow: auto;
-          transform: translateZ(0);
         }
         /**
          * In edit mode we have the tab bar on a new line *
@@ -1058,6 +1060,19 @@ class HUIRoot extends LitElement {
           margin-top: calc(
             var(--header-height) + 48px + env(safe-area-inset-top)
           );
+        }
+        hui-view {
+          padding-left: env(safe-area-inset-left);
+          padding-right: env(safe-area-inset-right);
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
+          overflow: auto;
+          width: 100%;
+          height: 100%;
+          transform: translateZ(0);
+          display: block;
         }
         .hide-tab {
           display: none;
