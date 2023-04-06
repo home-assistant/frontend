@@ -1049,8 +1049,6 @@ class HUIRoot extends LitElement {
         #view {
           margin-top: calc(var(--header-height) + env(safe-area-inset-top));
           height: calc(100vh - var(--header-height) - env(safe-area-inset-top));
-          transform: translateZ(0);
-          display: flex;
         }
         /**
          * In edit mode we have the tab bar on a new line *
@@ -1063,15 +1061,7 @@ class HUIRoot extends LitElement {
             var(--header-height) + 48px + env(safe-area-inset-top)
           );
         }
-        #view > * {
-          /**
-          * The view could get larger than the window in Firefox
-          * to prevent that we set the max-width to 100%
-          * flex-grow: 1 and flex-basis: 100% should make sure the view
-          * stays full width.
-          *
-          * https://github.com/home-assistant/home-assistant-polymer/pull/3806
-          */
+        hui-view {
           padding-left: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
           background: var(
@@ -1081,6 +1071,8 @@ class HUIRoot extends LitElement {
           overflow: auto;
           width: 100%;
           height: 100%;
+          transform: translateZ(0);
+          display: block;
         }
         .hide-tab {
           display: none;
