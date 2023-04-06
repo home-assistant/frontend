@@ -4,6 +4,10 @@ export interface CoverOpenCloseTileFeatureConfig {
   type: "cover-open-close";
 }
 
+export interface CoverPositionTileFeatureConfig {
+  type: "cover-position";
+}
+
 export interface CoverTiltTileFeatureConfig {
   type: "cover-tilt";
 }
@@ -29,7 +33,7 @@ export const VACUUM_COMMANDS = [
   "return_home",
 ] as const;
 
-export type VacuumCommand = (typeof VACUUM_COMMANDS)[number];
+export type VacuumCommand = typeof VACUUM_COMMANDS[number];
 
 export interface VacuumCommandsTileFeatureConfig {
   type: "vacuum-commands";
@@ -38,6 +42,7 @@ export interface VacuumCommandsTileFeatureConfig {
 
 export type LovelaceTileFeatureConfig =
   | CoverOpenCloseTileFeatureConfig
+  | CoverPositionTileFeatureConfig
   | CoverTiltTileFeatureConfig
   | LightBrightnessTileFeatureConfig
   | VacuumCommandsTileFeatureConfig

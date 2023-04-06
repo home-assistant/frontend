@@ -27,6 +27,7 @@ import { HomeAssistant } from "../../../../types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
 import { supportsAlarmModesTileFeature } from "../../tile-features/hui-alarm-modes-tile-feature";
 import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover-open-close-tile-feature";
+import { supportsCoverPositionTileFeature } from "../../tile-features/hui-cover-position-tile-feature";
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
 import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
@@ -38,6 +39,7 @@ type SupportsFeature = (stateObj: HassEntity) => boolean;
 
 const FEATURE_TYPES: FeatureType[] = [
   "cover-open-close",
+  "cover-position",
   "cover-tilt",
   "light-brightness",
   "vacuum-commands",
@@ -53,6 +55,7 @@ const EDITABLES_FEATURE_TYPES = new Set<FeatureType>([
 const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
   {
     "cover-open-close": supportsCoverOpenCloseTileFeature,
+    "cover-position": supportsCoverPositionTileFeature,
     "cover-tilt": supportsCoverTiltTileFeature,
     "light-brightness": supportsLightBrightnessTileFeature,
     "vacuum-commands": supportsVacuumCommandTileFeature,
