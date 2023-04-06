@@ -453,9 +453,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     "ui.panel.config.integrations.search"
                   )}
                 >
-                  ${!this._showDisabled && disabledCount
-                    ? html`<div class="filters" slot="suffix">
-                        <div
+                  <div class="filters" slot="suffix">
+                    ${!this._showDisabled && disabledCount
+                      ? html`<div
                           class="active-filters"
                           @click=${this._preventDefault}
                         >
@@ -469,10 +469,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                               "ui.panel.config.integrations.disable.show"
                             )}
                           ></mwc-button>
-                        </div>
-                        ${filterMenu}
-                      </div>`
-                    : ""}
+                        </div>`
+                      : ""}
+                    ${filterMenu}
+                  </div>
                 </search-input>
               </div>
             `}
