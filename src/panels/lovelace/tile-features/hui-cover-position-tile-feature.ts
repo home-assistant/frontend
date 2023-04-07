@@ -64,13 +64,13 @@ class HuiCoverPositionTileFeature
         .value=${value}
         min="0"
         max="100"
-        .step=${this.stateObj.attributes.percentage_step ?? 1}
+        .step="1"
         @value-changed=${this._valueChanged}
         .ariaLabel=${computeAttributeNameDisplay(
           this.hass.localize,
           this.stateObj,
           this.hass.entities,
-          "percentage"
+          "current_position"
         )}
         .disabled=${this.stateObj!.state === UNAVAILABLE}
       ></ha-control-slider>
@@ -89,9 +89,16 @@ class HuiCoverPositionTileFeature
 
   static get styles() {
     return css`
-      ha-control-button-group {
-        margin: 0 12px 12px 12px;
-        --control-button-group-spacing: 12px;
+      ha-control-slider {
+        --control-slider-color: var(--tile-color);
+        --control-slider-background: var(--tile-color);
+        --control-slider-background-opacity: 0.2;
+        --control-slider-thickness: 40px;
+        --control-slider-border-radius: 10px;
+      }
+      .container {
+        padding: 0 12px 12px 12px;
+        width: auto;
       }
     `;
   }
