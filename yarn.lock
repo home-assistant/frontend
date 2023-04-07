@@ -6953,10 +6953,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:3.29.1":
-  version: 3.29.1
-  resolution: "core-js@npm:3.29.1"
-  checksum: b38446dbfcfd3887b3d4922990da487e2c95044cb4c5717aaf95e786a4c6b218f05c056c7ed6c699169b9794a49fec890e402659d54661fc56965a0eb717e7bd
+"core-js@npm:3.30.0":
+  version: 3.30.0
+  resolution: "core-js@npm:3.30.0"
+  checksum: 276d4444a1261739ea4c350ef3f6aeab4c7ae7f36ac197f02d197a4566b42867c3a9b12c2fcda8a736aeca888d2c4131c8cb58ad17ed02294a10c9c97606df71
   languageName: node
   linkType: hard
 
@@ -9543,7 +9543,7 @@ __metadata:
     chai: 4.3.7
     chart.js: 3.3.2
     comlink: 4.4.1
-    core-js: 3.29.1
+    core-js: 3.30.0
     cropperjs: 1.5.13
     date-fns: 2.29.3
     date-fns-tz: 2.0.0
