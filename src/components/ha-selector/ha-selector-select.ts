@@ -340,6 +340,17 @@ export class HaSelectSelector extends LitElement {
     mwc-list-item[disabled] {
       --mdc-theme-text-primary-on-background: var(--disabled-text-color);
     }
+    ha-svg-icon {
+      color: var(--input-dropdown-icon-color);
+      cursor: pointer;
+    }
+    .clear-button {
+      --mdc-icon-size: 20px;
+      top: -70px;
+      inset-inline-start: initial;
+      inset-inline-end: -360px;
+      direction: var(--direction);
+    }
   `;
 }
 
