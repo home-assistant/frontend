@@ -2,6 +2,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { SelectOption, SelectSelector } from "../../data/selector";
@@ -194,6 +195,16 @@ export class HaSelectSelector extends LitElement {
           `
         )}
       </ha-select>
+      ${this.value
+        ? html`<ha-svg-icon
+            role="button"
+            tabindex="-1"
+            aria-label=${ifDefined(this.hass?.localize("ui.common.clear"))}
+            class="clear-button"
+            .path=${mdiClose}
+            @click=${this._clearValue}
+          ></ha-svg-icon>`
+        : ""}
     `;
   }
 
@@ -208,6 +219,11 @@ export class HaSelectSelector extends LitElement {
       this.selector.select?.mode ||
       ((this.selector.select?.options?.length || 0) < 6 ? "list" : "dropdown")
     );
+  }
+
+  private _clearValue(ev: Event) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", { value: undefined });
   }
 
   private _valueChanged(ev) {
