@@ -159,7 +159,7 @@ gulp.task(
       "gather-gallery-pages"
     ),
     "copy-static-gallery",
-    "gen-index-gallery-dev",
+    "gen-pages-gallery-dev",
     gulp.parallel(
       env.useRollup()
         ? "rollup-dev-server-gallery"
@@ -193,6 +193,6 @@ gulp.task(
     ),
     "copy-static-gallery",
     env.useRollup() ? "rollup-prod-gallery" : "webpack-prod-gallery",
-    "gen-index-gallery-prod"
+    "gen-pages-gallery-prod"
   )
 );
