@@ -65,7 +65,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   public connectedCallback() {
     super.connectedCallback();
     if (this.narrow !== false) {
-      toggleAttribute(this, "narrow", this.offsetWidth < 500);
+      toggleAttribute(this, "narrow", this.offsetWidth < 600);
     }
   }
 
