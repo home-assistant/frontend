@@ -4989,21 +4989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web/dev-server-rollup@npm:0.4.0":
-  version: 0.4.0
-  resolution: "@web/dev-server-rollup@npm:0.4.0"
-  dependencies:
-    "@rollup/plugin-node-resolve": ^13.0.4
-    "@web/dev-server-core": ^0.4.0
-    nanocolors: ^0.2.1
-    parse5: ^6.0.1
-    rollup: ^2.67.0
-    whatwg-url: ^11.0.0
-  checksum: e9ad742108a02f8e6c78c17a9769d28b54129d7bacefa89bf72ea55202a4f7ab03e24be51c5bbaf90302393f0832a3fc37c6932d014df7f039ff1ec0562f229d
-  languageName: node
-  linkType: hard
-
-"@web/dev-server-rollup@npm:^0.4.1":
+"@web/dev-server-rollup@npm:0.4.1, @web/dev-server-rollup@npm:^0.4.1":
   version: 0.4.1
   resolution: "@web/dev-server-rollup@npm:0.4.1"
   dependencies:
@@ -9560,7 +9546,7 @@ __metadata:
     "@vibrant/quantizer-mmcq": 3.2.1-alpha.1
     "@vue/web-component-wrapper": 1.3.0
     "@web/dev-server": 0.1.38
-    "@web/dev-server-rollup": 0.4.0
+    "@web/dev-server-rollup": 0.4.1
     "@webcomponents/scoped-custom-element-registry": 0.0.9
     "@webcomponents/webcomponentsjs": 2.8.0
     app-datepicker: 5.1.1
