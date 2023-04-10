@@ -1069,6 +1069,7 @@ class HUIRoot extends LitElement {
             var(--primary-background-color)
           );
           overflow: auto;
+          overscroll-behavior: contain;
           width: 100%;
           height: 100%;
           transform: translateZ(0);
