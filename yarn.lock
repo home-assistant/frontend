@@ -7903,9 +7903,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit-a11y@npm:2.4.0":
-  version: 2.4.0
-  resolution: "eslint-plugin-lit-a11y@npm:2.4.0"
+"eslint-plugin-lit-a11y@npm:2.4.1":
+  version: 2.4.1
+  resolution: "eslint-plugin-lit-a11y@npm:2.4.1"
   dependencies:
     aria-query: ^5.1.3
     axe-core: ^4.3.3
@@ -7915,12 +7915,12 @@ __metadata:
     eslint-plugin-lit: ^1.6.0
     eslint-rule-extender: 0.0.1
     language-tags: ^1.0.5
-    parse5: ^5.1.1
+    parse5: ^7.1.2
     parse5-htmlparser2-tree-adapter: ^6.0.1
     requireindex: ~1.2.0
   peerDependencies:
     eslint: ">= 5"
-  checksum: 977340590796cea034658054343d001945b59329a851ad43eeda906800379dd2f98cdc0103c0b7a39da6edfd623d580a0ea18bdf17ae5bb4b89f639b6109bd1d
+  checksum: 1e3caf3dbe16545bbdde096dea1c6ac47b1c366ac7014ccda392c6a62faecaf8c066b5a2f22e7f39c2618a4f14b91158bffbcb48c7f305ce92769f0e9e9bb257
   languageName: node
   linkType: hard
 
@@ -9570,7 +9570,7 @@ __metadata:
     eslint-plugin-disable: 2.0.3
     eslint-plugin-import: 2.27.5
     eslint-plugin-lit: 1.8.2
-    eslint-plugin-lit-a11y: 2.4.0
+    eslint-plugin-lit-a11y: 2.4.1
     eslint-plugin-unused-imports: 2.0.0
     eslint-plugin-wc: 1.4.0
     esprima: 4.0.1
@@ -12697,17 +12697,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parse5@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "parse5@npm:5.1.1"
-  checksum: 613a714af4c1101d1cb9f7cece2558e35b9ae8a0c03518223a4a1e35494624d9a9ad5fad4c13eab66a0e0adccd9aa3d522fc8f5f9cc19789e0579f3fa0bdfc65
-  languageName: node
-  linkType: hard
-
 "parse5@npm:^6.0.1":
   version: 6.0.1
   resolution: "parse5@npm:6.0.1"
   checksum: 7d569a176c5460897f7c8f3377eff640d54132b9be51ae8a8fa4979af940830b2b0c296ce75e5bd8f4041520aadde13170dbdec44889975f906098ea0002f4bd
+  languageName: node
+  linkType: hard
+
+"parse5@npm:^7.1.2":
+  version: 7.1.2
+  resolution: "parse5@npm:7.1.2"
+  dependencies:
+    entities: ^4.4.0
+  checksum: 59465dd05eb4c5ec87b76173d1c596e152a10e290b7abcda1aecf0f33be49646ea74840c69af975d7887543ea45564801736356c568d6b5e71792fd0f4055713
   languageName: node
   linkType: hard
 
