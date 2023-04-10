@@ -89,7 +89,7 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
       "@babel/preset-env",
       {
         useBuiltIns: "entry",
-        corejs: { version: "3.29", proposals: true },
+        corejs: { version: "3.30", proposals: true },
         bugfixes: true,
       },
     ],
