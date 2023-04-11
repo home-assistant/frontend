@@ -979,6 +979,7 @@ export class HaDataTable extends LitElement {
         }
         lit-virtualizer {
           contain: size layout !important;
+          overscroll-behavior: contain;
         }
       `,
     ];
