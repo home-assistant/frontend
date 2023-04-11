@@ -49,7 +49,7 @@ class HaInitPage extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("error") && this.error) {
       import("@material/mwc-button");
     }
