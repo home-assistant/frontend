@@ -196,7 +196,6 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       :host {
         display: block;
         padding-top: 4px;
-        padding-bottom: env(safe-area-inset-bottom);
       }
 
       .container {
