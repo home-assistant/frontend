@@ -1048,33 +1048,30 @@ class HUIRoot extends LitElement {
           color: var(--error-color);
         }
         #view {
-          margin-top: calc(var(--header-height) + env(safe-area-inset-top));
-          height: calc(100vh - var(--header-height) - env(safe-area-inset-top));
+          position: relative;
+          display: flex;
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
+          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
+          min-height: 100vh;
+          box-sizing: border-box;
+          padding-left: env(safe-area-inset-left);
+          padding-right: env(safe-area-inset-right);
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+        hui-view {
+          flex: 1 1 100%;
+          max-width: 100%;
         }
         /**
          * In edit mode we have the tab bar on a new line *
          */
         .edit-mode #view {
-          height: calc(
-            100vh - var(--header-height) - 48px - env(safe-area-inset-top)
-          );
-          margin-top: calc(
+          padding-top: calc(
             var(--header-height) + 48px + env(safe-area-inset-top)
           );
-        }
-        hui-view {
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
-          overflow: auto;
-          overscroll-behavior: contain;
-          width: 100%;
-          height: 100%;
-          transform: translateZ(0);
-          display: block;
         }
         .hide-tab {
           display: none;

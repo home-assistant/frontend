@@ -28,16 +28,12 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
   static override styles = [
     styles,
     css`
-      .mdc-top-app-bar {
-        position: sticky;
-        top: 0;
-      }
       .mdc-top-app-bar__row {
         height: var(--header-height);
         border-bottom: var(--app-header-border-bottom);
       }
       .mdc-top-app-bar--fixed-adjust {
-        padding-top: 0;
+        padding-top: var(--header-height);
       }
       .mdc-top-app-bar {
         --mdc-typography-headline6-font-weight: 400;
