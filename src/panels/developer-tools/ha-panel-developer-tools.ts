@@ -126,6 +126,7 @@ class PanelDeveloperTools extends LitElement {
           display: block;
           height: calc(100% - var(--header-height) - 48px);
           overflow: auto;
+          overscroll-behavior: contain;
         }
         paper-tabs {
           margin-left: max(env(safe-area-inset-left), 24px);

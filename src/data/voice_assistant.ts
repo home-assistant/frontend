@@ -84,14 +84,21 @@ type PipelineRunEvent =
   | PipelineTTSStartEvent
   | PipelineTTSEndEvent;
 
-export interface PipelineRunOptions {
-  start_stage: "stt" | "intent" | "tts";
+export type PipelineRunOptions = (
+  | {
+      start_stage: "intent" | "tts";
+      input: { text: string };
+    }
+  | {
+      start_stage: "stt";
+      input: { sample_rate: number };
+    }
+) & {
   end_stage: "stt" | "intent" | "tts";
   language?: string;
   pipeline?: string;
-  input?: { text: string };
   conversation_id?: string | null;
-}
+};
 
 export interface PipelineRun {
   init_options: PipelineRunOptions;
