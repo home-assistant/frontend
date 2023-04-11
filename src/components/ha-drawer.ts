@@ -1,9 +1,3 @@
-import {
-  DIRECTION_LEFT,
-  DIRECTION_RIGHT,
-  Manager,
-  Swipe,
-} from "@egjs/hammerjs";
 import { DrawerBase } from "@material/mwc-drawer/mwc-drawer-base";
 import { styles } from "@material/mwc-drawer/mwc-drawer.css";
 import { css, PropertyValues } from "lit";
@@ -40,22 +34,29 @@ export class HaDrawer extends DrawerBase {
       this.mdcRoot.dir = this.direction;
     }
     if (changedProps.has("open") && this.open && this.type === "modal") {
-      this._mc = new Manager(document, {
-        touchAction: "pan-y",
-      });
-      this._mc.add(
-        new Swipe({
-          direction:
-            this.direction === "rtl" ? DIRECTION_RIGHT : DIRECTION_LEFT,
-        })
-      );
-      this._mc.on("swipeleft swiperight", () => {
-        fireEvent(this, "hass-toggle-menu", { open: false });
-      });
+      this._setupSwipe();
     } else if (this._mc) {
       this._mc.destroy();
       this._mc = undefined;
     }
+  }
+
+  private async _setupSwipe() {
+    const hammer = await import("../resources/hammer");
+    this._mc = new hammer.Manager(document, {
+      touchAction: "pan-y",
+    });
+    this._mc.add(
+      new hammer.Swipe({
+        direction:
+          this.direction === "rtl"
+            ? hammer.DIRECTION_RIGHT
+            : hammer.DIRECTION_LEFT,
+      })
+    );
+    this._mc.on("swipeleft swiperight", () => {
+      fireEvent(this, "hass-toggle-menu", { open: false });
+    });
   }
 
   static override styles = [

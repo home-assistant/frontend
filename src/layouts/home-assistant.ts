@@ -65,7 +65,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     `;
   }
 
-  update(changedProps) {
+  update(changedProps: PropertyValues<this>) {
     if (this.hass?.states && this.hass.config && this.hass.services) {
       this.render = this.renderHass;
       this.update = super.update;
@@ -74,7 +74,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     super.update(changedProps);
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._initializeHass();
     setTimeout(() => registerServiceWorker(this), 1000);
