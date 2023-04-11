@@ -291,7 +291,7 @@ const processTimelineEntity = (
       state_localize: computeStateDisplayFromEntityAttributes(
         localize,
         language,
-        entities,
+        entities[entityId],
         entityId,
         {
           ...(state.a || first.a),
