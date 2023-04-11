@@ -255,6 +255,9 @@ export class AssistPipelineDebug extends LitElement {
       {
         start_stage: "stt",
         end_stage: "tts",
+        input: {
+          sample_rate: context.sampleRate,
+        },
       }
     );
   }

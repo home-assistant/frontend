@@ -135,8 +135,9 @@ export class AssistPipelineDebug extends LitElement {
     const messages: Array<{ from: string; text: string }> = [];
 
     const userMessage =
-      this.pipelineRun.init_options.input?.text ||
-      this.pipelineRun?.stt?.stt_output?.text;
+      ("text" in this.pipelineRun.init_options.input
+        ? this.pipelineRun.init_options.input.text
+        : undefined) || this.pipelineRun?.stt?.stt_output?.text;
 
     if (userMessage) {
       messages.push({
