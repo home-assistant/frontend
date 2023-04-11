@@ -93,13 +93,18 @@ class PanelDeveloperTools extends LitElement {
       haStyle,
       css`
         :host {
-          display: block;
-          height: 100%;
           color: var(--primary-text-color);
           --paper-card-header-color: var(--primary-text-color);
+          display: flex;
+          min-height: 100vh;
         }
         .header {
+          position: fixed;
+          top: 0;
+          z-index: 4;
           background-color: var(--app-header-background-color);
+          width: var(--mdc-top-app-bar-width, 100%);
+          padding-top: env(safe-area-inset-top);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
         }
@@ -124,9 +129,12 @@ class PanelDeveloperTools extends LitElement {
         }
         developer-tools-router {
           display: block;
-          height: calc(100% - var(--header-height) - 48px);
-          overflow: auto;
-          overscroll-behavior: contain;
+          padding-top: calc(
+            var(--header-height) + 48px + env(safe-area-inset-top)
+          );
+          padding-bottom: calc(env(safe-area-inset-bottom));
+          flex: 1 1 100%;
+          max-width: 100%;
         }
         paper-tabs {
           margin-left: max(env(safe-area-inset-left), 24px);
