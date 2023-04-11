@@ -24,26 +24,47 @@ import { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 import { supportsFeatureFromAttributes } from "./supports-feature";
 
+export const computeStateDisplaySingleEntity = (
+  localize: LocalizeFunc,
+  stateObj: HassEntity,
+  locale: FrontendLocaleData,
+  entity: EntityRegistryDisplayEntry | undefined,
+  state?: string
+): string =>
+  computeStateDisplayFromEntityAttributes(
+    localize,
+    locale,
+    entity,
+    stateObj.entity_id,
+    stateObj.attributes,
+    state !== undefined ? state : stateObj.state
+  );
+
 export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
   entities: HomeAssistant["entities"],
   state?: string
-): string =>
-  computeStateDisplayFromEntityAttributes(
+): string => {
+  const entity = entities[stateObj.entity_id] as
+    | EntityRegistryDisplayEntry
+    | undefined;
+
+  return computeStateDisplayFromEntityAttributes(
     localize,
     locale,
-    entities,
+    entity,
     stateObj.entity_id,
     stateObj.attributes,
     state !== undefined ? state : stateObj.state
   );
+};
 
 export const computeStateDisplayFromEntityAttributes = (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
-  entities: HomeAssistant["entities"],
+  entity: EntityRegistryDisplayEntry | undefined,
   entityId: string,
   attributes: any,
   state: string
@@ -51,8 +72,6 @@ export const computeStateDisplayFromEntityAttributes = (
   if (state === UNKNOWN || state === UNAVAILABLE) {
     return localize(`state.default.${state}`);
   }
-
-  const entity = entities[entityId] as EntityRegistryDisplayEntry | undefined;
 
   // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
   if (isNumericFromAttributes(attributes)) {
