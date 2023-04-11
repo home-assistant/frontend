@@ -586,6 +586,9 @@ class HUIRoot extends LitElement {
         constructUrlCurrentPath(removeSearchParam("conversation"))
       );
     }
+    window.addEventListener("scroll", () => {
+      this.toggleAttribute("scrolled", window.scrollY !== 0);
+    });
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -817,13 +820,14 @@ class HUIRoot extends LitElement {
   }
 
   private _navigateToView(path: string | number, replace?: boolean) {
-    if (!this.lovelace!.editMode) {
-      navigate(`${this.route!.prefix}/${path}${location.search}`, { replace });
-      return;
+    const url = this.lovelace!.editMode
+      ? `${this.route!.prefix}/${path}?${addSearchParam({ edit: "1" })}`
+      : `${this.route!.prefix}/${path}${location.search}`;
+
+    navigate(url, { replace });
+    if (!replace) {
+      window.scrollTo(0, 0);
     }
-    navigate(`${this.route!.prefix}/${path}?${addSearchParam({ edit: "1" })}`, {
-      replace,
-    });
   }
 
   private _editView() {
@@ -870,12 +874,10 @@ class HUIRoot extends LitElement {
   private _handleViewSelected(ev) {
     ev.preventDefault();
     const viewIndex = ev.detail.selected as number;
-
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
       this._navigateToView(path);
     }
-    this._view.scrollTo(0, 0);
   }
 
   private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
