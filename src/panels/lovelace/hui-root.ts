@@ -631,7 +631,9 @@ class HUIRoot extends LitElement {
         }
         newSelectView = index;
       }
-      window.scrollTo(0, 0);
+
+      // Will allow to override history scroll restoration when using back button
+      setTimeout(() => window.scrollTo({ top: 0, behavior: "auto" }), 1);
     }
 
     if (changedProperties.has("lovelace")) {

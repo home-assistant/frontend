@@ -234,7 +234,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       }
 
       ha-fab {
-        position: absolute;
+        position: fixed;
         right: calc(16px + env(safe-area-inset-right));
         bottom: calc(16px + env(safe-area-inset-bottom));
         z-index: 1;
