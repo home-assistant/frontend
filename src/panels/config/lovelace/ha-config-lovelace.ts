@@ -1,3 +1,4 @@
+import { mdiViewDashboard } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
 import {
   HassRouterPage,
@@ -10,7 +11,7 @@ export const lovelaceTabs = [
     component: "lovelace",
     path: "/config/lovelace/dashboards",
     translationKey: "ui.panel.config.lovelace.dashboards.caption",
-    icon: "hass:view-dashboard",
+    iconPath: mdiViewDashboard,
   },
 ];
 

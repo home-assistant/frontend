@@ -10,6 +10,7 @@ import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
+import "../../../../components/ha-tip";
 import {
   cloudLogout,
   CloudStatusLoggedIn,
@@ -22,8 +23,6 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
-import "./cloud-alexa-pref";
-import "./cloud-google-pref";
 import "./cloud-remote-pref";
 import "./cloud-tts-pref";
 import "./cloud-webhooks";
@@ -185,17 +184,13 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               dir=${this._rtlDirection}
             ></cloud-tts-pref>
 
-            <cloud-alexa-pref
-              .hass=${this.hass}
-              .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
-            ></cloud-alexa-pref>
-
-            <cloud-google-pref
-              .hass=${this.hass}
-              .cloudStatus=${this.cloudStatus}
-              dir=${this._rtlDirection}
-            ></cloud-google-pref>
+            <ha-tip .hass=${this.hass}>
+              <a href="/config/voice-assistants">
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.account.tip_moved_voice_assistants"
+                )}
+              </a>
+            </ha-tip>
 
             <cloud-webhooks
               .hass=${this.hass}

@@ -12,6 +12,7 @@ import {
   mdiMapMarkerRadius,
   mdiMathLog,
   mdiMemory,
+  mdiMicrophone,
   mdiNetwork,
   mdiNfcVariant,
   mdiPalette,
@@ -81,6 +82,12 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiViewDashboard,
       iconColor: "#B1345C",
       component: "lovelace",
+    },
+    {
+      path: "/config/voice-assistants",
+      translationKey: "voice_assistants",
+      iconPath: mdiMicrophone,
+      iconColor: "#3263C3",
     },
     {
       path: "/config/tags",
@@ -197,6 +204,14 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.tag.caption",
       iconPath: mdiNfcVariant,
       iconColor: "#616161",
+    },
+  ],
+  voice_assistants: [
+    {
+      path: "/config/voice-assistants",
+      translationKey: "ui.panel.config.dashboard.voice_assistants.main",
+      iconPath: mdiMicrophone,
+      iconColor: "#3263C3",
     },
   ],
   // Not used as a tab, but this way it will stay in the quick bar
