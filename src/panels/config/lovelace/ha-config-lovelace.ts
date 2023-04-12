@@ -11,7 +11,7 @@ export const lovelaceTabs = [
     component: "lovelace",
     path: "/config/lovelace/dashboards",
     translationKey: "ui.panel.config.lovelace.dashboards.caption",
-    iconPatch: mdiViewDashboard,
+    iconPath: mdiViewDashboard,
   },
 ];
 
