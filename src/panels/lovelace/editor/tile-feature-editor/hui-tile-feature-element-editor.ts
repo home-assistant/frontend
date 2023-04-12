@@ -1,4 +1,5 @@
 import { customElement } from "lit/decorators";
+import { HaFormSchema } from "../../../../components/ha-form/types";
 import { getTileFeatureElementClass } from "../../create-element/create-tile-feature-element";
 import {
   LovelaceTileFeatureConfig,
@@ -20,6 +21,17 @@ export class HuiTileFeatureElementEditor extends HuiElementEditor<
     // Check if a GUI editor exists
     if (elClass && elClass.getConfigElement) {
       return elClass.getConfigElement();
+    }
+
+    return undefined;
+  }
+
+  protected async getConfigSchema(): Promise<HaFormSchema[] | undefined> {
+    const elClass = await getTileFeatureElementClass(this.configElementType!);
+
+    // Check if a schema exists
+    if (elClass && elClass.getConfigSchema) {
+      return elClass.getConfigSchema();
     }
 
     return undefined;

@@ -28,6 +28,8 @@ import "./config-elements/hui-generic-entity-row-editor";
 import { GUISupportError } from "./gui-support-error";
 import { EditSubElementEvent, GUIModeChangedEvent } from "./types";
 import { LovelaceTileFeatureConfig } from "../tile-features/types";
+import { HaFormSchema } from "../../../components/ha-form/types";
+import { HuiGenericEditor } from "./config-elements/hui-generic-editor";
 
 export interface ConfigChangedEvent {
   config:
@@ -182,6 +184,10 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
     return undefined;
   }
 
+  protected async getConfigSchema(): Promise<HaFormSchema[] | undefined> {
+    return undefined;
+  }
+
   protected get configElementType(): string | undefined {
     return this.value ? (this.value as any).type : undefined;
   }
@@ -327,6 +333,15 @@ export abstract class HuiElementEditor<T, C = any> extends LitElement {
 
         this._loading = true;
         configElement = await this.getConfigElement();
+
+        if (!configElement) {
+          const schema = await this.getConfigSchema();
+          if (schema) {
+            await import("./config-elements/hui-generic-editor");
+            configElement = document.createElement("hui-generic-editor");
+            (configElement as HuiGenericEditor).schema = schema;
+          }
+        }
 
         if (configElement) {
           configElement.hass = this.hass;
