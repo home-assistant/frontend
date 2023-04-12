@@ -633,7 +633,7 @@ class HUIRoot extends LitElement {
       }
 
       // Will allow to override history scroll restoration when using back button
-      setTimeout(() => window.scrollTo({ top: 0, behavior: "auto" }), 1);
+      setTimeout(() => scrollTo({ behavior: "auto", top: 0 }), 1);
     }
 
     if (changedProperties.has("lovelace")) {
@@ -828,8 +828,9 @@ class HUIRoot extends LitElement {
       : `${this.route!.prefix}/${path}${location.search}`;
 
     const currentUrl = `${location.pathname}${location.search}`;
-    if (currentUrl === url && !replace) return;
-    navigate(url, { replace });
+    if (currentUrl !== url) {
+      navigate(url, { replace });
+    }
   }
 
   private _editView() {
@@ -879,6 +880,8 @@ class HUIRoot extends LitElement {
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
       this._navigateToView(path);
+    } else if (!this._editMode) {
+      scrollTo({ behavior: "smooth", top: 0 });
     }
   }
 
