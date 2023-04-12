@@ -868,6 +868,7 @@ class HUIRoot extends LitElement {
   }
 
   private _handleViewSelected(ev) {
+    ev.preventDefault();
     const viewIndex = ev.detail.selected as number;
 
     if (viewIndex !== this._curView) {
