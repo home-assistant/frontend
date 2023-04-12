@@ -631,6 +631,7 @@ class HUIRoot extends LitElement {
         }
         newSelectView = index;
       }
+      window.scrollTo(0, 0);
     }
 
     if (changedProperties.has("lovelace")) {
@@ -825,9 +826,6 @@ class HUIRoot extends LitElement {
       : `${this.route!.prefix}/${path}${location.search}`;
 
     navigate(url, { replace });
-    if (!replace) {
-      window.scrollTo(0, 0);
-    }
   }
 
   private _editView() {

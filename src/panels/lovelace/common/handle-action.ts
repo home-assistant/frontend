@@ -101,7 +101,6 @@ export const handleAction = async (
     case "navigate":
       if (actionConfig.navigation_path) {
         navigate(actionConfig.navigation_path);
-        window.scrollTo(0, 0);
       } else {
         showToast(node, {
           message: hass.localize(
