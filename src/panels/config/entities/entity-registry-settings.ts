@@ -1,15 +1,14 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
-import { mdiPencil } from "@mdi/js";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -17,7 +16,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
@@ -30,6 +28,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
@@ -73,15 +72,15 @@ import { domainToName } from "../../../data/integration";
 import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
 import { getSensorDeviceClassConvertibleUnits } from "../../../data/sensor";
 import {
-  WeatherUnits,
   getWeatherConvertibleUnits,
+  WeatherUnits,
 } from "../../../data/weather";
-import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showVoiceAssistantsView } from "../../../dialogs/more-info/components/voice/show-view-voice-assistants";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -699,6 +698,23 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               @value-changed=${this._areaPicked}
             ></ha-area-picker>`
           : ""}
+        <mwc-list class="aliases" @action=${this._handleVoiceAssistantsClicked}>
+          <mwc-list-item .twoline=${this.entry.aliases.length > 0} hasMeta>
+            <span>Voice assistants</span>
+            <span slot="secondary">
+              ${this.entry.aliases.length
+                ? [...this.entry.aliases]
+                    .sort((a, b) =>
+                      stringCompare(a, b, this.hass.locale.language)
+                    )
+                    .join(", ")
+                : this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.no_aliases"
+                  )}
+            </span>
+            <ha-icon-button-next slot="meta"></ha-icon-button-next>
+          </mwc-list-item>
+        </mwc-list>
         ${this._cameraPrefs
           ? html`
               <ha-settings-row>
@@ -848,34 +864,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 </div>
               `
             : ""}
-
-          <div class="label">
-            ${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.aliases_section"
-            )}
-          </div>
-          <mwc-list class="aliases" @action=${this._handleAliasesClicked}>
-            <mwc-list-item .twoline=${this.entry.aliases.length > 0} hasMeta>
-              <span>
-                ${this.entry.aliases.length > 0
-                  ? this.hass.localize(
-                      "ui.dialogs.entity_registry.editor.configured_aliases",
-                      { count: this.entry.aliases.length }
-                    )
-                  : this.hass.localize(
-                      "ui.dialogs.entity_registry.editor.no_aliases"
-                    )}
-              </span>
-              <span slot="secondary">
-                ${[...this.entry.aliases]
-                  .sort((a, b) =>
-                    stringCompare(a, b, this.hass.locale.language)
-                  )
-                  .join(", ")}
-              </span>
-              <ha-svg-icon slot="meta" .path=${mdiPencil}></ha-svg-icon>
-            </mwc-list-item>
-          </mwc-list>
           <div class="secondary">
             ${this.hass.localize(
               "ui.dialogs.entity_registry.editor.aliases_description"
@@ -1070,25 +1058,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _handleAliasesClicked(ev: CustomEvent) {
-    if (ev.detail.index !== 0) return;
-
-    const stateObj = this.hass.states[this.entry.entity_id];
-    const name =
-      (stateObj && computeStateName(stateObj)) || this.entry.entity_id;
-
-    showAliasesDialog(this, {
-      name,
-      aliases: this.entry!.aliases,
-      updateAliases: async (aliases: string[]) => {
-        const result = await updateEntityRegistryEntry(
-          this.hass,
-          this.entry.entity_id,
-          { aliases }
-        );
-        fireEvent(this, "entity-entry-updated", result.entity_entry);
-      },
-    });
+  private _handleVoiceAssistantsClicked() {
+    showVoiceAssistantsView(this, "Voice assistants");
   }
 
   private async _enableEntry() {

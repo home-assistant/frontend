@@ -1060,6 +1060,12 @@
           "aliases_description": "Aliases are alternative names used in voice assistants to refer to this entity."
         }
       },
+      "voice-settings": {
+        "expose_header": "Expose",
+        "aliasses_header": "Aliasses",
+        "ask_pin": "Ask for PIN",
+        "manual_config": "Managed with filters in configuration.yaml"
+      },
       "restart": {
         "heading": "Restart Home Assistant",
         "advanced_options": "Advanced options",
@@ -1246,10 +1252,7 @@
           "device_name_placeholder": "Change device name"
         }
       },
-      "domain_toggler": {
-        "title": "Toggle Domains",
-        "reset_entities": "Reset Entity overrides"
-      },
+      "entity_voice_settings": {},
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
         "deserialize": "Attempt to parse MQTT messages as JSON",
@@ -1405,6 +1408,10 @@
           "dashboards": {
             "main": "Dashboards",
             "secondary": "Organize how you interact with your home"
+          },
+          "voice_assistants": {
+            "main": "Voice assistants",
+            "secondary": "Manage your voice assistants"
           },
           "energy": {
             "main": "Energy",
@@ -1989,6 +1996,32 @@
               "delete": "Delete",
               "update": "Update",
               "create": "Create"
+            }
+          }
+        },
+        "voice_assistants": {
+          "assistants": {
+            "caption": "Assistants"
+          },
+          "expose": {
+            "caption": "Expose",
+            "headers": {
+              "name": "Name",
+              "area": "Area",
+              "assistants": "Assistants",
+              "aliases": "Aliases"
+            },
+            "aliases": "{count} aliases",
+            "expose": "Expose",
+            "unexpose": "Unexpose",
+            "add": "Expose entities",
+            "expose_confirm_title": "Expose selected entities?",
+            "expose_confirm_text": "Do you want to expose {entities} entities to {assistants}?",
+            "unexpose_confirm_title": "Stop exposing selected entities?",
+            "unexpose_confirm_text": "Do you want to stop exposing {entities} entities to {assistants}?",
+            "expose_dialog": {
+              "header": "Expose entity",
+              "expose_entities": "Expose {count} {count, plural,\n  one {entity}\n  other {entities}\n}"
             }
           }
         },
@@ -2677,6 +2710,7 @@
             "integrations_introduction": "Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.",
             "integrations_introduction2": "Check the website for ",
             "integrations_link_all_features": " all available features",
+            "tip_moved_voice_assistants": "Looking for Google Assistant and Amazon Alexa settings? They are moved to the new voice assistants page.",
             "connected": "Connected",
             "connecting": "Connecting…",
             "not_connected": "Not Connected",
@@ -2718,11 +2752,14 @@
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "state_reporting_error": "Unable to {enable_disable} report state.",
               "manage_entities": "[%key:ui::panel::config::cloud::account::google::manage_entities%]",
+              "manual_config": "[%key:ui::panel::config::cloud::account::google::manual_config%]",
               "enable": "enable",
               "disable": "disable",
-              "not_configured_title": "Alexa is not activated",
+              "not_configured_title": "Continue setting up Alexa",
               "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app.",
-              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
+              "expose_new_entities": "[%key:ui::panel::config::cloud::account::google::expose_new_entities%]",
+              "expose_new_entities_info": "Should new entities, that are supported and have no security risks be exposed to Alexa automatically?"
             },
             "google": {
               "title": "Google Assistant",
@@ -2738,10 +2775,13 @@
               "devices_pin": "Security Devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
               "manage_entities": "Manage Entities",
+              "manual_config": "Editing which entities are exposed via the UI is disabled because you have configured entity filters in configuration.yaml.",
               "enter_pin_error": "Unable to store PIN:",
-              "not_configured_title": "Google Assistant is not activated",
+              "not_configured_title": "Continue setting up Google Assistant",
               "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
-              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
+              "expose_new_entities": "Expose new entities",
+              "expose_new_entities_info": "Should new entities, that are supported and have no security risks be exposed to Google Assistant automatically?"
             },
             "webhooks": {
               "title": "Webhooks",
@@ -2756,56 +2796,12 @@
               "disable_hook_error_msg": "Failed to disable webhook:"
             }
           },
-          "alexa": {
-            "title": "Alexa",
-            "banner": "[%key:ui::panel::config::cloud::google::banner%]",
-            "exposed_entities": "[%key:ui::panel::config::cloud::google::exposed_entities%]",
-            "not_exposed_entities": "[%key:ui::panel::config::cloud::google::not_exposed_entities%]",
-            "manage_defaults": "[%key:ui::panel::config::cloud::google::manage_defaults%]",
-            "manage_defaults_dialog_description": "[%key:ui::panel::config::cloud::google::manage_defaults_dialog_description%]",
-            "expose_entity": "[%key:ui::panel::config::cloud::google::expose_entity%]",
-            "dont_expose_entity": "[%key:ui::panel::config::cloud::google::dont_expose_entity%]",
-            "follow_domain": "[%key:ui::panel::config::cloud::google::follow_domain%]",
-            "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
-            "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
-            "manage_aliases": "[%key:ui::panel::config::cloud::google::manage_aliases%]",
-            "expose": "Expose to Alexa",
-            "sync_entities": "Synchronize entities",
-            "sync_entities_error": "Failed to sync entities:"
-          },
           "dialog_certificate": {
             "certificate_information": "Certificate Information",
             "certificate_expiration_date": "Certificate expiration date:",
             "will_be_auto_renewed": "will be automatically renewed",
             "fingerprint": "Certificate fingerprint:",
             "close": "Close"
-          },
-          "google": {
-            "title": "Google Assistant",
-            "expose": "Expose to Google Assistant",
-            "disable_2FA": "Disable two factor authentication",
-            "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
-            "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not exposed entities",
-            "manage_defaults": "Manage defaults",
-            "manage_defaults_dialog_description": "Entities can be exposed by default based on their type.",
-            "expose_entity": "Expose entity",
-            "dont_expose_entity": "Don't expose entity",
-            "follow_domain": "Follow domain",
-            "exposed": "{selected} exposed",
-            "not_exposed": "{selected} not exposed",
-            "manage_aliases": "Manage aliases",
-            "add_aliases": "Add aliases",
-            "no_aliases": "No aliases",
-            "aliases_not_available": "Aliases not available",
-            "aliases_not_available_learn_more": "Learn more",
-            "sync_to_google": "Synchronizing changes to Google.",
-            "sync_entities": "Synchronize entities",
-            "sync_entities_error": "Failed to sync entities:",
-            "not_configured_title": "[%key:ui::panel::config::cloud::account::google::not_configured_title%]",
-            "not_configured_text": "[%key:ui::panel::config::cloud::account::google::not_configured_text%]",
-            "sync_failed_title": "Syncing failed",
-            "sync_failed_text": "Syncing your entities failed, try again or check the logs."
           },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
