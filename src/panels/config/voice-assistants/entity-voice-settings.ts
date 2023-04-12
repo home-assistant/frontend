@@ -1,6 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   EntityFilter,
@@ -50,6 +51,9 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   @state() private _googleEntity?: GoogleEntity;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
+    if (!isComponentLoaded(this.hass, "cloud")) {
+      return;
+    }
     if (changedProps.has("entry") && this.entry) {
       fetchCloudGoogleEntity(this.hass, this.entry.entity_id).then(
         (googleEntity) => {

@@ -8,12 +8,13 @@ import "./cloud-alexa-pref";
 import "./cloud-google-pref";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import "@polymer/paper-item/paper-item";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ha-config-voice-assistants-assistants")
 export class HaConfigVoiceAssistantsAssistants extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property() public isWide!: boolean;
 
@@ -57,29 +58,34 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
                     Amazon Echo, Google Home or your Android phone.
                   </div>
                   <div class="card-actions">
-                    <a href="https://www.nabucasa.com" target="_blank" rel="noreferrer">
+                    <a
+                      href="https://www.nabucasa.com"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       <mwc-button>Learn more</mwc-button>
                     </a>
                   </div>
                 </ha-card>
-                </ha-card>
-                <ha-card outlined>
-                  <a href="/config/cloud/register">
-                    <paper-item>
-                      <paper-item-body two-line>
-                        ${this.hass.localize(
-                          "ui.panel.config.cloud.login.start_trial"
-                        )}
-                        <div secondary>
-                          ${this.hass.localize(
-                            "ui.panel.config.cloud.login.trial_info"
-                          )}
-                        </div>
-                      </paper-item-body>
-                      <ha-icon-next></ha-icon-next>
-                    </paper-item>
-                  </a>
-                </ha-card>`}
+                ${isComponentLoaded(this.hass, "cloud")
+                  ? html` <ha-card outlined>
+                      <a href="/config/cloud/register">
+                        <paper-item>
+                          <paper-item-body two-line>
+                            ${this.hass.localize(
+                              "ui.panel.config.cloud.login.start_trial"
+                            )}
+                            <div secondary>
+                              ${this.hass.localize(
+                                "ui.panel.config.cloud.login.trial_info"
+                              )}
+                            </div>
+                          </paper-item-body>
+                          <ha-icon-next></ha-icon-next>
+                        </paper-item>
+                      </a>
+                    </ha-card>`
+                  : ""}`}
         </div>
       </hass-tabs-subpage>
     `;

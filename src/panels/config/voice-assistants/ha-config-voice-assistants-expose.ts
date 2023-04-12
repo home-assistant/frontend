@@ -56,7 +56,7 @@ import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
 export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public isWide!: boolean;
 
@@ -227,14 +227,14 @@ export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
       extEntities: Record<string, ExtEntityRegistryEntry> | undefined,
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
-      cloudStatus: CloudStatus,
+      cloudStatus: CloudStatus | undefined,
       filters: URLSearchParams
     ) => {
       const googleEnabled =
-        cloudStatus.logged_in === true &&
+        cloudStatus?.logged_in === true &&
         cloudStatus.prefs.google_enabled === true;
       const alexaEnabled =
-        cloudStatus.logged_in === true &&
+        cloudStatus?.logged_in === true &&
         cloudStatus.prefs.alexa_enabled === true;
 
       const showAssistants = [...voiceAssistantKeys];
