@@ -827,6 +827,8 @@ class HUIRoot extends LitElement {
       ? `${this.route!.prefix}/${path}?${addSearchParam({ edit: "1" })}`
       : `${this.route!.prefix}/${path}${location.search}`;
 
+    const currentUrl = `${location.pathname}${location.search}`;
+    if (currentUrl === url && !replace) return;
     navigate(url, { replace });
   }
 
