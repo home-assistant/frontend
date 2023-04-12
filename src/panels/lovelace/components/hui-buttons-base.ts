@@ -25,7 +25,7 @@ export class HuiButtonsBase extends LitElement {
           const stateObj = this.hass.states[entityConf.entity];
 
           const name =
-            (entityConf.show_name && stateObj) ||
+            (entityConf.show_name !== false && stateObj) ||
             (entityConf.name && entityConf.show_name !== false)
               ? entityConf.name || computeStateName(stateObj)
               : "";
