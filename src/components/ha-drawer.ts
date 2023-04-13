@@ -63,13 +63,21 @@ export class HaDrawer extends DrawerBase {
     styles,
     css`
       .mdc-drawer {
+        position: fixed;
         top: 0;
       }
       .mdc-drawer.mdc-drawer--modal.mdc-drawer--open {
         z-index: 200;
       }
       .mdc-drawer-app-content {
-        transform: translateZ(0);
+        overflow: unset;
+        flex: none;
+        padding-left: var(--mdc-drawer-width);
+        padding-inline-start: var(--mdc-drawer-width);
+        padding-inline-end: initial;
+        direction: var(--direction);
+        width: 100%;
+        box-sizing: border-box;
       }
     `,
   ];
