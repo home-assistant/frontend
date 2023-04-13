@@ -3,6 +3,23 @@ import type { ConversationResult } from "./conversation";
 import type { ResolvedMediaSource } from "./media_source";
 import type { SpeechMetadata } from "./stt";
 
+export interface VoiceAssistantPipeline {
+  id: string;
+  conversation_engine: string;
+  language: string;
+  name: string;
+  stt_engine: string;
+  tts_engine: string;
+}
+
+export interface VoiceAssistantPipelineMutableParams {
+  conversation_engine: string;
+  language: string;
+  name: string;
+  stt_engine: string;
+  tts_engine: string;
+}
+
 interface PipelineEventBase {
   timestamp: string;
 }
@@ -202,3 +219,37 @@ export const runVoiceAssistantPipeline = (
 
   return unsubProm;
 };
+
+export const fetchVoiceAssistantPipelines = (hass: HomeAssistant) =>
+  hass.callWS<VoiceAssistantPipeline[]>({
+    type: "voice_assistant/pipeline/list",
+  });
+
+export const createVoiceAssistantPipeline = (
+  hass: HomeAssistant,
+  pipeline: VoiceAssistantPipelineMutableParams
+) =>
+  hass.callWS<VoiceAssistantPipeline>({
+    type: "voice_assistant/pipeline/create",
+    ...pipeline,
+  });
+
+export const updateVoiceAssistantPipeline = (
+  hass: HomeAssistant,
+  pipelineId: string,
+  pipeline: Partial<VoiceAssistantPipelineMutableParams>
+) =>
+  hass.callWS<VoiceAssistantPipeline>({
+    type: "voice_assistant/pipeline/update",
+    pipeline_id: pipelineId,
+    ...pipeline,
+  });
+
+export const deleteVoiceAssistantPipeline = (
+  hass: HomeAssistant,
+  pipelineId: string
+) =>
+  hass.callWS<void>({
+    type: "voice_assistant/pipeline/delete",
+    pipeline_id: pipelineId,
+  });
