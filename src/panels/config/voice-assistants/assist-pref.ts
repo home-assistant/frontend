@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import "@material/mwc-list/mwc-list";
 import { mdiHelpCircle, mdiPlus } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
@@ -7,18 +6,21 @@ import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
-import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
+import "../../../components/ha-button";
 import {
+  createVoiceAssistantPipeline,
+  deleteVoiceAssistantPipeline,
   fetchVoiceAssistantPipelines,
+  updateVoiceAssistantPipeline,
   VoiceAssistantPipeline,
 } from "../../../data/voice_assistant";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
 
 export class AssistPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @state() private _exposeNew?: boolean;
 
   @state() private _pipelines: VoiceAssistantPipeline[] = [];
 
@@ -48,11 +50,16 @@ export class AssistPref extends LitElement {
           </a>
         </div>
         <div class="card-content">
-          <p>[Explanation that you can use multiple backends.]</p>
           <mwc-list>
             ${this._pipelines.map(
               (pipeline) => html`
-                <ha-list-item twoline hasMeta role="button">
+                <ha-list-item
+                  twoline
+                  hasMeta
+                  role="button"
+                  @click=${this._editPipeline}
+                  .id=${pipeline.id}
+                >
                   ${pipeline.name}
                   <span slot="secondary">${pipeline.language}</span>
                   <ha-icon-next slot="meta"></ha-icon-next>
@@ -61,21 +68,84 @@ export class AssistPref extends LitElement {
             )}
           </mwc-list>
           <div class="layout horizontal">
-            <mwc-button>
-              Add assistant
+            <ha-button @click=${this._addPipeline}>
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"
+              )}
               <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </mwc-button>
+            </ha-button>
           </div>
         </div>
         <div class="card-actions">
           <a
             href="/config/voice-assistants/expose?assistants=conversation&historyBack"
           >
-            <mwc-button>Manage entities</mwc-button>
+            <ha-button
+              >${this.hass.localize(
+                "ui.panel.config.voice_assistants.assistants.pipeline.manage_entities"
+              )}</ha-button
+            >
           </a>
         </div>
       </ha-card>
     `;
+  }
+
+  private _editPipeline(ev) {
+    const id = ev.currentTarget.id as string;
+
+    const pipeline = this._pipelines.find((res) => res.id === id);
+    this._openDialog(pipeline);
+  }
+
+  private _addPipeline() {
+    this._openDialog();
+  }
+
+  private async _openDialog(pipeline?: VoiceAssistantPipeline): Promise<void> {
+    showVoiceAssistantPipelineDetailDialog(this, {
+      pipeline,
+      createPipeline: async (values) => {
+        const created = await createVoiceAssistantPipeline(this.hass!, values);
+        this._pipelines = this._pipelines!.concat(created);
+      },
+      updatePipeline: async (values) => {
+        const updated = await updateVoiceAssistantPipeline(
+          this.hass!,
+          pipeline!.id,
+          values
+        );
+        this._pipelines = this._pipelines!.map((res) =>
+          res === pipeline ? updated : res
+        );
+      },
+      deletePipeline: async () => {
+        if (
+          !(await showConfirmationDialog(this, {
+            title: this.hass!.localize(
+              "ui.panel.config.voice_assistants.assistants.pipeline.delete.confirm_title",
+              { name: pipeline!.name }
+            ),
+            text: this.hass!.localize(
+              "ui.panel.config.voice_assistants.assistants.pipeline.delete.confirm_text",
+              { name: pipeline!.name }
+            ),
+            confirmText: this.hass!.localize("ui.common.delete"),
+            destructive: true,
+          }))
+        ) {
+          return false;
+        }
+
+        try {
+          await deleteVoiceAssistantPipeline(this.hass!, pipeline!.id);
+          this._pipelines = this._pipelines!.filter((res) => res !== pipeline);
+          return true;
+        } catch (err: any) {
+          return false;
+        }
+      },
+    });
   }
 
   static get styles(): CSSResultGroup {
@@ -83,19 +153,12 @@ export class AssistPref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      ha-settings-row {
-        padding: 0;
-      }
       .header-actions {
         position: absolute;
-        right: 24px;
+        right: 0px;
         top: 24px;
         display: flex;
         flex-direction: row;
-      }
-      :host([dir="rtl"]) .header-actions {
-        right: auto;
-        left: 24px;
       }
       .header-actions .icon-link {
         margin-top: -16px;
@@ -113,10 +176,6 @@ export class AssistPref extends LitElement {
       .card-header {
         display: flex;
         align-items: center;
-      }
-      img {
-        height: 28px;
-        margin-right: 16px;
       }
     `;
   }

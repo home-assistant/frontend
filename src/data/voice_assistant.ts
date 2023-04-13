@@ -229,7 +229,7 @@ export const createVoiceAssistantPipeline = (
   hass: HomeAssistant,
   pipeline: VoiceAssistantPipelineMutableParams
 ) =>
-  hass.callWS<void>({
+  hass.callWS<VoiceAssistantPipeline>({
     type: "voice_assistant/pipeline/create",
     ...pipeline,
   });
@@ -239,7 +239,7 @@ export const updateVoiceAssistantPipeline = (
   pipelineId: string,
   pipeline: Partial<VoiceAssistantPipelineMutableParams>
 ) =>
-  hass.callWS<void>({
+  hass.callWS<VoiceAssistantPipeline>({
     type: "voice_assistant/pipeline/update",
     pipeline_id: pipelineId,
     ...pipeline,

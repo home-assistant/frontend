@@ -2001,7 +2001,27 @@
         },
         "voice_assistants": {
           "assistants": {
-            "caption": "Assistants"
+            "caption": "Assistants",
+            "pipeline": {
+              "add_assistant": "Add assistant",
+              "manage_entities": "[%key:ui::panel::config::cloud::account::google::manage_entities%]",
+              "delete": {
+                "confirm_title": "Delete {name}?",
+                "confirm_text": "{name} will be permanently deleted."
+              },
+              "detail": {
+                "update_assistant_action": "Update",
+                "add_assistant_title": "Add assistant",
+                "add_assistant_action": "Create",
+                "form": {
+                  "name": "Name",
+                  "conversation_engine": "Conversation agent",
+                  "language": "Language",
+                  "stt_engine": "Speech to text",
+                  "tts_engine": "Text to speech"
+                }
+              }
+            }
           },
           "expose": {
             "caption": "Expose",
