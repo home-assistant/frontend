@@ -3,7 +3,7 @@ import type { ConversationResult } from "./conversation";
 import type { ResolvedMediaSource } from "./media_source";
 import type { SpeechMetadata } from "./stt";
 
-export interface VoiceAssistantPipeline {
+export interface AssistPipeline {
   id: string;
   conversation_engine: string;
   language: string;
@@ -12,7 +12,7 @@ export interface VoiceAssistantPipeline {
   tts_engine: string;
 }
 
-export interface VoiceAssistantPipelineMutableParams {
+export interface AssistPipelineMutableParams {
   conversation_engine: string;
   language: string;
   name: string;
@@ -131,7 +131,7 @@ export interface PipelineRun {
     Partial<PipelineTTSEndEvent["data"]> & { done: boolean };
 }
 
-export const runVoiceAssistantPipeline = (
+export const runAssistPipeline = (
   hass: HomeAssistant,
   callback: (event: PipelineRun) => void,
   options: PipelineRunOptions
@@ -213,43 +213,40 @@ export const runVoiceAssistantPipeline = (
     },
     {
       ...options,
-      type: "voice_assistant/run",
+      type: "assist_pipeline/run",
     }
   );
 
   return unsubProm;
 };
 
-export const fetchVoiceAssistantPipelines = (hass: HomeAssistant) =>
-  hass.callWS<VoiceAssistantPipeline[]>({
-    type: "voice_assistant/pipeline/list",
+export const fetchAssistPipelines = (hass: HomeAssistant) =>
+  hass.callWS<AssistPipeline[]>({
+    type: "assist_pipeline/pipeline/list",
   });
 
-export const createVoiceAssistantPipeline = (
+export const createAssistPipeline = (
   hass: HomeAssistant,
-  pipeline: VoiceAssistantPipelineMutableParams
+  pipeline: AssistPipelineMutableParams
 ) =>
-  hass.callWS<VoiceAssistantPipeline>({
-    type: "voice_assistant/pipeline/create",
+  hass.callWS<AssistPipeline>({
+    type: "assist_pipeline/pipeline/create",
     ...pipeline,
   });
 
-export const updateVoiceAssistantPipeline = (
+export const updateAssistPipeline = (
   hass: HomeAssistant,
   pipelineId: string,
-  pipeline: Partial<VoiceAssistantPipelineMutableParams>
+  pipeline: Partial<AssistPipelineMutableParams>
 ) =>
-  hass.callWS<VoiceAssistantPipeline>({
-    type: "voice_assistant/pipeline/update",
+  hass.callWS<AssistPipeline>({
+    type: "assist_pipeline/pipeline/update",
     pipeline_id: pipelineId,
     ...pipeline,
   });
 
-export const deleteVoiceAssistantPipeline = (
-  hass: HomeAssistant,
-  pipelineId: string
-) =>
+export const deleteAssistPipeline = (hass: HomeAssistant, pipelineId: string) =>
   hass.callWS<void>({
-    type: "voice_assistant/pipeline/delete",
+    type: "assist_pipeline/pipeline/delete",
     pipeline_id: pipelineId,
   });
