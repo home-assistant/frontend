@@ -26,13 +26,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  query,
-  state,
-} from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -550,19 +544,14 @@ class HUIRoot extends LitElement {
               `
             : ""}
         </div>
-        <div
-          id="view"
-          @ll-rebuild=${this._debouncedConfigChanged}
-          @scroll=${this._viewScrolled}
-        ></div>
+        <div id="view" @ll-rebuild=${this._debouncedConfigChanged}></div>
       </div>
     `;
   }
 
-  @eventOptions({ passive: true })
-  private _viewScrolled(ev) {
-    this.toggleAttribute("scrolled", ev.currentTarget.scrollTop !== 0);
-  }
+  private _handleWindowScroll = () => {
+    this.toggleAttribute("scrolled", window.scrollY !== 0);
+  };
 
   private _isVisible = (view: LovelaceViewConfig) =>
     Boolean(
@@ -573,7 +562,8 @@ class HUIRoot extends LitElement {
           view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
-  protected firstUpdated() {
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
     // Check for requested edit mode
     const searchParams = extractSearchParamsObject();
     if (searchParams.edit === "1") {
@@ -586,9 +576,12 @@ class HUIRoot extends LitElement {
         constructUrlCurrentPath(removeSearchParam("conversation"))
       );
     }
-    window.addEventListener("scroll", () => {
-      this.toggleAttribute("scrolled", window.scrollY !== 0);
-    });
+    window.addEventListener("scroll", this._handleWindowScroll);
+  }
+
+  protected disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("scroll", this._handleWindowScroll);
   }
 
   protected updated(changedProperties: PropertyValues): void {
