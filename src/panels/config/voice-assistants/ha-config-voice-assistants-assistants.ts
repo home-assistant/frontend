@@ -1,14 +1,15 @@
+import "@polymer/paper-item/paper-item";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { CloudStatus } from "../../../data/cloud";
 import "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../types";
+import "./assist-pref";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
-import "@polymer/paper-item/paper-item";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ha-config-voice-assistants-assistants")
 export class HaConfigVoiceAssistantsAssistants extends LitElement {
@@ -36,6 +37,7 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
         .tabs=${voiceAssistantTabs}
       >
         <div class="content">
+          <assist-pref .hass=${this.hass}> </assist-pref>
           ${this.cloudStatus?.logged_in
             ? html`<cloud-alexa-pref
                   .hass=${this.hass}
