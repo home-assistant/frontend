@@ -175,7 +175,7 @@ export class AssistPref extends LitElement {
         color: var(--secondary-text-color);
       }
       .add {
-        margin: 16px;
+        margin: 0 16px 16px;
       }
       .card-actions {
         display: flex;
