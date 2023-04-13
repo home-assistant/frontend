@@ -67,24 +67,22 @@ export class AssistPref extends LitElement {
               `
             )}
           </mwc-list>
-          <div class="layout horizontal">
-            <ha-button @click=${this._addPipeline}>
-              ${this.hass.localize(
-                "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"
-              )}
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-button>
-          </div>
+          <ha-button @click=${this._addPipeline}>
+            ${this.hass.localize(
+              "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"
+            )}
+            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          </ha-button>
         </div>
         <div class="card-actions">
           <a
             href="/config/voice-assistants/expose?assistants=conversation&historyBack"
           >
-            <ha-button
-              >${this.hass.localize(
+            <ha-button>
+              ${this.hass.localize(
                 "ui.panel.config.voice_assistants.assistants.pipeline.manage_entities"
-              )}</ha-button
-            >
+              )}
+            </ha-button>
           </a>
         </div>
       </ha-card>
