@@ -1,5 +1,4 @@
 import { ContextProvider } from "@lit-labs/context";
-import { Auth, Connection } from "home-assistant-js-websocket";
 import {
   areasContext,
   configContext,
@@ -83,8 +82,8 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       }),
     };
 
-    protected initializeHass(auth: Auth, conn: Connection) {
-      super.initializeHass(auth, conn);
+    protected hassConnected() {
+      super.hassConnected();
       for (const [key, value] of Object.entries(this.hass!)) {
         if (key in this.__contextProviders) {
           this.__contextProviders[key]!.setValue(value);
