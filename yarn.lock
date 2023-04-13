@@ -8754,7 +8754,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-require@npm:^1.4.0":
+"fs-require@npm:^1.6.0":
   version: 1.6.0
   resolution: "fs-require@npm:1.6.0"
   checksum: 085145a3021e142ae8d591d955f7e1d9cab17191666294e0ad394df5cb9ee379817b89c50de63bd861138dcb6adec589289d347c23de9bfe1ac82aeba6b1a128
@@ -9590,7 +9590,7 @@ __metadata:
     html-minifier-terser: 7.1.0
     husky: 8.0.3
     idb-keyval: 6.2.0
-    instant-mocha: 1.5.0
+    instant-mocha: 1.5.1
     intl-messageformat: 10.3.3
     js-yaml: 4.1.0
     jszip: 3.10.1
@@ -10032,12 +10032,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"instant-mocha@npm:1.5.0":
-  version: 1.5.0
-  resolution: "instant-mocha@npm:1.5.0"
+"instant-mocha@npm:1.5.1":
+  version: 1.5.1
+  resolution: "instant-mocha@npm:1.5.1"
   dependencies:
-    fs-require: ^1.4.0
-    memfs: ^3.4.12
+    fs-require: ^1.6.0
+    memfs: ^3.5.0
     source-map-support: ^0.5.21
     yargs: ^16.2.0
   peerDependencies:
@@ -10045,7 +10045,7 @@ __metadata:
     webpack: 4 || 5
   bin:
     instant-mocha: dist/cli.js
-  checksum: 77741864a0b6602e7599dc93e3bd3dfc3451c58e84881c7163b8fc9494c095528ba3cc2c8b74be41e885a659711d81777ff7fd761523c34d4eabcd9fb555156d
+  checksum: c098a792ba3bddc1d421da7067c21818ccc64e45d98ccce735ab35c29132f01cf624a2106b1ecd5f1e5d9c9d9bbb8f947d92db8bcfa7ddae01425f7fd291ee6e
   languageName: node
   linkType: hard
 
@@ -11629,12 +11629,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"memfs@npm:^3.4.12, memfs@npm:^3.4.3":
-  version: 3.4.13
-  resolution: "memfs@npm:3.4.13"
+"memfs@npm:^3.4.3, memfs@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "memfs@npm:3.5.0"
   dependencies:
     fs-monkey: ^1.0.3
-  checksum: 3f9717d6f060919d53f211acb6096a0ea2f566a8cbcc4ef7e1f2561e31e33dc456053fdf951c90a49c8ec55402de7f01b006b81683ab7bd4bdbbd8c9b9cdae5f
+  checksum: 8427db6c3644eeb9119b7a74b232d9a6178d018878acce6f05bd89d95e28b1073c9eeb00127131b0613b07a003e2e7b15b482f9004e548fe06a0aba7aa02515c
   languageName: node
   linkType: hard
 
