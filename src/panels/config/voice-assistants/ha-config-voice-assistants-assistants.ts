@@ -37,8 +37,7 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
         .tabs=${voiceAssistantTabs}
       >
         <div class="content">
-          <assist-pref .hass=${this.hass} dir=${computeRTLDirection(this.hass)}>
-          </assist-pref>
+          <assist-pref .hass=${this.hass}> </assist-pref>
           ${this.cloudStatus?.logged_in
             ? html`<cloud-alexa-pref
                   .hass=${this.hass}
