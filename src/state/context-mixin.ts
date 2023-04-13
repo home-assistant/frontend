@@ -82,6 +82,15 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       }),
     };
 
+    protected hassConnected() {
+      super.hassConnected();
+      for (const [key, value] of Object.entries(this.hass!)) {
+        if (key in this.__contextProviders) {
+          this.__contextProviders[key]!.setValue(value);
+        }
+      }
+    }
+
     protected _updateHass(obj: Partial<HomeAssistant>) {
       super._updateHass(obj);
       for (const [key, value] of Object.entries(obj)) {
