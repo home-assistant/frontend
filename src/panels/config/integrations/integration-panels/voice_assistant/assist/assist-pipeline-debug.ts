@@ -4,8 +4,8 @@ import "../../../../../../components/ha-button";
 import {
   PipelineRun,
   PipelineRunOptions,
-  runVoiceAssistantPipeline,
-} from "../../../../../../data/voice_assistant";
+  runAssistPipeline,
+} from "../../../../../../data/assist_pipeline";
 import "../../../../../../layouts/hass-subpage";
 import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-checkbox";
@@ -269,7 +269,7 @@ export class AssistPipelineDebug extends LitElement {
     this._finished = false;
     let added = false;
     try {
-      await runVoiceAssistantPipeline(
+      await runAssistPipeline(
         this.hass,
         (updatedRun) => {
           if (added) {
