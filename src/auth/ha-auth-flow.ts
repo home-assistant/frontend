@@ -9,6 +9,7 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-checkbox";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
@@ -20,13 +21,12 @@ import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
-import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import "./ha-password-manager-polyfill";
 
 type State = "loading" | "error" | "step";
 
 @customElement("ha-auth-flow")
-export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
+export class HaAuthFlow extends LitElement {
   @property({ attribute: false }) public authProvider?: AuthProvider;
 
   @property() public clientId?: string;
@@ -34,6 +34,8 @@ export class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @property() public redirectUri?: string;
 
   @property() public oauth2State?: string;
+
+  @property() public localize!: LocalizeFunc;
 
   @state() private _state: State = "loading";
 

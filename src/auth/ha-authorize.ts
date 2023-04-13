@@ -82,12 +82,13 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         .redirectUri=${this.redirectUri}
         .oauth2State=${this.oauth2State}
         .authProvider=${this._authProvider}
+        .localize=${this.localize}
       ></ha-auth-flow>
 
       ${inactiveProviders.length > 0
         ? html`
             <ha-pick-auth-provider
-              .resources=${this.resources}
+              .localize=${this.localize}
               .clientId=${this.clientId}
               .authProviders=${inactiveProviders}
               @pick-auth-provider=${this._handleAuthProviderPick}
