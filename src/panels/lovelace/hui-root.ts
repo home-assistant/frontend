@@ -574,7 +574,9 @@ class HUIRoot extends LitElement {
         constructUrlCurrentPath(removeSearchParam("conversation"))
       );
     }
-    window.addEventListener("scroll", this._handleWindowScroll);
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
   }
 
   public disconnectedCallback(): void {
