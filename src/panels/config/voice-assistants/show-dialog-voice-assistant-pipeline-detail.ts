@@ -1,16 +1,14 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
-  VoiceAssistantPipeline,
-  VoiceAssistantPipelineMutableParams,
-} from "../../../data/voice_assistant";
+  AssistPipeline,
+  AssistPipelineMutableParams,
+} from "../../../data/assist_pipeline";
 
 export interface VoiceAssistantPipelineDetailsDialogParams {
-  pipeline?: VoiceAssistantPipeline;
-  createPipeline: (
-    values: VoiceAssistantPipelineMutableParams
-  ) => Promise<unknown>;
+  pipeline?: AssistPipeline;
+  createPipeline: (values: AssistPipelineMutableParams) => Promise<unknown>;
   updatePipeline: (
-    updates: Partial<VoiceAssistantPipelineMutableParams>
+    updates: Partial<AssistPipelineMutableParams>
   ) => Promise<unknown>;
   deletePipeline: () => Promise<boolean>;
 }

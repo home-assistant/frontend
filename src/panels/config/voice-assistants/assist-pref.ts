@@ -9,12 +9,12 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-switch";
 import "../../../components/ha-button";
 import {
-  createVoiceAssistantPipeline,
-  deleteVoiceAssistantPipeline,
-  fetchVoiceAssistantPipelines,
-  updateVoiceAssistantPipeline,
-  VoiceAssistantPipeline,
-} from "../../../data/voice_assistant";
+  createAssistPipeline,
+  deleteAssistPipeline,
+  fetchAssistPipelines,
+  updateAssistPipeline,
+  AssistPipeline,
+} from "../../../data/assist_pipeline";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
@@ -23,12 +23,12 @@ import { brandsUrl } from "../../../util/brands-url";
 export class AssistPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _pipelines: VoiceAssistantPipeline[] = [];
+  @state() private _pipelines: AssistPipeline[] = [];
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    fetchVoiceAssistantPipelines(this.hass).then((pipelines) => {
+    fetchAssistPipelines(this.hass).then((pipelines) => {
       this._pipelines = pipelines;
     });
   }
@@ -40,7 +40,7 @@ export class AssistPref extends LitElement {
           <img
             alt=""
             src=${brandsUrl({
-              domain: "voice_assistant",
+              domain: "assist_pipeline",
               type: "icon",
               darkOptimized: this.hass.themes?.darkMode,
             })}
@@ -109,15 +109,15 @@ export class AssistPref extends LitElement {
     this._openDialog();
   }
 
-  private async _openDialog(pipeline?: VoiceAssistantPipeline): Promise<void> {
+  private async _openDialog(pipeline?: AssistPipeline): Promise<void> {
     showVoiceAssistantPipelineDetailDialog(this, {
       pipeline,
       createPipeline: async (values) => {
-        const created = await createVoiceAssistantPipeline(this.hass!, values);
+        const created = await createAssistPipeline(this.hass!, values);
         this._pipelines = this._pipelines!.concat(created);
       },
       updatePipeline: async (values) => {
-        const updated = await updateVoiceAssistantPipeline(
+        const updated = await updateAssistPipeline(
           this.hass!,
           pipeline!.id,
           values
@@ -145,7 +145,7 @@ export class AssistPref extends LitElement {
         }
 
         try {
-          await deleteVoiceAssistantPipeline(this.hass!, pipeline!.id);
+          await deleteAssistPipeline(this.hass!, pipeline!.id);
           this._pipelines = this._pipelines!.filter((res) => res !== pipeline);
           return true;
         } catch (err: any) {
@@ -186,6 +186,7 @@ export class AssistPref extends LitElement {
       .card-header {
         display: flex;
         align-items: center;
+        padding-bottom: 0;
       }
       img {
         height: 28px;

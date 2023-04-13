@@ -1,7 +1,7 @@
 import { HomeAssistant } from "../types";
 
 export const voiceAssistants = {
-  conversation: { domain: "voice_assistant", name: "Assist" },
+  conversation: { domain: "assist_pipeline", name: "Assist" },
   "cloud.alexa": {
     domain: "alexa",
     name: "Amazon Alexa",

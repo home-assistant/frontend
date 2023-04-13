@@ -7,9 +7,9 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import { SchemaUnion } from "../../../components/ha-form/types";
 import {
-  VoiceAssistantPipeline,
-  VoiceAssistantPipelineMutableParams,
-} from "../../../data/voice_assistant";
+  AssistPipeline,
+  AssistPipelineMutableParams,
+} from "../../../data/assist_pipeline";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
@@ -20,7 +20,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _params?: VoiceAssistantPipelineDetailsDialogParams;
 
-  @state() private _data?: Partial<VoiceAssistantPipeline>;
+  @state() private _data?: Partial<AssistPipeline>;
 
   @state() private _error?: Record<string, string>;
 
@@ -160,7 +160,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._submitting = true;
     try {
       if (this._params!.pipeline?.id) {
-        const values: Partial<VoiceAssistantPipelineMutableParams> = {
+        const values: Partial<AssistPipelineMutableParams> = {
           name: this._data!.name,
           conversation_engine: this._data!.conversation_engine,
           language: this._data!.language,
@@ -170,7 +170,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         await this._params!.updatePipeline(values);
       } else {
         await this._params!.createPipeline(
-          this._data as VoiceAssistantPipelineMutableParams
+          this._data as AssistPipelineMutableParams
         );
       }
       this.closeDialog();
