@@ -26,7 +26,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -86,8 +86,6 @@ class HUIRoot extends LitElement {
   };
 
   @state() private _curView?: number | "hass-unused-entities";
-
-  @query("#view", true) _view!: HTMLDivElement;
 
   private _viewCache?: { [viewId: string]: HUIView };
 
@@ -579,7 +577,7 @@ class HUIRoot extends LitElement {
     window.addEventListener("scroll", this._handleWindowScroll);
   }
 
-  protected disconnectedCallback(): void {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("scroll", this._handleWindowScroll);
   }
