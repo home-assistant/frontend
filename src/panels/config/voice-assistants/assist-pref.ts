@@ -18,6 +18,7 @@ import {
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
+import { brandsUrl } from "../../../util/brands-url";
 
 export class AssistPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -35,7 +36,17 @@ export class AssistPref extends LitElement {
   protected render() {
     return html`
       <ha-card outlined>
-        <h1 class="card-header">Assist</h1>
+        <h1 class="card-header">
+          <img
+            alt=""
+            src=${brandsUrl({
+              domain: "conversation",
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            })}
+            referrerpolicy="no-referrer"
+          />Assist
+        </h1>
         <div class="header-actions">
           <a
             href="https://www.home-assistant.io/docs/assist/"
@@ -49,31 +60,29 @@ export class AssistPref extends LitElement {
             ></ha-icon-button>
           </a>
         </div>
-        <div class="card-content">
-          <mwc-list>
-            ${this._pipelines.map(
-              (pipeline) => html`
-                <ha-list-item
-                  twoline
-                  hasMeta
-                  role="button"
-                  @click=${this._editPipeline}
-                  .id=${pipeline.id}
-                >
-                  ${pipeline.name}
-                  <span slot="secondary">${pipeline.language}</span>
-                  <ha-icon-next slot="meta"></ha-icon-next>
-                </ha-list-item>
-              `
-            )}
-          </mwc-list>
-          <ha-button @click=${this._addPipeline}>
-            ${this.hass.localize(
-              "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"
-            )}
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-button>
-        </div>
+        <mwc-list>
+          ${this._pipelines.map(
+            (pipeline) => html`
+              <ha-list-item
+                twoline
+                hasMeta
+                role="button"
+                @click=${this._editPipeline}
+                .id=${pipeline.id}
+              >
+                ${pipeline.name}
+                <span slot="secondary">${pipeline.language}</span>
+                <ha-icon-next slot="meta"></ha-icon-next>
+              </ha-list-item>
+            `
+          )}
+        </mwc-list>
+        <ha-button @click=${this._addPipeline} class="add" outlined>
+          ${this.hass.localize(
+            "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"
+          )}
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-button>
         <div class="card-actions">
           <a
             href="/config/voice-assistants/expose?assistants=conversation&historyBack"
@@ -165,6 +174,9 @@ export class AssistPref extends LitElement {
         direction: var(--direction);
         color: var(--secondary-text-color);
       }
+      .add {
+        margin: 16px;
+      }
       .card-actions {
         display: flex;
       }
@@ -174,6 +186,10 @@ export class AssistPref extends LitElement {
       .card-header {
         display: flex;
         align-items: center;
+      }
+      img {
+        height: 28px;
+        margin-right: 16px;
       }
     `;
   }
