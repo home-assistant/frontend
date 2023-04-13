@@ -742,12 +742,14 @@ class HUIRoot extends LitElement {
     const curViewConfig =
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
-    if (curViewConfig?.back_path) {
-      navigate(curViewConfig.back_path);
+    if (curViewConfig?.back_path != null) {
+      navigate(curViewConfig.back_path, { replace: true });
     } else if (history.length > 1) {
       history.back();
+    } else if (!views[0].subview) {
+      navigate(this.route!.prefix, { replace: true });
     } else {
-      navigate(this.route!.prefix);
+      navigate("/");
     }
   }
 
