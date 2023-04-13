@@ -40,7 +40,7 @@ export class AssistPref extends LitElement {
           <img
             alt=""
             src=${brandsUrl({
-              domain: "conversation",
+              domain: "voice_assistant",
               type: "icon",
               darkOptimized: this.hass.themes?.darkMode,
             })}
