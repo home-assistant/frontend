@@ -195,7 +195,8 @@ export class HuiEnergyDevicesGraphCard
       energyData.end,
       devices,
       period,
-      units
+      units,
+      ["sum"]
     );
 
     Object.values(data).forEach((stat) => {
@@ -221,7 +222,8 @@ export class HuiEnergyDevicesGraphCard
         energyData.endCompare,
         devices,
         period,
-        units
+        units,
+        ["sum"]
       );
 
       Object.values(compareData).forEach((stat) => {
