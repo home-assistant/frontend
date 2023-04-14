@@ -5373,6 +5373,7 @@
           "uninstall": "Failed to uninstall add-on",
           "install": "Failed to install add-on",
           "stop": "Failed to stop add-on",
+          "rebuild": "Failed to rebuild add-on",
           "restart": "Failed to restart add-on",
           "start": "Failed to start add-on",
           "go_to_config": "Edit Config",
