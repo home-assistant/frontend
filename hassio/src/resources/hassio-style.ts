@@ -44,10 +44,6 @@ export const hassioStyle = css`
       grid-template-columns: repeat(auto-fit, minmax(300px, 0.25fr));
     }
   }
-  ha-call-api-button {
-    font-weight: 500;
-    color: var(--primary-color);
-  }
   .error {
     color: var(--error-color);
     margin-top: 16px;

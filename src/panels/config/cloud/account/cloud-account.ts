@@ -7,7 +7,6 @@ import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
-import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-tip";
