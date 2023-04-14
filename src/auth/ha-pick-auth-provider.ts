@@ -2,10 +2,10 @@ import "@material/mwc-list";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-next";
 import "../components/ha-list-item";
 import { AuthProvider } from "../data/auth";
-import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 
 declare global {
   interface HASSDomEvents {
@@ -14,8 +14,10 @@ declare global {
 }
 
 @customElement("ha-pick-auth-provider")
-export class HaPickAuthProvider extends litLocalizeLiteMixin(LitElement) {
+export class HaPickAuthProvider extends LitElement {
   @property() public authProviders: AuthProvider[] = [];
+
+  @property() public localize!: LocalizeFunc;
 
   protected render() {
     return html`
