@@ -1,27 +1,22 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-check-list-item";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-textfield";
+import { mdiCog, mdiContentCopy } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  mdiCheckboxBlankOutline,
-  mdiCheckboxMarkedOutline,
-  mdiCog,
-  mdiContentCopy,
-} from "@mdi/js";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { slugify } from "../../../../../common/string/slugify";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/ha-check-list-item";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
-import { showToast } from "../../../../../util/toast";
 import {
-  WebhookTrigger,
   AutomationConfig,
+  WebhookTrigger,
 } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
+import { showToast } from "../../../../../util/toast";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
 const SUPPORTED_METHODS = ["GET", "HEAD", "POST", "PUT"];
@@ -139,13 +134,15 @@ export class HaWebhookTrigger extends LitElement {
             (method) => html`
               <ha-check-list-item
                 left
-                value=${method}
+                .value=${method}
                 @request-selected=${this._allowedMethodsChanged}
                 .selected=${allowedMethods!.includes(method)}
-                >${method}</ha-check-list-item
               >
+                ${method}
+              </ha-check-list-item>
             `
           )}
+          <li divider role="separator"></li>
           <ha-check-list-item
             left
             @request-selected=${this._localOnlyChanged}
@@ -165,6 +162,10 @@ export class HaWebhookTrigger extends LitElement {
   }
 
   private _localOnlyChanged(ev: CustomEvent<RequestSelectedDetail>): void {
+    ev.stopPropagation();
+    if (this.trigger.local_only === ev.detail.selected) {
+      return;
+    }
     const newTrigger = {
       ...this.trigger,
       local_only: ev.detail.selected,
@@ -173,14 +174,16 @@ export class HaWebhookTrigger extends LitElement {
   }
 
   private _allowedMethodsChanged(ev: CustomEvent<RequestSelectedDetail>): void {
+    ev.stopPropagation();
     const method = (ev.target as any).value;
     const selected = ev.detail.selected;
-    const methods = this.trigger.allowed_methods ?? [];
-    const newMethods = [...methods];
 
-    if (selected === methods.includes(method)) {
+    if (selected === this.trigger.allowed_methods?.includes(method)) {
       return;
     }
+
+    const methods = this.trigger.allowed_methods ?? [];
+    const newMethods = [...methods];
 
     if (selected) {
       newMethods.push(method);
@@ -199,10 +202,6 @@ export class HaWebhookTrigger extends LitElement {
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
-  }
-
-  private _selectedPath(value?: boolean): string {
-    return value ? mdiCheckboxMarkedOutline : mdiCheckboxBlankOutline;
   }
 
   static styles = css`
