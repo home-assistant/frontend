@@ -3765,9 +3765,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-commonjs@npm:24.0.1":
-  version: 24.0.1
-  resolution: "@rollup/plugin-commonjs@npm:24.0.1"
+"@rollup/plugin-commonjs@npm:24.1.0":
+  version: 24.1.0
+  resolution: "@rollup/plugin-commonjs@npm:24.1.0"
   dependencies:
     "@rollup/pluginutils": ^5.0.1
     commondir: ^1.0.1
@@ -3780,7 +3780,7 @@ __metadata:
   peerDependenciesMeta:
     rollup:
       optional: true
-  checksum: ff5b09f5c350640fe6836fcc97bf5c5612bf78b26eaaad01bf1aee955f0b136135d1a8950a02f680779aec1f16f2c6b6cf89d6080e84ed09be62737abb6b3a5f
+  checksum: 42faafc9bc8e04d75c86bb50d693ebb9c5eee19bf9ab3c09780b872547d12ff5ea85cfec7da75f5176d0aa4b5233101f667f44b85b331450a7bb14c95180852e
   languageName: node
   linkType: hard
 
@@ -9517,7 +9517,7 @@ __metadata:
     "@polymer/paper-toast": 3.0.1
     "@polymer/polymer": 3.5.1
     "@rollup/plugin-babel": 6.0.3
-    "@rollup/plugin-commonjs": 24.0.1
+    "@rollup/plugin-commonjs": 24.1.0
     "@rollup/plugin-json": 6.0.0
     "@rollup/plugin-node-resolve": 15.0.2
     "@rollup/plugin-replace": 5.0.2
