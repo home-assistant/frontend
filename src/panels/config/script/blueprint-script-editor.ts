@@ -58,16 +58,17 @@ export class HaBlueprintScriptEditor extends LitElement {
             input[key] = value.default;
           }
         });
-
-        fireEvent(this, "value-changed", {
-          value: {
-            ...this.config,
-            use_blueprint: {
-              ...this.config.use_blueprint,
-              input: input,
+        if (Object.keys(input).length) {
+          fireEvent(this, "value-changed", {
+            value: {
+              ...this.config,
+              use_blueprint: {
+                ...this.config.use_blueprint,
+                input: input,
+              },
             },
-          },
-        });
+          });
+        }
       }
     }
   }
