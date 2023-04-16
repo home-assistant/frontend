@@ -3,6 +3,23 @@ import type { ConversationResult } from "./conversation";
 import type { ResolvedMediaSource } from "./media_source";
 import type { SpeechMetadata } from "./stt";
 
+export interface AssistPipeline {
+  id: string;
+  conversation_engine: string;
+  language: string;
+  name: string;
+  stt_engine: string;
+  tts_engine: string;
+}
+
+export interface AssistPipelineMutableParams {
+  conversation_engine: string;
+  language: string;
+  name: string;
+  stt_engine: string;
+  tts_engine: string;
+}
+
 interface PipelineEventBase {
   timestamp: string;
 }
@@ -114,7 +131,7 @@ export interface PipelineRun {
     Partial<PipelineTTSEndEvent["data"]> & { done: boolean };
 }
 
-export const runVoiceAssistantPipeline = (
+export const runAssistPipeline = (
   hass: HomeAssistant,
   callback: (event: PipelineRun) => void,
   options: PipelineRunOptions
@@ -196,9 +213,40 @@ export const runVoiceAssistantPipeline = (
     },
     {
       ...options,
-      type: "voice_assistant/run",
+      type: "assist_pipeline/run",
     }
   );
 
   return unsubProm;
 };
+
+export const fetchAssistPipelines = (hass: HomeAssistant) =>
+  hass.callWS<AssistPipeline[]>({
+    type: "assist_pipeline/pipeline/list",
+  });
+
+export const createAssistPipeline = (
+  hass: HomeAssistant,
+  pipeline: AssistPipelineMutableParams
+) =>
+  hass.callWS<AssistPipeline>({
+    type: "assist_pipeline/pipeline/create",
+    ...pipeline,
+  });
+
+export const updateAssistPipeline = (
+  hass: HomeAssistant,
+  pipelineId: string,
+  pipeline: Partial<AssistPipelineMutableParams>
+) =>
+  hass.callWS<AssistPipeline>({
+    type: "assist_pipeline/pipeline/update",
+    pipeline_id: pipelineId,
+    ...pipeline,
+  });
+
+export const deleteAssistPipeline = (hass: HomeAssistant, pipelineId: string) =>
+  hass.callWS<void>({
+    type: "assist_pipeline/pipeline/delete",
+    pipeline_id: pipelineId,
+  });

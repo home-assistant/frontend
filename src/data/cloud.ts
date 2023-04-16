@@ -9,15 +9,6 @@ interface CloudStatusNotLoggedIn {
   http_use_ssl: boolean;
 }
 
-export interface GoogleEntityConfig {
-  should_expose?: boolean | null;
-  disable_2fa?: boolean;
-}
-
-export interface AlexaEntityConfig {
-  should_expose?: boolean | null;
-}
-
 export interface CertificateInformation {
   common_name: string;
   expire_date: string;
@@ -30,14 +21,6 @@ export interface CloudPreferences {
   remote_enabled: boolean;
   google_secure_devices_pin: string | undefined;
   cloudhooks: { [webhookId: string]: CloudWebhook };
-  google_default_expose: string[] | null;
-  google_entity_configs: {
-    [entityId: string]: GoogleEntityConfig;
-  };
-  alexa_default_expose: string[] | null;
-  alexa_entity_configs: {
-    [entityId: string]: AlexaEntityConfig;
-  };
   alexa_report_state: boolean;
   google_report_state: boolean;
   tts_default_voice: [string, string];
@@ -57,6 +40,13 @@ export interface CloudStatusLoggedIn {
   remote_domain: string | undefined;
   remote_connected: boolean;
   remote_certificate: undefined | CertificateInformation;
+  remote_certificate_status:
+    | null
+    | "error"
+    | "generating"
+    | "loaded"
+    | "loading"
+    | "ready";
   http_use_ssl: boolean;
   active_subscription: boolean;
 }
@@ -150,10 +140,8 @@ export const updateCloudPref = (
   prefs: {
     google_enabled?: CloudPreferences["google_enabled"];
     alexa_enabled?: CloudPreferences["alexa_enabled"];
-    alexa_default_expose?: CloudPreferences["alexa_default_expose"];
     alexa_report_state?: CloudPreferences["alexa_report_state"];
     google_report_state?: CloudPreferences["google_report_state"];
-    google_default_expose?: CloudPreferences["google_default_expose"];
     google_secure_devices_pin?: CloudPreferences["google_secure_devices_pin"];
     tts_default_voice?: CloudPreferences["tts_default_voice"];
   }
@@ -165,25 +153,14 @@ export const updateCloudPref = (
 
 export const updateCloudGoogleEntityConfig = (
   hass: HomeAssistant,
-  entityId: string,
-  values: GoogleEntityConfig
+  entity_id: string,
+  disable_2fa: boolean
 ) =>
-  hass.callWS<GoogleEntityConfig>({
+  hass.callWS({
     type: "cloud/google_assistant/entities/update",
-    entity_id: entityId,
-    ...values,
+    entity_id,
+    disable_2fa,
   });
 
 export const cloudSyncGoogleAssistant = (hass: HomeAssistant) =>
   hass.callApi("POST", "cloud/google_actions/sync");
-
-export const updateCloudAlexaEntityConfig = (
-  hass: HomeAssistant,
-  entityId: string,
-  values: AlexaEntityConfig
-) =>
-  hass.callWS<AlexaEntityConfig>({
-    type: "cloud/alexa/entities/update",
-    entity_id: entityId,
-    ...values,
-  });

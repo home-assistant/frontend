@@ -5,7 +5,7 @@ import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-circular-progress";
 import "../../../../../../components/ha-expansion-panel";
-import type { PipelineRun } from "../../../../../../data/voice_assistant";
+import type { PipelineRun } from "../../../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../../../types";
 import { formatNumber } from "../../../../../../common/number/format_number";
 

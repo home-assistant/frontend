@@ -216,7 +216,7 @@ export class HassioAddonStore extends LitElement {
     });
   }
 
-  private async _filterChanged(e) {
+  private _filterChanged(e) {
     this._filter = e.detail.value;
   }
 
