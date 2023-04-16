@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-blueprint-picker";
@@ -36,40 +36,6 @@ export class HaBlueprintScriptEditor extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._getBlueprints();
-  }
-
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-
-    // Load defaults only when blueprint is first initialized, or changed.
-    if (
-      this._blueprints &&
-      this.config.use_blueprint.input === undefined &&
-      (changedProps.has("_blueprints") ||
-        (changedProps.has("config") &&
-          this.config.use_blueprint.path !==
-            changedProps.get("config").use_blueprint?.path))
-    ) {
-      const input = {};
-      const blueprint = this._blueprint;
-      if (blueprint && !("error" in blueprint) && blueprint?.metadata?.input) {
-        Object.entries(blueprint.metadata.input).forEach(([key, value]) => {
-          if (value?.default !== undefined) {
-            input[key] = value.default;
-          }
-        });
-
-        fireEvent(this, "value-changed", {
-          value: {
-            ...this.config,
-            use_blueprint: {
-              ...this.config.use_blueprint,
-              input: input,
-            },
-          },
-        });
-      }
-    }
   }
 
   private get _blueprint(): BlueprintOrError | undefined {
@@ -145,7 +111,7 @@ export class HaBlueprintScriptEditor extends LitElement {
                               .disabled=${this.disabled}
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
-                              ""}
+                              value?.default}
                               @value-changed=${this._inputChanged}
                             ></ha-selector>`
                           : html`<ha-textfield
@@ -154,7 +120,7 @@ export class HaBlueprintScriptEditor extends LitElement {
                               .disabled=${this.disabled}
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
-                              ""}
+                              value?.default}
                               @change=${this._inputChanged}
                             ></ha-textfield>`}
                       </ha-settings-row>`
