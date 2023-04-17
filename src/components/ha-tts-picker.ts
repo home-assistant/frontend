@@ -14,6 +14,9 @@ import { TTSEngine, listTTSEngines } from "../data/tts";
 import { HomeAssistant } from "../types";
 import "./ha-select";
 import "./ha-list-item";
+import type { HaSelect } from "./ha-select";
+
+const DEFAULT = "default_engine_option";
 
 @customElement("ha-tts-picker")
 export class HaTTSPicker extends LitElement {
@@ -44,6 +47,9 @@ export class HaTTSPicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
+        <ha-list-item .value=${DEFAULT} .selected=${this.value === undefined}>
+          ${this.hass!.localize("ui.components.tts-picker.default")}
+        </ha-list-item>
         ${this._engines.map((engine) => {
           const stateObj = this.hass!.states[engine.engine_id];
           return html`<ha-list-item
@@ -77,10 +83,14 @@ export class HaTTSPicker extends LitElement {
   }
 
   private _changed(ev): void {
-    if (!this.hass || ev.target.value === "") {
+    const target = ev.target as HaSelect;
+    if (!this.hass || target.value === "") {
       return;
     }
-    this.value = ev.target.value === "remove" ? undefined : ev.target.value;
+    this.value = target.value === DEFAULT ? undefined : target.value;
+    if (target.value === DEFAULT) {
+      setTimeout(() => target.select(0), 0);
+    }
     fireEvent(this, "value-changed", { value: this.value });
   }
 }

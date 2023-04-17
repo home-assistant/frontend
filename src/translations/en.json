@@ -410,7 +410,8 @@
         "no_theme": "No theme"
       },
       "tts-picker": {
-        "tts": "Text to Speech"
+        "tts": "Text to Speech",
+        "default": "Default"
       },
       "user-picker": {
         "no_user": "No user",
