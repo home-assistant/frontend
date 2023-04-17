@@ -207,6 +207,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     );
     if (!runs.pipeline_runs.length) {
       showAlertDialog(this, { text: "No runs found" });
+      return;
     }
     const events = await getAssistPipelineRun(
       this.hass,
