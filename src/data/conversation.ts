@@ -56,6 +56,11 @@ export interface AgentInfo {
   attribution?: { name: string; url: string };
 }
 
+export interface Agent {
+  id: string;
+  name: string;
+}
+
 export const processConversationInput = (
   hass: HomeAssistant,
   text: string,
@@ -70,9 +75,20 @@ export const processConversationInput = (
     language,
   });
 
-export const getAgentInfo = (hass: HomeAssistant): Promise<AgentInfo> =>
+export const listAgents = (
+  hass: HomeAssistant
+): Promise<{ agents: Agent[]; default_agent: string | null }> =>
+  hass.callWS({
+    type: "conversation/agent/list",
+  });
+
+export const getAgentInfo = (
+  hass: HomeAssistant,
+  agent_id?: string
+): Promise<AgentInfo> =>
   hass.callWS({
     type: "conversation/agent/info",
+    agent_id,
   });
 
 export const prepareConversation = (
