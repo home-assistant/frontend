@@ -45,6 +45,6 @@ export class HaTTSSelector extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-tts-addon": HaTTSSelector;
+    "ha-selector-tts": HaTTSSelector;
   }
 }
