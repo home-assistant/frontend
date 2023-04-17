@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
