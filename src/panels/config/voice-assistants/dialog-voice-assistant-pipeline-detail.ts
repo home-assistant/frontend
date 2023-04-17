@@ -130,8 +130,9 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           name: "stt_engine",
           required: true,
           selector: {
-            text: {},
+            stt: {},
           },
+          context: { language: "language" },
         },
         {
           name: "tts_engine",
