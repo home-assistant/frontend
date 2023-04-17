@@ -56,10 +56,6 @@ const genPagesDevTask =
   ) =>
   async () => {
     for (const [page, entries] of Object.entries(pageEntries)) {
-      // Add the runtime chunk for Webpack only
-      if (!env.useRollup()) {
-        entries.unshift("runtime");
-      }
       const content = renderTemplate(
         path.resolve(inputRoot, inputSub, `${page}.template`),
         {
@@ -99,10 +95,6 @@ const genPagesProdTask =
       : {};
     const minifiedHTML = [];
     for (const [page, entries] of Object.entries(pageEntries)) {
-      // Add the runtime chunk for Webpack only
-      if (!env.useRollup()) {
-        entries.unshift("runtime");
-      }
       const content = renderTemplate(
         path.resolve(inputRoot, inputSub, `${page}.template`),
         {

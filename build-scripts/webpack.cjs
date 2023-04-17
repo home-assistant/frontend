@@ -84,7 +84,6 @@ const createWebpackConfig = ({
       ],
       moduleIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
       chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
-      runtimeChunk: "single",
     },
     plugins: [
       !isStatsBuild && new WebpackBar({ fancy: !isProdBuild }),
