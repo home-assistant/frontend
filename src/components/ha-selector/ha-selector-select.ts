@@ -135,7 +135,7 @@ export class HaSelectSelector extends LitElement {
           .helper=${this.helper}
           .disabled=${this.disabled}
           .required=${this.required && !value.length}
-          .value=${this._filter}
+          .value=${""}
           .items=${optionItems}
           .allowCustomValue=${this.selector.select.custom_value ?? false}
           @filter-changed=${this._filterChanged}
