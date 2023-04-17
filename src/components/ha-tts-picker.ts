@@ -35,11 +35,12 @@ export class HaTTSPicker extends LitElement {
   @state() _engines: TTSEngine[] = [];
 
   protected render(): TemplateResult {
+    const value = this.value ?? DEFAULT;
     return html`
       <ha-select
         .label=${this.label ||
         this.hass!.localize("ui.components.tts-picker.tts")}
-        .value=${this.value}
+        .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}
         @selected=${this._changed}
@@ -47,7 +48,7 @@ export class HaTTSPicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
-        <ha-list-item .value=${DEFAULT} .selected=${this.value === undefined}>
+        <ha-list-item .value=${DEFAULT}>
           ${this.hass!.localize("ui.components.tts-picker.default")}
         </ha-list-item>
         ${this._engines.map((engine) => {
@@ -93,9 +94,6 @@ export class HaTTSPicker extends LitElement {
       return;
     }
     this.value = target.value === DEFAULT ? undefined : target.value;
-    if (target.value === DEFAULT) {
-      setTimeout(() => target.select(0), 0);
-    }
     fireEvent(this, "value-changed", { value: this.value });
   }
 }
