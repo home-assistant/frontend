@@ -9,7 +9,10 @@ import { SchemaUnion } from "../../../components/ha-form/types";
 import {
   AssistPipeline,
   AssistPipelineMutableParams,
+  getAssistPipelineRun,
+  listAssistPipelineRuns,
 } from "../../../data/assist_pipeline";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
@@ -90,6 +93,9 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                 slot="secondaryAction"
                 @click=${this._setPreferred}
                 >Set as default</ha-button
+              >
+              <ha-button slot="secondaryAction" @click=${this._debugPipeline}
+                >Debug</ha-button
               >
             `
           : nothing}
@@ -192,6 +198,24 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   private async _setPreferred() {
     await this._params!.setPipelinePreferred();
     this._preferred = true;
+  }
+
+  private async _debugPipeline() {
+    const runs = await listAssistPipelineRuns(
+      this.hass,
+      this._params!.pipeline!.id!
+    );
+    if (!runs.pipeline_runs.length) {
+      showAlertDialog(this, { text: "No runs found" });
+    }
+    const events = await getAssistPipelineRun(
+      this.hass,
+      this._params!.pipeline!.id!,
+      runs.pipeline_runs[0]
+    );
+    showAlertDialog(this, {
+      text: html`<pre>${JSON.stringify(events.events, null, 2)}</pre>`,
+    });
   }
 
   private async _deletePipeline() {
