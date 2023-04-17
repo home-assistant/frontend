@@ -39,7 +39,7 @@ export class AssistPipelineDebug extends LitElement {
 
   @state() private _finished = false;
 
-  @state() private _languageOverride?: string;
+  @state() private _pipelineId?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -65,8 +65,8 @@ export class AssistPipelineDebug extends LitElement {
               </ha-button>
             `
           : html`
-              <ha-button slot="toolbar-icon" @click=${this._setLanguage}>
-                Set Language
+              <ha-button slot="toolbar-icon" @click=${this._pickPipeline}>
+                Pick pipeline
               </ha-button>
             `}
 
@@ -282,7 +282,7 @@ export class AssistPipelineDebug extends LitElement {
         },
         {
           ...options,
-          language: this._languageOverride,
+          pipeline: this._pipelineId,
           conversation_id: this.conversationId,
         }
       );
@@ -322,15 +322,15 @@ export class AssistPipelineDebug extends LitElement {
     );
   }
 
-  private async _setLanguage() {
-    const language = await showPromptDialog(this, {
-      title: "Language override",
-      inputLabel: "Language",
+  private async _pickPipeline() {
+    const pipeline = await showPromptDialog(this, {
+      title: "Set pipeline",
+      inputLabel: "Pipeline ID",
       inputType: "text",
       confirmText: "Set",
     });
-    if (language) {
-      this._languageOverride = language;
+    if (pipeline) {
+      this._pipelineId = pipeline;
     }
   }
 

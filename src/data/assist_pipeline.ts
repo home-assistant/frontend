@@ -112,7 +112,6 @@ export type PipelineRunOptions = (
     }
 ) & {
   end_stage: "stt" | "intent" | "tts";
-  language?: string;
   pipeline?: string;
   conversation_id?: string | null;
 };
