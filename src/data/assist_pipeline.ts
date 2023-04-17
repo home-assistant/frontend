@@ -219,6 +219,30 @@ export const runAssistPipeline = (
   return unsubProm;
 };
 
+export const listAssistPipelineRuns = (
+  hass: HomeAssistant,
+  pipeline_id: string
+) =>
+  hass.callWS<{
+    pipeline_runs: string[];
+  }>({
+    type: "assist_pipeline/pipeline_debug/list",
+    pipeline_id,
+  });
+
+export const getAssistPipelineRun = (
+  hass: HomeAssistant,
+  pipeline_id: string,
+  pipeline_run_id: string
+) =>
+  hass.callWS<{
+    events: PipelineRunEvent[];
+  }>({
+    type: "assist_pipeline/pipeline_debug/get",
+    pipeline_id,
+    pipeline_run_id,
+  });
+
 export const fetchAssistPipelines = (hass: HomeAssistant) =>
   hass.callWS<{
     pipelines: AssistPipeline[];
