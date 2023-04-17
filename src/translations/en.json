@@ -402,7 +402,8 @@
         "config_entry": "Integration"
       },
       "coversation-agent-picker": {
-        "conversation_agent": "Conversation agent"
+        "conversation_agent": "Conversation agent",
+        "default": "Default agent ({default})"
       },
       "theme-picker": {
         "theme": "Theme",

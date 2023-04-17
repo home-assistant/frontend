@@ -3,8 +3,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValueMap,
-  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -13,7 +13,9 @@ import { Agent, listAgents } from "../data/conversation";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
+import type { HaSelect } from "./ha-select";
 
+const DEFAULT = "default_agent_option";
 @customElement("ha-conversation-agent-picker")
 export class HaConversationAgentPicker extends LitElement {
   @property() public value?: string;
@@ -26,11 +28,14 @@ export class HaConversationAgentPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() _agents: Agent[] = [];
+  @state() _agents?: Agent[];
 
   @state() _defaultAgent: string | null = null;
 
-  protected render(): TemplateResult {
+  protected render() {
+    if (!this._agents) {
+      return nothing;
+    }
     return html`
       <ha-select
         .label=${this.label ||
@@ -45,6 +50,16 @@ export class HaConversationAgentPicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
+        <ha-list-item .value=${DEFAULT} .selected=${this.value === undefined}>
+          ${this.hass!.localize(
+            "ui.components.coversation-agent-picker.default",
+            {
+              default: this._agents.find(
+                (agent) => agent.id === this._defaultAgent
+              )?.name,
+            }
+          )}
+        </ha-list-item>
         ${this._agents.map(
           (agent) =>
             html`<ha-list-item .value=${agent.id}>${agent.name}</ha-list-item>`
@@ -72,10 +87,14 @@ export class HaConversationAgentPicker extends LitElement {
   }
 
   private _changed(ev): void {
-    if (!this.hass || ev.target.value === "") {
+    const target = ev.target as HaSelect;
+    if (!this.hass || target.value === "") {
       return;
     }
-    this.value = ev.target.value;
+    this.value = target.value === DEFAULT ? undefined : target.value;
+    if (target.value === DEFAULT) {
+      setTimeout(() => target.select(0), 0);
+    }
     fireEvent(this, "value-changed", { value: this.value });
   }
 }
