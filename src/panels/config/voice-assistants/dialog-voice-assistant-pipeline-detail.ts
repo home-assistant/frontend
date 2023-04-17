@@ -123,7 +123,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         },
         {
           name: "conversation_engine",
-          required: true,
           selector: {
             conversation_agent: {},
           },
@@ -137,7 +136,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         },
         {
           name: "stt_engine",
-          required: true,
           selector: {
             stt: {},
           },
@@ -145,7 +143,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         },
         {
           name: "tts_engine",
-          required: true,
           selector: {
             tts: {},
           },
