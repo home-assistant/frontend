@@ -1,10 +1,11 @@
 import "@material/mwc-list/mwc-list";
-import { mdiHelpCircle, mdiPlus } from "@mdi/js";
+import { mdiHelpCircle, mdiPlus, mdiStar } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-list-item";
 import "../../../components/ha-switch";
 import "../../../components/ha-button";
@@ -14,6 +15,7 @@ import {
   fetchAssistPipelines,
   updateAssistPipeline,
   AssistPipeline,
+  setAssistPipelinePreferred,
 } from "../../../data/assist_pipeline";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
@@ -25,11 +27,14 @@ export class AssistPref extends LitElement {
 
   @state() private _pipelines: AssistPipeline[] = [];
 
+  @state() private _preferred: string | null = null;
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
     fetchAssistPipelines(this.hass).then((pipelines) => {
-      this._pipelines = pipelines;
+      this._pipelines = pipelines.pipelines;
+      this._preferred = pipelines.preferred_pipeline;
     });
   }
 
@@ -72,6 +77,12 @@ export class AssistPref extends LitElement {
               >
                 ${pipeline.name}
                 <span slot="secondary">${pipeline.language}</span>
+                ${this._preferred === pipeline.id
+                  ? html`<ha-svg-icon
+                      slot="meta"
+                      .path=${mdiStar}
+                    ></ha-svg-icon>`
+                  : ""}
                 <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
             `
@@ -112,6 +123,7 @@ export class AssistPref extends LitElement {
   private async _openDialog(pipeline?: AssistPipeline): Promise<void> {
     showVoiceAssistantPipelineDetailDialog(this, {
       pipeline,
+      preferred: pipeline?.id === this._preferred,
       createPipeline: async (values) => {
         const created = await createAssistPipeline(this.hass!, values);
         this._pipelines = this._pipelines!.concat(created);
@@ -125,6 +137,10 @@ export class AssistPref extends LitElement {
         this._pipelines = this._pipelines!.map((res) =>
           res === pipeline ? updated : res
         );
+      },
+      setPipelinePreferred: async () => {
+        await setAssistPipelinePreferred(this.hass!, pipeline!.id);
+        this._preferred = pipeline!.id;
       },
       deletePipeline: async () => {
         if (
@@ -173,6 +189,14 @@ export class AssistPref extends LitElement {
         margin-right: 8px;
         direction: var(--direction);
         color: var(--secondary-text-color);
+      }
+      ha-list-item {
+        --mdc-list-item-meta-size: auto;
+        --mdc-list-item-meta-display: flex;
+      }
+      ha-svg-icon,
+      ha-icon-next {
+        width: 24px;
       }
       .add {
         margin: 0 16px 16px;

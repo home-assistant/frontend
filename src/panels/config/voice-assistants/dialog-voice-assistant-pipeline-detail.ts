@@ -22,6 +22,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _data?: Partial<AssistPipeline>;
 
+  @state() private _preferred?: boolean;
+
   @state() private _error?: Record<string, string>;
 
   @state() private _submitting = false;
@@ -31,6 +33,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._error = undefined;
     if (this._params.pipeline) {
       this._data = this._params.pipeline;
+      this._preferred = this._params.preferred;
     } else {
       this._data = {};
     }
@@ -82,6 +85,12 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
               >
                 ${this.hass.localize("ui.common.delete")}
               </ha-button>
+              <ha-button
+                .disabled=${this._preferred}
+                slot="secondaryAction"
+                @click=${this._setPreferred}
+                >Set as default</ha-button
+              >
             `
           : nothing}
         <ha-button
@@ -179,6 +188,11 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     } finally {
       this._submitting = false;
     }
+  }
+
+  private async _setPreferred() {
+    await this._params!.setPipelinePreferred();
+    this._preferred = true;
   }
 
   private async _deletePipeline() {

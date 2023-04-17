@@ -221,7 +221,10 @@ export const runAssistPipeline = (
 };
 
 export const fetchAssistPipelines = (hass: HomeAssistant) =>
-  hass.callWS<AssistPipeline[]>({
+  hass.callWS<{
+    pipelines: AssistPipeline[];
+    preferred_pipeline: string | null;
+  }>({
     type: "assist_pipeline/pipeline/list",
   });
 
@@ -236,13 +239,22 @@ export const createAssistPipeline = (
 
 export const updateAssistPipeline = (
   hass: HomeAssistant,
-  pipelineId: string,
+  pipeline_id: string,
   pipeline: Partial<AssistPipelineMutableParams>
 ) =>
   hass.callWS<AssistPipeline>({
     type: "assist_pipeline/pipeline/update",
-    pipeline_id: pipelineId,
+    pipeline_id,
     ...pipeline,
+  });
+
+export const setAssistPipelinePreferred = (
+  hass: HomeAssistant,
+  pipeline_id: string
+) =>
+  hass.callWS({
+    type: "assist_pipeline/pipeline/set_preferred",
+    pipeline_id,
   });
 
 export const deleteAssistPipeline = (hass: HomeAssistant, pipelineId: string) =>

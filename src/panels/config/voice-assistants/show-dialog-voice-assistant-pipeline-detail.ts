@@ -6,10 +6,12 @@ import {
 
 export interface VoiceAssistantPipelineDetailsDialogParams {
   pipeline?: AssistPipeline;
+  preferred?: boolean;
   createPipeline: (values: AssistPipelineMutableParams) => Promise<unknown>;
   updatePipeline: (
     updates: Partial<AssistPipelineMutableParams>
   ) => Promise<unknown>;
+  setPipelinePreferred: () => Promise<unknown>;
   deletePipeline: () => Promise<boolean>;
 }
 
