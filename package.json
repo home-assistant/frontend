@@ -26,7 +26,7 @@
   "type": "module",
   "dependencies": {
     "@braintree/sanitize-url": "6.0.2",
-    "@codemirror/autocomplete": "6.4.2",
+    "@codemirror/autocomplete": "6.5.1",
     "@codemirror/commands": "6.2.2",
     "@codemirror/language": "6.6.0",
     "@codemirror/legacy-modes": "6.3.2",
