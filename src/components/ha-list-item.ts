@@ -57,6 +57,9 @@ export class HaListItem extends ListItemBase {
           .mdc-deprecated-list-item__primary-text::before {
           display: none;
         }
+        :host([disabled]) {
+          color: var(--disabled-text-color);
+        }
       `,
     ];
   }
