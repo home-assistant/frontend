@@ -326,6 +326,10 @@ export interface TimeSelector {
   time: {} | null;
 }
 
+export interface TTSSelector {
+  tts: { language?: string } | null;
+}
+
 export interface UiActionSelector {
   "ui-action": {
     actions?: UiAction[];

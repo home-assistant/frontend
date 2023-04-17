@@ -147,8 +147,9 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           name: "tts_engine",
           required: true,
           selector: {
-            text: {},
+            tts: {},
           },
+          context: { language: "language" },
         },
       ] as const
   );
