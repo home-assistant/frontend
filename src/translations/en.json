@@ -401,6 +401,9 @@
       "config-entry-picker": {
         "config_entry": "Integration"
       },
+      "coversation-agent-picker": {
+        "conversation_agent": "Conversation agent"
+      },
       "theme-picker": {
         "theme": "Theme",
         "no_theme": "No theme"
