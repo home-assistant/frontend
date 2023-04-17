@@ -84,7 +84,12 @@ export class HaTTSPicker extends LitElement {
 
   private _changed(ev): void {
     const target = ev.target as HaSelect;
-    if (!this.hass || target.value === "") {
+    if (
+      !this.hass ||
+      target.value === "" ||
+      target.value === this.value ||
+      (this.value === undefined && target.value === DEFAULT)
+    ) {
       return;
     }
     this.value = target.value === DEFAULT ? undefined : target.value;
