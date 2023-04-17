@@ -30,6 +30,9 @@ export class HaListItem extends ListItemBase {
           margin-inline-end: 0px !important;
           direction: var(--direction);
         }
+        .mdc-deprecated-list-item__meta {
+          display: var(--mdc-list-item-meta-display);
+        }
         :host([multiline-secondary]) {
           height: auto;
         }
