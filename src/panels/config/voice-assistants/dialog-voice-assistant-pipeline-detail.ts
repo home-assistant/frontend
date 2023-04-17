@@ -212,7 +212,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     const events = await getAssistPipelineRun(
       this.hass,
       this._params!.pipeline!.id!,
-      runs.pipeline_runs[0]
+      runs.pipeline_runs[runs.pipeline_runs.length - 1]
     );
     showAlertDialog(this, {
       text: html`<pre>${JSON.stringify(events.events, null, 2)}</pre>`,
