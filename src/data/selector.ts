@@ -40,6 +40,7 @@ export type Selector =
   | TemplateSelector
   | ThemeSelector
   | TimeSelector
+  | TTSSelector
   | UiActionSelector
   | UiColorSelector;
 
