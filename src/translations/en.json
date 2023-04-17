@@ -462,6 +462,7 @@
           }
         }
       },
+      "stt-picker": { "stt": "Speech to text", "default": "Default" },
       "related-filter-menu": {
         "filter": "Filter",
         "filter_by_entity": "Filter by entity",

@@ -35,6 +35,7 @@ export type Selector =
   | StateSelector
   | StatisticSelector
   | StringSelector
+  | STTSelector
   | TargetSelector
   | TemplateSelector
   | ThemeSelector
@@ -298,6 +299,10 @@ export interface StringSelector {
     suffix?: string;
     autocomplete?: string;
   } | null;
+}
+
+export interface STTSelector {
+  stt: { language?: string } | null;
 }
 
 export interface TargetSelector {

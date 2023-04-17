@@ -1,3 +1,5 @@
+import { HomeAssistant } from "../types";
+
 export interface SpeechMetadata {
   language: string;
   format: "wav" | "ogg";
@@ -15,3 +17,17 @@ export interface SpeechMetadata {
     | 48000;
   channel: 1 | 2;
 }
+
+export interface STTEngine {
+  engine_id: string;
+  language_supported?: boolean;
+}
+
+export const listSTTEngines = (
+  hass: HomeAssistant,
+  language?: string
+): Promise<{ providers: STTEngine[] }> =>
+  hass.callWS({
+    type: "stt/engine/list",
+    language,
+  });
