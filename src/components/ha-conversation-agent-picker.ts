@@ -36,13 +36,14 @@ export class HaConversationAgentPicker extends LitElement {
     if (!this._agents) {
       return nothing;
     }
+    const value = this.value ?? DEFAULT;
     return html`
       <ha-select
         .label=${this.label ||
         this.hass!.localize(
           "ui.components.coversation-agent-picker.conversation_agent"
         )}
-        .value=${this.value}
+        .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}
         @selected=${this._changed}
@@ -50,7 +51,7 @@ export class HaConversationAgentPicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
-        <ha-list-item .value=${DEFAULT} .selected=${this.value === undefined}>
+        <ha-list-item .value=${DEFAULT}>
           ${this.hass!.localize(
             "ui.components.coversation-agent-picker.default",
             {
@@ -97,9 +98,6 @@ export class HaConversationAgentPicker extends LitElement {
       return;
     }
     this.value = target.value === DEFAULT ? undefined : target.value;
-    if (target.value === DEFAULT) {
-      setTimeout(() => target.select(0), 0);
-    }
     fireEvent(this, "value-changed", { value: this.value });
   }
 }
