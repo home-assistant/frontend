@@ -1,4 +1,8 @@
-import { mdiRayEndArrow, mdiRayStartArrow } from "@mdi/js";
+import {
+  mdiMicrophoneMessage,
+  mdiRayEndArrow,
+  mdiRayStartArrow,
+} from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -37,6 +41,11 @@ export class AssistPipelineDebug extends LitElement {
       .hass=${this.hass}
       header="Debug Assistant"
     >
+      <a
+        href="/config/voice-assistants/debug?pipeline=${this.pipelineId}"
+        slot="toolbar-icon"
+        ><ha-icon-button .path=${mdiMicrophoneMessage}></ha-icon-button
+      ></a>
       <div class="toolbar">
         ${this._runs?.length
           ? html`

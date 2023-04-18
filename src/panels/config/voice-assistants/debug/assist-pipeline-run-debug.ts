@@ -20,6 +20,7 @@ import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import "../../../../components/ha-textfield";
 import { fileDownload } from "../../../../util/file_download";
+import { extractSearchParam } from "../../../../common/url/search-params";
 
 @customElement("assist-pipeline-run-debug")
 export class AssistPipelineRunDebug extends LitElement {
@@ -39,7 +40,8 @@ export class AssistPipelineRunDebug extends LitElement {
 
   @state() private _finished = false;
 
-  @state() private _pipelineId?: string;
+  @state() private _pipelineId?: string =
+    extractSearchParam("pipeline") || undefined;
 
   protected render(): TemplateResult {
     return html`
