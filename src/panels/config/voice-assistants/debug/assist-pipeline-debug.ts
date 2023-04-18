@@ -42,7 +42,7 @@ export class AssistPipelineDebug extends LitElement {
               <ha-icon-button
                 .disabled=${this._runs[this._runs.length - 1]
                   .pipeline_run_id === this._runId}
-                label="Older trace"
+                label="Older run"
                 @click=${this._pickOlderRun}
                 .path=${mdiRayEndArrow}
               ></ha-icon-button>
@@ -61,7 +61,7 @@ export class AssistPipelineDebug extends LitElement {
               </select>
               <ha-icon-button
                 .disabled=${this._runs[0].pipeline_run_id === this._runId}
-                label="Newer trace"
+                label="Newer run"
                 @click=${this._pickNewerRun}
                 .path=${mdiRayStartArrow}
               ></ha-icon-button>
