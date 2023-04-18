@@ -1,26 +1,27 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { extractSearchParam } from "../../../../common/url/search-params";
 import "../../../../components/ha-button";
+import "../../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../../components/ha-checkbox";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-pipeline-picker";
+import "../../../../components/ha-textfield";
+import type { HaTextField } from "../../../../components/ha-textfield";
 import {
   PipelineRun,
   PipelineRunOptions,
   runAssistPipeline,
 } from "../../../../data/assist_pipeline";
-import "../../../../layouts/hass-subpage";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-checkbox";
-import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import {
   showAlertDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import "./assist-render-pipeline-run";
-import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import type { HaTextField } from "../../../../components/ha-textfield";
-import "../../../../components/ha-textfield";
+import "../../../../layouts/hass-subpage";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import { fileDownload } from "../../../../util/file_download";
-import { extractSearchParam } from "../../../../common/url/search-params";
+import "./assist-render-pipeline-run";
 
 @customElement("assist-pipeline-run-debug")
 export class AssistPipelineRunDebug extends LitElement {
@@ -66,16 +67,17 @@ export class AssistPipelineRunDebug extends LitElement {
                 Download
               </ha-button>
             `
-          : html`
-              <ha-button slot="toolbar-icon" @click=${this._pickPipeline}>
-                Pick pipeline
-              </ha-button>
-            `}
+          : ""}
 
         <div class="content">
           <div class="start-row">
             ${this._pipelineRuns.length === 0
               ? html`
+                  <ha-pipeline-picker
+                    .hass=${this.hass}
+                    .value=${this._pipelineId}
+                    @value-changed=${this._pipelinePicked}
+                  ></ha-pipeline-picker>
                   <ha-button raised @click=${this._runTextPipeline}>
                     Run Text Pipeline
                   </ha-button>
@@ -324,16 +326,8 @@ export class AssistPipelineRunDebug extends LitElement {
     );
   }
 
-  private async _pickPipeline() {
-    const pipeline = await showPromptDialog(this, {
-      title: "Set pipeline",
-      inputLabel: "Pipeline ID",
-      inputType: "text",
-      confirmText: "Set",
-    });
-    if (pipeline) {
-      this._pipelineId = pipeline;
-    }
+  private _pipelinePicked(ev) {
+    this._pipelineId = ev.detail.value;
   }
 
   static styles = [
@@ -349,7 +343,13 @@ export class AssistPipelineRunDebug extends LitElement {
         display: flex;
         justify-content: space-around;
         align-items: center;
+        flex-wrap: wrap;
         margin: 0 16px 16px;
+      }
+      ha-pipeline-picker {
+        display: block;
+        width: 100%;
+        margin-bottom: 16px;
       }
       .start-row ha-textfield {
         flex: 1;

@@ -31,6 +31,7 @@ export type Selector =
   | NavigationSelector
   | NumberSelector
   | ObjectSelector
+  | AssistPipelineSelector
   | SelectSelector
   | StateSelector
   | StatisticSelector
@@ -255,6 +256,11 @@ export interface NumberSelector {
 export interface ObjectSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   object: {} | null;
+}
+
+export interface AssistPipelineSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  assist_pipeline: {} | null;
 }
 
 export interface SelectOption {
