@@ -9,6 +9,7 @@ import {
   PipelineRunEvent,
   assistRunListing,
 } from "../../../../data/assist_pipeline";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
@@ -96,9 +97,17 @@ export class AssistPipelineDebug extends LitElement {
       this._runs = undefined;
       return;
     }
-    this._runs = (
-      await listAssistPipelineRuns(this.hass, this.pipelineId)
-    ).pipeline_runs.reverse();
+    try {
+      this._runs = (
+        await listAssistPipelineRuns(this.hass, this.pipelineId)
+      ).pipeline_runs.reverse();
+    } catch (e: any) {
+      showAlertDialog(this, {
+        title: "Failed to fetch pipeline runs",
+        text: e.message,
+      });
+      return;
+    }
     if (!this._runs.length) {
       return;
     }
@@ -116,9 +125,16 @@ export class AssistPipelineDebug extends LitElement {
       this._events = undefined;
       return;
     }
-    this._events = (
-      await getAssistPipelineRun(this.hass, this.pipelineId, this._runId)
-    ).events;
+    try {
+      this._events = (
+        await getAssistPipelineRun(this.hass, this.pipelineId, this._runId)
+      ).events;
+    } catch (e: any) {
+      showAlertDialog(this, {
+        title: "Failed to fetch events",
+        text: e.message,
+      });
+    }
   }
 
   private _pickOlderRun() {

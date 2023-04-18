@@ -1,4 +1,4 @@
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { HomeAssistant, Route } from "../../../../types";
 import "./assist-pipeline-debug";
@@ -13,15 +13,12 @@ export class AssistDebug extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   protected render() {
-    if (this.route.path) {
-      const splitPath = this.route.path.split("/", 3);
-      if (splitPath.length < 2) {
-        return nothing;
-      }
+    const pipelineId = this.route.path.substring(1);
+    if (pipelineId) {
       return html`<assist-pipeline-debug
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .pipelineId=${splitPath[1]}
+        .pipelineId=${pipelineId}
       ></assist-pipeline-debug>`;
     }
     return html`<assist-pipeline-run-debug
