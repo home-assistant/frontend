@@ -9,7 +9,6 @@ import {
   PipelineRunEvent,
   assistRunListing,
 } from "../../../../data/assist_pipeline";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../types";
@@ -69,6 +68,9 @@ export class AssistPipelineDebug extends LitElement {
             `
           : ""}
       </div>
+      ${this._runs?.length === 0
+        ? html`<div class="container">No runs found</div>`
+        : ""}
       <div class="content">
         ${this._events
           ? html`<assist-render-pipeline-events
@@ -98,7 +100,6 @@ export class AssistPipelineDebug extends LitElement {
       await listAssistPipelineRuns(this.hass, this.pipelineId)
     ).pipeline_runs.reverse();
     if (!this._runs.length) {
-      showAlertDialog(this, { text: "No runs found" });
       return;
     }
     if (
@@ -156,6 +157,9 @@ export class AssistPipelineDebug extends LitElement {
         max-width: 600px;
         margin: 0 auto;
         direction: ltr;
+      }
+      .container {
+        padding: 16px;
       }
       assist-render-pipeline-run {
         padding-top: 16px;
