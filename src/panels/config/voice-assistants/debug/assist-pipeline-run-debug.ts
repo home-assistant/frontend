@@ -81,7 +81,7 @@ export class AssistPipelineRunDebug extends LitElement {
                     Run Audio Pipeline
                   </ha-button>
                 `
-              : this._pipelineRuns[0].init_options.start_stage === "intent"
+              : this._pipelineRuns[0].init_options!.start_stage === "intent"
               ? html`
                   <ha-textfield
                     id="continue-conversation-text"
