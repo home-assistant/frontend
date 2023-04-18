@@ -3889,17 +3889,17 @@
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used",
           "datadisk": {
-            "title": "Move datadisk",
-            "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
+            "title": "Move data disk",
+            "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
             "extra_information": "Size: {size}, S/N: {serial}",
-            "select_device": "Select new datadisk",
+            "select_device": "Select new data disk",
             "no_devices_title": "No suitable storage found",
             "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk",
-            "moving_desc": "Rebooting and moving datadisk. Please have patience",
-            "moving": "Moving datadisk",
+            "moving_desc": "Rebooting and moving data disk. Please have patience",
+            "moving": "Moving data disk",
             "loading_devices": "Loading devices",
             "cancel": "[%key:ui::common::cancel%]",
-            "failed_to_move": "Failed to move datadisk",
+            "failed_to_move": "Failed to move data disk",
             "move": "Move"
           }
         },
@@ -5542,7 +5542,7 @@
         "failed_to_shutdown": "Failed to shutdown the host",
         "failed_to_set_hostname": "Setting hostname failed",
         "failed_to_import_from_usb": "Failed to import from USB",
-        "failed_to_move": "Failed to move datadisk",
+        "failed_to_move": "Failed to move data disk",
         "used_space": "Used space",
         "hostname": "Hostname",
         "change_hostname": "Change Hostname",
@@ -5559,7 +5559,7 @@
         "shutdown_host": "Shutdown host",
         "hardware": "Hardware",
         "import_from_usb": "Import from USB",
-        "move_datadisk": "Move datadisk"
+        "move_datadisk": "Move data disk"
       },
       "core": {
         "cpu_usage": "Core CPU Usage",
@@ -5657,11 +5657,11 @@
       },
       "datadisk_move": {
         "title": "[%key:supervisor::system::host::move_datadisk%]",
-        "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
-        "select_device": "Select new datadisk",
+        "description": "You are currently using ''{current_path}'' as data disk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
+        "select_device": "Select new data disk",
         "no_devices": "No suitable attached devices found",
-        "moving_desc": "Rebooting and moving datadisk. Please have patience",
-        "moving": "Moving datadisk",
+        "moving_desc": "Rebooting and moving data disk. Please have patience",
+        "moving": "Moving data disk",
         "loading_devices": "Loading devices",
         "cancel": "[%key:ui::common::cancel%]",
         "move": "Move"
