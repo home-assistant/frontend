@@ -1,28 +1,29 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import "../../../../../../components/ha-button";
+import "../../../../components/ha-button";
 import {
   PipelineRun,
   PipelineRunOptions,
   runAssistPipeline,
-} from "../../../../../../data/assist_pipeline";
-import "../../../../../../layouts/hass-subpage";
-import "../../../../../../components/ha-formfield";
-import "../../../../../../components/ha-checkbox";
-import { haStyle } from "../../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../../types";
+} from "../../../../data/assist_pipeline";
+import "../../../../layouts/hass-subpage";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-checkbox";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import {
   showAlertDialog,
   showPromptDialog,
-} from "../../../../../../dialogs/generic/show-dialog-box";
+} from "../../../../dialogs/generic/show-dialog-box";
 import "./assist-render-pipeline-run";
-import type { HaCheckbox } from "../../../../../../components/ha-checkbox";
-import type { HaTextField } from "../../../../../../components/ha-textfield";
-import "../../../../../../components/ha-textfield";
-import { fileDownload } from "../../../../../../util/file_download";
+import type { HaCheckbox } from "../../../../components/ha-checkbox";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import "../../../../components/ha-textfield";
+import { fileDownload } from "../../../../util/file_download";
+import { extractSearchParam } from "../../../../common/url/search-params";
 
-@customElement("assist-pipeline-debug")
-export class AssistPipelineDebug extends LitElement {
+@customElement("assist-pipeline-run-debug")
+export class AssistPipelineRunDebug extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
@@ -39,7 +40,8 @@ export class AssistPipelineDebug extends LitElement {
 
   @state() private _finished = false;
 
-  @state() private _pipelineId?: string;
+  @state() private _pipelineId?: string =
+    extractSearchParam("pipeline") || undefined;
 
   protected render(): TemplateResult {
     return html`
@@ -81,7 +83,7 @@ export class AssistPipelineDebug extends LitElement {
                     Run Audio Pipeline
                   </ha-button>
                 `
-              : this._pipelineRuns[0].init_options.start_stage === "intent"
+              : this._pipelineRuns[0].init_options!.start_stage === "intent"
               ? html`
                   <ha-textfield
                     id="continue-conversation-text"
@@ -364,6 +366,6 @@ export class AssistPipelineDebug extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "assist-pipeline-debug": AssistPipelineDebug;
+    "assist-pipeline-run-debug": AssistPipelineRunDebug;
   }
 }
