@@ -43,11 +43,8 @@ class HaConfigVoiceAssistants extends HassRouterPage {
         load: () => import("./ha-config-voice-assistants-expose"),
       },
       debug: {
-        tag: "assist-pipeline-debug",
-        load: () =>
-          import(
-            "../integrations/integration-panels/voice_assistant/assist/assist-pipeline-debug"
-          ),
+        tag: "assist-debug",
+        load: () => import("./debug/assist-debug"),
       },
     },
   };

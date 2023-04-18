@@ -9,12 +9,10 @@ import { SchemaUnion } from "../../../components/ha-form/types";
 import {
   AssistPipeline,
   AssistPipelineMutableParams,
-  getAssistPipelineRun,
-  listAssistPipelineRuns,
 } from "../../../data/assist_pipeline";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import "./debug/assist-render-pipeline-events";
 import { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
 
 @customElement("dialog-voice-assistant-pipeline-detail")
@@ -94,9 +92,13 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                 @click=${this._setPreferred}
                 >Set as default</ha-button
               >
-              <ha-button slot="secondaryAction" @click=${this._debugPipeline}
-                >Debug</ha-button
-              >
+              <a
+                href="/config/voice-assistants/debug/${this._params.pipeline
+                  .id}"
+                slot="secondaryAction"
+                @click=${this.closeDialog}
+                ><ha-button>Debug</ha-button>
+              </a>
             `
           : nothing}
         <ha-button
@@ -198,25 +200,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   private async _setPreferred() {
     await this._params!.setPipelinePreferred();
     this._preferred = true;
-  }
-
-  private async _debugPipeline() {
-    const runs = await listAssistPipelineRuns(
-      this.hass,
-      this._params!.pipeline!.id!
-    );
-    if (!runs.pipeline_runs.length) {
-      showAlertDialog(this, { text: "No runs found" });
-      return;
-    }
-    const events = await getAssistPipelineRun(
-      this.hass,
-      this._params!.pipeline!.id!,
-      runs.pipeline_runs[runs.pipeline_runs.length - 1]
-    );
-    showAlertDialog(this, {
-      text: html`<pre>${JSON.stringify(events.events, null, 2)}</pre>`,
-    });
   }
 
   private async _deletePipeline() {

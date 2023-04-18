@@ -1,13 +1,13 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../../../components/ha-card";
-import "../../../../../../components/ha-alert";
-import "../../../../../../components/ha-button";
-import "../../../../../../components/ha-circular-progress";
-import "../../../../../../components/ha-expansion-panel";
-import type { PipelineRun } from "../../../../../../data/assist_pipeline";
-import type { HomeAssistant } from "../../../../../../types";
-import { formatNumber } from "../../../../../../common/number/format_number";
+import "../../../../components/ha-card";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
+import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-expansion-panel";
+import type { PipelineRun } from "../../../../data/assist_pipeline";
+import type { HomeAssistant } from "../../../../types";
+import { formatNumber } from "../../../../common/number/format_number";
 
 const RUN_DATA = {
   pipeline: "Pipeline",
@@ -38,8 +38,10 @@ const STAGES: Record<PipelineRun["stage"], number> = {
 };
 
 const hasStage = (run: PipelineRun, stage: PipelineRun["stage"]) =>
-  STAGES[run.init_options.start_stage] <= STAGES[stage] &&
-  STAGES[stage] <= STAGES[run.init_options.end_stage];
+  run.init_options
+    ? STAGES[run.init_options.start_stage] <= STAGES[stage] &&
+      STAGES[stage] <= STAGES[run.init_options.end_stage]
+    : stage in run;
 
 const maybeRenderError = (
   run: PipelineRun,
@@ -123,21 +125,23 @@ const dataMinusKeysRender = (
 export class AssistPipelineDebug extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private pipelineRun!: PipelineRun;
+  @property() public pipelineRun!: PipelineRun;
 
   protected render(): TemplateResult {
     const lastRunStage: string = this.pipelineRun
-      ? ["tts", "intent", "stt"].find(
-          (stage) => this.pipelineRun![stage] !== undefined
-        ) || "ready"
+      ? ["tts", "intent", "stt"].find((stage) => stage in this.pipelineRun) ||
+        "ready"
       : "ready";
 
     const messages: Array<{ from: string; text: string }> = [];
 
     const userMessage =
-      ("text" in this.pipelineRun.init_options.input
+      (this.pipelineRun.init_options &&
+      "text" in this.pipelineRun.init_options.input
         ? this.pipelineRun.init_options.input.text
-        : undefined) || this.pipelineRun?.stt?.stt_output?.text;
+        : undefined) ||
+      this.pipelineRun?.stt?.stt_output?.text ||
+      this.pipelineRun?.intent?.intent_input;
 
     if (userMessage) {
       messages.push({
