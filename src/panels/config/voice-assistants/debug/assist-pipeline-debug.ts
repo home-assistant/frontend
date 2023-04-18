@@ -1,25 +1,25 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import "../../../../../../components/ha-button";
+import "../../../../components/ha-button";
 import {
   PipelineRun,
   PipelineRunOptions,
   runAssistPipeline,
-} from "../../../../../../data/assist_pipeline";
-import "../../../../../../layouts/hass-subpage";
-import "../../../../../../components/ha-formfield";
-import "../../../../../../components/ha-checkbox";
-import { haStyle } from "../../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../../types";
+} from "../../../../data/assist_pipeline";
+import "../../../../layouts/hass-subpage";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-checkbox";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import {
   showAlertDialog,
   showPromptDialog,
-} from "../../../../../../dialogs/generic/show-dialog-box";
+} from "../../../../dialogs/generic/show-dialog-box";
 import "./assist-render-pipeline-run";
-import type { HaCheckbox } from "../../../../../../components/ha-checkbox";
-import type { HaTextField } from "../../../../../../components/ha-textfield";
-import "../../../../../../components/ha-textfield";
-import { fileDownload } from "../../../../../../util/file_download";
+import type { HaCheckbox } from "../../../../components/ha-checkbox";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import "../../../../components/ha-textfield";
+import { fileDownload } from "../../../../util/file_download";
 
 @customElement("assist-pipeline-debug")
 export class AssistPipelineDebug extends LitElement {

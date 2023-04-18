@@ -16,6 +16,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
+import "./debug/assist-render-pipeline-events";
 
 @customElement("dialog-voice-assistant-pipeline-detail")
 export class DialogVoiceAssistantPipelineDetail extends LitElement {
@@ -215,7 +216,10 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       runs.pipeline_runs[runs.pipeline_runs.length - 1]
     );
     showAlertDialog(this, {
-      text: html`<pre>${JSON.stringify(events.events, null, 2)}</pre>`,
+      text: html`<assist-render-pipeline-events
+        .hass=${this.hass}
+        .events=${events.events}
+      ></assist-render-pipeline-events>`,
     });
   }
 
