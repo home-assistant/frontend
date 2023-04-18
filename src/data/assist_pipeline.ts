@@ -20,6 +20,11 @@ export interface AssistPipelineMutableParams {
   tts_engine: string;
 }
 
+export interface assistRunListing {
+  pipeline_run_id: string;
+  timestamp: string;
+}
+
 interface PipelineEventBase {
   timestamp: string;
 }
@@ -230,7 +235,7 @@ export const listAssistPipelineRuns = (
   pipeline_id: string
 ) =>
   hass.callWS<{
-    pipeline_runs: string[];
+    pipeline_runs: assistRunListing[];
   }>({
     type: "assist_pipeline/pipeline_debug/list",
     pipeline_id,
