@@ -9,6 +9,7 @@ import { SchemaUnion } from "../../../components/ha-form/types";
 import {
   AssistPipeline,
   AssistPipelineMutableParams,
+  fetchAssistPipelineLanguages,
 } from "../../../data/assist_pipeline";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -29,6 +30,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _submitting = false;
 
+  @state() private _supportedLanguages: string[] = [];
+
   public showDialog(params: VoiceAssistantPipelineDetailsDialogParams): void {
     this._params = params;
     this._error = undefined;
@@ -44,6 +47,15 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._params = undefined;
     this._data = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected firstUpdated() {
+    this._getSupportedLanguages();
+  }
+
+  private async _getSupportedLanguages() {
+    const { languages } = await fetchAssistPipelineLanguages(this.hass);
+    this._supportedLanguages = languages;
   }
 
   protected render() {
@@ -68,7 +80,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       >
         <div>
           <ha-form
-            .schema=${this._schema()}
+            .schema=${this._schema(this._supportedLanguages)}
             .data=${this._data}
             .hass=${this.hass}
             .error=${this._error}
@@ -120,7 +132,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   }
 
   private _schema = memoizeOne(
-    () =>
+    (languages: string[]) =>
       [
         {
           name: "name",
@@ -133,7 +145,9 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           name: "language",
           required: true,
           selector: {
-            text: {},
+            language: {
+              supported_languages: languages,
+            },
           },
         },
         {
