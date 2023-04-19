@@ -6,16 +6,13 @@ import memoizeOne from "memoize-one";
 import { UNIT_C } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { navigate } from "../../../common/navigate";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import { getCountryOptions } from "../../../components/country-datalist";
 import { getCurrencyOptions } from "../../../components/currency-datalist";
-import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-formfield";
-import "../../../components/ha-language-picker";
 import "../../../components/ha-radio";
 import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-select";
@@ -25,10 +22,13 @@ import "../../../components/map/ha-locations-editor";
 import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import { SYMBOL_TO_ISO } from "../../../data/currency";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-alert";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import type { HaCheckbox } from "../../../components/ha-checkbox";
+import "../../../components/ha-checkbox";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
@@ -53,6 +53,8 @@ class HaConfigSectionGeneral extends LitElement {
   @state() private _timeZone?: string;
 
   @state() private _location?: [number, number];
+
+  @state() private _languages?: { value: string; label: string }[];
 
   @state() private _error?: string;
 
@@ -253,19 +255,25 @@ class HaConfigSectionGeneral extends LitElement {
                     </mwc-list-item>`
                 )}</ha-select
               >
-              <ha-language-picker
-                .hass=${this.hass}
-                nativeName
+              <ha-select
                 .label=${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.language"
                 )}
                 name="language"
-                .value=${this._language}
+                fixedMenuPosition
+                naturalMenuWidth
                 .disabled=${disabled}
+                .value=${this._language}
                 @closed=${stopPropagation}
-                @value-changed=${this._handleLanguageChange}
+                @change=${this._handleChange}
               >
-              </ha-language-picker>
+                ${this._languages?.map(
+                  ({ value, label }) =>
+                    html`<mwc-list-item .value=${value}
+                      >${label}</mwc-list-item
+                    >`
+                )}</ha-select
+              >
             </div>
             ${this.narrow
               ? html`
@@ -322,10 +330,25 @@ class HaConfigSectionGeneral extends LitElement {
     this._timeZone = this.hass.config.time_zone || "Etc/GMT";
     this._name = this.hass.config.location_name;
     this._updateUnits = true;
+    this._computeLanguages();
   }
 
-  private _handleLanguageChange(ev) {
-    this._language = ev.detail.value;
+  private _computeLanguages() {
+    if (!this.hass.translationMetadata?.translations) {
+      return;
+    }
+    this._languages = Object.entries(this.hass.translationMetadata.translations)
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a[1].nativeName,
+          b[1].nativeName,
+          this.hass.locale.language
+        )
+      )
+      .map(([value, metaData]) => ({
+        value,
+        label: metaData.nativeName,
+      }));
   }
 
   private _handleChange(ev) {
