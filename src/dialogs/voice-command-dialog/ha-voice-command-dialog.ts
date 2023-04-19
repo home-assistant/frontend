@@ -11,25 +11,19 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import { LocalStorage } from "../../common/decorators/local-storage";
 import { fireEvent } from "../../common/dom/fire_event";
-import { SpeechRecognition } from "../../common/dom/speech-recognition";
 import "../../components/ha-dialog";
-import type { HaDialog } from "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
-import {
-  AgentInfo,
-  getAgentInfo,
-  prepareConversation,
-  processConversationInput,
-} from "../../data/conversation";
+import { runAssistPipeline } from "../../data/assist_pipeline";
+import { AgentInfo, getAgentInfo } from "../../data/conversation";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -40,49 +34,46 @@ interface Message {
   error?: boolean;
 }
 
-interface Results {
-  transcript: string;
-  final: boolean;
-}
-
 @customElement("ha-voice-command-dialog")
 export class HaVoiceCommandDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public results: Results | null = null;
-
-  @state() private _conversation: Message[] = [
-    {
-      who: "hass",
-      text: "",
-    },
-  ];
+  @state() private _conversation?: Message[];
 
   @state() private _opened = false;
+
+  @state() private _listening = false;
+
+  @LocalStorage("AssistPipelineId", true, false) private _pipelineId?: string;
 
   @state() private _agentInfo?: AgentInfo;
 
   @state() private _showSendButton = false;
 
-  @query("#scroll-container") private _scrollContainer!: HaDialog;
+  @query("#scroll-container") private _scrollContainer!: HTMLDivElement;
 
   @query("#message-input") private _messageInput!: HaTextField;
-
-  private recognition!: SpeechRecognition;
 
   private _conversationId: string | null = null;
 
   public async showDialog(): Promise<void> {
+    this._conversation = [
+      {
+        who: "hass",
+        text: "",
+      },
+    ];
     this._opened = true;
     this._agentInfo = await getAgentInfo(this.hass);
+    await this.updateComplete;
     this._scrollMessagesBottom();
   }
 
   public async closeDialog(): Promise<void> {
     this._opened = false;
-    if (this.recognition) {
-      this.recognition.abort();
-    }
+    this._agentInfo = undefined;
+    this._conversation = undefined;
+    this._conversationId = null;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -90,6 +81,7 @@ export class HaVoiceCommandDialog extends LitElement {
     if (!this._opened) {
       return nothing;
     }
+    const pipelineSupportsSTT = false;
     return html`
       <ha-dialog
         open
@@ -123,25 +115,13 @@ export class HaVoiceCommandDialog extends LitElement {
         </div>
         <div class="messages">
           <div class="messages-container" id="scroll-container">
-            ${this._conversation.map(
+            ${this._conversation!.map(
               (message) => html`
                 <div class=${this._computeMessageClasses(message)}>
                   ${message.text}
                 </div>
               `
             )}
-            ${this.results
-              ? html`
-                  <div class="message user">
-                    <span
-                      class=${classMap({
-                        interimTranscript: !this.results.final,
-                      })}
-                      >${this.results.transcript}</span
-                    >${!this.results.final ? "…" : ""}
-                  </div>
-                `
-              : ""}
           </div>
         </div>
         <div class="input" slot="primaryAction">
@@ -166,9 +146,9 @@ export class HaVoiceCommandDialog extends LitElement {
                     >
                     </ha-icon-button>
                   `
-                : SpeechRecognition
+                : pipelineSupportsSTT
                 ? html`
-                    ${this.results
+                    ${this._listening
                       ? html`
                           <div class="bouncer">
                             <div class="double-bounce1"></div>
@@ -206,14 +186,13 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
-    super.updated(changedProps);
+    super.firstUpdated(changedProps);
     this._conversation = [
       {
         who: "hass",
         text: this.hass.localize("ui.dialogs.voice_command.how_can_i_help"),
       },
     ];
-    prepareConversation(this.hass, this.hass.language);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -224,7 +203,7 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private _addMessage(message: Message) {
-    this._conversation = [...this._conversation, message];
+    this._conversation = [...this._conversation!, message];
   }
 
   private _handleKeyUp(ev: KeyboardEvent) {
@@ -253,75 +232,7 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  private _initRecognition() {
-    this.recognition = new SpeechRecognition();
-    this.recognition.interimResults = true;
-    this.recognition.lang = this.hass.language;
-    this.recognition.continuous = false;
-
-    this.recognition.addEventListener("start", () => {
-      this.results = {
-        final: false,
-        transcript: "",
-      };
-    });
-    this.recognition.addEventListener("nomatch", () => {
-      this._addMessage({
-        who: "user",
-        text: `<${this.hass.localize(
-          "ui.dialogs.voice_command.did_not_understand"
-        )}>`,
-        error: true,
-      });
-    });
-    this.recognition.addEventListener("error", (event) => {
-      // eslint-disable-next-line
-      console.error("Error recognizing text", event);
-      this.recognition!.abort();
-      // @ts-ignore
-      if (event.error !== "aborted" && event.error !== "no-speech") {
-        const text =
-          this.results && this.results.transcript
-            ? this.results.transcript
-            : `<${this.hass.localize(
-                "ui.dialogs.voice_command.did_not_hear"
-              )}>`;
-        this._addMessage({ who: "user", text, error: true });
-      }
-      this.results = null;
-    });
-    this.recognition.addEventListener("end", () => {
-      // Already handled by onerror
-      if (this.results == null) {
-        return;
-      }
-      const text = this.results.transcript;
-      this.results = null;
-      if (text) {
-        this._processText(text);
-      } else {
-        this._addMessage({
-          who: "user",
-          text: `<${this.hass.localize(
-            "ui.dialogs.voice_command.did_not_hear"
-          )}>`,
-          error: true,
-        });
-      }
-    });
-    this.recognition.addEventListener("result", (event) => {
-      const result = event.results[0];
-      this.results = {
-        transcript: result[0].transcript,
-        final: result.isFinal,
-      };
-    });
-  }
-
   private async _processText(text: string) {
-    if (this.recognition) {
-      this.recognition.abort();
-    }
     this._addMessage({ who: "user", text });
     const message: Message = {
       who: "hass",
@@ -330,21 +241,30 @@ export class HaVoiceCommandDialog extends LitElement {
     // To make sure the answer is placed at the right user text, we add it before we process it
     this._addMessage(message);
     try {
-      const response = await processConversationInput(
+      await runAssistPipeline(
         this.hass,
-        text,
-        this._conversationId,
-        this.hass.language
+        (updatedRun) => {
+          const plain =
+            updatedRun.intent?.intent_output?.response.speech?.plain;
+          if (plain) {
+            message.text = plain.speech;
+            if (
+              updatedRun.intent?.intent_output?.conversation_id !== undefined
+            ) {
+              this._conversationId =
+                updatedRun.intent?.intent_output?.conversation_id;
+            }
+            this.requestUpdate("_conversation");
+          }
+        },
+        {
+          start_stage: "intent",
+          input: { text },
+          end_stage: "intent",
+          pipeline: this._pipelineId,
+          conversation_id: this._conversationId,
+        }
       );
-      this._conversationId = response.conversation_id;
-      const plain = response.response.speech?.plain;
-      if (plain) {
-        message.text = plain.speech;
-      } else {
-        message.text = "<silence>";
-      }
-
-      this.requestUpdate("_conversation");
     } catch {
       message.text = this.hass.localize("ui.dialogs.voice_command.error");
       message.error = true;
@@ -353,34 +273,16 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private _toggleListening() {
-    if (!this.results) {
+    if (!this._listening) {
       this._startListening();
     } else {
       this._stopListening();
     }
   }
 
-  private _stopListening() {
-    if (this.recognition) {
-      this.recognition.stop();
-    }
-  }
+  private _stopListening() {}
 
-  private _startListening() {
-    if (!this.recognition) {
-      this._initRecognition();
-    }
-
-    if (this.results) {
-      return;
-    }
-
-    this.results = {
-      transcript: "",
-      final: false,
-    };
-    this.recognition!.start();
-  }
+  private _startListening() {}
 
   private _scrollMessagesBottom() {
     this._scrollContainer.scrollTo(0, 99999);
