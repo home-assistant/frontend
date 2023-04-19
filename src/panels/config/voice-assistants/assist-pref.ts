@@ -160,13 +160,9 @@ export class AssistPref extends LitElement {
           return false;
         }
 
-        try {
-          await deleteAssistPipeline(this.hass!, pipeline!.id);
-          this._pipelines = this._pipelines!.filter((res) => res !== pipeline);
-          return true;
-        } catch (err: any) {
-          return false;
-        }
+        await deleteAssistPipeline(this.hass!, pipeline!.id);
+        this._pipelines = this._pipelines!.filter((res) => res !== pipeline);
+        return true;
       },
     });
   }
