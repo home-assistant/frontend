@@ -7,8 +7,10 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
@@ -28,31 +30,61 @@ export class HaLanguagePicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() _defaultLanguages: string[] = [];
+  @state() _defaultLanguageOptions: { value: string; label: string }[] = [];
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._computeDefaultLanguages();
+    this._computeDefaultLanguageOptions();
   }
 
-  private _computeDefaultLanguages() {
+  private _getLanguagesOptions = memoizeOne(
+    (supportedLanguages: string[], language: string) => {
+      const languageDisplayNames =
+        Intl && "DisplayNames" in Intl
+          ? new Intl.DisplayNames(language, {
+              type: "language",
+              fallback: "code",
+            })
+          : undefined;
+
+      const options = supportedLanguages.map((lang) => ({
+        value: lang,
+        label: languageDisplayNames ? languageDisplayNames.of(lang)! : lang,
+      }));
+      options.sort((a, b) =>
+        caseInsensitiveStringCompare(a.label, b.label, language)
+      );
+      return options;
+    }
+  );
+
+  private _computeDefaultLanguageOptions() {
     if (!this.hass.translationMetadata?.translations) {
       return;
     }
-    this._defaultLanguages = Object.keys(
-      this.hass.translationMetadata.translations
-    );
+
+    const languages = Object.keys(this.hass.translationMetadata.translations);
+
+    this._defaultLanguageOptions = languages.map((lang) => ({
+      value: lang,
+      label:
+        this.hass.translationMetadata.translations[lang]?.nativeName ?? lang,
+    }));
   }
 
   protected render(): TemplateResult {
     const value = this.value;
 
-    const languages = this.supportedLanguages ?? this._defaultLanguages;
+    const languageOptions = this.supportedLanguages
+      ? this._getLanguagesOptions(
+          this.supportedLanguages,
+          this.hass.locale.language
+        )
+      : this._defaultLanguageOptions;
 
     return html`
       <ha-select
-        .label=${this.label ||
-        this.hass!.localize("ui.components.tts-picker.tts")}
+        .label=${this.label}
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}
@@ -61,14 +93,11 @@ export class HaLanguagePicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
-        ${languages.map((language) => {
-          const label =
-            this.hass.translationMetadata.translations[language]?.nativeName ||
-            language;
-          return html`
-            <ha-list-item .value=${language}>${label}</ha-list-item>
-          `;
-        })}
+        ${languageOptions.map(
+          (option) => html`
+            <ha-list-item .value=${option.value}>${option.label}</ha-list-item>
+          `
+        )}
       </ha-select>
     `;
   }
