@@ -403,7 +403,7 @@
       },
       "coversation-agent-picker": {
         "conversation_agent": "Conversation agent",
-        "default": "Default agent ({default})"
+        "none": "None"
       },
       "theme-picker": {
         "theme": "Theme",
@@ -411,7 +411,7 @@
       },
       "tts-picker": {
         "tts": "Text to Speech",
-        "default": "Default"
+        "none": "None"
       },
       "user-picker": {
         "no_user": "No user",
@@ -466,7 +466,7 @@
           }
         }
       },
-      "stt-picker": { "stt": "Speech to text", "default": "Default" },
+      "stt-picker": { "stt": "Speech to text", "none": "None" },
       "related-filter-menu": {
         "filter": "Filter",
         "filter_by_entity": "Filter by entity",
