@@ -1,4 +1,11 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -148,12 +155,11 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
     const anyExposed = uiExposed || manExposedAlexa || manExposedGoogle;
 
-    return html`<ha-settings-row>
-        <span slot="heading"
-          >${this.hass.localize(
-            "ui.dialogs.voice-settings.expose_header"
-          )}</span
-        >
+    return html`
+      <ha-settings-row>
+        <h3 slot="heading">
+          ${this.hass.localize("ui.dialogs.voice-settings.expose_header")}
+        </h3>
         <ha-switch
           @change=${this._toggleAll}
           .checked=${anyExposed}
@@ -161,65 +167,74 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       </ha-settings-row>
       ${anyExposed
         ? showAssistants.map(
-            (key) => html`<ha-settings-row>
-              <img
-                alt=""
-                src=${brandsUrl({
-                  domain: voiceAssistants[key].domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-                referrerpolicy="no-referrer"
-                slot="prefix"
-              />
-              <span slot="heading">${voiceAssistants[key].name}</span>
-              ${key === "cloud.google_assistant" &&
-              !googleManual &&
-              this._googleEntity?.might_2fa
-                ? html`<ha-formfield
-                    slot="description"
-                    .label=${this.hass.localize(
-                      "ui.dialogs.voice-settings.ask_pin"
-                    )}
-                  >
-                    <ha-checkbox
-                      .checked=${!this.entry.options?.[key]?.disable_2fa}
-                      @change=${this._2faChanged}
-                    ></ha-checkbox>
-                  </ha-formfield>`
-                : (alexaManual && key === "cloud.alexa") ||
-                  (googleManual && key === "cloud.google_assistant")
-                ? html`<span slot="description"
-                    >${this.hass.localize(
-                      "ui.dialogs.voice-settings.manual_config"
-                    )}</span
-                  >`
-                : ""}
-              <ha-switch
-                .assistant=${key}
-                @change=${this._toggleAssistant}
-                .disabled=${(alexaManual && key === "cloud.alexa") ||
-                (googleManual && key === "cloud.google_assistant")}
-                .checked=${alexaManual && key === "cloud.alexa"
-                  ? manExposedAlexa
-                  : googleManual && key === "cloud.google_assistant"
-                  ? manExposedGoogle
-                  : this.entry.options?.[key]?.should_expose}
-              ></ha-switch>
-            </ha-settings-row>`
+            (key) => html`
+              <ha-settings-row>
+                <img
+                  alt=""
+                  src=${brandsUrl({
+                    domain: voiceAssistants[key].domain,
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                  referrerpolicy="no-referrer"
+                  slot="prefix"
+                />
+                <span slot="heading">${voiceAssistants[key].name}</span>
+                ${key === "cloud.google_assistant" &&
+                !googleManual &&
+                this._googleEntity?.might_2fa
+                  ? html`
+                      <ha-formfield
+                        slot="description"
+                        .label=${this.hass.localize(
+                          "ui.dialogs.voice-settings.ask_pin"
+                        )}
+                      >
+                        <ha-checkbox
+                          .checked=${!this.entry.options?.[key]?.disable_2fa}
+                          @change=${this._2faChanged}
+                        ></ha-checkbox>
+                      </ha-formfield>
+                    `
+                  : (alexaManual && key === "cloud.alexa") ||
+                    (googleManual && key === "cloud.google_assistant")
+                  ? html`
+                      <span slot="description">
+                        ${this.hass.localize(
+                          "ui.dialogs.voice-settings.manual_config"
+                        )}
+                      </span>
+                    `
+                  : nothing}
+                <ha-switch
+                  .assistant=${key}
+                  @change=${this._toggleAssistant}
+                  .disabled=${(alexaManual && key === "cloud.alexa") ||
+                  (googleManual && key === "cloud.google_assistant")}
+                  .checked=${alexaManual && key === "cloud.alexa"
+                    ? manExposedAlexa
+                    : googleManual && key === "cloud.google_assistant"
+                    ? manExposedGoogle
+                    : this.entry.options?.[key]?.should_expose}
+                ></ha-switch>
+              </ha-settings-row>
+            `
           )
-        : ""}
+        : nothing}
 
-      <h3>
-        ${this.hass.localize("ui.dialogs.voice-settings.aliasses_header")}
-      </h3>
+      <h3>${this.hass.localize("ui.dialogs.voice-settings.aliases_header")}</h3>
+
+      <p>
+        ${this.hass.localize("ui.dialogs.voice-settings.aliases_description")}
+      </p>
 
       <ha-aliases-editor
         .hass=${this.hass}
         .aliases=${this._aliases ?? this.entry.aliases}
         @value-changed=${this._aliasesChanged}
         @blur=${this._saveAliases}
-      ></ha-aliases-editor>`;
+      ></ha-aliases-editor>
+    `;
   }
 
   private _aliasesChanged(ev) {
@@ -312,6 +327,11 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         ha-checkbox {
           --mdc-checkbox-state-layer-size: 40px;
         }
+        p {
+          margin-bottom: 16px;
+          font-size: 14px;
+          line-height: 20px;
+        }
       `,
     ];
   }
@@ -323,5 +343,11 @@ declare global {
   }
   interface HASSDomEvents {
     "entity-entry-updated": ExtEntityRegistryEntry;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "entity-voice-settings": EntityVoiceSettings;
   }
 }
