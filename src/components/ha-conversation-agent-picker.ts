@@ -1,4 +1,3 @@
-import { debounce } from "chart.js/helpers";
 import {
   css,
   CSSResultGroup,
@@ -10,6 +9,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { debounce } from "../common/util/debounce";
 import { Agent, listAgents } from "../data/conversation";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
