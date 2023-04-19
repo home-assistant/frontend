@@ -87,7 +87,7 @@ export class HuiTileCardEditor
                 {
                   name: "color",
                   selector: {
-                    "ui-color": {},
+                    ui_color: {},
                   },
                 },
                 {
@@ -115,13 +115,13 @@ export class HuiTileCardEditor
             {
               name: "tap_action",
               selector: {
-                "ui-action": {},
+                ui_action: {},
               },
             },
             {
               name: "icon_tap_action",
               selector: {
-                "ui-action": {},
+                ui_action: {},
               },
             },
           ] as const,
