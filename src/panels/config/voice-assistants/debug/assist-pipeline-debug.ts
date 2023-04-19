@@ -29,11 +29,11 @@ export class AssistPipelineDebug extends LitElement {
 
   @property() public pipelineId!: string;
 
-  @state() private _runId?: string;
+  @state() private _sessionId?: string;
 
-  @state() private _runs?: assistRunListing[];
+  @state() private _sessions?: assistRunListing[];
 
-  @state() private _events?: PipelineRunEvent[];
+  @state() private _runs?: { events: PipelineRunEvent[] }[];
 
   protected render() {
     return html`<hass-subpage
@@ -47,21 +47,21 @@ export class AssistPipelineDebug extends LitElement {
         ><ha-icon-button .path=${mdiMicrophoneMessage}></ha-icon-button
       ></a>
       <div class="toolbar">
-        ${this._runs?.length
+        ${this._sessions?.length
           ? html`
               <ha-icon-button
-                .disabled=${this._runs[this._runs.length - 1]
-                  .pipeline_run_id === this._runId}
+                .disabled=${this._sessions[this._sessions.length - 1]
+                  .pipeline_session_id === this._sessionId}
                 label="Older run"
                 @click=${this._pickOlderRun}
                 .path=${mdiRayEndArrow}
               ></ha-icon-button>
-              <select .value=${this._runId} @change=${this._pickRun}>
+              <select .value=${this._sessionId} @change=${this._pickRun}>
                 ${repeat(
-                  this._runs,
-                  (run) => run.pipeline_run_id,
+                  this._sessions,
+                  (run) => run.pipeline_session_id,
                   (run) =>
-                    html`<option value=${run.pipeline_run_id}>
+                    html`<option value=${run.pipeline_session_id}>
                       ${formatDateTimeWithSeconds(
                         new Date(run.timestamp),
                         this.hass.locale
@@ -70,7 +70,8 @@ export class AssistPipelineDebug extends LitElement {
                 )}
               </select>
               <ha-icon-button
-                .disabled=${this._runs[0].pipeline_run_id === this._runId}
+                .disabled=${this._sessions[0].pipeline_session_id ===
+                this._sessionId}
                 label="Newer run"
                 @click=${this._pickNewerRun}
                 .path=${mdiRayStartArrow}
@@ -78,15 +79,17 @@ export class AssistPipelineDebug extends LitElement {
             `
           : ""}
       </div>
-      ${this._runs?.length === 0
-        ? html`<div class="container">No runs found</div>`
+      ${!this._sessions?.length
+        ? html`<div class="container">No sessions found</div>`
         : ""}
       <div class="content">
-        ${this._events
-          ? html`<assist-render-pipeline-events
-              .hass=${this.hass}
-              .events=${this._events}
-            ></assist-render-pipeline-events>`
+        ${this._runs
+          ? this._runs.map(
+              (run) => html`<assist-render-pipeline-events
+                .hass=${this.hass}
+                .events=${run.events}
+              ></assist-render-pipeline-events>`
+            )
           : ""}
       </div>
     </hass-subpage>`;
@@ -94,22 +97,22 @@ export class AssistPipelineDebug extends LitElement {
 
   protected willUpdate(changedProperties) {
     if (changedProperties.has("pipelineId")) {
-      this._fetchRuns();
+      this._fetchSessions();
     }
-    if (changedProperties.has("_runId")) {
-      this._fetchEvents();
+    if (changedProperties.has("_sessionId")) {
+      this._fetchRuns();
     }
   }
 
-  private async _fetchRuns() {
+  private async _fetchSessions() {
     if (!this.pipelineId) {
-      this._runs = undefined;
+      this._sessions = undefined;
       return;
     }
     try {
-      this._runs = (
+      this._sessions = (
         await listAssistPipelineRuns(this.hass, this.pipelineId)
-      ).pipeline_runs.reverse();
+      ).pipeline_sessions?.reverse();
     } catch (e: any) {
       showAlertDialog(this, {
         title: "Failed to fetch pipeline runs",
@@ -117,27 +120,27 @@ export class AssistPipelineDebug extends LitElement {
       });
       return;
     }
-    if (!this._runs.length) {
+    if (!this._sessions?.length) {
       return;
     }
     if (
-      !this._runId ||
-      !this._runs.find((run) => run.pipeline_run_id === this._runId)
+      !this._sessionId ||
+      !this._sessions.find((run) => run.pipeline_session_id === this._sessionId)
     ) {
-      this._runId = this._runs[0].pipeline_run_id;
-      this._fetchEvents();
+      this._sessionId = this._sessions[0].pipeline_session_id;
+      this._fetchRuns();
     }
   }
 
-  private async _fetchEvents() {
-    if (!this._runId) {
-      this._events = undefined;
+  private async _fetchRuns() {
+    if (!this._sessionId) {
+      this._runs = undefined;
       return;
     }
     try {
-      this._events = (
-        await getAssistPipelineRun(this.hass, this.pipelineId, this._runId)
-      ).events;
+      this._runs = (
+        await getAssistPipelineRun(this.hass, this.pipelineId, this._sessionId)
+      ).runs;
     } catch (e: any) {
       showAlertDialog(this, {
         title: "Failed to fetch events",
@@ -147,21 +150,21 @@ export class AssistPipelineDebug extends LitElement {
   }
 
   private _pickOlderRun() {
-    const curIndex = this._runs!.findIndex(
-      (run) => run.pipeline_run_id === this._runId
+    const curIndex = this._sessions!.findIndex(
+      (run) => run.pipeline_session_id === this._sessionId
     );
-    this._runId = this._runs![curIndex + 1].pipeline_run_id;
+    this._sessionId = this._sessions![curIndex + 1].pipeline_session_id;
   }
 
   private _pickNewerRun() {
-    const curIndex = this._runs!.findIndex(
-      (run) => run.pipeline_run_id === this._runId
+    const curIndex = this._sessions!.findIndex(
+      (run) => run.pipeline_session_id === this._sessionId
     );
-    this._runId = this._runs![curIndex - 1].pipeline_run_id;
+    this._sessionId = this._sessions![curIndex - 1].pipeline_session_id;
   }
 
   private _pickRun(ev) {
-    this._runId = ev.target.value;
+    this._sessionId = ev.target.value;
   }
 
   static styles = [
@@ -186,8 +189,12 @@ export class AssistPipelineDebug extends LitElement {
       .container {
         padding: 16px;
       }
-      assist-render-pipeline-run {
+      assist-render-pipeline-events {
+        display: block;
+      }
+      assist-render-pipeline-events + assist-render-pipeline-events {
         padding-top: 16px;
+        border-top: 1px solid var(--divider-color);
       }
     `,
   ];

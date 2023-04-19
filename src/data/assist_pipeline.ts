@@ -21,7 +21,7 @@ export interface AssistPipelineMutableParams {
 }
 
 export interface assistRunListing {
-  pipeline_run_id: string;
+  pipeline_session_id: string;
   timestamp: string;
 }
 
@@ -235,7 +235,7 @@ export const listAssistPipelineRuns = (
   pipeline_id: string
 ) =>
   hass.callWS<{
-    pipeline_runs: assistRunListing[];
+    pipeline_sessions: assistRunListing[];
   }>({
     type: "assist_pipeline/pipeline_debug/list",
     pipeline_id,
@@ -244,14 +244,16 @@ export const listAssistPipelineRuns = (
 export const getAssistPipelineRun = (
   hass: HomeAssistant,
   pipeline_id: string,
-  pipeline_run_id: string
+  pipeline_session_id: string
 ) =>
   hass.callWS<{
-    events: PipelineRunEvent[];
+    runs: {
+      events: PipelineRunEvent[];
+    }[];
   }>({
     type: "assist_pipeline/pipeline_debug/get",
     pipeline_id,
-    pipeline_run_id,
+    pipeline_session_id,
   });
 
 export const fetchAssistPipelines = (hass: HomeAssistant) =>
