@@ -5,7 +5,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-pipeline-picker";
+import "../../../../components/ha-assist-pipeline-picker";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import {
@@ -73,11 +73,11 @@ export class AssistPipelineRunDebug extends LitElement {
           <div class="start-row">
             ${this._pipelineRuns.length === 0
               ? html`
-                  <ha-pipeline-picker
+                  <ha-assist-pipeline-picker
                     .hass=${this.hass}
                     .value=${this._pipelineId}
                     @value-changed=${this._pipelinePicked}
-                  ></ha-pipeline-picker>
+                  ></ha-assist-pipeline-picker>
                   <ha-button raised @click=${this._runTextPipeline}>
                     Run Text Pipeline
                   </ha-button>

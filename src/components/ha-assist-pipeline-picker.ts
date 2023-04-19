@@ -15,10 +15,10 @@ import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
-const DEFAULT = "default_pipeline_option";
+const DEFAULT = "__DEFAULT_PIPELINE_OPTION__";
 
-@customElement("ha-pipeline-picker")
-export class HaPipelinePicker extends LitElement {
+@customElement("ha-assist-pipeline-picker")
+export class HaAssistPipelinePicker extends LitElement {
   @property() public value?: string;
 
   @property() public label?: string;
@@ -102,6 +102,6 @@ export class HaPipelinePicker extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-pipeline-picker": HaPipelinePicker;
+    "ha-assist-pipeline-picker": HaAssistPipelinePicker;
   }
 }

@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { AssistPipelineSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
-import "../ha-pipeline-picker";
+import "../ha-assist-pipeline-picker";
 
 @customElement("ha-selector-assist_pipeline")
 export class HaAssistPipelineSelector extends LitElement {
@@ -21,14 +21,14 @@ export class HaAssistPipelineSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   protected render() {
-    return html`<ha-pipeline-picker
+    return html`<ha-assist-pipeline-picker
       .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
       .helper=${this.helper}
       .disabled=${this.disabled}
       .required=${this.required}
-    ></ha-pipeline-picker>`;
+    ></ha-assist-pipeline-picker>`;
   }
 
   static styles = css`
