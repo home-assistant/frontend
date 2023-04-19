@@ -88,8 +88,8 @@ export class HaSTTPicker extends LitElement {
 
     if (
       this.value &&
-      !this._engines.find((engine) => engine.engine_id === this.value)
-        ?.language_supported
+      this._engines.find((engine) => engine.engine_id === this.value)
+        ?.language_supported === false
     ) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });

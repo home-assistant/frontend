@@ -65,9 +65,10 @@ export class HaConversationAgentPicker extends LitElement {
           (agent) =>
             html`<ha-list-item
               .value=${agent.id}
-              .disabled=${!agent.language_supported}
-              >${agent.name}</ha-list-item
-            >`
+              .disabled=${agent.language_supported === false}
+            >
+              ${agent.name}
+            </ha-list-item>`
         )}
       </ha-select>
     `;
@@ -95,7 +96,8 @@ export class HaConversationAgentPicker extends LitElement {
 
     if (
       this.value &&
-      !this._agents.find((agent) => agent.id === this.value)?.language_supported
+      this._agents.find((agent) => agent.id === this.value)
+        ?.language_supported === false
     ) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
