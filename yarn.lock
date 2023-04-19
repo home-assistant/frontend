@@ -1462,18 +1462,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.9.4":
-  version: 6.9.4
-  resolution: "@codemirror/view@npm:6.9.4"
-  dependencies:
-    "@codemirror/state": ^6.1.4
-    style-mod: ^4.0.0
-    w3c-keyname: ^2.2.4
-  checksum: 9d2e9596caa3f568cea5aeff87c9ed10b7cf1e73d198240042bddeeffaea21f70b859927b1a05f5a613a8d58a92be762c6b899ced0725cf70194057d9591f83b
-  languageName: node
-  linkType: hard
-
-"@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.6.0":
+"@codemirror/view@npm:6.9.5, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.6.0":
   version: 6.9.5
   resolution: "@codemirror/view@npm:6.9.5"
   dependencies:
@@ -7932,20 +7921,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit@npm:1.8.2":
-  version: 1.8.2
-  resolution: "eslint-plugin-lit@npm:1.8.2"
-  dependencies:
-    parse5: ^6.0.1
-    parse5-htmlparser2-tree-adapter: ^6.0.1
-    requireindex: ^1.2.0
-  peerDependencies:
-    eslint: ">= 5"
-  checksum: 30c4d60d26734e6974da3b6f4998f9c10a797f63ad123368bb9d1064efcb99ccd255ba9e4efec41f7029a0eaf8196445c3d8cf424cd4ef918faee2b388d474ae
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-lit@npm:^1.6.0":
+"eslint-plugin-lit@npm:1.8.3, eslint-plugin-lit@npm:^1.6.0":
   version: 1.8.3
   resolution: "eslint-plugin-lit@npm:1.8.3"
   dependencies:
@@ -9475,7 +9451,7 @@ __metadata:
     "@codemirror/legacy-modes": 6.3.2
     "@codemirror/search": 6.3.0
     "@codemirror/state": 6.2.0
-    "@codemirror/view": 6.9.4
+    "@codemirror/view": 6.9.5
     "@egjs/hammerjs": 2.0.17
     "@formatjs/intl-datetimeformat": 6.5.1
     "@formatjs/intl-getcanonicallocales": 2.1.0
@@ -9590,7 +9566,7 @@ __metadata:
     eslint-import-resolver-webpack: 0.13.2
     eslint-plugin-disable: 2.0.3
     eslint-plugin-import: 2.27.5
-    eslint-plugin-lit: 1.8.2
+    eslint-plugin-lit: 1.8.3
     eslint-plugin-lit-a11y: 2.4.1
     eslint-plugin-unused-imports: 2.0.0
     eslint-plugin-wc: 1.4.0
