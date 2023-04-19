@@ -3,20 +3,22 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValueMap,
+  nothing,
+  PropertyValues,
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { debounce } from "../common/util/debounce";
 import { listSTTEngines, STTEngine } from "../data/stt";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
-const DEFAULT = "default_engine_option";
+const NONE = "__NONE_OPTION__";
 
 @customElement("ha-stt-picker")
 export class HaSTTPicker extends LitElement {
@@ -35,7 +37,11 @@ export class HaSTTPicker extends LitElement {
   @state() _engines: STTEngine[] = [];
 
   protected render(): TemplateResult {
-    const value = this.value ?? DEFAULT;
+    const value =
+      this.value ??
+      (this.required
+        ? this._engines.find((engine) => engine.language_supported)
+        : NONE);
     return html`
       <ha-select
         .label=${this.label ||
@@ -48,9 +54,11 @@ export class HaSTTPicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
-        <ha-list-item .value=${DEFAULT}>
-          ${this.hass!.localize("ui.components.stt-picker.default")}
-        </ha-list-item>
+        ${!this.required
+          ? html`<ha-list-item .value=${NONE}>
+              ${this.hass!.localize("ui.components.stt-picker.none")}
+            </ha-list-item>`
+          : nothing}
         ${this._engines.map((engine) => {
           const stateObj = this.hass!.states[engine.engine_id];
           return html`<ha-list-item
@@ -64,14 +72,27 @@ export class HaSTTPicker extends LitElement {
     `;
   }
 
-  protected willUpdate(
-    changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
-    if (!this.hasUpdated || changedProperties.has("language")) {
-      listSTTEngines(this.hass, this.language).then((engines) => {
-        this._engines = engines.providers;
-      });
+    if (!this.hasUpdated) {
+      this._updateEngines();
+    } else if (changedProperties.has("language")) {
+      this._debouncedUpdateEngines();
+    }
+  }
+
+  private _debouncedUpdateEngines = debounce(() => this._updateEngines(), 500);
+
+  private async _updateEngines() {
+    this._engines = (await listSTTEngines(this.hass, this.language)).providers;
+
+    if (
+      this.value &&
+      !this._engines.find((engine) => engine.engine_id === this.value)
+        ?.language_supported
+    ) {
+      this.value = undefined;
+      fireEvent(this, "value-changed", { value: this.value });
     }
   }
 
@@ -89,11 +110,11 @@ export class HaSTTPicker extends LitElement {
       !this.hass ||
       target.value === "" ||
       target.value === this.value ||
-      (this.value === undefined && target.value === DEFAULT)
+      (this.value === undefined && target.value === NONE)
     ) {
       return;
     }
-    this.value = target.value === DEFAULT ? undefined : target.value;
+    this.value = target.value === NONE ? undefined : target.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 }
