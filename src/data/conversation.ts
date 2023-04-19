@@ -59,6 +59,7 @@ export interface AgentInfo {
 export interface Agent {
   id: string;
   name: string;
+  language_supported: boolean;
 }
 
 export const processConversationInput = (
@@ -76,10 +77,12 @@ export const processConversationInput = (
   });
 
 export const listAgents = (
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  language?: string
 ): Promise<{ agents: Agent[]; default_agent: string | null }> =>
   hass.callWS({
     type: "conversation/agent/list",
+    language,
   });
 
 export const getAgentInfo = (

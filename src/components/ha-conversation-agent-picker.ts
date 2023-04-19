@@ -1,10 +1,11 @@
+import { debounce } from "chart.js/helpers";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
   nothing,
-  PropertyValueMap,
+  PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -19,6 +20,8 @@ const NONE = "__NONE_OPTION__";
 @customElement("ha-conversation-agent-picker")
 export class HaConversationAgentPicker extends LitElement {
   @property() public value?: string;
+
+  @property() public language?: string;
 
   @property() public label?: string;
 
@@ -66,14 +69,33 @@ export class HaConversationAgentPicker extends LitElement {
     `;
   }
 
-  protected firstUpdated(
-    changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
-    super.firstUpdated(changedProperties);
-    listAgents(this.hass).then((agents) => {
-      this._agents = agents.agents;
-      this._defaultAgent = agents.default_agent;
-    });
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    super.willUpdate(changedProperties);
+    if (!this.hasUpdated) {
+      this._updateAgents();
+    } else if (changedProperties.has("language")) {
+      this._debouncedUpdateAgents();
+    }
+  }
+
+  private _debouncedUpdateAgents = debounce(() => this._updateAgents(), 500);
+
+  private async _updateAgents() {
+    const { agents, default_agent } = await listAgents(
+      this.hass,
+      this.language
+    );
+
+    this._agents = agents;
+    this._defaultAgent = default_agent;
+
+    if (
+      this.value &&
+      !this._agents.find((agent) => agent.id === this.value)?.language_supported
+    ) {
+      this.value = undefined;
+      fireEvent(this, "value-changed", { value: this.value });
+    }
   }
 
   static get styles(): CSSResultGroup {

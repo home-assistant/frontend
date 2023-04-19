@@ -130,18 +130,19 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           },
         },
         {
-          name: "conversation_engine",
-          required: true,
-          selector: {
-            conversation_agent: {},
-          },
-        },
-        {
           name: "language",
           required: true,
           selector: {
             text: {},
           },
+        },
+        {
+          name: "conversation_engine",
+          required: true,
+          selector: {
+            conversation_agent: {},
+          },
+          context: { language: "language" },
         },
         {
           name: "stt_engine",
