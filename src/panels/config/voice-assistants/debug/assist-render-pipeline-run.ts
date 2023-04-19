@@ -8,6 +8,7 @@ import "../../../../components/ha-expansion-panel";
 import type { PipelineRun } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
 import { formatNumber } from "../../../../common/number/format_number";
+import "../../../../components/ha-yaml-editor";
 
 const RUN_DATA = {
   pipeline: "Pipeline",
@@ -118,7 +119,13 @@ const dataMinusKeysRender = (
     render = true;
     result[key] = data[key];
   }
-  return render ? html`<pre>${JSON.stringify(result, null, 2)}</pre>` : "";
+  return render
+    ? html`<ha-yaml-editor
+        readOnly
+        autoUpdate
+        .value=${result}
+      ></ha-yaml-editor>`
+    : "";
 };
 
 @customElement("assist-render-pipeline-run")
@@ -262,7 +269,11 @@ export class AssistPipelineDebug extends LitElement {
       <ha-card>
         <ha-expansion-panel>
           <span slot="header">Raw</span>
-          <pre>${JSON.stringify(this.pipelineRun, null, 2)}</pre>
+          <ha-yaml-editor
+            readOnly
+            autoUpdate
+            .value=${this.pipelineRun}
+          ></ha-yaml-editor>
         </ha-expansion-panel>
       </ha-card>
     `;
@@ -286,9 +297,6 @@ export class AssistPipelineDebug extends LitElement {
     .row {
       display: flex;
       justify-content: space-between;
-    }
-    pre {
-      margin: 0;
     }
     ha-expansion-panel {
       padding-left: 8px;
