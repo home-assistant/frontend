@@ -27,6 +27,7 @@ export class HaPickLanguageRow extends LitElement {
         </span>
         <ha-language-picker
           .hass=${this.hass}
+          nativeName
           .label=${this.hass.localize(
             "ui.panel.profile.language.dropdown_label"
           )}
