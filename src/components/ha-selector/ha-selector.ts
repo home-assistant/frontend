@@ -42,9 +42,11 @@ const LOAD_ELEMENTS = {
   tts: () => import("./ha-selector-tts"),
   location: () => import("./ha-selector-location"),
   color_temp: () => import("./ha-selector-color-temp"),
-  "ui-action": () => import("./ha-selector-ui-action"),
-  "ui-color": () => import("./ha-selector-ui-color"),
+  ui_action: () => import("./ha-selector-ui-action"),
+  ui_color: () => import("./ha-selector-ui-color"),
 };
+
+const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
@@ -75,7 +77,11 @@ export class HaSelector extends LitElement {
   }
 
   private get _type() {
-    return Object.keys(this.selector)[0];
+    const type = Object.keys(this.selector)[0];
+    if (LEGACY_UI_SELECTORS.has(type)) {
+      return type.replace("-", "_");
+    }
+    return type;
   }
 
   protected willUpdate(changedProps: PropertyValues) {
@@ -90,6 +96,10 @@ export class HaSelector extends LitElement {
     }
     if ("device" in selector) {
       return handleLegacyDeviceSelector(selector);
+    }
+    const type = Object.keys(this.selector)[0];
+    if (LEGACY_UI_SELECTORS.has(type)) {
+      return { [type.replace("-", "_")]: selector[type] };
     }
     return selector;
   });
