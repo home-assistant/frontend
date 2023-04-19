@@ -1071,7 +1071,8 @@
       },
       "voice-settings": {
         "expose_header": "Expose",
-        "aliasses_header": "Aliasses",
+        "aliases_header": "Aliases",
+        "aliases_description": "Aliases are supported by Assist and Google Assistant.",
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed with filters in configuration.yaml"
       },
