@@ -296,8 +296,3 @@ export const deleteAssistPipeline = (hass: HomeAssistant, pipelineId: string) =>
     type: "assist_pipeline/pipeline/delete",
     pipeline_id: pipelineId,
   });
-
-export const fetchAssistPipelineLanguages = (hass: HomeAssistant) =>
-  hass.callWS<{ languages: string[] }>({
-    type: "assist_pipeline/language/list",
-  });
