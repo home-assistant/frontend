@@ -30,7 +30,9 @@ export class HaLanguagePicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() _defaultLanguageOptions: { value: string; label: string }[] = [];
+  @property({ type: Boolean }) public nativeName = false;
+
+  @state() _defaultLanguages: string[] = [];
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -38,19 +40,30 @@ export class HaLanguagePicker extends LitElement {
   }
 
   private _getLanguagesOptions = memoizeOne(
-    (supportedLanguages: string[], language: string) => {
-      const languageDisplayNames =
-        Intl && "DisplayNames" in Intl
-          ? new Intl.DisplayNames(language, {
-              type: "language",
-              fallback: "code",
-            })
-          : undefined;
+    (languages: string[], language: string, nativeName: boolean) => {
+      let options: { label: string; value: string }[] = [];
 
-      const options = supportedLanguages.map((lang) => ({
-        value: lang,
-        label: languageDisplayNames ? languageDisplayNames.of(lang)! : lang,
-      }));
+      if (nativeName) {
+        const translations = this.hass.translationMetadata.translations;
+        options = languages.map((lang) => ({
+          value: lang,
+          label: translations[lang]?.nativeName ?? lang,
+        }));
+      } else {
+        const languageDisplayNames =
+          Intl && "DisplayNames" in Intl
+            ? new Intl.DisplayNames(language, {
+                type: "language",
+                fallback: "code",
+              })
+            : undefined;
+
+        options = languages.map((lang) => ({
+          value: lang,
+          label: languageDisplayNames ? languageDisplayNames.of(lang)! : lang,
+        }));
+      }
+
       options.sort((a, b) =>
         caseInsensitiveStringCompare(a.label, b.label, language)
       );
@@ -63,24 +76,19 @@ export class HaLanguagePicker extends LitElement {
       return;
     }
 
-    const languages = Object.keys(this.hass.translationMetadata.translations);
-
-    this._defaultLanguageOptions = languages.map((lang) => ({
-      value: lang,
-      label:
-        this.hass.translationMetadata.translations[lang]?.nativeName ?? lang,
-    }));
+    this._defaultLanguages = Object.keys(
+      this.hass.translationMetadata.translations
+    );
   }
 
   protected render(): TemplateResult {
     const value = this.value;
 
-    const languageOptions = this.supportedLanguages
-      ? this._getLanguagesOptions(
-          this.supportedLanguages,
-          this.hass.locale.language
-        )
-      : this._defaultLanguageOptions;
+    const languageOptions = this._getLanguagesOptions(
+      this.supportedLanguages ?? this._defaultLanguages,
+      this.hass.locale.language,
+      this.nativeName
+    );
 
     return html`
       <ha-select

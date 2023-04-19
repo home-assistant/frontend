@@ -255,6 +255,7 @@ class HaConfigSectionGeneral extends LitElement {
               >
               <ha-language-picker
                 .hass=${this.hass}
+                nativeName
                 .label=${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.language"
                 )}
