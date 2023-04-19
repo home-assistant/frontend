@@ -33,13 +33,11 @@ export class HaConversationAgentPicker extends LitElement {
 
   @state() _agents?: Agent[];
 
-  @state() _defaultAgent: string | null = null;
-
   protected render() {
     if (!this._agents) {
       return nothing;
     }
-    const value = this.value ?? (this.required ? this._defaultAgent : NONE);
+    const value = this.value ?? (this.required ? "homeassistant" : NONE);
     return html`
       <ha-select
         .label=${this.label ||
@@ -86,18 +84,14 @@ export class HaConversationAgentPicker extends LitElement {
   private _debouncedUpdateAgents = debounce(() => this._updateAgents(), 500);
 
   private async _updateAgents() {
-    const { agents, default_agent } = await listAgents(
-      this.hass,
-      this.language
-    );
+    const { agents } = await listAgents(this.hass, this.language);
 
     this._agents = agents;
-    this._defaultAgent = default_agent;
 
     if (
       this.value &&
-      this._agents.find((agent) => agent.id === this.value)
-        ?.language_supported === false
+      agents.find((agent) => agent.id === this.value)?.language_supported ===
+        false
     ) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
