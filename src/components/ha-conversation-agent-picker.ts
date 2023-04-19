@@ -63,7 +63,11 @@ export class HaConversationAgentPicker extends LitElement {
           : nothing}
         ${this._agents.map(
           (agent) =>
-            html`<ha-list-item .value=${agent.id}>${agent.name}</ha-list-item>`
+            html`<ha-list-item
+              .value=${agent.id}
+              .disabled=${!agent.language_supported}
+              >${agent.name}</ha-list-item
+            >`
         )}
       </ha-select>
     `;
