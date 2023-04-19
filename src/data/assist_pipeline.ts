@@ -20,7 +20,7 @@ export interface AssistPipelineMutableParams {
   tts_engine: string;
 }
 
-export interface assistRunListing {
+export interface assistSessionListing {
   pipeline_session_id: string;
   timestamp: string;
 }
@@ -235,7 +235,7 @@ export const listAssistPipelineRuns = (
   pipeline_id: string
 ) =>
   hass.callWS<{
-    pipeline_sessions: assistRunListing[];
+    pipeline_sessions: assistSessionListing[];
   }>({
     type: "assist_pipeline/pipeline_debug/list",
     pipeline_id,

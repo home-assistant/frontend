@@ -11,7 +11,7 @@ import {
   listAssistPipelineRuns,
   getAssistPipelineRun,
   PipelineRunEvent,
-  assistRunListing,
+  assistSessionListing,
 } from "../../../../data/assist_pipeline";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
@@ -31,7 +31,7 @@ export class AssistPipelineDebug extends LitElement {
 
   @state() private _sessionId?: string;
 
-  @state() private _sessions?: assistRunListing[];
+  @state() private _sessions?: assistSessionListing[];
 
   @state() private _runs?: { events: PipelineRunEvent[] }[];
 
