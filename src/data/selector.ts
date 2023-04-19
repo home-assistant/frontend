@@ -332,14 +332,14 @@ export interface TTSSelector {
 }
 
 export interface UiActionSelector {
-  "ui-action": {
+  ui_action: {
     actions?: UiAction[];
   } | null;
 }
 
 export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  "ui-color": {} | null;
+  ui_color: {} | null;
 }
 
 export const filterSelectorDevices = (
