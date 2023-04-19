@@ -81,8 +81,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
               <ha-button
                 slot="secondaryAction"
                 class="warning"
+                .disabled=${this._preferred || this._submitting}
                 @click=${this._deletePipeline}
-                .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.common.delete")}
               </ha-button>
@@ -104,7 +104,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         <ha-button
           slot="primaryAction"
           @click=${this._updatePipeline}
-          .disabled=${Boolean(this._error) || this._submitting}
+          .disabled=${this._submitting}
           dialogInitialFocus
         >
           ${this._params.pipeline?.id
@@ -198,8 +198,15 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   }
 
   private async _setPreferred() {
-    await this._params!.setPipelinePreferred();
-    this._preferred = true;
+    this._submitting = true;
+    try {
+      await this._params!.setPipelinePreferred();
+      this._preferred = true;
+    } catch (err: any) {
+      this._error = { base: err?.message || "Unknown error" };
+    } finally {
+      this._submitting = false;
+    }
   }
 
   private async _deletePipeline() {
@@ -208,6 +215,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       if (await this._params!.deletePipeline()) {
         this.closeDialog();
       }
+    } catch (err: any) {
+      this._error = { base: err?.message || "Unknown error" };
     } finally {
       this._submitting = false;
     }
