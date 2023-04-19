@@ -131,6 +131,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         },
         {
           name: "conversation_engine",
+          required: true,
           selector: {
             conversation_agent: {},
           },
