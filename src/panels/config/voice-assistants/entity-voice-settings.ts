@@ -222,9 +222,11 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           )
         : nothing}
 
-      <h3>${this.hass.localize("ui.dialogs.voice-settings.aliases_header")}</h3>
+      <h3 class="header">
+        ${this.hass.localize("ui.dialogs.voice-settings.aliases_header")}
+      </h3>
 
-      <p>
+      <p class="description">
         ${this.hass.localize("ui.dialogs.voice-settings.aliases_description")}
       </p>
 
@@ -312,6 +314,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         }
         img {
           height: 32px;
+          width: 32px;
           margin-right: 16px;
         }
         ha-aliases-editor {
@@ -327,10 +330,17 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         ha-checkbox {
           --mdc-checkbox-state-layer-size: 40px;
         }
-        p {
+        .header {
+          margin-top: 8px;
+          margin-bottom: 4px;
+        }
+        .description {
+          color: var(--secondary-text-color);
           margin-bottom: 16px;
           font-size: 14px;
           line-height: 20px;
+          margin-top: 0;
+          margin-bottom: 16px;
         }
       `,
     ];
