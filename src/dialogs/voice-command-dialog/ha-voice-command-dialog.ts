@@ -370,8 +370,13 @@ export class HaVoiceCommandDialog extends LitElement {
           }
 
           if (event.type === "error") {
-            hassMessage.text = event.data.message;
-            hassMessage.error = true;
+            if (userMessage.text === "…") {
+              userMessage.text = event.data.message;
+              userMessage.error = true;
+            } else {
+              hassMessage.text = event.data.message;
+              hassMessage.error = true;
+            }
             this.requestUpdate("_conversation");
             unsub();
           }
