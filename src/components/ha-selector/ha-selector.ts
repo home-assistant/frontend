@@ -29,6 +29,7 @@ const LOAD_ELEMENTS = {
   navigation: () => import("./ha-selector-navigation"),
   number: () => import("./ha-selector-number"),
   object: () => import("./ha-selector-object"),
+  select: () => import("./ha-selector-select"),
   assist_pipeline: () => import("./ha-selector-assist_pipeline"),
   state: () => import("./ha-selector-state"),
   stt: () => import("./ha-selector-stt"),
