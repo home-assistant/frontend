@@ -93,7 +93,7 @@ export class HaVoiceCommandDialog extends LitElement {
     if (!this._opened) {
       return nothing;
     }
-    const supportsSTT = this._pipeline?.stt_engine && window.isSecureContext;
+    const supportsSTT = this._pipeline?.stt_engine && AudioRecorder.isSupported;
     return html`
       <ha-dialog
         open

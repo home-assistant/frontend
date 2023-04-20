@@ -15,7 +15,7 @@ export class AudioRecorder {
     return this._context?.sampleRate;
   }
 
-  public get isSupported() {
+  public static get isSupported() {
     return (
       window.isSecureContext &&
       // @ts-ignore-next-line
