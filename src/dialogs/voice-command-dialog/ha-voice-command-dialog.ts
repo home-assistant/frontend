@@ -378,7 +378,7 @@ export class HaVoiceCommandDialog extends LitElement {
         },
         {
           start_stage: "stt",
-          end_stage: "tts",
+          end_stage: this._pipeline?.tts_engine ? "tts" : "intent",
           input: { sample_rate: this._audioRecorder.sampleRate! },
           pipeline: this._pipelineId,
           conversation_id: this._conversationId,
