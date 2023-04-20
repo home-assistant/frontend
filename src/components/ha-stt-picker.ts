@@ -5,7 +5,6 @@ import {
   LitElement,
   nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -34,9 +33,12 @@ export class HaSTTPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() _engines: STTEngine[] = [];
+  @state() _engines?: STTEngine[];
 
-  protected render(): TemplateResult {
+  protected render() {
+    if (!this._engines) {
+      return nothing;
+    }
     const value =
       this.value ??
       (this.required
