@@ -90,7 +90,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                 .disabled=${this._preferred}
                 slot="secondaryAction"
                 @click=${this._setPreferred}
-                >Set as default</ha-button
+                >Set as preferred</ha-button
               >
               <a
                 href="/config/voice-assistants/debug/${this._params.pipeline

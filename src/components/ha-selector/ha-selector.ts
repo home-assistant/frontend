@@ -14,6 +14,7 @@ const LOAD_ELEMENTS = {
   addon: () => import("./ha-selector-addon"),
   area: () => import("./ha-selector-area"),
   attribute: () => import("./ha-selector-attribute"),
+  assist_pipeline: () => import("./ha-selector-assist-pipeline"),
   boolean: () => import("./ha-selector-boolean"),
   color_rgb: () => import("./ha-selector-color-rgb"),
   config_entry: () => import("./ha-selector-config-entry"),

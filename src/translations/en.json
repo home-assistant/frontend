@@ -405,6 +405,10 @@
         "conversation_agent": "Conversation agent",
         "none": "None"
       },
+      "pipeline-picker": {
+        "pipeline": "Assistant",
+        "preferred": "Preferred assistant ({preferred})"
+      },
       "theme-picker": {
         "theme": "Theme",
         "no_theme": "No theme"
