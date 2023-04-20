@@ -42,7 +42,9 @@ export class HaSTTPicker extends LitElement {
     const value =
       this.value ??
       (this.required
-        ? this._engines.find((engine) => engine.language_supported)
+        ? this._engines.find(
+            (engine) => engine.supported_languages?.length !== 0
+          )
         : NONE);
     return html`
       <ha-select
@@ -65,7 +67,7 @@ export class HaSTTPicker extends LitElement {
           const stateObj = this.hass!.states[engine.engine_id];
           return html`<ha-list-item
             .value=${engine.engine_id}
-            .disabled=${engine.language_supported === false}
+            .disabled=${engine.supported_languages?.length === 0}
           >
             ${stateObj ? computeStateName(stateObj) : engine.engine_id}
           </ha-list-item>`;
@@ -88,11 +90,15 @@ export class HaSTTPicker extends LitElement {
   private async _updateEngines() {
     this._engines = (await listSTTEngines(this.hass, this.language)).providers;
 
-    if (
-      this.value &&
-      this._engines.find((engine) => engine.engine_id === this.value)
-        ?.language_supported === false
-    ) {
+    if (!this.value) {
+      return;
+    }
+
+    const selectedEngine = this._engines.find(
+      (engine) => engine.engine_id === this.value
+    );
+
+    if (!selectedEngine || selectedEngine.supported_languages?.length === 0) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
     }

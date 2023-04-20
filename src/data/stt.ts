@@ -20,7 +20,7 @@ export interface SpeechMetadata {
 
 export interface STTEngine {
   engine_id: string;
-  language_supported?: boolean;
+  supported_languages?: string[];
 }
 
 export const listSTTEngines = (
