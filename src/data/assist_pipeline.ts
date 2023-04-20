@@ -5,10 +5,10 @@ import type { SpeechMetadata } from "./stt";
 
 export interface AssistPipeline {
   id: string;
+  name: string;
+  language: string;
   conversation_engine: string;
   conversation_language: string | null;
-  language: string;
-  name: string;
   stt_engine: string | null;
   stt_language: string | null;
   tts_engine: string | null;
@@ -17,15 +17,15 @@ export interface AssistPipeline {
 }
 
 export interface AssistPipelineMutableParams {
-  conversation_engine: string;
-  conversation_language?: string | null;
-  language: string;
   name: string;
-  stt_engine?: string | null;
-  stt_language?: string | null;
-  tts_engine?: string | null;
-  tts_language?: string | null;
-  tts_voice?: string | null;
+  language: string;
+  conversation_engine: string;
+  conversation_language: string | null;
+  stt_engine: string | null;
+  stt_language: string | null;
+  tts_engine: string | null;
+  tts_language: string | null;
+  tts_voice: string | null;
 }
 
 export interface assistRunListing {
