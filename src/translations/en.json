@@ -407,7 +407,7 @@
       },
       "pipeline-picker": {
         "pipeline": "Assistant",
-        "default": "Default assistant ({default})"
+        "preferred": "Preferred assistant ({preferred})"
       },
       "theme-picker": {
         "theme": "Theme",

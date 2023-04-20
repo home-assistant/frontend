@@ -15,7 +15,7 @@ import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
-const DEFAULT = "__DEFAULT_PIPELINE_OPTION__";
+const PREFERRED = "__PREFERRED_PIPELINE_OPTION__";
 
 @customElement("ha-assist-pipeline-picker")
 export class HaAssistPipelinePicker extends LitElement {
@@ -31,13 +31,13 @@ export class HaAssistPipelinePicker extends LitElement {
 
   @state() _pipelines?: AssistPipeline[];
 
-  @state() _defaultPipeline: string | null = null;
+  @state() _preferredPipeline: string | null = null;
 
   protected render() {
     if (!this._pipelines) {
       return nothing;
     }
-    const value = this.value ?? DEFAULT;
+    const value = this.value ?? PREFERRED;
     return html`
       <ha-select
         .label=${this.label ||
@@ -50,10 +50,10 @@ export class HaAssistPipelinePicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
-        <ha-list-item .value=${DEFAULT}>
-          ${this.hass!.localize("ui.components.pipeline-picker.default", {
-            default: this._pipelines.find(
-              (pipeline) => pipeline.id === this._defaultPipeline
+        <ha-list-item .value=${PREFERRED}>
+          ${this.hass!.localize("ui.components.pipeline-picker.preferred", {
+            preferred: this._pipelines.find(
+              (pipeline) => pipeline.id === this._preferredPipeline
             )?.name,
           })}
         </ha-list-item>
@@ -73,7 +73,7 @@ export class HaAssistPipelinePicker extends LitElement {
     super.firstUpdated(changedProperties);
     fetchAssistPipelines(this.hass).then((pipelines) => {
       this._pipelines = pipelines.pipelines;
-      this._defaultPipeline = pipelines.preferred_pipeline;
+      this._preferredPipeline = pipelines.preferred_pipeline;
     });
   }
 
@@ -91,11 +91,11 @@ export class HaAssistPipelinePicker extends LitElement {
       !this.hass ||
       target.value === "" ||
       target.value === this.value ||
-      (this.value === undefined && target.value === DEFAULT)
+      (this.value === undefined && target.value === PREFERRED)
     ) {
       return;
     }
-    this.value = target.value === DEFAULT ? undefined : target.value;
+    this.value = target.value === PREFERRED ? undefined : target.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 }
