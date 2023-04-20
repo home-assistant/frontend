@@ -1,11 +1,9 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
-import { SchemaUnion } from "../../../components/ha-form/types";
 import {
   AssistPipeline,
   AssistPipelineMutableParams,
@@ -13,6 +11,10 @@ import {
 } from "../../../data/assist_pipeline";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import "./assist-pipeline-detail/assist-pipeline-detail-conversation";
+import "./assist-pipeline-detail/assist-pipeline-detail-config";
+import "./assist-pipeline-detail/assist-pipeline-detail-stt";
+import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./debug/assist-render-pipeline-events";
 import { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
 
@@ -79,14 +81,31 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         )}
       >
         <div>
-          <ha-form
-            .schema=${this._schema(this._supportedLanguages)}
-            .data=${this._data}
+          <assist-pipeline-detail-config
             .hass=${this.hass}
+            .data=${this._data}
             .error=${this._error}
-            .computeLabel=${this._computeLabel}
+            .supportedLanguages=${this._supportedLanguages}
             @value-changed=${this._valueChanged}
-          ></ha-form>
+          ></assist-pipeline-detail-config>
+          <assist-pipeline-detail-conversation
+            .hass=${this.hass}
+            .data=${this._data}
+            .error=${this._error}
+            @value-changed=${this._valueChanged}
+          ></assist-pipeline-detail-conversation>
+          <assist-pipeline-detail-stt
+            .hass=${this.hass}
+            .data=${this._data}
+            .error=${this._error}
+            @value-changed=${this._valueChanged}
+          ></assist-pipeline-detail-stt>
+          <assist-pipeline-detail-tts
+            .hass=${this.hass}
+            .data=${this._data}
+            .error=${this._error}
+            @value-changed=${this._valueChanged}
+          ></assist-pipeline-detail-tts>
         </div>
         ${this._params.pipeline?.id
           ? html`
@@ -131,57 +150,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     `;
   }
 
-  private _schema = memoizeOne(
-    (supportedLanguages: string[]) =>
-      [
-        {
-          name: "name",
-          required: true,
-          selector: {
-            text: {},
-          },
-        },
-        {
-          name: "language",
-          required: true,
-          selector: {
-            language: {
-              languages: supportedLanguages,
-            },
-          },
-        },
-        {
-          name: "conversation_engine",
-          required: true,
-          selector: {
-            conversation_agent: {},
-          },
-          context: { language: "language" },
-        },
-        {
-          name: "stt_engine",
-          selector: {
-            stt: {},
-          },
-          context: { language: "language" },
-        },
-        {
-          name: "tts_engine",
-          selector: {
-            tts: {},
-          },
-          context: { language: "language" },
-        },
-      ] as const
-  );
-
-  private _computeLabel = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.voice_assistants.assistants.pipeline.detail.form.${schema.name}`
-    );
-
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
     const value = ev.detail.value;
@@ -192,12 +160,17 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._submitting = true;
     try {
       if (this._params!.pipeline?.id) {
-        const values: Partial<AssistPipelineMutableParams> = {
-          name: this._data!.name,
-          conversation_engine: this._data!.conversation_engine,
-          language: this._data!.language,
-          stt_engine: this._data!.stt_engine,
-          tts_engine: this._data!.tts_engine,
+        const data = this._data!;
+        const values: AssistPipelineMutableParams = {
+          name: data.name!,
+          language: data.language!,
+          conversation_engine: data.conversation_engine!,
+          conversation_language: data.conversation_language,
+          stt_engine: data.stt_engine,
+          stt_language: data.stt_language,
+          tts_engine: data.tts_engine,
+          tts_language: data.tts_language,
+          tts_voice: data.tts_voice,
         };
         await this._params!.updatePipeline(values);
       } else {
@@ -239,7 +212,18 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyleDialog, css``];
+    return [
+      haStyleDialog,
+      css`
+        assist-pipeline-detail-config,
+        assist-pipeline-detail-conversation,
+        assist-pipeline-detail-stt,
+        assist-pipeline-detail-tts {
+          margin-bottom: 16px;
+          display: block;
+        }
+      `,
+    ];
   }
 }
 
