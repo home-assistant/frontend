@@ -67,7 +67,7 @@ export class HaTTSPicker extends LitElement {
           const stateObj = this.hass!.states[engine.engine_id];
           return html`<ha-list-item
             .value=${engine.engine_id}
-            .disabled=${engine.supported_languages?.length !== 0}
+            .disabled=${engine.supported_languages?.length === 0}
           >
             ${stateObj ? computeStateName(stateObj) : engine.engine_id}
           </ha-list-item>`;
