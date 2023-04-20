@@ -321,7 +321,6 @@ export class HaVoiceCommandDialog extends LitElement {
     // To make sure the answer is placed at the right user text, we add it before we process it
     this._addMessage(userMessage);
     this.requestUpdate("_audioRecorder");
-    this.hass.connection.socket!.binaryType = "arraybuffer";
     try {
       const unsub = await runAssistPipeline(
         this.hass,
@@ -342,6 +341,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
           // Stop recording if the server is done with STT stage
           if (event.type === "stt-end" && this._audioRecorder?.active) {
+            this._stt_binary_handler_id = undefined;
             this._stopListening();
             userMessage.text = event.data.stt_output.text;
             this.requestUpdate("_conversation");
@@ -365,11 +365,11 @@ export class HaVoiceCommandDialog extends LitElement {
           }
 
           if (event.type === "run-end") {
-            this._stt_binary_handler_id = undefined;
             unsub();
           }
 
           if (event.type === "error") {
+            this._stt_binary_handler_id = undefined;
             if (userMessage.text === "…") {
               userMessage.text = event.data.message;
               userMessage.error = true;
@@ -377,6 +377,7 @@ export class HaVoiceCommandDialog extends LitElement {
               hassMessage.text = event.data.message;
               hassMessage.error = true;
             }
+            this._stopListening();
             this.requestUpdate("_conversation");
             unsub();
           }
@@ -394,7 +395,7 @@ export class HaVoiceCommandDialog extends LitElement {
         title: "Error starting pipeline",
         text: err.message || err,
       });
-      this._audioRecorder?.stop();
+      this._stopListening();
     }
   }
 
@@ -402,19 +403,21 @@ export class HaVoiceCommandDialog extends LitElement {
     await this._audioRecorder?.stop();
     this.requestUpdate("_audioRecorder");
     // We're currently STTing, so finish audio
-    // if (run?.stage === "stt" && run.stt!.done === false) {
-    if (this._audioBuffer) {
-      for (const chunk of this._audioBuffer) {
-        this._sendAudioChunk(chunk);
+    if (this._stt_binary_handler_id) {
+      if (this._audioBuffer) {
+        for (const chunk of this._audioBuffer) {
+          this._sendAudioChunk(chunk);
+        }
       }
+      // Send empty message to indicate we're done streaming.
+      this._sendAudioChunk(new Int16Array());
     }
-    // Send empty message to indicate we're done streaming.
-    this._sendAudioChunk(new Int16Array());
-    // }
     this._audioBuffer = undefined;
   }
 
   private _sendAudioChunk(chunk: Int16Array) {
+    this.hass.connection.socket!.binaryType = "arraybuffer";
+
     // eslint-disable-next-line eqeqeq
     if (this._stt_binary_handler_id == undefined) {
       return;
