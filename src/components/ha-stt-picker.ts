@@ -19,6 +19,8 @@ import type { HaSelect } from "./ha-select";
 
 const NONE = "__NONE_OPTION__";
 
+const NAME_MAP = { cloud: "Home Assistant Cloud" };
+
 @customElement("ha-stt-picker")
 export class HaSTTPicker extends LitElement {
   @property() public value?: string;
@@ -64,12 +66,18 @@ export class HaSTTPicker extends LitElement {
             </ha-list-item>`
           : nothing}
         ${this._engines.map((engine) => {
-          const stateObj = this.hass!.states[engine.engine_id];
+          let label = engine.engine_id;
+          if (engine.engine_id.includes(".")) {
+            const stateObj = this.hass!.states[engine.engine_id];
+            label = stateObj ? computeStateName(stateObj) : engine.engine_id;
+          } else if (engine.engine_id in NAME_MAP) {
+            label = NAME_MAP[engine.engine_id];
+          }
           return html`<ha-list-item
             .value=${engine.engine_id}
             .disabled=${engine.supported_languages?.length === 0}
           >
-            ${stateObj ? computeStateName(stateObj) : engine.engine_id}
+            ${label}
           </ha-list-item>`;
         })}
       </ha-select>
@@ -98,6 +106,10 @@ export class HaSTTPicker extends LitElement {
       (engine) => engine.engine_id === this.value
     );
 
+    fireEvent(this, "supported-languages-changed", {
+      value: selectedEngine?.supported_languages,
+    });
+
     if (!selectedEngine || selectedEngine.supported_languages?.length === 0) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
@@ -124,6 +136,10 @@ export class HaSTTPicker extends LitElement {
     }
     this.value = target.value === NONE ? undefined : target.value;
     fireEvent(this, "value-changed", { value: this.value });
+    fireEvent(this, "supported-languages-changed", {
+      value: this._engines!.find((engine) => engine.engine_id === this.value)
+        ?.supported_languages,
+    });
   }
 }
 
