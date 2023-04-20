@@ -12,7 +12,7 @@ import {
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "./assist-pipeline-detail/assist-pipeline-detail-conversation";
-import "./assist-pipeline-detail/assist-pipeline-detail-general";
+import "./assist-pipeline-detail/assist-pipeline-detail-config";
 import "./assist-pipeline-detail/assist-pipeline-detail-stt";
 import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./debug/assist-render-pipeline-events";
@@ -81,13 +81,13 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         )}
       >
         <div>
-          <assist-pipeline-detail-general
+          <assist-pipeline-detail-config
             .hass=${this.hass}
             .data=${this._data}
             .error=${this._error}
             .supportedLanguages=${this._supportedLanguages}
             @value-changed=${this._valueChanged}
-          ></assist-pipeline-detail-general>
+          ></assist-pipeline-detail-config>
           <assist-pipeline-detail-conversation
             .hass=${this.hass}
             .data=${this._data}
@@ -210,7 +210,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        assist-pipeline-detail-general,
+        assist-pipeline-detail-config,
         assist-pipeline-detail-conversation,
         assist-pipeline-detail-stt,
         assist-pipeline-detail-tts {

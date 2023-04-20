@@ -5,40 +5,37 @@ import { SchemaUnion } from "../../../../components/ha-form/types";
 import { AssistPipeline } from "../../../../data/assist_pipeline";
 import { HomeAssistant } from "../../../../types";
 
-@customElement("assist-pipeline-detail-tts")
-export class AssistPipelineDetailTTS extends LitElement {
+@customElement("assist-pipeline-detail-config")
+export class AssistPipelineDetailConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public data?: Partial<AssistPipeline>;
 
   @property() public error?: Record<string, string>;
 
+  @property() public supportedLanguages?: string[];
+
   private _schema = memoizeOne(
-    (language?: string) =>
+    (supportedLanguages?: string[]) =>
       [
         {
           name: "",
           type: "grid",
           schema: [
             {
-              name: "tts_engine",
+              name: "name",
+              required: true,
               selector: {
-                tts: {
-                  language,
+                text: {},
+              },
+            },
+            {
+              name: "language",
+              required: true,
+              selector: {
+                language: {
+                  languages: supportedLanguages ?? [],
                 },
-              },
-            },
-
-            {
-              name: "tts_language",
-              selector: {
-                text: {},
-              },
-            },
-            {
-              name: "tts_voice",
-              selector: {
-                text: {},
               },
             },
           ] as const,
@@ -57,11 +54,11 @@ export class AssistPipelineDetailTTS extends LitElement {
     return html`
       <div class="section">
         <div class="intro">
-          <h3>Text to speech</h3>
-          <p>An engine does something that needs some explanation.</p>
+          <h3>Configuration</h3>
+          <p>Configuration for your assistant</p>
         </div>
         <ha-form
-          .schema=${this._schema(this.data?.language)}
+          .schema=${this._schema(this.supportedLanguages)}
           .data=${this.data}
           .error=${this.error}
           .hass=${this.hass}
@@ -104,6 +101,6 @@ export class AssistPipelineDetailTTS extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "assist-pipeline-detail-tts": AssistPipelineDetailTTS;
+    "assist-pipeline-detail-config": AssistPipelineDetailConfig;
   }
 }

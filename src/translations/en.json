@@ -2030,10 +2030,13 @@
                 "form": {
                   "name": "Name",
                   "conversation_engine": "Conversation agent",
-                  "conversation_language": "Conversation language",
+                  "conversation_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "language": "Language",
                   "stt_engine": "Speech to text",
-                  "tts_engine": "Text to speech"
+                  "stt_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
+                  "tts_engine": "Text to speech",
+                  "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
+                  "tts_voice": "Voice"
                 }
               }
             }
