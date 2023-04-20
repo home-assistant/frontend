@@ -4,11 +4,12 @@ import {
   html,
   LitElement,
   nothing,
-  PropertyValueMap,
+  PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { debounce } from "../common/util/debounce";
 import { Agent, listAgents } from "../data/conversation";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
@@ -20,6 +21,8 @@ const NONE = "__NONE_OPTION__";
 export class HaConversationAgentPicker extends LitElement {
   @property() public value?: string;
 
+  @property() public language?: string;
+
   @property() public label?: string;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -30,13 +33,11 @@ export class HaConversationAgentPicker extends LitElement {
 
   @state() _agents?: Agent[];
 
-  @state() _defaultAgent: string | null = null;
-
   protected render() {
     if (!this._agents) {
       return nothing;
     }
-    const value = this.value ?? (this.required ? this._defaultAgent : NONE);
+    const value = this.value ?? (this.required ? "homeassistant" : NONE);
     return html`
       <ha-select
         .label=${this.label ||
@@ -60,20 +61,41 @@ export class HaConversationAgentPicker extends LitElement {
           : nothing}
         ${this._agents.map(
           (agent) =>
-            html`<ha-list-item .value=${agent.id}>${agent.name}</ha-list-item>`
+            html`<ha-list-item
+              .value=${agent.id}
+              .disabled=${agent.language_supported === false}
+            >
+              ${agent.name}
+            </ha-list-item>`
         )}
       </ha-select>
     `;
   }
 
-  protected firstUpdated(
-    changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
-    super.firstUpdated(changedProperties);
-    listAgents(this.hass).then((agents) => {
-      this._agents = agents.agents;
-      this._defaultAgent = agents.default_agent;
-    });
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    super.willUpdate(changedProperties);
+    if (!this.hasUpdated) {
+      this._updateAgents();
+    } else if (changedProperties.has("language")) {
+      this._debouncedUpdateAgents();
+    }
+  }
+
+  private _debouncedUpdateAgents = debounce(() => this._updateAgents(), 500);
+
+  private async _updateAgents() {
+    const { agents } = await listAgents(this.hass, this.language);
+
+    this._agents = agents;
+
+    if (
+      this.value &&
+      agents.find((agent) => agent.id === this.value)?.language_supported ===
+        false
+    ) {
+      this.value = undefined;
+      fireEvent(this, "value-changed", { value: this.value });
+    }
   }
 
   static get styles(): CSSResultGroup {

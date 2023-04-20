@@ -20,10 +20,16 @@ export class HaConversationAgentSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @property({ attribute: false }) public context?: {
+    language?: string;
+  };
+
   protected render() {
     return html`<ha-conversation-agent-picker
       .hass=${this.hass}
       .value=${this.value}
+      .language=${this.selector.conversation_agent?.language ||
+      this.context?.language}
       .label=${this.label}
       .helper=${this.helper}
       .disabled=${this.disabled}

@@ -1,5 +1,5 @@
 import "@polymer/paper-item/paper-item";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -37,7 +37,9 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
         .tabs=${voiceAssistantTabs}
       >
         <div class="content">
-          <assist-pref .hass=${this.hass}> </assist-pref>
+          ${isComponentLoaded(this.hass, "assist_pipeline")
+            ? html`<assist-pref .hass=${this.hass}></assist-pref>`
+            : nothing}
           ${this.cloudStatus?.logged_in
             ? html`<cloud-alexa-pref
                   .hass=${this.hass}
