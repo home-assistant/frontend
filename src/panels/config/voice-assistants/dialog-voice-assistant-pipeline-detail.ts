@@ -132,7 +132,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (languages: string[]) =>
+    (supportedLanguages: string[]) =>
       [
         {
           name: "name",
@@ -146,7 +146,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           required: true,
           selector: {
             language: {
-              languages: languages,
+              languages: supportedLanguages,
             },
           },
         },
