@@ -192,10 +192,10 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._submitting = true;
     try {
       if (this._params!.pipeline?.id) {
-        const values: Partial<AssistPipelineMutableParams> = {
-          name: this._data!.name,
-          conversation_engine: this._data!.conversation_engine,
-          language: this._data!.language,
+        const values: AssistPipelineMutableParams = {
+          name: this._data!.name!,
+          conversation_engine: this._data!.conversation_engine!,
+          language: this._data!.language!,
           stt_engine: this._data!.stt_engine,
           tts_engine: this._data!.tts_engine,
         };
