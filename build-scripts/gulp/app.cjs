@@ -24,8 +24,7 @@ gulp.task(
     gulp.parallel(
       "gen-service-worker-app-dev",
       "gen-icons-json",
-      "gen-pages-dev",
-      "gen-index-app-dev",
+      "gen-pages-app-dev",
       "build-translations",
       "build-locale-data"
     ),
@@ -50,10 +49,6 @@ gulp.task(
     env.useRollup() ? "rollup-prod-app" : "webpack-prod-app",
     // Don't compress running tests
     ...(env.isTestBuild() ? [] : ["compress-app"]),
-    gulp.parallel(
-      "gen-pages-prod",
-      "gen-index-app-prod",
-      "gen-service-worker-app-prod"
-    )
+    gulp.parallel("gen-pages-app-prod", "gen-service-worker-app-prod")
   )
 );

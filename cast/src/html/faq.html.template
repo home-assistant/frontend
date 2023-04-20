@@ -3,7 +3,7 @@
   <head>
     <title>Home Assistant Cast - FAQ</title>
     <link rel="icon" href="/images/ha-cast-icon.png" type="image/png" />
-    <%= renderTemplate('_style_base') %>
+    <%= renderTemplate("../../../src/html/_style_base.html.template") %>
     <style>
       body {
         background-color: #e5e5e5;
@@ -35,25 +35,14 @@
     />
   </head>
   <body>
-    <%= renderTemplate('_js_base') %>
-
+    <%= renderTemplate("../../../src/html/_js_base.html.template") %>
     <script>
-      import("<%= latestLauncherJS %>");
+      <% for (const entry of latestEntryJS) { %>
+        import("<%= entry %>");
+      <% } %>
       window.latestJS = true;
     </script>
-
-    <script>
-      if (!window.latestJS) {
-        <% if (useRollup) { %>
-          _ls("/static/js/s.min.js").onload = function() {
-            System.import("<%= es5LauncherJS %>");
-          };
-        <% } else { %>
-          _ls("<%= es5LauncherJS %>");
-        <% } %>
-      }
-    </script>
-
+    <%= renderTemplate("../../../src/html/_script_load_es5.html.template") %>
     <hc-layout subtitle="FAQ">
       <style>
         a {
