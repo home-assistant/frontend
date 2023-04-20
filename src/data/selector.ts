@@ -26,6 +26,7 @@ export type Selector =
   | LegacyEntitySelector
   | FileSelector
   | IconSelector
+  | LanguageSelector
   | LocationSelector
   | MediaSelector
   | NavigationSelector
@@ -206,6 +207,13 @@ export interface IconSelector {
   icon: {
     placeholder?: string;
     fallbackPath?: string;
+  } | null;
+}
+
+export interface LanguageSelector {
+  language: {
+    languages?: string[];
+    native_name?: boolean;
   } | null;
 }
 

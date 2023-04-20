@@ -21,6 +21,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import type { HomeAssistant } from "../../../types";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
 import { brandsUrl } from "../../../util/brands-url";
+import { formatLanguageCode } from "../../../common/language/format_language";
 
 export class AssistPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -76,7 +77,9 @@ export class AssistPref extends LitElement {
                 .id=${pipeline.id}
               >
                 ${pipeline.name}
-                <span slot="secondary">${pipeline.language}</span>
+                <span slot="secondary">
+                  ${formatLanguageCode(pipeline.language, this.hass.locale)}
+                </span>
                 ${this._preferred === pipeline.id
                   ? html`<ha-svg-icon
                       slot="meta"

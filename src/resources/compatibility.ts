@@ -15,6 +15,8 @@ import "@formatjs/intl-relativetimeformat/locale-data/en";
 import "@formatjs/intl-datetimeformat/polyfill";
 import "@formatjs/intl-datetimeformat/locale-data/en";
 import "@formatjs/intl-datetimeformat/add-all-tz";
+import "@formatjs/intl-displaynames/polyfill";
+import "@formatjs/intl-displaynames/locale-data/en";
 
 // To use comlink under ES5
 import "proxy-polyfill";
