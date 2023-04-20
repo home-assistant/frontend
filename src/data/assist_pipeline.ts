@@ -6,18 +6,26 @@ import type { SpeechMetadata } from "./stt";
 export interface AssistPipeline {
   id: string;
   conversation_engine: string;
+  conversation_language: string | null;
   language: string;
   name: string;
-  stt_engine: string;
-  tts_engine: string;
+  stt_engine: string | null;
+  stt_language: string | null;
+  tts_engine: string | null;
+  tts_language: string | null;
+  tts_voice: string | null;
 }
 
 export interface AssistPipelineMutableParams {
   conversation_engine: string;
+  conversation_language?: string | null;
   language: string;
   name: string;
-  stt_engine: string;
-  tts_engine: string;
+  stt_engine?: string | null;
+  stt_language?: string | null;
+  tts_engine?: string | null;
+  tts_language?: string | null;
+  tts_voice?: string | null;
 }
 
 export interface assistRunListing {
@@ -274,7 +282,7 @@ export const createAssistPipeline = (
 export const updateAssistPipeline = (
   hass: HomeAssistant,
   pipeline_id: string,
-  pipeline: Partial<AssistPipelineMutableParams>
+  pipeline: AssistPipelineMutableParams
 ) =>
   hass.callWS<AssistPipeline>({
     type: "assist_pipeline/pipeline/update",
