@@ -10,6 +10,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { formatLanguageCode } from "../common/language/format_language";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
@@ -50,17 +51,9 @@ export class HaLanguagePicker extends LitElement {
           label: translations[lang]?.nativeName ?? lang,
         }));
       } else {
-        const languageDisplayNames =
-          Intl && "DisplayNames" in Intl
-            ? new Intl.DisplayNames(language, {
-                type: "language",
-                fallback: "code",
-              })
-            : undefined;
-
         options = languages.map((lang) => ({
           value: lang,
-          label: languageDisplayNames ? languageDisplayNames.of(lang)! : lang,
+          label: formatLanguageCode(lang, this.hass.locale),
         }));
       }
 
