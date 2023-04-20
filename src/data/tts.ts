@@ -2,7 +2,7 @@ import { HomeAssistant } from "../types";
 
 export interface TTSEngine {
   engine_id: string;
-  language_supported?: boolean;
+  supported_languages?: string[];
 }
 
 export interface TTSVoice {
