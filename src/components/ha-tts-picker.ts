@@ -1,4 +1,3 @@
-import { debounce } from "chart.js/helpers";
 import {
   css,
   CSSResultGroup,
@@ -11,6 +10,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { debounce } from "../common/util/debounce";
 import { listTTSEngines, TTSEngine } from "../data/tts";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
@@ -90,8 +90,8 @@ export class HaTTSPicker extends LitElement {
 
     if (
       this.value &&
-      !this._engines.find((engine) => engine.engine_id === this.value)
-        ?.language_supported
+      this._engines.find((engine) => engine.engine_id === this.value)
+        ?.language_supported === false
     ) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });

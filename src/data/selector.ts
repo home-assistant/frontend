@@ -89,8 +89,7 @@ export interface ColorTempSelector {
 }
 
 export interface ConversationAgentSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  conversation_agent: {} | null;
+  conversation_agent: { language?: string } | null;
 }
 
 export interface ConfigEntrySelector {
