@@ -42,6 +42,7 @@ const LOAD_ELEMENTS = {
   media: () => import("./ha-selector-media"),
   theme: () => import("./ha-selector-theme"),
   tts: () => import("./ha-selector-tts"),
+  tts_voice: () => import("./ha-selector-tts-voice"),
   location: () => import("./ha-selector-location"),
   color_temp: () => import("./ha-selector-color-temp"),
   ui_action: () => import("./ha-selector-ui-action"),

@@ -1,5 +1,5 @@
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { SchemaUnion } from "../../../../components/ha-form/types";
 import { AssistPipeline } from "../../../../data/assist_pipeline";
@@ -11,8 +11,10 @@ export class AssistPipelineDetailSTT extends LitElement {
 
   @property() public data?: Partial<AssistPipeline>;
 
+  @state() private _supportedLanguages?: string[];
+
   private _schema = memoizeOne(
-    (language?: string) =>
+    (language?: string, supportedLanguages?: string[]) =>
       [
         {
           name: "",
@@ -28,8 +30,9 @@ export class AssistPipelineDetailSTT extends LitElement {
             },
             {
               name: "stt_language",
+              required: true,
               selector: {
-                text: {},
+                language: { languages: supportedLanguages ?? [] },
               },
             },
           ] as const,
@@ -55,13 +58,18 @@ export class AssistPipelineDetailSTT extends LitElement {
           </p>
         </div>
         <ha-form
-          .schema=${this._schema(this.data?.language)}
+          .schema=${this._schema(this.data?.language, this._supportedLanguages)}
           .data=${this.data}
           .hass=${this.hass}
           .computeLabel=${this._computeLabel}
+          @supported-languages-changed=${this._supportedLanguagesChanged}
         ></ha-form>
       </div>
     `;
+  }
+
+  private _supportedLanguagesChanged(ev) {
+    this._supportedLanguages = ev.detail.value;
   }
 
   static get styles(): CSSResultGroup {

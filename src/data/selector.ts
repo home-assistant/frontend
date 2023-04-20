@@ -43,6 +43,7 @@ export type Selector =
   | ThemeSelector
   | TimeSelector
   | TTSSelector
+  | TTSVoiceSelector
   | UiActionSelector
   | UiColorSelector;
 
@@ -342,6 +343,10 @@ export interface TimeSelector {
 
 export interface TTSSelector {
   tts: { language?: string } | null;
+}
+
+export interface TTSVoiceSelector {
+  tts_voice: { engineId?: string; language?: string } | null;
 }
 
 export interface UiActionSelector {

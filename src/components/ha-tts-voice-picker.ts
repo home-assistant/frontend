@@ -10,20 +10,23 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
-import { Agent, listAgents } from "../data/conversation";
+import { listTTSVoices } from "../data/tts";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
 const NONE = "__NONE_OPTION__";
-@customElement("ha-conversation-agent-picker")
-export class HaConversationAgentPicker extends LitElement {
+
+@customElement("ha-tts-voice-picker")
+export class HaTTSVoicePicker extends LitElement {
   @property() public value?: string;
 
-  @property() public language?: string;
-
   @property() public label?: string;
+
+  @property() public engineId?: string;
+
+  @property() public language?: string;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -31,19 +34,17 @@ export class HaConversationAgentPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() _agents?: Agent[];
+  @state() _voices?: string[] | null;
 
   protected render() {
-    if (!this._agents) {
+    if (!this._voices) {
       return nothing;
     }
-    const value = this.value ?? (this.required ? "homeassistant" : NONE);
+    const value = this.value ?? (this.required ? this._voices[0] : NONE);
     return html`
       <ha-select
         .label=${this.label ||
-        this.hass!.localize(
-          "ui.components.coversation-agent-picker.conversation_agent"
-        )}
+        this.hass!.localize("ui.components.tts-voice-picker.voice")}
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}
@@ -54,19 +55,13 @@ export class HaConversationAgentPicker extends LitElement {
       >
         ${!this.required
           ? html`<ha-list-item .value=${NONE}>
-              ${this.hass!.localize(
-                "ui.components.coversation-agent-picker.none"
-              )}
+              ${this.hass!.localize("ui.components.tts-voice-picker.none")}
             </ha-list-item>`
           : nothing}
-        ${this._agents.map(
-          (agent) =>
-            html`<ha-list-item
-              .value=${agent.id}
-              .disabled=${agent.supported_languages?.length === 0}
-            >
-              ${agent.name}
-            </ha-list-item>`
+        ${this._voices.map(
+          (voice) => html`<ha-list-item .value=${voice}>
+            ${voice}
+          </ha-list-item>`
         )}
       </ha-select>
     `;
@@ -75,30 +70,31 @@ export class HaConversationAgentPicker extends LitElement {
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (!this.hasUpdated) {
-      this._updateAgents();
-    } else if (changedProperties.has("language")) {
-      this._debouncedUpdateAgents();
+      this._updateVoices();
+    } else if (
+      changedProperties.has("language") ||
+      changedProperties.has("engineId")
+    ) {
+      this._debouncedUpdateVoices();
     }
   }
 
-  private _debouncedUpdateAgents = debounce(() => this._updateAgents(), 500);
+  private _debouncedUpdateVoices = debounce(() => this._updateVoices(), 500);
 
-  private async _updateAgents() {
-    const { agents } = await listAgents(this.hass, this.language);
-
-    this._agents = agents;
+  private async _updateVoices() {
+    if (!this.engineId || !this.language) {
+      this._voices = undefined;
+      return;
+    }
+    this._voices = (
+      await listTTSVoices(this.hass, this.engineId, this.language)
+    ).voices;
 
     if (!this.value) {
       return;
     }
 
-    const selectedAgent = agents.find((agent) => agent.id === this.value);
-
-    fireEvent(this, "supported-languages-changed", {
-      value: selectedAgent?.supported_languages,
-    });
-
-    if (!selectedAgent || selectedAgent.supported_languages?.length === 0) {
+    if (!this._voices || !this._voices.includes(this.value)) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
     }
@@ -124,18 +120,11 @@ export class HaConversationAgentPicker extends LitElement {
     }
     this.value = target.value === NONE ? undefined : target.value;
     fireEvent(this, "value-changed", { value: this.value });
-    fireEvent(this, "supported-languages-changed", {
-      value: this._agents!.find((agent) => agent.id === this.value)
-        ?.supported_languages,
-    });
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-conversation-agent-picker": HaConversationAgentPicker;
-  }
-  interface HASSDomEvents {
-    "supported-languages-changed": { value: string[] | undefined };
+    "ha-tts-voice-picker": HaTTSVoicePicker;
   }
 }

@@ -42,7 +42,7 @@ export const listTTSVoices = (
   hass: HomeAssistant,
   engine_id: string,
   language: string
-): Promise<{ voices: TTSVoice[] }> =>
+): Promise<{ voices: string[] | null }> =>
   hass.callWS({
     type: "tts/engine/voices",
     engine_id,
