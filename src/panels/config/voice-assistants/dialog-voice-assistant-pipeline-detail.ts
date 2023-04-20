@@ -165,12 +165,12 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           name: data.name!,
           language: data.language!,
           conversation_engine: data.conversation_engine!,
-          conversation_language: data.conversation_language ?? null,
-          stt_engine: data.stt_engine ?? null,
-          stt_language: data.stt_language ?? null,
-          tts_engine: data.tts_engine ?? null,
-          tts_language: data.tts_language ?? null,
-          tts_voice: data.tts_voice ?? null,
+          conversation_language: data.conversation_language,
+          stt_engine: data.stt_engine,
+          stt_language: data.stt_language,
+          tts_engine: data.tts_engine,
+          tts_language: data.tts_language,
+          tts_voice: data.tts_voice,
         };
         await this._params!.updatePipeline(values);
       } else {
