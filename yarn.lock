@@ -1582,6 +1582,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formatjs/intl-displaynames@npm:6.3.1":
+  version: 6.3.1
+  resolution: "@formatjs/intl-displaynames@npm:6.3.1"
+  dependencies:
+    "@formatjs/ecma402-abstract": 1.14.3
+    "@formatjs/intl-localematcher": 0.2.32
+    tslib: ^2.4.0
+  checksum: a8f43cda125adf8ac34d890f6b2c8b77525d5dd1452fecc5053b16dc40142d5b00b4f0dfc26c73fdf03b38e84ed2936fe4eb453414f611f79e260374f8afb642
+  languageName: node
+  linkType: hard
+
 "@formatjs/intl-enumerator@npm:1.2.1":
   version: 1.2.1
   resolution: "@formatjs/intl-enumerator@npm:1.2.1"
@@ -9448,6 +9459,7 @@ __metadata:
     "@codemirror/view": 6.9.5
     "@egjs/hammerjs": 2.0.17
     "@formatjs/intl-datetimeformat": 6.5.1
+    "@formatjs/intl-displaynames": 6.3.1
     "@formatjs/intl-getcanonicallocales": 2.1.0
     "@formatjs/intl-locale": 3.1.1
     "@formatjs/intl-numberformat": 8.3.5

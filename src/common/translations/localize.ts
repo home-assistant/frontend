@@ -2,6 +2,7 @@ import { shouldPolyfill as shouldPolyfillLocale } from "@formatjs/intl-locale/li
 import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-pluralrules/lib/should-polyfill";
 import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-relativetimeformat/lib/should-polyfill";
 import { shouldPolyfill as shouldPolyfillDateTime } from "@formatjs/intl-datetimeformat/lib/should-polyfill";
+import { shouldPolyfill as shouldPolyfillDisplayName } from "@formatjs/intl-displaynames/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
 import { Resources, TranslationDict } from "../../types";
 import { getLocalLanguage } from "../../util/common-translation";
@@ -82,6 +83,10 @@ if (__BUILD__ === "latest") {
   if (shouldPolyfillDateTime(locale)) {
     polyfills.push(import("@formatjs/intl-datetimeformat/polyfill"));
     polyfills.push(import("@formatjs/intl-datetimeformat/add-all-tz"));
+  }
+  if (shouldPolyfillDisplayName(locale)) {
+    polyfills.push(import("@formatjs/intl-displaynames/polyfill"));
+    polyfills.push(import("@formatjs/intl-displaynames/locale-data/en"));
   }
 }
 
@@ -215,6 +220,17 @@ export const loadPolyfillLocales = async (language: string) => {
       );
       // @ts-ignore
       Intl.DateTimeFormat.__addLocaleData(await result.json());
+    }
+    if (
+      Intl.DisplayNames &&
+      // @ts-ignore
+      typeof Intl.DisplayNames.__addLocaleData === "function"
+    ) {
+      const result = await fetch(
+        `/static/locale-data/intl-displaynames/${language}.json`
+      );
+      // @ts-ignore
+      Intl.DisplayNames.__addLocaleData(await result.json());
     }
   } catch (e) {
     // Ignore
