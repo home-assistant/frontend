@@ -346,7 +346,7 @@ export class AssistPipelineRunDebug extends LitElement {
         flex-wrap: wrap;
         margin: 0 16px 16px;
       }
-      ha-pipeline-picker {
+      ha-assist-pipeline-picker {
         display: block;
         width: 100%;
         margin-bottom: 16px;
