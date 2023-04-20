@@ -160,12 +160,17 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._submitting = true;
     try {
       if (this._params!.pipeline?.id) {
+        const data = this._data!;
         const values: AssistPipelineMutableParams = {
-          name: this._data!.name!,
-          conversation_engine: this._data!.conversation_engine!,
-          language: this._data!.language!,
-          stt_engine: this._data!.stt_engine,
-          tts_engine: this._data!.tts_engine,
+          name: data.name!,
+          language: data.language!,
+          conversation_engine: data.conversation_engine!,
+          conversation_language: data.conversation_language,
+          stt_engine: data.stt_engine,
+          stt_language: data.stt_language,
+          tts_engine: data.tts_engine,
+          tts_language: data.tts_language,
+          tts_voice: data.tts_voice,
         };
         await this._params!.updatePipeline(values);
       } else {
