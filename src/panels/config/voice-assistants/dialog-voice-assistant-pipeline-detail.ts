@@ -80,30 +80,29 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
               )
         )}
       >
-        <div>
+        <div class="content">
+          ${this._error
+            ? html`<ha-alert alert-type="error"> ${this._error} </ha-alert>`
+            : nothing}
           <assist-pipeline-detail-config
             .hass=${this.hass}
             .data=${this._data}
-            .error=${this._error}
             .supportedLanguages=${this._supportedLanguages}
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-config>
           <assist-pipeline-detail-conversation
             .hass=${this.hass}
             .data=${this._data}
-            .error=${this._error}
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-conversation>
           <assist-pipeline-detail-stt
             .hass=${this.hass}
             .data=${this._data}
-            .error=${this._error}
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-stt>
           <assist-pipeline-detail-tts
             .hass=${this.hass}
             .data=${this._data}
-            .error=${this._error}
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-tts>
         </div>
@@ -180,7 +179,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       }
       this.closeDialog();
     } catch (err: any) {
-      this._error = { base: err?.message || "Unknown error" };
+      this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
     }
@@ -192,7 +191,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       await this._params!.setPipelinePreferred();
       this._preferred = true;
     } catch (err: any) {
-      this._error = { base: err?.message || "Unknown error" };
+      this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
     }
@@ -205,7 +204,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         this.closeDialog();
       }
     } catch (err: any) {
-      this._error = { base: err?.message || "Unknown error" };
+      this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
     }
@@ -217,9 +216,12 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       css`
         assist-pipeline-detail-config,
         assist-pipeline-detail-conversation,
-        assist-pipeline-detail-stt,
-        assist-pipeline-detail-tts {
+        assist-pipeline-detail-stt {
           margin-bottom: 16px;
+          display: block;
+        }
+        ha-alert {
+          margin-bottom: 8px;
           display: block;
         }
       `,
