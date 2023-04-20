@@ -2030,6 +2030,7 @@
                 "form": {
                   "name": "Name",
                   "conversation_engine": "Conversation agent",
+                  "conversation_language": "Conversation language",
                   "language": "Language",
                   "stt_engine": "Speech to text",
                   "tts_engine": "Text to speech"

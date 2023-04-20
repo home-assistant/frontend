@@ -1,11 +1,9 @@
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
-import { SchemaUnion } from "../../../components/ha-form/types";
 import {
   AssistPipeline,
   AssistPipelineMutableParams,
@@ -13,6 +11,10 @@ import {
 } from "../../../data/assist_pipeline";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import "./assist-pipeline-detail/assist-pipeline-detail-conversation";
+import "./assist-pipeline-detail/assist-pipeline-detail-general";
+import "./assist-pipeline-detail/assist-pipeline-detail-stt";
+import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./debug/assist-render-pipeline-events";
 import { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
 
@@ -79,14 +81,31 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         )}
       >
         <div>
-          <ha-form
-            .schema=${this._schema(this._supportedLanguages)}
-            .data=${this._data}
+          <assist-pipeline-detail-general
             .hass=${this.hass}
+            .data=${this._data}
             .error=${this._error}
-            .computeLabel=${this._computeLabel}
+            .supportedLanguages=${this._supportedLanguages}
             @value-changed=${this._valueChanged}
-          ></ha-form>
+          ></assist-pipeline-detail-general>
+          <assist-pipeline-detail-conversation
+            .hass=${this.hass}
+            .data=${this._data}
+            .error=${this._error}
+            @value-changed=${this._valueChanged}
+          ></assist-pipeline-detail-conversation>
+          <assist-pipeline-detail-stt
+            .hass=${this.hass}
+            .data=${this._data}
+            .error=${this._error}
+            @value-changed=${this._valueChanged}
+          ></assist-pipeline-detail-stt>
+          <assist-pipeline-detail-tts
+            .hass=${this.hass}
+            .data=${this._data}
+            .error=${this._error}
+            @value-changed=${this._valueChanged}
+          ></assist-pipeline-detail-tts>
         </div>
         ${this._params.pipeline?.id
           ? html`
@@ -130,57 +149,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       </ha-dialog>
     `;
   }
-
-  private _schema = memoizeOne(
-    (supportedLanguages: string[]) =>
-      [
-        {
-          name: "name",
-          required: true,
-          selector: {
-            text: {},
-          },
-        },
-        {
-          name: "language",
-          required: true,
-          selector: {
-            language: {
-              languages: supportedLanguages,
-            },
-          },
-        },
-        {
-          name: "conversation_engine",
-          required: true,
-          selector: {
-            conversation_agent: {},
-          },
-          context: { language: "language" },
-        },
-        {
-          name: "stt_engine",
-          selector: {
-            stt: {},
-          },
-          context: { language: "language" },
-        },
-        {
-          name: "tts_engine",
-          selector: {
-            tts: {},
-          },
-          context: { language: "language" },
-        },
-      ] as const
-  );
-
-  private _computeLabel = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.voice_assistants.assistants.pipeline.detail.form.${schema.name}`
-    );
 
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
@@ -239,7 +207,18 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyleDialog, css``];
+    return [
+      haStyleDialog,
+      css`
+        assist-pipeline-detail-general,
+        assist-pipeline-detail-conversation,
+        assist-pipeline-detail-stt,
+        assist-pipeline-detail-tts {
+          margin-bottom: 16px;
+          display: block;
+        }
+      `,
+    ];
   }
 }
 
