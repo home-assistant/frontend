@@ -11,8 +11,6 @@ export class AssistPipelineDetailConfig extends LitElement {
 
   @property() public data?: Partial<AssistPipeline>;
 
-  @property() public error?: Record<string, string>;
-
   @property() public supportedLanguages?: string[];
 
   private _schema = memoizeOne(
@@ -60,7 +58,6 @@ export class AssistPipelineDetailConfig extends LitElement {
         <ha-form
           .schema=${this._schema(this.supportedLanguages)}
           .data=${this.data}
-          .error=${this.error}
           .hass=${this.hass}
           .computeLabel=${this._computeLabel}
         ></ha-form>
