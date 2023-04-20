@@ -1,5 +1,5 @@
 export class AudioRecorder {
-  public active = false;
+  private _active = false;
 
   private _callback: (data: Int16Array) => void;
 
@@ -9,6 +9,10 @@ export class AudioRecorder {
 
   constructor(callback: (data: Int16Array) => void) {
     this._callback = callback;
+  }
+
+  public get active() {
+    return this._active;
   }
 
   public get sampleRate() {
@@ -24,7 +28,7 @@ export class AudioRecorder {
   }
 
   public async start() {
-    this.active = true;
+    this._active = true;
 
     if (!this._context || !this._stream) {
       await this._createContext();
@@ -34,7 +38,7 @@ export class AudioRecorder {
     }
 
     if (!this._context || !this._stream) {
-      this.active = false;
+      this._active = false;
       return;
     }
 
@@ -43,7 +47,7 @@ export class AudioRecorder {
 
     source.connect(recorder).connect(this._context.destination);
     recorder.port.onmessage = (e) => {
-      if (!this.active) {
+      if (!this._active) {
         return;
       }
       this._callback(e.data);
@@ -51,7 +55,7 @@ export class AudioRecorder {
   }
 
   public async stop() {
-    this.active = false;
+    this._active = false;
     if (this._stream) {
       this._stream.getTracks()[0].enabled = false;
     }
@@ -59,7 +63,7 @@ export class AudioRecorder {
   }
 
   public close() {
-    this.active = false;
+    this._active = false;
     this._stream?.getTracks()[0].stop();
     this._context?.close();
     this._stream = undefined;
