@@ -1,4 +1,3 @@
-/* eslint-disable lit/prefer-static-styles */
 import "@material/mwc-button/mwc-button";
 import {
   mdiClose,
@@ -22,11 +21,17 @@ import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
-import { runAssistPipeline } from "../../data/assist_pipeline";
+import {
+  AssistPipeline,
+  getAssistPipeline,
+  runAssistPipeline,
+} from "../../data/assist_pipeline";
 import { AgentInfo, getAgentInfo } from "../../data/conversation";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { AudioRecorder } from "../../util/audio-recorder";
 import { documentationUrl } from "../../util/documentation-url";
+import { showAlertDialog } from "../generic/show-dialog-box";
 
 interface Message {
   who: string;
@@ -42,9 +47,9 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _listening = false;
-
   @LocalStorage("AssistPipelineId", true, false) private _pipelineId?: string;
+
+  @state() private _pipeline?: AssistPipeline;
 
   @state() private _agentInfo?: AgentInfo;
 
@@ -56,15 +61,20 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _conversationId: string | null = null;
 
+  private _audioRecorder?: AudioRecorder;
+
+  private _audioBuffer?: Int16Array[];
+
+  private _stt_binary_handler_id?: number | null;
+
   public async showDialog(): Promise<void> {
     this._conversation = [
       {
         who: "hass",
-        text: "",
+        text: this.hass.localize("ui.dialogs.voice_command.how_can_i_help"),
       },
     ];
     this._opened = true;
-    this._agentInfo = await getAgentInfo(this.hass);
     await this.updateComplete;
     this._scrollMessagesBottom();
   }
@@ -74,6 +84,8 @@ export class HaVoiceCommandDialog extends LitElement {
     this._agentInfo = undefined;
     this._conversation = undefined;
     this._conversationId = null;
+    this._audioRecorder?.close();
+    this._audioRecorder = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -81,7 +93,7 @@ export class HaVoiceCommandDialog extends LitElement {
     if (!this._opened) {
       return nothing;
     }
-    const pipelineSupportsSTT = false;
+    const supportsSTT = this._pipeline?.stt_engine && window.isSecureContext;
     return html`
       <ha-dialog
         open
@@ -146,9 +158,9 @@ export class HaVoiceCommandDialog extends LitElement {
                     >
                     </ha-icon-button>
                   `
-                : pipelineSupportsSTT
+                : supportsSTT
                 ? html`
-                    ${this._listening
+                    ${this._audioRecorder?.active
                       ? html`
                           <div class="bouncer">
                             <div class="double-bounce1"></div>
@@ -185,14 +197,18 @@ export class HaVoiceCommandDialog extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    this._conversation = [
-      {
-        who: "hass",
-        text: this.hass.localize("ui.dialogs.voice_command.how_can_i_help"),
-      },
-    ];
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (!this.hasUpdated || changedProperties.has("_pipelineId")) {
+      this._getPipeline();
+    }
+  }
+
+  private async _getPipeline() {
+    this._pipeline = await getAssistPipeline(this.hass, this._pipelineId);
+    this._agentInfo = await getAgentInfo(
+      this.hass,
+      this._pipeline.conversation_engine
+    );
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -241,20 +257,23 @@ export class HaVoiceCommandDialog extends LitElement {
     // To make sure the answer is placed at the right user text, we add it before we process it
     this._addMessage(message);
     try {
-      await runAssistPipeline(
+      const unsub = await runAssistPipeline(
         this.hass,
-        (updatedRun) => {
-          const plain =
-            updatedRun.intent?.intent_output?.response.speech?.plain;
-          if (plain) {
-            message.text = plain.speech;
-            if (
-              updatedRun.intent?.intent_output?.conversation_id !== undefined
-            ) {
-              this._conversationId =
-                updatedRun.intent?.intent_output?.conversation_id;
+        (event) => {
+          if (event.type === "intent-end") {
+            this._conversationId = event.data.intent_output.conversation_id;
+            const plain = event.data.intent_output.response.speech?.plain;
+            if (plain) {
+              message.text = plain.speech;
             }
             this.requestUpdate("_conversation");
+            unsub();
+          }
+          if (event.type === "error") {
+            message.text = event.data.message;
+            message.error = true;
+            this.requestUpdate("_conversation");
+            unsub();
           }
         },
         {
@@ -272,20 +291,143 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  private _toggleListening() {
-    if (!this._listening) {
-      this._startListening();
+  private async _toggleListening() {
+    if (!this._audioRecorder?.active) {
+      await this._startListening();
     } else {
-      this._stopListening();
+      await this._stopListening();
     }
   }
 
-  private _stopListening() {}
+  private async _startListening() {
+    if (!this._audioRecorder) {
+      this._audioRecorder = new AudioRecorder((audio) => {
+        if (this._audioBuffer) {
+          this._audioBuffer.push(audio);
+        } else {
+          this._sendAudioChunk(audio);
+        }
+      });
+    }
+    this._audioRecorder.start();
+    const userMessage: Message = {
+      who: "user",
+      text: "…",
+    };
+    const hassMessage: Message = {
+      who: "hass",
+      text: "…",
+    };
+    // To make sure the answer is placed at the right user text, we add it before we process it
+    this._addMessage(userMessage);
+    this.requestUpdate("_audioRecorder");
+    this.hass.connection.socket!.binaryType = "arraybuffer";
+    try {
+      const unsub = await runAssistPipeline(
+        this.hass,
+        (event) => {
+          if (event.type === "run-start") {
+            this._stt_binary_handler_id =
+              event.data.runner_data.stt_binary_handler_id;
+          }
 
-  private _startListening() {}
+          // When we start STT stage, the WS has a binary handler
+          if (event.type === "stt-start" && this._audioBuffer) {
+            // Send the buffer over the WS to the STT engine.
+            for (const buffer of this._audioBuffer) {
+              this._sendAudioChunk(buffer);
+            }
+            this._audioBuffer = undefined;
+          }
+
+          // Stop recording if the server is done with STT stage
+          if (event.type === "stt-end" && this._audioRecorder?.active) {
+            this._stopListening();
+            userMessage.text = event.data.stt_output.text;
+            this.requestUpdate("_conversation");
+            // To make sure the answer is placed at the right user text, we add it before we process it
+            this._addMessage(hassMessage);
+          }
+
+          if (event.type === "intent-end") {
+            this._conversationId = event.data.intent_output.conversation_id;
+            const plain = event.data.intent_output.response.speech?.plain;
+            if (plain) {
+              hassMessage.text = plain.speech;
+            }
+            this.requestUpdate("_conversation");
+          }
+
+          if (event.type === "tts-end") {
+            const url = event.data.tts_output.url;
+            const audio = new Audio(url);
+            audio.play();
+          }
+
+          if (event.type === "run-end") {
+            this._stt_binary_handler_id = undefined;
+            unsub();
+          }
+
+          if (event.type === "error") {
+            hassMessage.text = event.data.message;
+            hassMessage.error = true;
+            this.requestUpdate("_conversation");
+            unsub();
+          }
+        },
+        {
+          start_stage: "stt",
+          end_stage: "tts",
+          input: { sample_rate: this._audioRecorder.sampleRate! },
+          pipeline: this._pipelineId,
+          conversation_id: this._conversationId,
+        }
+      );
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        title: "Error starting pipeline",
+        text: err.message || err,
+      });
+      this._audioRecorder?.stop();
+    }
+  }
+
+  private async _stopListening() {
+    await this._audioRecorder?.stop();
+    this.requestUpdate("_audioRecorder");
+    // We're currently STTing, so finish audio
+    // if (run?.stage === "stt" && run.stt!.done === false) {
+    if (this._audioBuffer) {
+      for (const chunk of this._audioBuffer) {
+        this._sendAudioChunk(chunk);
+      }
+    }
+    // Send empty message to indicate we're done streaming.
+    this._sendAudioChunk(new Int16Array());
+    // }
+    this._audioBuffer = undefined;
+  }
+
+  private _sendAudioChunk(chunk: Int16Array) {
+    // eslint-disable-next-line eqeqeq
+    if (this._stt_binary_handler_id == undefined) {
+      return;
+    }
+    // Turn into 8 bit so we can prefix our handler ID.
+    const data = new Uint8Array(1 + chunk.length * 2);
+    data[0] = this._stt_binary_handler_id;
+    data.set(new Uint8Array(chunk.buffer), 1);
+
+    this.hass.connection.socket!.send(data);
+  }
 
   private _scrollMessagesBottom() {
-    this._scrollContainer.scrollTo(0, 99999);
+    const scrollContainer = this._scrollContainer;
+    if (!scrollContainer) {
+      return;
+    }
+    scrollContainer.scrollTo(0, 99999);
   }
 
   private _computeMessageClasses(message: Message) {
@@ -412,10 +554,6 @@ export class HaVoiceCommandDialog extends LitElement {
         .input {
           margin-left: 0;
           margin-right: 0;
-        }
-
-        .interimTranscript {
-          color: var(--secondary-text-color);
         }
 
         .bouncer {
