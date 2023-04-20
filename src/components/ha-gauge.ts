@@ -211,6 +211,7 @@ export class Gauge extends LitElement {
         font-size: 50px;
         fill: var(--primary-text-color);
         text-anchor: middle;
+        direction: ltr;
       }
     `;
   }
