@@ -291,11 +291,11 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  private async _toggleListening() {
+  private _toggleListening() {
     if (!this._audioRecorder?.active) {
-      await this._startListening();
+      this._startListening();
     } else {
-      await this._stopListening();
+      this._stopListening();
     }
   }
 
@@ -309,18 +309,20 @@ export class HaVoiceCommandDialog extends LitElement {
         }
       });
     }
-    this._audioRecorder.start();
+    this._audioBuffer = [];
     const userMessage: Message = {
       who: "user",
       text: "…",
     };
+    this._audioRecorder.start().then(() => {
+      this._addMessage(userMessage);
+      this.requestUpdate("_audioRecorder");
+    });
     const hassMessage: Message = {
       who: "hass",
       text: "…",
     };
     // To make sure the answer is placed at the right user text, we add it before we process it
-    this._addMessage(userMessage);
-    this.requestUpdate("_audioRecorder");
     try {
       const unsub = await runAssistPipeline(
         this.hass,
@@ -340,7 +342,7 @@ export class HaVoiceCommandDialog extends LitElement {
           }
 
           // Stop recording if the server is done with STT stage
-          if (event.type === "stt-end" && this._audioRecorder?.active) {
+          if (event.type === "stt-end") {
             this._stt_binary_handler_id = undefined;
             this._stopListening();
             userMessage.text = event.data.stt_output.text;
@@ -399,8 +401,8 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  private async _stopListening() {
-    await this._audioRecorder?.stop();
+  private _stopListening() {
+    this._audioRecorder?.stop();
     this.requestUpdate("_audioRecorder");
     // We're currently STTing, so finish audio
     if (this._stt_binary_handler_id) {
