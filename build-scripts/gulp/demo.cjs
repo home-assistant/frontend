@@ -21,7 +21,7 @@ gulp.task(
     "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-json",
-      "gen-index-demo-dev",
+      "gen-pages-demo-dev",
       "build-translations",
       "build-locale-data"
     ),
@@ -42,6 +42,6 @@ gulp.task(
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-demo",
     env.useRollup() ? "rollup-prod-demo" : "webpack-prod-demo",
-    "gen-index-demo-prod"
+    "gen-pages-demo-prod"
   )
 );
