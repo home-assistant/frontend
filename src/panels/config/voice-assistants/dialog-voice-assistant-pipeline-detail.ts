@@ -146,7 +146,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           required: true,
           selector: {
             language: {
-              supported_languages: languages,
+              languages: languages,
             },
           },
         },

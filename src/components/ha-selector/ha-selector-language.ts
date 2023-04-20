@@ -27,7 +27,8 @@ export class HaLanguageSelector extends LitElement {
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
-        .supportedLanguages=${this.selector.language?.supported_languages}
+        .languages=${this.selector.language?.languages}
+        .nativeName=${Boolean(this.selector?.language?.native_name)}
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-language-picker>

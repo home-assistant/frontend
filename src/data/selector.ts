@@ -211,7 +211,10 @@ export interface IconSelector {
 }
 
 export interface LanguageSelector {
-  language: { supported_languages?: string[] } | null;
+  language: {
+    languages?: string[];
+    native_name?: boolean;
+  } | null;
 }
 
 export interface LocationSelector {

@@ -23,7 +23,7 @@ export class HaLanguagePicker extends LitElement {
 
   @property() public label?: string;
 
-  @property() public supportedLanguages?: string[];
+  @property() public languages?: string[];
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -78,7 +78,7 @@ export class HaLanguagePicker extends LitElement {
     const value = this.value;
 
     const languageOptions = this._getLanguagesOptions(
-      this.supportedLanguages ?? this._defaultLanguages,
+      this.languages ?? this._defaultLanguages,
       this.hass.locale.language,
       this.nativeName
     );

@@ -4,7 +4,13 @@ import { FrontendLocaleData } from "../../data/translation";
 export const formatLanguageCode = (
   languageCode: string,
   locale: FrontendLocaleData
-) => formatLanguageCodeMem(locale)?.of(languageCode) ?? languageCode;
+) => {
+  try {
+    return formatLanguageCodeMem(locale)?.of(languageCode) ?? languageCode;
+  } catch {
+    return languageCode;
+  }
+};
 
 const formatLanguageCodeMem = memoizeOne((locale: FrontendLocaleData) =>
   Intl && "DisplayNames" in Intl
