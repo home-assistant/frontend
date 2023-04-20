@@ -569,6 +569,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
           line-height: 24px;
           letter-spacing: 0.1px;
           margin: 0;
+          direction: ltr;
         }
 
         .color-temp {
