@@ -50,8 +50,11 @@ export class AssistPipelineDetailSTT extends LitElement {
     return html`
       <div class="section">
         <div class="intro">
-          <h3>Speech to text</h3>
-          <p>An engine does something that needs some explanation.</p>
+          <h3>Speech-to-text</h3>
+          <p>
+            When you are using the pipeline as a voice assistant, the
+            speech-to-text engine turns your voice command into text.
+          </p>
         </div>
         <ha-form
           .schema=${this._schema(this.data?.language)}

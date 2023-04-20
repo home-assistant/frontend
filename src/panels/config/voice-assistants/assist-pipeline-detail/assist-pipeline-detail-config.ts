@@ -55,7 +55,7 @@ export class AssistPipelineDetailConfig extends LitElement {
       <div class="section">
         <div class="intro">
           <h3>Configuration</h3>
-          <p>Configuration for your assistant</p>
+          <p>Main configuration of your assistant</p>
         </div>
         <ha-form
           .schema=${this._schema(this.supportedLanguages)}

@@ -53,7 +53,8 @@ export class AssistPipelineDetailConversation extends LitElement {
         <div class="intro">
           <h3>Conversation agent</h3>
           <p>
-            A conversation agent does something that needs some explanation.
+            The conversation agent is the brains of your voice assistant and
+            will process the incoming commands.
           </p>
         </div>
         <ha-form

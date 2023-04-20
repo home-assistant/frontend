@@ -57,8 +57,12 @@ export class AssistPipelineDetailTTS extends LitElement {
     return html`
       <div class="section">
         <div class="intro">
-          <h3>Text to speech</h3>
-          <p>An engine does something that needs some explanation.</p>
+          <h3>Text-to-speech</h3>
+          <p>
+            When you are using the pipeline as a voice assistant, the
+            text-to-speech engine turns the conversation text responses into
+            audio.
+          </p>
         </div>
         <ha-form
           .schema=${this._schema(this.data?.language)}
