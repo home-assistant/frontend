@@ -417,6 +417,10 @@
         "tts": "Text to Speech",
         "none": "None"
       },
+      "tts-voice-picker": {
+        "voice": "Voice",
+        "none": "None"
+      },
       "user-picker": {
         "no_user": "No user",
         "add_user": "Add user",

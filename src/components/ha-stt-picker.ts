@@ -98,6 +98,10 @@ export class HaSTTPicker extends LitElement {
       (engine) => engine.engine_id === this.value
     );
 
+    fireEvent(this, "supported-languages-changed", {
+      value: selectedEngine?.supported_languages,
+    });
+
     if (!selectedEngine || selectedEngine.supported_languages?.length === 0) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
@@ -124,6 +128,10 @@ export class HaSTTPicker extends LitElement {
     }
     this.value = target.value === NONE ? undefined : target.value;
     fireEvent(this, "value-changed", { value: this.value });
+    fireEvent(this, "supported-languages-changed", {
+      value: this._engines!.find((engine) => engine.engine_id === this.value)
+        ?.supported_languages,
+    });
   }
 }
 

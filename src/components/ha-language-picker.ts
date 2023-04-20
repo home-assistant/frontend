@@ -3,8 +3,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
+  nothing,
   PropertyValues,
-  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -74,7 +74,7 @@ export class HaLanguagePicker extends LitElement {
     );
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     const value = this.value;
 
     const languageOptions = this._getLanguagesOptions(
@@ -82,6 +82,10 @@ export class HaLanguagePicker extends LitElement {
       this.hass.locale.language,
       this.nativeName
     );
+
+    if (languageOptions.length === 0) {
+      return nothing;
+    }
 
     return html`
       <ha-select

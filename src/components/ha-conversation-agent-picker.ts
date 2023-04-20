@@ -94,6 +94,10 @@ export class HaConversationAgentPicker extends LitElement {
 
     const selectedAgent = agents.find((agent) => agent.id === this.value);
 
+    fireEvent(this, "supported-languages-changed", {
+      value: selectedAgent?.supported_languages,
+    });
+
     if (!selectedAgent || selectedAgent.supported_languages?.length === 0) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
@@ -120,11 +124,18 @@ export class HaConversationAgentPicker extends LitElement {
     }
     this.value = target.value === NONE ? undefined : target.value;
     fireEvent(this, "value-changed", { value: this.value });
+    fireEvent(this, "supported-languages-changed", {
+      value: this._agents!.find((agent) => agent.id === this.value)
+        ?.supported_languages,
+    });
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "ha-conversation-agent-picker": HaConversationAgentPicker;
+  }
+  interface HASSDomEvents {
+    "supported-languages-changed": { value: string[] | undefined };
   }
 }

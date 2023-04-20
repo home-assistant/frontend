@@ -9,9 +9,8 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { debounce } from "../common/util/debounce";
-import { listTTSEngines, TTSEngine } from "../data/tts";
+import { listTTSVoices } from "../data/tts";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
@@ -19,11 +18,13 @@ import type { HaSelect } from "./ha-select";
 
 const NONE = "__NONE_OPTION__";
 
-@customElement("ha-tts-picker")
-export class HaTTSPicker extends LitElement {
+@customElement("ha-tts-voice-picker")
+export class HaTTSVoicePicker extends LitElement {
   @property() public value?: string;
 
   @property() public label?: string;
+
+  @property() public engineId?: string;
 
   @property() public language?: string;
 
@@ -33,23 +34,17 @@ export class HaTTSPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() _engines?: TTSEngine[];
+  @state() _voices?: string[] | null;
 
   protected render() {
-    if (!this._engines) {
+    if (!this._voices) {
       return nothing;
     }
-    const value =
-      this.value ??
-      (this.required
-        ? this._engines.find(
-            (engine) => engine.supported_languages?.length !== 0
-          )
-        : NONE);
+    const value = this.value ?? (this.required ? this._voices[0] : NONE);
     return html`
       <ha-select
         .label=${this.label ||
-        this.hass!.localize("ui.components.tts-picker.tts")}
+        this.hass!.localize("ui.components.tts-voice-picker.voice")}
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}
@@ -60,18 +55,14 @@ export class HaTTSPicker extends LitElement {
       >
         ${!this.required
           ? html`<ha-list-item .value=${NONE}>
-              ${this.hass!.localize("ui.components.tts-picker.none")}
+              ${this.hass!.localize("ui.components.tts-voice-picker.none")}
             </ha-list-item>`
           : nothing}
-        ${this._engines.map((engine) => {
-          const stateObj = this.hass!.states[engine.engine_id];
-          return html`<ha-list-item
-            .value=${engine.engine_id}
-            .disabled=${engine.supported_languages?.length === 0}
-          >
-            ${stateObj ? computeStateName(stateObj) : engine.engine_id}
-          </ha-list-item>`;
-        })}
+        ${this._voices.map(
+          (voice) => html`<ha-list-item .value=${voice}>
+            ${voice}
+          </ha-list-item>`
+        )}
       </ha-select>
     `;
   }
@@ -79,30 +70,31 @@ export class HaTTSPicker extends LitElement {
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (!this.hasUpdated) {
-      this._updateEngines();
-    } else if (changedProperties.has("language")) {
-      this._debouncedUpdateEngines();
+      this._updateVoices();
+    } else if (
+      changedProperties.has("language") ||
+      changedProperties.has("engineId")
+    ) {
+      this._debouncedUpdateVoices();
     }
   }
 
-  private _debouncedUpdateEngines = debounce(() => this._updateEngines(), 500);
+  private _debouncedUpdateVoices = debounce(() => this._updateVoices(), 500);
 
-  private async _updateEngines() {
-    this._engines = (await listTTSEngines(this.hass, this.language)).providers;
+  private async _updateVoices() {
+    if (!this.engineId || !this.language) {
+      this._voices = undefined;
+      return;
+    }
+    this._voices = (
+      await listTTSVoices(this.hass, this.engineId, this.language)
+    ).voices;
 
     if (!this.value) {
       return;
     }
 
-    const selectedEngine = this._engines.find(
-      (engine) => engine.engine_id === this.value
-    );
-
-    fireEvent(this, "supported-languages-changed", {
-      value: selectedEngine?.supported_languages,
-    });
-
-    if (!selectedEngine || selectedEngine.supported_languages?.length === 0) {
+    if (!this._voices || !this._voices.includes(this.value)) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
     }
@@ -128,15 +120,11 @@ export class HaTTSPicker extends LitElement {
     }
     this.value = target.value === NONE ? undefined : target.value;
     fireEvent(this, "value-changed", { value: this.value });
-    fireEvent(this, "supported-languages-changed", {
-      value: this._engines!.find((engine) => engine.engine_id === this.value)
-        ?.supported_languages,
-    });
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-tts-picker": HaTTSPicker;
+    "ha-tts-voice-picker": HaTTSVoicePicker;
   }
 }
