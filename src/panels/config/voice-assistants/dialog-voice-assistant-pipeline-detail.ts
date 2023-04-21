@@ -94,22 +94,26 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .hass=${this.hass}
             .data=${this._data}
             .supportedLanguages=${this._supportedLanguages}
+            keys="name,language"
             @value-changed=${this._valueChanged}
             dialogInitialFocus
           ></assist-pipeline-detail-config>
           <assist-pipeline-detail-conversation
             .hass=${this.hass}
             .data=${this._data}
+            keys="conversation_engine,conversation_language"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-conversation>
           <assist-pipeline-detail-stt
             .hass=${this.hass}
             .data=${this._data}
+            keys="stt_engine,stt_language"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-stt>
           <assist-pipeline-detail-tts
             .hass=${this.hass}
             .data=${this._data}
+            keys="tts_engine,tts_language,tts_voice"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-tts>
         </div>
@@ -158,8 +162,14 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
-    const value = ev.detail.value;
-    this._data = value;
+    const value = {};
+    (ev.currentTarget as any)
+      .getAttribute("keys")
+      .split(",")
+      .forEach((key) => {
+        value[key] = ev.detail.value[key];
+      });
+    this._data = { ...this._data, ...value };
   }
 
   private async _updatePipeline() {
