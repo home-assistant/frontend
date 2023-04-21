@@ -40,6 +40,9 @@ export class HaLanguagePicker extends LitElement {
     super.updated(changedProperties);
     if (changedProperties.has("languages") || changedProperties.has("value")) {
       this._select.layoutOptions();
+      if (this._select.value !== this.value) {
+        fireEvent(this, "value-changed", { value: this._select.value });
+      }
       if (!this.value) {
         return;
       }
