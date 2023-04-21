@@ -40,7 +40,8 @@ export class HaTTSVoicePicker extends LitElement {
     if (!this._voices) {
       return nothing;
     }
-    const value = this.value ?? (this.required ? this._voices[0] : NONE);
+    const value =
+      this.value ?? (this.required ? this._voices[0]?.voice_id : NONE);
     return html`
       <ha-select
         .label=${this.label ||
