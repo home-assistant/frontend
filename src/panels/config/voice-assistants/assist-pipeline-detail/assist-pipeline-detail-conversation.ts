@@ -1,7 +1,6 @@
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { SchemaUnion } from "../../../../components/ha-form/types";
 import { AssistPipeline } from "../../../../data/assist_pipeline";
 import { HomeAssistant } from "../../../../types";
 
@@ -29,24 +28,26 @@ export class AssistPipelineDetailConversation extends LitElement {
                 },
               },
             },
-            {
-              name: "conversation_language",
-              required: true,
-              selector: {
-                language: { languages: supportedLanguages ?? [] },
-              },
-            },
+            supportedLanguages?.length
+              ? {
+                  name: "conversation_language",
+                  required: true,
+                  selector: {
+                    language: { languages: supportedLanguages },
+                  },
+                }
+              : { name: "", type: "constant" },
           ] as const,
         },
       ] as const
   );
 
-  private _computeLabel = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.voice_assistants.assistants.pipeline.detail.form.${schema.name}`
-    );
+  private _computeLabel = (schema): string =>
+    schema.name
+      ? this.hass.localize(
+          `ui.panel.config.voice_assistants.assistants.pipeline.detail.form.${schema.name}` as LocalizeKeys
+        )
+      : "";
 
   protected render() {
     return html`
@@ -92,11 +93,8 @@ export class AssistPipelineDetailConversation extends LitElement {
         margin-bottom: 4px;
       }
       p {
-        font-weight: normal;
         color: var(--secondary-text-color);
-        font-size: 16px;
-        line-height: 24px;
-        letter-spacing: 0.5px;
+        font-size: var(--mdc-typography-body2-font-size, 0.875rem);
         margin-top: 0;
         margin-bottom: 0;
       }

@@ -84,7 +84,11 @@ export class HaConversationAgentPicker extends LitElement {
   private _debouncedUpdateAgents = debounce(() => this._updateAgents(), 500);
 
   private async _updateAgents() {
-    const { agents } = await listAgents(this.hass, this.language);
+    const { agents } = await listAgents(
+      this.hass,
+      this.language,
+      this.hass.config.country || undefined
+    );
 
     this._agents = agents;
 

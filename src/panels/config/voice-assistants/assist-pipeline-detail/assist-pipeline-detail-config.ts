@@ -13,6 +13,12 @@ export class AssistPipelineDetailConfig extends LitElement {
 
   @property() public supportedLanguages?: string[];
 
+  public async focus() {
+    await this.updateComplete;
+    const input = this.renderRoot?.querySelector("ha-form");
+    input?.focus();
+  }
+
   private _schema = memoizeOne(
     (supportedLanguages?: string[]) =>
       [
@@ -84,11 +90,8 @@ export class AssistPipelineDetailConfig extends LitElement {
         margin-bottom: 4px;
       }
       p {
-        font-weight: normal;
         color: var(--secondary-text-color);
-        font-size: 16px;
-        line-height: 24px;
-        letter-spacing: 0.5px;
+        font-size: var(--mdc-typography-body2-font-size, 0.875rem);
         margin-top: 0;
         margin-bottom: 0;
       }

@@ -41,7 +41,13 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       this._data = this._params.pipeline;
       this._preferred = this._params.preferred;
     } else {
-      this._data = {};
+      this._data = {
+        language: (
+          this.hass.config.language || this.hass.locale.language
+        ).substring(0, 2),
+        stt_engine: "cloud",
+        tts_engine: "cloud",
+      };
     }
   }
 
@@ -89,6 +95,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .data=${this._data}
             .supportedLanguages=${this._supportedLanguages}
             @value-changed=${this._valueChanged}
+            dialogInitialFocus
           ></assist-pipeline-detail-config>
           <assist-pipeline-detail-conversation
             .hass=${this.hass}
@@ -158,24 +165,22 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   private async _updatePipeline() {
     this._submitting = true;
     try {
+      const data = this._data!;
+      const values: AssistPipelineMutableParams = {
+        name: data.name!,
+        language: data.language!,
+        conversation_engine: data.conversation_engine!,
+        conversation_language: data.conversation_language ?? null,
+        stt_engine: data.stt_engine ?? null,
+        stt_language: data.stt_language ?? null,
+        tts_engine: data.tts_engine ?? null,
+        tts_language: data.tts_language ?? null,
+        tts_voice: data.tts_voice ?? null,
+      };
       if (this._params!.pipeline?.id) {
-        const data = this._data!;
-        const values: AssistPipelineMutableParams = {
-          name: data.name!,
-          language: data.language!,
-          conversation_engine: data.conversation_engine!,
-          conversation_language: data.conversation_language ?? null,
-          stt_engine: data.stt_engine ?? null,
-          stt_language: data.stt_language ?? null,
-          tts_engine: data.tts_engine ?? null,
-          tts_language: data.tts_language ?? null,
-          tts_voice: data.tts_voice ?? null,
-        };
         await this._params!.updatePipeline(values);
       } else {
-        await this._params!.createPipeline(
-          this._data as AssistPipelineMutableParams
-        );
+        await this._params!.createPipeline(values);
       }
       this.closeDialog();
     } catch (err: any) {

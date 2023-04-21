@@ -25,9 +25,11 @@ export interface STTEngine {
 
 export const listSTTEngines = (
   hass: HomeAssistant,
-  language?: string
+  language?: string,
+  country?: string
 ): Promise<{ providers: STTEngine[] }> =>
   hass.callWS({
     type: "stt/engine/list",
     language,
+    country,
   });

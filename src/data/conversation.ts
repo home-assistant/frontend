@@ -78,11 +78,13 @@ export const processConversationInput = (
 
 export const listAgents = (
   hass: HomeAssistant,
-  language?: string
+  language?: string,
+  country?: string
 ): Promise<{ agents: Agent[] }> =>
   hass.callWS({
     type: "conversation/agent/list",
     language,
+    country,
   });
 
 export const getAgentInfo = (

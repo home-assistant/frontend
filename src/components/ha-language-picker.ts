@@ -1,17 +1,11 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-} from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { formatLanguageCode } from "../common/language/format_language";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import { FrontendLocaleData } from "../data/translation";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
@@ -35,13 +29,36 @@ export class HaLanguagePicker extends LitElement {
 
   @state() _defaultLanguages: string[] = [];
 
+  @query("ha-select") private _select!: HaSelect;
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._computeDefaultLanguageOptions();
   }
 
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    if (changedProperties.has("languages") || changedProperties.has("value")) {
+      this._select.layoutOptions();
+      if (!this.value) {
+        return;
+      }
+      const languageOptions = this._getLanguagesOptions(
+        this.languages ?? this._defaultLanguages,
+        this.hass.locale,
+        this.nativeName
+      );
+      const selectedItem = languageOptions.find(
+        (option) => option.value === this.value
+      );
+      if (!selectedItem) {
+        this.value = undefined;
+      }
+    }
+  }
+
   private _getLanguagesOptions = memoizeOne(
-    (languages: string[], language: string, nativeName: boolean) => {
+    (languages: string[], locale: FrontendLocaleData, nativeName: boolean) => {
       let options: { label: string; value: string }[] = [];
 
       if (nativeName) {
@@ -53,12 +70,12 @@ export class HaLanguagePicker extends LitElement {
       } else {
         options = languages.map((lang) => ({
           value: lang,
-          label: formatLanguageCode(lang, this.hass.locale),
+          label: formatLanguageCode(lang, locale),
         }));
       }
 
       options.sort((a, b) =>
-        caseInsensitiveStringCompare(a.label, b.label, language)
+        caseInsensitiveStringCompare(a.label, b.label, locale.language)
       );
       return options;
     }
@@ -75,21 +92,19 @@ export class HaLanguagePicker extends LitElement {
   }
 
   protected render() {
-    const value = this.value;
-
     const languageOptions = this._getLanguagesOptions(
       this.languages ?? this._defaultLanguages,
-      this.hass.locale.language,
+      this.hass.locale,
       this.nativeName
     );
 
-    if (languageOptions.length === 0) {
-      return nothing;
-    }
+    const value =
+      this.value ?? (this.required ? languageOptions[0]?.value : this.value);
 
     return html`
       <ha-select
-        .label=${this.label}
+        .label=${this.label ||
+        this.hass.localize("ui.components.language-picker.language")}
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}
@@ -98,11 +113,19 @@ export class HaLanguagePicker extends LitElement {
         fixedMenuPosition
         naturalMenuWidth
       >
-        ${languageOptions.map(
-          (option) => html`
-            <ha-list-item .value=${option.value}>${option.label}</ha-list-item>
-          `
-        )}
+        ${languageOptions.length === 0
+          ? html`<ha-list-item value=""
+              >${this.hass.localize(
+                "ui.components.language-picker.no_languages"
+              )}</ha-list-item
+            >`
+          : languageOptions.map(
+              (option) => html`
+                <ha-list-item .value=${option.value}
+                  >${option.label}</ha-list-item
+                >
+              `
+            )}
       </ha-select>
     `;
   }
@@ -117,6 +140,9 @@ export class HaLanguagePicker extends LitElement {
 
   private _changed(ev): void {
     const target = ev.target as HaSelect;
+    if (!this.hass || target.value === "" || target.value === this.value) {
+      return;
+    }
     this.value = target.value;
     fireEvent(this, "value-changed", { value: this.value });
   }

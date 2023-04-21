@@ -10,7 +10,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
-import { listTTSVoices } from "../data/tts";
+import { listTTSVoices, TTSVoice } from "../data/tts";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
@@ -34,7 +34,7 @@ export class HaTTSVoicePicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() _voices?: string[] | null;
+  @state() _voices?: TTSVoice[] | null;
 
   protected render() {
     if (!this._voices) {
@@ -59,8 +59,8 @@ export class HaTTSVoicePicker extends LitElement {
             </ha-list-item>`
           : nothing}
         ${this._voices.map(
-          (voice) => html`<ha-list-item .value=${voice}>
-            ${voice}
+          (voice) => html`<ha-list-item .value=${voice.voice_id}>
+            ${voice.name}
           </ha-list-item>`
         )}
       </ha-select>
@@ -94,7 +94,10 @@ export class HaTTSVoicePicker extends LitElement {
       return;
     }
 
-    if (!this._voices || !this._voices.includes(this.value)) {
+    if (
+      !this._voices ||
+      !this._voices.find((voice) => voice.voice_id === this.value)
+    ) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
     }
