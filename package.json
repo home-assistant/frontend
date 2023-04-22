@@ -27,7 +27,7 @@
   "dependencies": {
     "@braintree/sanitize-url": "6.0.2",
     "@codemirror/autocomplete": "6.5.1",
-    "@codemirror/commands": "6.2.2",
+    "@codemirror/commands": "6.2.3",
     "@codemirror/language": "6.6.0",
     "@codemirror/legacy-modes": "6.3.2",
     "@codemirror/search": "6.3.0",
