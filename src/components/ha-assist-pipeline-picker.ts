@@ -9,6 +9,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { formatLanguageCode } from "../common/language/format_language";
 import { AssistPipeline, listAssistPipelines } from "../data/assist_pipeline";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
@@ -60,7 +61,8 @@ export class HaAssistPipelinePicker extends LitElement {
         ${this._pipelines.map(
           (pipeline) =>
             html`<ha-list-item .value=${pipeline.id}>
-              ${pipeline.name} (${pipeline.language})
+              ${pipeline.name}
+              (${formatLanguageCode(pipeline.language, this.hass.locale)})
             </ha-list-item>`
         )}
       </ha-select>

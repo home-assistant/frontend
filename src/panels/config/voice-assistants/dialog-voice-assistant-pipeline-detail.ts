@@ -239,6 +239,9 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           margin-bottom: 8px;
           display: block;
         }
+        a {
+          text-decoration: none;
+        }
       `,
     ];
   }
