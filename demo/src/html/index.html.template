@@ -2,9 +2,7 @@
 <html>
   <head>
     <title>Home Assistant Demo</title>
-    <meta charset="utf-8" />
-    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
-    <link rel="icon" href="/static/icons/favicon.ico" />
+    <%= renderTemplate("../../../src/html/_header.html.template") %>
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#03a9f4" />
     <link
       rel="apple-touch-icon"
