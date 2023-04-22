@@ -9,7 +9,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { AssistPipeline, fetchAssistPipelines } from "../data/assist_pipeline";
+import { AssistPipeline, listAssistPipelines } from "../data/assist_pipeline";
 import { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
@@ -71,7 +71,7 @@ export class HaAssistPipelinePicker extends LitElement {
     changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
     super.firstUpdated(changedProperties);
-    fetchAssistPipelines(this.hass).then((pipelines) => {
+    listAssistPipelines(this.hass).then((pipelines) => {
       this._pipelines = pipelines.pipelines;
       this._preferredPipeline = pipelines.preferred_pipeline;
     });

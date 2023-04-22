@@ -1,17 +1,17 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { extractSearchParam } from "../../../../common/url/search-params";
+import "../../../../components/ha-assist-pipeline-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-assist-pipeline-picker";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import {
   PipelineRun,
   PipelineRunOptions,
-  runAssistPipeline,
+  runDebugAssistPipeline,
 } from "../../../../data/assist_pipeline";
 import {
   showAlertDialog,
@@ -20,6 +20,7 @@ import {
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { AudioRecorder } from "../../../../util/audio-recorder";
 import { fileDownload } from "../../../../util/file_download";
 import "./assist-render-pipeline-run";
 
@@ -81,7 +82,13 @@ export class AssistPipelineRunDebug extends LitElement {
                   <ha-button raised @click=${this._runTextPipeline}>
                     Run Text Pipeline
                   </ha-button>
-                  <ha-button raised @click=${this._runAudioPipeline}>
+                  <ha-button
+                    raised
+                    @click=${this._runAudioPipeline}
+                    .disabled=${!window.isSecureContext ||
+                    // @ts-ignore-next-line
+                    !(window.AudioContext || window.webkitAudioContext)}
+                  >
                     Run Audio Pipeline
                   </ha-button>
                 `
@@ -173,21 +180,16 @@ export class AssistPipelineRunDebug extends LitElement {
   }
 
   private async _runAudioPipeline() {
-    // @ts-ignore-next-line
-    const context = new (window.AudioContext || window.webkitAudioContext)();
-    let stream: MediaStream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (err) {
-      return;
-    }
+    const audioRecorder = new AudioRecorder((data) => {
+      if (this._audioBuffer) {
+        this._audioBuffer.push(data);
+      } else {
+        this._sendAudioChunk(data);
+      }
+    });
 
-    await context.audioWorklet.addModule(
-      new URL("./recorder.worklet.js", import.meta.url)
-    );
-
-    const source = context.createMediaStreamSource(stream);
-    const recorder = new AudioWorkletNode(context, "recorder.worklet");
+    this._audioBuffer = [];
+    audioRecorder.start();
 
     this.hass.connection.socket!.binaryType = "arraybuffer";
 
@@ -195,6 +197,7 @@ export class AssistPipelineRunDebug extends LitElement {
 
     let stopRecording: (() => void) | undefined = () => {
       stopRecording = undefined;
+      audioRecorder.close();
       // We're currently STTing, so finish audio
       if (run?.stage === "stt" && run.stt!.done === false) {
         if (this._audioBuffer) {
@@ -206,20 +209,6 @@ export class AssistPipelineRunDebug extends LitElement {
         this._sendAudioChunk(new Int16Array());
       }
       this._audioBuffer = undefined;
-      stream.getTracks()[0].stop();
-      context.close();
-    };
-    this._audioBuffer = [];
-    source.connect(recorder).connect(context.destination);
-    recorder.port.onmessage = (e) => {
-      if (!stopRecording) {
-        return;
-      }
-      if (this._audioBuffer) {
-        this._audioBuffer.push(e.data);
-      } else {
-        this._sendAudioChunk(e.data);
-      }
     };
 
     await this._doRunPipeline(
@@ -260,7 +249,7 @@ export class AssistPipelineRunDebug extends LitElement {
         start_stage: "stt",
         end_stage: "tts",
         input: {
-          sample_rate: context.sampleRate,
+          sample_rate: audioRecorder.sampleRate!,
         },
       }
     );
@@ -273,7 +262,7 @@ export class AssistPipelineRunDebug extends LitElement {
     this._finished = false;
     let added = false;
     try {
-      await runAssistPipeline(
+      await runDebugAssistPipeline(
         this.hass,
         (updatedRun) => {
           if (added) {
