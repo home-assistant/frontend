@@ -7,7 +7,7 @@ import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
-const SUPPRESS_DEFAULT_PRESS_SELECTOR = ["button"];
+const SUPPRESS_DEFAULT_PRESS_SELECTOR = ["button", "ha-list-item"];
 
 export const createCloseHeading = (
   hass: HomeAssistant,

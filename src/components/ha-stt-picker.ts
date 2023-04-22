@@ -96,7 +96,13 @@ export class HaSTTPicker extends LitElement {
   private _debouncedUpdateEngines = debounce(() => this._updateEngines(), 500);
 
   private async _updateEngines() {
-    this._engines = (await listSTTEngines(this.hass, this.language)).providers;
+    this._engines = (
+      await listSTTEngines(
+        this.hass,
+        this.language,
+        this.hass.config.country || undefined
+      )
+    ).providers;
 
     if (!this.value) {
       return;

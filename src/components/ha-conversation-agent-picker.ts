@@ -37,7 +37,15 @@ export class HaConversationAgentPicker extends LitElement {
     if (!this._agents) {
       return nothing;
     }
-    const value = this.value ?? (this.required ? "homeassistant" : NONE);
+    const value =
+      this.value ??
+      (this.required &&
+      (!this.language ||
+        this._agents
+          .find((agent) => agent.id === "homeassistant")
+          ?.supported_languages?.includes(this.language))
+        ? "homeassistant"
+        : NONE);
     return html`
       <ha-select
         .label=${this.label ||
@@ -84,7 +92,11 @@ export class HaConversationAgentPicker extends LitElement {
   private _debouncedUpdateAgents = debounce(() => this._updateAgents(), 500);
 
   private async _updateAgents() {
-    const { agents } = await listAgents(this.hass, this.language);
+    const { agents } = await listAgents(
+      this.hass,
+      this.language,
+      this.hass.config.country || undefined
+    );
 
     this._agents = agents;
 
