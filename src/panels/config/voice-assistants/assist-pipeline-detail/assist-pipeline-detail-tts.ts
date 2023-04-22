@@ -34,7 +34,7 @@ export class AssistPipelineDetailTTS extends LitElement {
                   name: "tts_language",
                   required: true,
                   selector: {
-                    language: { languages: supportedLanguages },
+                    language: { languages: supportedLanguages, no_sort: true },
                   },
                 }
               : { name: "", type: "constant" },

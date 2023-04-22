@@ -6,7 +6,7 @@ import {
   nothing,
   PropertyValues,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
@@ -35,6 +35,8 @@ export class HaTTSVoicePicker extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   @state() _voices?: TTSVoice[] | null;
+
+  @query("ha-select") private _select!: HaSelect;
 
   protected render() {
     if (!this._voices) {
@@ -101,6 +103,14 @@ export class HaTTSVoicePicker extends LitElement {
     ) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has("_voices") && this._select.value !== this.value) {
+      this._select.layoutOptions();
+      fireEvent(this, "value-changed", { value: this._select.value });
     }
   }
 

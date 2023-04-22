@@ -44,7 +44,7 @@ export class HaPickLanguageRow extends LitElement {
     // Only fire event if language was changed. This prevents select updates when
     // responding to hass changes.
     if (ev.detail.value !== this.hass.language) {
-      fireEvent(this, "hass-language-select", ev.target.value);
+      fireEvent(this, "hass-language-select", ev.detail.value);
     }
   }
 

@@ -27,6 +27,8 @@ export class HaLanguagePicker extends LitElement {
 
   @property({ type: Boolean }) public nativeName = false;
 
+  @property({ type: Boolean }) public noSort = false;
+
   @state() _defaultLanguages: string[] = [];
 
   @query("ha-select") private _select!: HaSelect;
@@ -77,9 +79,11 @@ export class HaLanguagePicker extends LitElement {
         }));
       }
 
-      options.sort((a, b) =>
-        caseInsensitiveStringCompare(a.label, b.label, locale.language)
-      );
+      if (!this.noSort) {
+        options.sort((a, b) =>
+          caseInsensitiveStringCompare(a.label, b.label, locale.language)
+        );
+      }
       return options;
     }
   );

@@ -34,7 +34,7 @@ export class AssistPipelineDetailSTT extends LitElement {
                   name: "stt_language",
                   required: true,
                   selector: {
-                    language: { languages: supportedLanguages },
+                    language: { languages: supportedLanguages, no_sort: true },
                   },
                 }
               : { name: "", type: "constant" },
