@@ -59,7 +59,7 @@ export interface AgentInfo {
 export interface Agent {
   id: string;
   name: string;
-  supported_languages?: string[];
+  supported_languages: "*" | string[];
 }
 
 export const processConversationInput = (

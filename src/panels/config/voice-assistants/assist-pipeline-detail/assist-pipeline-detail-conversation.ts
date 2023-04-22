@@ -5,6 +5,7 @@ import { LocalizeKeys } from "../../../../common/translations/localize";
 import { AssistPipeline } from "../../../../data/assist_pipeline";
 import { HomeAssistant } from "../../../../types";
 import "../../../../components/ha-form/ha-form";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("assist-pipeline-detail-conversation")
 export class AssistPipelineDetailConversation extends LitElement {
@@ -12,10 +13,10 @@ export class AssistPipelineDetailConversation extends LitElement {
 
   @property() public data?: Partial<AssistPipeline>;
 
-  @state() private _supportedLanguages?: string[];
+  @state() private _supportedLanguages?: "*" | string[];
 
   private _schema = memoizeOne(
-    (language?: string, supportedLanguages?: string[]) =>
+    (language?: string, supportedLanguages?: "*" | string[]) =>
       [
         {
           name: "",
@@ -30,12 +31,12 @@ export class AssistPipelineDetailConversation extends LitElement {
                 },
               },
             },
-            supportedLanguages?.length
+            supportedLanguages !== "*" && supportedLanguages?.length
               ? {
                   name: "conversation_language",
                   required: true,
                   selector: {
-                    language: { languages: supportedLanguages },
+                    language: { languages: supportedLanguages, no_sort: true },
                   },
                 }
               : { name: "", type: "constant" },
@@ -73,6 +74,14 @@ export class AssistPipelineDetailConversation extends LitElement {
   }
 
   private _supportedLanguagesChanged(ev) {
+    if (ev.detail.value === "*") {
+      // wait for update of conversation_engine
+      setTimeout(() => {
+        const value = { ...this.data };
+        value.conversation_language = "*";
+        fireEvent(this, "value-changed", { value });
+      }, 0);
+    }
     this._supportedLanguages = ev.detail.value;
   }
 
