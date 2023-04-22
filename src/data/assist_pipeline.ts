@@ -210,14 +210,15 @@ export const processEvent = (
   return run;
 };
 
-export const runAssistPipeline = (
+export const runDebugAssistPipeline = (
   hass: HomeAssistant,
-  callback: (event: PipelineRun) => void,
+  callback: (run: PipelineRun) => void,
   options: PipelineRunOptions
 ) => {
   let run: PipelineRun | undefined;
 
-  const unsubProm = hass.connection.subscribeMessage<PipelineRunEvent>(
+  const unsubProm = runAssistPipeline(
+    hass,
     (updateEvent) => {
       run = processEvent(run, updateEvent, options);
 
@@ -229,14 +230,21 @@ export const runAssistPipeline = (
         callback(run);
       }
     },
-    {
-      ...options,
-      type: "assist_pipeline/run",
-    }
+    options
   );
 
   return unsubProm;
 };
+
+export const runAssistPipeline = (
+  hass: HomeAssistant,
+  callback: (event: PipelineRunEvent) => void,
+  options: PipelineRunOptions
+) =>
+  hass.connection.subscribeMessage<PipelineRunEvent>(callback, {
+    ...options,
+    type: "assist_pipeline/run",
+  });
 
 export const listAssistPipelineRuns = (
   hass: HomeAssistant,
@@ -262,12 +270,18 @@ export const getAssistPipelineRun = (
     pipeline_run_id,
   });
 
-export const fetchAssistPipelines = (hass: HomeAssistant) =>
+export const listAssistPipelines = (hass: HomeAssistant) =>
   hass.callWS<{
     pipelines: AssistPipeline[];
     preferred_pipeline: string | null;
   }>({
     type: "assist_pipeline/pipeline/list",
+  });
+
+export const getAssistPipeline = (hass: HomeAssistant, pipeline_id?: string) =>
+  hass.callWS<AssistPipeline>({
+    type: "assist_pipeline/pipeline/get",
+    pipeline_id,
   });
 
 export const createAssistPipeline = (

@@ -12,7 +12,7 @@ import "../../../components/ha-button";
 import {
   createAssistPipeline,
   deleteAssistPipeline,
-  fetchAssistPipelines,
+  listAssistPipelines,
   updateAssistPipeline,
   AssistPipeline,
   setAssistPipelinePreferred,
@@ -33,7 +33,7 @@ export class AssistPref extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    fetchAssistPipelines(this.hass).then((pipelines) => {
+    listAssistPipelines(this.hass).then((pipelines) => {
       this._pipelines = pipelines.pipelines;
       this._preferred = pipelines.preferred_pipeline;
     });
