@@ -41,7 +41,13 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       this._data = this._params.pipeline;
       this._preferred = this._params.preferred;
     } else {
-      this._data = {};
+      this._data = {
+        language: (
+          this.hass.config.language || this.hass.locale.language
+        ).substring(0, 2),
+        stt_engine: "cloud",
+        tts_engine: "cloud",
+      };
     }
   }
 
@@ -88,21 +94,26 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .hass=${this.hass}
             .data=${this._data}
             .supportedLanguages=${this._supportedLanguages}
+            keys="name,language"
             @value-changed=${this._valueChanged}
+            dialogInitialFocus
           ></assist-pipeline-detail-config>
           <assist-pipeline-detail-conversation
             .hass=${this.hass}
             .data=${this._data}
+            keys="conversation_engine,conversation_language"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-conversation>
           <assist-pipeline-detail-stt
             .hass=${this.hass}
             .data=${this._data}
+            keys="stt_engine,stt_language"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-stt>
           <assist-pipeline-detail-tts
             .hass=${this.hass}
             .data=${this._data}
+            keys="tts_engine,tts_language,tts_voice"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-tts>
         </div>
@@ -151,31 +162,35 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
-    const value = ev.detail.value;
-    this._data = value;
+    const value = {};
+    (ev.currentTarget as any)
+      .getAttribute("keys")
+      .split(",")
+      .forEach((key) => {
+        value[key] = ev.detail.value[key];
+      });
+    this._data = { ...this._data, ...value };
   }
 
   private async _updatePipeline() {
     this._submitting = true;
     try {
+      const data = this._data!;
+      const values: AssistPipelineMutableParams = {
+        name: data.name!,
+        language: data.language!,
+        conversation_engine: data.conversation_engine!,
+        conversation_language: data.conversation_language ?? null,
+        stt_engine: data.stt_engine ?? null,
+        stt_language: data.stt_language ?? null,
+        tts_engine: data.tts_engine ?? null,
+        tts_language: data.tts_language ?? null,
+        tts_voice: data.tts_voice ?? null,
+      };
       if (this._params!.pipeline?.id) {
-        const data = this._data!;
-        const values: AssistPipelineMutableParams = {
-          name: data.name!,
-          language: data.language!,
-          conversation_engine: data.conversation_engine!,
-          conversation_language: data.conversation_language ?? null,
-          stt_engine: data.stt_engine ?? null,
-          stt_language: data.stt_language ?? null,
-          tts_engine: data.tts_engine ?? null,
-          tts_language: data.tts_language ?? null,
-          tts_voice: data.tts_voice ?? null,
-        };
         await this._params!.updatePipeline(values);
       } else {
-        await this._params!.createPipeline(
-          this._data as AssistPipelineMutableParams
-        );
+        await this._params!.createPipeline(values);
       }
       this.closeDialog();
     } catch (err: any) {

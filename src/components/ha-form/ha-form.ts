@@ -4,6 +4,7 @@ import {
   html,
   LitElement,
   PropertyValues,
+  ReactiveElement,
   TemplateResult,
 } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -56,13 +57,18 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public localizeValue?: (key: string) => string;
 
-  public focus() {
-    const root = this.shadowRoot?.querySelector(".root");
+  public async focus() {
+    await this.updateComplete;
+    const root = this.renderRoot.querySelector(".root");
     if (!root) {
       return;
     }
     for (const child of root.children) {
       if (child.tagName !== "HA-ALERT") {
+        if (child instanceof ReactiveElement) {
+          // eslint-disable-next-line no-await-in-loop
+          await child.updateComplete;
+        }
         (child as HTMLElement).focus();
         break;
       }

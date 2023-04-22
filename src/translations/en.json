@@ -413,6 +413,10 @@
         "theme": "Theme",
         "no_theme": "No theme"
       },
+      "language-picker": {
+        "language": "Language",
+        "no_languages": "No languages available"
+      },
       "tts-picker": {
         "tts": "Text to Speech",
         "none": "None"

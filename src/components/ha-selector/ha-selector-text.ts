@@ -30,6 +30,13 @@ export class HaTextSelector extends LitElement {
 
   @state() private _unmaskedPassword = false;
 
+  public async focus() {
+    await this.updateComplete;
+    (
+      this.renderRoot.querySelector("ha-textarea, ha-textfield") as HTMLElement
+    )?.focus();
+  }
+
   protected render() {
     if (this.selector.text?.multiline) {
       return html`<ha-textarea
