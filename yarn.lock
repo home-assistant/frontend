@@ -1571,14 +1571,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:6.6.0":
-  version: 6.6.0
-  resolution: "@formatjs/intl-datetimeformat@npm:6.6.0"
+"@formatjs/intl-datetimeformat@npm:6.7.0":
+  version: 6.7.0
+  resolution: "@formatjs/intl-datetimeformat@npm:6.7.0"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/intl-localematcher": 0.2.32
     tslib: ^2.4.0
-  checksum: 790e86783dc75adf86fff789afe6149a57335030906c04ecf4544c221820b81cad853c697b183fa46793464fdf703e19f0580feaada9590c28048132fd2d02d3
+  checksum: 9eebb8cda1c7ada91b891bb1a9d25bc6c36737da1ec87b2256e44cdaa60968ca644316f023e4a0bb6599fbaf57f520e4f600700a8f61a403941418c4ff68e024
   languageName: node
   linkType: hard
 
@@ -1611,15 +1611,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-locale@npm:3.2.0":
-  version: 3.2.0
-  resolution: "@formatjs/intl-locale@npm:3.2.0"
+"@formatjs/intl-locale@npm:3.2.1":
+  version: 3.2.1
+  resolution: "@formatjs/intl-locale@npm:3.2.1"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/intl-enumerator": 1.2.1
     "@formatjs/intl-getcanonicallocales": 2.1.0
     tslib: ^2.4.0
-  checksum: ef21a77060e39870e6f5112e1d7b73eb0b52200dcd386601eb230704f40017cbd001e0b776167656a0d1fba5bafb2e2fac584a49c66b0734f08fc5926fa06a4a
+  checksum: bac67ac88301e63178f66cf7115ffd3bedfd3284c8e7dbacc4912e32eeeda50099cc2718b4dda0e3de5e37b56f26b17cc21d0a32b36d255d5c090680cbcaadcf
   languageName: node
   linkType: hard
 
@@ -1632,36 +1632,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-numberformat@npm:8.4.0":
-  version: 8.4.0
-  resolution: "@formatjs/intl-numberformat@npm:8.4.0"
+"@formatjs/intl-numberformat@npm:8.4.1":
+  version: 8.4.1
+  resolution: "@formatjs/intl-numberformat@npm:8.4.1"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/intl-localematcher": 0.2.32
     tslib: ^2.4.0
-  checksum: e66ba344f4562f00b4f45ddb9b5e2e4006e47a7d62cab89f689d077df768e629bbdf2891a2053dc9bf33a592a157c09d1dfa803ac98630e628b94e0b9a5edf59
+  checksum: ed7ebd448586121d31b2a8e31d815f8461be169cd2639ead358f71353e596f68b9b9181142e1aa4d5977ac51c96f8c6015a78c229d9ceda270a794e241dfefb5
   languageName: node
   linkType: hard
 
-"@formatjs/intl-pluralrules@npm:5.2.0":
-  version: 5.2.0
-  resolution: "@formatjs/intl-pluralrules@npm:5.2.0"
+"@formatjs/intl-pluralrules@npm:5.2.1":
+  version: 5.2.1
+  resolution: "@formatjs/intl-pluralrules@npm:5.2.1"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/intl-localematcher": 0.2.32
     tslib: ^2.4.0
-  checksum: 659ab6eba9ed2b3ebdb004647fbf0d15e5f2379a244e9fe9540a3ebda1809cc7b15965d750b880e4b77f8c2dd2495bf3ff6e917948ff32bab8b3eb7676a7f9ca
+  checksum: 22ee7c48539b047e817c5bb0116a4ac46cd571b22df3e841eeaa0d7c6dc59f95f8e96c325875c50a0fdb6e7aae8c1befe6c79b71f436685853821eb9785a6cbd
   languageName: node
   linkType: hard
 
-"@formatjs/intl-relativetimeformat@npm:11.2.0":
-  version: 11.2.0
-  resolution: "@formatjs/intl-relativetimeformat@npm:11.2.0"
+"@formatjs/intl-relativetimeformat@npm:11.2.1":
+  version: 11.2.1
+  resolution: "@formatjs/intl-relativetimeformat@npm:11.2.1"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/intl-localematcher": 0.2.32
     tslib: ^2.4.0
-  checksum: a7d947794ead5856c9646a366dc84fa2a98c60dea1938d521eb89318482c9c22d7443dea4e65c25f4ee33beee3155a511aa66f239ec753da3a0801c0bbee1ed2
+  checksum: d2d20fbfcae541d9de098821491d2f53e53160cd3e06c8003d84167e0fbb0b85dcf2a82bfc3c70304f4966782cbb435ee46e5e815acfcca91c5974d312a12987
   languageName: node
   linkType: hard
 
@@ -9479,13 +9479,13 @@ __metadata:
     "@codemirror/state": 6.2.0
     "@codemirror/view": 6.9.5
     "@egjs/hammerjs": 2.0.17
-    "@formatjs/intl-datetimeformat": 6.6.0
+    "@formatjs/intl-datetimeformat": 6.7.0
     "@formatjs/intl-displaynames": 6.3.1
     "@formatjs/intl-getcanonicallocales": 2.1.0
-    "@formatjs/intl-locale": 3.2.0
-    "@formatjs/intl-numberformat": 8.4.0
-    "@formatjs/intl-pluralrules": 5.2.0
-    "@formatjs/intl-relativetimeformat": 11.2.0
+    "@formatjs/intl-locale": 3.2.1
+    "@formatjs/intl-numberformat": 8.4.1
+    "@formatjs/intl-pluralrules": 5.2.1
+    "@formatjs/intl-relativetimeformat": 11.2.1
     "@fullcalendar/core": 6.1.5
     "@fullcalendar/daygrid": 6.1.5
     "@fullcalendar/interaction": 6.1.5
