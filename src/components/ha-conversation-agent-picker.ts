@@ -17,6 +17,7 @@ import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
 const NONE = "__NONE_OPTION__";
+
 @customElement("ha-conversation-agent-picker")
 export class HaConversationAgentPicker extends LitElement {
   @property() public value?: string;
@@ -43,7 +44,7 @@ export class HaConversationAgentPicker extends LitElement {
       (!this.language ||
         this._agents
           .find((agent) => agent.id === "homeassistant")
-          ?.supported_languages?.includes(this.language))
+          ?.supported_languages.includes(this.language))
         ? "homeassistant"
         : NONE);
     return html`
@@ -71,7 +72,8 @@ export class HaConversationAgentPicker extends LitElement {
           (agent) =>
             html`<ha-list-item
               .value=${agent.id}
-              .disabled=${agent.supported_languages?.length === 0}
+              .disabled=${agent.supported_languages !== "*" &&
+              agent.supported_languages.length === 0}
             >
               ${agent.name}
             </ha-list-item>`
@@ -110,7 +112,11 @@ export class HaConversationAgentPicker extends LitElement {
       value: selectedAgent?.supported_languages,
     });
 
-    if (!selectedAgent || selectedAgent.supported_languages?.length === 0) {
+    if (
+      !selectedAgent ||
+      (selectedAgent.supported_languages !== "*" &&
+        selectedAgent.supported_languages.length === 0)
+    ) {
       this.value = undefined;
       fireEvent(this, "value-changed", { value: this.value });
     }
@@ -148,6 +154,6 @@ declare global {
     "ha-conversation-agent-picker": HaConversationAgentPicker;
   }
   interface HASSDomEvents {
-    "supported-languages-changed": { value: string[] | undefined };
+    "supported-languages-changed": { value: "*" | string[] | undefined };
   }
 }
