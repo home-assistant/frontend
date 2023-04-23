@@ -65,6 +65,7 @@ interface PipelineSTTStartEvent extends PipelineEventBase {
   type: "stt-start";
   data: {
     engine: string;
+    language: string;
     metadata: SpeechMetadata;
   };
 }
