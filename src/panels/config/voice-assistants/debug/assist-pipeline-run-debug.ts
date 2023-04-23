@@ -189,9 +189,7 @@ export class AssistPipelineRunDebug extends LitElement {
     });
 
     this._audioBuffer = [];
-    audioRecorder.start();
-
-    this.hass.connection.socket!.binaryType = "arraybuffer";
+    await audioRecorder.start();
 
     let run: PipelineRun | undefined;
 
@@ -288,6 +286,7 @@ export class AssistPipelineRunDebug extends LitElement {
   }
 
   private _sendAudioChunk(chunk: Int16Array) {
+    this.hass.connection.socket!.binaryType = "arraybuffer";
     // Turn into 8 bit so we can prefix our handler ID.
     const data = new Uint8Array(1 + chunk.length * 2);
     data[0] = this._pipelineRuns[0].run.runner_data.stt_binary_handler_id!;
