@@ -347,7 +347,7 @@ export class AssistPipelineRunDebug extends LitElement {
         padding-top: 16px;
       }
       assist-render-pipeline-run + assist-render-pipeline-run {
-        border-top: 3px solid black;
+        border-top: 1px solid var(--divider-color);
       }
     `,
   ];

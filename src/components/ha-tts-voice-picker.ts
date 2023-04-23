@@ -36,7 +36,7 @@ export class HaTTSVoicePicker extends LitElement {
 
   @state() _voices?: TTSVoice[] | null;
 
-  @query("ha-select") private _select!: HaSelect;
+  @query("ha-select") private _select?: HaSelect;
 
   protected render() {
     if (!this._voices) {
@@ -108,9 +108,12 @@ export class HaTTSVoicePicker extends LitElement {
 
   protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-    if (changedProperties.has("_voices") && this._select.value !== this.value) {
-      this._select.layoutOptions();
-      fireEvent(this, "value-changed", { value: this._select.value });
+    if (
+      changedProperties.has("_voices") &&
+      this._select?.value !== this.value
+    ) {
+      this._select?.layoutOptions();
+      fireEvent(this, "value-changed", { value: this._select?.value });
     }
   }
 

@@ -65,6 +65,7 @@ interface PipelineSTTStartEvent extends PipelineEventBase {
   type: "stt-start";
   data: {
     engine: string;
+    language: string;
     metadata: SpeechMetadata;
   };
 }
@@ -79,6 +80,7 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
   type: "intent-start";
   data: {
     engine: string;
+    language: string;
     intent_input: string;
   };
 }
@@ -93,6 +95,8 @@ interface PipelineTTSStartEvent extends PipelineEventBase {
   type: "tts-start";
   data: {
     engine: string;
+    language: string;
+    voice: string;
     tts_input: string;
   };
 }
