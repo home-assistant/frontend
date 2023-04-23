@@ -7,6 +7,10 @@ export class AudioRecorder {
 
   private _stream: MediaStream | undefined;
 
+  private _source: MediaStreamAudioSourceNode | undefined;
+
+  private _recorder: AudioWorkletNode | undefined;
+
   constructor(callback: (data: Int16Array) => void) {
     this._callback = callback;
   }
@@ -28,30 +32,19 @@ export class AudioRecorder {
   }
 
   public async start() {
-    this._active = true;
-
-    if (!this._context || !this._stream) {
-      await this._createContext();
-    } else {
-      this._context.resume();
-      this._stream.getTracks()[0].enabled = true;
-    }
-
-    if (!this._context || !this._stream) {
-      this._active = false;
-      return;
-    }
-
-    const source = this._context.createMediaStreamSource(this._stream);
-    const recorder = new AudioWorkletNode(this._context, "recorder.worklet");
-
-    source.connect(recorder).connect(this._context.destination);
-    recorder.port.onmessage = (e) => {
-      if (!this._active) {
-        return;
+    if (!this._context || !this._stream || !this._source || !this._recorder) {
+      try {
+        await this._createContext();
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        this._active = false;
       }
-      this._callback(e.data);
-    };
+    } else {
+      this._stream.getTracks()[0].enabled = true;
+      await this._context.resume();
+      this._active = true;
+    }
   }
 
   public async stop() {
@@ -68,21 +61,29 @@ export class AudioRecorder {
     this._context?.close();
     this._stream = undefined;
     this._context = undefined;
+    this._source = undefined;
+    this._recorder = undefined;
   }
 
   private async _createContext() {
-    try {
-      // @ts-ignore-next-line
-      this._context = new (window.AudioContext || window.webkitAudioContext)();
-      this._stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-      return;
-    }
+    // @ts-ignore-next-line
+    this._context = new (window.AudioContext || window.webkitAudioContext)();
+    this._stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
     await this._context.audioWorklet.addModule(
       new URL("./recorder.worklet.js", import.meta.url)
     );
+
+    this._source = this._context.createMediaStreamSource(this._stream);
+    this._recorder = new AudioWorkletNode(this._context, "recorder.worklet");
+
+    this._recorder.port.onmessage = (e) => {
+      if (!this._active) {
+        return;
+      }
+      this._callback(e.data);
+    };
+    this._active = true;
+    this._source.connect(this._recorder);
   }
 }
