@@ -21,11 +21,14 @@ const STT_DATA = {
 
 const INTENT_DATA = {
   engine: "Engine",
+  language: "Language",
   intent_input: "Input",
 };
 
 const TTS_DATA = {
   engine: "Engine",
+  language: "Language",
+  voice: "Voice",
   tts_input: "Input",
 };
 
@@ -120,11 +123,10 @@ const dataMinusKeysRender = (
     result[key] = data[key];
   }
   return render
-    ? html`<ha-yaml-editor
-        readOnly
-        autoUpdate
-        .value=${result}
-      ></ha-yaml-editor>`
+    ? html`<ha-expansion-panel>
+        <span slot="header">Raw</span>
+        <ha-yaml-editor readOnly autoUpdate .value=${result}></ha-yaml-editor>
+      </ha-expansion-panel>`
     : "";
 };
 
@@ -204,6 +206,16 @@ export class AssistPipelineDebug extends LitElement {
                   ? html`
                       <div class="card-content">
                         ${renderData(this.pipelineRun.stt, STT_DATA)}
+                        <div class="row">
+                          <div>Language</div>
+                          <div>${this.pipelineRun.stt.metadata.language}</div>
+                        </div>
+                        ${this.pipelineRun.stt.stt_output
+                          ? html`<div class="row">
+                              <div>Output</div>
+                              <div>${this.pipelineRun.stt.stt_output.text}</div>
+                            </div>`
+                          : ""}
                         ${dataMinusKeysRender(this.pipelineRun.stt, STT_DATA)}
                       </div>
                     `
@@ -225,6 +237,25 @@ export class AssistPipelineDebug extends LitElement {
                   ? html`
                       <div class="card-content">
                         ${renderData(this.pipelineRun.intent, INTENT_DATA)}
+                        ${this.pipelineRun.intent.intent_output
+                          ? html`<div class="row">
+                                <div>Response type</div>
+                                <div>
+                                  ${this.pipelineRun.intent.intent_output
+                                    .response.response_type}
+                                </div>
+                              </div>
+                              ${this.pipelineRun.intent.intent_output.response
+                                .response_type === "error"
+                                ? html`<div class="row">
+                                    <div>Error code</div>
+                                    <div>
+                                      ${this.pipelineRun.intent.intent_output
+                                        .response.data.code}
+                                    </div>
+                                  </div>`
+                                : ""}`
+                          : ""}
                         ${dataMinusKeysRender(
                           this.pipelineRun.intent,
                           INTENT_DATA
@@ -249,6 +280,7 @@ export class AssistPipelineDebug extends LitElement {
                   ? html`
                       <div class="card-content">
                         ${renderData(this.pipelineRun.tts, TTS_DATA)}
+                        ${dataMinusKeysRender(this.pipelineRun.tts, TTS_DATA)}
                       </div>
                     `
                   : ""}
@@ -300,6 +332,11 @@ export class AssistPipelineDebug extends LitElement {
     }
     ha-expansion-panel {
       padding-left: 8px;
+    }
+    .card-content ha-expansion-panel {
+      padding-left: 0px;
+      --expansion-panel-summary-padding: 0px;
+      --expansion-panel-content-padding: 0px;
     }
     .heading {
       font-weight: 500;
