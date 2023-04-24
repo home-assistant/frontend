@@ -83,6 +83,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   public async closeDialog(): Promise<void> {
     this._opened = false;
+    this._pipeline = undefined;
     this._agentInfo = undefined;
     this._conversation = undefined;
     this._conversationId = null;
@@ -204,7 +205,10 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
-    if (!this.hasUpdated || changedProperties.has("_pipelineId")) {
+    if (
+      changedProperties.has("_pipelineId") ||
+      (changedProperties.has("_opened") && this._opened === true)
+    ) {
       this._getPipeline();
     }
   }
