@@ -9,6 +9,7 @@ import type { PipelineRun } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-yaml-editor";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 const RUN_DATA = {
   pipeline: "Pipeline",
@@ -314,7 +315,12 @@ export class AssistPipelineDebug extends LitElement {
   private _playTTS(): void {
     const url = this.pipelineRun!.tts!.tts_output!.url;
     const audio = new Audio(url);
-    audio.play();
+    audio.addEventListener("error", () => {
+      showAlertDialog(this, { title: "Error", text: "Error playing audio" });
+    });
+    audio.addEventListener("canplaythrough", () => {
+      audio.play();
+    });
   }
 
   static styles = css`
