@@ -17,7 +17,6 @@ const RUN_DATA = {
 
 const STT_DATA = {
   engine: "Engine",
-  language: "Language",
 };
 
 const INTENT_DATA = {
