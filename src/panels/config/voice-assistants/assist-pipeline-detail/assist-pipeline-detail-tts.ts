@@ -88,7 +88,6 @@ export class AssistPipelineDetailTTS extends LitElement {
          this.data?.tts_engine
            ? html`<div class="footer">
                <ha-button
-                 slot="primaryAction"
                  .label=${this.hass.localize(
                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.try_tts"
                  )}
