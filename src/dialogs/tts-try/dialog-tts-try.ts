@@ -93,7 +93,7 @@ export class TTSTryDialog extends LitElement {
               <ha-button
                 ?dialogInitialFocus=${Boolean(this._defaultMessage)}
                 slot="primaryAction"
-                .label=${this.hass.localize("ui.dialogs.tts-try.read")}
+                .label=${this.hass.localize("ui.dialogs.tts-try.play")}
                 @click=${this._playExample}
                 .disabled=${this._loadingExample || !this._valid}
               >

@@ -1335,8 +1335,8 @@
         "header": "Try Text to Speech",
         "message": "Message",
         "message_example": "Hello. How can I assist?",
-        "message_placeholder": "Enter a sentence to read.",
-        "read": "Read"
+        "message_placeholder": "Enter a sentence to speak.",
+        "play": "Play"
       }
     },
     "duration": {
