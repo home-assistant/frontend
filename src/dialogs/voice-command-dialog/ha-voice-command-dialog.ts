@@ -588,7 +588,10 @@ export class HaVoiceCommandDialog extends LitElement {
           padding: 4px;
         }
         .attribution {
+          display: block;
           color: var(--secondary-text-color);
+          padding-top: 4px;
+          margin-bottom: -8px;
         }
         .messages {
           display: block;
