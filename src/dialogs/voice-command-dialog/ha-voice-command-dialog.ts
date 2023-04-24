@@ -578,6 +578,7 @@ export class HaVoiceCommandDialog extends LitElement {
         }
         ha-button-menu ha-button {
           --mdc-theme-primary: var(--primary-text-color);
+          --mdc-typography-button-text-transform: none;
         }
         ha-button-menu a {
           text-decoration: none;
