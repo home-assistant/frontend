@@ -1,10 +1,12 @@
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { LocalizeKeys } from "../../../../common/translations/localize";
-import { AssistPipeline } from "../../../../data/assist_pipeline";
-import { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-button";
 import "../../../../components/ha-form/ha-form";
+import { AssistPipeline } from "../../../../data/assist_pipeline";
+import { showTTSTryDialog } from "../../../../dialogs/tts-try/show-dialog-tts-try";
+import { HomeAssistant } from "../../../../types";
 
 @customElement("assist-pipeline-detail-tts")
 export class AssistPipelineDetailTTS extends LitElement {
@@ -38,8 +40,6 @@ export class AssistPipelineDetailTTS extends LitElement {
                   },
                 }
               : { name: "", type: "constant" },
-
-            { name: "", type: "constant" },
             {
               name: "tts_voice",
               selector: {
@@ -63,23 +63,60 @@ export class AssistPipelineDetailTTS extends LitElement {
   protected render() {
     return html`
       <div class="section">
-        <div class="intro">
-          <h3>Text-to-speech</h3>
-          <p>
-            When you are using the pipeline as a voice assistant, the
-            text-to-speech engine turns the conversation text responses into
-            audio.
-          </p>
+        <div class="content">
+          <div class="intro">
+            <h3>Text-to-speech</h3>
+            <p>
+              When you are using the pipeline as a voice assistant, the
+              text-to-speech engine turns the conversation text responses into
+              audio.
+            </p>
+          </div>
+          <ha-form
+            .schema=${this._schema(
+              this.data?.language,
+              this._supportedLanguages
+            )}
+            .data=${this.data}
+            .hass=${this.hass}
+            .computeLabel=${this._computeLabel}
+            @supported-languages-changed=${this._supportedLanguagesChanged}
+          ></ha-form>
         </div>
-        <ha-form
-          .schema=${this._schema(this.data?.language, this._supportedLanguages)}
-          .data=${this.data}
-          .hass=${this.hass}
-          .computeLabel=${this._computeLabel}
-          @supported-languages-changed=${this._supportedLanguagesChanged}
-        ></ha-form>
+
+       ${
+         this.data?.tts_engine
+           ? html`<div class="footer">
+               <ha-button
+                 slot="primaryAction"
+                 .label=${this.hass.localize(
+                   "ui.panel.config.voice_assistants.assistants.pipeline.detail.try_tts"
+                 )}
+                 @click=${this._preview}
+               >
+               </ha-button>
+             </div>`
+           : nothing
+       }
+        </div>
       </div>
     `;
+  }
+
+  private async _preview() {
+    if (!this.data) return;
+
+    const engine = this.data.tts_engine;
+    const language = this.data.tts_language || undefined;
+    const voice = this.data.tts_voice || undefined;
+
+    if (!engine) return;
+
+    showTTSTryDialog(this, {
+      engine,
+      language,
+      voice,
+    });
   }
 
   private _supportedLanguagesChanged(ev) {
@@ -91,7 +128,8 @@ export class AssistPipelineDetailTTS extends LitElement {
       .section {
         border: 1px solid var(--divider-color);
         border-radius: 8px;
-        box-sizing: border-box;
+      }
+      .content {
         padding: 16px;
       }
       .intro {
@@ -109,6 +147,10 @@ export class AssistPipelineDetailTTS extends LitElement {
         font-size: var(--mdc-typography-body2-font-size, 0.875rem);
         margin-top: 0;
         margin-bottom: 0;
+      }
+      .footer {
+        border-top: 1px solid var(--divider-color);
+        padding: 8px 16px;
       }
     `;
   }

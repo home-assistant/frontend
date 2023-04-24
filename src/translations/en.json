@@ -1330,6 +1330,13 @@
       "enter_code": {
         "title": "Enter code",
         "input_label": "Code"
+      },
+      "tts-try": {
+        "header": "Try Text to Speech",
+        "message": "Message",
+        "message_example": "Hello. How can I assist?",
+        "message_placeholder": "Enter a sentence to read.",
+        "read": "Read"
       }
     },
     "duration": {
@@ -2035,6 +2042,7 @@
                 "update_assistant_action": "Update",
                 "add_assistant_title": "Add assistant",
                 "add_assistant_action": "Create",
+                "try_tts": "Try voice",
                 "form": {
                   "name": "Name",
                   "conversation_engine": "Conversation agent",
