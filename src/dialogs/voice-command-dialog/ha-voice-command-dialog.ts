@@ -89,10 +89,14 @@ export class HaVoiceCommandDialog extends LitElement {
     this._conversationId = null;
     this._audioRecorder?.close();
     this._audioRecorder = undefined;
-    this._audio?.pause();
-    this._audio?.removeEventListener("ended", this._unloadAudio);
-    this._audio?.removeEventListener("pause", this._unloadAudio);
-    this._audio = undefined;
+    if (this._audio) {
+      this._audio.pause();
+      this._audio.removeEventListener("ended", this._unloadAudio);
+      this._audio.removeEventListener("pause", this._unloadAudio);
+      this._audio.removeEventListener("canplaythrough", this._playAudio);
+      this._audio.removeEventListener("error", this._audioError);
+      this._audio = undefined;
+    }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -378,10 +382,11 @@ export class HaVoiceCommandDialog extends LitElement {
               this._audio = new Audio(url);
               this._audio.addEventListener("ended", this._unloadAudio);
               this._audio.addEventListener("pause", this._unloadAudio);
+              this._audio.addEventListener("canplaythrough", this._playAudio);
+              this._audio.addEventListener("error", this._audioError);
             } else {
               this._audio.src = url;
             }
-            this._audio.play();
           }
 
           if (event.type === "run-end") {
@@ -450,11 +455,17 @@ export class HaVoiceCommandDialog extends LitElement {
     this.hass.connection.socket!.send(data);
   }
 
+  private _playAudio = () => {
+    this._audio?.play();
+  };
+
+  private _audioError = () => {
+    showAlertDialog(this, { title: "Error playing audio." });
+    this._audio?.removeAttribute("src");
+  };
+
   private _unloadAudio = () => {
-    if (!this._audio) {
-      return;
-    }
-    this._audio.src = "";
+    this._audio?.removeAttribute("src");
   };
 
   private _scrollMessagesBottom() {
