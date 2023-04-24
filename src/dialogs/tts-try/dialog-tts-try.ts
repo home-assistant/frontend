@@ -121,14 +121,14 @@ export class TTSTryDialog extends LitElement {
     const language = this._params!.language;
     const voice = this._params!.voice;
 
-    this._messages = {
-      ...this._messages,
-      [language?.substring(0, 2) || "_"]: message,
-    };
+    if (language) {
+      this._messages = {
+        ...this._messages,
+        [language.substring(0, 2)]: message,
+      };
+    }
 
     const audio = new Audio();
-    audio.play();
-
     this._loadingExample = true;
 
     let url;
