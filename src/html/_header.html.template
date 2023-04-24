@@ -6,4 +6,3 @@
     <link rel="modulepreload" href="<%= entry %>" crossorigin="use-credentials" />
   <% } %>
 <% } %>
-<%= renderTemplate("_style_base.html.template") %>

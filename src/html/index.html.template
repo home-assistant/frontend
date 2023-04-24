@@ -34,6 +34,7 @@
     <meta name="referrer" content="same-origin" />
     <meta name="theme-color" content="{{ theme_color }}" />
     <meta name="color-scheme" content="dark light" />
+    <%= renderTemplate("_style_base.html.template") %>
     <style>
       html {
         background-color: var(--primary-background-color, #fafafa);
