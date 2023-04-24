@@ -58,11 +58,15 @@ export class AudioRecorder {
   public close() {
     this._active = false;
     this._stream?.getTracks()[0].stop();
+    if (this._recorder) {
+      this._recorder.port.onmessage = null;
+    }
+    this._source?.disconnect();
     this._context?.close();
     this._stream = undefined;
-    this._context = undefined;
     this._source = undefined;
     this._recorder = undefined;
+    this._context = undefined;
   }
 
   private async _createContext() {
