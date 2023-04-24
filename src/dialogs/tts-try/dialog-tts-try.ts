@@ -30,6 +30,8 @@ export class TTSTryDialog extends LitElement {
     string
   >;
 
+  private _audio?: HTMLAudioElement;
+
   public showDialog(params: TTSTryDialogParams) {
     this._params = params;
     this._valid = Boolean(this._defaultMessage);
@@ -37,6 +39,14 @@ export class TTSTryDialog extends LitElement {
 
   public closeDialog() {
     this._params = undefined;
+    if (this._audio) {
+      this._audio.pause();
+      this._audio.removeEventListener("ended", this._audioEnded);
+      this._audio.removeEventListener("canplaythrough", this._audioCanPlay);
+      this._audio.removeEventListener("playing", this._audioPlaying);
+      this._audio.removeEventListener("error", this._audioError);
+      this._audio = undefined;
+    }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -128,9 +138,15 @@ export class TTSTryDialog extends LitElement {
       };
     }
 
-    const audio = new Audio();
     this._loadingExample = true;
 
+    if (!this._audio) {
+      this._audio = new Audio();
+      this._audio.addEventListener("ended", this._audioEnded);
+      this._audio.addEventListener("canplaythrough", this._audioCanPlay);
+      this._audio.addEventListener("playing", this._audioPlaying);
+      this._audio.addEventListener("error", this._audioError);
+    }
     let url;
     try {
       const result = await convertTextToSpeech(this.hass, {
@@ -148,18 +164,26 @@ export class TTSTryDialog extends LitElement {
       });
       return;
     }
-    audio.src = url;
-    audio.addEventListener("canplaythrough", () => {
-      audio.play();
-    });
-    audio.addEventListener("playing", () => {
-      this._loadingExample = false;
-    });
-    audio.addEventListener("error", () => {
-      showAlertDialog(this, { title: "Error playing audio." });
-      this._loadingExample = false;
-    });
+    this._audio.src = url;
   }
+
+  private _audioCanPlay = () => {
+    this._audio?.play();
+  };
+
+  private _audioPlaying = () => {
+    this._loadingExample = false;
+  };
+
+  private _audioError = () => {
+    showAlertDialog(this, { title: "Error playing audio." });
+    this._loadingExample = false;
+    this._audio?.removeAttribute("src");
+  };
+
+  private _audioEnded = () => {
+    this._audio?.removeAttribute("src");
+  };
 
   static get styles(): CSSResultGroup {
     return css`
