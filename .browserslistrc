@@ -1,0 +1,21 @@
+[modern]
+# Support for dynamic import is the main litmus test for serving modern builds.
+# Although officially a ES2020 feature, browsers implemented it early, so this
+# enables all of ES2017 and some features in ES2018.
+supports es6-module-dynamic-import
+
+# Exclude Safari 11-12 because of a bug in tagged template literals
+# https://bugs.webkit.org/show_bug.cgi?id=190756
+# Note: Dropping version 11 also enables several more ES2018 features
+not Safari < 13
+not iOS < 13
+
+# Exclude unsupported browsers
+not dead
+
+[legacy]
+# Legacy builds are transpiled to ES5 (strict mode) but also must support some features that cannot be polyfilled:
+# - web sockets to communicate with backend
+# - inline SVG used widely in buttons, widgets, etc.
+# - custom events used for most user interactions
+supports use-strict and supports websockets and supports svg-html5 and supports customevent
