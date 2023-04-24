@@ -65,6 +65,8 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _audioBuffer?: Int16Array[];
 
+  private _audio?: HTMLAudioElement;
+
   private _stt_binary_handler_id?: number | null;
 
   public async showDialog(): Promise<void> {
@@ -86,6 +88,10 @@ export class HaVoiceCommandDialog extends LitElement {
     this._conversationId = null;
     this._audioRecorder?.close();
     this._audioRecorder = undefined;
+    this._audio?.pause();
+    this._audio?.removeEventListener("ended", this._unloadAudio);
+    this._audio?.removeEventListener("pause", this._unloadAudio);
+    this._audio = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -249,6 +255,7 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private async _processText(text: string) {
+    this._audio?.pause();
     this._addMessage({ who: "user", text });
     const message: Message = {
       who: "hass",
@@ -300,6 +307,7 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private async _startListening() {
+    this._audio?.pause();
     if (!this._audioRecorder) {
       this._audioRecorder = new AudioRecorder((audio) => {
         if (this._audioBuffer) {
@@ -362,8 +370,14 @@ export class HaVoiceCommandDialog extends LitElement {
 
           if (event.type === "tts-end") {
             const url = event.data.tts_output.url;
-            const audio = new Audio(url);
-            audio.play();
+            if (!this._audio) {
+              this._audio = new Audio(url);
+              this._audio.addEventListener("ended", this._unloadAudio);
+              this._audio.addEventListener("pause", this._unloadAudio);
+            } else {
+              this._audio.src = url;
+            }
+            this._audio.play();
           }
 
           if (event.type === "run-end") {
@@ -431,6 +445,13 @@ export class HaVoiceCommandDialog extends LitElement {
 
     this.hass.connection.socket!.send(data);
   }
+
+  private _unloadAudio = () => {
+    if (!this._audio) {
+      return;
+    }
+    this._audio.src = "";
+  };
 
   private _scrollMessagesBottom() {
     const scrollContainer = this._scrollContainer;
