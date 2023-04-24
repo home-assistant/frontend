@@ -837,7 +837,8 @@
         "how_can_i_help": "How can I assist?",
         "input_label": "Enter a request",
         "send_text": "Send text",
-        "start_listening": "Start listening"
+        "start_listening": "Start listening",
+        "manage_assistants": "Manage assistants"
       },
       "generic": {
         "cancel": "Cancel",

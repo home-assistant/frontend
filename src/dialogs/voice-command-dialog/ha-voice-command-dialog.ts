@@ -153,6 +153,16 @@ export class HaVoiceCommandDialog extends LitElement {
                   ${pipeline.name}
                 </ha-list-item>`
               )}
+              ${this.hass.user?.is_admin
+                ? html`<li divider role="separator"></li>
+                    <a href="/config/voice-assistants/assistants"
+                      ><ha-list-item @click=${this.closeDialog}
+                        >${this.hass.localize(
+                          "ui.dialogs.voice_command.manage_assistants"
+                        )}</ha-list-item
+                      ></a
+                    >`
+                : nothing}
             </ha-button-menu>
             <a
               href=${documentationUrl(this.hass, "/docs/assist/")}
@@ -568,6 +578,9 @@ export class HaVoiceCommandDialog extends LitElement {
         }
         ha-button-menu ha-button {
           --mdc-theme-primary: var(--primary-text-color);
+        }
+        ha-button-menu a {
+          text-decoration: none;
         }
         ha-textfield {
           display: block;
