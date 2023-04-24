@@ -76,7 +76,7 @@ export const cloudLogin = (
   email: string,
   password: string
 ) =>
-  hass.callApi("POST", "cloud/login", {
+  hass.callApi<{ assist_pipline?: string }>("POST", "cloud/login", {
     email,
     password,
   });

@@ -12,12 +12,16 @@ import "../../../../components/ha-icon-next";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import "../../../../components/ha-textfield";
 import { cloudLogin } from "../../../../data/cloud";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import "../../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
+import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
@@ -210,10 +214,20 @@ export class CloudLogin extends LitElement {
     this._requestInProgress = true;
 
     try {
-      await cloudLogin(this.hass, email, password);
+      const result = await cloudLogin(this.hass, email, password);
       fireEvent(this, "ha-refresh-cloud-status");
       this.email = "";
       this._password = "";
+      if (result.assist_pipline) {
+        if (
+          await showConfirmationDialog(this, {
+            title: "Want to use cloud for your preferred assistant?",
+            text: "We created a new assistant for you, using the superior text-to-speech and speech-to-text engines from Home Assistant Cloud. Would you like to set this assistant as the preferred assistant?",
+          })
+        ) {
+          setAssistPipelinePreferred(this.hass, result.assist_pipline);
+        }
+      }
     } catch (err: any) {
       const errCode = err && err.body && err.body.code;
       if (errCode === "PasswordChangeRequired") {
