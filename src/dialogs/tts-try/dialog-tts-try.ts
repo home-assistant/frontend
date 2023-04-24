@@ -95,7 +95,7 @@ export class TTSTryDialog extends LitElement {
                 slot="primaryAction"
                 .label=${this.hass.localize("ui.dialogs.tts-try.play")}
                 @click=${this._playExample}
-                .disabled=${this._loadingExample || !this._valid}
+                .disabled=${!this._valid}
               >
                 <ha-svg-icon
                   slot="icon"
