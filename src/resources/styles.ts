@@ -112,6 +112,8 @@ export const derivedStyles = {
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
   "mdc-button-outline-color": "var(--divider-color)",
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
+  "mdc-dialog-heading-ink-color": "var(--primary-text-color)",
+  "mdc-dialog-content-ink-color": "var(--primary-text-color)",
 
   "mdc-text-field-idle-line-color": "var(--input-idle-line-color)",
   "mdc-text-field-hover-line-color": "var(--input-hover-line-color)",
@@ -296,8 +298,6 @@ export const haStyleDialog = css`
   ha-dialog {
     --mdc-dialog-min-width: 400px;
     --mdc-dialog-max-width: 600px;
-    --mdc-dialog-heading-ink-color: var(--primary-text-color);
-    --mdc-dialog-content-ink-color: var(--primary-text-color);
     --justify-action-buttons: space-between;
   }
 

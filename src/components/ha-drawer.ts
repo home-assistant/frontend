@@ -65,6 +65,7 @@ export class HaDrawer extends DrawerBase {
       .mdc-drawer {
         position: fixed;
         top: 0;
+        border-color: var(--divider-color, rgba(0, 0, 0, 0.12));
       }
       .mdc-drawer.mdc-drawer--modal.mdc-drawer--open {
         z-index: 200;
