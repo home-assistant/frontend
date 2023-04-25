@@ -11,6 +11,7 @@ import "./assist-pref";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
+import "./cloud-discover";
 
 @customElement("ha-config-voice-assistants-assistants")
 export class HaConfigVoiceAssistantsAssistants extends LitElement {
@@ -39,10 +40,11 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
       >
         <div class="content">
           ${isComponentLoaded(this.hass, "assist_pipeline")
-            ? html`<assist-pref .hass=${this.hass}></assist-pref>`
+            ? html` <assist-pref .hass=${this.hass}></assist-pref> `
             : nothing}
           ${this.cloudStatus?.logged_in
-            ? html`<cloud-alexa-pref
+            ? html`
+                <cloud-alexa-pref
                   .hass=${this.hass}
                   .cloudStatus=${this.cloudStatus}
                   dir=${computeRTLDirection(this.hass)}
@@ -51,46 +53,9 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
                   .hass=${this.hass}
                   .cloudStatus=${this.cloudStatus}
                   dir=${computeRTLDirection(this.hass)}
-                ></cloud-google-pref>`
-            : html`<ha-card
-                  header="Easily connect to voice assistants with Home Assistant Cloud"
-                >
-                  <div class="card-content">
-                    With Home Assistant Cloud, you can connect your Home
-                    Assistant instance in a few simple clicks to both Google
-                    Assistant and Amazon Alexa. If you can connect it to Home
-                    Assistant, you can now control it with your voice using the
-                    Amazon Echo, Google Home or your Android phone.
-                  </div>
-                  <div class="card-actions">
-                    <a
-                      href="https://www.nabucasa.com"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <mwc-button>Learn more</mwc-button>
-                    </a>
-                  </div>
-                </ha-card>
-                ${isComponentLoaded(this.hass, "cloud")
-                  ? html` <ha-card outlined>
-                      <a href="/config/cloud/register">
-                        <paper-item>
-                          <paper-item-body two-line>
-                            ${this.hass.localize(
-                              "ui.panel.config.cloud.login.start_trial"
-                            )}
-                            <div secondary>
-                              ${this.hass.localize(
-                                "ui.panel.config.cloud.login.trial_info"
-                              )}
-                            </div>
-                          </paper-item-body>
-                          <ha-icon-next></ha-icon-next>
-                        </paper-item>
-                      </a>
-                    </ha-card>`
-                  : ""}`}
+                ></cloud-google-pref>
+              `
+            : html`<cloud-discover .hass=${this.hass}></cloud-discover>`}
         </div>
       </hass-tabs-subpage>
     `;
