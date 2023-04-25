@@ -118,52 +118,50 @@ export class HaVoiceCommandDialog extends LitElement {
       >
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title">
-              ${this.hass.localize("ui.dialogs.voice_command.title")}
-            </span>
             <ha-icon-button
               slot="navigationIcon"
               dialogAction="cancel"
               .label=${this.hass.localize("ui.common.close")}
               .path=${mdiClose}
             ></ha-icon-button>
-            <ha-button-menu
-              slot="actionItems"
-              @opened=${this._loadPipelines}
-              @closed=${stopPropagation}
-              activatable
-              corner="BOTTOM_END"
-              menuCorner="END"
-              fixed
-            >
-              <ha-button slot="trigger" .label=${this._pipeline?.name}>
-                <ha-svg-icon
-                  slot="trailingIcon"
-                  .path=${mdiChevronDown}
-                ></ha-svg-icon>
-              </ha-button>
-              ${this._pipelines?.map(
-                (pipeline) => html`<ha-list-item
-                  ?selected=${pipeline.id === this._pipelineId ||
-                  (!this._pipelineId &&
-                    pipeline.id === this._preferredPipeline)}
-                  .pipeline=${pipeline.id}
-                  @click=${this._selectPipeline}
-                >
-                  ${pipeline.name}
-                </ha-list-item>`
-              )}
-              ${this.hass.user?.is_admin
-                ? html`<li divider role="separator"></li>
-                    <a href="/config/voice-assistants/assistants"
-                      ><ha-list-item @click=${this.closeDialog}
-                        >${this.hass.localize(
-                          "ui.dialogs.voice_command.manage_assistants"
-                        )}</ha-list-item
-                      ></a
-                    >`
-                : nothing}
-            </ha-button-menu>
+            <div slot="title">
+              ${this.hass.localize("ui.dialogs.voice_command.title")}
+              <ha-button-menu
+                @opened=${this._loadPipelines}
+                @closed=${stopPropagation}
+                activatable
+                fixed
+              >
+                <ha-button slot="trigger">
+                  ${this._pipeline?.name}
+                  <ha-svg-icon
+                    slot="trailingIcon"
+                    .path=${mdiChevronDown}
+                  ></ha-svg-icon>
+                </ha-button>
+                ${this._pipelines?.map(
+                  (pipeline) => html`<ha-list-item
+                    ?selected=${pipeline.id === this._pipelineId ||
+                    (!this._pipelineId &&
+                      pipeline.id === this._preferredPipeline)}
+                    .pipeline=${pipeline.id}
+                    @click=${this._selectPipeline}
+                  >
+                    ${pipeline.name}
+                  </ha-list-item>`
+                )}
+                ${this.hass.user?.is_admin
+                  ? html`<li divider role="separator"></li>
+                      <a href="/config/voice-assistants/assistants"
+                        ><ha-list-item @click=${this.closeDialog}
+                          >${this.hass.localize(
+                            "ui.dialogs.voice_command.manage_assistants"
+                          )}</ha-list-item
+                        ></a
+                      >`
+                  : nothing}
+              </ha-button-menu>
+            </div>
             <a
               href=${documentationUrl(this.hass, "/docs/assist/")}
               slot="actionItems"
@@ -259,7 +257,14 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private async _getPipeline() {
-    this._pipeline = await getAssistPipeline(this.hass, this._pipelineId);
+    try {
+      this._pipeline = await getAssistPipeline(this.hass, this._pipelineId);
+    } catch (e: any) {
+      if (e.code === "not_found") {
+        this._pipelineId = undefined;
+      }
+      return;
+    }
     this._agentInfo = await getAgentInfo(
       this.hass,
       this._pipeline.conversation_engine
@@ -568,17 +573,40 @@ export class HaVoiceCommandDialog extends LitElement {
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
           --mdc-theme-primary: var(--mdc-theme-surface);
+          --header-height: 64px;
         }
         ha-header-bar a {
           color: var(--primary-text-color);
         }
+        div[slot="title"] {
+          display: flex;
+          flex-direction: column;
+          margin-top: 8px;
+        }
         ha-button-menu {
           --mdc-theme-on-primary: var(--text-primary-color);
           --mdc-theme-primary: var(--primary-color);
+          margin-top: -8px;
         }
         ha-button-menu ha-button {
-          --mdc-theme-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--secondary-text-color);
           --mdc-typography-button-text-transform: none;
+          --mdc-typography-button-font-size: unset;
+          --mdc-typography-button-font-weight: 400;
+          --mdc-typography-button-letter-spacing: var(
+            --mdc-typography-headline6-letter-spacing,
+            0.0125em
+          );
+          --mdc-typography-button-line-height: var(
+            --mdc-typography-headline6-line-height,
+            2rem
+          );
+          --button-height: auto;
+          margin: 0 -8px;
+        }
+        ha-button-menu ha-button ha-svg-icon {
+          height: 28px;
+          margin-left: 4px;
         }
         ha-button-menu a {
           text-decoration: none;

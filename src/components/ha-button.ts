@@ -13,6 +13,9 @@ export class HaButton extends Button {
         margin-inline-end: 8px;
         direction: var(--direction);
       }
+      .mdc-button {
+        height: var(--button-height, 36px);
+      }
     `,
   ];
 }
