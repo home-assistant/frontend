@@ -418,7 +418,7 @@
         "no_languages": "No languages available"
       },
       "tts-picker": {
-        "tts": "Text to Speech",
+        "tts": "Text-to-speech",
         "none": "None"
       },
       "tts-voice-picker": {
@@ -478,7 +478,7 @@
           }
         }
       },
-      "stt-picker": { "stt": "Speech to text", "none": "None" },
+      "stt-picker": { "stt": "Speech-to-text", "none": "None" },
       "related-filter-menu": {
         "filter": "Filter",
         "filter_by_entity": "Filter by entity",
@@ -1332,7 +1332,7 @@
         "input_label": "Code"
       },
       "tts-try": {
-        "header": "Try Text to Speech",
+        "header": "Try text-to-speech",
         "message": "Message",
         "message_example": "Hello. How can I assist?",
         "message_placeholder": "Enter a sentence to speak.",
@@ -2048,9 +2048,9 @@
                   "conversation_engine": "Conversation agent",
                   "conversation_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "language": "Language",
-                  "stt_engine": "Speech to text",
+                  "stt_engine": "Speech-to-text",
                   "stt_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
-                  "tts_engine": "Text to speech",
+                  "tts_engine": "Text-to-speech",
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_voice": "Voice"
                 },
@@ -2806,13 +2806,13 @@
             "not_connected": "Not Connected",
             "fetching_subscription": "Fetching subscription…",
             "tts": {
-              "title": "Text to Speech",
+              "title": "Text-to-speech",
               "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
               "default_language": "Default language to use",
               "default_gender": "Default gender to use",
               "try": "Try",
               "dialog": {
-                "header": "Try Text to Speech",
+                "header": "Try text-to-speech",
                 "example_message": "Hello {name}, you can play any text on any supported media player!",
                 "target": "Target",
                 "target_browser": "Browser",
