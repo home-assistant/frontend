@@ -706,12 +706,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 )}</span
               >
               <span slot="secondary"
-                >Specific options for
-                ${domainToName(
-                  this.hass.localize,
-                  this._helperConfigEntry.domain
-                )}
-              </span>
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.configure_state_secondary",
+                  "integration",
+                  domainToName(
+                    this.hass.localize,
+                    this._helperConfigEntry.domain
+                  )
+                )}</span
+              >
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
           `
@@ -806,7 +809,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${this.entry.device_id
         ? html`<ha-settings-row>
             <span slot="heading"
-              >Use device area
+              >${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.use_device_area"
+              )}
               ${this.hass.devices[this.entry.device_id].area_id
                 ? `(${
                     this.hass.areas[
@@ -816,13 +821,19 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 : ""}</span
             >
             <span slot="description"
-              >You can
-              <button class="link" @click=${this._openDeviceSettings}>
-                ${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.change_device_area"
-                )}
-              </button>
-              in the device settings</span
+              >${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.change_device_settings",
+                {
+                  link: html`<button
+                    class="link"
+                    @click=${this._openDeviceSettings}
+                  >
+                    ${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.change_device_area_link"
+                    )}
+                  </button>`,
+                }
+              )}</span
             >
             <ha-switch
               .checked=${!this._areaId || this._noDeviceArea}

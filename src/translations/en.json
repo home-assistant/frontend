@@ -1055,8 +1055,11 @@
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
           "note": "Note: This might not work yet with all integrations.",
-          "change_device_area": "change the device area",
+          "use_device_area": "Use device area",
+          "change_device_settings": "You can {link} in the device settings",
+          "change_device_area_link": "change the device area",
           "configure_state": "{integration} options",
+          "configure_state_secondary": "Specific options for {integration}",
           "stream": {
             "preload_stream": "Preload camera stream",
             "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
@@ -1071,10 +1074,7 @@
             "stream_orientation_7": "Rotate right and flip",
             "stream_orientation_8": "Rotate right"
           },
-          "aliases_section": "Aliases",
-          "no_aliases": "No configured aliases",
-          "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-          "aliases_description": "Aliases are alternative names used in voice assistants to refer to this entity."
+          "no_aliases": "Configure aliases and expose settings for voice assistants"
         }
       },
       "voice-settings": {
