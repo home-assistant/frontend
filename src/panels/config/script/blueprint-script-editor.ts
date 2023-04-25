@@ -102,7 +102,12 @@ export class HaBlueprintScriptEditor extends LitElement {
                     ([key, value]) =>
                       html`<ha-settings-row .narrow=${this.narrow}>
                         <span slot="heading">${value?.name || key}</span>
-                        <span slot="description">${value?.description}</span>
+                        <ha-markdown
+                          slot="description"
+                          class="card-content"
+                          breaks
+                          .content=${value?.description}
+                        ></ha-markdown>
                         ${value?.selector
                           ? html`<ha-selector
                               .hass=${this.hass}
