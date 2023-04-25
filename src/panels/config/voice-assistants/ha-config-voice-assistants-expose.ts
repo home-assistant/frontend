@@ -103,6 +103,7 @@ export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
       icon: {
         title: "",
         type: "icon",
+        hidden: narrow,
         template: (_, entry) => html`
           <ha-state-icon
             title=${ifDefined(entry.entity?.state)}
@@ -119,13 +120,11 @@ export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
         filterable: true,
         direction: "asc",
         grows: true,
-        template: narrow
-          ? (name, entry) =>
-              html`
-                ${name}<br />
-                <div class="secondary">${entry.entity_id}</div>
-              `
-          : undefined,
+        template: (name, entry) =>
+          html`
+            ${name}<br />
+            <div class="secondary">${entry.entity_id}</div>
+          `,
       },
       area: {
         title: this.hass.localize(
@@ -181,6 +180,7 @@ export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
+        hidden: narrow,
         width: "15%",
         template: (aliases) =>
           aliases.length === 0
@@ -195,6 +195,7 @@ export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
       remove: {
         title: "",
         type: "icon-button",
+        hidden: narrow,
         template: () =>
           html`<ha-icon-button
             @click=${this._removeEntity}
@@ -298,10 +299,11 @@ export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
         result[entry.entity_id] = {
           entity_id: entry.entity_id,
           entity,
-          name: computeEntityRegistryName(
-            this.hass!,
-            entry as EntityRegistryEntry
-          ),
+          name:
+            computeEntityRegistryName(
+              this.hass!,
+              entry as EntityRegistryEntry
+            ) || "Unnamed entity",
           area: area ? area.name : "—",
           assistants: Object.keys(
             extEntities![entry.entity_id].options!
