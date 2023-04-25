@@ -17,7 +17,9 @@ export class CloudDiscover extends LitElement {
       <ha-card outlined>
         <div class="card-content">
           <h1 class="header">
-            Get the best assistant with Home Assistant Cloud
+            ${this.hass.localize(
+              "ui.panel.config.voice_assistants.assistants.cloud.header"
+            )}
           </h1>
           <div class="features">
             <div class="feature">
@@ -41,10 +43,15 @@ export class CloudDiscover extends LitElement {
                   referrerpolicy="no-referrer"
                 />
               </div>
-              <h2>Amazon Alexa and Google Assistant</h2>
+              <h2>
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.assistants.cloud.features.assistants.title"
+                )}
+              </h2>
               <p>
-                Control all your Home Assistant devices via any Alexa-enabled or
-                Google Assistant-enabled device.
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.assistants.cloud.features.assistants.text"
+                )}
               </p>
             </div>
             <div class="feature">
@@ -53,17 +60,24 @@ export class CloudDiscover extends LitElement {
                   <ha-svg-icon .path=${mdiMicrophoneMessage}></ha-svg-icon>
                 </div>
               </div>
-              <h2>Better speech options</h2>
+              <h2>
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.assistants.cloud.features.speech.title"
+                )}
+              </h2>
               <p>
-                Bring personality to your home by having it speak to you using
-                our neural-network powered speech-to-text and text-to-speech
-                services.
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.assistants.cloud.features.speech.text"
+                )}
               </p>
             </div>
           </div>
           <div class="more">
             <a href="https://www.nabucasa.com" target="_blank" rel="noreferrer">
-              And more<ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.assistants.cloud.and_more"
+              )}
+              <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
             </a>
           </div>
         </div>
@@ -71,10 +85,18 @@ export class CloudDiscover extends LitElement {
           ? html`
               <div class="card-actions">
                 <a href="/config/cloud/register">
-                  <ha-button unelevated>Try 1 month for free</ha-button>
+                  <ha-button unelevated>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
+                    )}
+                  </ha-button>
                 </a>
                 <a href="/config/cloud/login">
-                  <ha-button>Sign in</ha-button>
+                  <ha-button>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
+                    )}
+                  </ha-button>
                 </a>
               </div>
             `
@@ -172,10 +194,6 @@ export class CloudDiscover extends LitElement {
       }
       .more a ha-svg-icon {
         --mdc-icon-size: 16px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-        margin-left: 8px;
-        direction: var(--direction);
       }
     `;
   }
