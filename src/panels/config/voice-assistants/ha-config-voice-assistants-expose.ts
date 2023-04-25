@@ -303,7 +303,10 @@ export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
             computeEntityRegistryName(
               this.hass!,
               entry as EntityRegistryEntry
-            ) || "Unnamed entity",
+            ) ||
+            this.hass.localize(
+              "ui.panel.config.entities.picker.unnamed_entity"
+            ),
           area: area ? area.name : "—",
           assistants: Object.keys(
             extEntities![entry.entity_id].options!
