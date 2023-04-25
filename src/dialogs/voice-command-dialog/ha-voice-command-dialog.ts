@@ -593,7 +593,7 @@ export class HaVoiceCommandDialog extends LitElement {
         ha-button-menu {
           --mdc-theme-on-primary: var(--text-primary-color);
           --mdc-theme-primary: var(--primary-color);
-          margin-top: -8px;
+          margin: -8px 0 0 -8px;
         }
         ha-button-menu ha-button {
           --mdc-theme-primary: var(--secondary-text-color);
@@ -609,7 +609,6 @@ export class HaVoiceCommandDialog extends LitElement {
             2rem
           );
           --button-height: auto;
-          margin: 0 -8px;
         }
         ha-button-menu ha-button ha-svg-icon {
           height: 28px;
