@@ -65,12 +65,16 @@ export class AssistPipelineDetailTTS extends LitElement {
       <div class="section">
         <div class="content">
           <div class="intro">
-            <h3>Text-to-speech</h3>
-            <p>
-              When you are using the pipeline as a voice assistant, the
-              text-to-speech engine turns the conversation text responses into
-              audio.
-            </p>
+          <h3>
+            ${this.hass.localize(
+              `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.tts.title`
+            )}
+          </h3>
+          <p>
+            ${this.hass.localize(
+              `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.tts.description`
+            )}
+          </p>
           </div>
           <ha-form
             .schema=${this._schema(

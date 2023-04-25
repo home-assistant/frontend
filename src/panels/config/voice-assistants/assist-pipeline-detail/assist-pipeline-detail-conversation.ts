@@ -56,10 +56,15 @@ export class AssistPipelineDetailConversation extends LitElement {
     return html`
       <div class="section">
         <div class="intro">
-          <h3>Conversation agent</h3>
+          <h3>
+            ${this.hass.localize(
+              `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.conversation.title`
+            )}
+          </h3>
           <p>
-            The conversation agent is the brains of your voice assistant and
-            will process the incoming commands.
+            ${this.hass.localize(
+              `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.conversation.description`
+            )}
           </p>
         </div>
         <ha-form
