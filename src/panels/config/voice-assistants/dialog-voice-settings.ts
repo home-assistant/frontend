@@ -44,7 +44,7 @@ class DialogVoiceSettings extends LitElement {
         .heading=${createCloseHeading(
           this.hass,
           computeEntityRegistryName(this.hass, this._extEntityReg) ||
-            "Unnamed entity"
+            this.hass.localize("ui.panel.config.entities.picker.unnamed_entity")
         )}
       >
         <div>

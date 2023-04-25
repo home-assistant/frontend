@@ -3014,6 +3014,7 @@
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
             "search": "Search entities",
+            "unnamed_entity": "Unnamed entity",
             "filter": {
               "filter": "Filter",
               "show_hidden": "Show hidden entities",
