@@ -1,7 +1,6 @@
 import {
   mdiAccount,
   mdiAccountArrowRight,
-  mdiAccountVoice,
   mdiAirHumidifier,
   mdiAirHumidifierOff,
   mdiAudioVideo,
@@ -35,6 +34,7 @@ import {
   mdiRobot,
   mdiRobotOff,
   mdiSpeaker,
+  mdiSpeakerMessage,
   mdiSpeakerOff,
   mdiSpeakerPause,
   mdiSpeakerPlay,
@@ -249,7 +249,7 @@ export const domainIconWithoutDefault = (
       return mdiChartSankey;
 
     case "tts":
-      return mdiAccountVoice;
+      return mdiSpeakerMessage;
 
     case "update":
       return compareState === "on"
