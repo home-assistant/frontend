@@ -1,6 +1,7 @@
 import {
   mdiAccount,
   mdiAccountArrowRight,
+  mdiAccountVoice,
   mdiAirHumidifier,
   mdiAirHumidifierOff,
   mdiAudioVideo,
@@ -24,6 +25,7 @@ import {
   mdiLockAlert,
   mdiLockClock,
   mdiLockOpen,
+  mdiMicrophoneMessage,
   mdiPackage,
   mdiPackageDown,
   mdiPackageUp,
@@ -232,6 +234,9 @@ export const domainIconWithoutDefault = (
       break;
     }
 
+    case "stt":
+      return mdiMicrophoneMessage;
+
     case "sun":
       return stateObj?.state === "above_horizon"
         ? mdiWhiteBalanceSunny
@@ -242,6 +247,9 @@ export const domainIconWithoutDefault = (
 
     case "threshold":
       return mdiChartSankey;
+
+    case "tts":
+      return mdiAccountVoice;
 
     case "update":
       return compareState === "on"
