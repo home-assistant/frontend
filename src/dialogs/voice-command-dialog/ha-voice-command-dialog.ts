@@ -5,6 +5,7 @@ import {
   mdiHelpCircleOutline,
   mdiMicrophone,
   mdiSend,
+  mdiStar,
 } from "@mdi/js";
 import {
   css,
@@ -146,8 +147,14 @@ export class HaVoiceCommandDialog extends LitElement {
                       pipeline.id === this._preferredPipeline)}
                     .pipeline=${pipeline.id}
                     @click=${this._selectPipeline}
+                    .hasMeta=${pipeline.id === this._preferredPipeline}
                   >
-                    ${pipeline.name}
+                    ${pipeline.name}${pipeline.id === this._preferredPipeline
+                      ? html`<ha-svg-icon
+                          slot="meta"
+                          .path=${mdiStar}
+                        ></ha-svg-icon>`
+                      : nothing}
                   </ha-list-item>`
                 )}
                 ${this.hass.user?.is_admin
