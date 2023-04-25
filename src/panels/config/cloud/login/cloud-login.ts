@@ -218,14 +218,18 @@ export class CloudLogin extends LitElement {
       fireEvent(this, "ha-refresh-cloud-status");
       this.email = "";
       this._password = "";
-      if (result.assist_pipline) {
+      if (result.cloud_pipeline) {
         if (
           await showConfirmationDialog(this, {
-            title: "Want to use cloud for your preferred assistant?",
-            text: "We created a new assistant for you, using the superior text-to-speech and speech-to-text engines from Home Assistant Cloud. Would you like to set this assistant as the preferred assistant?",
+            title: this.hass.localize(
+              "ui.panel.config.cloud.login.cloud_pipeline_title"
+            ),
+            text: this.hass.localize(
+              "ui.panel.config.cloud.login.cloud_pipeline_text"
+            ),
           })
         ) {
-          setAssistPipelinePreferred(this.hass, result.assist_pipline);
+          setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
         }
       }
     } catch (err: any) {
