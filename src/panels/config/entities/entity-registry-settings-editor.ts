@@ -622,10 +622,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
         .disabled=${this.disabled}
         @input=${this._entityIdChanged}
       ></ha-textfield>
-      ${!this.entry.device_id
+      ${!this.entry.device_id || this._areaId || this._noDeviceArea
         ? html`<ha-area-picker
             .hass=${this.hass}
             .value=${this._areaId}
+            .placeholder=${this._device?.area_id}
             .disabled=${this.disabled}
             @value-changed=${this._areaPicked}
           ></ha-area-picker>`
@@ -804,43 +805,32 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
       ${this.entry.device_id
         ? html`<ha-settings-row>
-              <span slot="heading"
-                >Use device area
-                ${this.hass.devices[this.entry.device_id].area_id
-                  ? `(${
-                      this.hass.areas[
-                        this.hass.devices[this.entry.device_id].area_id!
-                      ]?.name
-                    })`
-                  : ""}</span
-              >
-              <span slot="description"
-                >You can
-                <button class="link" @click=${this._openDeviceSettings}>
-                  ${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.change_device_area"
-                  )}
-                </button>
-                in the device settings</span
-              >
-              <ha-switch
-                .checked=${!this._areaId || this._noDeviceArea}
-                .disabled=${this.disabled}
-                @change=${this._useDeviceAreaChanged}
-              >
-              </ha-switch></ha-settings-row
-            >${this._areaId || this._noDeviceArea
-              ? html`<ha-area-picker
-                  .hass=${this.hass}
-                  .placeholder=${this._device?.area_id}
-                  .label=${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.area"
-                  )}
-                  .value=${this._areaId}
-                  .disabled=${this.disabled}
-                  @value-changed=${this._areaPicked}
-                ></ha-area-picker>`
-              : ""}`
+            <span slot="heading"
+              >Use device area
+              ${this.hass.devices[this.entry.device_id].area_id
+                ? `(${
+                    this.hass.areas[
+                      this.hass.devices[this.entry.device_id].area_id!
+                    ]?.name
+                  })`
+                : ""}</span
+            >
+            <span slot="description"
+              >You can
+              <button class="link" @click=${this._openDeviceSettings}>
+                ${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.change_device_area"
+                )}
+              </button>
+              in the device settings</span
+            >
+            <ha-switch
+              .checked=${!this._areaId || this._noDeviceArea}
+              .disabled=${this.disabled}
+              @change=${this._useDeviceAreaChanged}
+            >
+            </ha-switch
+          ></ha-settings-row>`
         : ""}
     `;
   }
