@@ -1040,7 +1040,7 @@
           "enabled_label": "Enabled",
           "disabled_label": "Disabled",
           "enabled_cause": "Cannot change status. Disabled by {cause}.",
-          "hidden_label": "Hidden",
+          "visible_label": "Visible",
           "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
           "entity_disabled": "This entity is disabled.",

@@ -785,7 +785,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       <ha-settings-row>
         <span slot="heading"
           >${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.hidden_label"
+            "ui.dialogs.entity_registry.editor.visible_label"
           )}</span
         >
         <span slot="description"
@@ -794,7 +794,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           )}</span
         >
         <ha-switch
-          .checked=${this._disabledBy || this._hiddenBy}
+          .checked=${!this._disabledBy && !this._hiddenBy}
           .disabled=${this.disabled ||
           this._disabledBy ||
           (this._hiddenBy && this._hiddenBy !== "user")}
@@ -828,7 +828,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 .disabled=${this.disabled}
                 @change=${this._useDeviceAreaChanged}
               >
-              </ha-switch> </ha-settings-row
+              </ha-switch></ha-settings-row
             >${this._areaId || this._noDeviceArea
               ? html`<ha-area-picker
                   .hass=${this.hass}
@@ -1098,15 +1098,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this._disabledBy = null;
     } else {
       this._disabledBy = "user";
-      this._hiddenBy = null;
     }
   }
 
   private _hiddenChanged(ev: CustomEvent): void {
     if ((ev.target as any).checked) {
-      this._hiddenBy = "user";
-    } else {
       this._hiddenBy = null;
+    } else {
+      this._hiddenBy = "user";
     }
   }
 
