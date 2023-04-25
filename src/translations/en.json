@@ -2057,7 +2057,7 @@
                 "steps": {
                   "config": {
                     "title": "Configuration",
-                    "description": "Main configuration of your assistant."
+                    "description": "Give your assistant a name and select your language. Depending on this language, you may be able to choose region specific variants below."
                   },
                   "conversation": {
                     "title": "Conversation agent",
