@@ -58,8 +58,16 @@ export class AssistPipelineDetailConfig extends LitElement {
     return html`
       <div class="section">
         <div class="intro">
-          <h3>Configuration</h3>
-          <p>Main configuration of your assistant</p>
+          <h3>
+            ${this.hass.localize(
+              `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.config.title`
+            )}
+          </h3>
+          <p>
+            ${this.hass.localize(
+              `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.config.description`
+            )}
+          </p>
         </div>
         <ha-form
           .schema=${this._schema(this.supportedLanguages)}

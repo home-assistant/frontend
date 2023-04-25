@@ -54,10 +54,15 @@ export class AssistPipelineDetailSTT extends LitElement {
     return html`
       <div class="section">
         <div class="intro">
-          <h3>Speech-to-text</h3>
+          <h3>
+            ${this.hass.localize(
+              `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.stt.title`
+            )}
+          </h3>
           <p>
-            When you are using the pipeline as a voice assistant, the
-            speech-to-text engine turns your voice command into text.
+            ${this.hass.localize(
+              `ui.panel.config.voice_assistants.assistants.pipeline.detail.steps.stt.description`
+            )}
           </p>
         </div>
         <ha-form

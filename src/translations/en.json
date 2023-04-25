@@ -2053,6 +2053,24 @@
                   "tts_engine": "Text to speech",
                   "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
                   "tts_voice": "Voice"
+                },
+                "steps": {
+                  "config": {
+                    "title": "Configuration",
+                    "description": "Main configuration of your assistant."
+                  },
+                  "conversation": {
+                    "title": "Conversation agent",
+                    "description": "The conversation agent is the brains of your voice assistant and will process the incoming commands."
+                  },
+                  "stt": {
+                    "title": "Speech-to-text",
+                    "description": "When you are using the pipeline as a voice assistant, the speech-to-text engine turns your voice command into text."
+                  },
+                  "tts": {
+                    "title": "Text-to-speech",
+                    "description": "When you are using the pipeline as a voice assistant, the text-to-speech engine turns the conversation text responses into audio."
+                  }
                 }
               }
             },
