@@ -2061,15 +2061,15 @@
                   },
                   "conversation": {
                     "title": "Conversation agent",
-                    "description": "The conversation agent is the brains of your voice assistant and will process the incoming commands."
+                    "description": "The conversation agent is the brains of your assistant and will process the incoming text commands."
                   },
                   "stt": {
                     "title": "Speech-to-text",
-                    "description": "When you are using the pipeline as a voice assistant, the speech-to-text engine turns your voice command into text."
+                    "description": "When you are controlling your assistant with voice, the speech-to-text engine turns your voice command into text."
                   },
                   "tts": {
                     "title": "Text-to-speech",
-                    "description": "When you are using the pipeline as a voice assistant, the text-to-speech engine turns the conversation text responses into audio."
+                    "description": "When you are controlling your assistant with voice, the text-to-speech engine turns the conversation text responses into audio."
                   }
                 }
               }
