@@ -89,14 +89,7 @@ export class HaVoiceCommandDialog extends LitElement {
     this._conversationId = null;
     this._audioRecorder?.close();
     this._audioRecorder = undefined;
-    if (this._audio) {
-      this._audio.pause();
-      this._audio.removeEventListener("ended", this._unloadAudio);
-      this._audio.removeEventListener("pause", this._unloadAudio);
-      this._audio.removeEventListener("canplaythrough", this._playAudio);
-      this._audio.removeEventListener("error", this._audioError);
-      this._audio = undefined;
-    }
+    this._audio?.pause();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -378,15 +371,12 @@ export class HaVoiceCommandDialog extends LitElement {
 
           if (event.type === "tts-end") {
             const url = event.data.tts_output.url;
-            if (!this._audio) {
-              this._audio = new Audio(url);
-              this._audio.addEventListener("ended", this._unloadAudio);
-              this._audio.addEventListener("pause", this._unloadAudio);
-              this._audio.addEventListener("canplaythrough", this._playAudio);
-              this._audio.addEventListener("error", this._audioError);
-            } else {
-              this._audio.src = url;
-            }
+            this._audio = new Audio(url);
+            this._audio.play();
+            this._audio.addEventListener("ended", this._unloadAudio);
+            this._audio.addEventListener("pause", this._unloadAudio);
+            this._audio.addEventListener("canplaythrough", this._playAudio);
+            this._audio.addEventListener("error", this._audioError);
           }
 
           if (event.type === "run-end") {
@@ -466,6 +456,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _unloadAudio = () => {
     this._audio?.removeAttribute("src");
+    this._audio = undefined;
   };
 
   private _scrollMessagesBottom() {
