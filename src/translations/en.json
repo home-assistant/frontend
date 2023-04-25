@@ -2055,6 +2055,22 @@
                   "tts_voice": "Voice"
                 }
               }
+            },
+            "cloud": {
+              "header": "Get the best assistant with Home Assistant Cloud",
+              "features": {
+                "assistants": {
+                  "title": "Google Assistant and Amazon Alexa",
+                  "text": "Control all your Home Assistant devices via any Google Assistant-enabled or Alexa-enabled device."
+                },
+                "speech": {
+                  "title": "Better speech options",
+                  "text": "Bring personality to your home by having it speak to you using our neural-network powered speech-to-text and text-to-speech services."
+                }
+              },
+              "and_more": "And more",
+              "try_one_month": "Try 1 month for free",
+              "sign_in": "Sign in"
             }
           },
           "expose": {
