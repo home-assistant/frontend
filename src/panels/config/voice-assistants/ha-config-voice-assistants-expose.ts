@@ -1,10 +1,10 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
-  mdiMinusCircle,
-  mdiMinusCircleOutline,
+  mdiCloseBoxMultiple,
+  mdiCloseCircleOutline,
   mdiPlus,
-  mdiPlusCircle,
+  mdiPlusBoxMultiple,
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -199,7 +199,7 @@ export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
         template: () =>
           html`<ha-icon-button
             @click=${this._removeEntity}
-            .path=${mdiMinusCircleOutline}
+            .path=${mdiCloseCircleOutline}
           ></ha-icon-button>`,
       },
     })
@@ -496,7 +496,7 @@ export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
                         <ha-icon-button
                           id="enable-btn"
                           @click=${this._exposeSelected}
-                          .path=${mdiPlusCircle}
+                          .path=${mdiPlusBoxMultiple}
                           .label=${this.hass.localize(
                             "ui.panel.config.voice_assistants.expose.expose"
                           )}
@@ -509,7 +509,7 @@ export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
                         <ha-icon-button
                           id="disable-btn"
                           @click=${this._unexposeSelected}
-                          .path=${mdiMinusCircle}
+                          .path=${mdiCloseBoxMultiple}
                           .label=${this.hass.localize(
                             "ui.panel.config.voice_assistants.expose.unexpose"
                           )}
