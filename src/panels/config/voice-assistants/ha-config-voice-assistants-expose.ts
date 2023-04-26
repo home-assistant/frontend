@@ -35,11 +35,7 @@ import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntries,
 } from "../../../data/entity_registry";
-import {
-  exposeEntities,
-  voiceAssistantKeys,
-  voiceAssistants,
-} from "../../../data/voice";
+import { exposeEntities, voiceAssistants } from "../../../data/voice";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -230,7 +226,7 @@ export class VoiceAssistantsExpose extends LitElement {
         cloudStatus?.logged_in === true &&
         cloudStatus.prefs.alexa_enabled === true;
 
-      const showAssistants = [...voiceAssistantKeys];
+      const showAssistants = [...Object.keys(voiceAssistants)];
 
       if (!googleEnabled) {
         showAssistants.splice(
