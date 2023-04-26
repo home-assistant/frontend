@@ -76,10 +76,14 @@ export const cloudLogin = (
   email: string,
   password: string
 ) =>
-  hass.callApi("POST", "cloud/login", {
-    email,
-    password,
-  });
+  hass.callApi<{ success: boolean; cloud_pipeline?: string }>(
+    "POST",
+    "cloud/login",
+    {
+      email,
+      password,
+    }
+  );
 
 export const cloudLogout = (hass: HomeAssistant) =>
   hass.callApi("POST", "cloud/logout");
