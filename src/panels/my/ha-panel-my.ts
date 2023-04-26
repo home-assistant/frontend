@@ -141,7 +141,7 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     component: "tag",
     redirect: "/config/tags",
   },
-  "voice-assistants": {
+  voice_assistants: {
     redirect: "/config/voice-assistants",
   },
   lovelace_dashboards: {
