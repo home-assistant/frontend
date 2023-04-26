@@ -731,13 +731,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           }),
         })
       ) {
-        showConfigFlowDialog(this, {
-          dialogClosedCallback: () => {
-            this._handleFlowUpdated();
-          },
-          startFlowHandler: domain,
-          manifest: await fetchIntegrationManifest(this.hass, domain),
-          showAdvanced: this.hass.userData?.showAdvanced,
+        showAddIntegrationDialog(this, {
+          domain,
         });
       }
       return;
