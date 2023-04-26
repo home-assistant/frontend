@@ -125,6 +125,7 @@ class DialogExposeEntity extends LitElement {
     const entityState = this.hass.states[entity.entity_id];
     return html`<ha-check-list-item
       graphic="icon"
+      twoLine
       .value=${entity.entity_id}
       .selected=${this._selected.includes(entity.entity_id)}
       @request-selected=${this._handleSelected}
@@ -135,6 +136,7 @@ class DialogExposeEntity extends LitElement {
         .state=${entityState}
       ></ha-state-icon>
       ${computeEntityRegistryName(this.hass!, entity)}
+      <span slot="secondary">${entity.entity_id}</span>
     </ha-check-list-item>`;
   };
 
