@@ -1001,7 +1001,7 @@ export class HaIntegrationCard extends LitElement {
         @media (min-width: 563px) {
           ha-card.group {
             position: relative;
-            min-height: 164px;
+            min-height: 195px;
           }
           mwc-list {
             position: absolute;
