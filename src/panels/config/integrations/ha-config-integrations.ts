@@ -112,7 +112,10 @@ const groupByIntegration = (
       result.set(entry.domain, [entry]);
     }
   });
-  return result;
+
+  return new Map(
+    [...result.entries()].sort((a, b) => b[1].length - a[1].length)
+  );
 };
 
 @customElement("ha-config-integrations")
@@ -496,6 +499,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             ? Array.from(disabledConfigEntries.entries()).map(
                 ([domain, items]) =>
                   html`<ha-integration-card
+                    class=${items.length > 10
+                      ? "x3"
+                      : items.length > 5
+                      ? "x2"
+                      : null}
                     data-domain=${domain}
                     entryDisabled
                     .hass=${this.hass}
@@ -510,6 +518,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             ? Array.from(groupedConfigEntries.entries()).map(
                 ([domain, items]) =>
                   html`<ha-integration-card
+                    class=${items.length > 10
+                      ? "x3"
+                      : items.length > 5
+                      ? "x2"
+                      : ""}
                     data-domain=${domain}
                     .hass=${this.hass}
                     .domain=${domain}
@@ -821,9 +834,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .container {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          grid-auto-rows: minmax(162px, auto);
           grid-gap: 16px 16px;
           padding: 8px 16px 16px;
           margin-bottom: 64px;
+        }
+        ha-integration-card.x2 {
+          grid-row: span 2;
+        }
+        ha-integration-card.x3 {
+          grid-row: span 3;
         }
         .container > * {
           max-width: 500px;
