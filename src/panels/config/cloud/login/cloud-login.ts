@@ -9,8 +9,13 @@ import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
-import type { HaTextField } from "../../../../components/ha-textfield";
 import "../../../../components/ha-textfield";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import {
+  AssistPipeline,
+  listAssistPipelines,
+  setAssistPipelinePreferred,
+} from "../../../../data/assist_pipeline";
 import { cloudLogin } from "../../../../data/cloud";
 import {
   showAlertDialog,
@@ -21,7 +26,6 @@ import { haStyle } from "../../../../resources/styles";
 import "../../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
-import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
@@ -214,19 +218,39 @@ export class CloudLogin extends LitElement {
     this._requestInProgress = true;
 
     try {
+      let pipelines: AssistPipeline[] = [];
+      let preferred_pipeline: string | null = null;
+      try {
+        const response = await listAssistPipelines(this.hass);
+        pipelines = response.pipelines;
+        preferred_pipeline = response.preferred_pipeline;
+      } catch (err) {
+        /* empty */
+      }
       const result = await cloudLogin(this.hass, email, password);
       fireEvent(this, "ha-refresh-cloud-status");
       this.email = "";
       this._password = "";
-      if (result.cloud_pipeline) {
+      if (
+        result.cloud_pipeline &&
+        result.cloud_pipeline !== preferred_pipeline
+      ) {
+        const isNewPipeline = !pipelines.find(
+          (pipeline) => pipeline.id === result.cloud_pipeline
+        );
+
         if (
           await showConfirmationDialog(this, {
             title: this.hass.localize(
               "ui.panel.config.cloud.login.cloud_pipeline_title"
             ),
             text: this.hass.localize(
-              "ui.panel.config.cloud.login.cloud_pipeline_text"
+              isNewPipeline
+                ? "ui.panel.config.cloud.login.cloud_pipeline_text"
+                : "ui.panel.config.cloud.login.existing_cloud_pipeline_text"
             ),
+            dismissText: this.hass.localize("ui.common.no"),
+            confirmText: this.hass.localize("ui.common.yes"),
           })
         ) {
           setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
