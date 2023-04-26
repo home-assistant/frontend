@@ -43,7 +43,7 @@ import {
   STREAM_TYPE_HLS,
   updateCameraPrefs,
 } from "../../../data/camera";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import { ConfigEntry } from "../../../data/config_entries";
 import {
   createConfigFlow,
   handleConfigFlowStep,
@@ -129,6 +129,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property() public helperConfigEntry?: ConfigEntry;
+
   @state() private _name!: string;
 
   @state() private _icon!: string;
@@ -146,8 +148,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
   @state() private _hiddenBy!: EntityRegistryEntry["hidden_by"];
 
   @state() private _device?: DeviceRegistryEntry;
-
-  @state() private _helperConfigEntry?: ConfigEntry;
 
   @state() private _unit_of_measurement?: string | null;
 
@@ -176,20 +176,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private _origEntityId!: string;
 
   private _deviceClassOptions?: string[][];
-
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    if (this.entry.config_entry_id) {
-      getConfigEntries(this.hass, {
-        type: ["helper"],
-        domain: this.entry.platform,
-      }).then((entries) => {
-        this._helperConfigEntry = entries.find(
-          (ent) => ent.entry_id === this.entry.config_entry_id
-        );
-      });
-    }
-  }
 
   protected willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
@@ -686,7 +672,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
             </ha-settings-row>
           `
         : ""}
-      ${this._helperConfigEntry && this._helperConfigEntry.supports_options
+      ${this.helperConfigEntry && this.helperConfigEntry.supports_options
         ? html`
             <ha-list-item
               class="menu-item"
@@ -701,7 +687,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   "integration",
                   domainToName(
                     this.hass.localize,
-                    this._helperConfigEntry.domain
+                    this.helperConfigEntry.domain
                   )
                 )}</span
               >
@@ -711,7 +697,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   "integration",
                   domainToName(
                     this.hass.localize,
-                    this._helperConfigEntry.domain
+                    this.helperConfigEntry.domain
                   )
                 )}</span
               >
@@ -1124,7 +1110,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private async _showOptionsFlow() {
-    showOptionsFlowDialog(this, this._helperConfigEntry!, null);
+    showOptionsFlowDialog(this, this.helperConfigEntry!, null);
   }
 
   private _switchAsDomainsSorted = memoizeOne(

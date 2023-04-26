@@ -2,11 +2,15 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
-import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
+import {
+  ConfigEntry,
+  deleteConfigEntry,
+  getConfigEntries,
+} from "../../../data/config_entries";
 import { updateDeviceRegistryEntry } from "../../../data/device_registry";
 import {
   ExtEntityRegistryEntry,
@@ -40,6 +44,20 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
+
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    if (this.entry.config_entry_id) {
+      getConfigEntries(this.hass, {
+        type: ["helper"],
+        domain: this.entry.platform,
+      }).then((entries) => {
+        this._helperConfigEntry = entries.find(
+          (ent) => ent.entry_id === this.entry.config_entry_id
+        );
+      });
+    }
+  }
 
   protected render() {
     const stateObj: HassEntity | undefined =
@@ -90,6 +108,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         <entity-registry-settings-editor
           .hass=${this.hass}
           .entry=${this.entry}
+          .helperConfigEntry=${this._helperConfigEntry}
           .disabled=${this._submitting}
           @change=${this._entityRegistryChanged}
         ></entity-registry-settings-editor>
