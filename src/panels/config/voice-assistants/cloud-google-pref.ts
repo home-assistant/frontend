@@ -234,7 +234,7 @@ export class CloudGooglePref extends LitElement {
                 <mwc-button>
                   ${manualConfig
                     ? this.hass!.localize(
-                        "ui.panel.config.cloud.account.google.manage_entities"
+                        "ui.panel.config.cloud.account.google.show_entities"
                       )
                     : this.hass.localize(
                         "ui.panel.config.cloud.account.google.exposed_entities",

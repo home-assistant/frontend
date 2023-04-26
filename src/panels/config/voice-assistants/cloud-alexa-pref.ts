@@ -178,7 +178,7 @@ export class CloudAlexaPref extends LitElement {
                 <mwc-button>
                   ${manualConfig
                     ? this.hass!.localize(
-                        "ui.panel.config.cloud.account.alexa.manage_entities"
+                        "ui.panel.config.cloud.account.alexa.show_entities"
                       )
                     : this.hass.localize(
                         "ui.panel.config.cloud.account.alexa.exposed_entities",
