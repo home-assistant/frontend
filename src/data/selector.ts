@@ -111,12 +111,16 @@ export interface ConstantSelector {
 
 export interface DateSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  date: {} | null;
+  date: {
+    multiple?: boolean;
+  } | null;
 }
 
 export interface DateTimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  datetime: {} | null;
+  datetime: {
+    multiple?: boolean;
+  } | null;
 }
 
 interface DeviceSelectorFilter {
@@ -339,7 +343,9 @@ export interface ThemeSelector {
 }
 export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  time: {} | null;
+  time: {
+    multiple?: boolean;
+  } | null;
 }
 
 export interface TTSSelector {

@@ -9,7 +9,7 @@ import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-chip";
-import "../../components/ha-date-input";
+import "../../components/ha-date-time-input";
 import "../../components/ha-list-item";
 import "../../components/ha-select";
 import type { HaSelect } from "../../components/ha-select";
@@ -324,15 +324,17 @@ export class RecurrenceRuleEditor extends LitElement {
         : nothing}
       ${this._end === "on"
         ? html`
-            <ha-date-input
+            <ha-date-time-input
+              enable-date
               id="on"
               label=${this.hass.localize(
                 "ui.components.calendar.event.repeat.end_on.label"
               )}
               .locale=${this.locale}
               .value=${this._formatDate(this._untilDay!)}
+              .min="(${this._formatDate(this.dtstart!)})"
               @value-changed=${this._onUntilChange}
-            ></ha-date-input>
+            ></ha-date-time-input>
           `
         : nothing}
     `;

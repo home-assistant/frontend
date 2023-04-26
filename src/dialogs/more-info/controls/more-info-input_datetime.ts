@@ -1,8 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-date-input";
-import "../../../components/ha-time-input";
+import "../../../components/ha-date-time-input";
 import { isUnavailableState, UNKNOWN } from "../../../data/entity";
 import {
   setInputDateTimeValue,
@@ -21,78 +20,42 @@ class MoreInfoInputDatetime extends LitElement {
       return nothing;
     }
 
+    const both =
+      this.stateObj.attributes.has_date && this.stateObj.attributes.has_time;
+    const parts = stateToIsoDateString(this.stateObj).split("T");
+    const value =
+      this.stateObj.state === UNKNOWN
+        ? ""
+        : both
+        ? parts[0] + " " + parts[1]
+        : this.stateObj.attributes.has_date
+        ? parts[0]
+        : parts[1];
+
     return html`
-        ${
-          this.stateObj.attributes.has_date
-            ? html`
-                <ha-date-input
-                  .locale=${this.hass.locale}
-                  .value=${stateToIsoDateString(this.stateObj)}
-                  .disabled=${isUnavailableState(this.stateObj.state)}
-                  @value-changed=${this._dateChanged}
-                >
-                </ha-date-input>
-              `
-            : ``
-        }
-        ${
-          this.stateObj.attributes.has_time
-            ? html`
-                <ha-time-input
-                  .value=${this.stateObj.state === UNKNOWN
-                    ? ""
-                    : this.stateObj.attributes.has_date
-                    ? this.stateObj.state.split(" ")[1]
-                    : this.stateObj.state}
-                  .locale=${this.hass.locale}
-                  .disabled=${isUnavailableState(this.stateObj.state)}
-                  @value-changed=${this._timeChanged}
-                  @click=${this._stopEventPropagation}
-                ></ha-time-input>
-              `
-            : ``
-        }
-      </hui-generic-entity-row>
+      <ha-date-time-input
+        .enableDate=${this.stateObj.attributes.has_date}
+        .enableTime=${this.stateObj.attributes.has_time}
+        .value=${value}
+        .locale=${this.hass.locale}
+        .disabled=${isUnavailableState(this.stateObj.state)}
+        @value-changed=${this._valueChanged}
+      ></ha-date-time-input>
     `;
   }
 
-  private _stopEventPropagation(ev: Event): void {
+  private _valueChanged(ev: CustomEvent<{ value: string }>): void {
     ev.stopPropagation();
-  }
-
-  private _timeChanged(ev: CustomEvent<{ value: string }>): void {
-    setInputDateTimeValue(
-      this.hass!,
-      this.stateObj!.entity_id,
-      ev.detail.value,
-      this.stateObj!.attributes.has_date
-        ? this.stateObj!.state.split(" ")[0]
-        : undefined
-    );
-  }
-
-  private _dateChanged(ev: CustomEvent<{ value: string }>): void {
-    setInputDateTimeValue(
-      this.hass!,
-      this.stateObj!.entity_id,
-      this.stateObj!.attributes.has_time
-        ? this.stateObj!.state.split(" ")[1]
-        : undefined,
-      ev.detail.value
-    );
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-      }
-      ha-date-input + ha-time-input {
-        margin-left: 4px;
-      }
-    `;
+    if (this.stateObj) {
+      const parts = ev.detail.value.split(" ");
+      const date =
+        this.stateObj.attributes.has_date && parts[0] ? parts[0] : undefined;
+      const time =
+        this.stateObj.attributes.has_time && parts[parts.length - 1]
+          ? parts[parts.length - 1]
+          : undefined;
+      setInputDateTimeValue(this.hass!, this.stateObj.entity_id, date, time);
+    }
   }
 }
 

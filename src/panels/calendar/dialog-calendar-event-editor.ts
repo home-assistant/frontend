@@ -17,9 +17,8 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/ha-entity-picker";
-import "../../components/ha-date-input";
+import "../../components/ha-date-time-input";
 import "../../components/ha-textarea";
-import "../../components/ha-time-input";
 import {
   CalendarEntityFeature,
   CalendarEventMutableParams,
@@ -129,10 +128,7 @@ class DialogCalendarEventEditor extends LitElement {
     }
     const isCreate = this._params.entry === undefined;
 
-    const { startDate, startTime, endDate, endTime } = this._getLocaleStrings(
-      this._dtstart,
-      this._dtend
-    );
+    const { start, end } = this._getLocaleStrings(this._dtstart, this._dtend);
 
     return html`
       <ha-dialog
@@ -214,18 +210,13 @@ class DialogCalendarEventEditor extends LitElement {
               )}:</span
             >
             <div class="flex">
-              <ha-date-input
-                .value=${startDate}
+              <ha-date-time-input
+                enable-date
+                .enableTime=${!this._allDay}
+                .value=${start}
                 .locale=${this.hass.locale}
-                @value-changed=${this._startDateChanged}
-              ></ha-date-input>
-              ${!this._allDay
-                ? html`<ha-time-input
-                    .value=${startTime}
-                    .locale=${this.hass.locale}
-                    @value-changed=${this._startTimeChanged}
-                  ></ha-time-input>`
-                : ""}
+                @value-changed=${this._startChanged}
+              ></ha-date-time-input>
             </div>
           </div>
           <div>
@@ -233,19 +224,14 @@ class DialogCalendarEventEditor extends LitElement {
               >${this.hass.localize("ui.components.calendar.event.end")}:</span
             >
             <div class="flex">
-              <ha-date-input
-                .value=${endDate}
-                .min=${startDate}
+              <ha-date-time-input
+                enable-date
+                .enableTime=${!this._allDay}
+                .value=${end}
+                .min=${start}
                 .locale=${this.hass.locale}
-                @value-changed=${this._endDateChanged}
-              ></ha-date-input>
-              ${!this._allDay
-                ? html`<ha-time-input
-                    .value=${endTime}
-                    .locale=${this.hass.locale}
-                    @value-changed=${this._endTimeChanged}
-                  ></ha-time-input>`
-                : ""}
+                @value-changed=${this._endChanged}
+              ></ha-date-time-input>
             </div>
           </div>
           <ha-recurrence-rule-editor
@@ -301,10 +287,8 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _getLocaleStrings = memoizeOne(
     (startDate?: Date, endDate?: Date) => ({
-      startDate: this._formatDate(startDate!),
-      startTime: this._formatTime(startDate!),
-      endDate: this._formatDate(endDate!),
-      endTime: this._formatTime(endDate!),
+      start: this._formatDate(startDate!) + " " + this._formatTime(startDate!),
+      end: this._formatDate(endDate!) + " " + this._formatTime(endDate!),
     })
   );
 
@@ -343,13 +327,11 @@ class DialogCalendarEventEditor extends LitElement {
     this._allDay = ev.target.checked;
   }
 
-  private _startDateChanged(ev: CustomEvent) {
+  private _startChanged(ev: CustomEvent) {
     // Store previous event duration
     const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
-
-    this._dtstart = this._parseDate(
-      `${ev.detail.value}T${this._formatTime(this._dtstart!)}`
-    );
+    const parts = ev.detail.value.split(" ");
+    this._dtstart = this._parseDate(parts[0] + "T" + parts[1]);
 
     // Prevent that the end time can be before the start time. Try to keep the
     // duration the same.
@@ -361,34 +343,14 @@ class DialogCalendarEventEditor extends LitElement {
     }
   }
 
-  private _endDateChanged(ev: CustomEvent) {
-    this._dtend = this._parseDate(
-      `${ev.detail.value}T${this._formatTime(this._dtend!)}`
-    );
-  }
-
-  private _startTimeChanged(ev: CustomEvent) {
-    // Store previous event duration
-    const duration = differenceInMilliseconds(this._dtend!, this._dtstart!);
-
-    this._dtstart = this._parseDate(
-      `${this._formatDate(this._dtstart!)}T${ev.detail.value}`
-    );
-
-    // Prevent that the end time can be before the start time. Try to keep the
-    // duration the same.
+  private _endChanged(ev: CustomEvent) {
+    const parts = ev.detail.value.split(" ");
+    this._dtend = this._parseDate(parts[0] + "T" + parts[1]);
     if (this._dtend! <= this._dtstart!) {
-      this._dtend = addMilliseconds(new Date(this._dtstart), duration);
       this._info = this.hass.localize(
-        "ui.components.calendar.event.end_auto_adjusted"
+        "ui.components.calendar.event.invalid_duration"
       );
     }
-  }
-
-  private _endTimeChanged(ev: CustomEvent) {
-    this._dtend = this._parseDate(
-      `${this._formatDate(this._dtend!)}T${ev.detail.value}`
-    );
   }
 
   private _calculateData() {
@@ -589,11 +551,8 @@ class DialogCalendarEventEditor extends LitElement {
           display: block;
           padding: 16px 0;
         }
-        ha-date-input {
+        ha-date-time-input {
           flex-grow: 1;
-        }
-        ha-time-input {
-          margin-left: 16px;
         }
         ha-recurrence-rule-editor {
           display: block;

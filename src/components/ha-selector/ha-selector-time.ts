@@ -1,16 +1,17 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { TimeSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
-import "../ha-time-input";
+import type { TimeSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
+import "../ha-date-time-input";
+import "../ha-date-time-multiple-input";
 
 @customElement("ha-selector-time")
 export class HaTimeSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property() public hass!: HomeAssistant;
 
   @property({ attribute: false }) public selector!: TimeSelector;
 
-  @property() public value?: string;
+  @property() public value?: any;
 
   @property() public label?: string;
 
@@ -21,16 +22,33 @@ export class HaTimeSelector extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   protected render() {
+    if (!this.selector.time?.multiple) {
+      return html`
+        <ha-date-time-input
+          .hass=${this.hass}
+          .value=${this.value}
+          .label=${this.label}
+          .locale=${this.hass.locale}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          .helper=${this.helper}
+          enable-time
+          enable-second
+        ></ha-date-time-input>
+      `;
+    }
     return html`
-      <ha-time-input
+      <ha-date-time-multiple-input
+        .hass=${this.hass}
         .value=${this.value}
+        .label=${this.label}
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
         .required=${this.required}
         .helper=${this.helper}
-        .label=${this.label}
+        enable-time
         enable-second
-      ></ha-time-input>
+      ></ha-date-time-multiple-input>
     `;
   }
 }

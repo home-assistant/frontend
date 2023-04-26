@@ -2,35 +2,51 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { DateSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
-import "../ha-date-input";
+import "../ha-date-time-input";
+import "../ha-date-time-multiple-input";
 
 @customElement("ha-selector-date")
 export class HaDateSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public selector!: DateSelector;
+  @property({ attribute: false }) public selector!: DateSelector;
 
-  @property() public value?: string;
+  @property() public value?: any;
 
   @property() public label?: string;
 
   @property() public helper?: string;
 
-  @property({ type: Boolean, reflect: true }) public disabled = false;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required = true;
+  @property({ type: Boolean }) public required = false;
 
   protected render() {
+    if (!this.selector.date?.multiple) {
+      return html`
+        <ha-date-time-input
+          .hass=${this.hass}
+          .value=${this.value}
+          .label=${this.label}
+          .locale=${this.hass.locale}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          .helper=${this.helper}
+          enable-date
+        ></ha-date-time-input>
+      `;
+    }
     return html`
-      <ha-date-input
+      <ha-date-time-multiple-input
+        .hass=${this.hass}
+        .value=${this.value}
         .label=${this.label}
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
-        .value=${this.value}
         .required=${this.required}
         .helper=${this.helper}
-      >
-      </ha-date-input>
+        enable-date
+      ></ha-date-time-multiple-input>
     `;
   }
 }
