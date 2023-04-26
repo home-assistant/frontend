@@ -14,6 +14,7 @@ export type Selector =
   | BooleanSelector
   | ColorRGBSelector
   | ColorTempSelector
+  | ConversationAgentSelector
   | ConfigEntrySelector
   | ConstantSelector
   | DateSelector
@@ -25,19 +26,24 @@ export type Selector =
   | LegacyEntitySelector
   | FileSelector
   | IconSelector
+  | LanguageSelector
   | LocationSelector
   | MediaSelector
   | NavigationSelector
   | NumberSelector
   | ObjectSelector
+  | AssistPipelineSelector
   | SelectSelector
   | StateSelector
   | StatisticSelector
   | StringSelector
+  | STTSelector
   | TargetSelector
   | TemplateSelector
   | ThemeSelector
   | TimeSelector
+  | TTSSelector
+  | TTSVoiceSelector
   | UiActionSelector
   | UiColorSelector;
 
@@ -83,6 +89,10 @@ export interface ColorTempSelector {
     min_mireds?: number;
     max_mireds?: number;
   } | null;
+}
+
+export interface ConversationAgentSelector {
+  conversation_agent: { language?: string } | null;
 }
 
 export interface ConfigEntrySelector {
@@ -201,6 +211,14 @@ export interface IconSelector {
   } | null;
 }
 
+export interface LanguageSelector {
+  language: {
+    languages?: string[];
+    native_name?: boolean;
+    no_sort?: boolean;
+  } | null;
+}
+
 export interface LocationSelector {
   location: { radius?: boolean; icon?: string } | null;
 }
@@ -249,6 +267,11 @@ export interface ObjectSelector {
   object: {} | null;
 }
 
+export interface AssistPipelineSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  assist_pipeline: {} | null;
+}
+
 export interface SelectOption {
   value: any;
   label: string;
@@ -294,6 +317,10 @@ export interface StringSelector {
   } | null;
 }
 
+export interface STTSelector {
+  stt: { language?: string } | null;
+}
+
 export interface TargetSelector {
   target: {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
@@ -315,15 +342,23 @@ export interface TimeSelector {
   time: {} | null;
 }
 
+export interface TTSSelector {
+  tts: { language?: string } | null;
+}
+
+export interface TTSVoiceSelector {
+  tts_voice: { engineId?: string; language?: string } | null;
+}
+
 export interface UiActionSelector {
-  "ui-action": {
+  ui_action: {
     actions?: UiAction[];
   } | null;
 }
 
 export interface UiColorSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  "ui-color": {} | null;
+  ui_color: {} | null;
 }
 
 export const filterSelectorDevices = (

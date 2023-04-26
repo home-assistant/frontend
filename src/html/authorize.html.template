@@ -2,8 +2,8 @@
 <html>
   <head>
     <title>Home Assistant</title>
-    <link rel="modulepreload" href="<%= latestPageJS %>" crossorigin="use-credentials" />
-    <%= renderTemplate('_header') %>
+    <%= renderTemplate("_header.html.template") %>
+    <%= renderTemplate("_style_base.html.template") %>
     <style>
       .content {
         padding: 20px 16px;
@@ -38,36 +38,23 @@
       </div>
       <ha-authorize><p>Initializing</p></ha-authorize>
     </div>
-
-    <%= renderTemplate('_js_base') %>
-    <%= renderTemplate('_preload_roboto') %>
-
+    <%= renderTemplate("_js_base.html.template") %>
+    <%= renderTemplate("_preload_roboto.html.template") %>
     <script crossorigin="use-credentials">
       if (!window.globalThis) {
         window.globalThis = window;
       }
       // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
       if (!isS11_12) {
-        import("<%= latestPageJS %>");
+        <% for (const entry of latestEntryJS) { %>
+          import("<%= entry %>");
+        <% } %>
         window.latestJS = true;
         window.providersPromise = fetch("/auth/providers", {
           credentials: "same-origin",
         });
       }
     </script>
-
-    <script>
-      (function() {
-        if (!window.latestJS) {
-          <% if (useRollup) { %>
-            _ls("/static/js/s.min.js").onload = function() {
-              System.import("<%= es5PageJS %>");
-            }
-          <% } else { %>
-            _ls("<%= es5PageJS %>");
-          <% } %>
-        }
-      })();
-    </script>
+    <%= renderTemplate("_script_load_es5.html.template") %>
   </body>
 </html>

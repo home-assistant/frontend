@@ -193,11 +193,9 @@ export const computeStateDisplayFromEntityAttributes = (
     );
   }
 
-  // state of button is a timestamp
+  // state is a timestamp
   if (
-    domain === "button" ||
-    domain === "input_button" ||
-    domain === "scene" ||
+    ["button", "input_button", "scene", "stt", "tts"].includes(domain) ||
     (domain === "sensor" && attributes.device_class === "timestamp")
   ) {
     try {

@@ -108,7 +108,6 @@ class DialogRestart extends LitElement {
                         graphic="avatar"
                         twoline
                         multiline-secondary
-                        hasMeta
                         @request-selected=${this._reload}
                       >
                         <div slot="graphic" class="icon-background reload">
@@ -131,7 +130,6 @@ class DialogRestart extends LitElement {
                   graphic="avatar"
                   twoline
                   multiline-secondary
-                  hasMeta
                   @request-selected=${this._restart}
                 >
                   <div slot="graphic" class="icon-background restart">

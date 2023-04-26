@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
-    <link rel="icon" href="/static/icons/favicon.ico" />
+    <title>Home Assistant Demo</title>
+    <%= renderTemplate("../../../src/html/_header.html.template") %>
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#03a9f4" />
     <link
       rel="apple-touch-icon"
@@ -35,33 +34,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#03a9f4" />
-    <meta property="fb:app_id" content="338291289691179" />
-    <meta property="og:title" content="Home Assistant Demo" />
-    <meta property="og:site_name" content="Home Assistant" />
-    <meta property="og:url" content="https://demo.home-assistant.io/" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:description"
-      content="Open source home automation that puts local control and privacy first."
-    />
-    <meta
-      property="og:image"
-      content="https://www.home-assistant.io/images/default-social.png"
-    />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@home_assistant" />
-
-    <meta name="twitter:title" content="Home Assistant" />
-    <meta
-      name="twitter:description"
-      content="Open source home automation that puts local control and privacy first."
-    />
-    <meta
-      name="twitter:image"
-      content="https://www.home-assistant.io/images/default-social.png"
-    />
-    <title>Home Assistant Demo</title>
+    <%= renderTemplate("_social_meta.html.template") %>
     <style>
       html {
         background-color: var(--primary-background-color, #fafafa);
@@ -107,29 +80,22 @@
       </svg>
       <div id="ha-launch-screen-info-box" class="ha-launch-screen-spacer"></div>
     </div>
-
     <ha-demo></ha-demo>
-
-    <%= renderTemplate('_js_base') %>
-    <%= renderTemplate('_preload_roboto') %>
-
+    <%= renderTemplate("../../../src/html/_js_base.html.template") %>
+    <%= renderTemplate("../../../src/html/_preload_roboto.html.template") %>
     <script>
-      import("<%= latestDemoJS %>");
-      window.latestJS = true;
-    </script>
-
-    <script>
-      if (!window.latestJS) {
-        <% if (useRollup) { %>
-          _ls("/static/js/s.min.js").onload = function() {
-            System.import("<%= es5DemoJS %>");
-          };
-        <% } else { %>
-          _ls("<%= es5DemoJS %>");
+      if (!window.globalThis) {
+        window.globalThis = window;
+      }
+      // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
+      if (!isS11_12) {
+        <% for (const entry of latestEntryJS) { %>
+          import("<%= entry %>");
         <% } %>
+        window.latestJS = true;
       }
     </script>
-
+    <%= renderTemplate("../../../src/html/_script_load_es5.html.template") %>
     <script>
       var _gaq = [["_setAccount", "UA-57927901-5"], ["_trackPageview"]];
       (function (d, t) {

@@ -520,7 +520,7 @@ export class HaAutomationTrace extends LitElement {
         }
 
         .main {
-          height: calc(100% - var(--header-height));
+          min-height: calc(100% - var(--header-height));
           display: flex;
           background-color: var(--card-background-color);
           direction: ltr;

@@ -73,7 +73,7 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   main?: boolean;
   title: TemplateResult | string;
   label?: TemplateResult | string;
-  type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
+  type?: "numeric" | "icon" | "icon-button" | "overflow-menu" | "flex";
   template?: (data: any, row: T) => TemplateResult | string | typeof nothing;
   width?: string;
   maxWidth?: string;
@@ -359,10 +359,10 @@ export class HaDataTable extends LitElement {
       return nothing;
     }
     if (row.append) {
-      return html` <div class="mdc-data-table__row">${row.content}</div> `;
+      return html`<div class="mdc-data-table__row">${row.content}</div>`;
     }
     if (row.empty) {
-      return html` <div class="mdc-data-table__row"></div> `;
+      return html`<div class="mdc-data-table__row"></div>`;
     }
     return html`
       <div
@@ -406,6 +406,7 @@ export class HaDataTable extends LitElement {
             <div
               role=${column.main ? "rowheader" : "cell"}
               class="mdc-data-table__cell ${classMap({
+                "mdc-data-table__cell--flex": column.type === "flex",
                 "mdc-data-table__cell--numeric": column.type === "numeric",
                 "mdc-data-table__cell--icon": column.type === "icon",
                 "mdc-data-table__cell--icon-button":
@@ -661,6 +662,10 @@ export class HaDataTable extends LitElement {
           text-overflow: ellipsis;
           flex-shrink: 0;
           box-sizing: border-box;
+        }
+
+        .mdc-data-table__cell.mdc-data-table__cell--flex {
+          display: flex;
         }
 
         .mdc-data-table__cell.mdc-data-table__cell--icon {

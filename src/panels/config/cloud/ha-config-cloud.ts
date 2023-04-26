@@ -56,14 +56,6 @@ class HaConfigCloud extends HassRouterPage {
       account: {
         tag: "cloud-account",
       },
-      "google-assistant": {
-        tag: "cloud-google-assistant",
-        load: () => import("./google-assistant/cloud-google-assistant"),
-      },
-      alexa: {
-        tag: "cloud-alexa",
-        load: () => import("./alexa/cloud-alexa"),
-      },
     },
   };
 

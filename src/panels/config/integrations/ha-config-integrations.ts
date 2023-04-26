@@ -40,10 +40,6 @@ import {
   subscribeConfigFlowInProgress,
 } from "../../../data/config_flow";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import {
   EntityRegistryEntry,
@@ -53,13 +49,13 @@ import {
   domainToName,
   fetchIntegrationManifest,
   fetchIntegrationManifests,
-  IntegrationManifest,
   IntegrationLogInfo,
+  IntegrationManifest,
   subscribeLogInfo,
 } from "../../../data/integration";
 import {
-  getIntegrationDescriptions,
   findIntegration,
+  getIntegrationDescriptions,
 } from "../../../data/integrations";
 import { scanUSBDevices } from "../../../data/usb";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
@@ -140,9 +136,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
   @state()
-  private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
-
-  @state()
   private _manifests: Record<string, IntegrationManifest> = {};
 
   private _extraFetchedManifests?: Set<string>;
@@ -167,9 +160,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     return [
       subscribeEntityRegistry(this.hass.connection, (entries) => {
         this._entityRegistryEntries = entries;
-      }),
-      subscribeDeviceRegistry(this.hass.connection, (entries) => {
-        this._deviceRegistryEntries = entries;
       }),
       subscribeConfigFlowInProgress(this.hass, async (flowsInProgress) => {
         const integrations: Set<string> = new Set();
@@ -513,7 +503,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     .items=${items}
                     .manifest=${this._manifests[domain]}
                     .entityRegistryEntries=${this._entityRegistryEntries}
-                    .deviceRegistryEntries=${this._deviceRegistryEntries}
                   ></ha-integration-card> `
               )
             : ""}
@@ -527,7 +516,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     .items=${items}
                     .manifest=${this._manifests[domain]}
                     .entityRegistryEntries=${this._entityRegistryEntries}
-                    .deviceRegistryEntries=${this._deviceRegistryEntries}
                     .supportsDiagnostics=${this._diagnosticHandlers
                       ? this._diagnosticHandlers[domain]
                       : false}
@@ -731,13 +719,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           }),
         })
       ) {
-        showConfigFlowDialog(this, {
-          dialogClosedCallback: () => {
-            this._handleFlowUpdated();
-          },
-          startFlowHandler: domain,
-          manifest: await fetchIntegrationManifest(this.hass, domain),
-          showAdvanced: this.hass.userData?.showAdvanced,
+        showAddIntegrationDialog(this, {
+          domain,
         });
       }
       return;

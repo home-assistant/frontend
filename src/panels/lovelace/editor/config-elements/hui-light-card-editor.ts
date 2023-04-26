@@ -48,11 +48,11 @@ const SCHEMA = [
   { name: "theme", selector: { theme: {} } },
   {
     name: "hold_action",
-    selector: { "ui-action": {} },
+    selector: { ui_action: {} },
   },
   {
     name: "double_tap_action",
-    selector: { "ui-action": {} },
+    selector: { ui_action: {} },
   },
 ] as const;
 

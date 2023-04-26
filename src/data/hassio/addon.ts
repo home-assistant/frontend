@@ -381,3 +381,23 @@ export const fetchAddonInfo = (
       ? `/store/addons/${addonSlug}` // Use /store/addons when add-on is not installed
       : `/addons/${addonSlug}/info` // Use /addons when add-on is installed
   );
+
+export const rebuildLocalAddon = async (
+  hass: HomeAssistant,
+  slug: string
+): Promise<void> => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return hass.callWS<void>({
+      type: "supervisor/api",
+      endpoint: `/addons/${slug}/rebuild`,
+      method: "post",
+      timeout: null,
+    });
+  }
+  return (
+    await hass.callApi<HassioResponse<void>>(
+      "POST",
+      `hassio/addons/${slug}rebuild`
+    )
+  ).data;
+};
