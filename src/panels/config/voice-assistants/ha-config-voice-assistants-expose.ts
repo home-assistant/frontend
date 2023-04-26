@@ -44,7 +44,6 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -53,7 +52,7 @@ import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
 
 @customElement("ha-config-voice-assistants-expose")
-export class VoiceAssistantsExpose extends SubscribeMixin(LitElement) {
+export class VoiceAssistantsExpose extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
