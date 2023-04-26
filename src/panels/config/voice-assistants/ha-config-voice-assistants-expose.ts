@@ -571,7 +571,7 @@ export class VoiceAssistantsExpose extends LitElement {
   private _addEntry() {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : voiceAssistantKeys;
+      : this._availableAssistants(this.cloudStatus);
     showExposeEntityDialog(this, {
       filterAssistants: assistants,
       extendedEntities: this._extEntities!,
@@ -604,7 +604,7 @@ export class VoiceAssistantsExpose extends LitElement {
   private _unexposeSelected() {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : voiceAssistantKeys;
+      : this._availableAssistants(this.cloudStatus);
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.voice_assistants.expose.unexpose_confirm_title"
@@ -632,7 +632,7 @@ export class VoiceAssistantsExpose extends LitElement {
   private _exposeSelected() {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : voiceAssistantKeys;
+      : this._availableAssistants(this.cloudStatus);
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.voice_assistants.expose.expose_confirm_title"

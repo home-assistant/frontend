@@ -12,6 +12,7 @@ import {
   computeEntityRegistryName,
   ExtEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { voiceAssistants } from "../../../data/voice";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
@@ -43,20 +44,19 @@ class DialogExposeEntity extends LitElement {
       return nothing;
     }
 
+    const header = this.hass.localize(
+      "ui.panel.config.voice_assistants.expose.expose_dialog.header",
+      {
+        assistants: this._params.filterAssistants
+          .map((ass) => voiceAssistants[ass].name)
+          .join(", "),
+      }
+    );
+
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${this.hass.localize(
-          "ui.panel.config.voice_assistants.expose.expose_dialog.header"
-        )}
-      >
+      <ha-dialog open @closed=${this.closeDialog} .heading=${header}>
         <div slot="heading">
-          <h2 class="header">
-            ${this.hass.localize(
-              "ui.panel.config.voice_assistants.expose.expose_dialog.header"
-            )}
-          </h2>
+          <h2 class="header">${header}</h2>
           <ha-icon-button
             .label=${this.hass.localize("ui.dialogs.generic.close")}
             .path=${mdiClose}
