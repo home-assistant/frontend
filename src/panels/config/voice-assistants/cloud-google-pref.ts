@@ -2,6 +2,7 @@ import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
@@ -18,9 +19,12 @@ import {
   getExposeNewEntities,
   setExposeNewEntities,
 } from "../../../data/voice";
+import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 
 export class CloudGooglePref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property() private extEntities?: Record<string, ExtEntityRegistryEntry>;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
@@ -35,6 +39,13 @@ export class CloudGooglePref extends LitElement {
       );
     }
   }
+
+  private _exposedEntities = memoizeOne(
+    (extEntities: Record<string, ExtEntityRegistryEntry>) =>
+      Object.values(extEntities).filter(
+        (entity) => entity.options?.["cloud.google_assistant"]?.should_expose
+      ).length
+  );
 
   protected render() {
     if (!this.cloudStatus) {
@@ -215,17 +226,28 @@ export class CloudGooglePref extends LitElement {
                     `
                   : ""}`}
         </div>
-        <div class="card-actions">
-          <a
-            href="/config/voice-assistants/expose?assistants=cloud.google_assistant&historyBack"
-          >
-            <mwc-button>
-              ${this.hass.localize(
-                "ui.panel.config.cloud.account.google.manage_entities"
-              )}
-            </mwc-button>
-          </a>
-        </div>
+        ${google_enabled
+          ? html`<div class="card-actions">
+              <a
+                href="/config/voice-assistants/expose?assistants=cloud.google_assistant&historyBack"
+              >
+                <mwc-button>
+                  ${manualConfig
+                    ? this.hass!.localize(
+                        "ui.panel.config.cloud.account.google.show_entities"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.cloud.account.google.exposed_entities",
+                        {
+                          number: this.extEntities
+                            ? this._exposedEntities(this.extEntities)
+                            : 0,
+                        }
+                      )}
+                </mwc-button>
+              </a>
+            </div>`
+          : nothing}
       </ha-card>
     `;
   }
