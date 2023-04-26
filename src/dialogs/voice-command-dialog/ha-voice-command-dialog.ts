@@ -1,9 +1,11 @@
 import "@material/mwc-button/mwc-button";
 import {
+  mdiChevronDown,
   mdiClose,
   mdiHelpCircleOutline,
   mdiMicrophone,
   mdiSend,
+  mdiStar,
 } from "@mdi/js";
 import {
   css,
@@ -16,14 +18,19 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
+import "../../components/ha-button";
+import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
+import "../../components/ha-list-item";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
 import {
   AssistPipeline,
   getAssistPipeline,
+  listAssistPipelines,
   runAssistPipeline,
 } from "../../data/assist_pipeline";
 import { AgentInfo, getAgentInfo } from "../../data/conversation";
@@ -55,6 +62,10 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @state() private _showSendButton = false;
 
+  @state() private _pipelines?: AssistPipeline[];
+
+  @state() private _preferredPipeline?: string;
+
   @query("#scroll-container") private _scrollContainer!: HTMLDivElement;
 
   @query("#message-input") private _messageInput!: HaTextField;
@@ -84,6 +95,7 @@ export class HaVoiceCommandDialog extends LitElement {
   public async closeDialog(): Promise<void> {
     this._opened = false;
     this._pipeline = undefined;
+    this._pipelines = undefined;
     this._agentInfo = undefined;
     this._conversation = undefined;
     this._conversationId = null;
@@ -107,15 +119,56 @@ export class HaVoiceCommandDialog extends LitElement {
       >
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title">
-              ${this.hass.localize("ui.dialogs.voice_command.title")}
-            </span>
             <ha-icon-button
               slot="navigationIcon"
               dialogAction="cancel"
               .label=${this.hass.localize("ui.common.close")}
               .path=${mdiClose}
             ></ha-icon-button>
+            <div slot="title">
+              ${this.hass.localize("ui.dialogs.voice_command.title")}
+              <ha-button-menu
+                @opened=${this._loadPipelines}
+                @closed=${stopPropagation}
+                activatable
+                fixed
+              >
+                <ha-button slot="trigger">
+                  ${this._pipeline?.name}
+                  <ha-svg-icon
+                    slot="trailingIcon"
+                    .path=${mdiChevronDown}
+                  ></ha-svg-icon>
+                </ha-button>
+                ${this._pipelines?.map(
+                  (pipeline) => html`<ha-list-item
+                    ?selected=${pipeline.id === this._pipelineId ||
+                    (!this._pipelineId &&
+                      pipeline.id === this._preferredPipeline)}
+                    .pipeline=${pipeline.id}
+                    @click=${this._selectPipeline}
+                    .hasMeta=${pipeline.id === this._preferredPipeline}
+                  >
+                    ${pipeline.name}${pipeline.id === this._preferredPipeline
+                      ? html`<ha-svg-icon
+                          slot="meta"
+                          .path=${mdiStar}
+                        ></ha-svg-icon>`
+                      : nothing}
+                  </ha-list-item>`
+                )}
+                ${this.hass.user?.is_admin
+                  ? html`<li divider role="separator"></li>
+                      <a href="/config/voice-assistants/assistants"
+                        ><ha-list-item @click=${this.closeDialog}
+                          >${this.hass.localize(
+                            "ui.dialogs.voice_command.manage_assistants"
+                          )}</ha-list-item
+                        ></a
+                      >`
+                  : nothing}
+              </ha-button-menu>
+            </div>
             <a
               href=${documentationUrl(this.hass, "/docs/assist/")}
               slot="actionItems"
@@ -211,11 +264,41 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private async _getPipeline() {
-    this._pipeline = await getAssistPipeline(this.hass, this._pipelineId);
+    try {
+      this._pipeline = await getAssistPipeline(this.hass, this._pipelineId);
+    } catch (e: any) {
+      if (e.code === "not_found") {
+        this._pipelineId = undefined;
+      }
+      return;
+    }
     this._agentInfo = await getAgentInfo(
       this.hass,
       this._pipeline.conversation_engine
     );
+  }
+
+  private async _loadPipelines() {
+    if (this._pipelines) {
+      return;
+    }
+    const { pipelines, preferred_pipeline } = await listAssistPipelines(
+      this.hass
+    );
+    this._pipelines = pipelines;
+    this._preferredPipeline = preferred_pipeline || undefined;
+  }
+
+  private async _selectPipeline(ev: CustomEvent) {
+    this._pipelineId = (ev.currentTarget as any).pipeline;
+    this._conversation = [
+      {
+        who: "hass",
+        text: this.hass.localize("ui.dialogs.voice_command.how_can_i_help"),
+      },
+    ];
+    await this.updateComplete;
+    this._scrollMessagesBottom();
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -490,18 +573,50 @@ export class HaVoiceCommandDialog extends LitElement {
         ha-dialog {
           --primary-action-button-flex: 1;
           --secondary-action-button-flex: 0;
-          --mdc-dialog-max-width: 450px;
+          --mdc-dialog-max-width: 500px;
           --mdc-dialog-max-height: 500px;
           --dialog-content-padding: 0;
         }
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
           --mdc-theme-primary: var(--mdc-theme-surface);
+          --header-height: 64px;
         }
         ha-header-bar a {
           color: var(--primary-text-color);
         }
-
+        div[slot="title"] {
+          display: flex;
+          flex-direction: column;
+          margin-top: 8px;
+        }
+        ha-button-menu {
+          --mdc-theme-on-primary: var(--text-primary-color);
+          --mdc-theme-primary: var(--primary-color);
+          margin: -8px 0 0 -8px;
+        }
+        ha-button-menu ha-button {
+          --mdc-theme-primary: var(--secondary-text-color);
+          --mdc-typography-button-text-transform: none;
+          --mdc-typography-button-font-size: unset;
+          --mdc-typography-button-font-weight: 400;
+          --mdc-typography-button-letter-spacing: var(
+            --mdc-typography-headline6-letter-spacing,
+            0.0125em
+          );
+          --mdc-typography-button-line-height: var(
+            --mdc-typography-headline6-line-height,
+            2rem
+          );
+          --button-height: auto;
+        }
+        ha-button-menu ha-button ha-svg-icon {
+          height: 28px;
+          margin-left: 4px;
+        }
+        ha-button-menu a {
+          text-decoration: none;
+        }
         ha-textfield {
           display: block;
           overflow: hidden;
@@ -521,14 +636,20 @@ export class HaVoiceCommandDialog extends LitElement {
           padding: 4px;
         }
         .attribution {
+          display: block;
           color: var(--secondary-text-color);
+          padding-top: 4px;
+          margin-bottom: -8px;
         }
         .messages {
           display: block;
-          height: 300px;
+          height: 400px;
           box-sizing: border-box;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-max-width: 100%;
+          }
           .messages {
             height: 100%;
           }
