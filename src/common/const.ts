@@ -50,6 +50,7 @@ import {
   mdiRobotVacuum,
   mdiScriptText,
   mdiSineWave,
+  mdiSpeakerMessage,
   mdiSpeedometer,
   mdiSunWireless,
   mdiThermometer,
@@ -75,8 +76,8 @@ export const DEFAULT_DOMAIN_ICON = mdiBookmark;
 
 /** Icons for each domain */
 export const FIXED_DOMAIN_ICONS = {
-  alert: mdiAlert,
   air_quality: mdiAirFilter,
+  alert: mdiAlert,
   calendar: mdiCalendar,
   climate: mdiThermostat,
   configurator: mdiCog,
@@ -106,10 +107,12 @@ export const FIXED_DOMAIN_ICONS = {
   script: mdiScriptText,
   select: mdiFormatListBulleted,
   sensor: mdiEye,
-  siren: mdiBullhorn,
   simple_alarm: mdiBell,
+  siren: mdiBullhorn,
+  stt: mdiMicrophoneMessage,
   text: mdiFormTextbox,
   timer: mdiTimerOutline,
+  tts: mdiSpeakerMessage,
   updater: mdiCloudUpload,
   vacuum: mdiRobotVacuum,
   zone: mdiMapMarkerRadius,

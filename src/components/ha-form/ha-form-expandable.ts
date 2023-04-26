@@ -71,6 +71,7 @@ export class HaFormExpendable extends LitElement implements HaFormElement {
         display: block;
         --expansion-panel-content-padding: 0;
         border-radius: 6px;
+        --ha-card-border-radius: 6px;
       }
       ha-svg-icon,
       ha-icon {

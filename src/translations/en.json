@@ -401,9 +401,29 @@
       "config-entry-picker": {
         "config_entry": "Integration"
       },
+      "coversation-agent-picker": {
+        "conversation_agent": "Conversation agent",
+        "none": "None"
+      },
+      "pipeline-picker": {
+        "pipeline": "Assistant",
+        "preferred": "Preferred assistant ({preferred})"
+      },
       "theme-picker": {
         "theme": "Theme",
         "no_theme": "No theme"
+      },
+      "language-picker": {
+        "language": "Language",
+        "no_languages": "No languages available"
+      },
+      "tts-picker": {
+        "tts": "Text-to-speech",
+        "none": "None"
+      },
+      "tts-voice-picker": {
+        "voice": "Voice",
+        "none": "None"
       },
       "user-picker": {
         "no_user": "No user",
@@ -458,6 +478,7 @@
           }
         }
       },
+      "stt-picker": { "stt": "Speech-to-text", "none": "None" },
       "related-filter-menu": {
         "filter": "Filter",
         "filter_by_entity": "Filter by entity",
@@ -816,7 +837,8 @@
         "how_can_i_help": "How can I assist?",
         "input_label": "Enter a request",
         "send_text": "Send text",
-        "start_listening": "Start listening"
+        "start_listening": "Start listening",
+        "manage_assistants": "Manage assistants"
       },
       "generic": {
         "cancel": "Cancel",
@@ -1019,7 +1041,7 @@
           "enabled_label": "Enabled",
           "disabled_label": "Disabled",
           "enabled_cause": "Cannot change status. Disabled by {cause}.",
-          "hidden_label": "Hidden",
+          "visible_label": "Visible",
           "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
           "entity_disabled": "This entity is disabled.",
@@ -1034,12 +1056,11 @@
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
           "note": "Note: This might not work yet with all integrations.",
-          "advanced": "Advanced settings",
-          "area": "Set entity area only",
-          "area_note": "By default the entities of a device are in the same area as the device. If you change the area of this entity, it will no longer follow the area of the device.",
-          "follow_device_area": "Follow device area",
-          "change_device_area": "Change device area",
+          "use_device_area": "Use device area",
+          "change_device_settings": "You can {link} in the device settings",
+          "change_device_area_link": "change the device area",
           "configure_state": "{integration} options",
+          "configure_state_secondary": "Specific options for {integration}",
           "stream": {
             "preload_stream": "Preload camera stream",
             "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive.",
@@ -1054,11 +1075,15 @@
             "stream_orientation_7": "Rotate right and flip",
             "stream_orientation_8": "Rotate right"
           },
-          "aliases_section": "Aliases",
-          "no_aliases": "No configured aliases",
-          "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
-          "aliases_description": "Aliases are alternative names used in voice assistants to refer to this entity."
+          "no_aliases": "Configure aliases and expose settings for voice assistants"
         }
+      },
+      "voice-settings": {
+        "expose_header": "Expose",
+        "aliases_header": "Aliases",
+        "aliases_description": "Aliases are supported by Assist and Google Assistant.",
+        "ask_pin": "Ask for PIN",
+        "manual_config": "Managed with filters in configuration.yaml"
       },
       "restart": {
         "heading": "Restart Home Assistant",
@@ -1246,10 +1271,6 @@
           "device_name_placeholder": "Change device name"
         }
       },
-      "domain_toggler": {
-        "title": "Toggle Domains",
-        "reset_entities": "Reset Entity overrides"
-      },
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
         "deserialize": "Attempt to parse MQTT messages as JSON",
@@ -1305,6 +1326,13 @@
       "enter_code": {
         "title": "Enter code",
         "input_label": "Code"
+      },
+      "tts-try": {
+        "header": "Try text-to-speech",
+        "message": "Message",
+        "message_example": "Hello. How can I assist?",
+        "message_placeholder": "Enter a sentence to speak.",
+        "play": "Play"
       }
     },
     "duration": {
@@ -1405,6 +1433,10 @@
           "dashboards": {
             "main": "Dashboards",
             "secondary": "Organize how you interact with your home"
+          },
+          "voice_assistants": {
+            "main": "Voice assistants",
+            "secondary": "Manage your voice assistants"
           },
           "energy": {
             "main": "Energy",
@@ -1992,6 +2024,94 @@
             }
           }
         },
+        "voice_assistants": {
+          "assistants": {
+            "caption": "Assistants",
+            "pipeline": {
+              "add_assistant": "Add assistant",
+              "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
+              "delete": {
+                "confirm_title": "Delete {name}?",
+                "confirm_text": "{name} will be permanently deleted."
+              },
+              "detail": {
+                "update_assistant_action": "Update",
+                "add_assistant_title": "Add assistant",
+                "add_assistant_action": "Create",
+                "try_tts": "Try voice",
+                "form": {
+                  "name": "Name",
+                  "conversation_engine": "Conversation agent",
+                  "conversation_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
+                  "language": "Language",
+                  "stt_engine": "Speech-to-text",
+                  "stt_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
+                  "tts_engine": "Text-to-speech",
+                  "tts_language": "[%key:ui::panel::config::voice_assistants::assistants::pipeline::detail::form::language%]",
+                  "tts_voice": "Voice"
+                },
+                "steps": {
+                  "config": {
+                    "title": "Configuration",
+                    "description": "Give your assistant a name and select your language. Depending on this language, you may be able to choose region specific variants below."
+                  },
+                  "conversation": {
+                    "title": "Conversation agent",
+                    "description": "The conversation agent is the brains of your assistant and will process the incoming text commands."
+                  },
+                  "stt": {
+                    "title": "Speech-to-text",
+                    "description": "When you are controlling your assistant with voice, the speech-to-text engine turns your voice command into text."
+                  },
+                  "tts": {
+                    "title": "Text-to-speech",
+                    "description": "When you are controlling your assistant with voice, the text-to-speech engine turns the conversation text responses into audio."
+                  }
+                },
+                "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
+                "no_cloud_action": "Subscribe"
+              }
+            },
+            "cloud": {
+              "header": "Get the best assistant with Home Assistant Cloud",
+              "features": {
+                "assistants": {
+                  "title": "Google Assistant and Amazon Alexa",
+                  "text": "Control all your Home Assistant devices via any Google Assistant-enabled or Alexa-enabled device."
+                },
+                "speech": {
+                  "title": "Better speech options",
+                  "text": "Bring personality to your home by having it speak to you using our neural-network powered speech-to-text and text-to-speech services."
+                }
+              },
+              "and_more": "And more",
+              "try_one_month": "Try 1 month for free",
+              "sign_in": "Sign in"
+            }
+          },
+          "expose": {
+            "caption": "Expose",
+            "headers": {
+              "name": "Name",
+              "area": "Area",
+              "assistants": "Assistants",
+              "aliases": "Aliases"
+            },
+            "aliases": "{count} aliases",
+            "expose": "Expose",
+            "unexpose": "Unexpose",
+            "add": "Expose entities",
+            "expose_confirm_title": "Expose selected entities?",
+            "expose_confirm_text": "Do you want to expose {entities} entities to {assistants}?",
+            "unexpose_confirm_title": "Stop exposing selected entities?",
+            "unexpose_confirm_text": "Do you want to stop exposing {entities} entities to {assistants}?",
+            "expose_dialog": {
+              "header": "Expose entities",
+              "expose_to": "to {assistants}",
+              "expose_entities": "Expose {count} {count, plural,\n  one {entity}\n  other {entities}\n}"
+            }
+          }
+        },
         "automation": {
           "caption": "Automations",
           "description": "Create custom behavior rules for your home",
@@ -2206,8 +2326,10 @@
                 "webhook": {
                   "copy_url": "Copy URL to Clipboard",
                   "label": "Webhook",
+                  "local_only": "Only accessible from the local network",
                   "webhook_id": "Webhook ID",
-                  "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess."
+                  "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess.",
+                  "webhook_settings": "Webhook Settings"
                 },
                 "zone": {
                   "label": "Zone",
@@ -2632,7 +2754,9 @@
             "start_trial": "Start your free 1 month trial",
             "trial_info": "No payment information necessary",
             "alert_password_change_required": "You need to change your password before logging in.",
-            "alert_email_confirm_necessary": "You need to confirm your email before logging in."
+            "alert_email_confirm_necessary": "You need to confirm your email before logging in.",
+            "cloud_pipeline_title": "Want to use Home Assistant Cloud for your voice assistant?",
+            "cloud_pipeline_text": "We created a new assistant for you, using the great text-to-speech and speech-to-text engines from Home Assistant Cloud. Would you like to set this assistant as the preferred assistant?"
           },
           "forgot_password": {
             "title": "Forgot password",
@@ -2677,18 +2801,19 @@
             "integrations_introduction": "Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.",
             "integrations_introduction2": "Check the website for ",
             "integrations_link_all_features": " all available features",
+            "tip_moved_voice_assistants": "Looking for Google Assistant and Amazon Alexa settings? They are moved to the new voice assistants page.",
             "connected": "Connected",
             "connecting": "Connecting…",
             "not_connected": "Not Connected",
             "fetching_subscription": "Fetching subscription…",
             "tts": {
-              "title": "Text to Speech",
+              "title": "Text-to-speech",
               "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
               "default_language": "Default language to use",
               "default_gender": "Default gender to use",
               "try": "Try",
               "dialog": {
-                "header": "Try Text to Speech",
+                "header": "Try text-to-speech",
                 "example_message": "Hello {name}, you can play any text on any supported media player!",
                 "target": "Target",
                 "target_browser": "Browser",
@@ -2702,6 +2827,9 @@
               "not_connected": "Not Connected",
               "reconnecting": "Not connected. Trying to reconnect.",
               "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
+              "cerificate_loading": "Your certificate is loading.",
+              "cerificate_loaded": "Your certificate is loaded, waiting for validation.",
+              "cerificate_error": "There was an error generating the certficate, check your logs.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
               "instance_is_available": "Your instance is available at your",
               "instance_will_be_available": "Your instance will be available at your",
@@ -2717,12 +2845,16 @@
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "state_reporting_error": "Unable to {enable_disable} report state.",
-              "manage_entities": "[%key:ui::panel::config::cloud::account::google::manage_entities%]",
+              "show_entities": "[%key:ui::panel::config::cloud::account::google::show_entities%]",
+              "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
+              "manual_config": "[%key:ui::panel::config::cloud::account::google::manual_config%]",
               "enable": "enable",
               "disable": "disable",
-              "not_configured_title": "Alexa is not activated",
+              "not_configured_title": "Continue setting up Alexa",
               "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app.",
-              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
+              "expose_new_entities": "[%key:ui::panel::config::cloud::account::google::expose_new_entities%]",
+              "expose_new_entities_info": "Should new entities, that are supported and have no security risks be exposed to Alexa automatically?"
             },
             "google": {
               "title": "Google Assistant",
@@ -2737,11 +2869,15 @@
               "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say/enter this PIN when interacting with such devices via Google Assistant.",
               "devices_pin": "Security Devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
-              "manage_entities": "Manage Entities",
+              "show_entities": "Show Entities",
+              "exposed_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} exposed",
+              "manual_config": "Editing which entities are exposed via the UI is disabled because you have configured entity filters in configuration.yaml.",
               "enter_pin_error": "Unable to store PIN:",
-              "not_configured_title": "Google Assistant is not activated",
+              "not_configured_title": "Continue setting up Google Assistant",
               "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
-              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]"
+              "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
+              "expose_new_entities": "Expose new entities",
+              "expose_new_entities_info": "Should new entities, that are supported and have no security risks be exposed to Google Assistant automatically?"
             },
             "webhooks": {
               "title": "Webhooks",
@@ -2756,56 +2892,12 @@
               "disable_hook_error_msg": "Failed to disable webhook:"
             }
           },
-          "alexa": {
-            "title": "Alexa",
-            "banner": "[%key:ui::panel::config::cloud::google::banner%]",
-            "exposed_entities": "[%key:ui::panel::config::cloud::google::exposed_entities%]",
-            "not_exposed_entities": "[%key:ui::panel::config::cloud::google::not_exposed_entities%]",
-            "manage_defaults": "[%key:ui::panel::config::cloud::google::manage_defaults%]",
-            "manage_defaults_dialog_description": "[%key:ui::panel::config::cloud::google::manage_defaults_dialog_description%]",
-            "expose_entity": "[%key:ui::panel::config::cloud::google::expose_entity%]",
-            "dont_expose_entity": "[%key:ui::panel::config::cloud::google::dont_expose_entity%]",
-            "follow_domain": "[%key:ui::panel::config::cloud::google::follow_domain%]",
-            "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
-            "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
-            "manage_aliases": "[%key:ui::panel::config::cloud::google::manage_aliases%]",
-            "expose": "Expose to Alexa",
-            "sync_entities": "Synchronize entities",
-            "sync_entities_error": "Failed to sync entities:"
-          },
           "dialog_certificate": {
             "certificate_information": "Certificate Information",
             "certificate_expiration_date": "Certificate expiration date:",
             "will_be_auto_renewed": "will be automatically renewed",
             "fingerprint": "Certificate fingerprint:",
             "close": "Close"
-          },
-          "google": {
-            "title": "Google Assistant",
-            "expose": "Expose to Google Assistant",
-            "disable_2FA": "Disable two factor authentication",
-            "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
-            "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not exposed entities",
-            "manage_defaults": "Manage defaults",
-            "manage_defaults_dialog_description": "Entities can be exposed by default based on their type.",
-            "expose_entity": "Expose entity",
-            "dont_expose_entity": "Don't expose entity",
-            "follow_domain": "Follow domain",
-            "exposed": "{selected} exposed",
-            "not_exposed": "{selected} not exposed",
-            "manage_aliases": "Manage aliases",
-            "add_aliases": "Add aliases",
-            "no_aliases": "No aliases",
-            "aliases_not_available": "Aliases not available",
-            "aliases_not_available_learn_more": "Learn more",
-            "sync_to_google": "Synchronizing changes to Google.",
-            "sync_entities": "Synchronize entities",
-            "sync_entities_error": "Failed to sync entities:",
-            "not_configured_title": "[%key:ui::panel::config::cloud::account::google::not_configured_title%]",
-            "not_configured_text": "[%key:ui::panel::config::cloud::account::google::not_configured_text%]",
-            "sync_failed_title": "Syncing failed",
-            "sync_failed_text": "Syncing your entities failed, try again or check the logs."
           },
           "dialog_cloudhook": {
             "webhook_for": "Webhook for {name}",
@@ -2943,6 +3035,7 @@
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
             "search": "Search entities",
+            "unnamed_entity": "Unnamed entity",
             "filter": {
               "filter": "Filter",
               "show_hidden": "Show hidden entities",
@@ -3839,7 +3932,7 @@
             "wifi_password": "Wi-Fi password",
             "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
             "static": "Static",
-            "dhcp": "DHCP",
+            "auto": "Automatic",
             "disabled": "Disabled",
             "ip_netmask": "IP address/Netmask",
             "gateway": "Gateway address",
@@ -3859,17 +3952,17 @@
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used",
           "datadisk": {
-            "title": "Move datadisk",
-            "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
+            "title": "Move data disk",
+            "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
             "extra_information": "Size: {size}, S/N: {serial}",
-            "select_device": "Select new datadisk",
+            "select_device": "Select new data disk",
             "no_devices_title": "No suitable storage found",
             "no_devices_text": "There is no suitable external device found. The storage capacity of the external data disk must be larger than the storage capacity of the existing disk",
-            "moving_desc": "Rebooting and moving datadisk. Please have patience",
-            "moving": "Moving datadisk",
+            "moving_desc": "Rebooting and moving data disk. Please have patience",
+            "moving": "Moving data disk",
             "loading_devices": "Loading devices",
             "cancel": "[%key:ui::common::cancel%]",
-            "failed_to_move": "Failed to move datadisk",
+            "failed_to_move": "Failed to move data disk",
             "move": "Move"
           }
         },
@@ -5354,6 +5447,7 @@
           "uninstall": "Failed to uninstall add-on",
           "install": "Failed to install add-on",
           "stop": "Failed to stop add-on",
+          "rebuild": "Failed to rebuild add-on",
           "restart": "Failed to restart add-on",
           "start": "Failed to start add-on",
           "go_to_config": "Edit Config",
@@ -5511,7 +5605,7 @@
         "failed_to_shutdown": "Failed to shutdown the host",
         "failed_to_set_hostname": "Setting hostname failed",
         "failed_to_import_from_usb": "Failed to import from USB",
-        "failed_to_move": "Failed to move datadisk",
+        "failed_to_move": "Failed to move data disk",
         "used_space": "Used space",
         "hostname": "Hostname",
         "change_hostname": "Change Hostname",
@@ -5528,7 +5622,7 @@
         "shutdown_host": "Shutdown host",
         "hardware": "Hardware",
         "import_from_usb": "Import from USB",
-        "move_datadisk": "Move datadisk"
+        "move_datadisk": "Move data disk"
       },
       "core": {
         "cpu_usage": "Core CPU Usage",
@@ -5579,7 +5673,7 @@
         "wifi_password": "[%key:ui::panel::config::network::supervisor::wifi_password%]",
         "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
         "static": "Static",
-        "dhcp": "DHCP",
+        "auto": "Automatic",
         "disabled": "Disabled",
         "ip_netmask": "IP address/Netmask",
         "gateway": "Gateway address",
@@ -5626,11 +5720,11 @@
       },
       "datadisk_move": {
         "title": "[%key:supervisor::system::host::move_datadisk%]",
-        "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
-        "select_device": "Select new datadisk",
+        "description": "You are currently using ''{current_path}'' as data disk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
+        "select_device": "Select new data disk",
         "no_devices": "No suitable attached devices found",
-        "moving_desc": "Rebooting and moving datadisk. Please have patience",
-        "moving": "Moving datadisk",
+        "moving_desc": "Rebooting and moving data disk. Please have patience",
+        "moving": "Moving data disk",
         "loading_devices": "Loading devices",
         "cancel": "[%key:ui::common::cancel%]",
         "move": "Move"

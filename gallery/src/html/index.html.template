@@ -8,8 +8,9 @@
     />
     <meta name="theme-color" content="#2157BC" />
     <title>Home Assistant Design</title>
-
-    <script type="module" src="<%= latestGalleryJS %>"></script>
+    <% for (const entry of latestEntryJS) { %>
+      <script type="module" src="<%= entry %>"></script>
+    <% } %>
     <style>
       body {
         font-family: Roboto, Noto, sans-serif;

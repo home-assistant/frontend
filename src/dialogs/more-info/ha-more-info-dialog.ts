@@ -181,10 +181,10 @@ export class MoreInfoDialog extends LitElement {
     this.setView("settings");
   }
 
-  private async _showChildView(ev: CustomEvent): Promise<void> {
+  private _showChildView(ev: CustomEvent): void {
     const view = ev.detail as ChildView;
     if (view.viewImport) {
-      await view.viewImport();
+      view.viewImport();
     }
     this._childView = view;
   }
@@ -369,12 +369,14 @@ export class MoreInfoDialog extends LitElement {
           tabindex="-1"
           dialogInitialFocus
           @show-child-view=${this._showChildView}
+          @entity-entry-updated=${this._entryUpdated}
         >
           ${this._childView
             ? html`
                 <div class="child-view">
                   ${dynamicElement(this._childView.viewTag, {
                     hass: this.hass,
+                    entry: this._entry,
                     params: this._childView.viewParams,
                   })}
                 </div>
@@ -401,7 +403,6 @@ export class MoreInfoDialog extends LitElement {
                         .hass=${this.hass}
                         .entityId=${this._entityId}
                         .entry=${this._entry}
-                        @entity-entry-updated=${this._entryUpdated}
                       ></ha-more-info-settings>
                     `
                   : this._currView === "related"

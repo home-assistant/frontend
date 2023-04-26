@@ -196,7 +196,7 @@ class HaBlueprintOverview extends LitElement {
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
-            : html` <ha-icon-button
+            : html`<ha-icon-button
                 .blueprint=${blueprint}
                 .label=${this.hass.localize(
                   "ui.panel.config.blueprint.overview.delete_blueprint"

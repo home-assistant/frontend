@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <% if (!useWDS) { %>
-    <link rel="modulepreload" href="<%= latestCoreJS %>" crossorigin="use-credentials" />
-    <link rel="modulepreload" href="<%= latestAppJS %>" crossorigin="use-credentials" />
-    <% } %>
-    <%= renderTemplate('_header') %>
     <title>Home Assistant</title>
+    <%= renderTemplate("_header.html.template") %>
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#03a9f4" />
     <link
       rel="apple-touch-icon"
@@ -36,8 +32,9 @@
     <meta name="msapplication-TileColor" content="#03a9f4ff" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="referrer" content="same-origin" />
-    <meta name="theme-color" content="#THEMEC" />
+    <meta name="theme-color" content="{{ theme_color }}" />
     <meta name="color-scheme" content="dark light" />
+    <%= renderTemplate("_style_base.html.template") %>
     <style>
       html {
         background-color: var(--primary-background-color, #fafafa);
@@ -83,20 +80,18 @@
       </svg>
       <div id="ha-launch-screen-info-box" class="ha-launch-screen-spacer"></div>
     </div>
-
     <home-assistant></home-assistant>
-
-    <%= renderTemplate('_js_base') %>
-    <%= renderTemplate('_preload_roboto') %>
-
+    <%= renderTemplate("_js_base.html.template") %>
+    <%= renderTemplate("_preload_roboto.html.template") %>
     <script <% if (!useWDS) { %>crossorigin="use-credentials"<% } %>>
       if (!window.globalThis) {
         window.globalThis = window;
       }
       // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
       if (!isS11_12) {
-        import("<%= latestCoreJS %>");
-        import("<%= latestAppJS %>");
+        <% for (const entry of latestEntryJS) { %>
+          import("<%= entry %>");
+        <% } %>
         window.customPanelJS = "<%= latestCustomPanelJS %>";
         window.latestJS = true;
       }
@@ -106,7 +101,6 @@
     import("{{ extra_module }}");
     {%- endfor -%}
     </script>
-
     <script>
         if (!window.latestJS) {
           window.customPanelJS = "<%= es5CustomPanelJS %>";
@@ -115,13 +109,14 @@
             _ls("/static/js/s.min.js").onload = function() {
               // Although core and app can load in any order, we need to
               // force loading core first because it contains polyfills
-              return System.import("<%= es5CoreJS %>").then(function() {
-                System.import("<%= es5AppJS %>");
+              return System.import("<%= es5EntryJS[0] %>").then(function() {
+                System.import("<%= es5EntryJS[1] %>");
               });
             }
           <% } else { %>
-            _ls("<%= es5CoreJS %>");
-            _ls("<%= es5AppJS %>");
+            <% for (const entry of es5EntryJS) { %>
+              _ls("<%= entry %>");
+            <% } %>
           <% } %>
         }
     </script>

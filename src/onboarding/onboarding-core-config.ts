@@ -1,10 +1,25 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  nothing,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { createCountryListEl } from "../components/country-datalist";
 import { createCurrencyListEl } from "../components/currency-datalist";
+import "../components/ha-alert";
+import "../components/ha-formfield";
+import "../components/ha-radio";
+import type { HaRadio } from "../components/ha-radio";
+import "../components/ha-textfield";
+import type { HaTextField } from "../components/ha-textfield";
+import { createLanguageListEl } from "../components/language-datalist";
 import "../components/map/ha-locations-editor";
 import type {
   HaLocationsEditor,
@@ -20,14 +35,7 @@ import { SYMBOL_TO_ISO } from "../data/currency";
 import { onboardCoreConfigStep } from "../data/onboarding";
 import type { PolymerChangedEvent } from "../polymer-types";
 import type { HomeAssistant } from "../types";
-import "../components/ha-radio";
-import "../components/ha-formfield";
-import type { HaRadio } from "../components/ha-radio";
-import type { HaTextField } from "../components/ha-textfield";
-import "../components/ha-textfield";
 import { getLocalLanguage } from "../util/common-translation";
-import { createCountryListEl } from "../components/country-datalist";
-import { createLanguageListEl } from "../components/language-datalist";
 
 const amsterdam: [number, number] = [52.3731339, 4.8903147];
 const mql = matchMedia("(prefers-color-scheme: dark)");
@@ -57,10 +65,18 @@ class OnboardingCoreConfig extends LitElement {
 
   @state() private _country?: ConfigUpdateValues["country"];
 
+  @state() private _error?: string;
+
   @query("ha-locations-editor", true) private map!: HaLocationsEditor;
 
   protected render(): TemplateResult {
     return html`
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
+
       <p>
         ${this.onboardingLocalize(
           "ui.panel.page-onboarding.core-config.intro",
@@ -114,21 +130,26 @@ class OnboardingCoreConfig extends LitElement {
       <div class="row">
         <ha-textfield
           class="flex"
-          .label=${this.hass.localize(
-            "ui.panel.config.core.section.core.core_config.country"
-          )}
+          .label=${
+            this.hass.localize(
+              "ui.panel.config.core.section.core.core_config.country"
+            ) || "Country"
+          }
           name="country"
+          required
           .disabled=${this._working}
           .value=${this._countryValue}
           @change=${this._handleChange}
         ></ha-textfield>
-
         <ha-textfield
           class="flex"
-          .label=${this.hass.localize(
-            "ui.panel.config.core.section.core.core_config.language"
-          )}
+          .label=${
+            this.hass.localize(
+              "ui.panel.config.core.section.core.core_config.language"
+            ) || "Language"
+          }
           name="language"
+          required
           .disabled=${this._working}
           .value=${this._languageValue}
           @change=${this._handleChange}
@@ -251,7 +272,7 @@ class OnboardingCoreConfig extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     setTimeout(
-      () => this.shadowRoot!.querySelector("ha-textfield")!.focus(),
+      () => this.renderRoot.querySelector("ha-textfield")!.focus(),
       100
     );
     this.addEventListener("keypress", (ev) => {
@@ -259,39 +280,43 @@ class OnboardingCoreConfig extends LitElement {
         this._save(ev);
       }
     });
-    const tzInput = this.shadowRoot!.querySelector(
+    const tzInput = this.renderRoot.querySelector(
       "[name=timeZone]"
     ) as HaTextField;
     tzInput.updateComplete.then(() => {
-      tzInput.shadowRoot!.appendChild(createTimezoneListEl());
+      tzInput.renderRoot.appendChild(createTimezoneListEl());
       tzInput.formElement.setAttribute("list", "timezones");
     });
 
-    const curInput = this.shadowRoot!.querySelector(
+    const curInput = this.renderRoot.querySelector(
       "[name=currency]"
     ) as HaTextField;
     curInput.updateComplete.then(() => {
-      curInput.shadowRoot!.appendChild(
+      curInput.renderRoot.appendChild(
         createCurrencyListEl(this.hass.locale.language)
       );
       curInput.formElement.setAttribute("list", "currencies");
     });
 
-    const countryInput = this.shadowRoot!.querySelector(
+    const countryInput = this.renderRoot.querySelector(
       "[name=country]"
     ) as HaTextField;
     countryInput.updateComplete.then(() => {
-      countryInput.shadowRoot!.appendChild(
+      countryInput.renderRoot.appendChild(
         createCountryListEl(this.hass.locale.language)
       );
+
       countryInput.formElement.setAttribute("list", "countries");
     });
 
-    const langInput = this.shadowRoot!.querySelector(
+    const langInput = this.renderRoot.querySelector(
       "[name=language]"
     ) as HaTextField;
     langInput.updateComplete.then(() => {
-      langInput.shadowRoot!.appendChild(createLanguageListEl(this.hass));
+      langInput.renderRoot.appendChild(createLanguageListEl(this.hass));
+      langInput.renderRoot
+        .querySelector("#label")
+        ?.classList.add("mdc-floating-label--required");
       langInput.formElement.setAttribute("list", "languages");
     });
   }
@@ -401,7 +426,7 @@ class OnboardingCoreConfig extends LitElement {
       }
       this._language = getLocalLanguage();
     } catch (err: any) {
-      alert(`Failed to detect location information: ${err.message}`);
+      this._error = `Failed to detect location information: ${err.message}`;
     } finally {
       this._working = false;
     }
@@ -430,7 +455,7 @@ class OnboardingCoreConfig extends LitElement {
       });
     } catch (err: any) {
       this._working = false;
-      alert(`Failed to save: ${err.message}`);
+      this._error = err.message;
     }
   }
 
