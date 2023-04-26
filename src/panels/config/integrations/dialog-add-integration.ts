@@ -95,7 +95,7 @@ class AddIntegrationDialog extends LitElement {
   public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
     const loadPromise = this._load();
     this._open = true;
-    this._pickedBrand = params?.brand || params?.domain;
+    this._pickedBrand = params?.brand;
     this._initialFilter = params?.initialFilter;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
