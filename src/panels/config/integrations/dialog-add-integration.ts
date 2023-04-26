@@ -92,14 +92,24 @@ class AddIntegrationDialog extends LitElement {
 
   private _height?: number;
 
-  public showDialog(params?: AddIntegrationDialogParams): void {
-    this._load();
+  public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
+    const loadPromise = this._load();
     this._open = true;
-    this._pickedBrand = params?.brand;
+    this._pickedBrand = params?.brand || params?.domain;
     this._initialFilter = params?.initialFilter;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
+    if (params?.domain) {
+      this._fetchFlowsInProgress([params.domain]);
+    }
+    if (params?.brand) {
+      await loadPromise;
+      const brand = this._integrations?.[params.brand];
+      if (brand && "integrations" in brand && brand.integrations) {
+        this._fetchFlowsInProgress(Object.keys(brand.integrations));
+      }
+    }
   }
 
   public closeDialog() {
