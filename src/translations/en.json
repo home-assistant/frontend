@@ -2068,7 +2068,9 @@
                     "title": "Text-to-speech",
                     "description": "When you are controlling your assistant with voice, the text-to-speech engine turns the conversation text responses into audio."
                   }
-                }
+                },
+                "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
+                "no_cloud_action": "Subscribe"
               }
             },
             "cloud": {

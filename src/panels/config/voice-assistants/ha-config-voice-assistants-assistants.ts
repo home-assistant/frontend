@@ -40,7 +40,10 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
       >
         <div class="content">
           ${isComponentLoaded(this.hass, "assist_pipeline")
-            ? html` <assist-pref .hass=${this.hass}></assist-pref> `
+            ? html`<assist-pref
+                .hass=${this.hass}
+                .cloudStatus=${this.cloudStatus}
+              ></assist-pref>`
             : nothing}
           ${this.cloudStatus?.logged_in
             ? html`
