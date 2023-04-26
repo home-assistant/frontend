@@ -45,18 +45,24 @@ class DialogExposeEntity extends LitElement {
     }
 
     const header = this.hass.localize(
-      "ui.panel.config.voice_assistants.expose.expose_dialog.header",
-      {
-        assistants: this._params.filterAssistants
-          .map((ass) => voiceAssistants[ass].name)
-          .join(", "),
-      }
+      "ui.panel.config.voice_assistants.expose.expose_dialog.header"
     );
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} .heading=${header}>
         <div slot="heading">
-          <h2 class="header">${header}</h2>
+          <h2 class="header">
+            ${header}<span class="subtitle"
+              >${this.hass.localize(
+                "ui.panel.config.voice_assistants.expose.expose_dialog.expose_to",
+                {
+                  assistants: this._params.filterAssistants
+                    .map((ass) => voiceAssistants[ass].name)
+                    .join(", "),
+                }
+              )}</span
+            >
+          </h2>
           <ha-icon-button
             .label=${this.hass.localize("ui.dialogs.generic.close")}
             .path=${mdiClose}
@@ -153,6 +159,12 @@ class DialogExposeEntity extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
         }
+        @media all and (min-width: 600px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 600px;
+            --mdc-dialog-max-height: 80%;
+          }
+        }
         search-input {
           width: 100%;
           display: block;
@@ -195,6 +207,13 @@ class DialogExposeEntity extends LitElement {
             --mdc-dialog-scroll-divider-color,
             rgba(0, 0, 0, 0.12)
           );
+          display: flex;
+          flex-direction: column;
+        }
+        .subtitle {
+          color: var(--secondary-text-color);
+          font-size: 1rem;
+          line-height: normal;
         }
         .header_button {
           position: absolute;
