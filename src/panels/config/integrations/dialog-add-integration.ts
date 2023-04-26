@@ -101,7 +101,7 @@ class AddIntegrationDialog extends LitElement {
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
     if (params?.domain) {
-      this._fetchFlowsInProgress([params.domain]);
+      this._createFlow(params.domain);
     }
     if (params?.brand) {
       await loadPromise;
@@ -553,7 +553,7 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (integration.config_flow) {
-      this._createFlow(integration);
+      this._createFlow(integration.domain);
       return;
     }
 
@@ -573,25 +573,20 @@ class AddIntegrationDialog extends LitElement {
     showYamlIntegrationDialog(this, { manifest });
   }
 
-  private async _createFlow(integration: IntegrationListItem) {
-    const flowsInProgress = await this._fetchFlowsInProgress([
-      integration.domain,
-    ]);
+  private async _createFlow(domain: string) {
+    const flowsInProgress = await this._fetchFlowsInProgress([domain]);
 
     if (flowsInProgress?.length) {
-      this._pickedBrand = integration.domain;
+      this._pickedBrand = domain;
       return;
     }
 
-    const manifest = await fetchIntegrationManifest(
-      this.hass,
-      integration.domain
-    );
+    const manifest = await fetchIntegrationManifest(this.hass, domain);
 
     this.closeDialog();
 
     showConfigFlowDialog(this, {
-      startFlowHandler: integration.domain,
+      startFlowHandler: domain,
       showAdvanced: this.hass.userData?.showAdvanced,
       manifest,
     });

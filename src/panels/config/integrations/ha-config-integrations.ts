@@ -722,9 +722,19 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     const integration = findIntegration(integrations, domain);
 
     if (integration?.config_flow) {
-      showAddIntegrationDialog(this, {
-        domain,
-      });
+      // Integration exists, so we can just create a flow
+      const localize = await localizePromise;
+      if (
+        await showConfirmationDialog(this, {
+          title: localize("ui.panel.config.integrations.confirm_new", {
+            integration: integration.name || domainToName(localize, domain),
+          }),
+        })
+      ) {
+        showAddIntegrationDialog(this, {
+          domain,
+        });
+      }
       return;
     }
 
