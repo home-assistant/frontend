@@ -1271,7 +1271,6 @@
           "device_name_placeholder": "Change device name"
         }
       },
-      "entity_voice_settings": {},
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
         "deserialize": "Attempt to parse MQTT messages as JSON",
