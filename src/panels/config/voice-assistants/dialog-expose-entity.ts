@@ -12,6 +12,7 @@ import {
   computeEntityRegistryName,
   ExtEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { voiceAssistants } from "../../../data/voice";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
@@ -43,19 +44,24 @@ class DialogExposeEntity extends LitElement {
       return nothing;
     }
 
+    const header = this.hass.localize(
+      "ui.panel.config.voice_assistants.expose.expose_dialog.header"
+    );
+
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${this.hass.localize(
-          "ui.panel.config.voice_assistants.expose.expose_dialog.header"
-        )}
-      >
+      <ha-dialog open @closed=${this.closeDialog} .heading=${header}>
         <div slot="heading">
           <h2 class="header">
-            ${this.hass.localize(
-              "ui.panel.config.voice_assistants.expose.expose_dialog.header"
-            )}
+            ${header}<span class="subtitle"
+              >${this.hass.localize(
+                "ui.panel.config.voice_assistants.expose.expose_dialog.expose_to",
+                {
+                  assistants: this._params.filterAssistants
+                    .map((ass) => voiceAssistants[ass].name)
+                    .join(", "),
+                }
+              )}</span
+            >
           </h2>
           <ha-icon-button
             .label=${this.hass.localize("ui.dialogs.generic.close")}
@@ -109,22 +115,27 @@ class DialogExposeEntity extends LitElement {
   }
 
   private _filterEntities = memoizeOne(
-    (RegEntries: Record<string, ExtEntityRegistryEntry>, filter?: string) =>
-      Object.values(RegEntries).filter(
+    (RegEntries: Record<string, ExtEntityRegistryEntry>, filter?: string) => {
+      const lowerFilter = filter?.toLowerCase();
+      return Object.values(RegEntries).filter(
         (entity) =>
           this._params!.filterAssistants.some(
             (ass) => !entity.options?.[ass]?.should_expose
           ) &&
-          (!filter ||
-            entity.entity_id.includes(filter) ||
-            computeEntityRegistryName(this.hass!, entity)?.includes(filter))
-      )
+          (!lowerFilter ||
+            entity.entity_id.toLowerCase().includes(lowerFilter) ||
+            computeEntityRegistryName(this.hass!, entity)
+              ?.toLowerCase()
+              .includes(lowerFilter))
+      );
+    }
   );
 
   private _renderItem = (entity: ExtEntityRegistryEntry) => {
     const entityState = this.hass.states[entity.entity_id];
     return html`<ha-check-list-item
       graphic="icon"
+      twoLine
       .value=${entity.entity_id}
       .selected=${this._selected.includes(entity.entity_id)}
       @request-selected=${this._handleSelected}
@@ -135,6 +146,7 @@ class DialogExposeEntity extends LitElement {
         .state=${entityState}
       ></ha-state-icon>
       ${computeEntityRegistryName(this.hass!, entity)}
+      <span slot="secondary">${entity.entity_id}</span>
     </ha-check-list-item>`;
   };
 
@@ -150,6 +162,12 @@ class DialogExposeEntity extends LitElement {
       css`
         ha-dialog {
           --dialog-content-padding: 0;
+        }
+        @media all and (min-width: 600px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 600px;
+            --mdc-dialog-max-height: 80%;
+          }
         }
         search-input {
           width: 100%;
@@ -193,6 +211,13 @@ class DialogExposeEntity extends LitElement {
             --mdc-dialog-scroll-divider-color,
             rgba(0, 0, 0, 0.12)
           );
+          display: flex;
+          flex-direction: column;
+        }
+        .subtitle {
+          color: var(--secondary-text-color);
+          font-size: 1rem;
+          line-height: normal;
         }
         .header_button {
           position: absolute;

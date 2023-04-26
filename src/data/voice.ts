@@ -12,8 +12,6 @@ export const voiceAssistants = {
   },
 } as const;
 
-export const voiceAssistantKeys = Object.keys(voiceAssistants);
-
 export const setExposeNewEntities = (
   hass: HomeAssistant,
   assistant: string,

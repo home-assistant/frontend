@@ -34,11 +34,7 @@ import {
   GoogleEntity,
   fetchCloudGoogleEntity,
 } from "../../../data/google_assistant";
-import {
-  exposeEntities,
-  voiceAssistantKeys,
-  voiceAssistants,
-} from "../../../data/voice";
+import { exposeEntities, voiceAssistants } from "../../../data/voice";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -101,8 +97,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       this._cloudStatus?.logged_in === true &&
       this._cloudStatus.prefs.alexa_enabled === true;
 
-    const showAssistants = [...voiceAssistantKeys];
-    const uiAssistants = [...voiceAssistantKeys];
+    const showAssistants = [...Object.keys(voiceAssistants)];
+    const uiAssistants = [...showAssistants];
 
     const alexaManual =
       alexaEnabled &&
@@ -162,6 +158,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         </h3>
         <ha-switch
           @change=${this._toggleAll}
+          .assistants=${uiAssistants}
           .checked=${anyExposed}
         ></ha-switch>
       </ha-settings-row>
@@ -288,7 +285,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   private async _toggleAll(ev) {
     exposeEntities(
       this.hass,
-      voiceAssistantKeys,
+      ev.target.assistants,
       [this.entry.entity_id],
       ev.target.checked
     );

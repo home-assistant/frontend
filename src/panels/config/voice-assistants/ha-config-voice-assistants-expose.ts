@@ -35,11 +35,7 @@ import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntries,
 } from "../../../data/entity_registry";
-import {
-  exposeEntities,
-  voiceAssistantKeys,
-  voiceAssistants,
-} from "../../../data/voice";
+import { exposeEntities, voiceAssistants } from "../../../data/voice";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -98,7 +94,7 @@ export class VoiceAssistantsExpose extends LitElement {
   );
 
   private _columns = memoize(
-    (narrow, _language): DataTableColumnContainer => ({
+    (narrow, availableAssistants, _language): DataTableColumnContainer => ({
       icon: {
         title: "",
         type: "icon",
@@ -143,7 +139,7 @@ export class VoiceAssistantsExpose extends LitElement {
         width: "160px",
         type: "flex",
         template: (assistants, entry) =>
-          html`${voiceAssistantKeys.map((key) =>
+          html`${availableAssistants.map((key) =>
             assistants.includes(key)
               ? html`<div>
                   <img
@@ -221,6 +217,32 @@ export class VoiceAssistantsExpose extends LitElement {
     })
   );
 
+  private _availableAssistants = memoize(
+    (cloudStatus: CloudStatus | undefined) => {
+      const googleEnabled =
+        cloudStatus?.logged_in === true &&
+        cloudStatus.prefs.google_enabled === true;
+      const alexaEnabled =
+        cloudStatus?.logged_in === true &&
+        cloudStatus.prefs.alexa_enabled === true;
+
+      const showAssistants = [...Object.keys(voiceAssistants)];
+
+      if (!googleEnabled) {
+        showAssistants.splice(
+          showAssistants.indexOf("cloud.google_assistant"),
+          1
+        );
+      }
+
+      if (!alexaEnabled) {
+        showAssistants.splice(showAssistants.indexOf("cloud.alexa"), 1);
+      }
+
+      return showAssistants;
+    }
+  );
+
   private _filteredEntities = memoize(
     (
       entities: HomeAssistant["entities"],
@@ -237,7 +259,7 @@ export class VoiceAssistantsExpose extends LitElement {
         cloudStatus?.logged_in === true &&
         cloudStatus.prefs.alexa_enabled === true;
 
-      const showAssistants = [...voiceAssistantKeys];
+      const showAssistants = [...this._availableAssistants(cloudStatus)];
 
       const alexaManual =
         alexaEnabled &&
@@ -250,14 +272,14 @@ export class VoiceAssistantsExpose extends LitElement {
           (this.cloudStatus as CloudStatusLoggedIn).google_entities
         );
 
-      if (!googleEnabled || googleManual) {
+      if (googleManual) {
         showAssistants.splice(
           showAssistants.indexOf("cloud.google_assistant"),
           1
         );
       }
 
-      if (!alexaEnabled || alexaManual) {
+      if (alexaManual) {
         showAssistants.splice(showAssistants.indexOf("cloud.alexa"), 1);
       }
 
@@ -438,7 +460,11 @@ export class VoiceAssistantsExpose extends LitElement {
           : "/config"}
         .route=${this.route}
         .tabs=${voiceAssistantTabs}
-        .columns=${this._columns(this.narrow, this.hass.language)}
+        .columns=${this._columns(
+          this.narrow,
+          this._availableAssistants(this.cloudStatus),
+          this.hass.language
+        )}
         .data=${filteredEntities}
         .activeFilters=${activeFilters}
         .numHidden=${this._numHiddenEntities}
@@ -541,7 +567,7 @@ export class VoiceAssistantsExpose extends LitElement {
   private _addEntry() {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : voiceAssistantKeys;
+      : this._availableAssistants(this.cloudStatus);
     showExposeEntityDialog(this, {
       filterAssistants: assistants,
       extendedEntities: this._extEntities!,
@@ -567,14 +593,14 @@ export class VoiceAssistantsExpose extends LitElement {
     const entityId = ev.currentTarget.closest(".mdc-data-table__row").rowId;
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : voiceAssistantKeys;
+      : this._availableAssistants(this.cloudStatus);
     exposeEntities(this.hass, assistants, [entityId], false);
   };
 
   private _unexposeSelected() {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : voiceAssistantKeys;
+      : this._availableAssistants(this.cloudStatus);
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.voice_assistants.expose.unexpose_confirm_title"
@@ -602,7 +628,7 @@ export class VoiceAssistantsExpose extends LitElement {
   private _exposeSelected() {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : voiceAssistantKeys;
+      : this._availableAssistants(this.cloudStatus);
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.voice_assistants.expose.expose_confirm_title"
