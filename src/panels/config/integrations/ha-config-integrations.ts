@@ -499,9 +499,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             ? Array.from(disabledConfigEntries.entries()).map(
                 ([domain, items]) =>
                   html`<ha-integration-card
-                    class=${items.length > 10
+                    class=${items.length > 11
+                      ? "x4"
+                      : items.length > 7
                       ? "x3"
-                      : items.length > 5
+                      : items.length > 3
                       ? "x2"
                       : null}
                     data-domain=${domain}
@@ -518,11 +520,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             ? Array.from(groupedConfigEntries.entries()).map(
                 ([domain, items]) =>
                   html`<ha-integration-card
-                    class=${items.length > 10
+                    class=${items.length > 11
+                      ? "x4"
+                      : items.length > 7
                       ? "x3"
-                      : items.length > 5
+                      : items.length > 3
                       ? "x2"
-                      : ""}
+                      : null}
                     data-domain=${domain}
                     .hass=${this.hass}
                     .domain=${domain}
@@ -844,6 +848,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         }
         ha-integration-card.x3 {
           grid-row: span 3;
+        }
+        ha-integration-card.x4 {
+          grid-row: span 4;
         }
         .container > * {
           max-width: 500px;
