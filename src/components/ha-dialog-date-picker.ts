@@ -6,7 +6,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import { haStyleDialog } from "../resources/styles";
 import { HomeAssistant } from "../types";
-import { datePickerDialogParams } from "./ha-date-input";
+import { datePickerDialogParams } from "./ha-date-time-input";
 import "./ha-dialog";
 
 @customElement("ha-dialog-date-picker")
