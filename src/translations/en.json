@@ -2106,7 +2106,8 @@
             "unexpose_confirm_title": "Stop exposing selected entities?",
             "unexpose_confirm_text": "Do you want to stop exposing {entities} entities to {assistants}?",
             "expose_dialog": {
-              "header": "Expose entity",
+              "header": "Expose entities",
+              "expose_to": "to {assistants}",
               "expose_entities": "Expose {count} {count, plural,\n  one {entity}\n  other {entities}\n}"
             }
           }
