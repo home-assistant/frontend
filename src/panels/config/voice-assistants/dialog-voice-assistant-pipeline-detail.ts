@@ -28,6 +28,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _preferred?: boolean;
 
+  @state() private _cloudActive?: boolean;
+
   @state() private _error?: Record<string, string>;
 
   @state() private _submitting = false;
@@ -40,6 +42,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     if (this._params.pipeline) {
       this._data = this._params.pipeline;
       this._preferred = this._params.preferred;
+      this._cloudActive = this._params.cloudActiveSubscription;
     } else {
       this._data = {
         language: (
@@ -88,7 +91,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       >
         <div class="content">
           ${this._error
-            ? html`<ha-alert alert-type="error"> ${this._error} </ha-alert>`
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing}
           <assist-pipeline-detail-config
             .hass=${this.hass}
@@ -104,6 +107,28 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             keys="conversation_engine,conversation_language"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-conversation>
+          ${!this._cloudActive &&
+          (this._data.tts_engine === "cloud" ||
+            this._data.stt_engine === "cloud")
+            ? html`
+                <ha-alert alert-type="warning"
+                  >${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_message"
+                  )}
+                  <a
+                    href="/config/cloud"
+                    slot="action"
+                    @click=${this.closeDialog}
+                  >
+                    <ha-button>
+                      ${this.hass.localize(
+                        "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"
+                      )}
+                    </ha-button>
+                  </a>
+                </ha-alert>
+              `
+            : nothing}
           <assist-pipeline-detail-stt
             .hass=${this.hass}
             .data=${this._data}
@@ -236,7 +261,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           display: block;
         }
         ha-alert {
-          margin-bottom: 8px;
+          margin-bottom: 16px;
           display: block;
         }
         a {

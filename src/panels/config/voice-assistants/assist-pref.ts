@@ -22,6 +22,7 @@ import type { HomeAssistant } from "../../../types";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
 import { brandsUrl } from "../../../util/brands-url";
 import { formatLanguageCode } from "../../../common/language/format_language";
+import { CloudStatusLoggedIn } from "../../../data/cloud";
 
 export class AssistPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -29,6 +30,8 @@ export class AssistPref extends LitElement {
   @state() private _pipelines: AssistPipeline[] = [];
 
   @state() private _preferred: string | null = null;
+
+  @property() public cloudStatus?: CloudStatusLoggedIn;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -125,6 +128,7 @@ export class AssistPref extends LitElement {
 
   private async _openDialog(pipeline?: AssistPipeline): Promise<void> {
     showVoiceAssistantPipelineDetailDialog(this, {
+      cloudActiveSubscription: this.cloudStatus?.active_subscription,
       pipeline,
       preferred: pipeline?.id === this._preferred,
       createPipeline: async (values) => {
