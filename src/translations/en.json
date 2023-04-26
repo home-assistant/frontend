@@ -2030,7 +2030,7 @@
             "caption": "Assistants",
             "pipeline": {
               "add_assistant": "Add assistant",
-              "manage_entities": "[%key:ui::panel::config::cloud::account::google::manage_entities%]",
+              "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
               "delete": {
                 "confirm_title": "Delete {name}?",
                 "confirm_text": "{name} will be permanently deleted."
@@ -2846,6 +2846,7 @@
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "state_reporting_error": "Unable to {enable_disable} report state.",
               "manage_entities": "[%key:ui::panel::config::cloud::account::google::manage_entities%]",
+              "exposed_entities": "[%key:ui::panel::config::cloud::account::google::exposed_entities%]",
               "manual_config": "[%key:ui::panel::config::cloud::account::google::manual_config%]",
               "enable": "enable",
               "disable": "disable",
@@ -2869,6 +2870,7 @@
               "devices_pin": "Security Devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
               "manage_entities": "Manage Entities",
+              "exposed_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} exposed",
               "manual_config": "Editing which entities are exposed via the UI is disabled because you have configured entity filters in configuration.yaml.",
               "enter_pin_error": "Unable to store PIN:",
               "not_configured_title": "Continue setting up Google Assistant",

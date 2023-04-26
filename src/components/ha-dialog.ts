@@ -92,7 +92,7 @@ export class HaDialog extends DialogBase {
         padding: 24px 24px 0 24px;
       }
       .mdc-dialog__actions {
-        padding: 0 24px 24px 24px;
+        padding: 12px 24px 12px 24px;
       }
       .mdc-dialog__title::before {
         display: block;

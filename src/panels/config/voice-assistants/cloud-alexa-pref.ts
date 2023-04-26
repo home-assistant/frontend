@@ -2,6 +2,7 @@ import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isEmptyFilter } from "../../../common/entity/entity_filter";
 import "../../../components/ha-alert";
@@ -10,6 +11,7 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../data/cloud";
+import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import {
   getExposeNewEntities,
   setExposeNewEntities,
@@ -20,9 +22,18 @@ import { brandsUrl } from "../../../util/brands-url";
 export class CloudAlexaPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property() private extEntities?: Record<string, ExtEntityRegistryEntry>;
+
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
   @state() private _exposeNew?: boolean;
+
+  private _exposedEntities = memoizeOne(
+    (extEntities: Record<string, ExtEntityRegistryEntry>) =>
+      Object.values(extEntities).filter(
+        (entity) => entity.options?.["cloud.alexa"]?.should_expose
+      ).length
+  );
 
   protected willUpdate() {
     if (!this.hasUpdated) {
@@ -159,17 +170,28 @@ export class CloudAlexaPref extends LitElement {
                     `
                   : ""}`}
         </div>
-        <div class="card-actions">
-          <a
-            href="/config/voice-assistants/expose?assistants=cloud.alexa&historyBack"
-          >
-            <mwc-button
-              >${this.hass!.localize(
-                "ui.panel.config.cloud.account.alexa.manage_entities"
-              )}</mwc-button
-            >
-          </a>
-        </div>
+        ${alexa_enabled
+          ? html`<div class="card-actions">
+              <a
+                href="/config/voice-assistants/expose?assistants=cloud.alexa&historyBack"
+              >
+                <mwc-button>
+                  ${manualConfig
+                    ? this.hass!.localize(
+                        "ui.panel.config.cloud.account.alexa.manage_entities"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.cloud.account.alexa.exposed_entities",
+                        {
+                          number: this.extEntities
+                            ? this._exposedEntities(this.extEntities)
+                            : 0,
+                        }
+                      )}
+                </mwc-button>
+              </a>
+            </div>`
+          : nothing}
       </ha-card>
     `;
   }
