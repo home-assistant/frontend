@@ -48,8 +48,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         language: (
           this.hass.config.language || this.hass.locale.language
         ).substring(0, 2),
-        stt_engine: "cloud",
-        tts_engine: "cloud",
+        stt_engine: this._cloudActive ? "cloud" : undefined,
+        tts_engine: this._cloudActive ? "cloud" : undefined,
       };
     }
   }
