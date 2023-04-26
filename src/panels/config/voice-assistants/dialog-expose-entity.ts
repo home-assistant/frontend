@@ -115,16 +115,20 @@ class DialogExposeEntity extends LitElement {
   }
 
   private _filterEntities = memoizeOne(
-    (RegEntries: Record<string, ExtEntityRegistryEntry>, filter?: string) =>
-      Object.values(RegEntries).filter(
+    (RegEntries: Record<string, ExtEntityRegistryEntry>, filter?: string) => {
+      const lowerFilter = filter?.toLowerCase();
+      return Object.values(RegEntries).filter(
         (entity) =>
           this._params!.filterAssistants.some(
             (ass) => !entity.options?.[ass]?.should_expose
           ) &&
-          (!filter ||
-            entity.entity_id.includes(filter) ||
-            computeEntityRegistryName(this.hass!, entity)?.includes(filter))
-      )
+          (!lowerFilter ||
+            entity.entity_id.toLowerCase().includes(lowerFilter) ||
+            computeEntityRegistryName(this.hass!, entity)
+              ?.toLowerCase()
+              .includes(lowerFilter))
+      );
+    }
   );
 
   private _renderItem = (entity: ExtEntityRegistryEntry) => {
