@@ -158,6 +158,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         </h3>
         <ha-switch
           @change=${this._toggleAll}
+          .assistants=${uiAssistants}
           .checked=${anyExposed}
         ></ha-switch>
       </ha-settings-row>
@@ -284,7 +285,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   private async _toggleAll(ev) {
     exposeEntities(
       this.hass,
-      voiceAssistantKeys,
+      ev.target.assistants,
       [this.entry.entity_id],
       ev.target.checked
     );
