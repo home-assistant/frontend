@@ -597,7 +597,7 @@ export class VoiceAssistantsExpose extends LitElement {
     const entityId = ev.currentTarget.closest(".mdc-data-table__row").rowId;
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : voiceAssistantKeys;
+      : this._availableAssistants(this.cloudStatus);
     exposeEntities(this.hass, assistants, [entityId], false);
   };
 
