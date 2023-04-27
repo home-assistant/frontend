@@ -19,7 +19,7 @@ import {
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
-import { AlexaEntity, fetchCloudAlexaEntity } from "../../../data/alexa";
+import { fetchCloudAlexaEntity } from "../../../data/alexa";
 import {
   CloudStatus,
   CloudStatusLoggedIn,
@@ -52,10 +52,11 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
   @state() private _aliases?: string[];
 
-  @state() private _entities: {
-    "cloud.google_assistant"?: GoogleEntity | false;
-    "cloud.alexa"?: AlexaEntity | false;
-  } = {};
+  @state() private _googleEntity?: GoogleEntity;
+
+  @state() private _unsupported: Partial<
+    Record<"cloud.google_assistant" | "cloud.alexa" | "conversation", boolean>
+  > = {};
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (!isComponentLoaded(this.hass, "cloud")) {
@@ -77,31 +78,22 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         this.hass,
         this.entry.entity_id
       );
-      this._entities["cloud.google_assistant"] = googleEntity;
+      this._googleEntity = googleEntity;
+      this.requestUpdate("_googleEntity");
     } catch (err: any) {
       if (err.code === "not_supported") {
-        this._entities["cloud.google_assistant"] = false;
-      } else {
-        this._entities["cloud.google_assistant"] = undefined;
+        this._unsupported["cloud.google_assistant"] = true;
+        this.requestUpdate("_unsupported");
       }
-    } finally {
-      this.requestUpdate("_entities");
     }
 
     try {
-      const alexaEntity = await fetchCloudAlexaEntity(
-        this.hass,
-        this.entry.entity_id
-      );
-      this._entities["cloud.alexa"] = alexaEntity;
+      await fetchCloudAlexaEntity(this.hass, this.entry.entity_id);
     } catch (err: any) {
       if (err.code === "not_supported") {
-        this._entities["cloud.alexa"] = false;
-      } else {
-        this._entities["cloud.alexa"] = undefined;
+        this._unsupported["cloud.alexa"] = true;
+        this.requestUpdate("_unsupported");
       }
-    } finally {
-      this.requestUpdate("_entities");
     }
   }
 
@@ -198,13 +190,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       </ha-settings-row>
       ${anyExposed
         ? showAssistants.map((key) => {
-            const entity = this._entities[key] as
-              | GoogleEntity
-              | AlexaEntity
-              | false
-              | undefined;
-
-            const supported = entity !== false;
+            const supported = !this._unsupported[key];
 
             const exposed =
               alexaManual && key === "cloud.alexa"
@@ -221,8 +207,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               key === "cloud.google_assistant" &&
               !googleManual &&
               supported &&
-              entity &&
-              (entity as GoogleEntity).might_2fa;
+              this._googleEntity?.might_2fa;
 
             return html`
               <ha-settings-row .threeLine=${!supported && manualConfig}>
@@ -343,9 +328,15 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   }
 
   private async _toggleAll(ev) {
+    const expose = ev.target.checked;
+
+    const assistants = expose
+      ? ev.target.assistants.filter((key) => !this._unsupported[key])
+      : ev.target.assistants;
+
     exposeEntities(
       this.hass,
-      ev.target.assistants,
+      assistants,
       [this.entry.entity_id],
       ev.target.checked
     );
