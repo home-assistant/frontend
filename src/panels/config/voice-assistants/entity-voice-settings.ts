@@ -19,7 +19,7 @@ import {
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
-import { AlexaEntity } from "../../../data/alexa";
+import { AlexaEntity, fetchCloudAlexaEntity } from "../../../data/alexa";
 import {
   CloudStatus,
   CloudStatusLoggedIn,
@@ -62,25 +62,46 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       return;
     }
     if (changedProps.has("entry") && this.entry) {
-      fetchCloudGoogleEntity(this.hass, this.entry.entity_id)
-        .then((googleEntity) => {
-          this._entities["cloud.google_assistant"] = googleEntity;
-        })
-        .catch((e: any) => {
-          if (e.code === "not_supported") {
-            this._entities["cloud.google_assistant"] = false;
-          } else {
-            this._entities["cloud.google_assistant"] = undefined;
-          }
-        })
-        .finally(() => {
-          this.requestUpdate("_entities");
-        });
+      this._fetchEntities();
     }
     if (!this.hasUpdated) {
       fetchCloudStatus(this.hass).then((status) => {
         this._cloudStatus = status;
       });
+    }
+  }
+
+  private async _fetchEntities() {
+    try {
+      const googleEntity = await fetchCloudGoogleEntity(
+        this.hass,
+        this.entry.entity_id
+      );
+      this._entities["cloud.google_assistant"] = googleEntity;
+    } catch (err: any) {
+      if (err.code === "not_supported") {
+        this._entities["cloud.google_assistant"] = false;
+      } else {
+        this._entities["cloud.google_assistant"] = undefined;
+      }
+    } finally {
+      this.requestUpdate("_entities");
+    }
+
+    try {
+      const alexaEntity = await fetchCloudAlexaEntity(
+        this.hass,
+        this.entry.entity_id
+      );
+      this._entities["cloud.alexa"] = alexaEntity;
+    } catch (err: any) {
+      if (err.code === "not_supported") {
+        this._entities["cloud.alexa"] = false;
+      } else {
+        this._entities["cloud.alexa"] = undefined;
+      }
+    } finally {
+      this.requestUpdate("_entities");
     }
   }
 
@@ -176,15 +197,35 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         ></ha-switch>
       </ha-settings-row>
       ${anyExposed
-        ? showAssistants.map(
-            (key) => html`
-              ${this._entities[key] === false
-                ? html`<ha-alert alert-type="warning"
-                    >This entity is not supported by
-                    ${voiceAssistants[key].name}</ha-alert
-                  >`
-                : nothing}
-              <ha-settings-row>
+        ? showAssistants.map((key) => {
+            const entity = this._entities[key] as
+              | GoogleEntity
+              | AlexaEntity
+              | false
+              | undefined;
+
+            const supported = entity !== false;
+
+            const exposed =
+              alexaManual && key === "cloud.alexa"
+                ? manExposedAlexa
+                : googleManual && key === "cloud.google_assistant"
+                ? manExposedGoogle
+                : this.entry.options?.[key]?.should_expose;
+
+            const manualConfig =
+              (alexaManual && key === "cloud.alexa") ||
+              (googleManual && key === "cloud.google_assistant");
+
+            const support2fa =
+              key === "cloud.google_assistant" &&
+              !googleManual &&
+              supported &&
+              entity &&
+              (entity as GoogleEntity).might_2fa;
+
+            return html`
+              <ha-settings-row .threeLine=${!supported && manualConfig}>
                 <img
                   alt=""
                   src=${brandsUrl({
@@ -196,10 +237,23 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                   slot="prefix"
                 />
                 <span slot="heading">${voiceAssistants[key].name}</span>
-                ${key === "cloud.google_assistant" &&
-                !googleManual &&
-                this._entities[key] !== false &&
-                (this._entities[key] as GoogleEntity)?.might_2fa
+                ${!supported
+                  ? html`<div slot="description">
+                      ${this.hass.localize(
+                        "ui.dialogs.voice-settings.unsupported"
+                      )}
+                    </div>`
+                  : nothing}
+                ${manualConfig
+                  ? html`
+                      <div slot="description">
+                        ${this.hass.localize(
+                          "ui.dialogs.voice-settings.manual_config"
+                        )}
+                      </div>
+                    `
+                  : nothing}
+                ${support2fa
                   ? html`
                       <ha-formfield
                         slot="description"
@@ -213,30 +267,16 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                         ></ha-checkbox>
                       </ha-formfield>
                     `
-                  : (alexaManual && key === "cloud.alexa") ||
-                    (googleManual && key === "cloud.google_assistant")
-                  ? html`
-                      <span slot="description">
-                        ${this.hass.localize(
-                          "ui.dialogs.voice-settings.manual_config"
-                        )}
-                      </span>
-                    `
                   : nothing}
                 <ha-switch
                   .assistant=${key}
                   @change=${this._toggleAssistant}
-                  .disabled=${(alexaManual && key === "cloud.alexa") ||
-                  (googleManual && key === "cloud.google_assistant")}
-                  .checked=${alexaManual && key === "cloud.alexa"
-                    ? manExposedAlexa
-                    : googleManual && key === "cloud.google_assistant"
-                    ? manExposedGoogle
-                    : this.entry.options?.[key]?.should_expose}
+                  .disabled=${manualConfig || (!exposed && !supported)}
+                  .checked=${exposed}
                 ></ha-switch>
               </ha-settings-row>
-            `
-          )
+            `;
+          })
         : nothing}
 
       <h3 class="header">
@@ -325,6 +365,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           margin: 32px;
           margin-top: 0;
           --settings-row-prefix-display: contents;
+          --settings-row-content-display: contents;
         }
         ha-settings-row {
           padding: 0;

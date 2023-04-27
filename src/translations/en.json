@@ -1083,7 +1083,8 @@
         "aliases_header": "Aliases",
         "aliases_description": "Aliases are supported by Assist and Google Assistant.",
         "ask_pin": "Ask for PIN",
-        "manual_config": "Managed with filters in configuration.yaml"
+        "manual_config": "Managed in configuration.yaml",
+        "unsupported": "Unsupported"
       },
       "restart": {
         "heading": "Restart Home Assistant",
