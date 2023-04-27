@@ -1,9 +1,19 @@
+import {
+  mdiBug,
+  mdiClose,
+  mdiDotsVertical,
+  mdiStar,
+  mdiStarOutline,
+} from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-header-bar";
 import {
   AssistPipeline,
   AssistPipelineMutableParams,
@@ -11,8 +21,8 @@ import {
 } from "../../../data/assist_pipeline";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "./assist-pipeline-detail/assist-pipeline-detail-conversation";
 import "./assist-pipeline-detail/assist-pipeline-detail-config";
+import "./assist-pipeline-detail/assist-pipeline-detail-conversation";
 import "./assist-pipeline-detail/assist-pipeline-detail-stt";
 import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./debug/assist-render-pipeline-events";
@@ -74,21 +84,62 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       return nothing;
     }
 
+    const title = this._params.pipeline?.id
+      ? this._params.pipeline.name
+      : this.hass.localize(
+          "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_assistant_title"
+        );
+
     return html`
       <ha-dialog
         open
         @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this._params.pipeline?.id
-            ? this._params.pipeline.name
-            : this.hass.localize(
-                "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_assistant_title"
-              )
-        )}
+        .heading=${title}
       >
+        <ha-header-bar slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <div slot="title" class="main-title" .title=${title}>${title}</div>
+          ${this._params.pipeline?.id
+            ? html`
+                <ha-icon-button
+                  slot="actionItems"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.set_as_preferred"
+                  )}
+                  .path=${this._preferred ? mdiStar : mdiStarOutline}
+                  @click=${this._setPreferred}
+                  .disabled=${Boolean(this._preferred)}
+                ></ha-icon-button>
+
+                <ha-button-menu
+                  corner="BOTTOM_END"
+                  menuCorner="END"
+                  slot="actionItems"
+                  @closed=${stopPropagation}
+                  fixed
+                >
+                  <ha-icon-button
+                    slot="trigger"
+                    .label=${this.hass.localize("ui.common.menu")}
+                    .path=${mdiDotsVertical}
+                  ></ha-icon-button>
+                  <ha-list-item graphic="icon" @request-selected=${this._debug}>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.debug"
+                    )}
+                    <ha-svg-icon slot="graphic" .path=${mdiBug}></ha-svg-icon>
+                  </ha-list-item>
+                </ha-button-menu>
+              `
+            : nothing}
+        </ha-header-bar>
         <div class="content">
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -111,8 +162,8 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           (this._data.tts_engine === "cloud" ||
             this._data.stt_engine === "cloud")
             ? html`
-                <ha-alert alert-type="warning"
-                  >${this.hass.localize(
+                <ha-alert alert-type="warning">
+                  ${this.hass.localize(
                     "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_message"
                   )}
                   <a
@@ -152,19 +203,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
               >
                 ${this.hass.localize("ui.common.delete")}
               </ha-button>
-              <ha-button
-                .disabled=${this._preferred}
-                slot="secondaryAction"
-                @click=${this._setPreferred}
-                >Set as preferred</ha-button
-              >
-              <a
-                href="/config/voice-assistants/debug/${this._params.pipeline
-                  .id}"
-                slot="secondaryAction"
-                @click=${this.closeDialog}
-                ><ha-button>Debug</ha-button>
-              </a>
             `
           : nothing}
         <ha-button
@@ -237,6 +275,12 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     }
   }
 
+  private _debug(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) return;
+    navigate(`/config/voice-assistants/debug/${this._params!.pipeline!.id}`);
+    this.closeDialog();
+  }
+
   private async _deletePipeline() {
     this._submitting = true;
     try {
@@ -254,6 +298,15 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     return [
       haStyleDialog,
       css`
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          display: block;
+        }
+        .main-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
         assist-pipeline-detail-config,
         assist-pipeline-detail-conversation,
         assist-pipeline-detail-stt {

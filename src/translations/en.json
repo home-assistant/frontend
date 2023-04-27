@@ -2039,6 +2039,8 @@
                 "add_assistant_title": "Add assistant",
                 "add_assistant_action": "Create",
                 "try_tts": "Try voice",
+                "debug": "Debug",
+                "set_as_preferred": "Set as preferred",
                 "form": {
                   "name": "Name",
                   "conversation_engine": "Conversation agent",
