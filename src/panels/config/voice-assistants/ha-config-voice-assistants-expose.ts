@@ -1,7 +1,6 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
-  mdiAlertCircle,
   mdiCloseBoxMultiple,
   mdiCloseCircleOutline,
   mdiFilterVariant,
@@ -19,7 +18,6 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import {
@@ -56,10 +54,10 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
+import "./expose/expose-assistant-icon";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
@@ -87,8 +85,8 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @state() private _selectedEntities: string[] = [];
 
-  @state() private _supportedEntities: Record<
-    "cloud.google_assistant" | "cloud.alexa",
+  @state() private _supportedEntities?: Record<
+    "cloud.google_assistant" | "cloud.alexa" | "conversation",
     string[] | undefined
   >;
 
@@ -164,39 +162,15 @@ export class VoiceAssistantsExpose extends LitElement {
               this._supportedEntities[key].includes(entry.entity_id);
             const manual = entry.manAssistants?.includes(key);
             return assistants.includes(key)
-              ? html`<div style="position: relative;">
-                  <img
-                    style="height: 24px; margin-right: 16px;${styleMap({
-                      filter: manual ? "grayscale(100%)" : "",
-                    })}"
-                    alt=""
-                    src=${brandsUrl({
-                      domain: voiceAssistants[key].domain,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
-                    referrerpolicy="no-referrer"
-                    slot="prefix"
-                  />${!supported
-                    ? html`<ha-svg-icon
-                        .path=${mdiAlertCircle}
-                        style="color:var(--error-color);position: absolute;--mdc-icon-size: 16px;z-index: 2;right: 10px;top:-7px;"
-                      ></ha-svg-icon>`
-                    : nothing}${manual || !supported
-                    ? html`<simple-tooltip
-                        animation-delay="0"
-                        position="bottom"
-                        offset="0"
-                      >
-                        ${manual
-                          ? "Configured in YAML, not editable in UI"
-                          : ""}
-                        ${!supported
-                          ? "This entity is not supported by this assistant"
-                          : ""}
-                      </simple-tooltip>`
-                    : ""}
-                </div>`
+              ? html`
+                  <voice-assistants-expose-assistant-icon
+                    .assistant=${key}
+                    .hass=${this.hass}
+                    .manual=${manual}
+                    .unsupported=${!supported}
+                  >
+                  </voice-assistants-expose-assistant-icon>
+                `
               : html`<div style="width: 40px;"></div>`;
           })}`,
       },
@@ -482,6 +456,8 @@ export class VoiceAssistantsExpose extends LitElement {
       "cloud.google_assistant": googleEntities?.map(
         (entity) => entity.entity_id
       ),
+      // TODO add supported entity for assit
+      conversation: undefined,
     };
   }
 

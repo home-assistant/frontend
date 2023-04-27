@@ -2105,6 +2105,8 @@
             "expose_confirm_text": "Do you want to expose {entities} entities to {assistants}?",
             "unexpose_confirm_title": "Stop exposing selected entities?",
             "unexpose_confirm_text": "Do you want to stop exposing {entities} entities to {assistants}?",
+            "manually_configured": "Configured in YAML, not editable in UI",
+            "not_supported": "Not supported by this assistant",
             "expose_dialog": {
               "header": "Expose entities",
               "expose_to": "to {assistants}",
