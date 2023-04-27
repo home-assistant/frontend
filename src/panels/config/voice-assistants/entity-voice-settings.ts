@@ -19,6 +19,7 @@ import {
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
+import { AlexaEntity } from "../../../data/alexa";
 import {
   CloudStatus,
   CloudStatusLoggedIn,
@@ -51,18 +52,30 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
   @state() private _aliases?: string[];
 
-  @state() private _googleEntity?: GoogleEntity;
+  @state() private _entities: {
+    "cloud.google_assistant"?: GoogleEntity | false;
+    "cloud.alexa"?: AlexaEntity | false;
+  } = {};
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (!isComponentLoaded(this.hass, "cloud")) {
       return;
     }
     if (changedProps.has("entry") && this.entry) {
-      fetchCloudGoogleEntity(this.hass, this.entry.entity_id).then(
-        (googleEntity) => {
-          this._googleEntity = googleEntity;
-        }
-      );
+      fetchCloudGoogleEntity(this.hass, this.entry.entity_id)
+        .then((googleEntity) => {
+          this._entities["cloud.google_assistant"] = googleEntity;
+        })
+        .catch((e: any) => {
+          if (e.code === "not_supported") {
+            this._entities["cloud.google_assistant"] = false;
+          } else {
+            this._entities["cloud.google_assistant"] = undefined;
+          }
+        })
+        .finally(() => {
+          this.requestUpdate("_entities");
+        });
     }
     if (!this.hasUpdated) {
       fetchCloudStatus(this.hass).then((status) => {
@@ -165,6 +178,12 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       ${anyExposed
         ? showAssistants.map(
             (key) => html`
+              ${this._entities[key] === false
+                ? html`<ha-alert alert-type="warning"
+                    >This entity is not supported by
+                    ${voiceAssistants[key].name}</ha-alert
+                  >`
+                : nothing}
               <ha-settings-row>
                 <img
                   alt=""
@@ -179,7 +198,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                 <span slot="heading">${voiceAssistants[key].name}</span>
                 ${key === "cloud.google_assistant" &&
                 !googleManual &&
-                this._googleEntity?.might_2fa
+                this._entities[key] !== false &&
+                (this._entities[key] as GoogleEntity)?.might_2fa
                   ? html`
                       <ha-formfield
                         slot="description"
