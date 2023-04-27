@@ -1083,7 +1083,8 @@
         "aliases_header": "Aliases",
         "aliases_description": "Aliases are supported by Assist and Google Assistant.",
         "ask_pin": "Ask for PIN",
-        "manual_config": "Managed with filters in configuration.yaml"
+        "manual_config": "Managed in configuration.yaml",
+        "unsupported": "Unsupported"
       },
       "restart": {
         "heading": "Restart Home Assistant",
@@ -2039,6 +2040,8 @@
                 "add_assistant_title": "Add assistant",
                 "add_assistant_action": "Create",
                 "try_tts": "Try voice",
+                "debug": "Debug",
+                "set_as_preferred": "Set as preferred",
                 "form": {
                   "name": "Name",
                   "conversation_engine": "Conversation agent",
@@ -2105,6 +2108,8 @@
             "expose_confirm_text": "Do you want to expose {entities} entities to {assistants}?",
             "unexpose_confirm_title": "Stop exposing selected entities?",
             "unexpose_confirm_text": "Do you want to stop exposing {entities} entities to {assistants}?",
+            "manually_configured": "Configured in YAML, not editable in UI",
+            "not_supported": "Not supported by this assistant",
             "expose_dialog": {
               "header": "Expose entities",
               "expose_to": "to {assistants}",

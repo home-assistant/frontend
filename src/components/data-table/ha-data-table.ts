@@ -666,6 +666,7 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__cell.mdc-data-table__cell--flex {
           display: flex;
+          overflow: initial;
         }
 
         .mdc-data-table__cell.mdc-data-table__cell--icon {
