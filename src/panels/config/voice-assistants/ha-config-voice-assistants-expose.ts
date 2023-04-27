@@ -18,7 +18,6 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import {
@@ -35,6 +34,7 @@ import {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
+import { AlexaEntity, fetchCloudAlexaEntities } from "../../../data/alexa";
 import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import { entitiesContext } from "../../../data/context";
 import {
@@ -43,6 +43,10 @@ import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntries,
 } from "../../../data/entity_registry";
+import {
+  fetchCloudGoogleEntities,
+  GoogleEntity,
+} from "../../../data/google_assistant";
 import { exposeEntities, voiceAssistants } from "../../../data/voice";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
@@ -50,10 +54,10 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
+import "./expose/expose-assistant-icon";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
@@ -80,6 +84,11 @@ export class VoiceAssistantsExpose extends LitElement {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _selectedEntities: string[] = [];
+
+  @state() private _supportedEntities?: Record<
+    "cloud.google_assistant" | "cloud.alexa" | "conversation",
+    string[] | undefined
+  >;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -147,35 +156,23 @@ export class VoiceAssistantsExpose extends LitElement {
         width: "160px",
         type: "flex",
         template: (assistants, entry) =>
-          html`${availableAssistants.map((key) =>
-            assistants.includes(key)
-              ? html`<div>
-                  <img
-                    style="height: 24px; margin-right: 16px;${styleMap({
-                      filter: entry.manAssistants?.includes(key)
-                        ? "grayscale(100%)"
-                        : "",
-                    })}"
-                    alt=""
-                    src=${brandsUrl({
-                      domain: voiceAssistants[key].domain,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
-                    referrerpolicy="no-referrer"
-                    slot="prefix"
-                  />${entry.manAssistants?.includes(key)
-                    ? html`<simple-tooltip
-                        animation-delay="0"
-                        position="bottom"
-                        offset="1"
-                      >
-                        Configured in YAML, not editable in UI
-                      </simple-tooltip>`
-                    : ""}
-                </div>`
-              : html`<div style="width: 40px;"></div>`
-          )}`,
+          html`${availableAssistants.map((key) => {
+            const supported =
+              !this._supportedEntities?.[key] ||
+              this._supportedEntities[key].includes(entry.entity_id);
+            const manual = entry.manAssistants?.includes(key);
+            return assistants.includes(key)
+              ? html`
+                  <voice-assistants-expose-assistant-icon
+                    .assistant=${key}
+                    .hass=${this.hass}
+                    .manual=${manual}
+                    .unsupported=${!supported}
+                  >
+                  </voice-assistants-expose-assistant-icon>
+                `
+              : html`<div style="width: 40px;"></div>`;
+          })}`,
       },
       aliases: {
         title: this.hass.localize(
@@ -437,16 +434,36 @@ export class VoiceAssistantsExpose extends LitElement {
     });
   }
 
-  private async _fetchExtendedEntities() {
+  private async _fetchEntities() {
     this._extEntities = await getExtendedEntityRegistryEntries(
       this.hass,
       Object.keys(this._entities)
     );
+    let alexaEntitiesProm: Promise<AlexaEntity[]> | undefined;
+    let googleEntitiesProm: Promise<GoogleEntity[]> | undefined;
+    if (this.cloudStatus?.logged_in && this.cloudStatus.prefs.alexa_enabled) {
+      alexaEntitiesProm = fetchCloudAlexaEntities(this.hass);
+    }
+    if (this.cloudStatus?.logged_in && this.cloudStatus.prefs.google_enabled) {
+      googleEntitiesProm = fetchCloudGoogleEntities(this.hass);
+    }
+    const [alexaEntities, googleEntities] = await Promise.all([
+      alexaEntitiesProm,
+      googleEntitiesProm,
+    ]);
+    this._supportedEntities = {
+      "cloud.alexa": alexaEntities?.map((entity) => entity.entity_id),
+      "cloud.google_assistant": googleEntities?.map(
+        (entity) => entity.entity_id
+      ),
+      // TODO add supported entity for assit
+      conversation: undefined,
+    };
   }
 
   public willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("_entities")) {
-      this._fetchExtendedEntities();
+      this._fetchEntities();
     }
   }
 
