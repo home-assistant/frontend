@@ -1,6 +1,7 @@
 import { consume } from "@lit-labs/context";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
+  mdiAlertCircle,
   mdiCloseBoxMultiple,
   mdiCloseCircleOutline,
   mdiFilterVariant,
@@ -35,6 +36,7 @@ import {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
+import { AlexaEntity, fetchCloudAlexaEntities } from "../../../data/alexa";
 import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import { entitiesContext } from "../../../data/context";
 import {
@@ -43,6 +45,10 @@ import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntries,
 } from "../../../data/entity_registry";
+import {
+  fetchCloudGoogleEntities,
+  GoogleEntity,
+} from "../../../data/google_assistant";
 import { exposeEntities, voiceAssistants } from "../../../data/voice";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
@@ -80,6 +86,11 @@ export class VoiceAssistantsExpose extends LitElement {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _selectedEntities: string[] = [];
+
+  @state() private _supportedEntities: Record<
+    "cloud.google_assistant" | "cloud.alexa",
+    string[] | undefined
+  >;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -147,14 +158,16 @@ export class VoiceAssistantsExpose extends LitElement {
         width: "160px",
         type: "flex",
         template: (assistants, entry) =>
-          html`${availableAssistants.map((key) =>
-            assistants.includes(key)
-              ? html`<div>
+          html`${availableAssistants.map((key) => {
+            const supported =
+              !this._supportedEntities?.[key] ||
+              this._supportedEntities[key].includes(entry.entity_id);
+            const manual = entry.manAssistants?.includes(key);
+            return assistants.includes(key)
+              ? html`<div style="position: relative;">
                   <img
                     style="height: 24px; margin-right: 16px;${styleMap({
-                      filter: entry.manAssistants?.includes(key)
-                        ? "grayscale(100%)"
-                        : "",
+                      filter: manual ? "grayscale(100%)" : "",
                     })}"
                     alt=""
                     src=${brandsUrl({
@@ -164,18 +177,28 @@ export class VoiceAssistantsExpose extends LitElement {
                     })}
                     referrerpolicy="no-referrer"
                     slot="prefix"
-                  />${entry.manAssistants?.includes(key)
+                  />${!supported
+                    ? html`<ha-svg-icon
+                        .path=${mdiAlertCircle}
+                        style="color:var(--error-color);position: absolute;--mdc-icon-size: 16px;z-index: 2;right: 10px;top:-7px;"
+                      ></ha-svg-icon>`
+                    : nothing}${manual || !supported
                     ? html`<simple-tooltip
                         animation-delay="0"
                         position="bottom"
-                        offset="1"
+                        offset="0"
                       >
-                        Configured in YAML, not editable in UI
+                        ${manual
+                          ? "Configured in YAML, not editable in UI"
+                          : ""}
+                        ${!supported
+                          ? "This entity is not supported by this assistant"
+                          : ""}
                       </simple-tooltip>`
                     : ""}
                 </div>`
-              : html`<div style="width: 40px;"></div>`
-          )}`,
+              : html`<div style="width: 40px;"></div>`;
+          })}`,
       },
       aliases: {
         title: this.hass.localize(
@@ -437,16 +460,34 @@ export class VoiceAssistantsExpose extends LitElement {
     });
   }
 
-  private async _fetchExtendedEntities() {
+  private async _fetchEntities() {
     this._extEntities = await getExtendedEntityRegistryEntries(
       this.hass,
       Object.keys(this._entities)
     );
+    let alexaEntitiesProm: Promise<AlexaEntity[]> | undefined;
+    let googleEntitiesProm: Promise<GoogleEntity[]> | undefined;
+    if (this.cloudStatus?.logged_in && this.cloudStatus.prefs.alexa_enabled) {
+      alexaEntitiesProm = fetchCloudAlexaEntities(this.hass);
+    }
+    if (this.cloudStatus?.logged_in && this.cloudStatus.prefs.google_enabled) {
+      googleEntitiesProm = fetchCloudGoogleEntities(this.hass);
+    }
+    const [alexaEntities, googleEntities] = await Promise.all([
+      alexaEntitiesProm,
+      googleEntitiesProm,
+    ]);
+    this._supportedEntities = {
+      "cloud.alexa": alexaEntities?.map((entity) => entity.entity_id),
+      "cloud.google_assistant": googleEntities?.map(
+        (entity) => entity.entity_id
+      ),
+    };
   }
 
   public willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("_entities")) {
-      this._fetchExtendedEntities();
+      this._fetchEntities();
     }
   }
 
