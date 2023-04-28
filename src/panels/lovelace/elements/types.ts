@@ -1,6 +1,7 @@
 import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
+import { HuiImage } from "../components/hui-image";
 
 interface LovelaceElementConfigBase {
   type: string;
@@ -43,6 +44,7 @@ export interface ImageElementConfig extends LovelaceElementConfigBase {
   image?: string;
   state_image?: string;
   camera_image?: string;
+  camera_view?: HuiImage["cameraView"];
   dark_mode_image?: string;
   dark_mode_filter?: string;
   filter?: string;
