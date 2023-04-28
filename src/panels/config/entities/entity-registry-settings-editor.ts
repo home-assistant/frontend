@@ -60,6 +60,7 @@ import {
   fetchEntityRegistry,
   SensorEntityOptions,
   updateEntityRegistryEntry,
+  LockEntityOptions,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import { getNumberDeviceClassConvertibleUnits } from "../../../data/number";
@@ -171,6 +172,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _weatherConvertibleUnits?: WeatherUnits;
 
+  @state() private _default_code?: string | null;
+
   @state() private _noDeviceArea?: boolean;
 
   private _origEntityId!: string;
@@ -222,6 +225,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this._precision = this.entry.options?.sensor?.display_precision;
     }
 
+    if (domain === "lock") {
+      this._default_code = this.entry.options?.lock?.default_code;
+    }
+
     if (domain === "weather") {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
@@ -255,6 +262,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
       minimumFractionDigits: precision,
       maximumFractionDigits: precision,
     });
+  }
+
+  private testDefaultCode(code_format?: string, value?: string | null) {
+    if (code_format && value) {
+      return RegExp(code_format).test(value);
+    }
+    return true;
   }
 
   protected async updated(changedProps: PropertyValues): Promise<void> {
@@ -302,6 +316,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
     const domain = computeDomain(this.entry.entity_id);
 
     const invalidDomainUpdate = computeDomain(this._entityId.trim()) !== domain;
+
+    const regexCodeFormat = stateObj.attributes?.code_format;
+    const invalidDefaultCode =
+      this.testDefaultCode(regexCodeFormat, this._default_code) !== true;
 
     const defaultPrecision =
       this.entry.options?.sensor?.suggested_display_precision ?? undefined;
@@ -407,6 +425,22 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 `
               )}
             </ha-select>
+          `
+        : ""}
+      ${domain === "lock"
+        ? html`
+            <ha-textfield
+              error-message="Code does not match code format"
+              .value=${this._default_code == null
+                ? ""
+                : this._default_code.toString()}
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.default_code"
+              )}
+              .invalid=${invalidDefaultCode}
+              .disabled=${this.disabled}
+              @input=${this._defaultcodeChanged}
+            ></ha-textfield>
           `
         : ""}
       ${domain === "sensor" &&
@@ -892,6 +926,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
         this._precision;
     }
     if (
+      domain === "lock" &&
+      this.entry.options?.[domain]?.default_code !== this._default_code
+    ) {
+      params.options_domain = domain;
+      params.options = params.options || this.entry.options?.[domain] || {};
+      (params.options as LockEntityOptions).default_code = this._default_code;
+    }
+    if (
       domain === "weather" &&
       (stateObj?.attributes?.precipitation_unit !== this._precipitation_unit ||
         stateObj?.attributes?.pressure_unit !== this._pressure_unit ||
@@ -994,6 +1036,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private _unitChanged(ev): void {
     fireEvent(this, "change");
     this._unit_of_measurement = ev.target.value;
+  }
+
+  private _defaultcodeChanged(ev): void {
+    fireEvent(this, "change");
+    this._default_code =
+      ev.target.value === "" ? null : String(ev.target.value);
   }
 
   private _precipitationUnitChanged(ev): void {
