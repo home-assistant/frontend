@@ -49,10 +49,10 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   public showDialog(params: VoiceAssistantPipelineDetailsDialogParams): void {
     this._params = params;
     this._error = undefined;
+    this._cloudActive = this._params.cloudActiveSubscription;
     if (this._params.pipeline) {
       this._data = this._params.pipeline;
       this._preferred = this._params.preferred;
-      this._cloudActive = this._params.cloudActiveSubscription;
     } else {
       this._data = {
         language: (
