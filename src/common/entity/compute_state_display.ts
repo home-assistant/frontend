@@ -160,7 +160,7 @@ export const computeStateDisplayFromEntityAttributes = (
         );
         return formatDateTime(date, locale);
       }
-      if (domain === "date" || attributes.has_date) {
+      if (attributes.has_date) {
         date = new Date(attributes.year, attributes.month - 1, attributes.day);
         return formatDate(date, locale);
       }
