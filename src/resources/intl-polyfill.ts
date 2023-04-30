@@ -11,27 +11,30 @@ const polyfillIntl = async () => {
   const polyfills: Promise<unknown>[] = [];
 
   if (shouldPolyfillLocale()) {
-    await import("@formatjs/intl-locale/polyfill");
+    await import("@formatjs/intl-locale/polyfill-force");
   }
   if (shouldPolyfillPluralRules(locale)) {
     polyfills.push(
-      import("@formatjs/intl-pluralrules/polyfill"),
-      import("@formatjs/intl-pluralrules/locale-data/en")
+      import("@formatjs/intl-pluralrules/polyfill-force").then(
+        () => import("@formatjs/intl-pluralrules/locale-data/en")
+      )
     );
   }
   if (shouldPolyfillRelativeTime(locale)) {
-    polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill"));
+    polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill-force"));
   }
   if (shouldPolyfillDateTime(locale)) {
     polyfills.push(
-      import("@formatjs/intl-datetimeformat/polyfill"),
-      import("@formatjs/intl-datetimeformat/add-all-tz")
+      import("@formatjs/intl-datetimeformat/polyfill-force").then(
+        () => import("@formatjs/intl-datetimeformat/add-all-tz")
+      )
     );
   }
   if (shouldPolyfillDisplayName(locale)) {
     polyfills.push(
-      import("@formatjs/intl-displaynames/polyfill"),
-      import("@formatjs/intl-displaynames/locale-data/en")
+      import("@formatjs/intl-displaynames/polyfill-force").then(
+        () => import("@formatjs/intl-displaynames/locale-data/en")
+      )
     );
   }
   await Promise.all(polyfills).then(() =>
