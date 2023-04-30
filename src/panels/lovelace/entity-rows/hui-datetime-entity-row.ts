@@ -9,7 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { setDateTimeValue } from "../../../data/datetime";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -56,24 +56,20 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         hideName="true"
       >
-        <ha-date-input
-          .locale=${this.hass.locale}
-          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-          .value=${UNAVAILABLE_STATES.includes(stateObj.state)
-            ? this.hass.localize(`state.default.${stateObj.state}`)
-            : stateObj.state.split(" ")[0]}
-          @value-changed=${this._dateChanged}
-        >
-        </ha-date-input>
-        <ha-time-input
-          .value=${UNAVAILABLE_STATES.includes(stateObj.state)
-            ? ""
-            : stateObj.state.split(" ")[1]}
-          .locale=${this.hass.locale}
-          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-          @value-changed=${this._timeChanged}
-          @click=${this._stopEventPropagation}
-        ></ha-time-input>
+        ${isUnavailableState(stateObj.state)
+          ? this.hass.localize(`state.default.${stateObj.state}`)
+          : html`<ha-date-input
+                .locale=${this.hass.locale}
+                .value=${stateObj.state.split(" ")[0]}
+                @value-changed=${this._dateChanged}
+              >
+              </ha-date-input>
+              <ha-time-input
+                .value=${stateObj.state.split(" ")[1]}
+                .locale=${this.hass.locale}
+                @value-changed=${this._timeChanged}
+                @click=${this._stopEventPropagation}
+              ></ha-time-input>`}
       </hui-generic-entity-row>
     `;
   }
