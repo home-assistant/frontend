@@ -57,9 +57,7 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
         hideName="true"
       >
         <ha-time-input
-          .value=${isUnavailableState(stateObj.state)
-            ? this.hass.localize(`state.default.${stateObj.state}`)
-            : stateObj.state}
+          .value=${stateObj.state}
           .locale=${this.hass.locale}
           .disabled=${isUnavailableState(stateObj.state)}
           @value-changed=${this._timeChanged}
