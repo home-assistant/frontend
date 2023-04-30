@@ -58,7 +58,9 @@ class HuiDateEntityRow extends LitElement implements LovelaceRow {
         <ha-date-input
           .locale=${this.hass.locale}
           .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-          .value=${stateToIsoDateString(stateObj)}
+          .value=${UNAVAILABLE_STATES.includes(stateObj.state)
+            ? ""
+            : stateToIsoDateString(stateObj)}
           @value-changed=${this._dateChanged}
         >
         </ha-date-input>
