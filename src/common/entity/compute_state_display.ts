@@ -150,10 +150,7 @@ export const computeStateDisplayFromEntityAttributes = (
     } else {
       // If not trying to display an explicit state, create `Date` object from `stateObj`'s attributes then format.
       let date: Date;
-      if (
-        domain === "datetime" ||
-        (attributes.has_date && attributes.has_time)
-      ) {
+      if (attributes.has_date && attributes.has_time) {
         date = new Date(
           attributes.year,
           attributes.month - 1,
