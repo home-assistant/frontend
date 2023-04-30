@@ -9,7 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity";
 import { setTimeValue } from "../../../data/time";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -57,11 +57,11 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
         hideName="true"
       >
         <ha-time-input
-          .value=${UNAVAILABLE_STATES.includes(stateObj.state)
-            ? ""
+          .value=${isUnavailableState(stateObj.state)
+            ? this.hass.localize(`state.default.${stateObj.state}`)
             : stateObj.state}
           .locale=${this.hass.locale}
-          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+          .disabled=${isUnavailableState(stateObj.state)}
           @value-changed=${this._timeChanged}
           @click=${this._stopEventPropagation}
         ></ha-time-input>
