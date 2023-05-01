@@ -1,5 +1,5 @@
-// @ts-ignore
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+// @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-menu/mwc-menu-surface";
