@@ -39,6 +39,7 @@ import {
   ZwaveJSNodeMetadata,
   ZWaveJSSetConfigParamResult,
 } from "../../../../../data/zwave_js";
+import "../../../../../layouts/hass-loading-screen";
 import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
