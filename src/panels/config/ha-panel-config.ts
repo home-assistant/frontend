@@ -41,7 +41,6 @@ import {
   entityRegistryById,
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
-import "../../layouts/hass-loading-screen";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
