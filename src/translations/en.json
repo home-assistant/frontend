@@ -478,7 +478,10 @@
           }
         }
       },
-      "stt-picker": { "stt": "Speech-to-text", "none": "None" },
+      "stt-picker": {
+        "stt": "Speech-to-text",
+        "none": "None"
+      },
       "related-filter-menu": {
         "filter": "Filter",
         "filter_by_entity": "Filter by entity",
@@ -3956,6 +3959,7 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used",
+          "disk_metrics": "Disk metrics",
           "datadisk": {
             "title": "Move data disk",
             "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
@@ -3969,6 +3973,29 @@
             "cancel": "[%key:ui::common::cancel%]",
             "failed_to_move": "Failed to move data disk",
             "move": "Move"
+          },
+          "network_mounts": {
+            "title": "Network mounts",
+            "add_title": "Add network mount",
+            "update_title": "Update network mount",
+            "mount_usage": {
+              "backup": "Backup",
+              "media": "Media"
+            },
+            "name": "Name",
+            "server": "Server",
+            "port": "Port",
+            "share": "Mount share",
+            "path": "Mount path",
+            "type": "Mount type",
+            "usage": "Mount usage",
+            "connect": "Connect",
+            "update": "Update",
+            "username": "Username",
+            "password": "Password",
+            "errors": {
+              "reload": "Could not reload mount {mount}"
+            }
           }
         },
         "system_health": {
