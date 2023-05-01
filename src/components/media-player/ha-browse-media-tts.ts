@@ -119,6 +119,25 @@ class BrowseMediaTTS extends LitElement {
           this._provider = undefined;
           getTTSEngine(this.hass, provider).then((engine) => {
             this._provider = engine.provider;
+            if (
+              !this._language &&
+              engine.provider.supported_languages?.length
+            ) {
+              const langRegionCode =
+                `${this.hass.config.language}-${this.hass.config.country}`.toLowerCase();
+              const countryLang = engine.provider.supported_languages.find(
+                (lang) => lang.toLowerCase() === langRegionCode
+              );
+              if (countryLang) {
+                this._language = countryLang;
+                return;
+              }
+              this._language = engine.provider.supported_languages?.find(
+                (lang) =>
+                  lang.substring(0, 2) ===
+                  this.hass.config.language.substring(0, 2)
+              );
+            }
           });
 
           if (provider === "cloud") {
