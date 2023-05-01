@@ -15,6 +15,7 @@ import {
   computeDeviceName,
   DeviceEntityLookup,
   DeviceRegistryEntry,
+  getDeviceEntityLookup,
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
 import {
@@ -130,7 +131,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         ];
       }
 
-      const deviceEntityLookup: DeviceEntityLookup = {};
+      let deviceEntityLookup: DeviceEntityLookup = {};
 
       if (
         includeDomains ||
@@ -138,15 +139,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         includeDeviceClasses ||
         entityFilter
       ) {
-        for (const entity of entities) {
-          if (!entity.device_id) {
-            continue;
-          }
-          if (!(entity.device_id in deviceEntityLookup)) {
-            deviceEntityLookup[entity.device_id] = [];
-          }
-          deviceEntityLookup[entity.device_id].push(entity);
-        }
+        deviceEntityLookup = getDeviceEntityLookup(entities);
       }
 
       const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};

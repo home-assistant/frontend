@@ -4,8 +4,12 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { UiAction } from "../panels/lovelace/components/hui-action-editor";
 import { HomeAssistant } from "../types";
-import type { DeviceRegistryEntry } from "./device_registry";
-import type { EntitySources } from "./entity_sources";
+import {
+  DeviceRegistryEntry,
+  getDeviceIntegrationLookup,
+} from "./device_registry";
+import { EntityRegistryDisplayEntry } from "./entity_registry";
+import { EntitySources } from "./entity_sources";
 
 export type Selector =
   | ActionSelector
@@ -363,25 +367,37 @@ export interface UiColorSelector {
 }
 
 export const expandAreaTarget = (
+  hass: HomeAssistant,
   areaId: string,
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
-  _targetSelector: TargetSelector
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
 ) => {
   const newEntities: string[] = [];
   const newDevices: string[] = [];
   Object.values(devices).forEach((device) => {
     if (
-      device.area_id === areaId
-      // && deviceMeetsTargetFilter(device, targetSelector)
+      device.area_id === areaId &&
+      deviceMeetsTargetSelector(
+        hass,
+        Object.values(entities),
+        device,
+        targetSelector,
+        entitySources
+      )
     ) {
       newDevices.push(device.id);
     }
   });
   Object.values(entities).forEach((entity) => {
     if (
-      entity.area_id === areaId
-      // && entityMeetsTargetFilter(entity, targetSelector)
+      entity.area_id === areaId &&
+      entityMeetsTargetSelector(
+        hass.states[entity.entity_id],
+        targetSelector,
+        entitySources
+      )
     ) {
       newEntities.push(entity.entity_id);
     }
@@ -390,15 +406,21 @@ export const expandAreaTarget = (
 };
 
 export const expandDeviceTarget = (
+  hass: HomeAssistant,
   deviceId: string,
   entities: HomeAssistant["entities"],
-  _targetSelector: TargetSelector
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
 ) => {
   const newEntities: string[] = [];
   Object.values(entities).forEach((entity) => {
     if (
-      entity.device_id === deviceId
-      // && entityMeetsTargetFilter(entity, targetSelector)
+      entity.device_id === deviceId &&
+      entityMeetsTargetSelector(
+        hass.states[entity.entity_id],
+        targetSelector,
+        entitySources
+      )
     ) {
       newEntities.push(entity.entity_id);
     }
@@ -406,10 +428,59 @@ export const expandDeviceTarget = (
   return { entities: newEntities };
 };
 
+const deviceMeetsTargetSelector = (
+  hass: HomeAssistant,
+  entityRegistry: EntityRegistryDisplayEntry[],
+  device: DeviceRegistryEntry,
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
+): boolean => {
+  const deviceIntegrationLookup = entitySources
+    ? getDeviceIntegrationLookup(entitySources, entityRegistry)
+    : undefined;
+
+  if (targetSelector.target?.device) {
+    if (
+      !ensureArray(targetSelector.target.device).some((filterDevice) =>
+        filterSelectorDevices(filterDevice, device, deviceIntegrationLookup)
+      )
+    ) {
+      return false;
+    }
+  }
+  if (targetSelector.target?.entity) {
+    const entities = entityRegistry.filter(
+      (reg) => reg.device_id === device.id
+    );
+    return entities.some((entity) => {
+      const entityState = hass.states[entity.entity_id];
+      return entityMeetsTargetSelector(
+        entityState,
+        targetSelector,
+        entitySources
+      );
+    });
+  }
+  return true;
+};
+
+const entityMeetsTargetSelector = (
+  entity: HassEntity,
+  targetSelector: TargetSelector,
+  entitySources?: EntitySources
+): boolean => {
+  if (targetSelector.target?.entity) {
+    return ensureArray(targetSelector.target!.entity).some((filterEntity) =>
+      filterSelectorEntities(filterEntity, entity, entitySources)
+    );
+  }
+  return true;
+};
+
 export const filterSelectorDevices = (
   filterDevice: DeviceSelectorFilter,
   device: DeviceRegistryEntry,
-  deviceIntegrationLookup: Record<string, string[]> | undefined
+  deviceIntegrationLookup?: Record<string, string[]> | undefined
 ): boolean => {
   const {
     manufacturer: filterManufacturer,
