@@ -498,12 +498,22 @@ class DialogCalendarEventEditor extends LitElement {
       this._submitting = false;
       return;
     }
+    const eventData = this._calculateData();
+    if (eventData.rrule && range === RecurrenceRange.THISEVENT) {
+      // Updates to a single instance of a recurring event by definition
+      // cannot change the recurrence rule and doing so would be invalid.
+      // It is difficult to detect if the user changed the recurrence rule
+      // since updating the date may change it implicitly (e.g. day of week
+      // of the event changes) so we just assume the users intent based on
+      // recurrence range and drop any other rrule changes.
+      eventData.rrule = undefined;
+    }
     try {
       await updateCalendarEvent(
         this.hass!,
         this._calendarId!,
         entry.uid!,
-        this._calculateData(),
+        eventData,
         entry.recurrence_id || "",
         range!
       );
