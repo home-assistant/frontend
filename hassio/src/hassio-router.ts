@@ -5,7 +5,6 @@ import {
   HassRouterPage,
   RouterOptions,
 } from "../../src/layouts/hass-router-page";
-import "../../src/resources/ha-style";
 import { HomeAssistant } from "../../src/types";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./hassio-panel";

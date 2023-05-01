@@ -4,6 +4,7 @@ import {
   Supervisor,
   supervisorCollection,
 } from "../../src/data/supervisor/supervisor";
+import "../../src/layouts/hass-loading-screen";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
 
