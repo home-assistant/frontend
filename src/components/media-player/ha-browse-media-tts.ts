@@ -21,6 +21,7 @@ import { buttonLinkStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "../ha-select";
 import "../ha-textarea";
+import "../ha-language-picker";
 
 export interface TtsMediaPickedEvent {
   item: MediaPlayerItem;
@@ -103,21 +104,17 @@ class BrowseMediaTTS extends LitElement {
 
     return html`
       <div class="cloud-options">
-        <ha-select
-          fixedMenuPosition
-          naturalMenuWidth
+        <ha-language-picker
+          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.components.media-browser.tts.language"
           )}
           .value=${selectedVoice[0]}
-          @selected=${this._handleLanguageChange}
+          .languages=${languages}
           @closed=${stopPropagation}
+          @value-changed=${this._handleLanguageChange}
         >
-          ${languages.map(
-            ([key, label]) =>
-              html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
-          )}
-        </ha-select>
+        </ha-language-picker>
 
         <ha-select
           fixedMenuPosition
@@ -184,10 +181,10 @@ class BrowseMediaTTS extends LitElement {
   }
 
   async _handleLanguageChange(ev) {
-    if (ev.target.value === this._cloudOptions![0]) {
+    if (ev.detail.value === this._cloudOptions![0]) {
       return;
     }
-    this._cloudOptions = [ev.target.value, this._cloudOptions![1]];
+    this._cloudOptions = [ev.detail.value, this._cloudOptions![1]];
   }
 
   async _handleGenderChange(ev) {
@@ -256,7 +253,8 @@ class BrowseMediaTTS extends LitElement {
         display: flex;
         justify-content: space-between;
       }
-      .cloud-options ha-select {
+      .cloud-options ha-select,
+      ha-language-picker {
         width: 48%;
       }
       ha-textarea {
