@@ -282,25 +282,23 @@ export class HaServiceControl extends LitElement {
           return false;
         }
         if (
-          filter!.supported_features?.some(
-            (feature) => !supportsFeature(entityState, feature)
+          filter!.supported_features?.some((feature) =>
+            supportsFeature(entityState, feature)
           )
         ) {
-          return false;
+          return true;
         }
         if (
           filter!.attribute &&
           Object.entries(filter!.attribute).some(
             ([attribute, values]) =>
-              !(
-                attribute in entityState.attributes &&
-                attributeFilter(values, entityState.attributes[attribute])
-              )
+              attribute in entityState.attributes &&
+              attributeFilter(values, entityState.attributes[attribute])
           )
         ) {
-          return false;
+          return true;
         }
-        return true;
+        return false;
       })
     ) {
       return true;
