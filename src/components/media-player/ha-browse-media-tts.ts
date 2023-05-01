@@ -17,6 +17,7 @@ import { HomeAssistant } from "../../types";
 import "../ha-textarea";
 import "../ha-language-picker";
 import "../ha-tts-voice-picker";
+import { fetchCloudStatus } from "../../data/cloud";
 
 export interface TtsMediaPickedEvent {
   item: MediaPlayerItem;
@@ -119,6 +120,14 @@ class BrowseMediaTTS extends LitElement {
           getTTSEngine(this.hass, provider).then((engine) => {
             this._provider = engine.provider;
           });
+
+          if (provider === "cloud") {
+            fetchCloudStatus(this.hass).then((status) => {
+              if (status.logged_in) {
+                this._language = status.prefs.tts_default_voice[0];
+              }
+            });
+          }
         }
       }
     }
