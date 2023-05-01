@@ -1,3 +1,4 @@
+import { consume } from "@lit-labs/context";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
@@ -30,6 +31,8 @@ import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { subscribeTrigger, Trigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
+import { fullEntitiesContext } from "../../../../data/context";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { TRIGGER_TYPES } from "../../../../data/trigger";
 import {
   showAlertDialog,
@@ -104,6 +107,10 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
+
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
   protected render() {
@@ -131,7 +138,9 @@ export default class HaAutomationTriggerRow extends LitElement {
               class="trigger-icon"
               .path=${TRIGGER_TYPES[this.trigger.platform]}
             ></ha-svg-icon>
-            ${capitalizeFirstLetter(describeTrigger(this.trigger, this.hass))}
+            ${capitalizeFirstLetter(
+              describeTrigger(this.trigger, this.hass, this._entityReg)
+            )}
           </h3>
 
           <slot name="icons" slot="icons"></slot>
@@ -534,7 +543,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeTrigger(this.trigger, this.hass, true)
+        describeTrigger(this.trigger, this.hass, this._entityReg, true)
       ),
       defaultValue: this.trigger.alias,
       confirmText: this.hass.localize("ui.common.submit"),

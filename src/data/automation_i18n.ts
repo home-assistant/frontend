@@ -15,6 +15,7 @@ import {
   computeAttributeValueDisplay,
 } from "../common/entity/compute_attribute_display";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { EntityRegistryEntry } from "./entity_registry";
 
 const describeDuration = (forTime: number | string | ForDict) => {
   let duration: string | null;
@@ -31,6 +32,7 @@ const describeDuration = (forTime: number | string | ForDict) => {
 export const describeTrigger = (
   trigger: Trigger,
   hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
 ) => {
   if (trigger.alias && !ignoreAlias) {
@@ -437,7 +439,11 @@ export const describeTrigger = (
       return "Device trigger";
     }
     const config = trigger as DeviceTrigger;
-    const localized = localizeDeviceAutomationTrigger(hass, config);
+    const localized = localizeDeviceAutomationTrigger(
+      hass,
+      entityRegistry,
+      config
+    );
     if (localized) {
       return localized;
     }
@@ -455,6 +461,7 @@ export const describeTrigger = (
 export const describeCondition = (
   condition: Condition,
   hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
 ) => {
   if (condition.alias && !ignoreAlias) {
@@ -749,7 +756,11 @@ export const describeCondition = (
       return "Device condition";
     }
     const config = condition as DeviceCondition;
-    const localized = localizeDeviceAutomationCondition(hass, config);
+    const localized = localizeDeviceAutomationCondition(
+      hass,
+      entityRegistry,
+      config
+    );
     if (localized) {
       return localized;
     }

@@ -36,7 +36,11 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { fullEntitiesContext } from "../../data/context";
-import { subscribeEntityRegistry } from "../../data/entity_registry";
+import {
+  entityRegistryByEntityId,
+  entityRegistryById,
+  subscribeEntityRegistry,
+} from "../../data/entity_registry";
 import "../../layouts/hass-loading-screen";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -564,6 +568,8 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
+    entityRegistryByEntityId.clear();
+    entityRegistryById.clear();
   }
 
   protected firstUpdated(changedProps: PropertyValues) {

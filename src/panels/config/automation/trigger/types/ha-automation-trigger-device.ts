@@ -1,3 +1,4 @@
+import { consume } from "@lit-labs/context";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -5,12 +6,14 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/device/ha-device-trigger-picker";
 import "../../../../../components/ha-form/ha-form";
+import { fullEntitiesContext } from "../../../../../data/context";
 import {
   deviceAutomationsEqual,
   DeviceCapabilities,
   DeviceTrigger,
   fetchDeviceTriggerCapabilities,
 } from "../../../../../data/device_automation";
+import { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-trigger-device")
@@ -24,6 +27,10 @@ export class HaDeviceTrigger extends LitElement {
   @state() private _deviceId?: string;
 
   @state() private _capabilities?: DeviceCapabilities;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   private _origTrigger?: DeviceTrigger;
 
@@ -103,7 +110,7 @@ export class HaDeviceTrigger extends LitElement {
     const prevTrigger = changedProps.get("trigger");
     if (
       prevTrigger &&
-      !deviceAutomationsEqual(this.hass, prevTrigger, this.trigger)
+      !deviceAutomationsEqual(this._entityReg, prevTrigger, this.trigger)
     ) {
       this._getCapabilities();
     }
@@ -132,7 +139,7 @@ export class HaDeviceTrigger extends LitElement {
     let trigger = ev.detail.value;
     if (
       this._origTrigger &&
-      deviceAutomationsEqual(this.hass, this._origTrigger, trigger)
+      deviceAutomationsEqual(this._entityReg, this._origTrigger, trigger)
     ) {
       trigger = this._origTrigger;
     }

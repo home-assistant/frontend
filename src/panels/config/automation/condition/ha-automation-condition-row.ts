@@ -1,3 +1,4 @@
+import { consume } from "@lit-labs/context";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
@@ -25,6 +26,8 @@ import { Condition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { CONDITION_TYPES } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
+import { fullEntitiesContext } from "../../../../data/context";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -85,6 +88,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _testingResult?: boolean;
 
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
+
   protected render() {
     if (!this.condition) {
       return nothing;
@@ -106,7 +113,7 @@ export default class HaAutomationConditionRow extends LitElement {
               .path=${CONDITION_TYPES[this.condition.condition]}
             ></ha-svg-icon>
             ${capitalizeFirstLetter(
-              describeCondition(this.condition, this.hass)
+              describeCondition(this.condition, this.hass, this._entityReg)
             )}
           </h3>
 
@@ -423,7 +430,7 @@ export default class HaAutomationConditionRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeCondition(this.condition, this.hass, true)
+        describeCondition(this.condition, this.hass, this._entityReg, true)
       ),
       defaultValue: this.condition.alias,
       confirmText: this.hass.localize("ui.common.submit"),

@@ -3,8 +3,10 @@ import type { HaFormSchema } from "../components/ha-form/types";
 import { HomeAssistant } from "../types";
 import { BaseTrigger } from "./automation";
 import {
-  entityRegistryById,
   computeEntityRegistryName,
+  entityRegistryByEntityId,
+  entityRegistryById,
+  EntityRegistryEntry,
 } from "./entity_registry";
 
 export interface DeviceAutomation {
@@ -93,7 +95,7 @@ const deviceAutomationIdentifiers = [
 ];
 
 export const deviceAutomationsEqual = (
-  hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   a: DeviceAutomation,
   b: DeviceAutomation
 ) => {
@@ -110,7 +112,13 @@ export const deviceAutomationsEqual = (
       a[property]?.includes(".") !== b[property]?.includes(".")
     ) {
       // both entity_id and entity_reg_id could be used, we should compare the entity_reg_id
-      if (!compareEntityIdWithEntityRegId(hass, a[property], b[property])) {
+      if (
+        !compareEntityIdWithEntityRegId(
+          entityRegistry,
+          a[property],
+          b[property]
+        )
+      ) {
         return false;
       }
       continue;
@@ -128,7 +136,13 @@ export const deviceAutomationsEqual = (
       a[property]?.includes(".") !== b[property]?.includes(".")
     ) {
       // both entity_id and entity_reg_id could be used, we should compare the entity_reg_id
-      if (!compareEntityIdWithEntityRegId(hass, a[property], b[property])) {
+      if (
+        !compareEntityIdWithEntityRegId(
+          entityRegistry,
+          a[property],
+          b[property]
+        )
+      ) {
         return false;
       }
       continue;
@@ -142,7 +156,7 @@ export const deviceAutomationsEqual = (
 };
 
 const compareEntityIdWithEntityRegId = (
-  hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   entityIdA?: string,
   entityIdB?: string
 ) => {
@@ -150,16 +164,17 @@ const compareEntityIdWithEntityRegId = (
     return false;
   }
   if (entityIdA.includes(".")) {
-    entityIdA = hass.entities[entityIdA]?.id;
+    entityIdA = entityRegistryByEntityId(entityRegistry)[entityIdA].id;
   }
   if (entityIdB.includes(".")) {
-    entityIdB = hass.entities[entityIdB]?.id;
+    entityIdB = entityRegistryByEntityId(entityRegistry)[entityIdB].id;
   }
   return entityIdA === entityIdB;
 };
 
 const getEntityName = (
   hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   entityId: string | undefined
 ): string => {
   if (!entityId) {
@@ -172,7 +187,7 @@ const getEntityName = (
     }
     return entityId;
   }
-  const entityReg = entityRegistryById(hass.entities)[entityId];
+  const entityReg = entityRegistryById(entityRegistry)[entityId];
   if (entityReg) {
     return computeEntityRegistryName(hass, entityReg) || entityId;
   }
@@ -181,12 +196,13 @@ const getEntityName = (
 
 export const localizeDeviceAutomationAction = (
   hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   action: DeviceAction
 ): string =>
   hass.localize(
     `component.${action.domain}.device_automation.action_type.${action.type}`,
     "entity_name",
-    getEntityName(hass, action.entity_id),
+    getEntityName(hass, entityRegistry, action.entity_id),
     "subtype",
     action.subtype
       ? hass.localize(
@@ -197,12 +213,13 @@ export const localizeDeviceAutomationAction = (
 
 export const localizeDeviceAutomationCondition = (
   hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   condition: DeviceCondition
 ): string =>
   hass.localize(
     `component.${condition.domain}.device_automation.condition_type.${condition.type}`,
     "entity_name",
-    getEntityName(hass, condition.entity_id),
+    getEntityName(hass, entityRegistry, condition.entity_id),
     "subtype",
     condition.subtype
       ? hass.localize(
@@ -216,12 +233,13 @@ export const localizeDeviceAutomationCondition = (
 
 export const localizeDeviceAutomationTrigger = (
   hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
   trigger: DeviceTrigger
 ): string =>
   hass.localize(
     `component.${trigger.domain}.device_automation.trigger_type.${trigger.type}`,
     "entity_name",
-    getEntityName(hass, trigger.entity_id),
+    getEntityName(hass, entityRegistry, trigger.entity_id),
     "subtype",
     trigger.subtype
       ? hass.localize(
