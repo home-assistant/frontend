@@ -1063,7 +1063,8 @@ class HUIRoot extends LitElement {
           padding-right: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
         }
-        hui-view {
+        hui-view,
+        hui-unused-entities {
           flex: 1 1 100%;
           max-width: 100%;
         }
