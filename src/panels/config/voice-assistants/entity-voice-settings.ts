@@ -1,3 +1,4 @@
+import { mdiAlertCircle } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -32,8 +33,8 @@ import {
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import {
-  GoogleEntity,
   fetchCloudGoogleEntity,
+  GoogleEntity,
 } from "../../../data/google_assistant";
 import { exposeEntities, voiceAssistants } from "../../../data/voice";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -223,7 +224,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                 />
                 <span slot="heading">${voiceAssistants[key].name}</span>
                 ${!supported
-                  ? html`<div slot="description">
+                  ? html`<div slot="description" class="unsupported">
+                      <ha-svg-icon .path=${mdiAlertCircle}></ha-svg-icon>
                       ${this.hass.localize(
                         "ui.dialogs.voice-settings.unsupported"
                       )}
@@ -378,6 +380,15 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         }
         ha-checkbox {
           --mdc-checkbox-state-layer-size: 40px;
+        }
+        .unsupported {
+          display: flex;
+          align-items: center;
+        }
+        .unsupported ha-svg-icon {
+          color: var(--error-color);
+          --mdc-icon-size: 16px;
+          margin-right: 4px;
         }
         .header {
           margin-top: 8px;

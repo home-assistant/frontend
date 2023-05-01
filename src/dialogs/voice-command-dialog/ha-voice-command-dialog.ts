@@ -401,6 +401,7 @@ export class HaVoiceCommandDialog extends LitElement {
         }
       });
     }
+    this._stt_binary_handler_id = undefined;
     this._audioBuffer = [];
     const userMessage: Message = {
       who: "user",
@@ -463,6 +464,7 @@ export class HaVoiceCommandDialog extends LitElement {
           }
 
           if (event.type === "run-end") {
+            this._stt_binary_handler_id = undefined;
             unsub();
           }
 
@@ -509,6 +511,7 @@ export class HaVoiceCommandDialog extends LitElement {
       }
       // Send empty message to indicate we're done streaming.
       this._sendAudioChunk(new Int16Array());
+      this._stt_binary_handler_id = undefined;
     }
     this._audioBuffer = undefined;
   }
