@@ -9,7 +9,6 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { domainToName } from "../../../data/integration";
 import type { RepairsIssue } from "../../../data/repairs";
-import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";

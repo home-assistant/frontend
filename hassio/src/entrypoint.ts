@@ -2,6 +2,7 @@
 import "../../src/resources/compatibility";
 import { setCancelSyntheticClickEvents } from "@polymer/polymer/lib/utils/settings";
 import "../../src/resources/roboto";
+import "../../src/resources/ha-style";
 import "../../src/resources/safari-14-attachshadow-patch";
 import "./hassio-main";
 
