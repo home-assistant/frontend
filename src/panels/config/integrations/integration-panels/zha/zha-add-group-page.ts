@@ -13,7 +13,6 @@ import {
   ZHADeviceEndpoint,
   ZHAGroup,
 } from "../../../../../data/zha";
-import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-subpage";
 import type { PolymerChangedEvent } from "../../../../../polymer-types";
 import type { HomeAssistant } from "../../../../../types";
