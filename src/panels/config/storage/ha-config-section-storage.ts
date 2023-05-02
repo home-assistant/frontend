@@ -1,25 +1,36 @@
+import "@material/mwc-list";
 import {
   mdiBackupRestore,
   mdiDotsVertical,
   mdiPlayBox,
   mdiReload,
 } from "@mdi/js";
-import "@material/mwc-list";
 import {
-  css,
-  html,
   LitElement,
-  nothing,
   PropertyValues,
   TemplateResult,
+  css,
+  html,
+  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-metric";
 import "../../../components/ha-svg-icon";
-import { fetchHassioHostInfo, HassioHostInfo } from "../../../data/hassio/host";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
+import { HassioHostInfo, fetchHassioHostInfo } from "../../../data/hassio/host";
+import {
+  SupervisorMount,
+  SupervisorMountState,
+  SupervisorMountType,
+  SupervisorMountUsage,
+  fetchSupervisorMounts,
+  reloadSupervisorMount,
+} from "../../../data/supervisor/mounts";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import {
@@ -28,16 +39,6 @@ import {
 } from "../../../util/calculate";
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
-import {
-  fetchSupervisorMounts,
-  reloadSupervisorMount,
-  SupervisorMount,
-  SupervisorMountState,
-  SupervisorMountType,
-  SupervisorMountUsage,
-} from "../../../data/supervisor/mounts";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { extractApiErrorMessage } from "../../../data/hassio/common";
 import { showMountViewDialog } from "./show-dialog-view-mount";
 
 @customElement("ha-config-section-storage")
@@ -145,50 +146,45 @@ class HaConfigSectionStorage extends LitElement {
                     "ui.panel.config.storage.network_mounts.title"
                   )}
                 >
-                  <div class="card-content">
-                    <mwc-list>
-                      ${this._mounts.map(
-                        (mount) => html`
-                          <ha-list-item
-                            graphic="avatar"
-                            .mount=${mount}
-                            twoline
-                            .hasMeta=${mount.state !==
-                            SupervisorMountState.ACTIVE}
-                            @click=${this._changeMount}
-                          >
-                            <div slot="graphic">
-                              <ha-svg-icon
-                                .path=${mount.usage ===
-                                SupervisorMountUsage.MEDIA
-                                  ? mdiPlayBox
-                                  : mdiBackupRestore}
-                              ></ha-svg-icon>
-                            </div>
-                            <span
-                              class="mount-state-${mount.state || "unknown"}"
-                            >
-                              ${mount.name}
-                            </span>
-                            <span slot="secondary">
-                              ${mount.server}${mount.port
-                                ? `:${mount.port}`
-                                : nothing}${mount.type ===
-                              SupervisorMountType.NFS
-                                ? mount.path
-                                : mount.share}
-                            </span>
+                  <mwc-list>
+                    ${this._mounts.map(
+                      (mount) => html`
+                        <ha-list-item
+                          graphic="avatar"
+                          .mount=${mount}
+                          twoline
+                          .hasMeta=${mount.state !==
+                          SupervisorMountState.ACTIVE}
+                          @click=${this._changeMount}
+                        >
+                          <div slot="graphic">
                             <ha-svg-icon
-                              slot="meta"
-                              .mount=${mount}
-                              .path=${mdiReload}
-                              @click=${this._reloadMount}
+                              .path=${mount.usage === SupervisorMountUsage.MEDIA
+                                ? mdiPlayBox
+                                : mdiBackupRestore}
                             ></ha-svg-icon>
-                          </ha-list-item>
-                        `
-                      )}
-                    </mwc-list>
-                  </div>
+                          </div>
+                          <span class="mount-state-${mount.state || "unknown"}">
+                            ${mount.name}
+                          </span>
+                          <span slot="secondary">
+                            ${mount.server}${mount.port
+                              ? `:${mount.port}`
+                              : nothing}${mount.type === SupervisorMountType.NFS
+                              ? mount.path
+                              : ` :${mount.share}`}
+                          </span>
+                          <ha-icon-button
+                            class="reload-btn"
+                            slot="meta"
+                            .mount=${mount}
+                            @click=${this._reloadMount}
+                            .path=${mdiReload}
+                          ></ha-icon-button>
+                        </ha-list-item>
+                      `
+                    )}
+                  </mwc-list>
                 </ha-card>
               `
             : ""}
@@ -281,6 +277,13 @@ class HaConfigSectionStorage extends LitElement {
     }
     .mount-state-unknown {
       color: var(--warning-color);
+    }
+
+    .reload-btn {
+      float: right;
+      position: relative;
+      top: -10px;
+      right: 10px;
     }
   `;
 }
