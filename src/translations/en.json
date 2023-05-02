@@ -839,8 +839,10 @@
         "send_text": "Send text",
         "start_listening": "Start listening",
         "manage_assistants": "Manage assistants",
-        "not_supported_stt": "Text only assistant.",
-        "not_supported_microphone": "Microphone is not supported: text only conversation."
+        "not_supported_microphone": "Microphone is not supported. You need to access from a secure URL to use it. ",
+        "not_supported_microphone_documentation_start": "Visit",
+        "not_supported_microphone_documentation_link": "the documentation",
+        "not_supported_microphone_documentation_end": "to learn how to use a secure URL."
       },
       "generic": {
         "cancel": "Cancel",

@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import {
+  mdiAlertCircle,
   mdiChevronDown,
   mdiClose,
   mdiHelpCircleOutline,
@@ -14,12 +15,12 @@ import {
   LitElement,
   nothing,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
@@ -43,7 +44,7 @@ import { showAlertDialog } from "../generic/show-dialog-box";
 
 interface Message {
   who: string;
-  text?: string;
+  text?: string | TemplateResult;
   error?: boolean;
 }
 
@@ -111,8 +112,8 @@ export class HaVoiceCommandDialog extends LitElement {
       return nothing;
     }
 
-    const supportsSTT = this._pipeline?.stt_engine;
     const supportsMicrophone = AudioRecorder.isSupported;
+    const supportsSTT = this._pipeline?.stt_engine;
 
     return html`
       <ha-dialog
@@ -188,24 +189,6 @@ export class HaVoiceCommandDialog extends LitElement {
             </a>
           </ha-header-bar>
         </div>
-        ${!supportsSTT
-          ? html`
-              <ha-alert alert-type="info">
-                ${this.hass.localize(
-                  "ui.dialogs.voice_command.not_supported_stt"
-                )}
-              </ha-alert>
-            `
-          : !supportsMicrophone
-          ? html`
-              <ha-alert alert-type="warning">
-                ${this.hass.localize(
-                  "ui.dialogs.voice_command.not_supported_microphone"
-                )}
-              </ha-alert>
-            `
-          : nothing}
-
         <div class="messages">
           <div class="messages-container" id="scroll-container">
             ${this._conversation!.map(
@@ -248,16 +231,25 @@ export class HaVoiceCommandDialog extends LitElement {
                           </div>
                         `
                       : nothing}
-                    <ha-icon-button
-                      class="listening-icon"
-                      .path=${mdiMicrophone}
-                      @click=${this._toggleListening}
-                      .label=${this.hass.localize(
-                        "ui.dialogs.voice_command.start_listening"
-                      )}
-                      .disabled=${!supportsMicrophone}
-                    >
-                    </ha-icon-button>
+
+                    <div class="listening-icon">
+                      <ha-icon-button
+                        .path=${mdiMicrophone}
+                        @click=${this._toggleListening}
+                        .label=${this.hass.localize(
+                          "ui.dialogs.voice_command.start_listening"
+                        )}
+                      >
+                      </ha-icon-button>
+                      ${!supportsMicrophone
+                        ? html`
+                            <ha-svg-icon
+                              .path=${mdiAlertCircle}
+                              class="unsupported"
+                            ></ha-svg-icon>
+                          `
+                        : null}
+                    </div>
                   `}
             </span>
           </ha-textfield>
@@ -408,11 +400,48 @@ export class HaVoiceCommandDialog extends LitElement {
   private _toggleListening(ev) {
     ev.stopPropagation();
     ev.preventDefault();
+    const supportsMicrophone = AudioRecorder.isSupported;
+    if (!supportsMicrophone) {
+      this._showNotSupportedMessage();
+      return;
+    }
     if (!this._audioRecorder?.active) {
       this._startListening();
     } else {
       this._stopListening();
     }
+  }
+
+  private async _showNotSupportedMessage() {
+    this._addMessage({
+      who: "hass",
+      text: html`
+        <p>
+          ${this.hass.localize(
+            "ui.dialogs.voice_command.not_supported_microphone"
+          )}
+        </p>
+        <p>
+          ${this.hass.localize(
+            "ui.dialogs.voice_command.not_supported_microphone_documentation_start"
+          )}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href=${documentationUrl(
+              this.hass,
+              "/docs/configuration/securing/#remote-access"
+            )}
+            >${this.hass.localize(
+              "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
+            )}</a
+          >
+          ${this.hass.localize(
+            "ui.dialogs.voice_command.not_supported_microphone_documentation_end"
+          )}
+        </p>
+      `,
+    });
   }
 
   private async _startListening() {
@@ -586,7 +615,8 @@ export class HaVoiceCommandDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-icon-button.listening-icon {
+        .listening-icon {
+          position: relative;
           color: var(--secondary-text-color);
           margin-right: -24px;
           margin-inline-end: -24px;
@@ -594,8 +624,16 @@ export class HaVoiceCommandDialog extends LitElement {
           direction: var(--direction);
         }
 
-        ha-icon-button.listening-icon[active] {
+        .listening-icon[active] {
           color: var(--primary-color);
+        }
+
+        .unsupported {
+          color: var(--error-color);
+          position: absolute;
+          --mdc-icon-size: 16px;
+          right: 5px;
+          top: 0px;
         }
 
         ha-dialog {
@@ -713,6 +751,12 @@ export class HaVoiceCommandDialog extends LitElement {
           margin: 8px 0;
           padding: 8px;
           border-radius: 15px;
+        }
+        .message p {
+          margin: 0;
+        }
+        .message p:not(:last-child) {
+          margin-bottom: 8px;
         }
 
         .message.user {
