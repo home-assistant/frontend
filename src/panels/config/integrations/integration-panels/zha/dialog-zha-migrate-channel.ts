@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HassDialog } from "../../../../../dialogs/make-dialog-manager";
@@ -51,9 +51,9 @@ class DialogZHAMigrateChannel extends LitElement implements HassDialog {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | typeof nothing {
     if (!this._params) {
-      return html``;
+      return nothing;
     }
 
     return html`
