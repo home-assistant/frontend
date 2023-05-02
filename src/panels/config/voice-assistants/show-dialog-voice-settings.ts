@@ -1,7 +1,10 @@
 import { fireEvent } from "../../../common/dom/fire_event";
+import { ExposeEntitySettings } from "../../../data/expose";
 
 export interface VoiceSettingsDialogParams {
   entityId: string;
+  exposed: ExposeEntitySettings;
+  exposedEntitiesChanged?: () => void;
 }
 
 export const loadVoiceSettingsDialog = () => import("./dialog-voice-settings");

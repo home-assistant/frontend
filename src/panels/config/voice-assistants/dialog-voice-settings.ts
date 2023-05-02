@@ -1,17 +1,17 @@
 import "@material/mwc-button/mwc-button";
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import {
   ExtEntityRegistryEntry,
-  computeEntityRegistryName,
   getExtendedEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { VoiceSettingsDialogParams } from "./show-dialog-voice-settings";
 import "./entity-voice-settings";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import { VoiceSettingsDialogParams } from "./show-dialog-voice-settings";
 
 @customElement("dialog-voice-settings")
 class DialogVoiceSettings extends LitElement {
@@ -19,11 +19,18 @@ class DialogVoiceSettings extends LitElement {
 
   @state() private _extEntityReg?: ExtEntityRegistryEntry;
 
+  @state() private _params?: VoiceSettingsDialogParams;
+
   public async showDialog(params: VoiceSettingsDialogParams): Promise<void> {
-    this._extEntityReg = await getExtendedEntityRegistryEntry(
-      this.hass,
-      params.entityId
-    );
+    this._params = params;
+    try {
+      this._extEntityReg = await getExtendedEntityRegistryEntry(
+        this.hass,
+        params.entityId
+      );
+    } catch (e) {
+      this._extEntityReg = undefined;
+    }
   }
 
   public closeDialog(): void {
@@ -32,7 +39,7 @@ class DialogVoiceSettings extends LitElement {
   }
 
   protected render() {
-    if (!this._extEntityReg) {
+    if (!this._params) {
       return nothing;
     }
 
@@ -43,15 +50,18 @@ class DialogVoiceSettings extends LitElement {
         hideActions
         .heading=${createCloseHeading(
           this.hass,
-          computeEntityRegistryName(this.hass, this._extEntityReg) ||
+          computeStateName(this.hass.states[this._params.entityId]) ||
             this.hass.localize("ui.panel.config.entities.picker.unnamed_entity")
         )}
       >
         <div>
           <entity-voice-settings
             .hass=${this.hass}
-            .entry=${this._extEntityReg}
+            .entityId=${this._params.entityId}
+            .aliases=${this._extEntityReg?.aliases}
+            .exposed=${this._params.exposed}
             @entity-entry-updated=${this._entityEntryUpdated}
+            @exposed-entities-changed=${this._exposedEntitiesChanged}
           ></entity-voice-settings>
         </div>
       </ha-dialog>
@@ -60,6 +70,10 @@ class DialogVoiceSettings extends LitElement {
 
   private _entityEntryUpdated(ev: CustomEvent) {
     this._extEntityReg = ev.detail;
+  }
+
+  private _exposedEntitiesChanged() {
+    this._params!.exposedEntitiesChanged?.();
   }
 
   static get styles(): CSSResultGroup {

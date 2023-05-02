@@ -20,7 +20,7 @@ import {
   updateAssistPipeline,
 } from "../../../data/assist_pipeline";
 import { CloudStatus } from "../../../data/cloud";
-import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { ExposeEntitySettings } from "../../../data/expose";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -29,7 +29,10 @@ import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assi
 export class AssistPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private extEntities?: Record<string, ExtEntityRegistryEntry>;
+  @property({ attribute: false }) public exposedEntities?: Record<
+    string,
+    ExposeEntitySettings
+  >;
 
   @state() private _pipelines: AssistPipeline[] = [];
 
@@ -47,10 +50,9 @@ export class AssistPref extends LitElement {
   }
 
   private _exposedEntities = memoizeOne(
-    (extEntities: Record<string, ExtEntityRegistryEntry>) =>
-      Object.values(extEntities).filter(
-        (entity) => entity.options?.conversation?.should_expose
-      ).length
+    (exposedEntities: Record<string, ExposeEntitySettings>) =>
+      Object.values(exposedEntities).filter((expose) => expose.conversation)
+        .length
   );
 
   protected render() {
@@ -119,8 +121,8 @@ export class AssistPref extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.voice_assistants.assistants.pipeline.exposed_entities",
                 {
-                  number: this.extEntities
-                    ? this._exposedEntities(this.extEntities)
+                  number: this.exposedEntities
+                    ? this._exposedEntities(this.exposedEntities)
                     : 0,
                 }
               )}
