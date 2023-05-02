@@ -4,6 +4,7 @@ import memoizeOne from "memoize-one";
 import { LocalizeKeys } from "../../../../common/translations/localize";
 import { AssistPipeline } from "../../../../data/assist_pipeline";
 import { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-form/ha-form";
 
 @customElement("assist-pipeline-detail-config")
 export class AssistPipelineDetailConfig extends LitElement {
@@ -39,7 +40,7 @@ export class AssistPipelineDetailConfig extends LitElement {
                   required: true,
                   selector: {
                     language: {
-                      languages: supportedLanguages ?? [],
+                      languages: supportedLanguages,
                     },
                   },
                 }
