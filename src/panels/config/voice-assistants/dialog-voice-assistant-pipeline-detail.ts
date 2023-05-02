@@ -44,7 +44,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _submitting = false;
 
-  @state() private _supportedLanguages: string[] = [];
+  @state() private _supportedLanguages?: string[];
 
   public showDialog(params: VoiceAssistantPipelineDetailsDialogParams): void {
     this._params = params;
