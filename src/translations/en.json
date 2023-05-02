@@ -838,7 +838,10 @@
         "input_label": "Enter a request",
         "send_text": "Send text",
         "start_listening": "Start listening",
-        "manage_assistants": "Manage assistants"
+        "manage_assistants": "Manage assistants",
+        "not_supported_microphone": "Microphone is not supported. You need to access Home Assistant from a secure URL (HTTPS) to use it.",
+        "not_supported_microphone_documentation": "Visit {documentation_link} to learn how to use a secure URL",
+        "not_supported_microphone_documentation_link": "the documentation"
       },
       "generic": {
         "cancel": "Cancel",
