@@ -179,15 +179,6 @@ class ZHAConfigDashboard extends LitElement {
                 </div>
                 <div class="item">
                   <div>
-                    <div class="value">
-                      ${this._networkSettings.settings.network_info.network_key
-                        .key}
-                    </div>
-                    <div class="label">Network key</div>
-                  </div>
-                </div>
-                <div class="item">
-                  <div>
                     <div class="value">${this._networkSettings.radio_type}</div>
                     <div class="label">Radio type</div>
                   </div>
