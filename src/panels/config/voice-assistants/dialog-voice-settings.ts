@@ -35,6 +35,7 @@ class DialogVoiceSettings extends LitElement {
 
   public closeDialog(): void {
     this._extEntityReg = undefined;
+    this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
