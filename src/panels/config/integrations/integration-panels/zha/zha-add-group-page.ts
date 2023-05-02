@@ -14,8 +14,7 @@ import {
   ZHAGroup,
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
-import type { PolymerChangedEvent } from "../../../../../polymer-types";
-import type { HomeAssistant } from "../../../../../types";
+import type { ValueChangedEvent, HomeAssistant } from "../../../../../types";
 import "../../../ha-config-section";
 import "./zha-device-endpoint-data-table";
 import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
@@ -140,7 +139,7 @@ export class ZHAAddGroupPage extends LitElement {
     navigate(`/config/zha/group/${group.group_id}`, { replace: true });
   }
 
-  private _handleNameChange(ev: PolymerChangedEvent<string>) {
+  private _handleNameChange(ev: ValueChangedEvent<string>) {
     const target = ev.currentTarget as PaperInputElement;
     this._groupName = target.value || "";
   }

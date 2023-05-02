@@ -5,8 +5,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  TemplateResult,
   nothing,
+  TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
@@ -23,8 +23,11 @@ import {
   HassioPartialBackupCreateParams,
 } from "../../../src/data/hassio/backup";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
-import { PolymerChangedEvent } from "../../../src/polymer-types";
-import { HomeAssistant, TranslationDict } from "../../../src/types";
+import {
+  HomeAssistant,
+  TranslationDict,
+  ValueChangedEvent,
+} from "../../../src/types";
 import "./supervisor-formfield-label";
 
 type BackupOrRestoreKey = keyof TranslationDict["supervisor"]["backup"] &
@@ -416,7 +419,7 @@ export class SupervisorBackupContent extends LitElement {
     this[input.name] = input.value;
   }
 
-  private _handleTextValueChanged(ev: PolymerChangedEvent<string>) {
+  private _handleTextValueChanged(ev: ValueChangedEvent<string>) {
     const input = ev.currentTarget as PaperInputElement;
     this[input.name!] = ev.detail.value;
   }

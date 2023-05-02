@@ -33,8 +33,7 @@ import {
 } from "../data/core";
 import { SYMBOL_TO_ISO } from "../data/currency";
 import { onboardCoreConfigStep } from "../data/onboarding";
-import type { PolymerChangedEvent } from "../polymer-types";
-import type { HomeAssistant } from "../types";
+import type { ValueChangedEvent, HomeAssistant } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 
 const amsterdam: [number, number] = [52.3731339, 4.8903147];
@@ -368,7 +367,7 @@ class OnboardingCoreConfig extends LitElement {
     ]
   );
 
-  private _handleChange(ev: PolymerChangedEvent<string>) {
+  private _handleChange(ev: ValueChangedEvent<string>) {
     const target = ev.currentTarget as HaTextField;
 
     let value = target.value;
