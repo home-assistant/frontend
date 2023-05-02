@@ -49,7 +49,7 @@ export class AssistPref extends LitElement {
     });
   }
 
-  private _exposedEntities = memoizeOne(
+  private _exposedEntitiesCount = memoizeOne(
     (exposedEntities: Record<string, ExposeEntitySettings>) =>
       Object.values(exposedEntities).filter((expose) => expose.conversation)
         .length
@@ -122,7 +122,7 @@ export class AssistPref extends LitElement {
                 "ui.panel.config.voice_assistants.assistants.pipeline.exposed_entities",
                 {
                   number: this.exposedEntities
-                    ? this._exposedEntities(this.exposedEntities)
+                    ? this._exposedEntitiesCount(this.exposedEntities)
                     : 0,
                 }
               )}

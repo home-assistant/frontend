@@ -43,7 +43,7 @@ export class CloudGooglePref extends LitElement {
     }
   }
 
-  private _exposedEntities = memoizeOne(
+  private _exposedEntitiesCount = memoizeOne(
     (exposedEntities: Record<string, ExposeEntitySettings>) =>
       Object.values(exposedEntities).filter(
         (expose) => expose["cloud.google_assistant"]
@@ -243,7 +243,7 @@ export class CloudGooglePref extends LitElement {
                         "ui.panel.config.cloud.account.google.exposed_entities",
                         {
                           number: this.exposedEntities
-                            ? this._exposedEntities(this.exposedEntities)
+                            ? this._exposedEntitiesCount(this.exposedEntities)
                             : 0,
                         }
                       )}

@@ -31,7 +31,7 @@ export class CloudAlexaPref extends LitElement {
 
   @state() private _exposeNew?: boolean;
 
-  private _exposedEntities = memoizeOne(
+  private _exposedEntitiesCount = memoizeOne(
     (exposedEntities: Record<string, ExposeEntitySettings>) =>
       Object.values(exposedEntities).filter((expose) => expose["cloud.alexa"])
         .length
@@ -186,7 +186,7 @@ export class CloudAlexaPref extends LitElement {
                         "ui.panel.config.cloud.account.alexa.exposed_entities",
                         {
                           number: this.exposedEntities
-                            ? this._exposedEntities(this.exposedEntities)
+                            ? this._exposedEntitiesCount(this.exposedEntities)
                             : 0,
                         }
                       )}

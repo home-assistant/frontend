@@ -283,24 +283,24 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
       ${!this.entry
         ? html`<ha-alert alert-type="warning">
-            ${this.hass.localize("ui.dialogs.voice-settings.no_unique_id", {
-              faq_link: html`<a
-                href=${documentationUrl(this.hass, "/faq/unique_id")}
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
-              >`,
-            })}
+            ${this.hass.localize(
+              "ui.dialogs.voice-settings.aliases_no_unique_id",
+              {
+                faq_link: html`<a
+                  href=${documentationUrl(this.hass, "/faq/unique_id")}
+                  target="_blank"
+                  rel="noreferrer"
+                  >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
+                >`,
+              }
+            )}
           </ha-alert>`
-        : nothing}
-
-      <ha-aliases-editor
-        .hass=${this.hass}
-        .aliases=${this._aliases ?? (this.entry?.aliases || [])}
-        .disabled=${!this.entry}
-        @value-changed=${this._aliasesChanged}
-        @blur=${this._saveAliases}
-      ></ha-aliases-editor>
+        : html`<ha-aliases-editor
+            .hass=${this.hass}
+            .aliases=${this._aliases ?? this.entry.aliases}
+            @value-changed=${this._aliasesChanged}
+            @blur=${this._saveAliases}
+          ></ha-aliases-editor>`}
     `;
   }
 
