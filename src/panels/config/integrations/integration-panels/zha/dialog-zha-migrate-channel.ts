@@ -120,8 +120,12 @@ class DialogZHAMigrateChannel extends LitElement implements HassDialog {
     }
 
     await showAlertDialog(this, {
-      title: "Network channel has been changed",
-      text: "Devices will re-join the network over time. This may take a few minutes.",
+      title: this.hass.localize(
+        "ui.panel.config.zha.change_channel_dialog.channel_has_been_changed"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.zha.change_channel_dialog.devices_will_rejoin"
+      ),
     });
 
     this.closeDialog();

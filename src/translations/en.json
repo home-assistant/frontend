@@ -3563,7 +3563,9 @@
             "title": "Change network channel",
             "new_channel": "New channel",
             "change_channel": "Change channel",
-            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating!"
+            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating!",
+            "channel_has_been_changed": "Network channel has been changed",
+            "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes."
           }
         },
         "zwave_js": {
