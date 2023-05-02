@@ -738,6 +738,7 @@ export class VoiceAssistantsExpose extends LitElement {
     showVoiceSettingsDialog(this, {
       entityId,
       exposed: this.exposedEntities![entityId],
+      extEntityReg: this._extEntities?.[entityId],
       exposedEntitiesChanged: () => {
         fireEvent(this, "exposed-entities-changed");
       },

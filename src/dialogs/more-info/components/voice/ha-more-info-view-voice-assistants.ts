@@ -28,9 +28,8 @@ class MoreInfoViewVoiceAssistants extends LitElement {
     }
     return html`<entity-voice-settings
       .hass=${this.hass}
-      .entry=${this.entry}
       .entityId=${this.entry.entity_id}
-      .aliases=${this.entry.aliases}
+      .entry=${this.entry}
       .exposed=${this._calculateExposed(this.entry)}
     ></entity-voice-settings>`;
   }

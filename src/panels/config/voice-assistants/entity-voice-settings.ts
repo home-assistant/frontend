@@ -46,6 +46,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { EntityRegistrySettings } from "../entities/entity-registry-settings";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("entity-voice-settings")
 export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
@@ -54,8 +55,6 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   @property() public entityId!: string;
 
   @property({ attribute: false }) public exposed!: ExposeEntitySettings;
-
-  @property({ attribute: false }) public aliases?: string[];
 
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry;
 
@@ -282,10 +281,23 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         ${this.hass.localize("ui.dialogs.voice-settings.aliases_description")}
       </p>
 
+      ${!this.entry
+        ? html`<ha-alert alert-type="warning">
+            ${this.hass.localize("ui.dialogs.voice-settings.no_unique_id", {
+              faq_link: html`<a
+                href=${documentationUrl(this.hass, "/faq/unique_id")}
+                target="_blank"
+                rel="noreferrer"
+                >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
+              >`,
+            })}
+          </ha-alert>`
+        : nothing}
+
       <ha-aliases-editor
         .hass=${this.hass}
-        .aliases=${this._aliases ?? (this.aliases || [])}
-        .disabled=${!this.aliases}
+        .aliases=${this._aliases ?? (this.entry?.aliases || [])}
+        .disabled=${!this.entry}
         @value-changed=${this._aliasesChanged}
         @blur=${this._saveAliases}
       ></ha-aliases-editor>

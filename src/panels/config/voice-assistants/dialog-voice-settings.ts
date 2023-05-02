@@ -4,10 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import {
-  ExtEntityRegistryEntry,
-  getExtendedEntityRegistryEntry,
-} from "../../../data/entity_registry";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
@@ -17,24 +13,13 @@ import { VoiceSettingsDialogParams } from "./show-dialog-voice-settings";
 class DialogVoiceSettings extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _extEntityReg?: ExtEntityRegistryEntry;
-
   @state() private _params?: VoiceSettingsDialogParams;
 
-  public async showDialog(params: VoiceSettingsDialogParams): Promise<void> {
+  public showDialog(params: VoiceSettingsDialogParams): void {
     this._params = params;
-    try {
-      this._extEntityReg = await getExtendedEntityRegistryEntry(
-        this.hass,
-        params.entityId
-      );
-    } catch (e) {
-      this._extEntityReg = undefined;
-    }
   }
 
   public closeDialog(): void {
-    this._extEntityReg = undefined;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -59,7 +44,7 @@ class DialogVoiceSettings extends LitElement {
           <entity-voice-settings
             .hass=${this.hass}
             .entityId=${this._params.entityId}
-            .aliases=${this._extEntityReg?.aliases}
+            .entry=${this._params.extEntityReg}
             .exposed=${this._params.exposed}
             @entity-entry-updated=${this._entityEntryUpdated}
             @exposed-entities-changed=${this._exposedEntitiesChanged}
@@ -70,7 +55,7 @@ class DialogVoiceSettings extends LitElement {
   }
 
   private _entityEntryUpdated(ev: CustomEvent) {
-    this._extEntityReg = ev.detail;
+    this._params!.extEntityReg = ev.detail;
   }
 
   private _exposedEntitiesChanged() {
