@@ -211,25 +211,6 @@ class ZHAConfigDashboard extends LitElement {
             </mwc-button>
           </div>
         </ha-card>
-        ${this._networkSettings
-          ? html`
-              <ha-card
-                header=${this.hass.localize(
-                  "ui.panel.config.zha.configuration_page.network_management_title"
-                )}
-              >
-                <div class="card-content">
-                  <p>
-                    <mwc-button @click=${this._updateConfiguration}>
-                      ${this.hass.localize(
-                        "ui.panel.config.zha.configuration_page.change_channel"
-                      )}
-                    </mwc-button>
-                  </p>
-                </div>
-              </ha-card>
-            `
-          : ""}
         ${this._configuration
           ? Object.entries(this._configuration.schemas).map(
               ([section, schema]) => html`<ha-card
