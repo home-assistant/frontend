@@ -1,3 +1,4 @@
+import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button/mwc-button";
 import {
   mdiChevronDown,
@@ -109,7 +110,6 @@ export class HaVoiceCommandDialog extends LitElement {
     if (!this._opened) {
       return nothing;
     }
-    const supportsSTT = this._pipeline?.stt_engine && AudioRecorder.isSupported;
     return html`
       <ha-dialog
         open
@@ -202,11 +202,12 @@ export class HaVoiceCommandDialog extends LitElement {
             dialogInitialFocus
             iconTrailing
           >
-            <span slot="trailingIcon">
+            <div slot="trailingIcon">
               ${this._showSendButton
                 ? html`
                     <ha-icon-button
-                      class="listening-icon"
+                      id="microphone-button"
+                      class="move-end"
                       .path=${mdiSend}
                       @click=${this._handleSendMessage}
                       .label=${this.hass.localize(
@@ -215,8 +216,8 @@ export class HaVoiceCommandDialog extends LitElement {
                     >
                     </ha-icon-button>
                   `
-                : supportsSTT
-                ? html`
+                : this._pipeline?.stt_engine
+                ? html` <div class="move-end">
                     ${this._audioRecorder?.active
                       ? html`
                           <div class="bouncer">
@@ -226,17 +227,28 @@ export class HaVoiceCommandDialog extends LitElement {
                         `
                       : ""}
                     <ha-icon-button
-                      class="listening-icon"
-                      .path=${mdiMicrophone}
-                      @click=${this._toggleListening}
+                      id="microphone-button"
                       .label=${this.hass.localize(
                         "ui.dialogs.voice_command.start_listening"
                       )}
+                      .path=${mdiMicrophone}
+                      .disabled=${!AudioRecorder.isSupported}
+                      @click=${this._toggleListening}
                     >
                     </ha-icon-button>
-                  `
+                    ${!AudioRecorder.isSupported
+                      ? html`<simple-tooltip
+                          animation-delay="0"
+                          position="top"
+                          offset="1"
+                          >${this.hass.localize(
+                            "ui.dialogs.voice_command.stt_not_supported"
+                          )}</simple-tooltip
+                        >`
+                      : ""}
+                  </div>`
                 : ""}
-            </span>
+            </div>
           </ha-textfield>
           ${this._agentInfo && this._agentInfo.attribution
             ? html`
@@ -561,18 +573,20 @@ export class HaVoiceCommandDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-icon-button.listening-icon {
+        #microphone-button {
           color: var(--secondary-text-color);
-          margin-right: -24px;
-          margin-inline-end: -24px;
-          margin-inline-start: initial;
           direction: var(--direction);
         }
-
-        ha-icon-button.listening-icon[active] {
+        #microphone-button[active] {
           color: var(--primary-color);
         }
-
+        .move-end {
+          position: relative;
+          right: -24px;
+        }
+        simple-tooltip {
+          top: 0;
+        }
         ha-dialog {
           --primary-action-button-flex: 1;
           --secondary-action-button-flex: 0;
@@ -622,7 +636,6 @@ export class HaVoiceCommandDialog extends LitElement {
         }
         ha-textfield {
           display: block;
-          overflow: hidden;
         }
         a.button {
           text-decoration: none;

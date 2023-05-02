@@ -838,6 +838,7 @@
         "input_label": "Enter a request",
         "send_text": "Send text",
         "start_listening": "Start listening",
+        "stt_not_supported": "You can only use speech-to-text when using HTTPS.",
         "manage_assistants": "Manage assistants"
       },
       "generic": {
