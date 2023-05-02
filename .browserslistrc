@@ -14,8 +14,20 @@ not iOS < 13
 not dead
 
 [legacy]
-# Legacy builds are transpiled to ES5 (strict mode) but also must support some features that cannot be polyfilled:
+# Legacy builds are served when modern requirements are not met and support browsers:
+# - released in the last 10 year + current alpha/beta versionss
+# - with global utilization above 0.1%
+# The lattermost query ensures that support for popular old browsers is not dropped too early
+# (e.g. IE 11, Android 4.4, or Samsung 4).
+#
+# In addition, legacy browsers must support some minimum features that cannot be polyfilled:
+# - ES5 (strict mode)
 # - web sockets to communicate with backend
 # - inline SVG used widely in buttons, widgets, etc.
 # - custom events used for most user interactions
-supports use-strict and supports websockets and supports svg-html5 and supports customevent
+# - CSS flexbox used in the majority of the layout
+# Nearly all of these are redundant with the above rules.
+# As of May 2023, only web sockets must be added to the query.
+unreleased versions
+last 10 years
+> 0.1% and supports websockets
