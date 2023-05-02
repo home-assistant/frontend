@@ -1052,10 +1052,6 @@ class HUIRoot extends LitElement {
         #view {
           position: relative;
           display: flex;
-          background: var(
-            --lovelace-background,
-            var(--primary-background-color)
-          );
           padding-top: calc(var(--header-height) + env(safe-area-inset-top));
           min-height: 100vh;
           box-sizing: border-box;
@@ -1063,8 +1059,13 @@ class HUIRoot extends LitElement {
           padding-right: env(safe-area-inset-right);
           padding-bottom: env(safe-area-inset-bottom);
         }
-        hui-view,
-        hui-unused-entities {
+        hui-view {
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
+        }
+        #view > * {
           flex: 1 1 100%;
           max-width: 100%;
         }
