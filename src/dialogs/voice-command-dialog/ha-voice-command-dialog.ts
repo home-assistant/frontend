@@ -423,21 +423,23 @@ export class HaVoiceCommandDialog extends LitElement {
         </p>
         <p>
           ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone_documentation_start"
-          )}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href=${documentationUrl(
-              this.hass,
-              "/docs/configuration/securing/#remote-access"
-            )}
-            >${this.hass.localize(
-              "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
-            )}</a
-          >
-          ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone_documentation_end"
+            "ui.dialogs.voice_command.not_supported_microphone_documentation",
+            {
+              documentation_link: html`
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href=${documentationUrl(
+                    this.hass,
+                    "/docs/configuration/securing/#remote-access"
+                  )}
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
+                  )}
+                </a>
+              `,
+            }
           )}
         </p>
       `,
