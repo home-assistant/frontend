@@ -382,7 +382,9 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  private _toggleListening() {
+  private _toggleListening(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
     if (!this._audioRecorder?.active) {
       this._startListening();
     } else {
@@ -616,6 +618,19 @@ export class HaVoiceCommandDialog extends LitElement {
         ha-button-menu ha-button ha-svg-icon {
           height: 28px;
           margin-left: 4px;
+          margin-inline-start: 4px;
+          margin-inline-end: 4px;
+          direction: var(--direction);
+        }
+        ha-list-item {
+          --mdc-list-item-meta-size: 16px;
+        }
+        ha-list-item ha-svg-icon {
+          margin-left: 4px;
+          margin-inline-start: 4px;
+          margin-inline-end: 4px;
+          direction: var(--direction);
+          display: block;
         }
         ha-button-menu a {
           text-decoration: none;
