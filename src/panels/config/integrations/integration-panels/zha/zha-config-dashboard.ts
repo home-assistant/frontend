@@ -1,5 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import { mdiFolderMultipleOutline, mdiLan, mdiNetwork, mdiPlus } from "@mdi/js";
+import {
+  mdiFolderMultipleOutline,
+  mdiLan,
+  mdiNetwork,
+  mdiPlus,
+  mdiPencil,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -16,6 +22,7 @@ import {
 import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
+import "../../../../../components/ha-icon-button";
 import { fileDownload } from "../../../../../util/file_download";
 import "../../../../../components/ha-icon-next";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -26,6 +33,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/buttons/ha-progress-button";
+import { showZHAMigrateChannelDialog } from "./show-dialog-zha-migrate-channel";
 import {
   fetchZHAConfiguration,
   updateZHAConfiguration,
@@ -126,30 +134,63 @@ class ZHAConfigDashboard extends LitElement {
           )}
         >
           ${this._networkSettings
-            ? html`<div class="card-content network-settings">
-                <div>
-                  <strong>PAN ID:</strong>
-                  ${this._networkSettings.settings.network_info.pan_id}
+            ? html`<div class="card-content">
+                <div class="item">
+                  <div>
+                    <div class="value">
+                      ${this._networkSettings.settings.network_info.pan_id}
+                    </div>
+                    <div class="label">PAN ID</div>
+                  </div>
                 </div>
-                <div>
-                  <strong>Extended PAN ID:</strong>
-                  ${this._networkSettings.settings.network_info.extended_pan_id}
+                <div class="item">
+                  <div>
+                    <div class="value">
+                      ${this._networkSettings.settings.network_info
+                        .extended_pan_id}
+                    </div>
+                    <div class="label">Extended PAN ID</div>
+                  </div>
                 </div>
-                <div>
-                  <strong>Channel:</strong>
-                  ${this._networkSettings.settings.network_info.channel}
+                <div class="item">
+                  <div>
+                    <div class="value">
+                      ${this._networkSettings.settings.network_info.channel}
+                    </div>
+                    <div class="label">Channel</div>
+                  </div>
+
+                  <ha-icon-button
+                    .label=${this.hass.localize(
+                      "ui.panel.config.zha.configuration_page.change_channel"
+                    )}
+                    .path=${mdiPencil}
+                    @click=${this._showChannelMigrationDialog}
+                  >
+                  </ha-icon-button>
                 </div>
-                <div>
-                  <strong>Coordinator IEEE:</strong>
-                  ${this._networkSettings.settings.node_info.ieee}
+                <div class="item">
+                  <div>
+                    <div class="value">
+                      ${this._networkSettings.settings.node_info.ieee}
+                    </div>
+                    <div class="label">Coordinator IEEE</div>
+                  </div>
                 </div>
-                <div>
-                  <strong>Network key:</strong>
-                  ${this._networkSettings.settings.network_info.network_key.key}
+                <div class="item">
+                  <div>
+                    <div class="value">
+                      ${this._networkSettings.settings.network_info.network_key
+                        .key}
+                    </div>
+                    <div class="label">Network key</div>
+                  </div>
                 </div>
-                <div>
-                  <strong>Radio type:</strong>
-                  ${this._networkSettings.radio_type}
+                <div class="item">
+                  <div>
+                    <div class="value">${this._networkSettings.radio_type}</div>
+                    <div class="label">Radio type</div>
+                  </div>
                 </div>
               </div>`
             : ""}
@@ -170,6 +211,25 @@ class ZHAConfigDashboard extends LitElement {
             </mwc-button>
           </div>
         </ha-card>
+        ${this._networkSettings
+          ? html`
+              <ha-card
+                header=${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.network_management_title"
+                )}
+              >
+                <div class="card-content">
+                  <p>
+                    <mwc-button @click=${this._updateConfiguration}>
+                      ${this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.change_channel"
+                      )}
+                    </mwc-button>
+                  </p>
+                </div>
+              </ha-card>
+            `
+          : ""}
         ${this._configuration
           ? Object.entries(this._configuration.schemas).map(
               ([section, schema]) => html`<ha-card
@@ -222,6 +282,12 @@ class ZHAConfigDashboard extends LitElement {
 
   private async _fetchSettings(): Promise<void> {
     this._networkSettings = await fetchZHANetworkSettings(this.hass!);
+  }
+
+  private async _showChannelMigrationDialog(): Promise<void> {
+    showZHAMigrateChannelDialog(this, {
+      currentChannel: this._networkSettings!.settings.network_info.channel,
+    });
   }
 
   private async _createAndDownloadBackup(): Promise<void> {
@@ -314,6 +380,20 @@ class ZHAConfigDashboard extends LitElement {
           display: flex;
           justify-content: space-between;
           align-items: center;
+        }
+
+        .network-settings .item .label {
+          font-size: 0.85em;
+          color: var(--mdc-text-field-label-ink-color);
+        }
+
+        .network-settings .item {
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .network-settings .item:not(:last-of-type) {
+          margin-bottom: 0.9em;
         }
       `,
     ];

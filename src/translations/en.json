@@ -3463,7 +3463,9 @@
             "update_button": "Update Configuration",
             "download_backup": "Download Backup",
             "migrate_radio": "Migrate Radio",
-            "network_settings_title": "Network Settings"
+            "network_settings_title": "Network Settings",
+            "network_management_title": "Network Management",
+            "change_channel": "Change channel"
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
@@ -3557,6 +3559,12 @@
             "lqi": "LQI",
             "relationship": "Relationship",
             "depth": "Depth"
+          },
+          "change_channel_dialog": {
+            "title": "Change network channel",
+            "new_channel": "New channel",
+            "change_channel": "Change channel",
+            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating!"
           }
         },
         "zwave_js": {
