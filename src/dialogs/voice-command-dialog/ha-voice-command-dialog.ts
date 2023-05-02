@@ -575,7 +575,6 @@ export class HaVoiceCommandDialog extends LitElement {
       css`
         #microphone-button {
           color: var(--secondary-text-color);
-          direction: var(--direction);
         }
         #microphone-button[active] {
           color: var(--primary-color);
@@ -583,6 +582,9 @@ export class HaVoiceCommandDialog extends LitElement {
         .move-end {
           position: relative;
           right: -24px;
+          inset-inline-end: -24px;
+          inset-inline-start: initial;
+          direction: var(--direction);
         }
         simple-tooltip {
           top: 0;
