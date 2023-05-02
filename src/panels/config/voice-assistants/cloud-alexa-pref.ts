@@ -11,28 +11,30 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../data/cloud";
-import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import {
+  ExposeEntitySettings,
   getExposeNewEntities,
   setExposeNewEntities,
-} from "../../../data/voice";
+} from "../../../data/expose";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 
 export class CloudAlexaPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private extEntities?: Record<string, ExtEntityRegistryEntry>;
+  @property({ attribute: false }) public exposedEntities?: Record<
+    string,
+    ExposeEntitySettings
+  >;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
   @state() private _exposeNew?: boolean;
 
-  private _exposedEntities = memoizeOne(
-    (extEntities: Record<string, ExtEntityRegistryEntry>) =>
-      Object.values(extEntities).filter(
-        (entity) => entity.options?.["cloud.alexa"]?.should_expose
-      ).length
+  private _exposedEntitiesCount = memoizeOne(
+    (exposedEntities: Record<string, ExposeEntitySettings>) =>
+      Object.values(exposedEntities).filter((expose) => expose["cloud.alexa"])
+        .length
   );
 
   protected willUpdate() {
@@ -183,8 +185,8 @@ export class CloudAlexaPref extends LitElement {
                     : this.hass.localize(
                         "ui.panel.config.cloud.account.alexa.exposed_entities",
                         {
-                          number: this.extEntities
-                            ? this._exposedEntities(this.extEntities)
+                          number: this.exposedEntities
+                            ? this._exposedEntitiesCount(this.exposedEntities)
                             : 0,
                         }
                       )}

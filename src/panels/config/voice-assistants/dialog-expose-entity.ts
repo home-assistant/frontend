@@ -1,18 +1,16 @@
 import "@material/mwc-button";
 import "@material/mwc-list";
 import { mdiClose } from "@mdi/js";
+import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-check-list-item";
 import "../../../components/search-input";
-import {
-  computeEntityRegistryName,
-  ExtEntityRegistryEntry,
-} from "../../../data/entity_registry";
-import { voiceAssistants } from "../../../data/voice";
+import { ExposeEntitySettings, voiceAssistants } from "../../../data/expose";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
@@ -49,7 +47,7 @@ class DialogExposeEntity extends LitElement {
     );
 
     const entities = this._filterEntities(
-      this._params.extendedEntities,
+      this._params.exposedEntities,
       this._filter
     );
 
@@ -126,42 +124,40 @@ class DialogExposeEntity extends LitElement {
   }
 
   private _filterEntities = memoizeOne(
-    (RegEntries: Record<string, ExtEntityRegistryEntry>, filter?: string) => {
+    (
+      exposedEntities: Record<string, ExposeEntitySettings>,
+      filter?: string
+    ) => {
       const lowerFilter = filter?.toLowerCase();
-      return Object.values(RegEntries).filter(
+      return Object.values(this.hass.states).filter(
         (entity) =>
           this._params!.filterAssistants.some(
-            (ass) => !entity.options?.[ass]?.should_expose
+            (ass) => !exposedEntities[entity.entity_id]?.[ass]
           ) &&
           (!lowerFilter ||
             entity.entity_id.toLowerCase().includes(lowerFilter) ||
-            computeEntityRegistryName(this.hass!, entity)
-              ?.toLowerCase()
-              .includes(lowerFilter))
+            computeStateName(entity)?.toLowerCase().includes(lowerFilter))
       );
     }
   );
 
-  private _renderItem = (entity: ExtEntityRegistryEntry) => {
-    const entityState = this.hass.states[entity.entity_id];
-    return html`
-      <ha-check-list-item
-        graphic="icon"
-        twoLine
-        .value=${entity.entity_id}
-        .selected=${this._selected.includes(entity.entity_id)}
-        @request-selected=${this._handleSelected}
-      >
-        <ha-state-icon
-          title=${ifDefined(entityState?.state)}
-          slot="graphic"
-          .state=${entityState}
-        ></ha-state-icon>
-        ${computeEntityRegistryName(this.hass!, entity)}
-        <span slot="secondary">${entity.entity_id}</span>
-      </ha-check-list-item>
-    `;
-  };
+  private _renderItem = (entityState: HassEntity) => html`
+    <ha-check-list-item
+      graphic="icon"
+      twoLine
+      .value=${entityState.entity_id}
+      .selected=${this._selected.includes(entityState.entity_id)}
+      @request-selected=${this._handleSelected}
+    >
+      <ha-state-icon
+        title=${ifDefined(entityState?.state)}
+        slot="graphic"
+        .state=${entityState}
+      ></ha-state-icon>
+      ${computeStateName(entityState)}
+      <span slot="secondary">${entityState.entity_id}</span>
+    </ha-check-list-item>
+  `;
 
   private _expose() {
     this._params!.exposeEntities(this._selected);

@@ -838,7 +838,10 @@
         "input_label": "Enter a request",
         "send_text": "Send text",
         "start_listening": "Start listening",
-        "manage_assistants": "Manage assistants"
+        "manage_assistants": "Manage assistants",
+        "not_supported_microphone": "Microphone is not supported. You need to access Home Assistant from a secure URL (HTTPS) to use it.",
+        "not_supported_microphone_documentation": "Visit {documentation_link} to learn how to use a secure URL",
+        "not_supported_microphone_documentation_link": "the documentation"
       },
       "generic": {
         "cancel": "Cancel",
@@ -1082,6 +1085,7 @@
         "expose_header": "Expose",
         "aliases_header": "Aliases",
         "aliases_description": "Aliases are supported by Assist and Google Assistant.",
+        "aliases_no_unique_id": "Aliases are not supported for entities without an unique id. See the {faq_link} for more detail.",
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
         "unsupported": "Unsupported"

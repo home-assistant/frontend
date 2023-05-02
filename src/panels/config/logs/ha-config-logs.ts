@@ -9,7 +9,6 @@ import "../../../components/search-input";
 import { LogProvider } from "../../../data/error_log";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import "./error-log-card";
