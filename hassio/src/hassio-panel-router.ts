@@ -5,12 +5,8 @@ import {
   RouterOptions,
 } from "../../src/layouts/hass-router-page";
 import { HomeAssistant, Route } from "../../src/types";
-import "./addon-store/hassio-addon-store";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./dashboard/hassio-dashboard";
-// Don't codesplit the others, because it breaks the UI when pushed to a Pi
-import "./backups/hassio-backups";
-import "./system/hassio-system";
 
 @customElement("hassio-panel-router")
 class HassioPanelRouter extends HassRouterPage {
@@ -31,12 +27,15 @@ class HassioPanelRouter extends HassRouterPage {
       },
       store: {
         tag: "hassio-addon-store",
+        load: () => import("./addon-store/hassio-addon-store"),
       },
       backups: {
         tag: "hassio-backups",
+        load: () => import("./backups/hassio-backups"),
       },
       system: {
         tag: "hassio-system",
+        load: () => import("./system/hassio-system"),
       },
     },
   };

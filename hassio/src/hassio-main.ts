@@ -9,7 +9,6 @@ import { navigate } from "../../src/common/navigate";
 import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
-import "../../src/layouts/hass-loading-screen";
 import { HomeAssistant } from "../../src/types";
 import "./hassio-router";
 import { SupervisorBaseElement } from "./supervisor-base-element";

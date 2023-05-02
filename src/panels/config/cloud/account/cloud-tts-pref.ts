@@ -8,6 +8,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-language-picker";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import {
   CloudTTSInfo,
@@ -54,34 +55,33 @@ export class CloudTTSPref extends LitElement {
             '"tts.cloud_say"'
           )}
           <br /><br />
+          <div class="row">
+            <ha-language-picker
+              .hass=${this.hass}
+              .label=${this.hass.localize(
+                "ui.panel.config.cloud.account.tts.default_language"
+              )}
+              .disabled=${this.savingPreferences}
+              .value=${defaultVoice[0]}
+              .languages=${languages}
+              @value-changed=${this._handleLanguageChange}
+            >
+            </ha-language-picker>
 
-          <ha-select
-            .label=${this.hass.localize(
-              "ui.panel.config.cloud.account.tts.default_language"
-            )}
-            .disabled=${this.savingPreferences}
-            .value=${defaultVoice[0]}
-            @selected=${this._handleLanguageChange}
-          >
-            ${languages.map(
-              ([key, label]) =>
-                html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
-            )}
-          </ha-select>
-
-          <ha-select
-            .label=${this.hass.localize(
-              "ui.panel.config.cloud.account.tts.default_gender"
-            )}
-            .disabled=${this.savingPreferences}
-            .value=${defaultVoice[1]}
-            @selected=${this._handleGenderChange}
-          >
-            ${genders.map(
-              ([key, label]) =>
-                html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
-            )}
-          </ha-select>
+            <ha-select
+              .label=${this.hass.localize(
+                "ui.panel.config.cloud.account.tts.default_gender"
+              )}
+              .disabled=${this.savingPreferences}
+              .value=${defaultVoice[1]}
+              @selected=${this._handleGenderChange}
+            >
+              ${genders.map(
+                ([key, label]) =>
+                  html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
+              )}
+            </ha-select>
+          </div>
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._openTryDialog}>
@@ -115,11 +115,11 @@ export class CloudTTSPref extends LitElement {
   }
 
   async _handleLanguageChange(ev) {
-    if (ev.target.value === this.cloudStatus!.prefs.tts_default_voice[0]) {
+    if (ev.detail.value === this.cloudStatus!.prefs.tts_default_voice[0]) {
       return;
     }
     this.savingPreferences = true;
-    const language = ev.target.value;
+    const language = ev.detail.value;
 
     const curGender = this.cloudStatus!.prefs.tts_default_voice[1];
     const genders = this.getSupportedGenders(
@@ -184,6 +184,18 @@ export class CloudTTSPref extends LitElement {
       :host([dir="rtl"]) .example {
         right: auto;
         left: 24px;
+      }
+      .row {
+        display: flex;
+      }
+      .row > * {
+        flex: 1;
+      }
+      .row > *:first-child {
+        margin-right: 8px;
+      }
+      .row > *:last-child {
+        margin-left: 8px;
       }
       .card-actions {
         display: flex;

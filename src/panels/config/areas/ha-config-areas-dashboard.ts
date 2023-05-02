@@ -21,7 +21,6 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
@@ -222,10 +221,6 @@ export class HaConfigAreasDashboard extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      hass-loading-screen {
-        --app-header-background-color: var(--sidebar-background-color);
-        --app-header-text-color: var(--sidebar-text-color);
-      }
       .container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
