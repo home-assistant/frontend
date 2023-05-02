@@ -838,7 +838,9 @@
         "input_label": "Enter a request",
         "send_text": "Send text",
         "start_listening": "Start listening",
-        "manage_assistants": "Manage assistants"
+        "manage_assistants": "Manage assistants",
+        "not_supported_stt": "Text only assistant.",
+        "not_supported_microphone": "Microphone is not supported: text only conversation."
       },
       "generic": {
         "cancel": "Cancel",

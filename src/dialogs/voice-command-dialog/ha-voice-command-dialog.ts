@@ -19,6 +19,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
@@ -109,7 +110,10 @@ export class HaVoiceCommandDialog extends LitElement {
     if (!this._opened) {
       return nothing;
     }
-    const supportsSTT = this._pipeline?.stt_engine && AudioRecorder.isSupported;
+
+    const supportsSTT = this._pipeline?.stt_engine;
+    const supportsMicrophone = AudioRecorder.isSupported;
+
     return html`
       <ha-dialog
         open
@@ -150,10 +154,12 @@ export class HaVoiceCommandDialog extends LitElement {
                     .hasMeta=${pipeline.id === this._preferredPipeline}
                   >
                     ${pipeline.name}${pipeline.id === this._preferredPipeline
-                      ? html`<ha-svg-icon
-                          slot="meta"
-                          .path=${mdiStar}
-                        ></ha-svg-icon>`
+                      ? html`
+                          <ha-svg-icon
+                            slot="meta"
+                            .path=${mdiStar}
+                          ></ha-svg-icon>
+                        `
                       : nothing}
                   </ha-list-item>`
                 )}
@@ -182,6 +188,24 @@ export class HaVoiceCommandDialog extends LitElement {
             </a>
           </ha-header-bar>
         </div>
+        ${!supportsSTT
+          ? html`
+              <ha-alert alert-type="info">
+                ${this.hass.localize(
+                  "ui.dialogs.voice_command.not_supported_stt"
+                )}
+              </ha-alert>
+            `
+          : !supportsMicrophone
+          ? html`
+              <ha-alert alert-type="warning">
+                ${this.hass.localize(
+                  "ui.dialogs.voice_command.not_supported_microphone"
+                )}
+              </ha-alert>
+            `
+          : nothing}
+
         <div class="messages">
           <div class="messages-container" id="scroll-container">
             ${this._conversation!.map(
@@ -203,7 +227,7 @@ export class HaVoiceCommandDialog extends LitElement {
             iconTrailing
           >
             <span slot="trailingIcon">
-              ${this._showSendButton
+              ${this._showSendButton || !supportsSTT
                 ? html`
                     <ha-icon-button
                       class="listening-icon"
@@ -215,8 +239,7 @@ export class HaVoiceCommandDialog extends LitElement {
                     >
                     </ha-icon-button>
                   `
-                : supportsSTT
-                ? html`
+                : html`
                     ${this._audioRecorder?.active
                       ? html`
                           <div class="bouncer">
@@ -224,7 +247,7 @@ export class HaVoiceCommandDialog extends LitElement {
                             <div class="double-bounce2"></div>
                           </div>
                         `
-                      : ""}
+                      : nothing}
                     <ha-icon-button
                       class="listening-icon"
                       .path=${mdiMicrophone}
@@ -232,10 +255,10 @@ export class HaVoiceCommandDialog extends LitElement {
                       .label=${this.hass.localize(
                         "ui.dialogs.voice_command.start_listening"
                       )}
+                      .disabled=${!supportsMicrophone}
                     >
                     </ha-icon-button>
-                  `
-                : ""}
+                  `}
             </span>
           </ha-textfield>
           ${this._agentInfo && this._agentInfo.attribution
