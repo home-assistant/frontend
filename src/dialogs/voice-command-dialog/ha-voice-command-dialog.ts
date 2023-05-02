@@ -686,6 +686,7 @@ export class HaVoiceCommandDialog extends LitElement {
           display: block;
           height: 400px;
           box-sizing: border-box;
+          position: relative;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-dialog {
@@ -693,6 +694,7 @@ export class HaVoiceCommandDialog extends LitElement {
           }
           .messages {
             height: 100%;
+            flex: 1;
           }
         }
         .messages-container {
