@@ -45,8 +45,9 @@ export class CloudGooglePref extends LitElement {
 
   private _exposedEntitiesCount = memoizeOne(
     (exposedEntities: Record<string, ExposeEntitySettings>) =>
-      Object.values(exposedEntities).filter(
-        (expose) => expose["cloud.google_assistant"]
+      Object.entries(exposedEntities).filter(
+        ([entityId, expose]) =>
+          expose["cloud.google_assistant"] && entityId in this.hass.states
       ).length
   );
 
