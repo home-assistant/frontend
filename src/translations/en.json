@@ -3993,19 +3993,19 @@
               },
               "share": {
                 "title": "Remote share",
-                "description": "This is the name of the share you created on your storrage server"
+                "description": "This is the name of the share you created on your storage server"
               },
               "server": {
                 "title": "Server",
-                "description": "This is the domain name (FQDN) or IP address of the storrage server you want to connect to"
+                "description": "This is the domain name (FQDN) or IP address of the storage server you want to connect to"
               },
               "path": {
                 "title": "Remote share path",
-                "description": "This is the path of the remote share on your storrage server"
+                "description": "This is the path of the remote share on your storage server"
               },
               "type": {
                 "title": "Protocol",
-                "description": "This determine how you communicate with the storrage server"
+                "description": "This determine how you communicate with the storage server"
               },
               "usage": {
                 "title": "Usage",
