@@ -51,8 +51,10 @@ export class AssistPref extends LitElement {
 
   private _exposedEntitiesCount = memoizeOne(
     (exposedEntities: Record<string, ExposeEntitySettings>) =>
-      Object.values(exposedEntities).filter((expose) => expose.conversation)
-        .length
+      Object.entries(exposedEntities).filter(
+        ([entityId, expose]) =>
+          expose.conversation && entityId in this.hass.states
+      ).length
   );
 
   protected render() {
