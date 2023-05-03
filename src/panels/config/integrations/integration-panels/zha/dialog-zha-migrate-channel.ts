@@ -1,6 +1,7 @@
 import { html, LitElement, TemplateResult, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import { changeZHANetworkChannel } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
@@ -82,6 +83,7 @@ class DialogZHAMigrateChannel extends LitElement implements HassDialog {
             fixedMenuPosition
             naturalMenuWidth
             @selected=${this._newChannelChosen}
+            @closed=${stopPropagation}
             value=${String(this._params.currentChannel)}
           >
             ${VALID_CHANNELS.map(
