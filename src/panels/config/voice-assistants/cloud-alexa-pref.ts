@@ -284,6 +284,8 @@ export class CloudAlexaPref extends LitElement {
       img {
         height: 28px;
         margin-right: 16px;
+        margin-inline-end: 16px;
+        margin-inline-start: initial;
       }
     `;
   }

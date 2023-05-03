@@ -18,10 +18,33 @@ export class CloudDiscover extends LitElement {
         <div class="card-content">
           <h1 class="header">
             ${this.hass.localize(
-              "ui.panel.config.voice_assistants.assistants.cloud.header"
+              "ui.panel.config.voice_assistants.assistants.cloud.title",
+              {
+                home_assistant_cloud: html`
+                  <span class="no-wrap">Home Assistant Cloud</span>
+                `,
+              }
             )}
           </h1>
           <div class="features">
+            <div class="feature">
+              <div class="logos">
+                <div class="round-icon">
+                  <ha-svg-icon .path=${mdiMicrophoneMessage}></ha-svg-icon>
+                </div>
+              </div>
+              <h2>
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.assistants.cloud.features.speech.title"
+                )}
+                <span class="no-wrap"></span>
+              </h2>
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.assistants.cloud.features.speech.text"
+                )}
+              </p>
+            </div>
             <div class="feature">
               <div class="logos">
                 <img
@@ -51,23 +74,6 @@ export class CloudDiscover extends LitElement {
               <p>
                 ${this.hass.localize(
                   "ui.panel.config.voice_assistants.assistants.cloud.features.assistants.text"
-                )}
-              </p>
-            </div>
-            <div class="feature">
-              <div class="logos">
-                <div class="round-icon">
-                  <ha-svg-icon .path=${mdiMicrophoneMessage}></ha-svg-icon>
-                </div>
-              </div>
-              <h2>
-                ${this.hass.localize(
-                  "ui.panel.config.voice_assistants.assistants.cloud.features.speech.title"
-                )}
-              </h2>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.voice_assistants.assistants.cloud.features.speech.text"
                 )}
               </p>
             </div>
@@ -194,6 +200,9 @@ export class CloudDiscover extends LitElement {
       }
       .more a ha-svg-icon {
         --mdc-icon-size: 16px;
+      }
+      .no-wrap {
+        white-space: nowrap;
       }
     `;
   }
