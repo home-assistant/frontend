@@ -3990,7 +3990,7 @@
             "options": {
               "name": {
                 "title": "Name",
-                "description": "This name will be shown to you in the  UI, and will also be the name of the folder created on your system"
+                "description": "This name will be shown to you in the UI, and will also be the name of the folder created on your system"
               },
               "share": {
                 "title": "Remote share",
@@ -4006,11 +4006,11 @@
               },
               "type": {
                 "title": "Protocol",
-                "description": "This determine how you communicate with the storage server"
+                "description": "This determines how to communicate with the storage server"
               },
               "usage": {
                 "title": "Usage",
-                "description": "This determine how the share is intended to be used"
+                "description": "This determines how the share is intended to be used"
               },
               "username": {
                 "title": "Username",
