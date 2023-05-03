@@ -1088,7 +1088,8 @@
         "aliases_no_unique_id": "Aliases are not supported for entities without an unique id. See the {faq_link} for more detail.",
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
-        "unsupported": "Unsupported"
+        "unsupported": "Unsupported",
+        "view_entity": "More info about entity"
       },
       "restart": {
         "heading": "Restart Home Assistant",
