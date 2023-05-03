@@ -61,12 +61,12 @@ const mountSchema = memoizeOne(
         type: "select",
         options: [
           [
-            SupervisorMountType.NFS,
-            localize("ui.panel.config.storage.network_mounts.mount_type.nfs"),
-          ],
-          [
             SupervisorMountType.CIFS,
             localize("ui.panel.config.storage.network_mounts.mount_type.cifs"),
+          ],
+          [
+            SupervisorMountType.NFS,
+            localize("ui.panel.config.storage.network_mounts.mount_type.nfs"),
           ],
         ],
       },
