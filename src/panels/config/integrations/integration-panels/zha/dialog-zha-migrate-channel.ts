@@ -79,18 +79,14 @@ class DialogZHAMigrateChannel extends LitElement implements HassDialog {
             .label=${this.hass.localize(
               "ui.panel.config.zha.change_channel_dialog.new_channel"
             )}
-            name="newChannel"
             fixedMenuPosition
-            dialogInitialFocus
             naturalMenuWidth
             @selected=${this._newChannelChosen}
-            value="auto"
+            value=${String(this._params.currentChannel)}
           >
             ${VALID_CHANNELS.map(
               (newChannel) =>
-                html`<mwc-list-item
-                  name="newChannel"
-                  .value=${newChannel.toString()}
+                html`<mwc-list-item .value=${String(newChannel)}
                   >${newChannel}</mwc-list-item
                 >`
             )}
