@@ -119,7 +119,17 @@ export class VoiceAssistantsExpose extends LitElement {
   );
 
   private _columns = memoize(
-    (narrow, availableAssistants, _language): DataTableColumnContainer => ({
+    (
+      narrow: boolean,
+      availableAssistants: string[],
+      supportedEntities:
+        | Record<
+            "cloud.google_assistant" | "cloud.alexa" | "conversation",
+            string[] | undefined
+          >
+        | undefined,
+      _language: string
+    ): DataTableColumnContainer => ({
       icon: {
         title: "",
         type: "icon",
@@ -166,8 +176,8 @@ export class VoiceAssistantsExpose extends LitElement {
         template: (assistants, entry) =>
           html`${availableAssistants.map((key) => {
             const supported =
-              !this._supportedEntities?.[key] ||
-              this._supportedEntities[key].includes(entry.entity_id);
+              !supportedEntities?.[key] ||
+              supportedEntities[key].includes(entry.entity_id);
             const manual = entry.manAssistants?.includes(key);
             return assistants.includes(key)
               ? html`
@@ -450,6 +460,10 @@ export class VoiceAssistantsExpose extends LitElement {
       this.hass,
       Object.keys(this._entities)
     );
+    this._fetchSupportedEntities();
+  }
+
+  private async _fetchSupportedEntities() {
     let alexaEntitiesProm: Promise<AlexaEntity[]> | undefined;
     let googleEntitiesProm: Promise<GoogleEntity[]> | undefined;
     if (this.cloudStatus?.logged_in && this.cloudStatus.prefs.alexa_enabled) {
@@ -467,7 +481,7 @@ export class VoiceAssistantsExpose extends LitElement {
       "cloud.google_assistant": googleEntities?.map(
         (entity) => entity.entity_id
       ),
-      // TODO add supported entity for assit
+      // TODO add supported entity for assist
       conversation: undefined,
     };
   }
@@ -475,6 +489,14 @@ export class VoiceAssistantsExpose extends LitElement {
   public willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("_entities")) {
       this._fetchEntities();
+      return;
+    }
+    if (
+      changedProperties.has("hass") &&
+      this.hass.config.state === "RUNNING" &&
+      changedProperties.get("hass")?.config.state !== this.hass.config.state
+    ) {
+      this._fetchSupportedEntities();
     }
   }
 
@@ -505,6 +527,7 @@ export class VoiceAssistantsExpose extends LitElement {
         .columns=${this._columns(
           this.narrow,
           this._availableAssistants(this.cloudStatus),
+          this._supportedEntities,
           this.hass.language
         )}
         .data=${filteredEntities}
