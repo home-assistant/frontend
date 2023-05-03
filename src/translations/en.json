@@ -3978,6 +3978,7 @@
             "title": "Network storage",
             "add_title": "Add network storage",
             "update_title": "Update network storage",
+            "no_mounts": "No connected network storage",
             "mount_usage": {
               "backup": "Backup",
               "media": "Media"
