@@ -344,9 +344,8 @@ export class VoiceAssistantsExpose extends LitElement {
         const entry: ExtEntityRegistryEntry | undefined =
           entities[entityState.entity_id];
         const areaId =
-          entry?.area_id ?? entry?.device_id
-            ? devices[entry.device_id!]?.area_id
-            : undefined;
+          entry?.area_id ??
+          (entry?.device_id ? devices[entry.device_id!]?.area_id : undefined);
         const area = areaId ? areas[areaId] : undefined;
 
         result[entityState.entity_id] = {
