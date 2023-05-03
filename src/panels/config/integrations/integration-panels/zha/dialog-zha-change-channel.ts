@@ -11,7 +11,7 @@ import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
 import "@material/mwc-list/mwc-list-item";
-import { ZHAMigrateChannelDialogParams } from "./show-dialog-zha-migrate-channel";
+import { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
 
 const VALID_CHANNELS = [
   "auto",
@@ -32,19 +32,17 @@ const VALID_CHANNELS = [
   25,
 ];
 
-@customElement("dialog-zha-migrate-channel")
-class DialogZHAMigrateChannel extends LitElement implements HassDialog {
+@customElement("dialog-zha-change-channel")
+class DialogZHAChangeChannel extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _migrationInProgress = false;
 
-  @state() private _params?: ZHAMigrateChannelDialogParams;
+  @state() private _params?: ZHAChangeChannelDialogParams;
 
   private _newChannel: "auto" | number = "auto";
 
-  public async showDialog(
-    params: ZHAMigrateChannelDialogParams
-  ): Promise<void> {
+  public async showDialog(params: ZHAChangeChannelDialogParams): Promise<void> {
     this._params = params;
   }
 
@@ -144,6 +142,6 @@ class DialogZHAMigrateChannel extends LitElement implements HassDialog {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-zha-migrate-channel": DialogZHAMigrateChannel;
+    "dialog-zha-change-channel": DialogZHAChangeChannel;
   }
 }

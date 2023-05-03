@@ -33,7 +33,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/buttons/ha-progress-button";
-import { showZHAMigrateChannelDialog } from "./show-dialog-zha-migrate-channel";
+import { showZHAChangeChannelDialog } from "./show-dialog-zha-change-channel";
 import {
   fetchZHAConfiguration,
   updateZHAConfiguration,
@@ -257,7 +257,7 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private async _showChannelMigrationDialog(): Promise<void> {
-    showZHAMigrateChannelDialog(this, {
+    showZHAChangeChannelDialog(this, {
       currentChannel: this._networkSettings!.settings.network_info.channel,
     });
   }
