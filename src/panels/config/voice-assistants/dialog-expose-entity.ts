@@ -176,7 +176,17 @@ class DialogExposeEntity extends LitElement {
         lit-virtualizer {
           height: 500px;
         }
-        @media all and (max-width: 500px), all and (max-height: 800px) {
+        @media all and (max-height: 800px) {
+          lit-virtualizer {
+            height: 334px;
+          }
+        }
+        @media all and (max-height: 600px) {
+          lit-virtualizer {
+            height: 238px;
+          }
+        }
+        @media all and (max-width: 500px), all and (max-height: 500px) {
           ha-dialog {
             --mdc-dialog-min-width: calc(
               100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
