@@ -211,7 +211,6 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               (googleManual && key === "cloud.google_assistant");
 
             const support2fa =
-              this.entry &&
               key === "cloud.google_assistant" &&
               !googleManual &&
               supported &&
@@ -256,7 +255,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                         )}
                       >
                         <ha-checkbox
-                          .checked=${!this.entry!.options?.[key]?.disable_2fa}
+                          .checked=${!this._googleEntity!.disable_2fa}
                           @change=${this._2faChanged}
                         ></ha-checkbox>
                       </ha-formfield>
