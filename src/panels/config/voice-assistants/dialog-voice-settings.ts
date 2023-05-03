@@ -4,7 +4,6 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -43,16 +42,7 @@ class DialogVoiceSettings extends LitElement {
       this.hass.localize("ui.panel.config.entities.picker.unnamed_entity");
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        hideActions
-        .heading=${createCloseHeading(
-          this.hass,
-          computeStateName(this.hass.states[this._params.entityId]) ||
-            this.hass.localize("ui.panel.config.entities.picker.unnamed_entity")
-        )}
-      >
+      <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>
         <ha-header-bar slot="heading">
           <ha-icon-button
             slot="navigationIcon"
