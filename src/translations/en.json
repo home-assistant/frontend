@@ -1088,7 +1088,8 @@
         "aliases_no_unique_id": "Aliases are not supported for entities without an unique id. See the {faq_link} for more detail.",
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
-        "unsupported": "Unsupported"
+        "unsupported": "Unsupported",
+        "view_entity": "More info about entity"
       },
       "restart": {
         "heading": "Restart Home Assistant",
@@ -2838,7 +2839,7 @@
               "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
               "cerificate_loading": "Your certificate is loading.",
               "cerificate_loaded": "Your certificate is loaded, waiting for validation.",
-              "cerificate_error": "There was an error generating the certficate, check your logs.",
+              "cerificate_error": "There was an error generating the certificate, check your logs.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
               "instance_is_available": "Your instance is available at your",
               "instance_will_be_available": "Your instance will be available at your",
@@ -2863,19 +2864,19 @@
               "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app.",
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "expose_new_entities": "[%key:ui::panel::config::cloud::account::google::expose_new_entities%]",
-              "expose_new_entities_info": "Should new entities, that are supported and have no security risks be exposed to Alexa automatically?"
+              "expose_new_entities_info": "Should new entities be exposed to Alexa automatically? Exposes supported devices that are not classified as security devices."
             },
             "google": {
               "title": "Google Assistant",
-              "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
+              "info": "With the Google Assistant integration for Home Assistant Cloud, you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
               "http_use_ssl_warning_title": "Local communication unavailable",
-              "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant because you have configured an SSL certificate for your HTTP integration.",
+              "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant, because you have configured an SSL certificate for your HTTP integration.",
               "enable_ha_skill": "Activate the Home Assistant Cloud skill for Google Assistant",
               "config_documentation": "Configuration documentation",
-              "enable_state_reporting": "Enable State Reporting",
+              "enable_state_reporting": "Enable state reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This speeds up voice commands and allows you to always see the latest states in the Google app.",
-              "security_devices": "Security Devices",
-              "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say/enter this PIN when interacting with such devices via Google Assistant.",
+              "security_devices": "Security devices",
+              "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors, and locks. You will be asked to say/enter this PIN when interacting with security devices via Google Assistant.",
               "devices_pin": "Security Devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
               "show_entities": "Show Entities",
@@ -2886,7 +2887,7 @@
               "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "expose_new_entities": "Expose new entities",
-              "expose_new_entities_info": "Should new entities, that are supported and have no security risks be exposed to Google Assistant automatically?"
+              "expose_new_entities_info": "Should new entities be exposed to Google Assistant automatically? Exposes supported devices that are not classified as security devices."
             },
             "webhooks": {
               "title": "Webhooks",
