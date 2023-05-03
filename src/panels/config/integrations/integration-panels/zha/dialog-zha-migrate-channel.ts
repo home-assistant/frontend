@@ -59,7 +59,8 @@ class DialogZHAMigrateChannel extends LitElement implements HassDialog {
     return html`
       <ha-dialog
         open
-        hideActions
+        scrimClickAction
+        escapeKeyAction
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
@@ -81,7 +82,7 @@ class DialogZHAMigrateChannel extends LitElement implements HassDialog {
             fixedMenuPosition
             dialogInitialFocus
             naturalMenuWidth
-            @change=${this._newChannelChosen}
+            @selected=${this._newChannelChosen}
             value="auto"
           >
             ${VALID_CHANNELS.map(
@@ -94,6 +95,7 @@ class DialogZHAMigrateChannel extends LitElement implements HassDialog {
         </p>
 
         <ha-progress-button
+          slot="primaryAction"
           .progress=${this._migrationInProgress}
           .disabled=${this._migrationInProgress}
           @click=${this._changeNetworkChannel}
