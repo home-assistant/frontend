@@ -7,6 +7,7 @@ import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box"
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/buttons/ha-progress-button";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
 import "@material/mwc-list/mwc-list-item";
 import { ZHAMigrateChannelDialogParams } from "./show-dialog-zha-migrate-channel";
@@ -87,7 +88,9 @@ class DialogZHAMigrateChannel extends LitElement implements HassDialog {
           >
             ${VALID_CHANNELS.map(
               (newChannel) =>
-                html`<mwc-list-item .value=${newChannel.toString()}
+                html`<mwc-list-item
+                  name="newChannel"
+                  .value=${newChannel.toString()}
                   >${newChannel}</mwc-list-item
                 >`
             )}
@@ -104,6 +107,13 @@ class DialogZHAMigrateChannel extends LitElement implements HassDialog {
             "ui.panel.config.zha.change_channel_dialog.change_channel"
           )}
         </ha-progress-button>
+
+        <ha-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          .disabled=${this._migrationInProgress}
+          >${this.hass.localize("ui.dialogs.generic.cancel")}</ha-button
+        >
       </ha-dialog>
     `;
   }
