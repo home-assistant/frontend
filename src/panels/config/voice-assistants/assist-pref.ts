@@ -207,9 +207,14 @@ export class AssistPref extends LitElement {
         display: flex;
         flex-direction: row;
       }
+      :host([dir="rtl"]) .header-actions {
+        right: auto;
+        left: 0;
+      }
       .header-actions .icon-link {
         margin-top: -16px;
         margin-inline-end: 8px;
+        margin-inline-start: 8px;
         margin-right: 8px;
         direction: var(--direction);
         color: var(--secondary-text-color);
@@ -239,6 +244,8 @@ export class AssistPref extends LitElement {
       img {
         height: 28px;
         margin-right: 16px;
+        margin-inline-end: 16px;
+        margin-inline-start: initial;
       }
     `;
   }
