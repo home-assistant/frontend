@@ -3975,26 +3975,56 @@
             "move": "Move"
           },
           "network_mounts": {
-            "title": "Network mounts",
-            "add_title": "Add network mount",
-            "update_title": "Update network mount",
+            "title": "Network storage",
+            "add_title": "Add network storage",
+            "update_title": "Update network storage",
             "mount_usage": {
               "backup": "Backup",
               "media": "Media"
             },
-            "name": "Name",
-            "server": "Server",
-            "port": "Port",
-            "share": "Mount share",
-            "path": "Mount path",
-            "type": "Mount type",
-            "usage": "Mount usage",
+            "mount_type": {
+              "nfs": "Network File Share (NFS)",
+              "cifs": "Samba/Windows (CIFS)"
+            },
+            "options": {
+              "name": {
+                "title": "Name",
+                "description": "This name will be shown to you in the  UI, and will also be the name of the folder created on your system"
+              },
+              "share": {
+                "title": "Remote share",
+                "description": "This is the name of the share you created on your storrage server"
+              },
+              "server": {
+                "title": "Server",
+                "description": "This is the domain name (FQDN) or IP address of the storrage server you want to connect to"
+              },
+              "path": {
+                "title": "Remote share path",
+                "description": "This is the path of the remote share on your storrage server"
+              },
+              "type": {
+                "title": "Protocol",
+                "description": "This determine how you communicate with the storrage server"
+              },
+              "usage": {
+                "title": "Usage",
+                "description": "This determine how the share is intended to be used"
+              },
+              "username": {
+                "title": "Username",
+                "description": "This is your username for the samba share"
+              },
+              "password": {
+                "title": "Password",
+                "description": "This is your password for the samba share"
+              }
+            },
             "connect": "Connect",
             "update": "Update",
-            "username": "Username",
-            "password": "Password",
             "errors": {
-              "reload": "Could not reload mount {mount}"
+              "reload": "Could not reload mount {mount}",
+              "invalid_name": "Invalid name, can only contain alphanumeric characters and underscores"
             }
           }
         },

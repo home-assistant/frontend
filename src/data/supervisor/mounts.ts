@@ -41,10 +41,16 @@ export interface SupervisorCIFSMount extends SupervisorMountResponse {
 
 export type SupervisorMount = SupervisorNFSMount | SupervisorCIFSMount;
 
-export interface SupervisorMountRequestParams extends SupervisorMountBase {
+export type SupervisorNFSMountRequestParams = SupervisorNFSMount;
+
+export interface SupervisorCIFSMountRequestParams extends SupervisorCIFSMount {
   username?: string;
   password?: string;
 }
+
+export type SupervisorMountRequestParams =
+  | SupervisorNFSMountRequestParams
+  | SupervisorCIFSMountRequestParams;
 
 export interface SupervisorMounts {
   mounts: SupervisorMount[];

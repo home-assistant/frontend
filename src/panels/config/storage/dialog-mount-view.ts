@@ -32,25 +32,6 @@ const mountSchema = memoizeOne(
         selector: { text: {} },
       },
       {
-        name: "server",
-        required: true,
-        selector: { text: {} },
-      },
-      {
-        name: "port",
-        required: false,
-        selector: { number: { mode: "box" } },
-      },
-      {
-        name: "type",
-        required: true,
-        type: "select",
-        options: [
-          [SupervisorMountType.NFS, "NFS"],
-          [SupervisorMountType.CIFS, "CIFS"],
-        ],
-      },
-      {
         name: "usage",
         required: true,
         type: "select",
@@ -68,6 +49,26 @@ const mountSchema = memoizeOne(
             ),
           ],
         ] as const,
+      },
+      {
+        name: "server",
+        required: true,
+        selector: { text: {} },
+      },
+      {
+        name: "type",
+        required: true,
+        type: "select",
+        options: [
+          [
+            SupervisorMountType.NFS,
+            localize("ui.panel.config.storage.network_mounts.mount_type.nfs"),
+          ],
+          [
+            SupervisorMountType.CIFS,
+            localize("ui.panel.config.storage.network_mounts.mount_type.cifs"),
+          ],
+        ],
       },
       ...(mountType === "nfs"
         ? ([
@@ -109,6 +110,8 @@ class ViewMountDialog extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _validationError?: Record<string, string>;
+
   @state() private _existing?: boolean;
 
   @state() private _reloadMounts?: () => void;
@@ -125,6 +128,7 @@ class ViewMountDialog extends LitElement {
     this._data = undefined;
     this._waiting = undefined;
     this._error = undefined;
+    this._validationError = undefined;
     this._existing = undefined;
     this._reloadMounts = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -158,7 +162,10 @@ class ViewMountDialog extends LitElement {
             this._existing,
             this._data?.type
           )}
+          .error=${this._validationError}
           .computeLabel=${this._computeLabelCallback}
+          .computeHelper=${this._computeHelperCallback}
+          .computeError=${this._computeErrorCallback}
           @value-changed=${this._valueChanged}
           dialogInitialFocus
         ></ha-form>
@@ -194,10 +201,30 @@ class ViewMountDialog extends LitElement {
     // @ts-ignore
     schema: SchemaUnion<ReturnType<typeof mountSchema>>
   ): string =>
-    this.hass.localize(`ui.panel.config.storage.network_mounts.${schema.name}`);
+    this.hass.localize(
+      `ui.panel.config.storage.network_mounts.options.${schema.name}.title`
+    );
+
+  private _computeHelperCallback = (
+    // @ts-ignore
+    schema: SchemaUnion<ReturnType<typeof mountSchema>>
+  ): string =>
+    this.hass.localize(
+      `ui.panel.config.storage.network_mounts.options.${schema.name}.description`
+    );
+
+  private _computeErrorCallback = (error: string): string =>
+    this.hass.localize(
+      // @ts-ignore
+      `ui.panel.config.storage.network_mounts.errors.${error}`
+    ) || error;
 
   private _valueChanged(ev: CustomEvent) {
+    this._validationError = {};
     this._data = ev.detail.value;
+    if (this._data?.name && !/^\w+$/.test(this._data.name)) {
+      this._validationError.name = "invalid_name";
+    }
   }
 
   private async _connectMount() {

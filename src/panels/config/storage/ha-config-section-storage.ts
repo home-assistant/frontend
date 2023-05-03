@@ -1,10 +1,5 @@
 import "@material/mwc-list";
-import {
-  mdiBackupRestore,
-  mdiDotsVertical,
-  mdiPlayBox,
-  mdiReload,
-} from "@mdi/js";
+import { mdiBackupRestore, mdiPlayBox, mdiReload } from "@mdi/js";
 import {
   LitElement,
   PropertyValues,
@@ -70,27 +65,6 @@ class HaConfigSectionStorage extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.storage.caption")}
       >
-        ${this._hostInfo
-          ? html`
-              <ha-button-menu slot="toolbar-icon">
-                <ha-icon-button
-                  slot="trigger"
-                  .label=${this.hass.localize("ui.common.menu")}
-                  .path=${mdiDotsVertical}
-                ></ha-icon-button>
-                <mwc-list-item @click=${this._moveDatadisk}>
-                  ${this.hass.localize(
-                    "ui.panel.config.storage.datadisk.title"
-                  )}
-                </mwc-list-item>
-                <mwc-list-item @click=${this._addMount}>
-                  ${this.hass.localize(
-                    "ui.panel.config.storage.network_mounts.add_title"
-                  )}
-                </mwc-list-item>
-              </ha-button-menu>
-            `
-          : ""}
         <div class="content">
           ${this._error
             ? html`
@@ -135,6 +109,15 @@ class HaConfigSectionStorage extends LitElement {
                         `
                       : ""}
                   </div>
+                  ${this._hostInfo
+                    ? html`<div class="card-actions">
+                        <mwc-button @click=${this._moveDatadisk}>
+                          ${this.hass.localize(
+                            "ui.panel.config.storage.datadisk.title"
+                          )}
+                        </mwc-button>
+                      </div>`
+                    : nothing}
                 </ha-card>
               `
             : ""}
@@ -185,6 +168,13 @@ class HaConfigSectionStorage extends LitElement {
                       `
                     )}
                   </mwc-list>
+                  <div class="card-actions">
+                    <mwc-button @click=${this._addMount}>
+                      ${this.hass.localize(
+                        "ui.panel.config.storage.network_mounts.add_title"
+                      )}
+                    </mwc-button>
+                  </div>
                 </ha-card>
               `
             : ""}
