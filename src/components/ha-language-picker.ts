@@ -70,7 +70,13 @@ export class HaLanguagePicker extends LitElement {
         const translations = this.hass.translationMetadata.translations;
         options = languages.map((lang) => ({
           value: lang,
-          label: translations[lang]?.nativeName ?? lang,
+          label:
+            translations[lang]?.nativeName ??
+            // this will not work if Intl.DisplayNames is polyfilled, it will return in the language of the user
+            new Intl.DisplayNames(lang, {
+              type: "language",
+              fallback: "code",
+            }).of(lang),
         }));
       } else {
         options = languages.map((lang) => ({
