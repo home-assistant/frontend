@@ -72,16 +72,6 @@ class HuiDateEntityRow extends LitElement implements LovelaceRow {
     setDateValue(this.hass!, stateObj.entity_id, ev.detail.value);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-date-input + ha-time-input {
-        margin-left: 4px;
-        margin-inline-start: 4px;
-        margin-inline-end: initial;
-        direction: var(--direction);
-      }
-    `;
-  }
 }
 
 declare global {
