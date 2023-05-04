@@ -21,7 +21,7 @@ import {
   ZHADevice,
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
-import { PolymerChangedEvent } from "../../../../../polymer-types";
+import { ValueChangedEvent } from "../../../../../types";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
@@ -339,7 +339,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     }
   }
 
-  private _onZoomToDevice(event: PolymerChangedEvent<string>) {
+  private _onZoomToDevice(event: ValueChangedEvent<string>) {
     event.stopPropagation();
     this.zoomedDeviceId = event.detail.value;
     if (!this._network) {

@@ -15,8 +15,7 @@ import {
   IntegrationManifest,
 } from "../data/integration";
 import { Selector } from "../data/selector";
-import { PolymerChangedEvent } from "../polymer-types";
-import { HomeAssistant } from "../types";
+import { ValueChangedEvent, HomeAssistant } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-icon-button";
@@ -397,7 +396,7 @@ export class HaServiceControl extends LitElement {
     this.requestUpdate("_checkedKeys");
   }
 
-  private _serviceChanged(ev: PolymerChangedEvent<string>) {
+  private _serviceChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     if (ev.detail.value === this._value?.service) {
       return;
