@@ -1,12 +1,4 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { html, LitElement, nothing, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import { isUnavailableState } from "../../../data/entity";
@@ -71,7 +63,6 @@ class HuiDateEntityRow extends LitElement implements LovelaceRow {
 
     setDateValue(this.hass!, stateObj.entity_id, ev.detail.value);
   }
-
 }
 
 declare global {
