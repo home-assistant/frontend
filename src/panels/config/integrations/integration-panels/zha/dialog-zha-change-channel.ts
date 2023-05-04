@@ -10,7 +10,7 @@ import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
-import "@material/mwc-list/mwc-list-item";
+import "../../../../../components/ha-list-item";
 import { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
 
 const VALID_CHANNELS = [
@@ -40,14 +40,16 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
 
   @state() private _params?: ZHAChangeChannelDialogParams;
 
-  private _newChannel: "auto" | number = "auto";
+  @state() private _newChannel?: "auto" | number;
 
   public async showDialog(params: ZHAChangeChannelDialogParams): Promise<void> {
     this._params = params;
+    this._newChannel = params.currentChannel;
   }
 
   public closeDialog(): void {
     this._params = undefined;
+    this._newChannel = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -82,12 +84,12 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
             naturalMenuWidth
             @selected=${this._newChannelChosen}
             @closed=${stopPropagation}
-            value=${String(this._params.currentChannel)}
+            .value=${String(this._newChannel)}
           >
             ${VALID_CHANNELS.map(
               (newChannel) =>
-                html`<mwc-list-item .value=${String(newChannel)}
-                  >${newChannel}</mwc-list-item
+                html`<ha-list-item .value=${String(newChannel)}
+                  >${newChannel}</ha-list-item
                 >`
             )}
           </ha-select>
@@ -122,7 +124,7 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
   private async _changeNetworkChannel(): Promise<void> {
     try {
       this._migrationInProgress = true;
-      await changeZHANetworkChannel(this.hass, this._newChannel);
+      await changeZHANetworkChannel(this.hass, this._newChannel!);
     } finally {
       this._migrationInProgress = false;
     }
