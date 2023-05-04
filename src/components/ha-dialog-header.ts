@@ -22,6 +22,9 @@ export class HaDialogHeader extends LitElement {
   static get styles() {
     return [
       css`
+        :host {
+          display: block;
+        }
         .header {
           height: var(--header-height);
           display: flex;
