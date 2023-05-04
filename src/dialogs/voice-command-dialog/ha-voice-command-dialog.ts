@@ -418,7 +418,7 @@ export class HaVoiceCommandDialog extends LitElement {
       text: html`
         <p>
           ${this.hass.localize(
-            "ui.dialogs.voice_command.not_supported_microphone"
+            "ui.dialogs.voice_command.not_supported_microphone_browser"
           )}
         </p>
         <p>
