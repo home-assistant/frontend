@@ -36,5 +36,4 @@ export const customIcons = new Proxy(customIconsWindow.customIcons!, {
           getIcon: customIconsets[prop],
         }
       : undefined),
-  has: (obj, prop: string) => prop in obj || prop in customIconsets,
 });
