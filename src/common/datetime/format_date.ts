@@ -1,10 +1,6 @@
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
-import { polyfillsLoaded } from "../translations/localize";
-
-if (__BUILD__ === "latest" && polyfillsLoaded) {
-  await polyfillsLoaded;
-}
+import "../../resources/intl-polyfill";
 
 // Tuesday, August 10
 export const formatDateWeekdayDay = (
