@@ -226,6 +226,7 @@ export const DOMAINS_INPUT_ROW = [
   "select",
   "switch",
   "text",
+  "time",
   "vacuum",
 ];
 
