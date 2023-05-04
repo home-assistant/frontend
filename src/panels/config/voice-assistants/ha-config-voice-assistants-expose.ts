@@ -334,6 +334,7 @@ export class VoiceAssistantsExpose extends LitElement {
             filteredAssistants.some(
               (assis) =>
                 !(assis === "cloud.alexa" && alexaManual) &&
+                !(assis === "cloud.google_assistant" && googleManual) &&
                 exposedEntities?.[entity.entity_id]?.[assis]
             )
           );
@@ -377,20 +378,10 @@ export class VoiceAssistantsExpose extends LitElement {
         );
         Object.keys(this.hass.states).forEach((entityId) => {
           const assistants: string[] = [];
-          if (
-            alexaManual &&
-            (!filteredAssistants ||
-              filteredAssistants.includes("cloud.alexa")) &&
-            manFilterFuncs.amazon(entityId)
-          ) {
+          if (alexaManual && manFilterFuncs.amazon(entityId)) {
             assistants.push("cloud.alexa");
           }
-          if (
-            googleManual &&
-            (!filteredAssistants ||
-              filteredAssistants.includes("cloud.google_assistant")) &&
-            manFilterFuncs.google(entityId)
-          ) {
+          if (googleManual && manFilterFuncs.google(entityId)) {
             assistants.push("cloud.google_assistant");
           }
           if (!assistants.length) {
@@ -399,7 +390,10 @@ export class VoiceAssistantsExpose extends LitElement {
           if (entityId in result) {
             result[entityId].assistants.push(...assistants);
             result[entityId].manAssistants = assistants;
-          } else {
+          } else if (
+            !filteredAssistants ||
+            filteredAssistants.some((ass) => assistants.includes(ass))
+          ) {
             const entityState = this.hass.states[entityId];
             const entry: ExtEntityRegistryEntry | undefined =
               entities[entityId];
