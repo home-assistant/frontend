@@ -94,7 +94,7 @@ const connProm = async (auth) => {
   }
 };
 
-if (__DEV__) {
+if (__DEV__ && "performance" in window) {
   // Remove adoptedStyleSheets so style inspector works on shadow DOM.
   // @ts-ignore
   delete Document.prototype.adoptedStyleSheets;
