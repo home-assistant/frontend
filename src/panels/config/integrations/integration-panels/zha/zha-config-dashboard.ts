@@ -33,6 +33,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/buttons/ha-progress-button";
+import "../../../../../components/ha-settings-row";
 import { showZHAChangeChannelDialog } from "./show-dialog-zha-change-channel";
 import {
   fetchZHAConfiguration,
@@ -135,30 +136,27 @@ class ZHAConfigDashboard extends LitElement {
         >
           ${this._networkSettings
             ? html`<div class="card-content">
-                <div class="item">
-                  <div>
-                    <div class="value">
-                      ${this._networkSettings.settings.network_info.pan_id}
-                    </div>
-                    <div class="label">PAN ID</div>
-                  </div>
-                </div>
-                <div class="item">
-                  <div>
-                    <div class="value">
-                      ${this._networkSettings.settings.network_info
-                        .extended_pan_id}
-                    </div>
-                    <div class="label">Extended PAN ID</div>
-                  </div>
-                </div>
-                <div class="item">
-                  <div>
-                    <div class="value">
-                      ${this._networkSettings.settings.network_info.channel}
-                    </div>
-                    <div class="label">Channel</div>
-                  </div>
+                <ha-settings-row>
+                  <span slot="description">PAN ID</span>
+                  <span slot="heading"
+                    >${this._networkSettings.settings.network_info.pan_id}</span
+                  >
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="heading"
+                    >${this._networkSettings.settings.network_info
+                      .extended_pan_id}</span
+                  >
+                  <span slot="description">Extended PAN ID</span>
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="description">Channel</span>
+                  <span slot="heading"
+                    >${this._networkSettings.settings.network_info
+                      .channel}</span
+                  >
 
                   <ha-icon-button
                     .label=${this.hass.localize(
@@ -168,21 +166,21 @@ class ZHAConfigDashboard extends LitElement {
                     @click=${this._showChannelMigrationDialog}
                   >
                   </ha-icon-button>
-                </div>
-                <div class="item">
-                  <div>
-                    <div class="value">
-                      ${this._networkSettings.settings.node_info.ieee}
-                    </div>
-                    <div class="label">Coordinator IEEE</div>
-                  </div>
-                </div>
-                <div class="item">
-                  <div>
-                    <div class="value">${this._networkSettings.radio_type}</div>
-                    <div class="label">Radio type</div>
-                  </div>
-                </div>
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="description">Coordinator IEEE</span>
+                  <span slot="heading"
+                    >${this._networkSettings.settings.node_info.ieee}</span
+                  >
+                </ha-settings-row>
+
+                <ha-settings-row>
+                  <span slot="description">Radio type</span>
+                  <span slot="heading"
+                    >${this._networkSettings.radio_type}</span
+                  >
+                </ha-settings-row>
               </div>`
             : ""}
           <div class="card-actions">
@@ -348,24 +346,16 @@ class ZHAConfigDashboard extends LitElement {
           margin-top: 2px;
         }
 
-        .network-settings > .card-actions {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+        .network-settings ha-settings-row {
+          padding-left: 0;
+          padding-right: 0;
+
+          --paper-item-body-two-line-min-height: 55px;
         }
 
-        .network-settings .item .label {
-          font-size: 0.85em;
-          color: var(--mdc-text-field-label-ink-color);
-        }
-
-        .network-settings .item {
-          display: flex;
-          justify-content: space-between;
-        }
-
-        .network-settings .item:not(:last-of-type) {
-          margin-bottom: 0.9em;
+        .network-settings ha-settings-row ha-icon-button {
+          margin-top: -16px;
+          margin-bottom: -16px;
         }
       `,
     ];
