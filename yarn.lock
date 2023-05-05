@@ -2002,14 +2002,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/virtualizer@npm:1.0.1":
-  version: 1.0.1
-  resolution: "@lit-labs/virtualizer@npm:1.0.1"
+"@lit-labs/virtualizer@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@lit-labs/virtualizer@npm:2.0.1"
   dependencies:
-    event-target-shim: ^6.0.2
-    lit: ^2.5.0
+    lit: ^2.7.0
     tslib: ^2.0.3
-  checksum: e20ab1cefb48768e8b757147a4eb97c2dd5db686b452eb1cf3d6c9ea178c23ed55540f57117597599c2b5abfb9266f068c782fdbf6b4286637ff8d2e6fd9ff0a
+  checksum: 93f7fafecd0a535c4d1c6107dab39bf6092b323f1ce57adfa816058da9dce71006f3c109e4fb473aa1e5aeba3154b1fc9bdba7aa75f97f021cbcaf0d3f052d87
   languageName: node
   linkType: hard
 
@@ -8126,13 +8125,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"event-target-shim@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "event-target-shim@npm:6.0.2"
-  checksum: 9be93437e5b84056a7dc70af8b8962f4ef7f6fd41a988efcd39dfa2853e33242a4058e0dac9cc589cb16ed7409010590ac8cbcc2e3f823100cd337e13be953a0
-  languageName: node
-  linkType: hard
-
 "eventemitter3@npm:^4.0.0":
   version: 4.0.7
   resolution: "eventemitter3@npm:4.0.7"
@@ -9460,7 +9452,7 @@ __metadata:
     "@lezer/highlight": 1.1.4
     "@lit-labs/context": 0.3.1
     "@lit-labs/motion": 1.0.3
-    "@lit-labs/virtualizer": 1.0.1
+    "@lit-labs/virtualizer": 2.0.1
     "@lrnwebcomponents/simple-tooltip": 4.2.0
     "@material/chips": =14.0.0-canary.53b3cad2f.0
     "@material/data-table": =14.0.0-canary.53b3cad2f.0
@@ -11285,7 +11277,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.7.2, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.3.0, lit@npm:^2.5.0, lit@npm:^2.6.1, lit@npm:^2.7.0":
+"lit@npm:2.7.2, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.3.0, lit@npm:^2.6.1, lit@npm:^2.7.0":
   version: 2.7.2
   resolution: "lit@npm:2.7.2"
   dependencies:
