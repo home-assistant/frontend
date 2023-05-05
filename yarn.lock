@@ -1976,13 +1976,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/context@npm:0.3.0":
-  version: 0.3.0
-  resolution: "@lit-labs/context@npm:0.3.0"
+"@lit-labs/context@npm:0.3.1":
+  version: 0.3.1
+  resolution: "@lit-labs/context@npm:0.3.1"
   dependencies:
     "@lit/reactive-element": ^1.5.0
     lit: ^2.7.0
-  checksum: 85c66a67d12d3a9e3753337ef8f5566789ccacbb98b40b01c79db98ea6186c0bcdb5c16b4a27673cd5b4fb807bf3970c376b8c96797a9b20a78b0681f391efdb
+  checksum: eca24343bf63a092662a45c0483a77191348514c84aa7fa1a497d45c5741c16e8e61fb294ed8e56d73536b4e7fe96c49beb416417a2c879e670e553e19f5a3f5
   languageName: node
   linkType: hard
 
@@ -9459,7 +9459,7 @@ __metadata:
     "@fullcalendar/timegrid": 6.1.5
     "@koa/cors": 4.0.0
     "@lezer/highlight": 1.1.4
-    "@lit-labs/context": 0.3.0
+    "@lit-labs/context": 0.3.1
     "@lit-labs/motion": 1.0.3
     "@lit-labs/virtualizer": 1.0.1
     "@lrnwebcomponents/simple-tooltip": 4.2.0
