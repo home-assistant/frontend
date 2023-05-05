@@ -15,7 +15,11 @@ import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { LocalizeFunc } from "../common/translations/localize";
-import { ConfigEntry, subscribeConfigEntries } from "../data/config_entries";
+import {
+  ConfigEntry,
+  getConfigEntries,
+  subscribeConfigEntries,
+} from "../data/config_entries";
 import {
   getConfigFlowInProgressCollection,
   localizeConfigFlowTitle,
@@ -51,6 +55,13 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   @state() private _entries?: ConfigEntry[];
 
   @state() private _discovered?: DataEntryFlowProgress[];
+
+  public async _fetchEntries() {
+    const entries = await getConfigEntries(this.hass, {
+      type: ["device", "hub", "service"],
+    });
+    this._entries = [...(this._entries ?? []), ...entries];
+  }
 
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
@@ -180,6 +191,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title", undefined, true);
     this._scanUSBDevices();
+    this._fetchEntries();
     loadConfigFlowDialog();
   }
 
