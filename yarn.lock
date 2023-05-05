@@ -9005,19 +9005,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:10.2.1":
-  version: 10.2.1
-  resolution: "glob@npm:10.2.1"
+"glob@npm:10.2.2":
+  version: 10.2.2
+  resolution: "glob@npm:10.2.2"
   dependencies:
     foreground-child: ^3.1.0
-    fs.realpath: ^1.0.0
     jackspeak: ^2.0.3
     minimatch: ^9.0.0
     minipass: ^5.0.0
     path-scurry: ^1.7.0
   bin:
     glob: dist/cjs/src/bin.js
-  checksum: 760a624138e7bbc49179859ba314a8547b114de2324cf571d43dc4ce3379be297034099b36857f966ec5445b30cbd558d0be90c9992ef186671aca53b1bde7a0
+  checksum: 33cbbbea74deb605107715f2ee51937953271ff2f6ce712b57d95a714e2f1bf272fa2c2b0c5101097bf98d3e5d40856941af498b05bce07567aca1a6e3cc7ae9
   languageName: node
   linkType: hard
 
@@ -9567,7 +9566,7 @@ __metadata:
     fancy-log: 2.0.0
     fs-extra: 11.1.1
     fuse.js: 6.6.2
-    glob: 10.2.1
+    glob: 10.2.2
     google-timezones-json: 1.1.0
     gulp: 4.0.2
     gulp-flatmap: 1.0.2
