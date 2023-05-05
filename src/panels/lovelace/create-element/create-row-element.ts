@@ -27,6 +27,7 @@ const LAZY_LOAD_TYPES = {
   "button-entity": () => import("../entity-rows/hui-button-entity-row"),
   "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
   "cover-entity": () => import("../entity-rows/hui-cover-entity-row"),
+  "date-entity": () => import("../entity-rows/hui-date-entity-row"),
   "group-entity": () => import("../entity-rows/hui-group-entity-row"),
   "input-button-entity": () =>
     import("../entity-rows/hui-input-button-entity-row"),
@@ -61,6 +62,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   button: "button",
   climate: "climate",
   cover: "cover",
+  date: "date",
   fan: "toggle",
   group: "group",
   humidifier: "humidifier",
