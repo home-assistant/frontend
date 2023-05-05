@@ -265,7 +265,6 @@ class MoreInfoLight extends LitElement {
     return [
       moreInfoControlStyle,
       css`
-        md-outlined-icon-button-toggle,
         md-outlined-icon-button {
           --ha-icon-display: block;
           --md-sys-color-on-surface: var(--secondary-text-color);
