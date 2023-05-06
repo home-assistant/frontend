@@ -9595,7 +9595,7 @@ __metadata:
     proxy-polyfill: 0.3.2
     punycode: 2.3.0
     qr-scanner: 1.4.2
-    qrcode: 1.5.1
+    qrcode: 1.5.3
     regenerator-runtime: 0.13.11
     resize-observer-polyfill: 1.5.1
     roboto-fontface: 0.10.0
@@ -13186,9 +13186,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qrcode@npm:1.5.1":
-  version: 1.5.1
-  resolution: "qrcode@npm:1.5.1"
+"qrcode@npm:1.5.3":
+  version: 1.5.3
+  resolution: "qrcode@npm:1.5.3"
   dependencies:
     dijkstrajs: ^1.0.1
     encode-utf8: ^1.0.3
@@ -13196,7 +13196,7 @@ __metadata:
     yargs: ^15.3.1
   bin:
     qrcode: bin/qrcode
-  checksum: 842f899d95caaad2ac507408b5498be3197e1df16bc6b537b20069d2cb1330e4588b50f672ce4a9ccf01338f7c97b5732ff9b5caaa6eb2338187d3c25a973e79
+  checksum: 9a8a20a0a9cb1d15de8e7b3ffa214e8b6d2a8b07655f25bd1b1d77f4681488f84d7bae569870c0652872d829d5f8ac4922c27a6bd14c13f0e197bf07b28dead7
   languageName: node
   linkType: hard
 
