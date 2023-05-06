@@ -9578,7 +9578,7 @@ __metadata:
     leaflet: 1.9.3
     leaflet-draw: 1.0.4
     lint-staged: 13.2.2
-    lit: 2.7.2
+    lit: 2.7.3
     lit-analyzer: 1.2.1
     lodash.template: 4.5.0
     magic-string: 0.30.0
@@ -11277,14 +11277,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit@npm:2.7.2, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.3.0, lit@npm:^2.6.1, lit@npm:^2.7.0":
-  version: 2.7.2
-  resolution: "lit@npm:2.7.2"
+"lit@npm:2.7.3, lit@npm:^2.0.0, lit@npm:^2.0.0-rc.2, lit@npm:^2.2.1, lit@npm:^2.3.0, lit@npm:^2.6.1, lit@npm:^2.7.0":
+  version: 2.7.3
+  resolution: "lit@npm:2.7.3"
   dependencies:
     "@lit/reactive-element": ^1.6.0
     lit-element: ^3.3.0
     lit-html: ^2.7.0
-  checksum: e8a53a0044c23564c99af6b2bfa68f521d28263354e33049917b9595549d091dd4af332a1b7eede1bfd5ba4fda63d9194659becf7f4c0951e8d83f3f2b0ba071
+  checksum: 325be0255e8b95ba066d56f3e40dd8530cd423d1687ea6d55b2919df8fb1d63a399be439c5601de65a990dfa9a131d07b2e84a1004b1a52d34ce51569cdf4255
   languageName: node
   linkType: hard
 
