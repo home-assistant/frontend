@@ -16,7 +16,6 @@ import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-color-picker";
 import "../../../../components/ha-control-slider";
 import "../../../../components/ha-icon-button-prev";
-import "../../../../components/ha-labeled-slider";
 import {
   getLightCurrentModeRgbColor,
   LightColorMode,
@@ -137,56 +136,49 @@ class MoreInfoViewLightColorPicker extends LitElement {
               </div>
 
               ${supportsRgbw || supportsRgbww
-                ? html`<ha-labeled-slider
-                    .caption=${this.hass.localize(
+                ? html`<ha-control-slider
+                    class="horizontal color-brightness"
+                    label=${this.hass.localize(
                       "ui.card.light.color_brightness"
                     )}
-                    icon="hass:brightness-7"
+                    min="0"
                     max="100"
+                    mode="cursor"
+                    .showHandle=${this._colorBrightnessSliderValue}
                     .value=${this._colorBrightnessSliderValue}
-                    @change=${this._colorBrightnessSliderChanged}
-                    pin
-                  ></ha-labeled-slider>`
+                    @value-changed=${this._colorBrightnessSliderChanged}
+                  ></ha-control-slider>`
                 : ""}
               ${supportsRgbw
                 ? html`
-                    <ha-labeled-slider
-                      .caption=${this.hass.localize(
-                        "ui.card.light.white_value"
-                      )}
-                      icon="hass:file-word-box"
+                    <ha-control-slider
+                      class="horizontal white"
+                      min="0"
                       max="100"
                       .name=${"wv"}
                       .value=${this._wvSliderValue}
-                      @change=${this._wvSliderChanged}
-                      pin
-                    ></ha-labeled-slider>
+                      @value-changed=${this._wvSliderChanged}
+                    ></ha-control-slider>
                   `
                 : ""}
               ${supportsRgbww
                 ? html`
-                    <ha-labeled-slider
-                      .caption=${this.hass.localize(
-                        "ui.card.light.cold_white_value"
-                      )}
-                      icon="hass:file-word-box-outline"
+                    <ha-control-slider
+                      class="horizontal cold-white"
+                      min="0"
                       max="100"
                       .name=${"cw"}
                       .value=${this._cwSliderValue}
-                      @change=${this._wvSliderChanged}
-                      pin
-                    ></ha-labeled-slider>
-                    <ha-labeled-slider
-                      .caption=${this.hass.localize(
-                        "ui.card.light.warm_white_value"
-                      )}
-                      icon="hass:file-word-box"
+                      @value-changed=${this._wvSliderChanged}
+                    ></ha-control-slider>
+                    <ha-control-slider
+                      class="horizontal warm-white"
+                      min="0"
                       max="100"
                       .name=${"ww"}
                       .value=${this._wwSliderValue}
-                      @change=${this._wvSliderChanged}
-                      pin
-                    ></ha-labeled-slider>
+                      @value-changed=${this._wvSliderChanged}
+                    ></ha-control-slider>
                   `
                 : ""}
             `
@@ -548,7 +540,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
           --ha-color-picker-marker-bordercolor: white;
         }
 
-        ha-control-slider {
+        ha-control-slider[vertical] {
           height: 45vh;
           max-height: 320px;
           min-height: 200px;
@@ -557,8 +549,58 @@ class MoreInfoViewLightColorPicker extends LitElement {
           --control-slider-border-radius: 24px;
         }
 
-        ha-labeled-slider {
-          width: 100%;
+        .horizontal {
+          --control-slider-thickness: 40px;
+          --control-slider-border-radius: 10px;
+          --control-slider-background: var(--disabled-color);
+          --control-slider-background-opacity: 0.2;
+          margin: 10px 0;
+        }
+
+        .color-brightness {
+          --control-slider-background: -webkit-linear-gradient(
+              left,
+              black,
+              transparent
+            ),
+            -webkit-linear-gradient(top, rgba(255, 0, 0, 1) 0%, rgba(
+                    255,
+                    154,
+                    0,
+                    1
+                  )
+                  10%, rgba(208, 222, 33, 1) 20%, rgba(79, 220, 74, 1) 30%, rgba(
+                    63,
+                    218,
+                    216,
+                    1
+                  )
+                  40%, rgba(47, 201, 226, 1) 50%, rgba(28, 127, 238, 1) 60%, rgba(
+                    95,
+                    21,
+                    242,
+                    1
+                  )
+                  70%, rgba(186, 12, 248, 1) 80%, rgba(251, 7, 217, 1) 90%, rgba(
+                    255,
+                    0,
+                    0,
+                    1
+                  )
+                  100%);
+          --control-slider-background-opacity: 1;
+        }
+
+        .white {
+          --control-slider-color: var(--amber-color);
+        }
+
+        .cold-white {
+          --control-slider-color: rgb(166, 209, 255);
+        }
+
+        .warm-white {
+          --control-slider-color: rgb(255, 160, 0);
         }
 
         .color-temp-value {
