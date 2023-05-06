@@ -1,15 +1,13 @@
-// Run demo develop mode
-const gulp = require("gulp");
-const env = require("../env.cjs");
-
-require("./clean.cjs");
-require("./translations.cjs");
-require("./gen-icons-json.cjs");
-require("./gather-static.cjs");
-require("./webpack.cjs");
-require("./service-worker.cjs");
-require("./entry-html.cjs");
-require("./rollup.cjs");
+import gulp from "gulp";
+import env from "../env.cjs";
+import "./clean.cjs";
+import "./entry-html.cjs";
+import "./gather-static.cjs";
+import "./gen-icons-json.cjs";
+import "./rollup.cjs";
+import "./service-worker.cjs";
+import "./translations.cjs";
+import "./webpack.cjs";
 
 gulp.task(
   "develop-demo",

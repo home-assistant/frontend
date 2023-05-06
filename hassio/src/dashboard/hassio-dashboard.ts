@@ -9,7 +9,6 @@ import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addons";
-import "./hassio-update";
 import "../../../src/layouts/hass-subpage";
 
 @customElement("hassio-dashboard")
@@ -21,6 +20,12 @@ class HassioDashboard extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
+
+  firstUpdated() {
+    if (!atLeastVersion(this.hass.config.version, 2022, 5)) {
+      import("./hassio-update");
+    }
+  }
 
   protected render(): TemplateResult {
     if (atLeastVersion(this.hass.config.version, 2022, 5)) {
@@ -44,7 +49,7 @@ class HassioDashboard extends LitElement {
             <ha-svg-icon
               slot="icon"
               .path=${mdiStorePlus}
-            ></ha-svg-icon> </ha-fab
+            ></ha-svg-icon></ha-fab
         ></a>
       </hass-subpage>`;
     }

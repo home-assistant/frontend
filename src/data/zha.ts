@@ -432,6 +432,15 @@ export const listZHANetworkBackups = (
     type: "zha/network/backups/list",
   });
 
+export const changeZHANetworkChannel = (
+  hass: HomeAssistant,
+  newChannel: "auto" | number
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/network/change_channel",
+    new_channel: newChannel,
+  });
+
 export const INITIALIZED = "INITIALIZED";
 export const INTERVIEW_COMPLETE = "INTERVIEW_COMPLETE";
 export const CONFIGURED = "CONFIGURED";

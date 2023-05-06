@@ -3,8 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
 import { SceneAction } from "../../../../../data/script";
-import { PolymerChangedEvent } from "../../../../../polymer-types";
-import { HomeAssistant } from "../../../../../types";
+import { ValueChangedEvent, HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 
 const includeDomains = ["scene"];
@@ -51,7 +50,7 @@ export class HaSceneAction extends LitElement implements ActionElement {
     `;
   }
 
-  private _entityPicked(ev: PolymerChangedEvent<string>) {
+  private _entityPicked(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: {

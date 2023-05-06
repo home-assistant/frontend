@@ -83,6 +83,7 @@ export const FIXED_DOMAIN_ICONS = {
   configurator: mdiCog,
   conversation: mdiMicrophoneMessage,
   counter: mdiCounter,
+  date: mdiCalendar,
   demo: mdiHomeAssistant,
   google_assistant: mdiGoogleAssistant,
   group: mdiGoogleCirclesCommunities,
@@ -208,6 +209,7 @@ export const DOMAINS_INPUT_ROW = [
   "automation",
   "button",
   "cover",
+  "date",
   "fan",
   "group",
   "humidifier",
@@ -226,6 +228,7 @@ export const DOMAINS_INPUT_ROW = [
   "select",
   "switch",
   "text",
+  "time",
   "vacuum",
 ];
 

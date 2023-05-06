@@ -1,4 +1,3 @@
-import "@lit-labs/virtualizer";
 import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -26,6 +25,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { debounce } from "../../common/util/debounce";
 import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import { HomeAssistant } from "../../types";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
@@ -183,6 +183,10 @@ export class HaDataTable extends LitElement {
 
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
+
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
 
     if (properties.has("columns")) {
       this._filterable = Object.values(this.columns).some(

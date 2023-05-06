@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import {
+  mdiAlertCircle,
   mdiChevronDown,
   mdiClose,
   mdiHelpCircleOutline,
@@ -14,6 +15,7 @@ import {
   LitElement,
   nothing,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
@@ -42,7 +44,7 @@ import { showAlertDialog } from "../generic/show-dialog-box";
 
 interface Message {
   who: string;
-  text?: string;
+  text?: string | TemplateResult;
   error?: boolean;
 }
 
@@ -109,7 +111,10 @@ export class HaVoiceCommandDialog extends LitElement {
     if (!this._opened) {
       return nothing;
     }
-    const supportsSTT = this._pipeline?.stt_engine && AudioRecorder.isSupported;
+
+    const supportsMicrophone = AudioRecorder.isSupported;
+    const supportsSTT = this._pipeline?.stt_engine;
+
     return html`
       <ha-dialog
         open
@@ -150,10 +155,12 @@ export class HaVoiceCommandDialog extends LitElement {
                     .hasMeta=${pipeline.id === this._preferredPipeline}
                   >
                     ${pipeline.name}${pipeline.id === this._preferredPipeline
-                      ? html`<ha-svg-icon
-                          slot="meta"
-                          .path=${mdiStar}
-                        ></ha-svg-icon>`
+                      ? html`
+                          <ha-svg-icon
+                            slot="meta"
+                            .path=${mdiStar}
+                          ></ha-svg-icon>
+                        `
                       : nothing}
                   </ha-list-item>`
                 )}
@@ -203,7 +210,7 @@ export class HaVoiceCommandDialog extends LitElement {
             iconTrailing
           >
             <span slot="trailingIcon">
-              ${this._showSendButton
+              ${this._showSendButton || !supportsSTT
                 ? html`
                     <ha-icon-button
                       class="listening-icon"
@@ -215,8 +222,7 @@ export class HaVoiceCommandDialog extends LitElement {
                     >
                     </ha-icon-button>
                   `
-                : supportsSTT
-                ? html`
+                : html`
                     ${this._audioRecorder?.active
                       ? html`
                           <div class="bouncer">
@@ -224,18 +230,27 @@ export class HaVoiceCommandDialog extends LitElement {
                             <div class="double-bounce2"></div>
                           </div>
                         `
-                      : ""}
-                    <ha-icon-button
-                      class="listening-icon"
-                      .path=${mdiMicrophone}
-                      @click=${this._toggleListening}
-                      .label=${this.hass.localize(
-                        "ui.dialogs.voice_command.start_listening"
-                      )}
-                    >
-                    </ha-icon-button>
-                  `
-                : ""}
+                      : nothing}
+
+                    <div class="listening-icon">
+                      <ha-icon-button
+                        .path=${mdiMicrophone}
+                        @click=${this._toggleListening}
+                        .label=${this.hass.localize(
+                          "ui.dialogs.voice_command.start_listening"
+                        )}
+                      >
+                      </ha-icon-button>
+                      ${!supportsMicrophone
+                        ? html`
+                            <ha-svg-icon
+                              .path=${mdiAlertCircle}
+                              class="unsupported"
+                            ></ha-svg-icon>
+                          `
+                        : null}
+                    </div>
+                  `}
             </span>
           </ha-textfield>
           ${this._agentInfo && this._agentInfo.attribution
@@ -382,12 +397,53 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  private _toggleListening() {
+  private _toggleListening(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const supportsMicrophone = AudioRecorder.isSupported;
+    if (!supportsMicrophone) {
+      this._showNotSupportedMessage();
+      return;
+    }
     if (!this._audioRecorder?.active) {
       this._startListening();
     } else {
       this._stopListening();
     }
+  }
+
+  private async _showNotSupportedMessage() {
+    this._addMessage({
+      who: "hass",
+      text: html`
+        <p>
+          ${this.hass.localize(
+            "ui.dialogs.voice_command.not_supported_microphone_browser"
+          )}
+        </p>
+        <p>
+          ${this.hass.localize(
+            "ui.dialogs.voice_command.not_supported_microphone_documentation",
+            {
+              documentation_link: html`
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href=${documentationUrl(
+                    this.hass,
+                    "/docs/configuration/securing/#remote-access"
+                  )}
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
+                  )}
+                </a>
+              `,
+            }
+          )}
+        </p>
+      `,
+    });
   }
 
   private async _startListening() {
@@ -561,7 +617,8 @@ export class HaVoiceCommandDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-icon-button.listening-icon {
+        .listening-icon {
+          position: relative;
           color: var(--secondary-text-color);
           margin-right: -24px;
           margin-inline-end: -24px;
@@ -569,8 +626,16 @@ export class HaVoiceCommandDialog extends LitElement {
           direction: var(--direction);
         }
 
-        ha-icon-button.listening-icon[active] {
+        .listening-icon[active] {
           color: var(--primary-color);
+        }
+
+        .unsupported {
+          color: var(--error-color);
+          position: absolute;
+          --mdc-icon-size: 16px;
+          right: 5px;
+          top: 0px;
         }
 
         ha-dialog {
@@ -616,6 +681,19 @@ export class HaVoiceCommandDialog extends LitElement {
         ha-button-menu ha-button ha-svg-icon {
           height: 28px;
           margin-left: 4px;
+          margin-inline-start: 4px;
+          margin-inline-end: 4px;
+          direction: var(--direction);
+        }
+        ha-list-item {
+          --mdc-list-item-meta-size: 16px;
+        }
+        ha-list-item ha-svg-icon {
+          margin-left: 4px;
+          margin-inline-start: 4px;
+          margin-inline-end: 4px;
+          direction: var(--direction);
+          display: block;
         }
         ha-button-menu a {
           text-decoration: none;
@@ -648,6 +726,7 @@ export class HaVoiceCommandDialog extends LitElement {
           display: block;
           height: 400px;
           box-sizing: border-box;
+          position: relative;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-dialog {
@@ -655,6 +734,7 @@ export class HaVoiceCommandDialog extends LitElement {
           }
           .messages {
             height: 100%;
+            flex: 1;
           }
         }
         .messages-container {
@@ -673,6 +753,12 @@ export class HaVoiceCommandDialog extends LitElement {
           margin: 8px 0;
           padding: 8px;
           border-radius: 15px;
+        }
+        .message p {
+          margin: 0;
+        }
+        .message p:not(:last-child) {
+          margin-bottom: 8px;
         }
 
         .message.user {

@@ -21,8 +21,7 @@ import {
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { HomeAssistant } from "../../types";
+import { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./ha-devices-picker";
@@ -291,7 +290,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
     this._areaPicker = !this._areaPicker;
   }
 
-  private async _areaPicked(ev: PolymerChangedEvent<string>) {
+  private async _areaPicked(ev: ValueChangedEvent<string>) {
     const value = ev.detail.value;
     let selectedDevices = [];
     const target = ev.target as any;

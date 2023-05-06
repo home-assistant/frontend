@@ -6,8 +6,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
 import { domainToName } from "../data/integration";
-import { PolymerChangedEvent } from "../polymer-types";
-import { HomeAssistant } from "../types";
+import { ValueChangedEvent, HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
@@ -133,7 +132,7 @@ class HaConfigEntryPicker extends LitElement {
     return this.value || "";
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 

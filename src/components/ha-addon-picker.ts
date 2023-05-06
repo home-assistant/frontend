@@ -6,8 +6,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { fetchHassioAddonsInfo, HassioAddonInfo } from "../data/hassio/addon";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import { PolymerChangedEvent } from "../polymer-types";
-import { HomeAssistant } from "../types";
+import { ValueChangedEvent, HomeAssistant } from "../types";
 import { HaComboBox } from "./ha-combo-box";
 
 const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (
@@ -113,7 +112,7 @@ class HaAddonPicker extends LitElement {
     return this.value || "";
   }
 
-  private _addonChanged(ev: PolymerChangedEvent<string>) {
+  private _addonChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 
