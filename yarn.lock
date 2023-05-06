@@ -1399,15 +1399,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/commands@npm:6.2.3":
-  version: 6.2.3
-  resolution: "@codemirror/commands@npm:6.2.3"
+"@codemirror/commands@npm:6.2.4":
+  version: 6.2.4
+  resolution: "@codemirror/commands@npm:6.2.4"
   dependencies:
     "@codemirror/language": ^6.0.0
     "@codemirror/state": ^6.2.0
     "@codemirror/view": ^6.0.0
     "@lezer/common": ^1.0.0
-  checksum: e6b7d07818d6df4372a272539b84a256e651cfa3416a33f9e1859f2ced0f6e3c944e0c40c2c407dcd5b13ffab2931d4e5ea5952db439837071de336e7a31c722
+  checksum: 468895fa19ff0554181b698c81f850820de5c0289cab92c44392fb127286f09ca72b921d6ea4353b70b616a4fd0c3667d86b6f917202a3ad2e196eb7b581f7b6
   languageName: node
   linkType: hard
 
@@ -1452,14 +1452,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.10.1, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.6.0":
-  version: 6.10.1
-  resolution: "@codemirror/view@npm:6.10.1"
+"@codemirror/view@npm:6.11.0, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.6.0":
+  version: 6.11.0
+  resolution: "@codemirror/view@npm:6.11.0"
   dependencies:
     "@codemirror/state": ^6.1.4
     style-mod: ^4.0.0
     w3c-keyname: ^2.2.4
-  checksum: 3a3aaf38866c8859234de6092c2e71d1e77957492bd40dc2c4e2812887a637ef52c07bb238f8bd5f2aace769483740e822f8d683808eb46f4791b71d649a28ed
+  checksum: 42a64e54366991c9bd6c9ca9355c497eb67766ab124cc839c122bd34808defaa9042eebb06f1bd9217593c897b1a5df35d42d72ef2d906e9ee4f6daab3a15b44
   languageName: node
   linkType: hard
 
@@ -9429,12 +9429,12 @@ __metadata:
     "@babel/preset-typescript": 7.21.5
     "@braintree/sanitize-url": 6.0.2
     "@codemirror/autocomplete": 6.6.0
-    "@codemirror/commands": 6.2.3
+    "@codemirror/commands": 6.2.4
     "@codemirror/language": 6.6.0
     "@codemirror/legacy-modes": 6.3.2
     "@codemirror/search": 6.4.0
     "@codemirror/state": 6.2.0
-    "@codemirror/view": 6.10.1
+    "@codemirror/view": 6.11.0
     "@egjs/hammerjs": 2.0.17
     "@formatjs/intl-datetimeformat": 6.7.0
     "@formatjs/intl-displaynames": 6.3.1
