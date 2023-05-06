@@ -124,7 +124,7 @@
     "proxy-polyfill": "0.3.2",
     "punycode": "2.3.0",
     "qr-scanner": "1.4.2",
-    "qrcode": "1.5.1",
+    "qrcode": "1.5.3",
     "regenerator-runtime": "0.13.11",
     "resize-observer-polyfill": "1.5.1",
     "roboto-fontface": "0.10.0",
