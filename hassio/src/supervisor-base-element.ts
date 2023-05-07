@@ -63,8 +63,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
     });
   }
 
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
+  protected willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("hass")) {
       const oldHass = changedProperties.get("hass") as
         | HomeAssistant
@@ -83,23 +82,10 @@ export class SupervisorBaseElement extends urlSyncMixin(
         this._initializeLocalize();
       }
     }
-
-    if (changedProperties.has("_collections")) {
-      if (this._collections) {
-        const unsubs = Object.keys(this._unsubs);
-        for (const collection of Object.keys(this._collections)) {
-          if (!unsubs.includes(collection)) {
-            this._unsubs[collection] = this._collections[collection].subscribe(
-              (data) => this._updateSupervisor({ [collection]: data })
-            );
-          }
-        }
-      }
-    }
   }
 
-  protected _updateSupervisor(obj: Partial<Supervisor>): void {
-    this.supervisor = { ...this.supervisor, ...obj };
+  protected _updateSupervisor(update: Partial<Supervisor>): void {
+    this.supervisor = { ...this.supervisor, ...update };
   }
 
   protected firstUpdated(changedProps: PropertyValues): void {
@@ -123,8 +109,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
       "/api/hassio/app/static/translations"
     );
 
-    this.supervisor = {
-      ...this.supervisor,
+    this._updateSupervisor({
       localize: await computeLocalize<SupervisorKeys>(
         this.constructor.prototype,
         language,
@@ -132,7 +117,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
           [language]: data,
         }
       ),
-    };
+    });
   }
 
   private async _handleSupervisorStoreRefreshEvent(ev) {
@@ -165,17 +150,15 @@ export class SupervisorBaseElement extends urlSyncMixin(
             collection,
             supervisorCollection[collection]
           );
-        }
-      });
-
-      Object.keys(this._collections).forEach((collection) => {
-        if (
-          this.supervisor === undefined ||
-          this.supervisor[collection] === undefined
-        ) {
-          this._updateSupervisor({
-            [collection]: this._collections[collection].state,
-          });
+          if (this._unsubs[collection]) {
+            this._unsubs[collection]();
+          }
+          this._unsubs[collection] = this._collections[collection].subscribe(
+            (data) =>
+              this._updateSupervisor({
+                [collection]: data,
+              })
+          );
         }
       });
     } else {
