@@ -5404,6 +5404,7 @@
         }
       },
       "dashboard": {
+        "search_addons": "Search add-ons",
         "changelog": "Changelog",
         "cpu_usage": "Add-on CPU Usage",
         "ram_usage": "Add-on RAM Usage",
