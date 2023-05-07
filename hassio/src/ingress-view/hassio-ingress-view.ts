@@ -16,6 +16,7 @@ import "../../../src/components/ha-icon-button";
 import {
   fetchHassioAddonInfo,
   HassioAddonDetails,
+  startHassioAddon,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import {
@@ -23,7 +24,10 @@ import {
   validateHassioSession,
 } from "../../../src/data/hassio/ingress";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
-import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -56,12 +60,13 @@ class HassioIngressView extends LitElement {
 
   protected render(): TemplateResult {
     if (!this._addon) {
-      return html` <hass-loading-screen></hass-loading-screen> `;
+      return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
     const iframe = html`<iframe
       title=${this._addon.name}
       src=${this._addon.ingress_url!}
+      @load=${this._checkLoaded}
     >
     </iframe>`;
 
@@ -132,10 +137,10 @@ class HassioIngressView extends LitElement {
       return;
     }
 
-    const addon = this.route.path.substr(1);
+    const addon = this.route.path.substring(1);
 
     const oldRoute = changedProps.get("route") as this["route"] | undefined;
-    const oldAddon = oldRoute ? oldRoute.path.substr(1) : undefined;
+    const oldAddon = oldRoute ? oldRoute.path.substring(1) : undefined;
 
     if (addon && addon !== oldAddon) {
       this._fetchData(addon);
@@ -151,17 +156,27 @@ class HassioIngressView extends LitElement {
       addon = await fetchHassioAddonInfo(this.hass, addonSlug);
     } catch (err: any) {
       await showAlertDialog(this, {
-        text: "Unable to fetch add-on info to start Ingress",
+        text: this.supervisor.localize("ingress.error_addon_info"),
         title: "Supervisor",
       });
       await nextRender();
-      history.back();
+      navigate("/hassio/store", { replace: true });
+      return;
+    }
+
+    if (!addon.version) {
+      await showAlertDialog(this, {
+        text: this.supervisor.localize("ingress.error_addon_not_installed"),
+        title: addon.name,
+      });
+      await nextRender();
+      navigate(`/hassio/addon/${addon.slug}/info`, { replace: true });
       return;
     }
 
     if (!addon.ingress_url) {
       await showAlertDialog(this, {
-        text: "Add-on does not support Ingress",
+        text: this.supervisor.localize("ingress.error_addon_not_supported"),
         title: addon.name,
       });
       await nextRender();
@@ -170,13 +185,33 @@ class HassioIngressView extends LitElement {
     }
 
     if (addon.state !== "started") {
-      await showAlertDialog(this, {
-        text: "Add-on is not running. Please start it first",
+      const confirm = await showConfirmationDialog(this, {
+        text: this.supervisor.localize("ingress.error_addon_not_running"),
         title: addon.name,
+        confirmText: this.supervisor.localize("ingress.start_addon"),
+        dismissText: this.supervisor.localize("common.no"),
       });
-      await nextRender();
-      navigate(`/hassio/addon/${addon.slug}/info`, { replace: true });
-      return;
+      if (confirm) {
+        try {
+          await startHassioAddon(this.hass, addonSlug);
+          // Give the add-on some time to start
+          await new Promise((resolve) => {
+            setTimeout(resolve, 1000);
+          });
+        } catch (e) {
+          await showAlertDialog(this, {
+            text: this.supervisor.localize("ingress.error_starting_addon"),
+            title: addon.name,
+          });
+          await nextRender();
+          navigate(`/hassio/addon/${addon.slug}/info`, { replace: true });
+          return;
+        }
+      } else {
+        await nextRender();
+        navigate(`/hassio/addon/${addon.slug}/info`, { replace: true });
+        return;
+      }
     }
 
     let session;
@@ -185,7 +220,7 @@ class HassioIngressView extends LitElement {
       session = await createSessionPromise;
     } catch (err: any) {
       await showAlertDialog(this, {
-        text: "Unable to create an Ingress session",
+        text: this.supervisor.localize("ingress.error_creating_session"),
         title: addon.name,
       });
       await nextRender();
@@ -205,6 +240,31 @@ class HassioIngressView extends LitElement {
     }, 60000);
 
     this._addon = addon;
+  }
+
+  private _checkLoaded(ev): void {
+    if (!this._addon) {
+      return;
+    }
+    if (ev.target.contentDocument.body.textContent === "502: Bad Gateway") {
+      showConfirmationDialog(this, {
+        text: this.supervisor.localize("ingress.error_addon_not_ready"),
+        title: this._addon.name,
+        confirmText: this.supervisor.localize("ingress.retry"),
+        dismissText: this.supervisor.localize("common.no"),
+        confirm: async () => {
+          const addon = this._addon;
+          this._addon = undefined;
+          await Promise.all([
+            this.updateComplete,
+            new Promise((resolve) => {
+              setTimeout(resolve, 500);
+            }),
+          ]);
+          this._addon = addon;
+        },
+      });
+    }
   }
 
   private _toggleMenu(): void {
