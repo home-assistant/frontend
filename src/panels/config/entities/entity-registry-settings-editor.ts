@@ -269,7 +269,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     value?: string | null
   ): boolean {
     if (codeFormat && value) {
-      return RegExp(codeFormat).test(value) !== true;
+      return !RegExp(codeFormat).test(value);
     }
     return false;
   }
