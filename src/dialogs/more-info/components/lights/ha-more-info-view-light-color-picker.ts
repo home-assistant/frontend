@@ -136,49 +136,94 @@ class MoreInfoViewLightColorPicker extends LitElement {
               </div>
 
               ${supportsRgbw || supportsRgbww
-                ? html`<ha-control-slider
-                    class="horizontal color-brightness"
-                    label=${this.hass.localize(
-                      "ui.card.light.color_brightness"
-                    )}
-                    min="0"
-                    max="100"
-                    mode="cursor"
-                    .showHandle=${this._colorBrightnessSliderValue}
-                    .value=${this._colorBrightnessSliderValue}
-                    @value-changed=${this._colorBrightnessSliderChanged}
-                  ></ha-control-slider>`
+                ? html`
+                    <div class="white-sliders">
+                      <p class="slider-label">
+                        ${this.hass.localize("ui.card.light.color_brightness")}
+                      </p>
+                      <p class="slider-value">
+                        ${this._colorBrightnessSliderValue !== undefined
+                          ? `${this._colorBrightnessSliderValue}%`
+                          : nothing}
+                      </p>
+                      <ha-control-slider
+                        class="horizontal color-brightness"
+                        label=${this.hass.localize(
+                          "ui.card.light.color_brightness"
+                        )}
+                        min="0"
+                        max="100"
+                        mode="cursor"
+                        .showHandle=${this._colorBrightnessSliderValue}
+                        .value=${this._colorBrightnessSliderValue}
+                        @value-changed=${this._colorBrightnessSliderChanged}
+                      ></ha-control-slider>
+                    </div>
+                  `
                 : ""}
               ${supportsRgbw
                 ? html`
-                    <ha-control-slider
-                      class="horizontal white"
-                      min="0"
-                      max="100"
-                      .name=${"wv"}
-                      .value=${this._wvSliderValue}
-                      @value-changed=${this._wvSliderChanged}
-                    ></ha-control-slider>
+                    <div class="white-sliders">
+                      <p class="slider-label">
+                        ${this.hass.localize("ui.card.light.white_value")}
+                      </p>
+                      <p class="slider-value">
+                        ${this._wvSliderValue !== undefined
+                          ? `${this._wvSliderValue}%`
+                          : nothing}
+                      </p>
+                      <ha-control-slider
+                        class="horizontal white"
+                        min="0"
+                        max="100"
+                        .showHandle
+                        .name=${"wv"}
+                        .value=${this._wvSliderValue}
+                        @value-changed=${this._wvSliderChanged}
+                      ></ha-control-slider>
+                    </div>
                   `
                 : ""}
               ${supportsRgbww
                 ? html`
-                    <ha-control-slider
-                      class="horizontal cold-white"
-                      min="0"
-                      max="100"
-                      .name=${"cw"}
-                      .value=${this._cwSliderValue}
-                      @value-changed=${this._wvSliderChanged}
-                    ></ha-control-slider>
-                    <ha-control-slider
-                      class="horizontal warm-white"
-                      min="0"
-                      max="100"
-                      .name=${"ww"}
-                      .value=${this._wwSliderValue}
-                      @value-changed=${this._wvSliderChanged}
-                    ></ha-control-slider>
+                    <div class="white-sliders">
+                      <p class="slider-label">
+                        ${this.hass.localize("ui.card.light.cold_white_value")}
+                      </p>
+                      <p class="slider-value">
+                        ${this._cwSliderValue !== undefined
+                          ? `${this._cwSliderValue}%`
+                          : nothing}
+                      </p>
+                      <ha-control-slider
+                        class="horizontal cold-white"
+                        min="0"
+                        max="100"
+                        .showHandle
+                        .name=${"cw"}
+                        .value=${this._cwSliderValue}
+                        @value-changed=${this._wvSliderChanged}
+                      ></ha-control-slider>
+                    </div>
+                    <div class="white-sliders">
+                      <p class="slider-label">
+                        ${this.hass.localize("ui.card.light.warm_white_value")}
+                      </p>
+                      <p class="slider-value">
+                        ${this._wwSliderValue !== undefined
+                          ? `${this._wwSliderValue}%`
+                          : nothing}
+                      </p>
+                      <ha-control-slider
+                        class="horizontal warm-white"
+                        min="0"
+                        max="100"
+                        .showHandle
+                        .name=${"ww"}
+                        .value=${this._wwSliderValue}
+                        @value-changed=${this._wvSliderChanged}
+                      ></ha-control-slider>
+                    </div>
                   `
                 : ""}
             `
@@ -554,7 +599,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
           --control-slider-border-radius: 10px;
           --control-slider-background: var(--disabled-color);
           --control-slider-background-opacity: 0.2;
-          margin: 10px 0;
+          margin: 20px 0;
         }
 
         .color-brightness {
@@ -612,6 +657,39 @@ class MoreInfoViewLightColorPicker extends LitElement {
           letter-spacing: 0.1px;
           margin: 0;
           direction: ltr;
+        }
+
+        .slider-label {
+          width: 50%;
+          float: left;
+          text-align: left;
+          font-style: normal;
+          font-weight: 500;
+          font-size: 16px;
+          height: 24px;
+          line-height: 24px;
+          letter-spacing: 0.1px;
+          margin: 0;
+          direction: ltr;
+        }
+
+        .slider-value {
+          width: 50%;
+          float: right;
+          text-align: left;
+          font-style: normal;
+          font-weight: 500;
+          font-size: 16px;
+          height: 24px;
+          line-height: 24px;
+          letter-spacing: 0.1px;
+          margin: 0;
+          direction: ltr;
+          text-align: right;
+        }
+
+        .white-sliders {
+          width: 100%;
         }
 
         .color-temp {
