@@ -164,7 +164,7 @@
     "@rollup/plugin-json": "6.0.0",
     "@rollup/plugin-node-resolve": "15.0.2",
     "@rollup/plugin-replace": "5.0.2",
-    "@types/babel__plugin-transform-runtime": "^7",
+    "@types/babel__plugin-transform-runtime": "7.9.2",
     "@types/chromecast-caf-receiver": "5.0.12",
     "@types/chromecast-caf-sender": "1.0.5",
     "@types/esprima": "4.0.3",
