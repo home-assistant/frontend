@@ -1,17 +1,15 @@
-const gulp = require("gulp");
-const path = require("path");
-const fs = require("fs");
-const hash = require("object-hash");
+import fs from "fs";
+import gulp from "gulp";
+import hash from "object-hash";
+import path from "path";
+import paths from "../paths.cjs";
 
-const ICON_PACKAGE_PATH = path.resolve(
-  __dirname,
-  "../../node_modules/@mdi/svg/"
-);
+const ICON_PACKAGE_PATH = path.resolve("node_modules/@mdi/svg/");
 const META_PATH = path.resolve(ICON_PACKAGE_PATH, "meta.json");
 const PACKAGE_PATH = path.resolve(ICON_PACKAGE_PATH, "package.json");
 const ICON_PATH = path.resolve(ICON_PACKAGE_PATH, "svg");
-const OUTPUT_DIR = path.resolve(__dirname, "../../build/mdi");
-const REMOVED_ICONS_PATH = path.resolve(__dirname, "../removedIcons.json");
+const OUTPUT_DIR = path.resolve(paths.build_dir, "mdi");
+const REMOVED_ICONS_PATH = new URL("../removedIcons.json", import.meta.url);
 
 const encoding = "utf8";
 

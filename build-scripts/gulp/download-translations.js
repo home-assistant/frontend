@@ -1,6 +1,6 @@
-const gulp = require("gulp");
-const fs = require("fs/promises");
-const mapStream = require("map-stream");
+import fs from "fs/promises";
+import gulp from "gulp";
+import mapStream from "map-stream";
 
 const inDirFrontend = "translations/frontend";
 const inDirBackend = "translations/backend";

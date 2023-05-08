@@ -1,12 +1,13 @@
 // Tasks to generate entry HTML
-const gulp = require("gulp");
-const fs = require("fs-extra");
-const path = require("path");
-const template = require("lodash.template");
-const { minify } = require("html-minifier-terser");
-const paths = require("../paths.cjs");
-const env = require("../env.cjs");
-const { htmlMinifierOptions, terserOptions } = require("../bundle.cjs");
+
+import fs from "fs-extra";
+import gulp from "gulp";
+import { minify } from "html-minifier-terser";
+import template from "lodash.template";
+import path from "path";
+import { htmlMinifierOptions, terserOptions } from "../bundle.cjs";
+import env from "../env.cjs";
+import paths from "../paths.cjs";
 
 const renderTemplate = (templateFile, data = {}) => {
   const compiled = template(
@@ -89,9 +90,11 @@ const genPagesProdTask =
     inputSub = "src/html"
   ) =>
   async () => {
-    const latestManifest = require(path.resolve(outputLatest, "manifest.json"));
+    const latestManifest = fs.readJsonSync(
+      path.resolve(outputLatest, "manifest.json")
+    );
     const es5Manifest = outputES5
-      ? require(path.resolve(outputES5, "manifest.json"))
+      ? fs.readJsonSync(path.resolve(outputES5, "manifest.json"))
       : {};
     const minifiedHTML = [];
     for (const [page, entries] of Object.entries(pageEntries)) {

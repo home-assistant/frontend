@@ -1,18 +1,15 @@
-const del = import("del");
-const path = require("path");
-const gulp = require("gulp");
-const fs = require("fs");
-const paths = require("../paths.cjs");
+import { deleteSync } from "del";
+import fs from "fs";
+import gulp from "gulp";
+import path from "path";
+import paths from "../paths.cjs";
 
 const outDir = "build/locale-data";
 
-gulp.task("clean-locale-data", async () => (await del).deleteSync([outDir]));
+gulp.task("clean-locale-data", async () => deleteSync([outDir]));
 
-gulp.task("ensure-locale-data-build-dir", (done) => {
-  if (!fs.existsSync(outDir)) {
-    fs.mkdirSync(outDir, { recursive: true });
-  }
-  done();
+gulp.task("ensure-locale-data-build-dir", async () => {
+  fs.mkdirSync(outDir, { recursive: true });
 });
 
 const modules = {
@@ -31,11 +28,14 @@ gulp.task("create-locale-data", (done) => {
   Object.entries(modules).forEach(([module, className]) => {
     Object.keys(translationMeta).forEach((lang) => {
       try {
-        const localeData = String(
-          fs.readFileSync(
-            require.resolve(`@formatjs/${module}/locale-data/${lang}.js`)
+        const localeData = fs
+          .readFileSync(
+            path.resolve(
+              paths.polymer_dir,
+              `node_modules/@formatjs/${module}/locale-data/${lang}.js`
+            ),
+            "utf-8"
           )
-        )
           .replace(
             new RegExp(
               `\\/\\*\\s*@generated\\s*\\*\\/\\s*\\/\\/\\s*prettier-ignore\\s*if\\s*\\(Intl\\.${className}\\s*&&\\s*typeof\\s*Intl\\.${className}\\.__addLocaleData\\s*===\\s*'function'\\)\\s*{\\s*Intl\\.${className}\\.__addLocaleData\\(`,
@@ -46,15 +46,13 @@ gulp.task("create-locale-data", (done) => {
           .replace(/\)\s*}/im, "");
         // make sure we have valid JSON
         JSON.parse(localeData);
-        if (!fs.existsSync(path.join(outDir, module))) {
-          fs.mkdirSync(path.join(outDir, module), { recursive: true });
-        }
+        fs.mkdirSync(path.join(outDir, module), { recursive: true });
         fs.writeFileSync(
           path.join(outDir, `${module}/${lang}.json`),
           localeData
         );
       } catch (e) {
-        if (e.code !== "MODULE_NOT_FOUND") {
+        if (e.code !== "ENOENT") {
           throw e;
         }
       }

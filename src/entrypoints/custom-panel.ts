@@ -140,3 +140,10 @@ document.addEventListener(
   () => window.parent.customPanel!.registerIframe(initialize, setProperties),
   { once: true }
 );
+
+window.addEventListener("unload", () => {
+  // allow disconnected callback to fire
+  while (document.body.lastChild) {
+    document.body.removeChild(document.body.lastChild);
+  }
+});
