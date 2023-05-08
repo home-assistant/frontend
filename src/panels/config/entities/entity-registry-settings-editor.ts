@@ -264,7 +264,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     });
   }
 
-  private _testDefaultCode(
+  private _isInvalidDefaultCode(
     codeFormat?: string,
     value?: string | null
   ): boolean {
@@ -322,7 +322,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     const invalidDefaultCode =
       domain === "lock" &&
-      this._testDefaultCode(
+      this._isInvalidDefaultCode(
         stateObj?.attributes?.code_format,
         this._defaultCode
       );
