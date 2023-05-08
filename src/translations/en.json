@@ -478,7 +478,10 @@
           }
         }
       },
-      "stt-picker": { "stt": "Speech-to-text", "none": "None" },
+      "stt-picker": {
+        "stt": "Speech-to-text",
+        "none": "None"
+      },
       "related-filter-menu": {
         "filter": "Filter",
         "filter_by_entity": "Filter by entity",
@@ -3970,6 +3973,7 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used",
+          "disk_metrics": "Disk metrics",
           "datadisk": {
             "title": "Move data disk",
             "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
@@ -3983,6 +3987,60 @@
             "cancel": "[%key:ui::common::cancel%]",
             "failed_to_move": "Failed to move data disk",
             "move": "Move"
+          },
+          "network_mounts": {
+            "title": "Network storage",
+            "add_title": "Add network storage",
+            "update_title": "Update network storage",
+            "no_mounts": "No connected network storage",
+            "mount_usage": {
+              "backup": "Backup",
+              "media": "Media"
+            },
+            "mount_type": {
+              "nfs": "Network File Share (NFS)",
+              "cifs": "Samba/Windows (CIFS)"
+            },
+            "options": {
+              "name": {
+                "title": "Name",
+                "description": "This name will be shown to you in the UI, and will also be the name of the folder created on your system"
+              },
+              "share": {
+                "title": "Remote share",
+                "description": "This is the name of the share you created on your storage server"
+              },
+              "server": {
+                "title": "Server",
+                "description": "This is the domain name (FQDN) or IP address of the storage server you want to connect to"
+              },
+              "path": {
+                "title": "Remote share path",
+                "description": "This is the path of the remote share on your storage server"
+              },
+              "type": {
+                "title": "Protocol",
+                "description": "This determines how to communicate with the storage server"
+              },
+              "usage": {
+                "title": "Usage",
+                "description": "This determines how the share is intended to be used"
+              },
+              "username": {
+                "title": "Username",
+                "description": "This is your username for the samba share"
+              },
+              "password": {
+                "title": "Password",
+                "description": "This is your password for the samba share"
+              }
+            },
+            "connect": "Connect",
+            "update": "Update",
+            "errors": {
+              "reload": "Could not reload mount {mount}",
+              "invalid_name": "Invalid name, can only contain alphanumeric characters and underscores"
+            }
           }
         },
         "system_health": {
