@@ -194,6 +194,9 @@ class HassioIngressView extends LitElement {
       if (confirm) {
         try {
           await startHassioAddon(this.hass, addonSlug);
+          fireEvent(this, "supervisor-collection-refresh", {
+            collection: "addon",
+          });
           // Give the add-on some time to start
           await new Promise((resolve) => {
             setTimeout(resolve, 1000);
@@ -219,6 +222,9 @@ class HassioIngressView extends LitElement {
     try {
       session = await createSessionPromise;
     } catch (err: any) {
+      if (this._sessionKeepAlive) {
+        clearInterval(this._sessionKeepAlive);
+      }
       await showAlertDialog(this, {
         text: this.supervisor.localize("ingress.error_creating_session"),
         title: addon.name,
