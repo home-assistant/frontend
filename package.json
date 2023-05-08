@@ -25,6 +25,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
+    "@babel/runtime": "7.21.5",
     "@braintree/sanitize-url": "6.0.2",
     "@codemirror/autocomplete": "6.6.1",
     "@codemirror/commands": "6.2.4",
@@ -125,7 +126,6 @@
     "punycode": "2.3.0",
     "qr-scanner": "1.4.2",
     "qrcode": "1.5.3",
-    "regenerator-runtime": "0.13.11",
     "resize-observer-polyfill": "1.5.1",
     "roboto-fontface": "0.10.0",
     "rrule": "2.7.2",
@@ -151,6 +151,7 @@
   "devDependencies": {
     "@babel/core": "7.21.8",
     "@babel/plugin-proposal-decorators": "7.21.0",
+    "@babel/plugin-transform-runtime": "7.21.4",
     "@babel/preset-env": "7.21.5",
     "@babel/preset-typescript": "7.21.5",
     "@koa/cors": "4.0.0",
@@ -163,6 +164,7 @@
     "@rollup/plugin-json": "6.0.0",
     "@rollup/plugin-node-resolve": "15.0.2",
     "@rollup/plugin-replace": "5.0.2",
+    "@types/babel__plugin-transform-runtime": "^7",
     "@types/chromecast-caf-receiver": "5.0.12",
     "@types/chromecast-caf-sender": "1.0.5",
     "@types/esprima": "4.0.3",

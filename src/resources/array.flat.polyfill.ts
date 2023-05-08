@@ -1,4 +1,7 @@
 /* eslint-disable no-extend-native */
+
+export {}; // for Babel to treat as a module
+
 if (!Array.prototype.flat) {
   Object.defineProperty(Array.prototype, "flat", {
     configurable: true,
