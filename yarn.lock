@@ -1110,6 +1110,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/plugin-transform-runtime@npm:7.21.4":
+  version: 7.21.4
+  resolution: "@babel/plugin-transform-runtime@npm:7.21.4"
+  dependencies:
+    "@babel/helper-module-imports": ^7.21.4
+    "@babel/helper-plugin-utils": ^7.20.2
+    babel-plugin-polyfill-corejs2: ^0.3.3
+    babel-plugin-polyfill-corejs3: ^0.6.0
+    babel-plugin-polyfill-regenerator: ^0.4.1
+    semver: ^6.3.0
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 7e2e6b0d6f9762fde58738829e4d3b5e13dc88ccc1463e4eee83c8d8f50238eeb8e3699923f5ad4d7edf597515f74d67fbb14eb330225075fc7733b547e22145
+  languageName: node
+  linkType: hard
+
 "@babel/plugin-transform-shorthand-properties@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/plugin-transform-shorthand-properties@npm:7.18.6"
@@ -1326,7 +1342,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
+"@babel/runtime@npm:7.21.5, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4":
   version: 7.21.5
   resolution: "@babel/runtime@npm:7.21.5"
   dependencies:
@@ -3997,6 +4013,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 590b7580570534a640510c071e09074cf63b5958b237a728f94322567350aea4d239f8a9d897a12b15c856b992ee4d7907e9812bb079886af2c00714e7fb3f60
+  languageName: node
+  linkType: hard
+
+"@types/babel__plugin-transform-runtime@npm:^7":
+  version: 7.9.2
+  resolution: "@types/babel__plugin-transform-runtime@npm:7.9.2"
+  checksum: 0eb18bf14b478804d34f96d47b992e53043776b8679e0c110051985a22ec18497e6f2c6d20f5289876c6094ccac2d41fa2f716a150e7512cee0a5c2ae1cf79b3
   languageName: node
   linkType: hard
 
@@ -9427,8 +9450,10 @@ __metadata:
   dependencies:
     "@babel/core": 7.21.8
     "@babel/plugin-proposal-decorators": 7.21.0
+    "@babel/plugin-transform-runtime": 7.21.4
     "@babel/preset-env": 7.21.5
     "@babel/preset-typescript": 7.21.5
+    "@babel/runtime": 7.21.5
     "@braintree/sanitize-url": 6.0.2
     "@codemirror/autocomplete": 6.6.1
     "@codemirror/commands": 6.2.4
@@ -9505,6 +9530,7 @@ __metadata:
     "@rollup/plugin-node-resolve": 15.0.2
     "@rollup/plugin-replace": 5.0.2
     "@thomasloven/round-slider": 0.6.0
+    "@types/babel__plugin-transform-runtime": ^7
     "@types/chromecast-caf-receiver": 5.0.12
     "@types/chromecast-caf-sender": 1.0.5
     "@types/esprima": 4.0.3
@@ -9598,7 +9624,6 @@ __metadata:
     punycode: 2.3.0
     qr-scanner: 1.4.2
     qrcode: 1.5.3
-    regenerator-runtime: 0.13.11
     resize-observer-polyfill: 1.5.1
     roboto-fontface: 0.10.0
     rollup: 2.79.1
@@ -13370,7 +13395,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:0.13.11, regenerator-runtime@npm:^0.13.11, regenerator-runtime@npm:^0.13.3":
+"regenerator-runtime@npm:^0.13.11, regenerator-runtime@npm:^0.13.3":
   version: 0.13.11
   resolution: "regenerator-runtime@npm:0.13.11"
   checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
