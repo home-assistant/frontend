@@ -1,9 +1,9 @@
 // Gulp task to gather all static files.
 
-const gulp = require("gulp");
-const path = require("path");
-const fs = require("fs-extra");
-const paths = require("../paths.cjs");
+import fs from "fs-extra";
+import gulp from "gulp";
+import path from "path";
+import paths from "../paths.cjs";
 
 const npmPath = (...parts) =>
   path.resolve(paths.polymer_dir, "node_modules", ...parts);
