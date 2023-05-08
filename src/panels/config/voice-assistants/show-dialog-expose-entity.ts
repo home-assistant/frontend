@@ -1,9 +1,9 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { ExposeEntitySettings } from "../../../data/expose";
 
 export interface ExposeEntityDialogParams {
   filterAssistants: string[];
-  extendedEntities: Record<string, ExtEntityRegistryEntry>;
+  exposedEntities: Record<string, ExposeEntitySettings>;
   exposeEntities: (entities: string[]) => void;
 }
 

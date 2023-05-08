@@ -13,9 +13,8 @@ import "../../../components/ha-textfield";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
 import { showAliasesDialog } from "../../../dialogs/aliases/show-dialog-aliases";
 import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import { ValueChangedEvent, HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
 import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 
 const cropOptions: CropOptions = {
@@ -187,7 +186,7 @@ class DialogAreaDetail extends LitElement {
     this._name = ev.target.value;
   }
 
-  private _pictureChanged(ev: PolymerChangedEvent<string | null>) {
+  private _pictureChanged(ev: ValueChangedEvent<string | null>) {
     this._error = undefined;
     this._picture = (ev.target as HaPictureUpload).value;
   }

@@ -1,13 +1,13 @@
-const gulp = require("gulp");
-const env = require("../env.cjs");
-require("./clean.cjs");
-require("./compress.cjs");
-require("./entry-html.cjs");
-require("./gather-static.cjs");
-require("./gen-icons-json.cjs");
-require("./rollup.cjs");
-require("./translations.cjs");
-require("./webpack.cjs");
+import gulp from "gulp";
+import env from "../env.cjs";
+import "./clean.js";
+import "./compress.js";
+import "./entry-html.js";
+import "./gather-static.js";
+import "./gen-icons-json.js";
+import "./rollup.js";
+import "./translations.js";
+import "./webpack.js";
 
 gulp.task(
   "develop-hassio",

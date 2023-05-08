@@ -1,4 +1,3 @@
-import "@lit-labs/virtualizer";
 import {
   css,
   CSSResultGroup,
@@ -15,6 +14,7 @@ import {
   LineChartUnit,
   TimelineEntity,
 } from "../../data/history";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
@@ -169,6 +169,12 @@ export class StateHistoryCharts extends LitElement {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return !(changedProps.size === 1 && changedProps.has("hass"));
+  }
+
+  protected willUpdate() {
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
   }
 
   protected updated(changedProps: PropertyValues) {

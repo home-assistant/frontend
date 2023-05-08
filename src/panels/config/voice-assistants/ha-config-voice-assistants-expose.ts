@@ -19,7 +19,8 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   EntityFilter,
   generateFilter,
@@ -38,26 +39,28 @@ import { AlexaEntity, fetchCloudAlexaEntities } from "../../../data/alexa";
 import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import { entitiesContext } from "../../../data/context";
 import {
-  computeEntityRegistryName,
-  EntityRegistryEntry,
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntries,
 } from "../../../data/entity_registry";
 import {
+  exposeEntities,
+  ExposeEntitySettings,
+  voiceAssistants,
+} from "../../../data/expose";
+import {
   fetchCloudGoogleEntities,
   GoogleEntity,
 } from "../../../data/google_assistant";
-import { exposeEntities, voiceAssistants } from "../../../data/voice";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
-import "./expose/expose-assistant-icon";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
@@ -70,6 +73,11 @@ export class VoiceAssistantsExpose extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public exposedEntities?: Record<
+    string,
+    ExposeEntitySettings
+  >;
 
   @state()
   @consume({ context: entitiesContext, subscribe: true })
@@ -111,7 +119,17 @@ export class VoiceAssistantsExpose extends LitElement {
   );
 
   private _columns = memoize(
-    (narrow, availableAssistants, _language): DataTableColumnContainer => ({
+    (
+      narrow: boolean,
+      availableAssistants: string[],
+      supportedEntities:
+        | Record<
+            "cloud.google_assistant" | "cloud.alexa" | "conversation",
+            string[] | undefined
+          >
+        | undefined,
+      _language: string
+    ): DataTableColumnContainer => ({
       icon: {
         title: "",
         type: "icon",
@@ -158,8 +176,8 @@ export class VoiceAssistantsExpose extends LitElement {
         template: (assistants, entry) =>
           html`${availableAssistants.map((key) => {
             const supported =
-              !this._supportedEntities?.[key] ||
-              this._supportedEntities[key].includes(entry.entity_id);
+              !supportedEntities?.[key] ||
+              supportedEntities[key].includes(entry.entity_id);
             const manual = entry.manAssistants?.includes(key);
             return assistants.includes(key)
               ? html`
@@ -256,8 +274,8 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _filteredEntities = memoize(
     (
-      entities: HomeAssistant["entities"],
-      extEntities: Record<string, ExtEntityRegistryEntry> | undefined,
+      entities: Record<string, ExtEntityRegistryEntry>,
+      exposedEntities: Record<string, ExposeEntitySettings>,
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       cloudStatus: CloudStatus | undefined,
@@ -296,12 +314,11 @@ export class VoiceAssistantsExpose extends LitElement {
 
       const result: Record<string, DataTableRowData> = {};
 
-      let filteredEntities = Object.values(entities);
+      let filteredEntities = Object.values(this.hass.states);
 
       filteredEntities = filteredEntities.filter((entity) =>
         showAssistants.some(
-          (assis) =>
-            extEntities?.[entity.entity_id].options?.[assis]?.should_expose
+          (assis) => exposedEntities?.[entity.entity_id]?.[assis]
         )
       );
 
@@ -317,37 +334,38 @@ export class VoiceAssistantsExpose extends LitElement {
             filteredAssistants.some(
               (assis) =>
                 !(assis === "cloud.alexa" && alexaManual) &&
-                extEntities?.[entity.entity_id].options?.[assis]?.should_expose
+                !(assis === "cloud.google_assistant" && googleManual) &&
+                exposedEntities?.[entity.entity_id]?.[assis]
             )
           );
         }
       });
 
-      for (const entry of filteredEntities) {
-        const entity = this.hass.states[entry.entity_id];
-        const areaId = entry.area_id ?? devices[entry.device_id!]?.area_id;
+      for (const entityState of filteredEntities) {
+        const entry: ExtEntityRegistryEntry | undefined =
+          entities[entityState.entity_id];
+        const areaId =
+          entry?.area_id ??
+          (entry?.device_id ? devices[entry.device_id!]?.area_id : undefined);
         const area = areaId ? areas[areaId] : undefined;
 
-        result[entry.entity_id] = {
-          entity_id: entry.entity_id,
-          entity,
+        result[entityState.entity_id] = {
+          entity_id: entityState.entity_id,
+          entity: entityState,
           name:
-            computeEntityRegistryName(
-              this.hass!,
-              entry as EntityRegistryEntry
-            ) ||
+            computeStateName(entityState) ||
             this.hass.localize(
               "ui.panel.config.entities.picker.unnamed_entity"
             ),
           area: area ? area.name : "—",
           assistants: Object.keys(
-            extEntities![entry.entity_id].options!
+            exposedEntities?.[entityState.entity_id]
           ).filter(
             (key) =>
               showAssistants.includes(key) &&
-              extEntities![entry.entity_id].options![key]?.should_expose
+              exposedEntities?.[entityState.entity_id]?.[key]
           ),
-          aliases: extEntities?.[entry.entity_id].aliases,
+          aliases: entry?.aliases || [],
         };
       }
 
@@ -358,22 +376,12 @@ export class VoiceAssistantsExpose extends LitElement {
           (this.cloudStatus as CloudStatusLoggedIn).google_entities,
           (this.cloudStatus as CloudStatusLoggedIn).alexa_entities
         );
-        Object.keys(entities).forEach((entityId) => {
+        Object.keys(this.hass.states).forEach((entityId) => {
           const assistants: string[] = [];
-          if (
-            alexaManual &&
-            (!filteredAssistants ||
-              filteredAssistants.includes("cloud.alexa")) &&
-            manFilterFuncs.amazon(entityId)
-          ) {
+          if (alexaManual && manFilterFuncs.amazon(entityId)) {
             assistants.push("cloud.alexa");
           }
-          if (
-            googleManual &&
-            (!filteredAssistants ||
-              filteredAssistants.includes("cloud.google_assistant")) &&
-            manFilterFuncs.google(entityId)
-          ) {
+          if (googleManual && manFilterFuncs.google(entityId)) {
             assistants.push("cloud.google_assistant");
           }
           if (!assistants.length) {
@@ -382,31 +390,38 @@ export class VoiceAssistantsExpose extends LitElement {
           if (entityId in result) {
             result[entityId].assistants.push(...assistants);
             result[entityId].manAssistants = assistants;
-          } else {
-            const entry = entities[entityId];
-            const areaId = entry.area_id ?? devices[entry.device_id!]?.area_id;
+          } else if (
+            !filteredAssistants ||
+            filteredAssistants.some((ass) => assistants.includes(ass))
+          ) {
+            const entityState = this.hass.states[entityId];
+            const entry: ExtEntityRegistryEntry | undefined =
+              entities[entityId];
+            const areaId =
+              entry?.area_id ??
+              (entry?.device_id
+                ? devices[entry.device_id!]?.area_id
+                : undefined);
             const area = areaId ? areas[areaId] : undefined;
             result[entityId] = {
-              entity_id: entry.entity_id,
-              entity: this.hass.states[entityId],
-              name: computeEntityRegistryName(
-                this.hass!,
-                entry as EntityRegistryEntry
-              ),
+              entity_id: entityState.entity_id,
+              entity: entityState,
+              name: computeStateName(entityState),
               area: area ? area.name : "—",
               assistants: [
-                ...(extEntities
-                  ? Object.keys(extEntities[entry.entity_id].options!).filter(
+                ...(exposedEntities
+                  ? Object.keys(
+                      exposedEntities?.[entityState.entity_id]
+                    ).filter(
                       (key) =>
                         showAssistants.includes(key) &&
-                        extEntities[entry.entity_id].options![key]
-                          ?.should_expose
+                        exposedEntities?.[entityState.entity_id]?.[key]
                     )
                   : []),
                 ...assistants,
               ],
               manAssistants: assistants,
-              aliases: extEntities?.[entityId].aliases,
+              aliases: entry?.aliases || [],
             };
           }
         });
@@ -439,6 +454,10 @@ export class VoiceAssistantsExpose extends LitElement {
       this.hass,
       Object.keys(this._entities)
     );
+    this._fetchSupportedEntities();
+  }
+
+  private async _fetchSupportedEntities() {
     let alexaEntitiesProm: Promise<AlexaEntity[]> | undefined;
     let googleEntitiesProm: Promise<GoogleEntity[]> | undefined;
     if (this.cloudStatus?.logged_in && this.cloudStatus.prefs.alexa_enabled) {
@@ -456,7 +475,7 @@ export class VoiceAssistantsExpose extends LitElement {
       "cloud.google_assistant": googleEntities?.map(
         (entity) => entity.entity_id
       ),
-      // TODO add supported entity for assit
+      // TODO add supported entity for assist
       conversation: undefined,
     };
   }
@@ -464,18 +483,26 @@ export class VoiceAssistantsExpose extends LitElement {
   public willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("_entities")) {
       this._fetchEntities();
+      return;
+    }
+    if (
+      changedProperties.has("hass") &&
+      this.hass.config.state === "RUNNING" &&
+      changedProperties.get("hass")?.config.state !== this.hass.config.state
+    ) {
+      this._fetchSupportedEntities();
     }
   }
 
   protected render() {
-    if (!this.hass || this.hass.entities === undefined) {
+    if (!this.hass || !this.exposedEntities || !this._extEntities) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
     const activeFilters = this._activeFilters(this._searchParms);
 
     const filteredEntities = this._filteredEntities(
-      this._entities,
       this._extEntities,
+      this.exposedEntities,
       this.hass.devices,
       this.hass.areas,
       this.cloudStatus,
@@ -494,6 +521,7 @@ export class VoiceAssistantsExpose extends LitElement {
         .columns=${this._columns(
           this.narrow,
           this._availableAssistants(this.cloudStatus),
+          this._supportedEntities,
           this.hass.language
         )}
         .data=${filteredEntities}
@@ -621,9 +649,11 @@ export class VoiceAssistantsExpose extends LitElement {
       : this._availableAssistants(this.cloudStatus);
     showExposeEntityDialog(this, {
       filterAssistants: assistants,
-      extendedEntities: this._extEntities!,
+      exposedEntities: this.exposedEntities!,
       exposeEntities: (entities) => {
-        exposeEntities(this.hass, assistants, entities, true);
+        exposeEntities(this.hass, assistants, entities, true).then(() =>
+          fireEvent(this, "exposed-entities-changed")
+        );
       },
     });
   }
@@ -645,7 +675,9 @@ export class VoiceAssistantsExpose extends LitElement {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
       : this._availableAssistants(this.cloudStatus);
-    exposeEntities(this.hass, assistants, [entityId], false);
+    exposeEntities(this.hass, assistants, [entityId], false).then(() =>
+      fireEvent(this, "exposed-entities-changed")
+    );
   };
 
   private _unexposeSelected() {
@@ -670,7 +702,12 @@ export class VoiceAssistantsExpose extends LitElement {
       ),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
-        exposeEntities(this.hass, assistants, this._selectedEntities, false);
+        exposeEntities(
+          this.hass,
+          assistants,
+          this._selectedEntities,
+          false
+        ).then(() => fireEvent(this, "exposed-entities-changed"));
         this._clearSelection();
       },
     });
@@ -698,7 +735,12 @@ export class VoiceAssistantsExpose extends LitElement {
       ),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
-        exposeEntities(this.hass, assistants, this._selectedEntities, true);
+        exposeEntities(
+          this.hass,
+          assistants,
+          this._selectedEntities,
+          true
+        ).then(() => fireEvent(this, "exposed-entities-changed"));
         this._clearSelection();
       },
     });
@@ -710,7 +752,14 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _openEditEntry(ev: CustomEvent): void {
     const entityId = (ev.detail as RowClickedEvent).id;
-    showVoiceSettingsDialog(this, { entityId });
+    showVoiceSettingsDialog(this, {
+      entityId,
+      exposed: this.exposedEntities![entityId],
+      extEntityReg: this._extEntities?.[entityId],
+      exposedEntitiesChanged: () => {
+        fireEvent(this, "exposed-entities-changed");
+      },
+    });
   }
 
   private _clearFilter() {

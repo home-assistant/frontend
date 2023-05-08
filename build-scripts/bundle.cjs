@@ -90,6 +90,8 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
     setSpreadProperties: true,
   },
   browserslistEnv: latestBuild ? "modern" : "legacy",
+  // Must be unambiguous because some dependencies are CommonJS only
+  sourceType: "unambiguous",
   presets: [
     [
       "@babel/preset-env",
@@ -112,8 +114,6 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
         ignoreModuleNotFound: true,
       },
     ],
-    // Support  some proposals still in TC39 process
-    ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
     // Minify template literals for production
     isProdBuild && [
       "template-html-minifier",
@@ -131,6 +131,13 @@ module.exports.babelOptions = ({ latestBuild, isProdBuild, isTestBuild }) => ({
         failOnError: true, // we can turn this off in case of false positives
       },
     ],
+    // Import helpers and regenerator from runtime package
+    [
+      "@babel/plugin-transform-runtime",
+      { version: require("../package.json").dependencies["@babel/runtime"] },
+    ],
+    // Support  some proposals still in TC39 process
+    ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
   ].filter(Boolean),
   exclude: [
     // \\ for Windows, / for Mac OS and Linux
@@ -149,27 +156,27 @@ const publicPath = (latestBuild, root = "") =>
   latestBuild ? `${root}/frontend_latest/` : `${root}/frontend_es5/`;
 
 /*
-BundleConfig {
-  // Object with entrypoints that need to be bundled
-  entry: { [name: string]: pathToFile },
-  // Folder where bundled files need to be written
-  outputPath: string,
-  // absolute url-path where bundled files can be found
-  publicPath: string,
-  // extra definitions that we need to replace in source
-  defineOverlay: {[name: string]: value },
-  // if this is a production build
-  isProdBuild: boolean,
-  // If we're targeting latest browsers
-  latestBuild: boolean,
-  // If we're doing a stats build (create nice chunk names)
-  isStatsBuild: boolean,
-  // If it's just a test build in CI, skip time on source map generation
-  isTestBuild: boolean,
-  // Names of entrypoints that should not be hashed
-  dontHash: Set<string>
-}
-*/
+  BundleConfig {
+    // Object with entrypoints that need to be bundled
+    entry: { [name: string]: pathToFile },
+    // Folder where bundled files need to be written
+    outputPath: string,
+    // absolute url-path where bundled files can be found
+    publicPath: string,
+    // extra definitions that we need to replace in source
+    defineOverlay: {[name: string]: value },
+    // if this is a production build
+    isProdBuild: boolean,
+    // If we're targeting latest browsers
+    latestBuild: boolean,
+    // If we're doing a stats build (create nice chunk names)
+    isStatsBuild: boolean,
+    // If it's just a test build in CI, skip time on source map generation
+    isTestBuild: boolean,
+    // Names of entrypoints that should not be hashed
+    dontHash: Set<string>
+  }
+  */
 
 module.exports.config = {
   app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild, isWDS }) {

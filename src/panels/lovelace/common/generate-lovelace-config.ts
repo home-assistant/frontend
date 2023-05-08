@@ -13,7 +13,6 @@ import {
 } from "../../../data/energy";
 import { domainToName } from "../../../data/integration";
 import { LovelaceCardConfig, LovelaceViewConfig } from "../../../data/lovelace";
-import { SENSOR_DEVICE_CLASS_BATTERY } from "../../../data/sensor";
 import { computeUserInitials } from "../../../data/user";
 import { HomeAssistant } from "../../../types";
 import { HELPER_DOMAINS } from "../../config/helpers/const";
@@ -179,11 +178,6 @@ export const computeCards = (
         conf.name = name;
       }
       footerEntities.push(conf);
-    } else if (
-      domain === "sensor" &&
-      stateObj?.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY
-    ) {
-      // Do nothing.
     } else {
       let name: string | undefined;
       const entityConf =

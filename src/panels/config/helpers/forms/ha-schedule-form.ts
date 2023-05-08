@@ -22,7 +22,7 @@ import "../../../../components/ha-textfield";
 import { Schedule, ScheduleDay, weekdays } from "../../../../data/schedule";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import { installResizeObserver } from "../../../lovelace/common/install-resize-observer";
+import { loadPolyfillIfNeeded } from "../../../../resources/resize-observer.polyfill";
 
 const defaultFullCalendarConfig: CalendarOptions = {
   plugins: [timeGridPlugin, interactionPlugin],
@@ -125,7 +125,7 @@ class HaScheduleForm extends LitElement {
 
   private async _attachObserver(): Promise<void> {
     if (!this._resizeObserver) {
-      await installResizeObserver();
+      await loadPolyfillIfNeeded();
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measureForm(), 250, false)
       );

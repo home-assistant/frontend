@@ -1,4 +1,3 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
