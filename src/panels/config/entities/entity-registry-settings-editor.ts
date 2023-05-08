@@ -438,7 +438,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               error-message=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.default_code_error"
               )}
-              .value=${this._defaultCode}
+              .value=${this._defaultCode == null ? "" : this._defaultCode}
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.default_code"
               )}
