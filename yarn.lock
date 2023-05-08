@@ -4016,7 +4016,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__plugin-transform-runtime@npm:^7":
+"@types/babel__plugin-transform-runtime@npm:7.9.2":
   version: 7.9.2
   resolution: "@types/babel__plugin-transform-runtime@npm:7.9.2"
   checksum: 0eb18bf14b478804d34f96d47b992e53043776b8679e0c110051985a22ec18497e6f2c6d20f5289876c6094ccac2d41fa2f716a150e7512cee0a5c2ae1cf79b3
@@ -9530,7 +9530,7 @@ __metadata:
     "@rollup/plugin-node-resolve": 15.0.2
     "@rollup/plugin-replace": 5.0.2
     "@thomasloven/round-slider": 0.6.0
-    "@types/babel__plugin-transform-runtime": ^7
+    "@types/babel__plugin-transform-runtime": 7.9.2
     "@types/chromecast-caf-receiver": 5.0.12
     "@types/chromecast-caf-sender": 1.0.5
     "@types/esprima": 4.0.3
