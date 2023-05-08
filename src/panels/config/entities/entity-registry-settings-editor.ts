@@ -436,7 +436,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${domain === "lock"
         ? html`
             <ha-textfield
-              error-message=${this.hass.localize(
+              .errorMessage=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.default_code_error"
               )}
               .value=${this._defaultCode == null ? "" : this._defaultCode}
