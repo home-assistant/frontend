@@ -204,7 +204,7 @@ class HassioIngressView extends LitElement {
             title: addon.name,
           });
           await nextRender();
-          navigate(`/hassio/addon/${addon.slug}/info`, { replace: true });
+          navigate(`/hassio/addon/${addon.slug}/logs`, { replace: true });
           return;
         }
       } else {
