@@ -1,3 +1,5 @@
+export {}; // for Babel to treat as a module
+
 const documentContainer = document.createElement("template");
 documentContainer.setAttribute("style", "display: none;");
 

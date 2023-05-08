@@ -2,7 +2,12 @@
   "compilerOptions": {
     // Language Options
     "target": "ES2017",
-    "lib": ["ES2017", "DOM", "DOM.Iterable", "WebWorker"],
+    "lib": [
+      "ES2017",
+      "DOM",
+      "DOM.Iterable",
+      "WebWorker"
+    ],
     "experimentalDecorators": true,
     // Modules
     "module": "ESNext",
@@ -21,6 +26,7 @@
     "skipLibCheck": true,
     // Interop with CommonJS and other tools
     "esModuleInterop": true,
+    "isolatedModules": true,
     "plugins": [
       {
         "name": "ts-lit-plugin",
