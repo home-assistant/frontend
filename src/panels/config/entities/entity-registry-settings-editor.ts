@@ -269,9 +269,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
     value?: string | null
   ): boolean {
     if (codeFormat && value) {
-      return RegExp(codeFormat).test(value);
+      return RegExp(codeFormat).test(value) !== true;
     }
-    return true;
+    return false;
   }
 
   protected async updated(changedProps: PropertyValues): Promise<void> {
@@ -326,6 +326,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         stateObj?.attributes?.code_format,
         this._defaultCode
       );
+
     const defaultPrecision =
       this.entry.options?.sensor?.suggested_display_precision ?? undefined;
 
