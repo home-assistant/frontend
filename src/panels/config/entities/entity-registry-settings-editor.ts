@@ -172,7 +172,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _weatherConvertibleUnits?: WeatherUnits;
 
-  @state() private _default_code?: string | null;
+  @state() private _defaultCode?: string | null;
 
   @state() private _noDeviceArea?: boolean;
 
@@ -226,7 +226,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     if (domain === "lock") {
-      this._default_code = this.entry.options?.lock?.default_code;
+      this._defaultCode = this.entry.options?.lock?.default_code;
     }
 
     if (domain === "weather") {
@@ -264,9 +264,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
     });
   }
 
-  private testDefaultCode(code_format?: string, value?: string | null) {
-    if (code_format && value) {
-      return RegExp(code_format).test(value);
+  private _testDefaultCode(
+    codeFormat?: string,
+    value?: string | null
+  ): boolean {
+    if (codeFormat && value) {
+      return RegExp(codeFormat).test(value);
     }
     return true;
   }
@@ -317,10 +320,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     const invalidDomainUpdate = computeDomain(this._entityId.trim()) !== domain;
 
-    const regexCodeFormat = stateObj.attributes?.code_format;
     const invalidDefaultCode =
-      this.testDefaultCode(regexCodeFormat, this._default_code) !== true;
-
+      domain === "lock" &&
+      this._testDefaultCode(
+        stateObj?.attributes?.code_format,
+        this._defaultCode
+      );
     const defaultPrecision =
       this.entry.options?.sensor?.suggested_display_precision ?? undefined;
 
@@ -430,10 +435,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${domain === "lock"
         ? html`
             <ha-textfield
-              error-message="Code does not match code format"
-              .value=${this._default_code == null
-                ? ""
-                : this._default_code.toString()}
+              error-message=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.default_code_error"
+              )}
+              .value=${this._defaultCode}
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.default_code"
               )}
@@ -927,11 +932,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
     if (
       domain === "lock" &&
-      this.entry.options?.[domain]?.default_code !== this._default_code
+      this.entry.options?.[domain]?.default_code !== this._defaultCode
     ) {
       params.options_domain = domain;
-      params.options = params.options || this.entry.options?.[domain] || {};
-      (params.options as LockEntityOptions).default_code = this._default_code;
+      params.options = this.entry.options?.[domain] || {};
+      (params.options as LockEntityOptions).default_code = this._defaultCode;
     }
     if (
       domain === "weather" &&
@@ -1040,8 +1045,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private _defaultcodeChanged(ev): void {
     fireEvent(this, "change");
-    this._default_code =
-      ev.target.value === "" ? null : String(ev.target.value);
+    this._defaultCode = ev.target.value === "" ? null : ev.target.value;
   }
 
   private _precipitationUnitChanged(ev): void {
