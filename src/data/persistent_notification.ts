@@ -1,4 +1,15 @@
-import { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  Connection,
+  HassEntity,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
+
+export interface PersitentNotificationEntity extends HassEntity {
+  notification_id?: string;
+  created_at?: string;
+  title?: string;
+  message?: string;
+}
 
 export interface PersistentNotification {
   created_at: string;
