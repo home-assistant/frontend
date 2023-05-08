@@ -20,6 +20,8 @@ class HassioAddons extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
+  @property({ type: Boolean }) public narrow!: boolean;
+
   @state() private _filter?: string;
 
   protected render(): TemplateResult {
@@ -30,7 +32,7 @@ class HassioAddons extends LitElement {
           suffix
           .filter=${this._filter}
           @value-changed=${this._handleSearchChange}
-          .label=${this.supervisor.localize("dashoard.search_addons")}
+          .label=${this.supervisor.localize("dashboard.search_addons")}
         >
         </search-input>
       </div>
@@ -125,21 +127,14 @@ class HassioAddons extends LitElement {
           cursor: pointer;
         }
         .search {
-          display: flex;
-          justify-content: flex-end;
-          width: 100%;
-          align-items: center;
-          height: 56px;
           position: sticky;
           top: 0;
           z-index: 2;
         }
-        .search search-input {
+        search-input {
           display: block;
-          position: absolute;
-          top: 0;
-          right: 0;
-          left: 0;
+          --mdc-text-field-fill-color: var(--sidebar-background-color);
+          --mdc-text-field-idle-line-color: var(--divider-color);
         }
       `,
     ];
