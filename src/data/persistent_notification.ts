@@ -1,4 +1,4 @@
-import { Connection } from "home-assistant-js-websocket";
+import { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 
 export interface PersistentNotification {
   created_at: string;
@@ -20,15 +20,18 @@ export interface PersistentNotificationMessage {
 export const subscribeNotifications = (
   conn: Connection,
   onChange: (notifications: PersistentNotification[]) => void
-): Promise<() => Promise<void>> => {
+): UnsubscribeFunc => {
   const params = {
     type: "persistent_notification/subscribe",
   };
   const stream = new NotificationStream();
-  return conn.subscribeMessage<PersistentNotificationMessage>(
+  const subscription = conn.subscribeMessage<PersistentNotificationMessage>(
     (message) => onChange(stream.processMessage(message)),
     params
   );
+  return () => {
+    subscription.then((unsub) => unsub?.());
+  };
 };
 
 class NotificationStream {
