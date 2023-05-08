@@ -1,15 +1,4 @@
-import {
-  Connection,
-  createCollection,
-  HassEntity,
-} from "home-assistant-js-websocket";
-
-export interface PersitentNotificationEntity extends HassEntity {
-  notification_id?: string;
-  created_at?: string;
-  title?: string;
-  message?: string;
-}
+import { Connection } from "home-assistant-js-websocket";
 
 export interface PersistentNotification {
   created_at: string;
@@ -19,25 +8,49 @@ export interface PersistentNotification {
   status: "read" | "unread";
 }
 
-const fetchNotifications = (conn) =>
-  conn.sendMessagePromise({
-    type: "persistent_notification/get",
-  });
+export interface PersistentNotifications {
+  [notificationId: string]: PersistentNotification;
+}
 
-const subscribeUpdates = (conn, store) =>
-  conn.subscribeEvents(
-    () => fetchNotifications(conn).then((ntf) => store.setState(ntf, true)),
-    "persistent_notifications_updated"
-  );
+export interface PersistentNotificationMessage {
+  type: "added" | "removed" | "current" | "updated";
+  notifications: PersistentNotifications;
+}
 
 export const subscribeNotifications = (
   conn: Connection,
   onChange: (notifications: PersistentNotification[]) => void
-) =>
-  createCollection<PersistentNotification[]>(
-    "_ntf",
-    fetchNotifications,
-    subscribeUpdates,
-    conn,
-    onChange
+): Promise<() => Promise<void>> => {
+  const params = {
+    type: "persistent_notification/subscribe",
+  };
+  const stream = new NotificationStream();
+  return conn.subscribeMessage<PersistentNotificationMessage>(
+    (message) => onChange(stream.processMessage(message)),
+    params
   );
+};
+
+class NotificationStream {
+  notifications: PersistentNotifications;
+
+  constructor() {
+    this.notifications = {};
+  }
+
+  processMessage(
+    streamMessage: PersistentNotificationMessage
+  ): PersistentNotification[] {
+    if (streamMessage.type === "removed") {
+      for (const notificationId of Object.keys(streamMessage.notifications)) {
+        delete this.notifications[notificationId];
+      }
+    } else {
+      this.notifications = {
+        ...this.notifications,
+        ...streamMessage.notifications,
+      };
+    }
+    return Object.values(this.notifications);
+  }
+}
