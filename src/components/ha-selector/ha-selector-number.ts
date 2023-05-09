@@ -40,7 +40,9 @@ export class HaNumberSelector extends LitElement {
                 .min=${this.selector.number?.min}
                 .max=${this.selector.number?.max}
                 .value=${this.value ?? ""}
-                .step=${this.selector.number?.step ?? 1}
+                .step=${this.selector.number?.step === "any"
+                  ? undefined
+                  : this.selector.number?.step ?? 1}
                 .disabled=${this.disabled}
                 .required=${this.required}
                 pin
@@ -51,7 +53,8 @@ export class HaNumberSelector extends LitElement {
             `
           : ""}
         <ha-textfield
-          .inputMode=${(this.selector.number?.step || 1) % 1 !== 0
+          .inputMode=${this.selector.number?.step === "any" ||
+          (this.selector.number?.step ?? 1) % 1 !== 0
             ? "decimal"
             : "numeric"}
           .label=${this.selector.number?.mode !== "box"
