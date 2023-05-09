@@ -28,6 +28,10 @@ export class HaDialogHeader extends LitElement {
         :host {
           display: block;
         }
+        :host([show-border]) {
+          border-bottom: 1px solid
+            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
+        }
         .header .header-bar {
           height: var(--header-height);
           display: flex;

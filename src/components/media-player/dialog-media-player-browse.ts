@@ -67,7 +67,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           : this._currentItem.title}
         @closed=${this.closeDialog}
       >
-        <ha-dialog-header slot="heading">
+        <ha-dialog-header show-border slot="heading">
           ${this._navigateIds.length > 1
             ? html`
                 <ha-icon-button
@@ -167,9 +167,6 @@ class DialogMediaPlayerBrowse extends LitElement {
           }
         }
 
-        ha-dialog-header {
-          border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
-        }
         ha-dialog-header ha-media-manage-button {
           --mdc-theme-primary: var(--primary-text-color);
           margin: 6px;

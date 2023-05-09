@@ -101,7 +101,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
         @closed=${this.closeDialog}
         .heading=${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
       >
-        <ha-dialog-header slot="heading">
+        <ha-dialog-header show-border slot="heading">
           <ha-icon-button
             slot="navigationIcon"
             dialogAction="cancel"
@@ -229,11 +229,6 @@ class DialogZHAManageZigbeeDevice extends LitElement {
 
         .content {
           outline: none;
-        }
-
-        ha-dialog-header {
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         @media all and (min-width: 600px) and (min-height: 501px) {

@@ -83,7 +83,7 @@ export class HuiCreateDialogCard
         .heading=${title}
         class=${classMap({ table: this._currTabIndex === 1 })}
       >
-        <ha-dialog-header slot="heading">
+        <ha-dialog-header show-border slot="heading">
           <ha-icon-button
             slot="navigationIcon"
             dialogAction="cancel"
@@ -174,11 +174,6 @@ export class HuiCreateDialogCard
 
         ha-dialog.table {
           --dialog-content-padding: 0;
-        }
-
-        ha-dialog-header {
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         @media (min-width: 1200px) {

@@ -218,7 +218,7 @@ export class HuiDialogEditView extends LitElement {
           "yaml-mode": this._yamlMode,
         })}
       >
-        <ha-dialog-header slot="heading">
+        <ha-dialog-header show-border slot="heading">
           <ha-icon-button
             slot="navigationIcon"
             dialogAction="cancel"
@@ -494,9 +494,6 @@ export class HuiDialogEditView extends LitElement {
         }
         ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
-        }
-        ha-dialog-header {
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
         h2 {
           margin: 0;
