@@ -1,12 +1,12 @@
-import { mdiClose, mdiContentCopy } from "@mdi/js";
 import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { mdiClose, mdiContentCopy } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
 import "../../../components/ha-dialog";
-import "../../../components/ha-header-bar";
+import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import {
@@ -79,14 +79,14 @@ class DialogSystemLogDetail extends LitElement {
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>
-        <ha-header-bar slot="heading">
+        <ha-dialog-header slot="heading">
           <ha-icon-button
             slot="navigationIcon"
             dialogAction="cancel"
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title"> ${title} </span>
+          <span slot="title">${title}</span>
           <ha-icon-button
             id="copy"
             @click=${this._copyLog}
@@ -94,7 +94,7 @@ class DialogSystemLogDetail extends LitElement {
             .label=${this.hass.localize("ui.panel.config.logs.copy")}
             .path=${mdiContentCopy}
           ></ha-icon-button>
-        </ha-header-bar>
+        </ha-dialog-header>
         ${this.isCustomIntegration
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
@@ -233,14 +233,6 @@ class DialogSystemLogDetail extends LitElement {
         }
         .warning {
           color: var(--warning-color);
-        }
-
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         @media all and (min-width: 451px) and (min-height: 501px) {

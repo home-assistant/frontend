@@ -24,10 +24,10 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
-import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/ha-textfield";
+import "../../components/ha-dialog-header";
 import type { HaTextField } from "../../components/ha-textfield";
 import {
   AssistPipeline,
