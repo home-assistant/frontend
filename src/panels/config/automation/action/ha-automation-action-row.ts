@@ -3,6 +3,8 @@ import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
   mdiContentDuplicate,
+  mdiContentCopy,
+  mdiContentCut,
   mdiDelete,
   mdiDotsVertical,
   mdiPlay,
@@ -31,6 +33,7 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../../data/entity_registry";
+import { Clipboard } from "../../../../data/automation";
 import { Action, getActionType } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
@@ -57,7 +60,7 @@ import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
 
-const getType = (action: Action | undefined) => {
+export const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
@@ -111,6 +114,8 @@ export default class HaAutomationActionRow extends LitElement {
   @property({ type: Boolean }) public hideMenu = false;
 
   @property({ type: Boolean }) public reOrderMode = false;
+
+  @property() public clipboard?: Clipboard;
 
   @state() private _entityReg: EntityRegistryEntry[] = [];
 
@@ -219,6 +224,26 @@ export default class HaAutomationActionRow extends LitElement {
                     <ha-svg-icon
                       slot="graphic"
                       .path=${mdiContentDuplicate}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.copy"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentCopy}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.cut"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentCut}
                     ></ha-svg-icon>
                   </mwc-list-item>
 
@@ -342,6 +367,7 @@ export default class HaAutomationActionRow extends LitElement {
                       narrow: this.narrow,
                       reOrderMode: this.reOrderMode,
                       disabled: this.disabled,
+                      clipboard: this.clipboard,
                     })}
                   </div>
                 `}
@@ -376,17 +402,24 @@ export default class HaAutomationActionRow extends LitElement {
         fireEvent(this, "duplicate");
         break;
       case 4:
+        fireEvent(this, "set-clipboard", { action: this.action });
+        break;
+      case 5:
+        fireEvent(this, "set-clipboard", { action: this.action });
+        fireEvent(this, "value-changed", { value: null });
+        break;
+      case 6:
         this._switchUiMode();
         this.expand();
         break;
-      case 5:
+      case 7:
         this._switchYamlMode();
         this.expand();
         break;
-      case 6:
+      case 8:
         this._onDisable();
         break;
-      case 7:
+      case 9:
         this._onDelete();
         break;
     }

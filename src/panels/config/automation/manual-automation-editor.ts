@@ -2,7 +2,8 @@ import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import deepClone from "deep-clone-simple";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -10,6 +11,7 @@ import {
   Condition,
   ManualAutomationConfig,
   Trigger,
+  Clipboard,
 } from "../../../data/automation";
 import { Action } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
@@ -32,6 +34,8 @@ export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public config!: ManualAutomationConfig;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @state() private _clipboard: Clipboard = {};
 
   protected render() {
     return html`
@@ -91,6 +95,8 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
+        @set-clipboard=${this._setClipboard}
+        .clipboard=${this._clipboard}
       ></ha-automation-trigger>
 
       <div class="header">
@@ -120,6 +126,8 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
+        @set-clipboard=${this._setClipboard}
+        .clipboard=${this._clipboard}
       ></ha-automation-condition>
 
       <div class="header">
@@ -152,6 +160,8 @@ export class HaManualAutomationEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
+        @set-clipboard=${this._setClipboard}
+        .clipboard=${this._clipboard}
       ></ha-automation-action>
     `;
   }
@@ -161,6 +171,11 @@ export class HaManualAutomationEditor extends LitElement {
     fireEvent(this, "value-changed", {
       value: { ...this.config!, trigger: ev.detail.value as Trigger[] },
     });
+  }
+
+  private _setClipboard(ev: CustomEvent): void {
+    ev.stopPropagation();
+    this._clipboard = { ...this._clipboard, ...deepClone(ev.detail) };
   }
 
   private _conditionChanged(ev: CustomEvent): void {

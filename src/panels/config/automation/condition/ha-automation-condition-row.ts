@@ -3,6 +3,8 @@ import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
   mdiContentDuplicate,
+  mdiContentCopy,
+  mdiContentCut,
   mdiDelete,
   mdiDotsVertical,
   mdiFlask,
@@ -22,6 +24,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import { Condition, testCondition } from "../../../../data/automation";
+import type { Clipboard } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { CONDITION_TYPES } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
@@ -76,6 +79,8 @@ export default class HaAutomationConditionRow extends LitElement {
   @property({ type: Boolean }) public reOrderMode = false;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property() public clipboard?: Clipboard;
 
   @state() private _yamlMode = false;
 
@@ -156,6 +161,26 @@ export default class HaAutomationConditionRow extends LitElement {
                     <ha-svg-icon
                       slot="graphic"
                       .path=${mdiContentDuplicate}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.copy"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentCopy}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.cut"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentCut}
                     ></ha-svg-icon>
                   </mwc-list-item>
 
@@ -255,6 +280,7 @@ export default class HaAutomationConditionRow extends LitElement {
               .hass=${this.hass}
               .condition=${this.condition}
               .reOrderMode=${this.reOrderMode}
+              .clipboard=${this.clipboard}
             ></ha-automation-condition-editor>
           </div>
         </ha-expansion-panel>
@@ -307,17 +333,24 @@ export default class HaAutomationConditionRow extends LitElement {
         fireEvent(this, "duplicate");
         break;
       case 4:
+        fireEvent(this, "set-clipboard", { condition: this.condition });
+        break;
+      case 5:
+        fireEvent(this, "set-clipboard", { condition: this.condition });
+        fireEvent(this, "value-changed", { value: null });
+        break;
+      case 6:
         this._switchUiMode();
         this.expand();
         break;
-      case 5:
+      case 7:
         this._switchYamlMode();
         this.expand();
         break;
-      case 6:
+      case 8:
         this._onDisable();
         break;
-      case 7:
+      case 9:
         this._onDelete();
         break;
     }

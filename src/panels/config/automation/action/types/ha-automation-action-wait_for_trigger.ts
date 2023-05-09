@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-formfield";
 import { WaitForTriggerAction } from "../../../../../data/script";
+import type { Clipboard } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import "../../trigger/ha-automation-trigger";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
@@ -24,6 +25,8 @@ export class HaWaitForTriggerAction
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public reOrderMode = false;
+
+  @property() public clipboard?: Clipboard;
 
   public static get defaultConfig() {
     return { wait_for_trigger: [] };
@@ -62,6 +65,7 @@ export class HaWaitForTriggerAction
         .name=${"wait_for_trigger"}
         .reOrderMode=${this.reOrderMode}
         @value-changed=${this._valueChanged}
+        .clipboard=${this.clipboard}
       ></ha-automation-trigger>
     `;
   }
