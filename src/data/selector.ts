@@ -256,7 +256,7 @@ export interface NumberSelector {
   number: {
     min?: number;
     max?: number;
-    step?: number;
+    step?: number | "any";
     mode?: "box" | "slider";
     unit_of_measurement?: string;
   } | null;
