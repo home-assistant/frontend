@@ -39,6 +39,7 @@ export class HaDialogHeader extends LitElement {
         .header-navigation-icon {
           flex: none;
           min-width: 16px;
+          height: 100%;
         }
         .header-title {
           flex: 1;
@@ -55,6 +56,7 @@ export class HaDialogHeader extends LitElement {
         .header-action-items {
           flex: none;
           min-width: 16px;
+          height: 100%;
         }
       `,
     ];
