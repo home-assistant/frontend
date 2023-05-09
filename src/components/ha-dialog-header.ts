@@ -40,6 +40,8 @@ export class HaDialogHeader extends LitElement {
           flex: none;
           min-width: 16px;
           height: 100%;
+          display: flex;
+          flex-direction: row;
         }
         .header-title {
           flex: 1;
@@ -57,6 +59,8 @@ export class HaDialogHeader extends LitElement {
           flex: none;
           min-width: 16px;
           height: 100%;
+          display: flex;
+          flex-direction: row;
         }
       `,
     ];
