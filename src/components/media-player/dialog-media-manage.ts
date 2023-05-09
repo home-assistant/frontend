@@ -290,10 +290,11 @@ class DialogMediaManage extends LitElement {
           }
         }
 
-        ha-media-upload-button,
-        ha-button {
+        ha-dialog-header ha-media-upload-button,
+        ha-dialog-header ha-button {
           --mdc-theme-primary: var(--primary-text-color);
-          margin: 0 12px;
+          margin: 6px;
+          display: block;
         }
 
         mwc-list {
