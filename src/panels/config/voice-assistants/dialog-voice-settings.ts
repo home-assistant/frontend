@@ -51,7 +51,7 @@ class DialogVoiceSettings extends LitElement {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title" class="main-title" .title=${title}>${title}</span>
+          <span slot="title" .title=${title}>${title}</span>
           <ha-icon-button
             slot="actionItems"
             .label=${this.hass.localize(
