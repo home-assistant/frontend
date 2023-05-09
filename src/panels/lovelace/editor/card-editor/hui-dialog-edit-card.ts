@@ -15,7 +15,6 @@ import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-header-bar";
 import "../../../../components/ha-icon-button";
 import type {
   LovelaceCardConfig,
