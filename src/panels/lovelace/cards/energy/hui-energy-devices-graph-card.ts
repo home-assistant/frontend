@@ -6,7 +6,7 @@ import {
   ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import { addHours, differenceInDays } from "date-fns/esm";
+import { differenceInDays } from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -181,8 +181,6 @@ export class HuiEnergyDevicesGraphCard
     const period =
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
 
-    const startMinHour = addHours(energyData.start, -1);
-
     const lengthUnit = this.hass.config.unit_system.length || "";
     const units: StatisticsUnitConfiguration = {
       energy: "kWh",
@@ -191,53 +189,26 @@ export class HuiEnergyDevicesGraphCard
 
     const data = await fetchStatistics(
       this.hass,
-      startMinHour,
+      energyData.start,
       energyData.end,
       devices,
       period,
       units,
-      ["sum"]
+      ["change"]
     );
-
-    Object.values(data).forEach((stat) => {
-      // if the start of the first value is after the requested period, we have the first data point, and should add a zero point
-      if (stat.length && new Date(stat[0].start) > startMinHour) {
-        stat.unshift({
-          ...stat[0],
-          start: startMinHour.getTime(),
-          end: startMinHour.getTime(),
-          sum: 0,
-          state: 0,
-        });
-      }
-    });
 
     let compareData: Statistics | undefined;
 
     if (energyData.startCompare && energyData.endCompare) {
-      const startCompareMinHour = addHours(energyData.startCompare, -1);
       compareData = await fetchStatistics(
         this.hass,
-        startCompareMinHour,
+        energyData.startCompare,
         energyData.endCompare,
         devices,
         period,
         units,
-        ["sum"]
+        ["change"]
       );
-
-      Object.values(compareData).forEach((stat) => {
-        // if the start of the first value is after the requested period, we have the first data point, and should add a zero point
-        if (stat.length && new Date(stat[0].start) > startMinHour) {
-          stat.unshift({
-            ...stat[0],
-            start: startCompareMinHour.getTime(),
-            end: startCompareMinHour.getTime(),
-            sum: 0,
-            state: 0,
-          });
-        }
-      });
     }
 
     const chartData: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> =
