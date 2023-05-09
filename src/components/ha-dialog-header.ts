@@ -6,15 +6,18 @@ export class HaDialogHeader extends LitElement {
   protected render() {
     return html`
       <header class="header">
-        <section class="header-navigation-icon">
-          <slot name="navigationIcon"></slot>
-        </section>
-        <section class="header-title">
-          <slot name="title"></slot>
-        </section>
-        <section class="header-action-items">
-          <slot name="actionItems"></slot>
-        </section>
+        <div class="header-bar">
+          <section class="header-navigation-icon">
+            <slot name="navigationIcon"></slot>
+          </section>
+          <section class="header-title">
+            <slot name="title"></slot>
+          </section>
+          <section class="header-action-items">
+            <slot name="actionItems"></slot>
+          </section>
+        </div>
+        <slot></slot>
       </header>
     `;
   }
@@ -25,7 +28,7 @@ export class HaDialogHeader extends LitElement {
         :host {
           display: block;
         }
-        .header {
+        .header .header-bar {
           height: var(--header-height);
           display: flex;
           flex-direction: row;
