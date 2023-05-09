@@ -72,7 +72,7 @@ export class CloudWebhooks extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.webhooks.no_hooks_yet2"
                   )}
-                  <a href="/config/automation/new"
+                  <a href="/config/automation/edit/new"
                     >${this.hass.localize(
                       "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_automation"
                     )}</a
