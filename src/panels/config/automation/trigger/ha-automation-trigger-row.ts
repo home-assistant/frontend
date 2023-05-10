@@ -677,6 +677,8 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 }
 
+// dummy comment
+
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-trigger-row": HaAutomationTriggerRow;
