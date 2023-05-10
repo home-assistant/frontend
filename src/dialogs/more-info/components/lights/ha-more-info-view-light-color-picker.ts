@@ -12,6 +12,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { rgb2hex } from "../../../../common/color/convert-color";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-color-picker";
@@ -52,6 +53,8 @@ class MoreInfoViewLightColorPicker extends LitElement {
   @state() private _saturationSegments = 8;
 
   @state() private _colorPickerColor?: [number, number, number];
+
+  @state() private _colorBrightnessColor?: [number, number, number];
 
   @state() private _mode?: Mode;
 
@@ -156,7 +159,11 @@ class MoreInfoViewLightColorPicker extends LitElement {
                         max="100"
                         mode="cursor"
                         style=${styleMap({
-                          "--control-slider-color": this._colorPickerColor,
+                          "--control-slider-color": rgb2hex(
+                            this._colorBrightnessColor
+                              ? this._colorBrightnessColor
+                              : [255, 255, 255]
+                          ),
                         })}
                         .showHandle=${this._colorBrightnessSliderValue}
                         .value=${this._colorBrightnessSliderValue}
@@ -214,7 +221,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
                       ></ha-control-slider>
                     </div>
                     <div class="rgbw-slider">
-                      <p class="slider-percentage">
+                      <p class="slider-name">
                         ${this.hass.localize("ui.card.light.warm_white_value")}
                       </p>
                       <p class="slider-percentage">
@@ -292,8 +299,20 @@ class MoreInfoViewLightColorPicker extends LitElement {
         number,
         number
       ];
+
+      if (this._colorBrightnessSliderValue) {
+        this._colorBrightnessColor = this._adjustColorBrightness(
+          this._colorPickerColor,
+          (this._colorBrightnessSliderValue / 100) * 255,
+          true
+        );
+      } else if (this._colorBrightnessSliderValue === 0) {
+        this._colorBrightnessColor = [255, 255, 255];
+      }
     } else {
       this._colorPickerColor = [0, 0, 0];
+      this._colorBrightnessColor = [255, 255, 255];
+      this._colorBrightnessSliderValue = undefined;
       this._ctSliderValue = undefined;
       this._wvSliderValue = undefined;
       this._cwSliderValue = undefined;
@@ -671,7 +690,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
           --control-slider-background: -webkit-linear-gradient(
             left,
             black,
-            rgb(var(--control-slider-color))
+            var(--control-slider-color)
           );
           --control-slider-background-opacity: 1;
         }
