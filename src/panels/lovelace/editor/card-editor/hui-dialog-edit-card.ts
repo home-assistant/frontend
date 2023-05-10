@@ -1,12 +1,12 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   nothing,
+  PropertyValues,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -14,7 +14,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
-import "../../../../components/ha-header-bar";
+import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import type {
   LovelaceCardConfig,
@@ -178,26 +178,30 @@ export class HuiDialogEditCard
         @opened=${this._opened}
         .heading=${heading}
       >
-        <div slot="heading">
-          <ha-header-bar>
-            <div slot="title" @click=${this._enlarge}>${heading}</div>
-            ${this._documentationURL !== undefined
-              ? html`
-                  <a
-                    slot="actionItems"
-                    class="header_button"
-                    href=${this._documentationURL}
-                    title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                    target="_blank"
-                    rel="noreferrer"
-                    dir=${computeRTLDirection(this.hass)}
-                  >
-                    <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
-                  </a>
-                `
-              : ""}
-          </ha-header-bar>
-        </div>
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <span slot="title" @click=${this._enlarge}>${heading}</span>
+          ${this._documentationURL !== undefined
+            ? html`
+                <a
+                  slot="actionItems"
+                  class="header_button"
+                  href=${this._documentationURL}
+                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  target="_blank"
+                  rel="noreferrer"
+                  dir=${computeRTLDirection(this.hass)}
+                >
+                  <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
+                </a>
+              `
+            : nothing}
+        </ha-dialog-header>
         <div class="content">
           <div class="element-editor">
             <hui-card-element-editor
@@ -404,14 +408,6 @@ export class HuiDialogEditCard
           :host([large]) .content {
             width: calc(90vw - 48px);
           }
-        }
-
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          flex-shrink: 0;
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
         .center {
