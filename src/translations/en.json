@@ -2566,6 +2566,9 @@
                 },
                 "parallel": {
                   "label": "Run in parallel"
+                },
+                "variables": {
+                  "label": "Define variables"
                 }
               }
             }
