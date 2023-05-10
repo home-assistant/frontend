@@ -46,6 +46,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
+import { debounce } from "../../../common/util/debounce";
 
 const modeIcons: { [mode in HvacMode]: string } = {
   auto: mdiCalendarSync,
@@ -91,6 +92,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   @query("ha-card") private _card?: HaCard;
 
   @state() private resyncSetpoint = false;
+
+  private previousMode?: string;
+
+  private validatePreviousMode?: CallableFunction;
 
   public getCardSize(): number {
     return 7;
@@ -494,11 +499,37 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     });
   }
 
+  protected firstUpdated(): void {
+    if (!this.validatePreviousMode) {
+      this.validatePreviousMode = debounce(
+        (previousStateObj: ClimateEntity) => {
+          const stateObj = this.hass!.states[
+            this._config!.entity
+          ] as ClimateEntity;
+          if (previousStateObj === stateObj && this.previousMode) {
+            stateObj.state = this.previousMode;
+            this.previousMode = undefined;
+            this.requestUpdate();
+          }
+        },
+        2000
+      );
+    }
+  }
+
   private _handleAction(e: MouseEvent): void {
+    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
+    const selectedMode = (e.currentTarget as any).mode;
+
+    this.previousMode = this.previousMode || stateObj.state;
+    stateObj.state = selectedMode;
+    this.requestUpdate();
     this.hass!.callService("climate", "set_hvac_mode", {
       entity_id: this._config!.entity,
-      hvac_mode: (e.currentTarget as any).mode,
+      hvac_mode: selectedMode,
     });
+
+    this.validatePreviousMode?.(stateObj);
   }
 
   private async _callServiceHelper(
