@@ -32,36 +32,39 @@ export class HaDialogHeader extends LitElement {
           border-bottom: 1px solid
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
-        .header .header-bar {
-          height: var(--header-height);
+        .header-bar {
           display: flex;
           flex-direction: row;
-          align-items: center;
+          align-items: flex-start;
           padding: 4px;
           box-sizing: border-box;
         }
-        .header-navigation-icon {
-          flex: none;
-          min-width: 16px;
-          height: 100%;
-          display: flex;
-          flex-direction: row;
-        }
         .header-title {
           flex: 1;
-          font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
-          line-height: var(--mdc-typography-headline6-line-height, 2rem);
-          font-weight: var(--mdc-typography-headline6-font-weight, 500);
-          letter-spacing: 0.0125em;
-          padding: 0px 4px;
+          font-size: 22px;
+          line-height: 28px;
+          font-weight: 400;
+          padding: 10px 4px;
           min-width: 0;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
+        @media all and (min-width: 450px) and (min-height: 500px) {
+          .header-bar {
+            padding: 12px;
+          }
+        }
+        .header-navigation-icon {
+          flex: none;
+          min-width: 8px;
+          height: 100%;
+          display: flex;
+          flex-direction: row;
+        }
         .header-action-items {
           flex: none;
-          min-width: 16px;
+          min-width: 8px;
           height: 100%;
           display: flex;
           flex-direction: row;

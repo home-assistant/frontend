@@ -640,16 +640,13 @@ export class HaVoiceCommandDialog extends LitElement {
           --mdc-dialog-max-height: 500px;
           --dialog-content-padding: 0;
         }
-        ha-dialog-header {
-          --header-height: 64px;
-        }
         ha-dialog-header a {
           color: var(--primary-text-color);
         }
         div[slot="title"] {
           display: flex;
           flex-direction: column;
-          margin-top: 8px;
+          margin: -4px 0;
         }
         ha-button-menu {
           --mdc-theme-on-primary: var(--text-primary-color);
