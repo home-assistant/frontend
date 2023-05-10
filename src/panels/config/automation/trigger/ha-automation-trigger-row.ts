@@ -170,6 +170,18 @@ export default class HaAutomationTriggerRow extends LitElement {
 
                   <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.edit_id"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiIdentifier}
+                    ></ha-svg-icon>
+                  </mwc-list-item>
+
+                  <li divider role="separator"></li>
+
+                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+                    ${this.hass.localize(
                       "ui.panel.config.automation.editor.triggers.duplicate"
                     )}
                     <ha-svg-icon
@@ -195,16 +207,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                     <ha-svg-icon
                       slot="graphic"
                       .path=${mdiContentCut}
-                    ></ha-svg-icon>
-                  </mwc-list-item>
-
-                  <mwc-list-item graphic="icon" .disabled=${this.disabled}>
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.triggers.edit_id"
-                    )}
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${mdiIdentifier}
                     ></ha-svg-icon>
                   </mwc-list-item>
 
@@ -449,18 +451,18 @@ export default class HaAutomationTriggerRow extends LitElement {
         fireEvent(this, "re-order");
         break;
       case 2:
-        fireEvent(this, "duplicate");
+        this._requestShowId = true;
+        this.expand();
         break;
       case 3:
-        fireEvent(this, "set-clipboard", { trigger: this.trigger });
+        fireEvent(this, "duplicate");
         break;
       case 4:
         fireEvent(this, "set-clipboard", { trigger: this.trigger });
-        fireEvent(this, "value-changed", { value: null });
         break;
       case 5:
-        this._requestShowId = true;
-        this.expand();
+        fireEvent(this, "set-clipboard", { trigger: this.trigger });
+        fireEvent(this, "value-changed", { value: null });
         break;
       case 6:
         this._switchUiMode();

@@ -217,6 +217,9 @@ export default class HaAutomationActionRow extends LitElement {
                     )}
                     <ha-svg-icon slot="graphic" .path=${mdiSort}></ha-svg-icon>
                   </mwc-list-item>
+
+                  <li divider role="separator"></li>
+
                   <mwc-list-item graphic="icon" .disabled=${this.disabled}>
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.actions.duplicate"
