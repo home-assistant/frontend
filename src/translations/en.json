@@ -5597,7 +5597,8 @@
       "addon_running": "Add-on is running",
       "addon_stopped": "Add-on is stopped",
       "addons": "Installed add-ons",
-      "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
+      "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!",
+      "search_addons": "Search add-ons"
     },
     "store": {
       "missing_addons": "Missing add-ons? Enable advanced mode in your user profile page",
