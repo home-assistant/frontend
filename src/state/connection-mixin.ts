@@ -10,7 +10,6 @@ import {
   subscribeServices,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
-import { polyfillsLoaded } from "../common/translations/localize";
 import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
@@ -224,17 +223,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
       subscribeConfig(conn, (config) => {
         if (this.hass?.config?.time_zone !== config.time_zone) {
-          if (__BUILD__ === "latest" && polyfillsLoaded) {
-            polyfillsLoaded.then(() => {
-              if ("__setDefaultTimeZone" in Intl.DateTimeFormat) {
-                // @ts-ignore
-                Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
-              }
-            });
-          } else if ("__setDefaultTimeZone" in Intl.DateTimeFormat) {
-            // @ts-ignore
-            Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
-          }
+          import("../resources/intl-polyfill").then(() => {
+            if ("__setDefaultTimeZone" in Intl.DateTimeFormat) {
+              // @ts-ignore
+              Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
+            }
+          });
         }
         this._updateHass({ config });
       });

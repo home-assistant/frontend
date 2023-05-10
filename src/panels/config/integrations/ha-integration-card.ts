@@ -174,9 +174,11 @@ export class HaIntegrationCard extends LitElement {
         ${this.items.map(
           (item) =>
             html`<ha-list-item
+              dense
               hasMeta
               .entryId=${item.entry_id}
               @click=${this._selectConfigEntry}
+              class="config-entry"
               >${item.title ||
               this.hass.localize(
                 "ui.panel.config.integrations.config_entry.unnamed_entry"
@@ -1001,7 +1003,7 @@ export class HaIntegrationCard extends LitElement {
         @media (min-width: 563px) {
           ha-card.group {
             position: relative;
-            min-height: 195px;
+            min-height: 200px;
           }
           mwc-list {
             position: absolute;
@@ -1025,6 +1027,9 @@ export class HaIntegrationCard extends LitElement {
         }
         ha-list-item ha-svg-icon {
           color: var(--secondary-text-color);
+        }
+        .config-entry {
+          height: 36px;
         }
         ha-icon-next {
           width: 24px;

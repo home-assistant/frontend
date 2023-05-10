@@ -48,7 +48,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   @property() public onboardingLocalize!: LocalizeFunc;
 
-  @state() private _entries?: ConfigEntry[];
+  @state() private _entries: ConfigEntry[] = [];
 
   @state() private _discovered?: DataEntryFlowProgress[];
 
@@ -105,7 +105,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!this._entries || !this._discovered) {
+    if (!this._discovered) {
       return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.

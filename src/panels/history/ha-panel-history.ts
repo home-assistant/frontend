@@ -360,7 +360,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     clearInterval(this._interval);
     const now = new Date();
     const end = this._endDate > now ? now : this._endDate;
-    const timespan = differenceInHours(this._startDate, end);
+    const timespan = differenceInHours(end, this._startDate);
     this._interval = window.setInterval(
       () => this._stateHistoryCharts?.requestUpdate(),
       // if timespan smaller than 1 hour, update every 10 seconds, smaller than 5 hours, redraw every minute, otherwise every 5 minutes

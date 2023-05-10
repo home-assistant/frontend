@@ -23,8 +23,7 @@ import {
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { HomeAssistant } from "../../types";
+import { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 
@@ -323,7 +322,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     return this.value || "";
   }
 
-  private _deviceChanged(ev: PolymerChangedEvent<string>) {
+  private _deviceChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
 
@@ -336,7 +335,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 

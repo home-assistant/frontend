@@ -478,7 +478,10 @@
           }
         }
       },
-      "stt-picker": { "stt": "Speech-to-text", "none": "None" },
+      "stt-picker": {
+        "stt": "Speech-to-text",
+        "none": "None"
+      },
       "related-filter-menu": {
         "filter": "Filter",
         "filter_by_entity": "Filter by entity",
@@ -838,7 +841,10 @@
         "input_label": "Enter a request",
         "send_text": "Send text",
         "start_listening": "Start listening",
-        "manage_assistants": "Manage assistants"
+        "manage_assistants": "Manage assistants",
+        "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
+        "not_supported_microphone_documentation": "Visit {documentation_link} to learn how to use a secure URL",
+        "not_supported_microphone_documentation_link": "the documentation"
       },
       "generic": {
         "cancel": "Cancel",
@@ -977,6 +983,8 @@
           "name": "Name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
+          "default_code": "Default code",
+          "default_code_error": "Code does not match code format",
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of Measurement",
           "precipitation_unit": "Precipitation unit",
@@ -1082,9 +1090,11 @@
         "expose_header": "Expose",
         "aliases_header": "Aliases",
         "aliases_description": "Aliases are supported by Assist and Google Assistant.",
+        "aliases_no_unique_id": "Aliases are not supported for entities without an unique id. See the {faq_link} for more detail.",
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
-        "unsupported": "Unsupported"
+        "unsupported": "Unsupported",
+        "view_entity": "More info about entity"
       },
       "restart": {
         "heading": "Restart Home Assistant",
@@ -2076,14 +2086,14 @@
               }
             },
             "cloud": {
-              "header": "Get the best assistant with Home Assistant Cloud",
+              "title": "Get the best assistant with {home_assistant_cloud}",
               "features": {
                 "assistants": {
                   "title": "Google Assistant and Amazon Alexa",
                   "text": "Control all your Home Assistant devices via any Google Assistant-enabled or Alexa-enabled device."
                 },
                 "speech": {
-                  "title": "Better speech options",
+                  "title": "Amazing speech options for Assist",
                   "text": "Bring personality to your home by having it speak to you using our neural-network powered speech-to-text and text-to-speech services."
                 }
               },
@@ -2834,7 +2844,7 @@
               "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
               "cerificate_loading": "Your certificate is loading.",
               "cerificate_loaded": "Your certificate is loaded, waiting for validation.",
-              "cerificate_error": "There was an error generating the certficate, check your logs.",
+              "cerificate_error": "There was an error generating the certificate, check your logs.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
               "instance_is_available": "Your instance is available at your",
               "instance_will_be_available": "Your instance will be available at your",
@@ -2859,19 +2869,19 @@
               "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app.",
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "expose_new_entities": "[%key:ui::panel::config::cloud::account::google::expose_new_entities%]",
-              "expose_new_entities_info": "Should new entities, that are supported and have no security risks be exposed to Alexa automatically?"
+              "expose_new_entities_info": "Should new entities be exposed to Alexa automatically? Exposes supported devices that are not classified as security devices."
             },
             "google": {
               "title": "Google Assistant",
-              "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
+              "info": "With the Google Assistant integration for Home Assistant Cloud, you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
               "http_use_ssl_warning_title": "Local communication unavailable",
-              "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant because you have configured an SSL certificate for your HTTP integration.",
+              "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant, because you have configured an SSL certificate for your HTTP integration.",
               "enable_ha_skill": "Activate the Home Assistant Cloud skill for Google Assistant",
               "config_documentation": "Configuration documentation",
-              "enable_state_reporting": "Enable State Reporting",
+              "enable_state_reporting": "Enable state reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This speeds up voice commands and allows you to always see the latest states in the Google app.",
-              "security_devices": "Security Devices",
-              "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say/enter this PIN when interacting with such devices via Google Assistant.",
+              "security_devices": "Security devices",
+              "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors, and locks. You will be asked to say/enter this PIN when interacting with security devices via Google Assistant.",
               "devices_pin": "Security Devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
               "show_entities": "Show Entities",
@@ -2882,7 +2892,7 @@
               "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "expose_new_entities": "Expose new entities",
-              "expose_new_entities_info": "Should new entities, that are supported and have no security risks be exposed to Google Assistant automatically?"
+              "expose_new_entities_info": "Should new entities be exposed to Google Assistant automatically? Exposes supported devices that are not classified as security devices."
             },
             "webhooks": {
               "title": "Webhooks",
@@ -3458,7 +3468,8 @@
             "update_button": "Update Configuration",
             "download_backup": "Download Backup",
             "migrate_radio": "Migrate Radio",
-            "network_settings_title": "Network Settings"
+            "network_settings_title": "Network Settings",
+            "change_channel": "Change channel"
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",
@@ -3552,6 +3563,14 @@
             "lqi": "LQI",
             "relationship": "Relationship",
             "depth": "Depth"
+          },
+          "change_channel_dialog": {
+            "title": "Change network channel",
+            "new_channel": "New channel",
+            "change_channel": "Change channel",
+            "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating!",
+            "channel_has_been_changed": "Network channel has been changed",
+            "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes."
           }
         },
         "zwave_js": {
@@ -3956,6 +3975,7 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used",
+          "disk_metrics": "Disk metrics",
           "datadisk": {
             "title": "Move data disk",
             "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
@@ -3969,6 +3989,60 @@
             "cancel": "[%key:ui::common::cancel%]",
             "failed_to_move": "Failed to move data disk",
             "move": "Move"
+          },
+          "network_mounts": {
+            "title": "Network storage",
+            "add_title": "Add network storage",
+            "update_title": "Update network storage",
+            "no_mounts": "No connected network storage",
+            "mount_usage": {
+              "backup": "Backup",
+              "media": "Media"
+            },
+            "mount_type": {
+              "nfs": "Network File Share (NFS)",
+              "cifs": "Samba/Windows (CIFS)"
+            },
+            "options": {
+              "name": {
+                "title": "Name",
+                "description": "This name will be shown to you in the UI, and will also be the name of the folder created on your system"
+              },
+              "share": {
+                "title": "Remote share",
+                "description": "This is the name of the share you created on your storage server"
+              },
+              "server": {
+                "title": "Server",
+                "description": "This is the domain name (FQDN) or IP address of the storage server you want to connect to"
+              },
+              "path": {
+                "title": "Remote share path",
+                "description": "This is the path of the remote share on your storage server"
+              },
+              "type": {
+                "title": "Protocol",
+                "description": "This determines how to communicate with the storage server"
+              },
+              "usage": {
+                "title": "Usage",
+                "description": "This determines how the share is intended to be used"
+              },
+              "username": {
+                "title": "Username",
+                "description": "This is your username for the samba share"
+              },
+              "password": {
+                "title": "Password",
+                "description": "This is your password for the samba share"
+              }
+            },
+            "connect": "Connect",
+            "update": "Update",
+            "errors": {
+              "reload": "Could not reload mount {mount}",
+              "invalid_name": "Invalid name, can only contain alphanumeric characters and underscores"
+            }
           }
         },
         "system_health": {

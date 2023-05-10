@@ -5,8 +5,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { getStates } from "../../common/entity/get_states";
 import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { HomeAssistant } from "../../types";
+import { ValueChangedEvent, HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 
@@ -100,11 +99,11 @@ class HaEntityStatePicker extends LitElement {
     return this.value || "";
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
     if (newValue !== this._value) {

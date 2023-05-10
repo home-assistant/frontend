@@ -3,7 +3,7 @@ import { mdiAlertCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { voiceAssistants } from "../../../../data/voice";
+import { voiceAssistants } from "../../../../data/expose";
 import { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import "../../../../components/ha-svg-icon";

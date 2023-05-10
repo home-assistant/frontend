@@ -1,5 +1,3 @@
-import "@material/web/button/filled-button";
-import "@material/web/iconbutton/filled-icon-button";
 import { mdiCheck, mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";

@@ -12,8 +12,8 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog-header";
 import "../../../components/ha-form/ha-form";
-import "../../../components/ha-header-bar";
 import {
   AssistPipeline,
   AssistPipelineMutableParams,
@@ -44,7 +44,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   @state() private _submitting = false;
 
-  @state() private _supportedLanguages: string[] = [];
+  @state() private _supportedLanguages?: string[];
 
   public showDialog(params: VoiceAssistantPipelineDetailsDialogParams): void {
     this._params = params;
@@ -98,14 +98,14 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         escapeKeyAction
         .heading=${title}
       >
-        <ha-header-bar slot="heading">
+        <ha-dialog-header slot="heading">
           <ha-icon-button
             slot="navigationIcon"
             dialogAction="cancel"
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <div slot="title" class="main-title" .title=${title}>${title}</div>
+          <span slot="title" .title=${title}>${title}</span>
           ${this._params.pipeline?.id
             ? html`
                 <ha-icon-button
@@ -139,7 +139,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                 </ha-button-menu>
               `
             : nothing}
-        </ha-header-bar>
+        </ha-dialog-header>
         <div class="content">
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -298,15 +298,6 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-header-bar {
-          --mdc-theme-on-primary: var(--primary-text-color);
-          --mdc-theme-primary: var(--mdc-theme-surface);
-          display: block;
-        }
-        .main-title {
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
         assist-pipeline-detail-config,
         assist-pipeline-detail-conversation,
         assist-pipeline-detail-stt {

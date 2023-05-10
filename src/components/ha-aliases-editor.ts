@@ -15,6 +15,8 @@ class AliasesEditor extends LitElement {
 
   @property() public aliases!: string[];
 
+  @property({ type: Boolean }) public disabled = false;
+
   protected render() {
     if (!this.aliases) {
       return nothing;
@@ -25,6 +27,7 @@ class AliasesEditor extends LitElement {
         (alias, index) => html`
           <div class="layout horizontal center-center row">
             <ha-textfield
+              .disabled=${this.disabled}
               dialogInitialFocus=${index}
               .index=${index}
               class="flex-auto"
@@ -37,6 +40,7 @@ class AliasesEditor extends LitElement {
               @keydown=${this._keyDownAlias}
             ></ha-textfield>
             <ha-icon-button
+              .disabled=${this.disabled}
               .index=${index}
               slot="navigationIcon"
               label=${this.hass!.localize("ui.dialogs.aliases.remove_alias", {
@@ -49,7 +53,7 @@ class AliasesEditor extends LitElement {
         `
       )}
       <div class="layout horizontal center-center">
-        <mwc-button @click=${this._addAlias}>
+        <mwc-button @click=${this._addAlias} .disabled=${this.disabled}>
           ${this.hass!.localize("ui.dialogs.aliases.add_alias")}
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </mwc-button>

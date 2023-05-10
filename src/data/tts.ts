@@ -40,6 +40,15 @@ export const listTTSEngines = (
     country,
   });
 
+export const getTTSEngine = (
+  hass: HomeAssistant,
+  engine_id: string
+): Promise<{ provider: TTSEngine }> =>
+  hass.callWS({
+    type: "tts/engine/get",
+    engine_id,
+  });
+
 export const listTTSVoices = (
   hass: HomeAssistant,
   engine_id: string,

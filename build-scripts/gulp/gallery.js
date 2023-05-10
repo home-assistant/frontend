@@ -1,22 +1,19 @@
-// Run demo develop mode
-const gulp = require("gulp");
-const fs = require("fs");
-const path = require("path");
-const { marked } = require("marked");
-const { glob } = require("glob");
-const yaml = require("js-yaml");
-
-const env = require("../env.cjs");
-const paths = require("../paths.cjs");
-
-require("./clean.cjs");
-require("./translations.cjs");
-require("./gen-icons-json.cjs");
-require("./gather-static.cjs");
-require("./webpack.cjs");
-require("./service-worker.cjs");
-require("./entry-html.cjs");
-require("./rollup.cjs");
+import fs from "fs";
+import { glob } from "glob";
+import gulp from "gulp";
+import yaml from "js-yaml";
+import { marked } from "marked";
+import path from "path";
+import env from "../env.cjs";
+import paths from "../paths.cjs";
+import "./clean.js";
+import "./entry-html.js";
+import "./gather-static.js";
+import "./gen-icons-json.js";
+import "./rollup.js";
+import "./service-worker.js";
+import "./translations.js";
+import "./webpack.js";
 
 gulp.task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");

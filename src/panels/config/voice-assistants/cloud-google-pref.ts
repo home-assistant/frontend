@@ -4,6 +4,7 @@ import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { isEmptyFilter } from "../../../common/entity/entity_filter";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
@@ -11,20 +12,22 @@ import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../data/cloud";
-import { showSaveSuccessToast } from "../../../util/toast-saved-success";
-import { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
-import { isEmptyFilter } from "../../../common/entity/entity_filter";
 import {
+  ExposeEntitySettings,
   getExposeNewEntities,
   setExposeNewEntities,
-} from "../../../data/voice";
-import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+} from "../../../data/expose";
+import { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
+import { showSaveSuccessToast } from "../../../util/toast-saved-success";
 
 export class CloudGooglePref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private extEntities?: Record<string, ExtEntityRegistryEntry>;
+  @property({ attribute: false }) public exposedEntities?: Record<
+    string,
+    ExposeEntitySettings
+  >;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
@@ -40,10 +43,11 @@ export class CloudGooglePref extends LitElement {
     }
   }
 
-  private _exposedEntities = memoizeOne(
-    (extEntities: Record<string, ExtEntityRegistryEntry>) =>
-      Object.values(extEntities).filter(
-        (entity) => entity.options?.["cloud.google_assistant"]?.should_expose
+  private _exposedEntitiesCount = memoizeOne(
+    (exposedEntities: Record<string, ExposeEntitySettings>) =>
+      Object.entries(exposedEntities).filter(
+        ([entityId, expose]) =>
+          expose["cloud.google_assistant"] && entityId in this.hass.states
       ).length
   );
 
@@ -239,8 +243,8 @@ export class CloudGooglePref extends LitElement {
                     : this.hass.localize(
                         "ui.panel.config.cloud.account.google.exposed_entities",
                         {
-                          number: this.extEntities
-                            ? this._exposedEntities(this.extEntities)
+                          number: this.exposedEntities
+                            ? this._exposedEntitiesCount(this.exposedEntities)
                             : 0,
                         }
                       )}
@@ -360,6 +364,8 @@ export class CloudGooglePref extends LitElement {
       img {
         height: 28px;
         margin-right: 16px;
+        margin-inline-end: 16px;
+        margin-inline-start: initial;
       }
     `;
   }
