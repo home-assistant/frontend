@@ -17,6 +17,7 @@ import {
   PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -145,7 +146,10 @@ class MoreInfoLight extends LitElement {
                 ${supportsColorTemp || supportsColor
                   ? html`
                       <md-outlined-icon-button
-                        class="color-mode"
+                        class=${classMap({
+                          "color-rgb-mode": supportsColor,
+                          "color-temp-mode": !supportsColor,
+                        })}
                         .disabled=${this.stateObj.state === UNAVAILABLE}
                         .title=${this.hass.localize(
                           "ui.dialogs.more_info_control.light.change_color"
@@ -273,20 +277,31 @@ class MoreInfoLight extends LitElement {
           --md-sys-color-on-surface: var(--secondary-text-color);
           --md-sys-color-on-surface-variant: var(--secondary-text-color);
           --md-sys-color-on-surface-rgb: var(--rgb-secondary-text-color);
-          --md-sys-color-outline: var(--secondary-text-color);
         }
         md-outlined-button {
           --ha-icon-display: block;
           --md-sys-color-primary: var(--primary-text-color);
           --md-sys-color-outline: var(--divider-color);
         }
-        .color-mode {
+        .color-rgb-mode {
           background-image: url("/static/images/color_wheel.png");
           background-size: cover;
-          --md-sys-color-outline: transparent;
+          border-radius: 20px;
+          --md-sys-color-outline: var(--divider-color);
         }
-        .color-mode[disabled] {
-          filter: grayscale(1) oapcity(0.5);
+        .color-temp-mode {
+          background: linear-gradient(
+            0,
+            rgb(255, 160, 0) 0%,
+            white 50%,
+            rgb(166, 209, 255) 100%
+          );
+          border-radius: 20px;
+          --md-sys-color-outline: var(--divider-color);
+        }
+        .color-rgb-mode[disabled],
+        .color-temp-mode[disabled] {
+          filter: grayscale(1) opacity(0.5);
         }
       `,
     ];
