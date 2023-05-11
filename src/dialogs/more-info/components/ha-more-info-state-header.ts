@@ -85,7 +85,6 @@ export class HaMoreInfoStateHeader extends LitElement {
         font-weight: 400;
         font-size: 36px;
         line-height: 44px;
-        margin-bottom: 4px;
       }
       .last-changed {
         font-style: normal;
@@ -93,9 +92,12 @@ export class HaMoreInfoStateHeader extends LitElement {
         font-size: 16px;
         line-height: 24px;
         letter-spacing: 0.1px;
-        margin-bottom: 24px;
+        padding: 4px 0;
+        margin-bottom: 20px;
         cursor: pointer;
         user-select: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       }
     `;
   }
