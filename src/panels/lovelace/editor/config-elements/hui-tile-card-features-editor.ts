@@ -30,6 +30,7 @@ import { supportsCoverOpenCloseTileFeature } from "../../tile-features/hui-cover
 import { supportsCoverTiltTileFeature } from "../../tile-features/hui-cover-tilt-tile-feature";
 import { supportsFanSpeedTileFeature } from "../../tile-features/hui-fan-speed-tile-feature";
 import { supportsLightBrightnessTileFeature } from "../../tile-features/hui-light-brightness-tile-feature";
+import { supportsLightColorTempTileFeature } from "../../tile-features/hui-light-color-temp-tile-feature";
 import { supportsVacuumCommandTileFeature } from "../../tile-features/hui-vacuum-commands-tile-feature";
 import { LovelaceTileFeatureConfig } from "../../tile-features/types";
 
@@ -40,6 +41,7 @@ const FEATURE_TYPES: FeatureType[] = [
   "cover-open-close",
   "cover-tilt",
   "light-brightness",
+  "light-color-temp",
   "vacuum-commands",
   "fan-speed",
   "alarm-modes",
@@ -55,6 +57,7 @@ const SUPPORTS_FEATURE_TYPES: Record<FeatureType, SupportsFeature | undefined> =
     "cover-open-close": supportsCoverOpenCloseTileFeature,
     "cover-tilt": supportsCoverTiltTileFeature,
     "light-brightness": supportsLightBrightnessTileFeature,
+    "light-color-temp": supportsLightColorTempTileFeature,
     "vacuum-commands": supportsVacuumCommandTileFeature,
     "fan-speed": supportsFanSpeedTileFeature,
     "alarm-modes": supportsAlarmModesTileFeature,
