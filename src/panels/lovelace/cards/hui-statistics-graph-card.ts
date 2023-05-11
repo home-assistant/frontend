@@ -251,7 +251,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
           : undefined;
       }
       const unitconfig = unitClass ? { [unitClass]: this._unit } : undefined;
-      this._statistics = await fetchStatistics(
+      const statistics = await fetchStatistics(
         this.hass!,
         startDate,
         undefined,
@@ -260,6 +260,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         unitconfig,
         this._statTypes
       );
+
+      this._statistics = {};
+      this._entities.forEach((id) => {
+        if (id in statistics) {
+          this._statistics![id] = statistics[id];
+        }
+      });
     } catch (err) {
       this._statistics = undefined;
     }
