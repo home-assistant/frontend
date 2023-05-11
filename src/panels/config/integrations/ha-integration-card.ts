@@ -27,6 +27,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-list-item";
 import "../../../components/ha-icon-button";
@@ -164,6 +165,13 @@ export class HaIntegrationCard extends LitElement {
         ${item
           ? this._renderSingleEntry(item)
           : this._renderGroupedIntegration()}
+
+        <a
+          href=${`/config/integrations/integration/${this.domain}`}
+          style="position: absolute; top: 18px; right: 12px;"
+        >
+          <ha-button>Detail</ha-button>
+        </a>
       </ha-card>
     `;
   }
