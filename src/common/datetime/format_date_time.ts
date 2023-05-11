@@ -24,6 +24,29 @@ const formatDateTimeMem = memoizeOne(
     )
 );
 
+// Aug 9, 2021, 8:23 AM
+export const formatShortDateTimeWithYear = (
+  dateObj: Date,
+  locale: FrontendLocaleData
+) => formatShortDateTimeWithYearMem(locale).format(dateObj);
+
+const formatShortDateTimeWithYearMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(
+      locale.language === "en" && !useAmPm(locale)
+        ? "en-u-hc-h23"
+        : locale.language,
+      {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: useAmPm(locale) ? "numeric" : "2-digit",
+        minute: "2-digit",
+        hour12: useAmPm(locale),
+      }
+    )
+);
+
 // Aug 9, 8:23 AM
 export const formatShortDateTime = (
   dateObj: Date,

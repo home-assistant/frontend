@@ -509,6 +509,9 @@
       "relative_time": {
         "never": "Never"
       },
+      "absolute_time": {
+        "never": "[%key:ui::components::relative_time::never%]"
+      },
       "history_charts": {
         "history_disabled": "History integration disabled",
         "loading_history": "Loading state history…",
