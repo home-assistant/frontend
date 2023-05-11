@@ -24,11 +24,7 @@ import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { deepEqual } from "../../../../common/util/deep-equal";
-import {
-  ExtendedStatisticType,
-  statTypeMap,
-  supportedStatTypeMap,
-} from "../../../../components/chart/statistics-chart";
+import { supportedStatTypeMap } from "../../../../components/chart/statistics-chart";
 import "../../../../components/entity/ha-statistics-picker";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
@@ -38,6 +34,7 @@ import {
   isExternalStatistic,
   StatisticsMetaData,
   statisticsMetaHasType,
+  StatisticType,
 } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import type { StatisticsGraphCardConfig } from "../../cards/types";
@@ -86,7 +83,7 @@ const stat_types = [
   "sum",
   "state",
   "change",
-] as ExtendedStatisticType[];
+] as StatisticType[];
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor
@@ -253,7 +250,7 @@ export class HuiStatisticsGraphCardEditor
           (stat_type) =>
             stat_type !== "change" &&
             this._metaDatas?.every((metaData) =>
-              statisticsMetaHasType(metaData, statTypeMap[stat_type])
+              statisticsMetaHasType(metaData, stat_type)
             )
         );
     const data = {
@@ -324,7 +321,7 @@ export class HuiStatisticsGraphCardEditor
     if (config.stat_types && config.entities.length) {
       config.stat_types = ensureArray(config.stat_types).filter((stat_type) =>
         metadata!.every((metaData) =>
-          statisticsMetaHasType(metaData, statTypeMap[stat_type])
+          statisticsMetaHasType(metaData, stat_type)
         )
       );
       if (!config.stat_types.length) {

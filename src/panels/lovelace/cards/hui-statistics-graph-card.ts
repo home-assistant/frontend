@@ -9,10 +9,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import {
-  ExtendedStatisticType,
-  statTypeMap,
-} from "../../../components/chart/statistics-chart";
 import "../../../components/ha-card";
 import {
   fetchStatistics,
@@ -20,6 +16,7 @@ import {
   getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
+  StatisticType,
 } from "../../../data/recorder";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -74,7 +71,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private _interval?: number;
 
-  private _statTypes?: Array<ExtendedStatisticType>;
+  private _statTypes?: Array<StatisticType>;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -124,7 +121,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     if (typeof config.stat_types === "string") {
       this._statTypes = [config.stat_types];
     } else if (!config.stat_types) {
-      this._statTypes = ["state", "sum", "min", "max", "mean"];
+      this._statTypes = ["change", "state", "sum", "min", "max", "mean"];
     } else {
       this._statTypes = config.stat_types;
     }
@@ -261,7 +258,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         this._entities,
         this._config!.period,
         unitconfig,
-        this._statTypes?.map((stat_type) => statTypeMap[stat_type])
+        this._statTypes
       );
     } catch (err) {
       this._statistics = undefined;
